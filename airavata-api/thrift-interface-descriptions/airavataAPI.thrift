@@ -129,10 +129,10 @@ service Airavata {
      * @return
      *   The server-side generated airavata experiment globally unique identifier.
      *
-     * @throws org.apache.airavata.api.error.InvalidRequestException
+     * @throws org.apache.airavata.model.error.InvalidRequestException
      *    For any incorrect forming of the request itself.
      *
-     * @throws org.apache.airavata.api.error.AiravataClientException
+     * @throws org.apache.airavata.model.error.AiravataClientException
      *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *
      *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -145,7 +145,7 @@ service Airavata {
      *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *         is implemented, the authorization will be more substantial.
      *
-     * @throws org.apache.airavata.api.error.AiravataSystemException
+     * @throws org.apache.airavata.model.error.AiravataSystemException
      *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *       rather an Airavata Administrator will be notified to take corrective action.
      *
@@ -165,13 +165,13 @@ service Airavata {
    * @return experimentMetada
    *   This method will return the previously stored experiment metadata.
    *
-   * @throws org.apache.airavata.api.error.InvalidRequestException
+   * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
    * 
-   * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
-   * @throws org.apache.airavata.api.error.AiravataClientException
+   * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
    *      
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -184,7 +184,7 @@ service Airavata {
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
-   * @throws org.apache.airavata.api.error.AiravataSystemException
+   * @throws org.apache.airavata.model.error.AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
@@ -210,13 +210,13 @@ service Airavata {
    * @return
    *   This method call does not have a return value.
    *
-   * @throws org.apache.airavata.api.error.InvalidRequestException
+   * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
    * 
-   * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
-   * @throws org.apache.airavata.api.error.AiravataClientException
+   * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
    *      
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -229,7 +229,7 @@ service Airavata {
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
-   * @throws org.apache.airavata.api.error.AiravataSystemException
+   * @throws org.apache.airavata.model.error.AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
@@ -280,13 +280,13 @@ service Airavata {
    * @return
    *   This method call does not have a return value.
    *
-   * @throws org.apache.airavata.api.error.InvalidRequestException
+   * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
    * 
-   * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
-   * @throws org.apache.airavata.api.error.AiravataClientException
+   * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
    *      
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -299,7 +299,7 @@ service Airavata {
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
-   * @throws org.apache.airavata.api.error.AiravataSystemException
+   * @throws org.apache.airavata.model.error.AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
@@ -347,10 +347,10 @@ service Airavata {
    * @return
    *   The server-side generated experiment GUID.
    *
-   * @throws org.apache.airavata.api.error.InvalidRequestException
+   * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
    * 
-   * @throws org.apache.airavata.api.error.AiravataClientException
+   * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
    *      
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -363,7 +363,7 @@ service Airavata {
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
-   * @throws org.apache.airavata.api.error.AiravataSystemException
+   * @throws org.apache.airavata.model.error.AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
@@ -391,13 +391,13 @@ service Airavata {
    * @return
    *   The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
    *
-   * @throws org.apache.airavata.api.error.InvalidRequestException
+   * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
    * 
-   * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
-   * @throws org.apache.airavata.api.error.AiravataClientException
+   * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
    *      
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -410,7 +410,7 @@ service Airavata {
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
-   * @throws org.apache.airavata.api.error.AiravataSystemException
+   * @throws org.apache.airavata.model.error.AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
@@ -431,13 +431,13 @@ service Airavata {
    * @return
    *   This method call does not have a return value.
    *
-   * @throws org.apache.airavata.api.error.InvalidRequestException
+   * @throws org.apache.airavata.model.error.InvalidRequestException
    *    For any incorrect forming of the request itself.
    * 
-   * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
    *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
    * 
-   * @throws org.apache.airavata.api.error.AiravataClientException
+   * @throws org.apache.airavata.model.error.AiravataClientException
    *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
    *      
    *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -450,7 +450,7 @@ service Airavata {
    *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
    *         is implemented, the authorization will be more substantial.
    *
-   * @throws org.apache.airavata.api.error.AiravataSystemException
+   * @throws org.apache.airavata.model.error.AiravataSystemException
    *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
    *       rather an Airavata Administrator will be notified to take corrective action.
    *

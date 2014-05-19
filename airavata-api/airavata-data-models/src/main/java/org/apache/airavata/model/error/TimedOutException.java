@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.api.error;
+package org.apache.airavata.model.error;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -28,47 +28,31 @@ import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
-import org.apache.thrift.protocol.TProtocolException;
-import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
-import org.apache.thrift.async.AsyncMethodCallback;
-import org.apache.thrift.server.AbstractNonblockingServer.*;
-import java.util.List;
-import java.util.ArrayList;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
-import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * This exception is thrown for invalid authorization requests such user does not have acces to an aplication or resource.
- * 
- *  message: contains the authorization failure message
+    /**
+ * This exception is thrown when RPC timeout gets exceeded.
  */
-@SuppressWarnings("all") public class AuthorizationException extends TException implements org.apache.thrift.TBase<AuthorizationException, AuthorizationException._Fields>, java.io.Serializable, Cloneable, Comparable<AuthorizationException> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("AuthorizationException");
+@SuppressWarnings("all") public class TimedOutException extends TException implements org.apache.thrift.TBase<TimedOutException, TimedOutException._Fields>, java.io.Serializable, Cloneable, Comparable<TimedOutException> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TimedOutException");
 
-  private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new AuthorizationExceptionStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new AuthorizationExceptionTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TimedOutExceptionStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TimedOutExceptionTupleSchemeFactory());
   }
 
-  public String message; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    MESSAGE((short)1, "message");
+;
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -83,8 +67,6 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // MESSAGE
-          return MESSAGE;
         default:
           return null;
       }
@@ -123,87 +105,37 @@ import org.slf4j.LoggerFactory;
       return _fieldName;
     }
   }
-
-  // isset id assignments
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(AuthorizationException.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TimedOutException.class, metaDataMap);
   }
 
-  public AuthorizationException() {
-  }
-
-  public AuthorizationException(
-    String message)
-  {
-    this();
-    this.message = message;
+  public TimedOutException() {
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public AuthorizationException(AuthorizationException other) {
-    if (other.isSetMessage()) {
-      this.message = other.message;
-    }
+  public TimedOutException(TimedOutException other) {
   }
 
-  public AuthorizationException deepCopy() {
-    return new AuthorizationException(this);
+  public TimedOutException deepCopy() {
+    return new TimedOutException(this);
   }
 
   @Override
   public void clear() {
-    this.message = null;
-  }
-
-  public String getMessage() {
-    return this.message;
-  }
-
-  public AuthorizationException setMessage(String message) {
-    this.message = message;
-    return this;
-  }
-
-  public void unsetMessage() {
-    this.message = null;
-  }
-
-  /** Returns true if field message is set (has been assigned a value) and false otherwise */
-  public boolean isSetMessage() {
-    return this.message != null;
-  }
-
-  public void setMessageIsSet(boolean value) {
-    if (!value) {
-      this.message = null;
-    }
   }
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case MESSAGE:
-      if (value == null) {
-        unsetMessage();
-      } else {
-        setMessage((String)value);
-      }
-      break;
-
     }
   }
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case MESSAGE:
-      return getMessage();
-
     }
     throw new IllegalStateException();
   }
@@ -215,8 +147,6 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case MESSAGE:
-      return isSetMessage();
     }
     throw new IllegalStateException();
   }
@@ -225,23 +155,14 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof AuthorizationException)
-      return this.equals((AuthorizationException)that);
+    if (that instanceof TimedOutException)
+      return this.equals((TimedOutException)that);
     return false;
   }
 
-  public boolean equals(AuthorizationException that) {
+  public boolean equals(TimedOutException that) {
     if (that == null)
       return false;
-
-    boolean this_present_message = true && this.isSetMessage();
-    boolean that_present_message = true && that.isSetMessage();
-    if (this_present_message || that_present_message) {
-      if (!(this_present_message && that_present_message))
-        return false;
-      if (!this.message.equals(that.message))
-        return false;
-    }
 
     return true;
   }
@@ -252,23 +173,13 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(AuthorizationException other) {
+  public int compareTo(TimedOutException other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetMessage()).compareTo(other.isSetMessage());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetMessage()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.message, other.message);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     return 0;
   }
 
@@ -286,25 +197,15 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("AuthorizationException(");
+    StringBuilder sb = new StringBuilder("TimedOutException(");
     boolean first = true;
 
-    sb.append("message:");
-    if (this.message == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.message);
-    }
-    first = false;
     sb.append(")");
     return sb.toString();
   }
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (message == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'message' was not present! Struct: " + toString());
-    }
     // check for sub-struct validity
   }
 
@@ -324,15 +225,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class AuthorizationExceptionStandardSchemeFactory implements SchemeFactory {
-    public AuthorizationExceptionStandardScheme getScheme() {
-      return new AuthorizationExceptionStandardScheme();
+  private static class TimedOutExceptionStandardSchemeFactory implements SchemeFactory {
+    public TimedOutExceptionStandardScheme getScheme() {
+      return new TimedOutExceptionStandardScheme();
     }
   }
 
-  private static class AuthorizationExceptionStandardScheme extends StandardScheme<AuthorizationException> {
+  private static class TimedOutExceptionStandardScheme extends StandardScheme<TimedOutException> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, AuthorizationException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TimedOutException struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -342,14 +243,6 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // MESSAGE
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.message = iprot.readString();
-              struct.setMessageIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -361,40 +254,32 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, AuthorizationException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TimedOutException struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.message != null) {
-        oprot.writeFieldBegin(MESSAGE_FIELD_DESC);
-        oprot.writeString(struct.message);
-        oprot.writeFieldEnd();
-      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
 
   }
 
-  private static class AuthorizationExceptionTupleSchemeFactory implements SchemeFactory {
-    public AuthorizationExceptionTupleScheme getScheme() {
-      return new AuthorizationExceptionTupleScheme();
+  private static class TimedOutExceptionTupleSchemeFactory implements SchemeFactory {
+    public TimedOutExceptionTupleScheme getScheme() {
+      return new TimedOutExceptionTupleScheme();
     }
   }
 
-  private static class AuthorizationExceptionTupleScheme extends TupleScheme<AuthorizationException> {
+  private static class TimedOutExceptionTupleScheme extends TupleScheme<TimedOutException> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, AuthorizationException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TimedOutException struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.message);
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, AuthorizationException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TimedOutException struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.message = iprot.readString();
-      struct.setMessageIsSet(true);
     }
   }
 

@@ -28,7 +28,6 @@ import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
-import org.apache.thrift.protocol.TProtocolException;
 import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
 import org.apache.thrift.async.AsyncMethodCallback;
@@ -38,13 +37,10 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,7 +59,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param project
      */
-    public String createProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public String createProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Update a Project
@@ -71,7 +67,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param project
      */
-    public void updateProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public void updateProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Get a Project by ID
@@ -79,7 +75,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param projectId
      */
-    public org.apache.airavata.model.workspace.Project getProject(String projectId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public org.apache.airavata.model.workspace.Project getProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Get all Project by user
@@ -87,7 +83,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param userName
      */
-    public List<org.apache.airavata.model.workspace.Project> getAllUserProjects(String userName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public List<org.apache.airavata.model.workspace.Project> getAllUserProjects(String userName) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Get all Experiments within a Project
@@ -95,7 +91,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param projectId
      */
-    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllExperimentsInProject(String projectId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllExperimentsInProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Get all Experiments by user
@@ -103,7 +99,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param userName
      */
-    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllUserExperiments(String userName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllUserExperiments(String userName) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
@@ -119,10 +115,10 @@ import org.slf4j.LoggerFactory;
      * @return
      *   The server-side generated airavata experiment globally unique identifier.
      * 
-     * @throws org.apache.airavata.api.error.InvalidRequestException
+     * @throws org.apache.airavata.model.error.InvalidRequestException
      *    For any incorrect forming of the request itself.
      * 
-     * @throws org.apache.airavata.api.error.AiravataClientException
+     * @throws org.apache.airavata.model.error.AiravataClientException
      *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      * 
      *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -135,14 +131,14 @@ import org.slf4j.LoggerFactory;
      *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *         is implemented, the authorization will be more substantial.
      * 
-     * @throws org.apache.airavata.api.error.AiravataSystemException
+     * @throws org.apache.airavata.model.error.AiravataSystemException
      *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *       rather an Airavata Administrator will be notified to take corrective action.
      * 
      * 
      * @param experiment
      */
-    public String createExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public String createExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Fetch previously created experiment metadata.
@@ -153,13 +149,13 @@ import org.slf4j.LoggerFactory;
      * @return experimentMetada
      *   This method will return the previously stored experiment metadata.
      * 
-     * @throws org.apache.airavata.api.error.InvalidRequestException
+     * @throws org.apache.airavata.model.error.InvalidRequestException
      *    For any incorrect forming of the request itself.
      * 
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException
      *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
      * 
-     * @throws org.apache.airavata.api.error.AiravataClientException
+     * @throws org.apache.airavata.model.error.AiravataClientException
      *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *      
      *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -172,14 +168,14 @@ import org.slf4j.LoggerFactory;
      *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *         is implemented, the authorization will be more substantial.
      * 
-     * @throws org.apache.airavata.api.error.AiravataSystemException
+     * @throws org.apache.airavata.model.error.AiravataSystemException
      *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *       rather an Airavata Administrator will be notified to take corrective action.
      * 
      * 
      * @param airavataExperimentId
      */
-    public org.apache.airavata.model.workspace.experiment.Experiment getExperiment(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public org.apache.airavata.model.workspace.experiment.Experiment getExperiment(String airavataExperimentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Configure a previously created experiment with required inputs, scheduling and other quality of service
@@ -196,13 +192,13 @@ import org.slf4j.LoggerFactory;
      * @return
      *   This method call does not have a return value.
      * 
-     * @throws org.apache.airavata.api.error.InvalidRequestException
+     * @throws org.apache.airavata.model.error.InvalidRequestException
      *    For any incorrect forming of the request itself.
      * 
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException
      *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
      * 
-     * @throws org.apache.airavata.api.error.AiravataClientException
+     * @throws org.apache.airavata.model.error.AiravataClientException
      *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *      
      *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -215,7 +211,7 @@ import org.slf4j.LoggerFactory;
      *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *         is implemented, the authorization will be more substantial.
      * 
-     * @throws org.apache.airavata.api.error.AiravataSystemException
+     * @throws org.apache.airavata.model.error.AiravataSystemException
      *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *       rather an Airavata Administrator will be notified to take corrective action.
      * 
@@ -223,7 +219,7 @@ import org.slf4j.LoggerFactory;
      * @param airavataExperimentId
      * @param experiment
      */
-    public void updateExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public void updateExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     public void updateExperimentConfiguration(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.UserConfigurationData userConfiguration) throws org.apache.thrift.TException;
 
@@ -240,7 +236,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param airavataExperimentId
      */
-    public boolean validateExperiment(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public boolean validateExperiment(String airavataExperimentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
@@ -261,13 +257,13 @@ import org.slf4j.LoggerFactory;
      * @return
      *   This method call does not have a return value.
      * 
-     * @throws org.apache.airavata.api.error.InvalidRequestException
+     * @throws org.apache.airavata.model.error.InvalidRequestException
      *    For any incorrect forming of the request itself.
      * 
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException
      *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
      * 
-     * @throws org.apache.airavata.api.error.AiravataClientException
+     * @throws org.apache.airavata.model.error.AiravataClientException
      *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *      
      *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -280,7 +276,7 @@ import org.slf4j.LoggerFactory;
      *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *         is implemented, the authorization will be more substantial.
      * 
-     * @throws org.apache.airavata.api.error.AiravataSystemException
+     * @throws org.apache.airavata.model.error.AiravataSystemException
      *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *       rather an Airavata Administrator will be notified to take corrective action.
      * 
@@ -288,9 +284,9 @@ import org.slf4j.LoggerFactory;
      * @param airavataExperimentId
      * @param airavataCredStoreToken
      */
-    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.airavata.api.error.LaunchValidationException, org.apache.thrift.TException;
+    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.LaunchValidationException, org.apache.thrift.TException;
 
-    public org.apache.airavata.model.workspace.experiment.ExperimentStatus getExperimentStatus(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public org.apache.airavata.model.workspace.experiment.ExperimentStatus getExperimentStatus(String airavataExperimentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     public List<org.apache.airavata.model.workspace.experiment.DataObjectType> getExperimentOutputs(String airavataExperimentId) throws org.apache.thrift.TException;
 
@@ -311,13 +307,13 @@ import org.slf4j.LoggerFactory;
      * @return
      *   The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
      * 
-     * @throws org.apache.airavata.api.error.InvalidRequestException
+     * @throws org.apache.airavata.model.error.InvalidRequestException
      *    For any incorrect forming of the request itself.
      * 
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException
      *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
      * 
-     * @throws org.apache.airavata.api.error.AiravataClientException
+     * @throws org.apache.airavata.model.error.AiravataClientException
      *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *      
      *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -330,7 +326,7 @@ import org.slf4j.LoggerFactory;
      *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *         is implemented, the authorization will be more substantial.
      * 
-     * @throws org.apache.airavata.api.error.AiravataSystemException
+     * @throws org.apache.airavata.model.error.AiravataSystemException
      *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *       rather an Airavata Administrator will be notified to take corrective action.
      * 
@@ -338,7 +334,7 @@ import org.slf4j.LoggerFactory;
      * @param existingExperimentID
      * @param newExperiementName
      */
-    public String cloneExperiment(String existingExperimentID, String newExperiementName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public String cloneExperiment(String existingExperimentID, String newExperiementName) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Terminate a running experiment.
@@ -349,13 +345,13 @@ import org.slf4j.LoggerFactory;
      * @return
      *   This method call does not have a return value.
      * 
-     * @throws org.apache.airavata.api.error.InvalidRequestException
+     * @throws org.apache.airavata.model.error.InvalidRequestException
      *    For any incorrect forming of the request itself.
      * 
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException
      *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
      * 
-     * @throws org.apache.airavata.api.error.AiravataClientException
+     * @throws org.apache.airavata.model.error.AiravataClientException
      *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *      
      *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -368,14 +364,14 @@ import org.slf4j.LoggerFactory;
      *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *         is implemented, the authorization will be more substantial.
      * 
-     * @throws org.apache.airavata.api.error.AiravataSystemException
+     * @throws org.apache.airavata.model.error.AiravataSystemException
      *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *       rather an Airavata Administrator will be notified to take corrective action.
      * 
      * 
      * @param airavataExperimentId
      */
-    public void terminateExperiment(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException;
+    public void terminateExperiment(String airavataExperimentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
   }
 
@@ -463,7 +459,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "GetAPIVersion failed: unknown result");
     }
 
-    public String createProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String createProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_createProject(project);
       return recv_createProject();
@@ -476,7 +472,7 @@ import org.slf4j.LoggerFactory;
       sendBase("createProject", args);
     }
 
-    public String recv_createProject() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_createProject() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       createProject_result result = new createProject_result();
       receiveBase(result, "createProject");
@@ -495,7 +491,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createProject failed: unknown result");
     }
 
-    public void updateProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public void updateProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_updateProject(project);
       recv_updateProject();
@@ -508,7 +504,7 @@ import org.slf4j.LoggerFactory;
       sendBase("updateProject", args);
     }
 
-    public void recv_updateProject() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public void recv_updateProject() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       updateProject_result result = new updateProject_result();
       receiveBase(result, "updateProject");
@@ -524,7 +520,7 @@ import org.slf4j.LoggerFactory;
       return;
     }
 
-    public org.apache.airavata.model.workspace.Project getProject(String projectId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.Project getProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_getProject(projectId);
       return recv_getProject();
@@ -537,7 +533,7 @@ import org.slf4j.LoggerFactory;
       sendBase("getProject", args);
     }
 
-    public org.apache.airavata.model.workspace.Project recv_getProject() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.Project recv_getProject() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       getProject_result result = new getProject_result();
       receiveBase(result, "getProject");
@@ -556,7 +552,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getProject failed: unknown result");
     }
 
-    public List<org.apache.airavata.model.workspace.Project> getAllUserProjects(String userName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.workspace.Project> getAllUserProjects(String userName) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_getAllUserProjects(userName);
       return recv_getAllUserProjects();
@@ -569,7 +565,7 @@ import org.slf4j.LoggerFactory;
       sendBase("getAllUserProjects", args);
     }
 
-    public List<org.apache.airavata.model.workspace.Project> recv_getAllUserProjects() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.workspace.Project> recv_getAllUserProjects() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       getAllUserProjects_result result = new getAllUserProjects_result();
       receiveBase(result, "getAllUserProjects");
@@ -588,7 +584,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllUserProjects failed: unknown result");
     }
 
-    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllExperimentsInProject(String projectId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllExperimentsInProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_getAllExperimentsInProject(projectId);
       return recv_getAllExperimentsInProject();
@@ -601,7 +597,7 @@ import org.slf4j.LoggerFactory;
       sendBase("getAllExperimentsInProject", args);
     }
 
-    public List<org.apache.airavata.model.workspace.experiment.Experiment> recv_getAllExperimentsInProject() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.workspace.experiment.Experiment> recv_getAllExperimentsInProject() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       getAllExperimentsInProject_result result = new getAllExperimentsInProject_result();
       receiveBase(result, "getAllExperimentsInProject");
@@ -620,7 +616,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllExperimentsInProject failed: unknown result");
     }
 
-    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllUserExperiments(String userName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllUserExperiments(String userName) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_getAllUserExperiments(userName);
       return recv_getAllUserExperiments();
@@ -633,7 +629,7 @@ import org.slf4j.LoggerFactory;
       sendBase("getAllUserExperiments", args);
     }
 
-    public List<org.apache.airavata.model.workspace.experiment.Experiment> recv_getAllUserExperiments() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.workspace.experiment.Experiment> recv_getAllUserExperiments() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       getAllUserExperiments_result result = new getAllUserExperiments_result();
       receiveBase(result, "getAllUserExperiments");
@@ -652,7 +648,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllUserExperiments failed: unknown result");
     }
 
-    public String createExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String createExperiment(org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_createExperiment(experiment);
       return recv_createExperiment();
@@ -665,7 +661,7 @@ import org.slf4j.LoggerFactory;
       sendBase("createExperiment", args);
     }
 
-    public String recv_createExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_createExperiment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       createExperiment_result result = new createExperiment_result();
       receiveBase(result, "createExperiment");
@@ -684,7 +680,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createExperiment failed: unknown result");
     }
 
-    public org.apache.airavata.model.workspace.experiment.Experiment getExperiment(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.experiment.Experiment getExperiment(String airavataExperimentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_getExperiment(airavataExperimentId);
       return recv_getExperiment();
@@ -697,7 +693,7 @@ import org.slf4j.LoggerFactory;
       sendBase("getExperiment", args);
     }
 
-    public org.apache.airavata.model.workspace.experiment.Experiment recv_getExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.experiment.Experiment recv_getExperiment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       getExperiment_result result = new getExperiment_result();
       receiveBase(result, "getExperiment");
@@ -719,7 +715,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getExperiment failed: unknown result");
     }
 
-    public void updateExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public void updateExperiment(String airavataExperimentId, org.apache.airavata.model.workspace.experiment.Experiment experiment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_updateExperiment(airavataExperimentId, experiment);
       recv_updateExperiment();
@@ -733,7 +729,7 @@ import org.slf4j.LoggerFactory;
       sendBase("updateExperiment", args);
     }
 
-    public void recv_updateExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public void recv_updateExperiment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       updateExperiment_result result = new updateExperiment_result();
       receiveBase(result, "updateExperiment");
@@ -794,7 +790,7 @@ import org.slf4j.LoggerFactory;
       return;
     }
 
-    public boolean validateExperiment(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public boolean validateExperiment(String airavataExperimentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_validateExperiment(airavataExperimentId);
       return recv_validateExperiment();
@@ -807,7 +803,7 @@ import org.slf4j.LoggerFactory;
       sendBase("validateExperiment", args);
     }
 
-    public boolean recv_validateExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public boolean recv_validateExperiment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       validateExperiment_result result = new validateExperiment_result();
       receiveBase(result, "validateExperiment");
@@ -829,7 +825,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "validateExperiment failed: unknown result");
     }
 
-    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.airavata.api.error.LaunchValidationException, org.apache.thrift.TException
+    public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.LaunchValidationException, org.apache.thrift.TException
     {
       send_launchExperiment(airavataExperimentId, airavataCredStoreToken);
       recv_launchExperiment();
@@ -843,7 +839,7 @@ import org.slf4j.LoggerFactory;
       sendBase("launchExperiment", args);
     }
 
-    public void recv_launchExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.airavata.api.error.LaunchValidationException, org.apache.thrift.TException
+    public void recv_launchExperiment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.LaunchValidationException, org.apache.thrift.TException
     {
       launchExperiment_result result = new launchExperiment_result();
       receiveBase(result, "launchExperiment");
@@ -865,7 +861,7 @@ import org.slf4j.LoggerFactory;
       return;
     }
 
-    public org.apache.airavata.model.workspace.experiment.ExperimentStatus getExperimentStatus(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.experiment.ExperimentStatus getExperimentStatus(String airavataExperimentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_getExperimentStatus(airavataExperimentId);
       return recv_getExperimentStatus();
@@ -878,7 +874,7 @@ import org.slf4j.LoggerFactory;
       sendBase("getExperimentStatus", args);
     }
 
-    public org.apache.airavata.model.workspace.experiment.ExperimentStatus recv_getExperimentStatus() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.experiment.ExperimentStatus recv_getExperimentStatus() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       getExperimentStatus_result result = new getExperimentStatus_result();
       receiveBase(result, "getExperimentStatus");
@@ -946,7 +942,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getJobStatuses failed: unknown result");
     }
 
-    public String cloneExperiment(String existingExperimentID, String newExperiementName) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String cloneExperiment(String existingExperimentID, String newExperiementName) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_cloneExperiment(existingExperimentID, newExperiementName);
       return recv_cloneExperiment();
@@ -960,7 +956,7 @@ import org.slf4j.LoggerFactory;
       sendBase("cloneExperiment", args);
     }
 
-    public String recv_cloneExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_cloneExperiment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       cloneExperiment_result result = new cloneExperiment_result();
       receiveBase(result, "cloneExperiment");
@@ -982,7 +978,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "cloneExperiment failed: unknown result");
     }
 
-    public void terminateExperiment(String airavataExperimentId) throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public void terminateExperiment(String airavataExperimentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_terminateExperiment(airavataExperimentId);
       recv_terminateExperiment();
@@ -995,7 +991,7 @@ import org.slf4j.LoggerFactory;
       sendBase("terminateExperiment", args);
     }
 
-    public void recv_terminateExperiment() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException
+    public void recv_terminateExperiment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       terminateExperiment_result result = new terminateExperiment_result();
       receiveBase(result, "terminateExperiment");
@@ -1083,7 +1079,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1115,7 +1111,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1147,7 +1143,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.model.workspace.Project getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public org.apache.airavata.model.workspace.Project getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1179,7 +1175,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public List<org.apache.airavata.model.workspace.Project> getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public List<org.apache.airavata.model.workspace.Project> getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1211,7 +1207,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public List<org.apache.airavata.model.workspace.experiment.Experiment> getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public List<org.apache.airavata.model.workspace.experiment.Experiment> getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1243,7 +1239,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public List<org.apache.airavata.model.workspace.experiment.Experiment> getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public List<org.apache.airavata.model.workspace.experiment.Experiment> getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1275,7 +1271,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1307,7 +1303,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.model.workspace.experiment.Experiment getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public org.apache.airavata.model.workspace.experiment.Experiment getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1342,7 +1338,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1444,7 +1440,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public boolean getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public boolean getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1479,7 +1475,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.airavata.api.error.LaunchValidationException, org.apache.thrift.TException {
+      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.LaunchValidationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1511,7 +1507,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.model.workspace.experiment.ExperimentStatus getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public org.apache.airavata.model.workspace.experiment.ExperimentStatus getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1610,7 +1606,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1642,7 +1638,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.api.error.InvalidRequestException, org.apache.airavata.api.error.ExperimentNotFoundException, org.apache.airavata.api.error.AiravataClientException, org.apache.airavata.api.error.AiravataSystemException, org.apache.thrift.TException {
+      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.ExperimentNotFoundException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1724,11 +1720,11 @@ import org.slf4j.LoggerFactory;
         createProject_result result = new createProject_result();
         try {
           result.success = iface.createProject(args.project);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -1752,11 +1748,11 @@ import org.slf4j.LoggerFactory;
         updateProject_result result = new updateProject_result();
         try {
           iface.updateProject(args.project);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -1780,11 +1776,11 @@ import org.slf4j.LoggerFactory;
         getProject_result result = new getProject_result();
         try {
           result.success = iface.getProject(args.projectId);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -1808,11 +1804,11 @@ import org.slf4j.LoggerFactory;
         getAllUserProjects_result result = new getAllUserProjects_result();
         try {
           result.success = iface.getAllUserProjects(args.userName);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -1836,11 +1832,11 @@ import org.slf4j.LoggerFactory;
         getAllExperimentsInProject_result result = new getAllExperimentsInProject_result();
         try {
           result.success = iface.getAllExperimentsInProject(args.projectId);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -1864,11 +1860,11 @@ import org.slf4j.LoggerFactory;
         getAllUserExperiments_result result = new getAllUserExperiments_result();
         try {
           result.success = iface.getAllUserExperiments(args.userName);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -1892,11 +1888,11 @@ import org.slf4j.LoggerFactory;
         createExperiment_result result = new createExperiment_result();
         try {
           result.success = iface.createExperiment(args.experiment);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -1920,13 +1916,13 @@ import org.slf4j.LoggerFactory;
         getExperiment_result result = new getExperiment_result();
         try {
           result.success = iface.getExperiment(args.airavataExperimentId);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+        } catch (org.apache.airavata.model.error.ExperimentNotFoundException enf) {
           result.enf = enf;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -1950,13 +1946,13 @@ import org.slf4j.LoggerFactory;
         updateExperiment_result result = new updateExperiment_result();
         try {
           iface.updateExperiment(args.airavataExperimentId, args.experiment);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+        } catch (org.apache.airavata.model.error.ExperimentNotFoundException enf) {
           result.enf = enf;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -2021,13 +2017,13 @@ import org.slf4j.LoggerFactory;
         try {
           result.success = iface.validateExperiment(args.airavataExperimentId);
           result.setSuccessIsSet(true);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+        } catch (org.apache.airavata.model.error.ExperimentNotFoundException enf) {
           result.enf = enf;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -2051,15 +2047,15 @@ import org.slf4j.LoggerFactory;
         launchExperiment_result result = new launchExperiment_result();
         try {
           iface.launchExperiment(args.airavataExperimentId, args.airavataCredStoreToken);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+        } catch (org.apache.airavata.model.error.ExperimentNotFoundException enf) {
           result.enf = enf;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
-        } catch (org.apache.airavata.api.error.LaunchValidationException lve) {
+        } catch (org.apache.airavata.model.error.LaunchValidationException lve) {
           result.lve = lve;
         }
         return result;
@@ -2083,13 +2079,13 @@ import org.slf4j.LoggerFactory;
         getExperimentStatus_result result = new getExperimentStatus_result();
         try {
           result.success = iface.getExperimentStatus(args.airavataExperimentId);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+        } catch (org.apache.airavata.model.error.ExperimentNotFoundException enf) {
           result.enf = enf;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -2153,13 +2149,13 @@ import org.slf4j.LoggerFactory;
         cloneExperiment_result result = new cloneExperiment_result();
         try {
           result.success = iface.cloneExperiment(args.existingExperimentID, args.newExperiementName);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+        } catch (org.apache.airavata.model.error.ExperimentNotFoundException enf) {
           result.enf = enf;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -2183,13 +2179,13 @@ import org.slf4j.LoggerFactory;
         terminateExperiment_result result = new terminateExperiment_result();
         try {
           iface.terminateExperiment(args.airavataExperimentId);
-        } catch (org.apache.airavata.api.error.InvalidRequestException ire) {
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
-        } catch (org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+        } catch (org.apache.airavata.model.error.ExperimentNotFoundException enf) {
           result.enf = enf;
-        } catch (org.apache.airavata.api.error.AiravataClientException ace) {
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
           result.ace = ace;
-        } catch (org.apache.airavata.api.error.AiravataSystemException ase) {
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
         }
         return result;
@@ -2309,18 +2305,18 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             createProject_result result = new createProject_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -2375,18 +2371,18 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             updateProject_result result = new updateProject_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -2442,18 +2438,18 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             getProject_result result = new getProject_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -2509,18 +2505,18 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             getAllUserProjects_result result = new getAllUserProjects_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -2576,18 +2572,18 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             getAllExperimentsInProject_result result = new getAllExperimentsInProject_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -2643,18 +2639,18 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             getAllUserExperiments_result result = new getAllUserExperiments_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -2710,18 +2706,18 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             createExperiment_result result = new createExperiment_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -2777,23 +2773,23 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             getExperiment_result result = new getExperiment_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.ExperimentNotFoundException) {
-                        result.enf = (org.apache.airavata.api.error.ExperimentNotFoundException) e;
+            else             if (e instanceof org.apache.airavata.model.error.ExperimentNotFoundException) {
+                        result.enf = (org.apache.airavata.model.error.ExperimentNotFoundException) e;
                         result.setEnfIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -2848,23 +2844,23 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             updateExperiment_result result = new updateExperiment_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.ExperimentNotFoundException) {
-                        result.enf = (org.apache.airavata.api.error.ExperimentNotFoundException) e;
+            else             if (e instanceof org.apache.airavata.model.error.ExperimentNotFoundException) {
+                        result.enf = (org.apache.airavata.model.error.ExperimentNotFoundException) e;
                         result.setEnfIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -3021,23 +3017,23 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             validateExperiment_result result = new validateExperiment_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.ExperimentNotFoundException) {
-                        result.enf = (org.apache.airavata.api.error.ExperimentNotFoundException) e;
+            else             if (e instanceof org.apache.airavata.model.error.ExperimentNotFoundException) {
+                        result.enf = (org.apache.airavata.model.error.ExperimentNotFoundException) e;
                         result.setEnfIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -3092,28 +3088,28 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             launchExperiment_result result = new launchExperiment_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.ExperimentNotFoundException) {
-                        result.enf = (org.apache.airavata.api.error.ExperimentNotFoundException) e;
+            else             if (e instanceof org.apache.airavata.model.error.ExperimentNotFoundException) {
+                        result.enf = (org.apache.airavata.model.error.ExperimentNotFoundException) e;
                         result.setEnfIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.LaunchValidationException) {
-                        result.lve = (org.apache.airavata.api.error.LaunchValidationException) e;
+            else             if (e instanceof org.apache.airavata.model.error.LaunchValidationException) {
+                        result.lve = (org.apache.airavata.model.error.LaunchValidationException) e;
                         result.setLveIsSet(true);
                         msg = result;
             }
@@ -3169,23 +3165,23 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             getExperimentStatus_result result = new getExperimentStatus_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.ExperimentNotFoundException) {
-                        result.enf = (org.apache.airavata.api.error.ExperimentNotFoundException) e;
+            else             if (e instanceof org.apache.airavata.model.error.ExperimentNotFoundException) {
+                        result.enf = (org.apache.airavata.model.error.ExperimentNotFoundException) e;
                         result.setEnfIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -3343,23 +3339,23 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             cloneExperiment_result result = new cloneExperiment_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.ExperimentNotFoundException) {
-                        result.enf = (org.apache.airavata.api.error.ExperimentNotFoundException) e;
+            else             if (e instanceof org.apache.airavata.model.error.ExperimentNotFoundException) {
+                        result.enf = (org.apache.airavata.model.error.ExperimentNotFoundException) e;
                         result.setEnfIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -3414,23 +3410,23 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             terminateExperiment_result result = new terminateExperiment_result();
-            if (e instanceof org.apache.airavata.api.error.InvalidRequestException) {
-                        result.ire = (org.apache.airavata.api.error.InvalidRequestException) e;
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.ExperimentNotFoundException) {
-                        result.enf = (org.apache.airavata.api.error.ExperimentNotFoundException) e;
+            else             if (e instanceof org.apache.airavata.model.error.ExperimentNotFoundException) {
+                        result.enf = (org.apache.airavata.model.error.ExperimentNotFoundException) e;
                         result.setEnfIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataClientException) {
-                        result.ace = (org.apache.airavata.api.error.AiravataClientException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
                         result.setAceIsSet(true);
                         msg = result;
             }
-            else             if (e instanceof org.apache.airavata.api.error.AiravataSystemException) {
-                        result.ase = (org.apache.airavata.api.error.AiravataSystemException) e;
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
                         msg = result;
             }
@@ -4428,9 +4424,9 @@ import org.slf4j.LoggerFactory;
     }
 
     public String success; // required
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -4520,9 +4516,9 @@ import org.slf4j.LoggerFactory;
 
     public createProject_result(
       String success,
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
@@ -4539,13 +4535,13 @@ import org.slf4j.LoggerFactory;
         this.success = other.success;
       }
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -4585,11 +4581,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public createProject_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public createProject_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -4609,11 +4605,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public createProject_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public createProject_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -4633,11 +4629,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public createProject_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public createProject_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -4671,7 +4667,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -4679,7 +4675,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -4687,7 +4683,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -4940,7 +4936,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -4949,7 +4945,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -4958,7 +4954,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -5054,17 +5050,17 @@ import org.slf4j.LoggerFactory;
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -5438,9 +5434,9 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new updateProject_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -5524,9 +5520,9 @@ import org.slf4j.LoggerFactory;
     }
 
     public updateProject_result(
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.ire = ire;
@@ -5539,13 +5535,13 @@ import org.slf4j.LoggerFactory;
      */
     public updateProject_result(updateProject_result other) {
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -5560,11 +5556,11 @@ import org.slf4j.LoggerFactory;
       this.ase = null;
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public updateProject_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public updateProject_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -5584,11 +5580,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public updateProject_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public updateProject_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -5608,11 +5604,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public updateProject_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public updateProject_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -5638,7 +5634,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -5646,7 +5642,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -5654,7 +5650,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -5867,7 +5863,7 @@ import org.slf4j.LoggerFactory;
           switch (schemeField.id) {
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -5876,7 +5872,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -5885,7 +5881,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -5966,17 +5962,17 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(3);
         if (incoming.get(0)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -6347,9 +6343,9 @@ import org.slf4j.LoggerFactory;
     }
 
     public org.apache.airavata.model.workspace.Project success; // required
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -6439,9 +6435,9 @@ import org.slf4j.LoggerFactory;
 
     public getProject_result(
       org.apache.airavata.model.workspace.Project success,
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
@@ -6458,13 +6454,13 @@ import org.slf4j.LoggerFactory;
         this.success = new org.apache.airavata.model.workspace.Project(other.success);
       }
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -6504,11 +6500,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public getProject_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public getProject_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -6528,11 +6524,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public getProject_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public getProject_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -6552,11 +6548,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public getProject_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public getProject_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -6590,7 +6586,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -6598,7 +6594,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -6606,7 +6602,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -6863,7 +6859,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -6872,7 +6868,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -6881,7 +6877,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -6978,17 +6974,17 @@ import org.slf4j.LoggerFactory;
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -7359,9 +7355,9 @@ import org.slf4j.LoggerFactory;
     }
 
     public List<org.apache.airavata.model.workspace.Project> success; // required
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -7452,9 +7448,9 @@ import org.slf4j.LoggerFactory;
 
     public getAllUserProjects_result(
       List<org.apache.airavata.model.workspace.Project> success,
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
@@ -7475,13 +7471,13 @@ import org.slf4j.LoggerFactory;
         this.success = __this__success;
       }
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -7536,11 +7532,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public getAllUserProjects_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public getAllUserProjects_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -7560,11 +7556,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public getAllUserProjects_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public getAllUserProjects_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -7584,11 +7580,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public getAllUserProjects_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public getAllUserProjects_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -7622,7 +7618,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -7630,7 +7626,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -7638,7 +7634,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -7902,7 +7898,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -7911,7 +7907,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -7920,7 +7916,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -8039,17 +8035,17 @@ import org.slf4j.LoggerFactory;
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -8420,9 +8416,9 @@ import org.slf4j.LoggerFactory;
     }
 
     public List<org.apache.airavata.model.workspace.experiment.Experiment> success; // required
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -8513,9 +8509,9 @@ import org.slf4j.LoggerFactory;
 
     public getAllExperimentsInProject_result(
       List<org.apache.airavata.model.workspace.experiment.Experiment> success,
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
@@ -8536,13 +8532,13 @@ import org.slf4j.LoggerFactory;
         this.success = __this__success;
       }
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -8597,11 +8593,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public getAllExperimentsInProject_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public getAllExperimentsInProject_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -8621,11 +8617,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public getAllExperimentsInProject_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public getAllExperimentsInProject_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -8645,11 +8641,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public getAllExperimentsInProject_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public getAllExperimentsInProject_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -8683,7 +8679,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -8691,7 +8687,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -8699,7 +8695,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -8963,7 +8959,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -8972,7 +8968,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -8981,7 +8977,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -9100,17 +9096,17 @@ import org.slf4j.LoggerFactory;
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -9481,9 +9477,9 @@ import org.slf4j.LoggerFactory;
     }
 
     public List<org.apache.airavata.model.workspace.experiment.Experiment> success; // required
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -9574,9 +9570,9 @@ import org.slf4j.LoggerFactory;
 
     public getAllUserExperiments_result(
       List<org.apache.airavata.model.workspace.experiment.Experiment> success,
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
@@ -9597,13 +9593,13 @@ import org.slf4j.LoggerFactory;
         this.success = __this__success;
       }
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -9658,11 +9654,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public getAllUserExperiments_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public getAllUserExperiments_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -9682,11 +9678,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public getAllUserExperiments_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public getAllUserExperiments_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -9706,11 +9702,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public getAllUserExperiments_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public getAllUserExperiments_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -9744,7 +9740,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -9752,7 +9748,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -9760,7 +9756,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -10024,7 +10020,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -10033,7 +10029,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -10042,7 +10038,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -10161,17 +10157,17 @@ import org.slf4j.LoggerFactory;
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -10547,9 +10543,9 @@ import org.slf4j.LoggerFactory;
     }
 
     public String success; // required
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -10639,9 +10635,9 @@ import org.slf4j.LoggerFactory;
 
     public createExperiment_result(
       String success,
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
@@ -10658,13 +10654,13 @@ import org.slf4j.LoggerFactory;
         this.success = other.success;
       }
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -10704,11 +10700,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public createExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public createExperiment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -10728,11 +10724,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public createExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public createExperiment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -10752,11 +10748,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public createExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public createExperiment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -10790,7 +10786,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -10798,7 +10794,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -10806,7 +10802,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -11059,7 +11055,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -11068,7 +11064,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -11077,7 +11073,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -11173,17 +11169,17 @@ import org.slf4j.LoggerFactory;
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -11555,10 +11551,10 @@ import org.slf4j.LoggerFactory;
     }
 
     public org.apache.airavata.model.workspace.experiment.Experiment success; // required
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.ExperimentNotFoundException enf; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.ExperimentNotFoundException enf; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -11653,10 +11649,10 @@ import org.slf4j.LoggerFactory;
 
     public getExperiment_result(
       org.apache.airavata.model.workspace.experiment.Experiment success,
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.ExperimentNotFoundException enf,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.ExperimentNotFoundException enf,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
@@ -11674,16 +11670,16 @@ import org.slf4j.LoggerFactory;
         this.success = new org.apache.airavata.model.workspace.experiment.Experiment(other.success);
       }
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetEnf()) {
-        this.enf = new org.apache.airavata.api.error.ExperimentNotFoundException(other.enf);
+        this.enf = new org.apache.airavata.model.error.ExperimentNotFoundException(other.enf);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -11724,11 +11720,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public getExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public getExperiment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -11748,11 +11744,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.ExperimentNotFoundException getEnf() {
+    public org.apache.airavata.model.error.ExperimentNotFoundException getEnf() {
       return this.enf;
     }
 
-    public getExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public getExperiment_result setEnf(org.apache.airavata.model.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -11772,11 +11768,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public getExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public getExperiment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -11796,11 +11792,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public getExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public getExperiment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -11834,7 +11830,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -11842,7 +11838,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetEnf();
         } else {
-          setEnf((org.apache.airavata.api.error.ExperimentNotFoundException)value);
+          setEnf((org.apache.airavata.model.error.ExperimentNotFoundException)value);
         }
         break;
 
@@ -11850,7 +11846,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -11858,7 +11854,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -12147,7 +12143,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -12156,7 +12152,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ENF
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+                struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
                 struct.enf.read(iprot);
                 struct.setEnfIsSet(true);
               } else { 
@@ -12165,7 +12161,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -12174,7 +12170,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 4: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -12282,22 +12278,22 @@ import org.slf4j.LoggerFactory;
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+          struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
           struct.enf.read(iprot);
           struct.setEnfIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(4)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -12768,10 +12764,10 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new updateExperiment_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.ExperimentNotFoundException enf; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.ExperimentNotFoundException enf; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -12860,10 +12856,10 @@ import org.slf4j.LoggerFactory;
     }
 
     public updateExperiment_result(
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.ExperimentNotFoundException enf,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.ExperimentNotFoundException enf,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.ire = ire;
@@ -12877,16 +12873,16 @@ import org.slf4j.LoggerFactory;
      */
     public updateExperiment_result(updateExperiment_result other) {
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetEnf()) {
-        this.enf = new org.apache.airavata.api.error.ExperimentNotFoundException(other.enf);
+        this.enf = new org.apache.airavata.model.error.ExperimentNotFoundException(other.enf);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -12902,11 +12898,11 @@ import org.slf4j.LoggerFactory;
       this.ase = null;
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public updateExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public updateExperiment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -12926,11 +12922,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.ExperimentNotFoundException getEnf() {
+    public org.apache.airavata.model.error.ExperimentNotFoundException getEnf() {
       return this.enf;
     }
 
-    public updateExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public updateExperiment_result setEnf(org.apache.airavata.model.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -12950,11 +12946,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public updateExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public updateExperiment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -12974,11 +12970,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public updateExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public updateExperiment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -13004,7 +13000,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -13012,7 +13008,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetEnf();
         } else {
-          setEnf((org.apache.airavata.api.error.ExperimentNotFoundException)value);
+          setEnf((org.apache.airavata.model.error.ExperimentNotFoundException)value);
         }
         break;
 
@@ -13020,7 +13016,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -13028,7 +13024,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -13273,7 +13269,7 @@ import org.slf4j.LoggerFactory;
           switch (schemeField.id) {
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -13282,7 +13278,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ENF
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+                struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
                 struct.enf.read(iprot);
                 struct.setEnfIsSet(true);
               } else { 
@@ -13291,7 +13287,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -13300,7 +13296,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 4: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -13392,22 +13388,22 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+          struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
           struct.enf.read(iprot);
           struct.setEnfIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -15167,10 +15163,10 @@ import org.slf4j.LoggerFactory;
     }
 
     public boolean success; // required
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.ExperimentNotFoundException enf; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.ExperimentNotFoundException enf; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -15267,10 +15263,10 @@ import org.slf4j.LoggerFactory;
 
     public validateExperiment_result(
       boolean success,
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.ExperimentNotFoundException enf,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.ExperimentNotFoundException enf,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
@@ -15288,16 +15284,16 @@ import org.slf4j.LoggerFactory;
       __isset_bitfield = other.__isset_bitfield;
       this.success = other.success;
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetEnf()) {
-        this.enf = new org.apache.airavata.api.error.ExperimentNotFoundException(other.enf);
+        this.enf = new org.apache.airavata.model.error.ExperimentNotFoundException(other.enf);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -15338,11 +15334,11 @@ import org.slf4j.LoggerFactory;
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public validateExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public validateExperiment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -15362,11 +15358,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.ExperimentNotFoundException getEnf() {
+    public org.apache.airavata.model.error.ExperimentNotFoundException getEnf() {
       return this.enf;
     }
 
-    public validateExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public validateExperiment_result setEnf(org.apache.airavata.model.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -15386,11 +15382,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public validateExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public validateExperiment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -15410,11 +15406,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public validateExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public validateExperiment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -15448,7 +15444,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -15456,7 +15452,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetEnf();
         } else {
-          setEnf((org.apache.airavata.api.error.ExperimentNotFoundException)value);
+          setEnf((org.apache.airavata.model.error.ExperimentNotFoundException)value);
         }
         break;
 
@@ -15464,7 +15460,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -15472,7 +15468,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -15755,7 +15751,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -15764,7 +15760,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ENF
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+                struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
                 struct.enf.read(iprot);
                 struct.setEnfIsSet(true);
               } else { 
@@ -15773,7 +15769,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -15782,7 +15778,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 4: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -15889,22 +15885,22 @@ import org.slf4j.LoggerFactory;
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+          struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
           struct.enf.read(iprot);
           struct.setEnfIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(4)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -16371,11 +16367,11 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new launchExperiment_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.ExperimentNotFoundException enf; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
-    public org.apache.airavata.api.error.LaunchValidationException lve; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.ExperimentNotFoundException enf; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.LaunchValidationException lve; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -16469,11 +16465,11 @@ import org.slf4j.LoggerFactory;
     }
 
     public launchExperiment_result(
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.ExperimentNotFoundException enf,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase,
-      org.apache.airavata.api.error.LaunchValidationException lve)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.ExperimentNotFoundException enf,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase,
+      org.apache.airavata.model.error.LaunchValidationException lve)
     {
       this();
       this.ire = ire;
@@ -16488,19 +16484,19 @@ import org.slf4j.LoggerFactory;
      */
     public launchExperiment_result(launchExperiment_result other) {
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetEnf()) {
-        this.enf = new org.apache.airavata.api.error.ExperimentNotFoundException(other.enf);
+        this.enf = new org.apache.airavata.model.error.ExperimentNotFoundException(other.enf);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
       if (other.isSetLve()) {
-        this.lve = new org.apache.airavata.api.error.LaunchValidationException(other.lve);
+        this.lve = new org.apache.airavata.model.error.LaunchValidationException(other.lve);
       }
     }
 
@@ -16517,11 +16513,11 @@ import org.slf4j.LoggerFactory;
       this.lve = null;
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public launchExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public launchExperiment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -16541,11 +16537,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.ExperimentNotFoundException getEnf() {
+    public org.apache.airavata.model.error.ExperimentNotFoundException getEnf() {
       return this.enf;
     }
 
-    public launchExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public launchExperiment_result setEnf(org.apache.airavata.model.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -16565,11 +16561,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public launchExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public launchExperiment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -16589,11 +16585,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public launchExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public launchExperiment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -16613,11 +16609,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.LaunchValidationException getLve() {
+    public org.apache.airavata.model.error.LaunchValidationException getLve() {
       return this.lve;
     }
 
-    public launchExperiment_result setLve(org.apache.airavata.api.error.LaunchValidationException lve) {
+    public launchExperiment_result setLve(org.apache.airavata.model.error.LaunchValidationException lve) {
       this.lve = lve;
       return this;
     }
@@ -16643,7 +16639,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -16651,7 +16647,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetEnf();
         } else {
-          setEnf((org.apache.airavata.api.error.ExperimentNotFoundException)value);
+          setEnf((org.apache.airavata.model.error.ExperimentNotFoundException)value);
         }
         break;
 
@@ -16659,7 +16655,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -16667,7 +16663,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -16675,7 +16671,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetLve();
         } else {
-          setLve((org.apache.airavata.api.error.LaunchValidationException)value);
+          setLve((org.apache.airavata.model.error.LaunchValidationException)value);
         }
         break;
 
@@ -16952,7 +16948,7 @@ import org.slf4j.LoggerFactory;
           switch (schemeField.id) {
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -16961,7 +16957,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ENF
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+                struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
                 struct.enf.read(iprot);
                 struct.setEnfIsSet(true);
               } else { 
@@ -16970,7 +16966,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -16979,7 +16975,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 4: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -16988,7 +16984,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 5: // LVE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.lve = new org.apache.airavata.api.error.LaunchValidationException();
+                struct.lve = new org.apache.airavata.model.error.LaunchValidationException();
                 struct.lve.read(iprot);
                 struct.setLveIsSet(true);
               } else { 
@@ -17091,27 +17087,27 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+          struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
           struct.enf.read(iprot);
           struct.setEnfIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
         if (incoming.get(4)) {
-          struct.lve = new org.apache.airavata.api.error.LaunchValidationException();
+          struct.lve = new org.apache.airavata.model.error.LaunchValidationException();
           struct.lve.read(iprot);
           struct.setLveIsSet(true);
         }
@@ -17483,10 +17479,10 @@ import org.slf4j.LoggerFactory;
     }
 
     public org.apache.airavata.model.workspace.experiment.ExperimentStatus success; // required
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.ExperimentNotFoundException enf; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.ExperimentNotFoundException enf; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -17581,10 +17577,10 @@ import org.slf4j.LoggerFactory;
 
     public getExperimentStatus_result(
       org.apache.airavata.model.workspace.experiment.ExperimentStatus success,
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.ExperimentNotFoundException enf,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.ExperimentNotFoundException enf,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
@@ -17602,16 +17598,16 @@ import org.slf4j.LoggerFactory;
         this.success = new org.apache.airavata.model.workspace.experiment.ExperimentStatus(other.success);
       }
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetEnf()) {
-        this.enf = new org.apache.airavata.api.error.ExperimentNotFoundException(other.enf);
+        this.enf = new org.apache.airavata.model.error.ExperimentNotFoundException(other.enf);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -17652,11 +17648,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public getExperimentStatus_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public getExperimentStatus_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -17676,11 +17672,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.ExperimentNotFoundException getEnf() {
+    public org.apache.airavata.model.error.ExperimentNotFoundException getEnf() {
       return this.enf;
     }
 
-    public getExperimentStatus_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public getExperimentStatus_result setEnf(org.apache.airavata.model.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -17700,11 +17696,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public getExperimentStatus_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public getExperimentStatus_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -17724,11 +17720,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public getExperimentStatus_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public getExperimentStatus_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -17762,7 +17758,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -17770,7 +17766,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetEnf();
         } else {
-          setEnf((org.apache.airavata.api.error.ExperimentNotFoundException)value);
+          setEnf((org.apache.airavata.model.error.ExperimentNotFoundException)value);
         }
         break;
 
@@ -17778,7 +17774,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -17786,7 +17782,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -18075,7 +18071,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -18084,7 +18080,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ENF
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+                struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
                 struct.enf.read(iprot);
                 struct.setEnfIsSet(true);
               } else { 
@@ -18093,7 +18089,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -18102,7 +18098,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 4: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -18210,22 +18206,22 @@ import org.slf4j.LoggerFactory;
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+          struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
           struct.enf.read(iprot);
           struct.setEnfIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(4)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -20225,10 +20221,10 @@ import org.slf4j.LoggerFactory;
     }
 
     public String success; // required
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.ExperimentNotFoundException enf; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.ExperimentNotFoundException enf; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -20323,10 +20319,10 @@ import org.slf4j.LoggerFactory;
 
     public cloneExperiment_result(
       String success,
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.ExperimentNotFoundException enf,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.ExperimentNotFoundException enf,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
@@ -20344,16 +20340,16 @@ import org.slf4j.LoggerFactory;
         this.success = other.success;
       }
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetEnf()) {
-        this.enf = new org.apache.airavata.api.error.ExperimentNotFoundException(other.enf);
+        this.enf = new org.apache.airavata.model.error.ExperimentNotFoundException(other.enf);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -20394,11 +20390,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public cloneExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public cloneExperiment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -20418,11 +20414,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.ExperimentNotFoundException getEnf() {
+    public org.apache.airavata.model.error.ExperimentNotFoundException getEnf() {
       return this.enf;
     }
 
-    public cloneExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public cloneExperiment_result setEnf(org.apache.airavata.model.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -20442,11 +20438,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public cloneExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public cloneExperiment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -20466,11 +20462,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public cloneExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public cloneExperiment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -20504,7 +20500,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -20512,7 +20508,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetEnf();
         } else {
-          setEnf((org.apache.airavata.api.error.ExperimentNotFoundException)value);
+          setEnf((org.apache.airavata.model.error.ExperimentNotFoundException)value);
         }
         break;
 
@@ -20520,7 +20516,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -20528,7 +20524,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -20813,7 +20809,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -20822,7 +20818,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ENF
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+                struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
                 struct.enf.read(iprot);
                 struct.setEnfIsSet(true);
               } else { 
@@ -20831,7 +20827,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -20840,7 +20836,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 4: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -20947,22 +20943,22 @@ import org.slf4j.LoggerFactory;
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+          struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
           struct.enf.read(iprot);
           struct.setEnfIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(4)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }
@@ -21339,10 +21335,10 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new terminateExperiment_resultTupleSchemeFactory());
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException ire; // required
-    public org.apache.airavata.api.error.ExperimentNotFoundException enf; // required
-    public org.apache.airavata.api.error.AiravataClientException ace; // required
-    public org.apache.airavata.api.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.ExperimentNotFoundException enf; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -21431,10 +21427,10 @@ import org.slf4j.LoggerFactory;
     }
 
     public terminateExperiment_result(
-      org.apache.airavata.api.error.InvalidRequestException ire,
-      org.apache.airavata.api.error.ExperimentNotFoundException enf,
-      org.apache.airavata.api.error.AiravataClientException ace,
-      org.apache.airavata.api.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.ExperimentNotFoundException enf,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.ire = ire;
@@ -21448,16 +21444,16 @@ import org.slf4j.LoggerFactory;
      */
     public terminateExperiment_result(terminateExperiment_result other) {
       if (other.isSetIre()) {
-        this.ire = new org.apache.airavata.api.error.InvalidRequestException(other.ire);
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
       if (other.isSetEnf()) {
-        this.enf = new org.apache.airavata.api.error.ExperimentNotFoundException(other.enf);
+        this.enf = new org.apache.airavata.model.error.ExperimentNotFoundException(other.enf);
       }
       if (other.isSetAce()) {
-        this.ace = new org.apache.airavata.api.error.AiravataClientException(other.ace);
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
       }
       if (other.isSetAse()) {
-        this.ase = new org.apache.airavata.api.error.AiravataSystemException(other.ase);
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
     }
 
@@ -21473,11 +21469,11 @@ import org.slf4j.LoggerFactory;
       this.ase = null;
     }
 
-    public org.apache.airavata.api.error.InvalidRequestException getIre() {
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
       return this.ire;
     }
 
-    public terminateExperiment_result setIre(org.apache.airavata.api.error.InvalidRequestException ire) {
+    public terminateExperiment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -21497,11 +21493,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.ExperimentNotFoundException getEnf() {
+    public org.apache.airavata.model.error.ExperimentNotFoundException getEnf() {
       return this.enf;
     }
 
-    public terminateExperiment_result setEnf(org.apache.airavata.api.error.ExperimentNotFoundException enf) {
+    public terminateExperiment_result setEnf(org.apache.airavata.model.error.ExperimentNotFoundException enf) {
       this.enf = enf;
       return this;
     }
@@ -21521,11 +21517,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataClientException getAce() {
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
       return this.ace;
     }
 
-    public terminateExperiment_result setAce(org.apache.airavata.api.error.AiravataClientException ace) {
+    public terminateExperiment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -21545,11 +21541,11 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public org.apache.airavata.api.error.AiravataSystemException getAse() {
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
       return this.ase;
     }
 
-    public terminateExperiment_result setAse(org.apache.airavata.api.error.AiravataSystemException ase) {
+    public terminateExperiment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -21575,7 +21571,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetIre();
         } else {
-          setIre((org.apache.airavata.api.error.InvalidRequestException)value);
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
         }
         break;
 
@@ -21583,7 +21579,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetEnf();
         } else {
-          setEnf((org.apache.airavata.api.error.ExperimentNotFoundException)value);
+          setEnf((org.apache.airavata.model.error.ExperimentNotFoundException)value);
         }
         break;
 
@@ -21591,7 +21587,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAce();
         } else {
-          setAce((org.apache.airavata.api.error.AiravataClientException)value);
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
         }
         break;
 
@@ -21599,7 +21595,7 @@ import org.slf4j.LoggerFactory;
         if (value == null) {
           unsetAse();
         } else {
-          setAse((org.apache.airavata.api.error.AiravataSystemException)value);
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
         }
         break;
 
@@ -21844,7 +21840,7 @@ import org.slf4j.LoggerFactory;
           switch (schemeField.id) {
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
                 struct.ire.read(iprot);
                 struct.setIreIsSet(true);
               } else { 
@@ -21853,7 +21849,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 2: // ENF
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+                struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
                 struct.enf.read(iprot);
                 struct.setEnfIsSet(true);
               } else { 
@@ -21862,7 +21858,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 3: // ACE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
                 struct.ace.read(iprot);
                 struct.setAceIsSet(true);
               } else { 
@@ -21871,7 +21867,7 @@ import org.slf4j.LoggerFactory;
               break;
             case 4: // ASE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
                 struct.ase.read(iprot);
                 struct.setAseIsSet(true);
               } else { 
@@ -21963,22 +21959,22 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
-          struct.ire = new org.apache.airavata.api.error.InvalidRequestException();
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
         if (incoming.get(1)) {
-          struct.enf = new org.apache.airavata.api.error.ExperimentNotFoundException();
+          struct.enf = new org.apache.airavata.model.error.ExperimentNotFoundException();
           struct.enf.read(iprot);
           struct.setEnfIsSet(true);
         }
         if (incoming.get(2)) {
-          struct.ace = new org.apache.airavata.api.error.AiravataClientException();
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
         if (incoming.get(3)) {
-          struct.ase = new org.apache.airavata.api.error.AiravataSystemException();
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
         }

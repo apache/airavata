@@ -23,7 +23,7 @@ package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
-import org.apache.airavata.api.error.*;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
@@ -217,8 +217,8 @@ public class AiravataServerHandler implements Airavata.Iface {
      * registering the experiment in a persistent store.
      *
      * @param experiment@return The server-side generated airavata experiment globally unique identifier.
-     * @throws org.apache.airavata.api.error.InvalidRequestException For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.api.error.AiravataClientException The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.model.error.InvalidRequestException For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.model.error.AiravataClientException The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                               <p/>
      *                                                               UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *                                                               step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -229,7 +229,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                               <p/>
      *                                                               INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *                                                               is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.api.error.AiravataSystemException This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     * @throws org.apache.airavata.model.error.AiravataSystemException This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *                                                               rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
@@ -252,9 +252,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
      * @return experimentMetada
      * This method will return the previously stored experiment metadata.
-     * @throws org.apache.airavata.api.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.api.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                                   <p/>
      *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -265,7 +265,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                                   <p/>
      *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.api.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
@@ -294,9 +294,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
      * @param experiment
      * @return This method call does not have a return value.
-     * @throws org.apache.airavata.api.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.api.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                                   <p/>
      *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -307,7 +307,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                                   <p/>
      *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.api.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
@@ -387,9 +387,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      *
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
      * @return This method returns the previously configured experiment configuration data.
-     * @throws org.apache.airavata.api.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.api.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                                   <p/>
      *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -400,7 +400,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                                   <p/>
      *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.api.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
@@ -488,11 +488,11 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                               if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
      *                               Note: This parameter is not persisted within Airavata Registry for security reasons.
      * @return This method call does not have a return value.
-     * @throws org.apache.airavata.api.error.InvalidRequestException
+     * @throws org.apache.airavata.model.error.InvalidRequestException
      *          For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException
      *          If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.api.error.AiravataClientException
+     * @throws org.apache.airavata.model.error.AiravataClientException
      *          The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *          <p/>
      *          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -504,7 +504,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *          <p/>
      *          INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *          is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.api.error.AiravataSystemException
+     * @throws org.apache.airavata.model.error.AiravataSystemException
      *          This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *          rather an Airavata Administrator will be notified to take corrective action.
      */
@@ -548,13 +548,13 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @return
      *   The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
      *
-     * @throws org.apache.airavata.api.error.InvalidRequestException
+     * @throws org.apache.airavata.model.error.InvalidRequestException
      *    For any incorrect forming of the request itself.
      *
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException
      *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
      *
-     * @throws org.apache.airavata.api.error.AiravataClientException
+     * @throws org.apache.airavata.model.error.AiravataClientException
      *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *
      *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
@@ -567,7 +567,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *         is implemented, the authorization will be more substantial.
      *
-     * @throws org.apache.airavata.api.error.AiravataSystemException
+     * @throws org.apache.airavata.model.error.AiravataSystemException
      *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *       rather an Airavata Administrator will be notified to take corrective action.
      *
@@ -601,9 +601,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      *
      * @param airavataExperimentId The identifier for the requested experiment. This is returned during the create experiment step.
      * @return This method call does not have a return value.
-     * @throws org.apache.airavata.api.error.InvalidRequestException     For any incorrect forming of the request itself.
-     * @throws org.apache.airavata.api.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
-     * @throws org.apache.airavata.api.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+     * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
+     * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+     * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                                   <p/>
      *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
      *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
@@ -614,7 +614,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                                   <p/>
      *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
      *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.api.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override

@@ -21,18 +21,17 @@
 
 package org.apache.airavata.client.samples;
 
-import org.apache.airavata.api.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
-import org.apache.airavata.model.appcatalog.GSISSHJobSubmission;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.api.error.AiravataClientException;
-import org.apache.airavata.api.error.AiravataSystemException;
-import org.apache.airavata.api.error.InvalidRequestException;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;

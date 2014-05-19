@@ -17,38 +17,16 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
-package org.apache.airavata.orchestrator.core.validator;
+ */
 
-public class ValidatorResult {
-    private boolean isSuccessful;
+package org.apache.airavata.model.error;
 
-    private String validationMessage;
+public class AiravataClientConnectException extends Exception {
 
+	private static final long serialVersionUID = 430165455326177755L;
 
-    public ValidatorResult(boolean successful) {
-        isSuccessful = successful;
-    }
+	public AiravataClientConnectException(String message) {
+		super(message);
+	}
 
-    public ValidatorResult(boolean successful, String validationMessage) {
-        isSuccessful = successful;
-        this.validationMessage = validationMessage;
-    }
-
-    public boolean isSuccessful() {
-        return isSuccessful;
-    }
-
-    public void setValidationMessage(String validationMessage) {
-        this.validationMessage = validationMessage;
-    }
-
-    public String getValidationMessage() {
-
-        return validationMessage;
-    }
-
-    public void setSuccessful(boolean successful) {
-        isSuccessful = successful;
-    }
 }

@@ -26,6 +26,9 @@ import java.util.concurrent.ExecutorService;
 
 
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.model.error.LaunchValidationException;
+import org.apache.airavata.model.error.ValidationResults;
+import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -33,7 +36,6 @@ import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
-import org.apache.airavata.orchestrator.core.validator.ValidatorResult;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
@@ -114,44 +116,57 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         return tasks;
     }
 
-    public boolean validateExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
+    public ValidationResults validateExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException,LaunchValidationException {
+        org.apache.airavata.model.error.ValidationResults validationResults = new org.apache.airavata.model.error.ValidationResults();
+        validationResults.setValidationState(true); // initially making it to success, if atleast one failed them simply mark it failed.
         if (this.orchestratorConfiguration.isEnableValidation()) {
             List<String> validatorClzzez = this.orchestratorContext.getOrchestratorConfiguration().getValidatorClasses();
-            ValidatorResult[] resultArray = new ValidatorResult[validatorClzzez.size()];
-            int index = 0;
+            ValidatorResult vResult = null;
             for (String validator : validatorClzzez) {
                 try {
                     Class<? extends JobMetadataValidator> vClass = Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
                     JobMetadataValidator jobMetadataValidator = vClass.newInstance();
-                    resultArray[index] = jobMetadataValidator.validate(experiment, workflowNodeDetail, taskID);
-                    if(resultArray[index].isSuccessful()){
+                    vResult = jobMetadataValidator.validate(experiment, workflowNodeDetail, taskID);
+                    if (vResult.isResult()) {
                         logger.info("Validation of " + validator + " is SUCCESSFUL");
-                    }else {
-                        logger.error("Validation of " + validator + " is FAILED:[error]" + resultArray[index].getValidationMessage());
+                    } else {
+                        logger.error("Validation of " + validator + " is FAILED:[error]" + vResult.getErrorDetails());
                         //todo we need to store this message to registry
+                        validationResults.setValidationState(false);
                         // we do not return immediately after the first failure
                     }
                 } catch (ClassNotFoundException e) {
                     logger.error("Error loading the validation class: ", validator, e);
-                    resultArray[index] = new ValidatorResult(false, "Error loading the validation class: " + e.getMessage());
+                    vResult = new ValidatorResult();
+                    vResult.setResult(false);
+                    vResult.setErrorDetails("Error loading the validation class: " + e.getMessage());
+                    validationResults.setValidationState(false);
                 } catch (InstantiationException e) {
-                   logger.error("Error loading the validation class: ", validator, e);
-                   resultArray[index] = new ValidatorResult(false, "Error loading the validation class: " + e.getMessage());
+                    logger.error("Error loading the validation class: ", validator, e);
+                    vResult = new ValidatorResult();
+                    vResult.setResult(false);
+                    vResult.setErrorDetails("Error loading the validation class: " + e.getMessage());
+                    validationResults.setValidationState(false);
                 } catch (IllegalAccessException e) {
-                   logger.error("Error loading the validation class: ", validator, e);
-                   resultArray[index] = new ValidatorResult(false, "Error loading the validation class: " + e.getMessage());
-                }
-                index++;
-            }
-            // we check whether validation was successful or not
-            for(ValidatorResult result:resultArray){
-                if(!result.isSuccessful()){
-                    return false;
-                }
-            }
+                    logger.error("Error loading the validation class: ", validator, e);
+                    vResult = new ValidatorResult();
+                    vResult.setResult(false);
+                    vResult.setErrorDetails("Error loading the validation class: " + e.getMessage());
+                    validationResults.setValidationState(false);
 
+                }
+                validationResults.addToValidationResultList(vResult);
+            }
         }
-        return true;
+        if(validationResults.isSetValidationState()){
+            return validationResults;
+        }else {
+            //atleast one validation has failed, so we throw an exception
+            LaunchValidationException launchValidationException = new LaunchValidationException();
+            launchValidationException.setValidationResult(validationResults);
+            launchValidationException.setErrorMessage("Validation failed refer the validationResults list for detail error");
+            throw launchValidationException;
+        }
     }
 
     public void cancelExperiment(String experimentID)

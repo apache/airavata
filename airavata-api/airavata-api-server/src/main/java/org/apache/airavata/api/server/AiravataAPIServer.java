@@ -22,8 +22,8 @@
 package org.apache.airavata.api.server;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.error.AiravataErrorType;
-import org.apache.airavata.api.error.AiravataSystemException;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.util.Constants;
 import org.apache.airavata.api.server.util.RegistryInitUtil;

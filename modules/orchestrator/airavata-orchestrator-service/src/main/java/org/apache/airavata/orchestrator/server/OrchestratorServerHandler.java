@@ -24,6 +24,7 @@ package org.apache.airavata.orchestrator.server;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
@@ -119,9 +120,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             if (tasks.size() > 1) {
                 log.info("There are multiple tasks for this experiment, So Orchestrator will launch multiple Jobs");
             }
-            List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL,WorkflowNodeConstants.EXPERIMENT_ID,experimentId);
+            List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL, WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
             for (String workflowNodeId : ids) {
-                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails)registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
+                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
                 List<Object> taskDetailList = registry.get(RegistryModelType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
                 for (Object o : taskDetailList) {
                     TaskDetails taskID = (TaskDetails) o;
@@ -131,7 +132,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
                         return false;
                     }
-                    return orchestrator.validateExperiment(experiment, workflowNodeDetail, taskID);
+                    return orchestrator.validateExperiment(experiment, workflowNodeDetail, taskID).isSetValidationState();
                 }
             }
 
