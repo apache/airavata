@@ -67,9 +67,9 @@ $airavataclient = new AiravataClient($protocol);
 
 try
 {
-    if ($argc != 3)
+    if ($argc != 4)
     {
-        echo 'php createExperiment.php <username> <experiment_name>';
+        echo 'php createExperiment.php <username> <experiment_name> <project_ID>';
     }
     else
     {
@@ -128,9 +128,9 @@ try
         $exOutputs = array($output);
 
         /* Create Experiment: needs to update using unique project ID. */
-        $proj = "default";
         $user = $argv[1];
         $exp_name = $argv[2];
+        $proj = $argv[3];
 
         $experiment = new Experiment();
         $experiment->projectID = $proj;
@@ -145,12 +145,12 @@ try
 
         if ($expId)
         {
-            echo "Experiment $expId created!     ";
+            echo "Experiment $expId created! \n    ";
             var_dump($experiment);
         } 
         else
         {
-            echo "Failed to create experiment.";
+            echo "Failed to create experiment. \n";
         }
     }
 
