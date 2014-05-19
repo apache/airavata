@@ -75,9 +75,9 @@ else
 
     $clone = get_experiment($cloneId);
 
-    echo "Created clone named $clone->name:\n\n";
-
     var_dump($clone);
+
+    echo "Created clone with ID $clone->experimentID named $clone->name \n\n";
 }
 
 
