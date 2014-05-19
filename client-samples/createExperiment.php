@@ -145,8 +145,8 @@ try
 
         if ($expId)
         {
-            echo "Experiment $expId created! \n    ";
             var_dump($experiment);
+            echo "Experiment $expId created! \n    ";
         } 
         else
         {
