@@ -20,17 +20,19 @@
 */
 package org.apache.airavata.orchestrator.core.util;
 
+import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
-import org.apache.airavata.orchestrator.core.validator.ValidatorResult;
 
 public class SecondValidator implements JobMetadataValidator {
-    public ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException {
-        if(taskID.getTaskID() == null){
-            return new ValidatorResult(false,"No taskID is set, so Validation failed");
+    public ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) {
+        if(taskID.getTaskID() == null) {
+            ValidatorResult validatorResult = new ValidatorResult(false);
+            validatorResult.setErrorDetails("No taskID is set, so Validation failed");
+            return validatorResult;
         }
         return new ValidatorResult(true);
     }

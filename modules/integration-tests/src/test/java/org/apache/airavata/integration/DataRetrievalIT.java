@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.airavata.api.Airavata.Client;
-import org.apache.airavata.api.error.AiravataClientConnectException;
-import org.apache.airavata.api.error.AiravataClientException;
-import org.apache.airavata.api.error.AiravataSystemException;
-import org.apache.airavata.api.error.ExperimentNotFoundException;
-import org.apache.airavata.api.error.InvalidRequestException;
+import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;

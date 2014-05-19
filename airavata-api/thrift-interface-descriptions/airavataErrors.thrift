@@ -26,7 +26,7 @@
 
 include "experimentModel.thrift"
 
-namespace java org.apache.airavata.api.error
+namespace java org.apache.airavata.model.error
 namespace php Airavata.API.Error
 namespace cpp airavata.api.error
 namespace perl AiravataAPIError

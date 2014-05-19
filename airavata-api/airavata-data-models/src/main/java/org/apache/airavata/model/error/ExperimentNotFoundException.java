@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.api.error;
+package org.apache.airavata.model.error;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -28,41 +28,30 @@ import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
-import org.apache.thrift.protocol.TProtocolException;
-import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
-import org.apache.thrift.async.AsyncMethodCallback;
-import org.apache.thrift.server.AbstractNonblockingServer.*;
-import java.util.List;
-import java.util.ArrayList;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
-import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * This exception is thrown for invalid requests that occur from any reasons like required input parameters are missing,
- *  or a parameter is malformed.
+    /**
+ * This exception is thrown when a client asks to perform an operation on an experiment that does not exist.
  * 
- *  message: contains the associated error message.
+ * identifier:  A description of the experiment that was not found on the server.
+ * 
+ * key:  The value passed from the client in the identifier, which was not found.
  */
-@SuppressWarnings("all") public class InvalidRequestException extends TException implements org.apache.thrift.TBase<InvalidRequestException, InvalidRequestException._Fields>, java.io.Serializable, Cloneable, Comparable<InvalidRequestException> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("InvalidRequestException");
+@SuppressWarnings("all") public class ExperimentNotFoundException extends TException implements org.apache.thrift.TBase<ExperimentNotFoundException, ExperimentNotFoundException._Fields>, java.io.Serializable, Cloneable, Comparable<ExperimentNotFoundException> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ExperimentNotFoundException");
 
   private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new InvalidRequestExceptionStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new InvalidRequestExceptionTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new ExperimentNotFoundExceptionStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new ExperimentNotFoundExceptionTupleSchemeFactory());
   }
 
   public String message; // required
@@ -132,13 +121,13 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(InvalidRequestException.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ExperimentNotFoundException.class, metaDataMap);
   }
 
-  public InvalidRequestException() {
+  public ExperimentNotFoundException() {
   }
 
-  public InvalidRequestException(
+  public ExperimentNotFoundException(
     String message)
   {
     this();
@@ -148,14 +137,14 @@ import org.slf4j.LoggerFactory;
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public InvalidRequestException(InvalidRequestException other) {
+  public ExperimentNotFoundException(ExperimentNotFoundException other) {
     if (other.isSetMessage()) {
       this.message = other.message;
     }
   }
 
-  public InvalidRequestException deepCopy() {
-    return new InvalidRequestException(this);
+  public ExperimentNotFoundException deepCopy() {
+    return new ExperimentNotFoundException(this);
   }
 
   @Override
@@ -167,7 +156,7 @@ import org.slf4j.LoggerFactory;
     return this.message;
   }
 
-  public InvalidRequestException setMessage(String message) {
+  public ExperimentNotFoundException setMessage(String message) {
     this.message = message;
     return this;
   }
@@ -226,12 +215,12 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof InvalidRequestException)
-      return this.equals((InvalidRequestException)that);
+    if (that instanceof ExperimentNotFoundException)
+      return this.equals((ExperimentNotFoundException)that);
     return false;
   }
 
-  public boolean equals(InvalidRequestException that) {
+  public boolean equals(ExperimentNotFoundException that) {
     if (that == null)
       return false;
 
@@ -253,7 +242,7 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(InvalidRequestException other) {
+  public int compareTo(ExperimentNotFoundException other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -287,7 +276,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("InvalidRequestException(");
+    StringBuilder sb = new StringBuilder("ExperimentNotFoundException(");
     boolean first = true;
 
     sb.append("message:");
@@ -325,15 +314,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class InvalidRequestExceptionStandardSchemeFactory implements SchemeFactory {
-    public InvalidRequestExceptionStandardScheme getScheme() {
-      return new InvalidRequestExceptionStandardScheme();
+  private static class ExperimentNotFoundExceptionStandardSchemeFactory implements SchemeFactory {
+    public ExperimentNotFoundExceptionStandardScheme getScheme() {
+      return new ExperimentNotFoundExceptionStandardScheme();
     }
   }
 
-  private static class InvalidRequestExceptionStandardScheme extends StandardScheme<InvalidRequestException> {
+  private static class ExperimentNotFoundExceptionStandardScheme extends StandardScheme<ExperimentNotFoundException> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, InvalidRequestException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, ExperimentNotFoundException struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -362,7 +351,7 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, InvalidRequestException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, ExperimentNotFoundException struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -377,22 +366,22 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class InvalidRequestExceptionTupleSchemeFactory implements SchemeFactory {
-    public InvalidRequestExceptionTupleScheme getScheme() {
-      return new InvalidRequestExceptionTupleScheme();
+  private static class ExperimentNotFoundExceptionTupleSchemeFactory implements SchemeFactory {
+    public ExperimentNotFoundExceptionTupleScheme getScheme() {
+      return new ExperimentNotFoundExceptionTupleScheme();
     }
   }
 
-  private static class InvalidRequestExceptionTupleScheme extends TupleScheme<InvalidRequestException> {
+  private static class ExperimentNotFoundExceptionTupleScheme extends TupleScheme<ExperimentNotFoundException> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, InvalidRequestException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, ExperimentNotFoundException struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.message);
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, InvalidRequestException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, ExperimentNotFoundException struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.message = iprot.readString();
       struct.setMessageIsSet(true);

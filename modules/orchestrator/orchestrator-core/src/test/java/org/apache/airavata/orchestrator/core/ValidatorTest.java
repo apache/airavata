@@ -91,13 +91,13 @@ public class ValidatorTest extends BaseOrchestratorTest {
         simpleExperiment.setExperimentID(experimentId);
         tasks = orchestrator.createTasks(experimentId);
 
-        Assert.assertTrue(orchestrator.validateExperiment(simpleExperiment, test, tasks.get(0)));
+        Assert.assertTrue(orchestrator.validateExperiment(simpleExperiment, test, tasks.get(0)).isValidationState());
 
         simpleExperiment.setExperimentID(null);
 
-        Assert.assertFalse(orchestrator.validateExperiment(simpleExperiment,test,tasks.get(0)));
+        Assert.assertFalse(orchestrator.validateExperiment(simpleExperiment,test,tasks.get(0)).isValidationState());
         tasks.get(0).setTaskID(null);
-        Assert.assertFalse(orchestrator.validateExperiment(simpleExperiment,test,tasks.get(0)));
+        Assert.assertFalse(orchestrator.validateExperiment(simpleExperiment,test,tasks.get(0)).isValidationState());
     }
 
 }

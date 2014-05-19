@@ -20,11 +20,14 @@
 */
 package org.apache.airavata.orchestrator.cpi;
 
+import org.apache.airavata.model.error.LaunchValidationException;
+import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 
+import javax.validation.Validation;
 import java.util.List;
 
 /*
@@ -42,8 +45,8 @@ public interface Orchestrator {
      * @return boolean if the experiments are valids after executing all the validators return true otherwise it iwll return false
      * @throws OrchestratorException
      */
-     boolean validateExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail,
-                            TaskDetails taskID) throws OrchestratorException;
+     ValidationResults validateExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail,
+                            TaskDetails taskID) throws OrchestratorException,LaunchValidationException;
     /**
      * After creating the experiment Data user have the
      * experimentID as the handler to the experiment, during the launchExperiment

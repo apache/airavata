@@ -22,16 +22,14 @@ package org.apache.airavata.integration;
 
 import java.util.Date;
 
-import org.apache.airavata.api.error.AiravataSystemException;
-import org.apache.airavata.api.error.ExperimentNotFoundException;
-import org.apache.airavata.api.error.InvalidRequestException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
 import org.apache.thrift.TException;
 import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * this class contains the common utils across the single application integration tests

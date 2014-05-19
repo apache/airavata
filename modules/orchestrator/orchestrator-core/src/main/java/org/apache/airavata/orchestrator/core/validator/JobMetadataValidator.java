@@ -20,12 +20,28 @@
 */
 package org.apache.airavata.orchestrator.core.validator;
 
+import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 
+/**
+ * This is the interface to implement a validation logic, users can implement their validation
+ * logic in validate mthod and if its failed, they can wrap-up an error and return the validation-Results object
+ * as the return value
+ */
 public interface JobMetadataValidator {
 
-    ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException;
+    /**
+     * Validation logic can be implemented, more importantsly no exceptions should be thrown,
+     * if there are internal exceptions, errors can be encapsulate to the ValidationResults object
+     * and set the results as failed (false) and return in, orchestrator will wrap them to an Exception and
+     * thrown to the client side
+     * @param experiment
+     * @param workflowNodeDetail
+     * @param taskID
+     * @return
+     */
+    ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID);
 }

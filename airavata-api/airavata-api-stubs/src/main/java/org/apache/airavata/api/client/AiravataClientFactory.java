@@ -22,7 +22,7 @@
 package org.apache.airavata.api.client;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;

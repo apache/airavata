@@ -31,11 +31,11 @@ import junit.framework.Assert;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.api.error.AiravataClientConnectException;
-import org.apache.airavata.api.error.AiravataClientException;
-import org.apache.airavata.api.error.AiravataSystemException;
-import org.apache.airavata.api.error.ExperimentNotFoundException;
-import org.apache.airavata.api.error.InvalidRequestException;
+import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.ApplicationManager;
