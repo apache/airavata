@@ -23,35 +23,18 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
     <persistence-unit name="appcatalog_data">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <!--class>org.apache.airavata.persistance.registry.jpa.model.Gateway</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Configuration</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Users</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Gateway_Worker</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Project</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.ProjectUser</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Published_Workflow</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.User_Workflow</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Experiment</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Input</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Output</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.TaskDetail</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.ErrorDetail</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.ApplicationInput</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.ApplicationOutput</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.NodeInput</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.NodeOutput</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.JobDetail</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.Status</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.ExperimentConfigData</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.Computational_Resource_Scheduling</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.AdvancedInputDataHandling</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.AdvancedOutputDataHandling</class>
-		<class>org.apache.airavata.persistance.registry.jpa.model.QosParam</class-->
+        <class>org.apache.aiaravata.application.catalog.data.model.ComputeResource</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.DataMovementProtocol</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.GlobusJobSubmission</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.GSISSHSubmission</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.GSISSHExport</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.GSISSHPreJobCommand</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.GSISSHPostJobCommand</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.HostAlias</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.HostIPAddress</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.JobSubmissionProtocol</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.SCPDataMovement</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.SSHSubmission</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>
