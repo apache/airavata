@@ -62,13 +62,15 @@ $airavataclient = new AiravataClient($protocol);
 try
 {
 
+   if ($argc != 2) {
+		echo 'php getAllExperimentsInProject.php <project_ID>';
+	}
 
-
-    $projectExperiments = $airavataclient->getAllExperimentsInProject('default');
-    echo '# of project experiments = ' . sizeof($projectExperiments) . '         <br><br>';
-    var_dump($projectExperiments);
-
-
+	else {
+	    $projectExperiments = $airavataclient->getAllExperimentsInProject($argv[1]);
+   	  echo '# of project experiments = ' . sizeof($projectExperiments) . '         <br><br>';
+    	  var_dump($projectExperiments);
+   }
 
 
 }
