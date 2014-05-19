@@ -486,7 +486,7 @@
                 <module>modules/workflow-model</module>
                 <module>modules/commons</module>
                 <module>modules/registry</module>
-                <!--<module>modules/app-catalog</module>-->
+                <module>modules/app-catalog</module>
                 <module>modules/airavata-client</module>
                 <module>modules/credential-store</module>
                 <module>modules/orchestrator</module>
