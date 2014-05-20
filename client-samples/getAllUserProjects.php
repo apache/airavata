@@ -68,9 +68,9 @@ try
     }
     else
     {
-        $userExperiments = $airavataclient->getAllUserProjects($argv[1]);
-        echo '# of user projects = ' . sizeof($userExperiments) . '       ';
-        var_dump($userExperiments);
+        $userProjects = $airavataclient->getAllUserProjects($argv[1]);
+        echo '# of user projects = ' . sizeof($userProjects) . '       ';
+        var_dump($userProjects);
     }
 }
 catch (InvalidRequestException $ire)

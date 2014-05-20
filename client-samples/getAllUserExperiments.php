@@ -50,7 +50,7 @@ $airavataclient = $airavataClientFactory->getAiravataClient();
 
 /* this is the same as the factory */
 $transport = new TSocket('gw111.iu.xsede.org', 8930);
-$transport->setRecvTimeout(50000);
+$transport->setRecvTimeout(20000);
 
 $protocol = new TBinaryProtocol($transport);
 $transport->open();
