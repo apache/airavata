@@ -28,6 +28,7 @@ import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
+import org.apache.thrift.protocol.TProtocolException;
 import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
 import org.apache.thrift.async.AsyncMethodCallback;
@@ -37,10 +38,13 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
-
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,9 +107,9 @@ import org.slf4j.LoggerFactory;
      */
     public void addApplicationDeployment(String applicationInterfaceId, org.apache.airavata.model.appcatalog.ApplicationDeployment applicationDeployment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
-    public List<String> listApplicationDeploymentIds() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public List<String> listApplicationDeploymentIds(String applicationInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
-    public org.apache.airavata.model.appcatalog.ApplicationDeployment getApplicationDeployment(String applicationDeploymentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public org.apache.airavata.model.appcatalog.ApplicationDeployment getApplicationDeployment(String applicationInterfaceId, String applicationDeploymentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
   }
 
@@ -147,9 +151,9 @@ import org.slf4j.LoggerFactory;
 
     public void addApplicationDeployment(String applicationInterfaceId, org.apache.airavata.model.appcatalog.ApplicationDeployment applicationDeployment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void listApplicationDeploymentIds(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void listApplicationDeploymentIds(String applicationInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getApplicationDeployment(String applicationDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getApplicationDeployment(String applicationInterfaceId, String applicationDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -721,15 +725,16 @@ import org.slf4j.LoggerFactory;
       return;
     }
 
-    public List<String> listApplicationDeploymentIds() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public List<String> listApplicationDeploymentIds(String applicationInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_listApplicationDeploymentIds();
+      send_listApplicationDeploymentIds(applicationInterfaceId);
       return recv_listApplicationDeploymentIds();
     }
 
-    public void send_listApplicationDeploymentIds() throws org.apache.thrift.TException
+    public void send_listApplicationDeploymentIds(String applicationInterfaceId) throws org.apache.thrift.TException
     {
       listApplicationDeploymentIds_args args = new listApplicationDeploymentIds_args();
+      args.setApplicationInterfaceId(applicationInterfaceId);
       sendBase("listApplicationDeploymentIds", args);
     }
 
@@ -752,15 +757,16 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "listApplicationDeploymentIds failed: unknown result");
     }
 
-    public org.apache.airavata.model.appcatalog.ApplicationDeployment getApplicationDeployment(String applicationDeploymentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.appcatalog.ApplicationDeployment getApplicationDeployment(String applicationInterfaceId, String applicationDeploymentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_getApplicationDeployment(applicationDeploymentId);
+      send_getApplicationDeployment(applicationInterfaceId, applicationDeploymentId);
       return recv_getApplicationDeployment();
     }
 
-    public void send_getApplicationDeployment(String applicationDeploymentId) throws org.apache.thrift.TException
+    public void send_getApplicationDeployment(String applicationInterfaceId, String applicationDeploymentId) throws org.apache.thrift.TException
     {
       getApplicationDeployment_args args = new getApplicationDeployment_args();
+      args.setApplicationInterfaceId(applicationInterfaceId);
       args.setApplicationDeploymentId(applicationDeploymentId);
       sendBase("getApplicationDeployment", args);
     }
@@ -1384,21 +1390,24 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void listApplicationDeploymentIds(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void listApplicationDeploymentIds(String applicationInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      listApplicationDeploymentIds_call method_call = new listApplicationDeploymentIds_call(resultHandler, this, ___protocolFactory, ___transport);
+      listApplicationDeploymentIds_call method_call = new listApplicationDeploymentIds_call(applicationInterfaceId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class listApplicationDeploymentIds_call extends org.apache.thrift.async.TAsyncMethodCall {
-      public listApplicationDeploymentIds_call(org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String applicationInterfaceId;
+      public listApplicationDeploymentIds_call(String applicationInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.applicationInterfaceId = applicationInterfaceId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("listApplicationDeploymentIds", org.apache.thrift.protocol.TMessageType.CALL, 0));
         listApplicationDeploymentIds_args args = new listApplicationDeploymentIds_args();
+        args.setApplicationInterfaceId(applicationInterfaceId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1413,23 +1422,26 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void getApplicationDeployment(String applicationDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getApplicationDeployment(String applicationInterfaceId, String applicationDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getApplicationDeployment_call method_call = new getApplicationDeployment_call(applicationDeploymentId, resultHandler, this, ___protocolFactory, ___transport);
+      getApplicationDeployment_call method_call = new getApplicationDeployment_call(applicationInterfaceId, applicationDeploymentId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getApplicationDeployment_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String applicationInterfaceId;
       private String applicationDeploymentId;
-      public getApplicationDeployment_call(String applicationDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public getApplicationDeployment_call(String applicationInterfaceId, String applicationDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
+        this.applicationInterfaceId = applicationInterfaceId;
         this.applicationDeploymentId = applicationDeploymentId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getApplicationDeployment", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getApplicationDeployment_args args = new getApplicationDeployment_args();
+        args.setApplicationInterfaceId(applicationInterfaceId);
         args.setApplicationDeploymentId(applicationDeploymentId);
         args.write(prot);
         prot.writeMessageEnd();
@@ -1994,7 +2006,7 @@ import org.slf4j.LoggerFactory;
       public listApplicationDeploymentIds_result getResult(I iface, listApplicationDeploymentIds_args args) throws org.apache.thrift.TException {
         listApplicationDeploymentIds_result result = new listApplicationDeploymentIds_result();
         try {
-          result.success = iface.listApplicationDeploymentIds();
+          result.success = iface.listApplicationDeploymentIds(args.applicationInterfaceId);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -2022,7 +2034,7 @@ import org.slf4j.LoggerFactory;
       public getApplicationDeployment_result getResult(I iface, getApplicationDeployment_args args) throws org.apache.thrift.TException {
         getApplicationDeployment_result result = new getApplicationDeployment_result();
         try {
-          result.success = iface.getApplicationDeployment(args.applicationDeploymentId);
+          result.success = iface.getApplicationDeployment(args.applicationInterfaceId, args.applicationDeploymentId);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -3317,7 +3329,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, listApplicationDeploymentIds_args args, org.apache.thrift.async.AsyncMethodCallback<List<String>> resultHandler) throws TException {
-        iface.listApplicationDeploymentIds(resultHandler);
+        iface.listApplicationDeploymentIds(args.applicationInterfaceId,resultHandler);
       }
     }
 
@@ -3384,7 +3396,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, getApplicationDeployment_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.appcatalog.ApplicationDeployment> resultHandler) throws TException {
-        iface.getApplicationDeployment(args.applicationDeploymentId,resultHandler);
+        iface.getApplicationDeployment(args.applicationInterfaceId, args.applicationDeploymentId,resultHandler);
       }
     }
 
@@ -20858,6 +20870,7 @@ import org.slf4j.LoggerFactory;
   public static class listApplicationDeploymentIds_args implements org.apache.thrift.TBase<listApplicationDeploymentIds_args, listApplicationDeploymentIds_args._Fields>, java.io.Serializable, Cloneable, Comparable<listApplicationDeploymentIds_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("listApplicationDeploymentIds_args");
 
+    private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -20865,10 +20878,11 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new listApplicationDeploymentIds_argsTupleSchemeFactory());
     }
 
+    public String applicationInterfaceId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-;
+      APPLICATION_INTERFACE_ID((short)1, "applicationInterfaceId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -20883,6 +20897,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 1: // APPLICATION_INTERFACE_ID
+            return APPLICATION_INTERFACE_ID;
           default:
             return null;
         }
@@ -20921,9 +20937,13 @@ import org.slf4j.LoggerFactory;
         return _fieldName;
       }
     }
+
+    // isset id assignments
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APPLICATION_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationInterfaceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(listApplicationDeploymentIds_args.class, metaDataMap);
     }
@@ -20931,10 +20951,20 @@ import org.slf4j.LoggerFactory;
     public listApplicationDeploymentIds_args() {
     }
 
+    public listApplicationDeploymentIds_args(
+      String applicationInterfaceId)
+    {
+      this();
+      this.applicationInterfaceId = applicationInterfaceId;
+    }
+
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public listApplicationDeploymentIds_args(listApplicationDeploymentIds_args other) {
+      if (other.isSetApplicationInterfaceId()) {
+        this.applicationInterfaceId = other.applicationInterfaceId;
+      }
     }
 
     public listApplicationDeploymentIds_args deepCopy() {
@@ -20943,15 +20973,51 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
+      this.applicationInterfaceId = null;
+    }
+
+    public String getApplicationInterfaceId() {
+      return this.applicationInterfaceId;
+    }
+
+    public listApplicationDeploymentIds_args setApplicationInterfaceId(String applicationInterfaceId) {
+      this.applicationInterfaceId = applicationInterfaceId;
+      return this;
+    }
+
+    public void unsetApplicationInterfaceId() {
+      this.applicationInterfaceId = null;
+    }
+
+    /** Returns true if field applicationInterfaceId is set (has been assigned a value) and false otherwise */
+    public boolean isSetApplicationInterfaceId() {
+      return this.applicationInterfaceId != null;
+    }
+
+    public void setApplicationInterfaceIdIsSet(boolean value) {
+      if (!value) {
+        this.applicationInterfaceId = null;
+      }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case APPLICATION_INTERFACE_ID:
+        if (value == null) {
+          unsetApplicationInterfaceId();
+        } else {
+          setApplicationInterfaceId((String)value);
+        }
+        break;
+
       }
     }
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case APPLICATION_INTERFACE_ID:
+        return getApplicationInterfaceId();
+
       }
       throw new IllegalStateException();
     }
@@ -20963,6 +21029,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
+      case APPLICATION_INTERFACE_ID:
+        return isSetApplicationInterfaceId();
       }
       throw new IllegalStateException();
     }
@@ -20980,6 +21048,15 @@ import org.slf4j.LoggerFactory;
       if (that == null)
         return false;
 
+      boolean this_present_applicationInterfaceId = true && this.isSetApplicationInterfaceId();
+      boolean that_present_applicationInterfaceId = true && that.isSetApplicationInterfaceId();
+      if (this_present_applicationInterfaceId || that_present_applicationInterfaceId) {
+        if (!(this_present_applicationInterfaceId && that_present_applicationInterfaceId))
+          return false;
+        if (!this.applicationInterfaceId.equals(that.applicationInterfaceId))
+          return false;
+      }
+
       return true;
     }
 
@@ -20996,6 +21073,16 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetApplicationInterfaceId()).compareTo(other.isSetApplicationInterfaceId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetApplicationInterfaceId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationInterfaceId, other.applicationInterfaceId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -21016,12 +21103,22 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("listApplicationDeploymentIds_args(");
       boolean first = true;
 
+      sb.append("applicationInterfaceId:");
+      if (this.applicationInterfaceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationInterfaceId);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (applicationInterfaceId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'applicationInterfaceId' was not present! Struct: " + toString());
+      }
       // check for sub-struct validity
     }
 
@@ -21059,6 +21156,14 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
+            case 1: // APPLICATION_INTERFACE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.applicationInterfaceId = iprot.readString();
+                struct.setApplicationInterfaceIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -21074,6 +21179,11 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.applicationInterfaceId != null) {
+          oprot.writeFieldBegin(APPLICATION_INTERFACE_ID_FIELD_DESC);
+          oprot.writeString(struct.applicationInterfaceId);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -21091,11 +21201,14 @@ import org.slf4j.LoggerFactory;
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, listApplicationDeploymentIds_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.applicationInterfaceId);
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, listApplicationDeploymentIds_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.applicationInterfaceId = iprot.readString();
+        struct.setApplicationInterfaceIdIsSet(true);
       }
     }
 
@@ -21813,7 +21926,8 @@ import org.slf4j.LoggerFactory;
   public static class getApplicationDeployment_args implements org.apache.thrift.TBase<getApplicationDeployment_args, getApplicationDeployment_args._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationDeployment_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationDeployment_args");
 
-    private static final org.apache.thrift.protocol.TField APPLICATION_DEPLOYMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationDeploymentId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField APPLICATION_DEPLOYMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationDeploymentId", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -21821,11 +21935,13 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new getApplicationDeployment_argsTupleSchemeFactory());
     }
 
+    public String applicationInterfaceId; // required
     public String applicationDeploymentId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      APPLICATION_DEPLOYMENT_ID((short)1, "applicationDeploymentId");
+      APPLICATION_INTERFACE_ID((short)1, "applicationInterfaceId"),
+      APPLICATION_DEPLOYMENT_ID((short)2, "applicationDeploymentId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -21840,7 +21956,9 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // APPLICATION_DEPLOYMENT_ID
+          case 1: // APPLICATION_INTERFACE_ID
+            return APPLICATION_INTERFACE_ID;
+          case 2: // APPLICATION_DEPLOYMENT_ID
             return APPLICATION_DEPLOYMENT_ID;
           default:
             return null;
@@ -21885,6 +22003,8 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APPLICATION_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationInterfaceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.APPLICATION_DEPLOYMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationDeploymentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -21895,9 +22015,11 @@ import org.slf4j.LoggerFactory;
     }
 
     public getApplicationDeployment_args(
+      String applicationInterfaceId,
       String applicationDeploymentId)
     {
       this();
+      this.applicationInterfaceId = applicationInterfaceId;
       this.applicationDeploymentId = applicationDeploymentId;
     }
 
@@ -21905,6 +22027,9 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public getApplicationDeployment_args(getApplicationDeployment_args other) {
+      if (other.isSetApplicationInterfaceId()) {
+        this.applicationInterfaceId = other.applicationInterfaceId;
+      }
       if (other.isSetApplicationDeploymentId()) {
         this.applicationDeploymentId = other.applicationDeploymentId;
       }
@@ -21916,7 +22041,32 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
+      this.applicationInterfaceId = null;
       this.applicationDeploymentId = null;
+    }
+
+    public String getApplicationInterfaceId() {
+      return this.applicationInterfaceId;
+    }
+
+    public getApplicationDeployment_args setApplicationInterfaceId(String applicationInterfaceId) {
+      this.applicationInterfaceId = applicationInterfaceId;
+      return this;
+    }
+
+    public void unsetApplicationInterfaceId() {
+      this.applicationInterfaceId = null;
+    }
+
+    /** Returns true if field applicationInterfaceId is set (has been assigned a value) and false otherwise */
+    public boolean isSetApplicationInterfaceId() {
+      return this.applicationInterfaceId != null;
+    }
+
+    public void setApplicationInterfaceIdIsSet(boolean value) {
+      if (!value) {
+        this.applicationInterfaceId = null;
+      }
     }
 
     public String getApplicationDeploymentId() {
@@ -21945,6 +22095,14 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case APPLICATION_INTERFACE_ID:
+        if (value == null) {
+          unsetApplicationInterfaceId();
+        } else {
+          setApplicationInterfaceId((String)value);
+        }
+        break;
+
       case APPLICATION_DEPLOYMENT_ID:
         if (value == null) {
           unsetApplicationDeploymentId();
@@ -21958,6 +22116,9 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case APPLICATION_INTERFACE_ID:
+        return getApplicationInterfaceId();
+
       case APPLICATION_DEPLOYMENT_ID:
         return getApplicationDeploymentId();
 
@@ -21972,6 +22133,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
+      case APPLICATION_INTERFACE_ID:
+        return isSetApplicationInterfaceId();
       case APPLICATION_DEPLOYMENT_ID:
         return isSetApplicationDeploymentId();
       }
@@ -21990,6 +22153,15 @@ import org.slf4j.LoggerFactory;
     public boolean equals(getApplicationDeployment_args that) {
       if (that == null)
         return false;
+
+      boolean this_present_applicationInterfaceId = true && this.isSetApplicationInterfaceId();
+      boolean that_present_applicationInterfaceId = true && that.isSetApplicationInterfaceId();
+      if (this_present_applicationInterfaceId || that_present_applicationInterfaceId) {
+        if (!(this_present_applicationInterfaceId && that_present_applicationInterfaceId))
+          return false;
+        if (!this.applicationInterfaceId.equals(that.applicationInterfaceId))
+          return false;
+      }
 
       boolean this_present_applicationDeploymentId = true && this.isSetApplicationDeploymentId();
       boolean that_present_applicationDeploymentId = true && that.isSetApplicationDeploymentId();
@@ -22016,6 +22188,16 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetApplicationInterfaceId()).compareTo(other.isSetApplicationInterfaceId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetApplicationInterfaceId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationInterfaceId, other.applicationInterfaceId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetApplicationDeploymentId()).compareTo(other.isSetApplicationDeploymentId());
       if (lastComparison != 0) {
         return lastComparison;
@@ -22046,6 +22228,14 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("getApplicationDeployment_args(");
       boolean first = true;
 
+      sb.append("applicationInterfaceId:");
+      if (this.applicationInterfaceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationInterfaceId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("applicationDeploymentId:");
       if (this.applicationDeploymentId == null) {
         sb.append("null");
@@ -22059,6 +22249,9 @@ import org.slf4j.LoggerFactory;
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
+      if (applicationInterfaceId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'applicationInterfaceId' was not present! Struct: " + toString());
+      }
       if (applicationDeploymentId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'applicationDeploymentId' was not present! Struct: " + toString());
       }
@@ -22099,7 +22292,15 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
-            case 1: // APPLICATION_DEPLOYMENT_ID
+            case 1: // APPLICATION_INTERFACE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.applicationInterfaceId = iprot.readString();
+                struct.setApplicationInterfaceIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // APPLICATION_DEPLOYMENT_ID
               if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
                 struct.applicationDeploymentId = iprot.readString();
                 struct.setApplicationDeploymentIdIsSet(true);
@@ -22122,6 +22323,11 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.applicationInterfaceId != null) {
+          oprot.writeFieldBegin(APPLICATION_INTERFACE_ID_FIELD_DESC);
+          oprot.writeString(struct.applicationInterfaceId);
+          oprot.writeFieldEnd();
+        }
         if (struct.applicationDeploymentId != null) {
           oprot.writeFieldBegin(APPLICATION_DEPLOYMENT_ID_FIELD_DESC);
           oprot.writeString(struct.applicationDeploymentId);
@@ -22144,12 +22350,15 @@ import org.slf4j.LoggerFactory;
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationDeployment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.applicationInterfaceId);
         oprot.writeString(struct.applicationDeploymentId);
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationDeployment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.applicationInterfaceId = iprot.readString();
+        struct.setApplicationInterfaceIdIsSet(true);
         struct.applicationDeploymentId = iprot.readString();
         struct.setApplicationDeploymentIdIsSet(true);
       }

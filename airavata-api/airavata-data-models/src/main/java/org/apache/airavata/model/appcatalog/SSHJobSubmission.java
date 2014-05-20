@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class SSHJobSubmission implements org.apache.thrift.TBase<SSHJobSubmission, SSHJobSubmission._Fields>, java.io.Serializable, Cloneable, Comparable<SSHJobSubmission> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("SSHJobSubmission");
 
-  private static final org.apache.thrift.protocol.TField SSH_JOB_SUBMISSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("sshJobSubmissionID", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_DATA_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionDataID", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManager", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField SSH_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("sshPort", org.apache.thrift.protocol.TType.I32, (short)3);
 
@@ -61,13 +61,13 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new SSHJobSubmissionTupleSchemeFactory());
   }
 
-  private String sshJobSubmissionID; // required
+  private String jobSubmissionDataID; // required
   private ResourceJobManager resourceJobManager; // required
   private int sshPort; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    SSH_JOB_SUBMISSION_ID((short)1, "sshJobSubmissionID"),
+    JOB_SUBMISSION_DATA_ID((short)1, "jobSubmissionDataID"),
     /**
      * 
      * @see ResourceJobManager
@@ -88,8 +88,8 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // SSH_JOB_SUBMISSION_ID
-          return SSH_JOB_SUBMISSION_ID;
+        case 1: // JOB_SUBMISSION_DATA_ID
+          return JOB_SUBMISSION_DATA_ID;
         case 2: // RESOURCE_JOB_MANAGER
           return RESOURCE_JOB_MANAGER;
         case 3: // SSH_PORT
@@ -140,7 +140,7 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.SSH_JOB_SUBMISSION_ID, new org.apache.thrift.meta_data.FieldMetaData("sshJobSubmissionID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.JOB_SUBMISSION_DATA_ID, new org.apache.thrift.meta_data.FieldMetaData("jobSubmissionDataID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_JOB_MANAGER, new org.apache.thrift.meta_data.FieldMetaData("resourceJobManager", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResourceJobManager.class)));
@@ -151,18 +151,18 @@ import org.slf4j.LoggerFactory;
   }
 
   public SSHJobSubmission() {
-    this.sshJobSubmissionID = "DO_NOT_SET_AT_CLIENTS";
+    this.jobSubmissionDataID = "DO_NOT_SET_AT_CLIENTS";
 
     this.sshPort = 22;
 
   }
 
   public SSHJobSubmission(
-    String sshJobSubmissionID,
+    String jobSubmissionDataID,
     ResourceJobManager resourceJobManager)
   {
     this();
-    this.sshJobSubmissionID = sshJobSubmissionID;
+    this.jobSubmissionDataID = jobSubmissionDataID;
     this.resourceJobManager = resourceJobManager;
   }
 
@@ -171,8 +171,8 @@ import org.slf4j.LoggerFactory;
    */
   public SSHJobSubmission(SSHJobSubmission other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetSshJobSubmissionID()) {
-      this.sshJobSubmissionID = other.sshJobSubmissionID;
+    if (other.isSetJobSubmissionDataID()) {
+      this.jobSubmissionDataID = other.jobSubmissionDataID;
     }
     if (other.isSetResourceJobManager()) {
       this.resourceJobManager = other.resourceJobManager;
@@ -186,33 +186,33 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.sshJobSubmissionID = "DO_NOT_SET_AT_CLIENTS";
+    this.jobSubmissionDataID = "DO_NOT_SET_AT_CLIENTS";
 
     this.resourceJobManager = null;
     this.sshPort = 22;
 
   }
 
-  public String getSshJobSubmissionID() {
-    return this.sshJobSubmissionID;
+  public String getJobSubmissionDataID() {
+    return this.jobSubmissionDataID;
   }
 
-  public void setSshJobSubmissionID(String sshJobSubmissionID) {
-    this.sshJobSubmissionID = sshJobSubmissionID;
+  public void setJobSubmissionDataID(String jobSubmissionDataID) {
+    this.jobSubmissionDataID = jobSubmissionDataID;
   }
 
-  public void unsetSshJobSubmissionID() {
-    this.sshJobSubmissionID = null;
+  public void unsetJobSubmissionDataID() {
+    this.jobSubmissionDataID = null;
   }
 
-  /** Returns true if field sshJobSubmissionID is set (has been assigned a value) and false otherwise */
-  public boolean isSetSshJobSubmissionID() {
-    return this.sshJobSubmissionID != null;
+  /** Returns true if field jobSubmissionDataID is set (has been assigned a value) and false otherwise */
+  public boolean isSetJobSubmissionDataID() {
+    return this.jobSubmissionDataID != null;
   }
 
-  public void setSshJobSubmissionIDIsSet(boolean value) {
+  public void setJobSubmissionDataIDIsSet(boolean value) {
     if (!value) {
-      this.sshJobSubmissionID = null;
+      this.jobSubmissionDataID = null;
     }
   }
 
@@ -271,11 +271,11 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case SSH_JOB_SUBMISSION_ID:
+    case JOB_SUBMISSION_DATA_ID:
       if (value == null) {
-        unsetSshJobSubmissionID();
+        unsetJobSubmissionDataID();
       } else {
-        setSshJobSubmissionID((String)value);
+        setJobSubmissionDataID((String)value);
       }
       break;
 
@@ -300,8 +300,8 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case SSH_JOB_SUBMISSION_ID:
-      return getSshJobSubmissionID();
+    case JOB_SUBMISSION_DATA_ID:
+      return getJobSubmissionDataID();
 
     case RESOURCE_JOB_MANAGER:
       return getResourceJobManager();
@@ -320,8 +320,8 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case SSH_JOB_SUBMISSION_ID:
-      return isSetSshJobSubmissionID();
+    case JOB_SUBMISSION_DATA_ID:
+      return isSetJobSubmissionDataID();
     case RESOURCE_JOB_MANAGER:
       return isSetResourceJobManager();
     case SSH_PORT:
@@ -343,12 +343,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_sshJobSubmissionID = true && this.isSetSshJobSubmissionID();
-    boolean that_present_sshJobSubmissionID = true && that.isSetSshJobSubmissionID();
-    if (this_present_sshJobSubmissionID || that_present_sshJobSubmissionID) {
-      if (!(this_present_sshJobSubmissionID && that_present_sshJobSubmissionID))
+    boolean this_present_jobSubmissionDataID = true && this.isSetJobSubmissionDataID();
+    boolean that_present_jobSubmissionDataID = true && that.isSetJobSubmissionDataID();
+    if (this_present_jobSubmissionDataID || that_present_jobSubmissionDataID) {
+      if (!(this_present_jobSubmissionDataID && that_present_jobSubmissionDataID))
         return false;
-      if (!this.sshJobSubmissionID.equals(that.sshJobSubmissionID))
+      if (!this.jobSubmissionDataID.equals(that.jobSubmissionDataID))
         return false;
     }
 
@@ -386,12 +386,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetSshJobSubmissionID()).compareTo(other.isSetSshJobSubmissionID());
+    lastComparison = Boolean.valueOf(isSetJobSubmissionDataID()).compareTo(other.isSetJobSubmissionDataID());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetSshJobSubmissionID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sshJobSubmissionID, other.sshJobSubmissionID);
+    if (isSetJobSubmissionDataID()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobSubmissionDataID, other.jobSubmissionDataID);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -436,11 +436,11 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("SSHJobSubmission(");
     boolean first = true;
 
-    sb.append("sshJobSubmissionID:");
-    if (this.sshJobSubmissionID == null) {
+    sb.append("jobSubmissionDataID:");
+    if (this.jobSubmissionDataID == null) {
       sb.append("null");
     } else {
-      sb.append(this.sshJobSubmissionID);
+      sb.append(this.jobSubmissionDataID);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -463,8 +463,8 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetSshJobSubmissionID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'sshJobSubmissionID' is unset! Struct:" + toString());
+    if (!isSetJobSubmissionDataID()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'jobSubmissionDataID' is unset! Struct:" + toString());
     }
 
     if (!isSetResourceJobManager()) {
@@ -510,10 +510,10 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // SSH_JOB_SUBMISSION_ID
+          case 1: // JOB_SUBMISSION_DATA_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.sshJobSubmissionID = iprot.readString();
-              struct.setSshJobSubmissionIDIsSet(true);
+              struct.jobSubmissionDataID = iprot.readString();
+              struct.setJobSubmissionDataIDIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -547,9 +547,9 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.sshJobSubmissionID != null) {
-        oprot.writeFieldBegin(SSH_JOB_SUBMISSION_ID_FIELD_DESC);
-        oprot.writeString(struct.sshJobSubmissionID);
+      if (struct.jobSubmissionDataID != null) {
+        oprot.writeFieldBegin(JOB_SUBMISSION_DATA_ID_FIELD_DESC);
+        oprot.writeString(struct.jobSubmissionDataID);
         oprot.writeFieldEnd();
       }
       if (struct.resourceJobManager != null) {
@@ -579,7 +579,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, SSHJobSubmission struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.sshJobSubmissionID);
+      oprot.writeString(struct.jobSubmissionDataID);
       oprot.writeI32(struct.resourceJobManager.getValue());
       BitSet optionals = new BitSet();
       if (struct.isSetSshPort()) {
@@ -594,8 +594,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, SSHJobSubmission struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.sshJobSubmissionID = iprot.readString();
-      struct.setSshJobSubmissionIDIsSet(true);
+      struct.jobSubmissionDataID = iprot.readString();
+      struct.setJobSubmissionDataIDIsSet(true);
       struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
       struct.setResourceJobManagerIsSet(true);
       BitSet incoming = iprot.readBitSet(1);

@@ -33,8 +33,8 @@ class ApplicationCatalogAPIIf {
   virtual void listApplicationInterfaceIds(std::vector<std::string> & _return) = 0;
   virtual void getApplicationInterface( ::ApplicationInterface& _return, const std::string& applicationInterfaceId) = 0;
   virtual void addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment) = 0;
-  virtual void listApplicationDeploymentIds(std::vector<std::string> & _return) = 0;
-  virtual void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationDeploymentId) = 0;
+  virtual void listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId) = 0;
+  virtual void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId) = 0;
 };
 
 class ApplicationCatalogAPIIfFactory {
@@ -119,10 +119,10 @@ class ApplicationCatalogAPINull : virtual public ApplicationCatalogAPIIf {
   void addApplicationDeployment(const std::string& /* applicationInterfaceId */, const  ::ApplicationDeployment& /* applicationDeployment */) {
     return;
   }
-  void listApplicationDeploymentIds(std::vector<std::string> & /* _return */) {
+  void listApplicationDeploymentIds(std::vector<std::string> & /* _return */, const std::string& /* applicationInterfaceId */) {
     return;
   }
-  void getApplicationDeployment( ::ApplicationDeployment& /* _return */, const std::string& /* applicationDeploymentId */) {
+  void getApplicationDeployment( ::ApplicationDeployment& /* _return */, const std::string& /* applicationInterfaceId */, const std::string& /* applicationDeploymentId */) {
     return;
   }
 };
@@ -2423,14 +2423,21 @@ class ApplicationCatalogAPI_addApplicationDeployment_presult {
 class ApplicationCatalogAPI_listApplicationDeploymentIds_args {
  public:
 
-  ApplicationCatalogAPI_listApplicationDeploymentIds_args() {
+  ApplicationCatalogAPI_listApplicationDeploymentIds_args() : applicationInterfaceId() {
   }
 
   virtual ~ApplicationCatalogAPI_listApplicationDeploymentIds_args() throw() {}
 
+  std::string applicationInterfaceId;
 
-  bool operator == (const ApplicationCatalogAPI_listApplicationDeploymentIds_args & /* rhs */) const
+  void __set_applicationInterfaceId(const std::string& val) {
+    applicationInterfaceId = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_listApplicationDeploymentIds_args & rhs) const
   {
+    if (!(applicationInterfaceId == rhs.applicationInterfaceId))
+      return false;
     return true;
   }
   bool operator != (const ApplicationCatalogAPI_listApplicationDeploymentIds_args &rhs) const {
@@ -2451,6 +2458,7 @@ class ApplicationCatalogAPI_listApplicationDeploymentIds_pargs {
 
   virtual ~ApplicationCatalogAPI_listApplicationDeploymentIds_pargs() throw() {}
 
+  const std::string* applicationInterfaceId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2547,12 +2555,17 @@ class ApplicationCatalogAPI_listApplicationDeploymentIds_presult {
 class ApplicationCatalogAPI_getApplicationDeployment_args {
  public:
 
-  ApplicationCatalogAPI_getApplicationDeployment_args() : applicationDeploymentId() {
+  ApplicationCatalogAPI_getApplicationDeployment_args() : applicationInterfaceId(), applicationDeploymentId() {
   }
 
   virtual ~ApplicationCatalogAPI_getApplicationDeployment_args() throw() {}
 
+  std::string applicationInterfaceId;
   std::string applicationDeploymentId;
+
+  void __set_applicationInterfaceId(const std::string& val) {
+    applicationInterfaceId = val;
+  }
 
   void __set_applicationDeploymentId(const std::string& val) {
     applicationDeploymentId = val;
@@ -2560,6 +2573,8 @@ class ApplicationCatalogAPI_getApplicationDeployment_args {
 
   bool operator == (const ApplicationCatalogAPI_getApplicationDeployment_args & rhs) const
   {
+    if (!(applicationInterfaceId == rhs.applicationInterfaceId))
+      return false;
     if (!(applicationDeploymentId == rhs.applicationDeploymentId))
       return false;
     return true;
@@ -2582,6 +2597,7 @@ class ApplicationCatalogAPI_getApplicationDeployment_pargs {
 
   virtual ~ApplicationCatalogAPI_getApplicationDeployment_pargs() throw() {}
 
+  const std::string* applicationInterfaceId;
   const std::string* applicationDeploymentId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -2749,11 +2765,11 @@ class ApplicationCatalogAPIClient : virtual public ApplicationCatalogAPIIf {
   void addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment);
   void send_addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment);
   void recv_addApplicationDeployment();
-  void listApplicationDeploymentIds(std::vector<std::string> & _return);
-  void send_listApplicationDeploymentIds();
+  void listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId);
+  void send_listApplicationDeploymentIds(const std::string& applicationInterfaceId);
   void recv_listApplicationDeploymentIds(std::vector<std::string> & _return);
-  void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationDeploymentId);
-  void send_getApplicationDeployment(const std::string& applicationDeploymentId);
+  void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId);
+  void send_getApplicationDeployment(const std::string& applicationInterfaceId, const std::string& applicationDeploymentId);
   void recv_getApplicationDeployment( ::ApplicationDeployment& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
@@ -3013,23 +3029,23 @@ class ApplicationCatalogAPIMultiface : virtual public ApplicationCatalogAPIIf {
     ifaces_[i]->addApplicationDeployment(applicationInterfaceId, applicationDeployment);
   }
 
-  void listApplicationDeploymentIds(std::vector<std::string> & _return) {
+  void listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->listApplicationDeploymentIds(_return);
+      ifaces_[i]->listApplicationDeploymentIds(_return, applicationInterfaceId);
     }
-    ifaces_[i]->listApplicationDeploymentIds(_return);
+    ifaces_[i]->listApplicationDeploymentIds(_return, applicationInterfaceId);
     return;
   }
 
-  void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationDeploymentId) {
+  void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getApplicationDeployment(_return, applicationDeploymentId);
+      ifaces_[i]->getApplicationDeployment(_return, applicationInterfaceId, applicationDeploymentId);
     }
-    ifaces_[i]->getApplicationDeployment(_return, applicationDeploymentId);
+    ifaces_[i]->getApplicationDeployment(_return, applicationInterfaceId, applicationDeploymentId);
     return;
   }
 
