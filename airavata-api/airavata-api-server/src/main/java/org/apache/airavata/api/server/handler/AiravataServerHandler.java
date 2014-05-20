@@ -148,10 +148,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             return projects;
         } catch (RegistryException e) {
-            logger.error("Error while updating the project", e);
+            logger.error("Error while retrieving projects", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating the project. More info : " + e.getMessage());
+            exception.setMessage("Error while retrieving projects. More info : " + e.getMessage());
             throw exception;
         }
     }
@@ -317,7 +317,37 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
+            ExperimentStatus experimentStatus = getExperimentStatus(airavataExperimentId);
+            if (experimentStatus != null){
+                ExperimentState experimentState = experimentStatus.getExperimentState();
+                switch (experimentState){
+                    case CREATED:
+                        registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
+                        break;
+                    case VALIDATED:
+                        registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
+                        break;
+                    case CANCELED:
+                        registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
+                        break;
+                    case FAILED:
+                        registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
+                        break;
+                    case UNKNOWN:
+                        registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
+                        break;
+                    default:
+                        logger.error("Error while updating experiment. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        AiravataSystemException exception = new AiravataSystemException();
+                        exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                        exception.setMessage("Error while updating experiment. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        throw exception;
+                }
+            }
         } catch (Exception e) {
             logger.error("Error while updating experiment", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -334,12 +364,45 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
+            ExperimentStatus experimentStatus = getExperimentStatus(airavataExperimentId);
+            if (experimentStatus != null){
+                ExperimentState experimentState = experimentStatus.getExperimentState();
+                switch (experimentState){
+                    case CREATED:
+                        registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
+                        break;
+                    case VALIDATED:
+                        registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
+                        break;
+                    case CANCELED:
+                        registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
+                        break;
+                    case FAILED:
+                        registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
+                        break;
+                    case UNKNOWN:
+                        registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
+                        break;
+                    default:
+                        logger.error("Error while updating experiment. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        AiravataSystemException exception = new AiravataSystemException();
+                        exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                        exception.setMessage("Error while updating experiment. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        throw exception;
+                }
+            }
         } catch (Exception e) {
             logger.error("Error while updating user configuration", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating user configuration. More info : " + e.getMessage());
+            exception.setMessage("Error while updating user configuration. " +
+                    "Update experiment is only valid for experiments " +
+                    "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                    "experiment is in one of above statuses...  " + e.getMessage());
             throw exception;
         }
     }
@@ -351,12 +414,45 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
+            ExperimentStatus experimentStatus = getExperimentStatus(airavataExperimentId);
+            if (experimentStatus != null){
+                ExperimentState experimentState = experimentStatus.getExperimentState();
+                switch (experimentState){
+                    case CREATED:
+                        registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
+                        break;
+                    case VALIDATED:
+                        registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
+                        break;
+                    case CANCELED:
+                        registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
+                        break;
+                    case FAILED:
+                        registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
+                        break;
+                    case UNKNOWN:
+                        registry.add(ChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
+                        break;
+                    default:
+                        logger.error("Error while updating scheduling info. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        AiravataSystemException exception = new AiravataSystemException();
+                        exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                        exception.setMessage("Error while updating experiment. Update experiment is only valid for experiments " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "experiment is in one of above statuses... ");
+                        throw exception;
+                }
+            }
         } catch (Exception e) {
             logger.error("Error while updating scheduling info", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while updating scheduling info. More info : " + e.getMessage());
+            exception.setMessage("Error while updating scheduling info. " +
+                    "Update experiment is only valid for experiments " +
+                    "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                    "experiment is in one of above statuses...  " + e.getMessage());
             throw exception;
         }
     }
@@ -390,25 +486,31 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @throws org.apache.airavata.model.error.InvalidRequestException     For any incorrect forming of the request itself.
      * @throws org.apache.airavata.model.error.ExperimentNotFoundException If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
      * @throws org.apache.airavata.model.error.AiravataClientException     The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-     *                                                                   <p/>
-     *                                                                   UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-     *                                                                   step, then Airavata Registry will not have a provenance area setup. The client has to follow
-     *                                                                   gateway registration steps and retry this request.
-     *                                                                   <p/>
-     *                                                                   AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-     *                                                                   For now this is a place holder.
-     *                                                                   <p/>
-     *                                                                   INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-     *                                                                   is implemented, the authorization will be more substantial.
-     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-     *                                                                   rather an Airavata Administrator will be notified to take corrective action.
+     *<p/>
+     *UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+     *step, then Airavata Registry will not have a provenance area setup. The client has to follow
+     *gateway registration steps and retry this request.
+     *<p/>
+     *AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+     *For now this is a place holder.
+     *<p/>
+     *INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+     *is implemented, the authorization will be more substantial.
+     * @throws org.apache.airavata.model.error.AiravataSystemException     This exception will be thrown for any
+     *          Airavata Server side issues and if the problem cannot be corrected by the client
+     *         rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws InvalidRequestException,
+                                                                                    ExperimentNotFoundException,
+                                                                                    AiravataClientException,
+                                                                                    AiravataSystemException,
+                                                                                    TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
             if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
-                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId +
+                                                      " does not exist in the system..");
             }
             return (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, airavataExperimentId);
         } catch (Exception e) {
