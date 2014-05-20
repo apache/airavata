@@ -36,7 +36,7 @@ import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * this handler is responsible for monitoring jobs in a pull mode
@@ -51,7 +51,7 @@ public class GridPullMonitorHandler extends ThreadedHandler {
 
     private AuthenticationInfo authenticationInfo;
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
         String myProxyUser = null;
         try {
             myProxyUser = ServerSettings.getSetting("myproxy.username");

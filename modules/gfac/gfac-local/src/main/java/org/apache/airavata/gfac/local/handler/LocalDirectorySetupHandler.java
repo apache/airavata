@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Map;
+import java.util.Properties;
 
 public class LocalDirectorySetupHandler implements GFacHandler {
     private static final Logger log = LoggerFactory.getLogger(LocalDirectorySetupHandler.class);
@@ -57,7 +57,7 @@ public class LocalDirectorySetupHandler implements GFacHandler {
            }
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
 
     }
 }

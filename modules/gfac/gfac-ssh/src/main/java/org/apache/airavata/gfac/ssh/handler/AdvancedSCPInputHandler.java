@@ -75,14 +75,14 @@ public class AdvancedSCPInputHandler extends AbstractHandler {
 
     private String inputPath;
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
-        password = properties.get("password");
-        passPhrase = properties.get("passPhrase");
-        privateKeyPath = properties.get("privateKeyPath");
-        publicKeyPath = properties.get("publicKeyPath");
-        userName = properties.get("userName");
-        hostName = properties.get("hostName");
-        inputPath = properties.get("inputPath");
+    public void initProperties(Properties properties) throws GFacHandlerException {
+        password = (String)properties.get("password");
+        passPhrase = (String)properties.get("passPhrase");
+        privateKeyPath = (String)properties.get("privateKeyPath");
+        publicKeyPath = (String)properties.get("publicKeyPath");
+        userName = (String)properties.get("userName");
+        hostName = (String)properties.get("hostName");
+        inputPath = (String)properties.get("inputPath");
     }
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
