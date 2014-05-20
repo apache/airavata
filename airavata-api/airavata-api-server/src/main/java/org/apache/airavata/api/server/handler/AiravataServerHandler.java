@@ -68,7 +68,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public String createProject(Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            if (!validateProject(project)){
+            if (!validateString(project.getName()) || !validateString(project.getOwner())){
                 logger.error("Project name and owner cannot be empty...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -82,12 +82,12 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    private boolean validateProject(Project project){
+    private boolean validateString(String name){
         boolean valid = true;
-        if (project.getName() == null || project.getName().equals("")){
+        if (name == null || name.equals("") || name.trim().length() == 0){
             valid = false;
         }
-        if (project.getOwner() == null || project.getOwner().equals("")){
+        if (name == null || name.equals("") || name.trim().length() == 0){
             valid = false;
         }
         return valid;
@@ -100,6 +100,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public void updateProject(Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        if (!validateString(project.getName()) || !validateString(project.getOwner())){
+            logger.error("Project name and owner cannot be empty...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
         try {
             registry = RegistryFactory.getDefaultRegistry();
             registry.update(RegistryModelType.PROJECT, project, project.getProjectID());
@@ -121,6 +125,13 @@ public class AiravataServerHandler implements Airavata.Iface {
     public Project getProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.PROJECT, projectId)){
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
             return (Project)registry.get(RegistryModelType.PROJECT, projectId);
         } catch (RegistryException e) {
             logger.error("Error while updating the project", e);
@@ -138,7 +149,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<Project> getAllUserProjects(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (userName == null || userName.equals("")){
+        if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -178,7 +189,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<Experiment> getAllExperimentsInProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (projectId == null || projectId.equals("")){
+        if (validateString(projectId)){
             logger.error("Project id cannot be empty. Please provide a valid project ID...");
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -220,7 +231,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<Experiment> getAllUserExperiments(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (userName == null || userName.equals("")){
+        if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -728,7 +739,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
             }
             Experiment existingExperiment = (Experiment)registry.get(RegistryModelType.EXPERIMENT, existingExperimentID);
-            if (newExperiementName != null && !newExperiementName.equals("")){
+            if (!validateString(newExperiementName)){
                 existingExperiment.setName(newExperiementName);
             }
             return (String)registry.add(ParentDataType.EXPERIMENT, existingExperiment);
