@@ -28,6 +28,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
+import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.*;
@@ -137,6 +138,20 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<Project> getAllUserProjects(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        if (userName == null || userName.equals("")){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!ResourceUtils.isUserExist(userName)){
+            logger.error("User does not exist in the system. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("User does not exist in the system. Please provide a valid user..");
+            throw exception;
+        }
         List<Project> projects = new ArrayList<Project>();
         try {
             registry = RegistryFactory.getDefaultRegistry();
@@ -163,9 +178,23 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<Experiment> getAllExperimentsInProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        if (projectId == null || projectId.equals("")){
+            logger.error("Project id cannot be empty. Please provide a valid project ID...");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Project id cannot be empty. Please provide a valid project ID...");
+            throw exception;
+        }
         try {
-            List<Experiment> experiments = new ArrayList<Experiment>();
             registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.PROJECT, projectId)){
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
+            List<Experiment> experiments = new ArrayList<Experiment>();
             if (registry.isExist(RegistryModelType.PROJECT, projectId)){
 	            List<Object> list = registry.get(RegistryModelType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId);
 	            if (list != null && !list.isEmpty()){
@@ -191,6 +220,20 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<Experiment> getAllUserExperiments(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        if (userName == null || userName.equals("")){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!ResourceUtils.isUserExist(userName)){
+            logger.error("User does not exist in the system. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("User does not exist in the system. Please provide a valid user..");
+            throw exception;
+        }
         try {
             List<Experiment> experiments = new ArrayList<Experiment>();
             registry = RegistryFactory.getDefaultRegistry();
