@@ -153,12 +153,12 @@ service ApplicationCatalogAPI {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)   
             
-  list<string> listApplicationDeploymentIds()
+  list<string> listApplicationDeploymentIds(1: required string applicationInterfaceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)  
 
-  applicationCatalogDataModel.ApplicationDeployment getApplicationDeployment(1: required string applicationDeploymentId)
+  applicationCatalogDataModel.ApplicationDeployment getApplicationDeployment(1: required string applicationInterfaceId, 2: required string applicationDeploymentId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)  

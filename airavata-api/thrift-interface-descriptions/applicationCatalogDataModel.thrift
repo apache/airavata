@@ -111,26 +111,26 @@ enum SecurityProtocol {
 
 
 struct SCPDataMovement {
-    1: required string scpDataMovementID = DEFAULT_ID,
+    1: required string dataSubmissionDataID = DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: optional i32 sshPort = 22
 }
 
 struct SSHJobSubmission {
-    1: required string sshJobSubmissionID = DEFAULT_ID,
+    1: required string jobSubmissionDataID = DEFAULT_ID,
     2: required ResourceJobManager resourceJobManager,
     3: optional i32 sshPort = 22
 }
 
 struct GlobusJobSubmission {
-    1: required string globusJobSubmissionID = DEFAULT_ID,
+    1: required string jobSubmissionDataID = DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: required ResourceJobManager resourceJobManager,
-    4: optional string globusGateKeeperEndPoint
+    4: optional list<string> globusGateKeeperEndPoint
 }
 
 struct GSISSHJobSubmission {
-    1: required string gssishJobSubmissionID = DEFAULT_ID,
+    1: required string jobSubmissionDataID = DEFAULT_ID,
     2: required ResourceJobManager resourceJobManager,
     3: optional i32 sshPort = 22,
     4: optional set<string> exports,
