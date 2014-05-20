@@ -35,8 +35,8 @@ interface ApplicationCatalogAPIIf {
   public function listApplicationInterfaceIds();
   public function getApplicationInterface($applicationInterfaceId);
   public function addApplicationDeployment($applicationInterfaceId, \ApplicationDeployment $applicationDeployment);
-  public function listApplicationDeploymentIds();
-  public function getApplicationDeployment($applicationDeploymentId);
+  public function listApplicationDeploymentIds($applicationInterfaceId);
+  public function getApplicationDeployment($applicationInterfaceId, $applicationDeploymentId);
 }
 
 class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\ApplicationCatalogAPIIf {
@@ -1102,15 +1102,16 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     return;
   }
 
-  public function listApplicationDeploymentIds()
+  public function listApplicationDeploymentIds($applicationInterfaceId)
   {
-    $this->send_listApplicationDeploymentIds();
+    $this->send_listApplicationDeploymentIds($applicationInterfaceId);
     return $this->recv_listApplicationDeploymentIds();
   }
 
-  public function send_listApplicationDeploymentIds()
+  public function send_listApplicationDeploymentIds($applicationInterfaceId)
   {
     $args = new \Airavata\API\AppCatalog\ApplicationCatalogAPI_listApplicationDeploymentIds_args();
+    $args->applicationInterfaceId = $applicationInterfaceId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -1161,15 +1162,16 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     throw new \Exception("listApplicationDeploymentIds failed: unknown result");
   }
 
-  public function getApplicationDeployment($applicationDeploymentId)
+  public function getApplicationDeployment($applicationInterfaceId, $applicationDeploymentId)
   {
-    $this->send_getApplicationDeployment($applicationDeploymentId);
+    $this->send_getApplicationDeployment($applicationInterfaceId, $applicationDeploymentId);
     return $this->recv_getApplicationDeployment();
   }
 
-  public function send_getApplicationDeployment($applicationDeploymentId)
+  public function send_getApplicationDeployment($applicationInterfaceId, $applicationDeploymentId)
   {
     $args = new \Airavata\API\AppCatalog\ApplicationCatalogAPI_getApplicationDeployment_args();
+    $args->applicationInterfaceId = $applicationInterfaceId;
     $args->applicationDeploymentId = $applicationDeploymentId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -4958,11 +4960,21 @@ class ApplicationCatalogAPI_addApplicationDeployment_result {
 class ApplicationCatalogAPI_listApplicationDeploymentIds_args {
   static $_TSPEC;
 
+  public $applicationInterfaceId = null;
 
-  public function __construct() {
+  public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        1 => array(
+          'var' => 'applicationInterfaceId',
+          'type' => TType::STRING,
+          ),
         );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['applicationInterfaceId'])) {
+        $this->applicationInterfaceId = $vals['applicationInterfaceId'];
+      }
     }
   }
 
@@ -4985,6 +4997,13 @@ class ApplicationCatalogAPI_listApplicationDeploymentIds_args {
       }
       switch ($fid)
       {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->applicationInterfaceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -4998,6 +5017,11 @@ class ApplicationCatalogAPI_listApplicationDeploymentIds_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationCatalogAPI_listApplicationDeploymentIds_args');
+    if ($this->applicationInterfaceId !== null) {
+      $xfer += $output->writeFieldBegin('applicationInterfaceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->applicationInterfaceId);
+      $xfer += $output->writeFieldEnd();
+    }
     $xfer += $output->writeFieldStop();
     $xfer += $output->writeStructEnd();
     return $xfer;
@@ -5172,18 +5196,26 @@ class ApplicationCatalogAPI_listApplicationDeploymentIds_result {
 class ApplicationCatalogAPI_getApplicationDeployment_args {
   static $_TSPEC;
 
+  public $applicationInterfaceId = null;
   public $applicationDeploymentId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
+          'var' => 'applicationInterfaceId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
           'var' => 'applicationDeploymentId',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['applicationInterfaceId'])) {
+        $this->applicationInterfaceId = $vals['applicationInterfaceId'];
+      }
       if (isset($vals['applicationDeploymentId'])) {
         $this->applicationDeploymentId = $vals['applicationDeploymentId'];
       }
@@ -5211,6 +5243,13 @@ class ApplicationCatalogAPI_getApplicationDeployment_args {
       {
         case 1:
           if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->applicationInterfaceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->applicationDeploymentId);
           } else {
             $xfer += $input->skip($ftype);
@@ -5229,8 +5268,13 @@ class ApplicationCatalogAPI_getApplicationDeployment_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationCatalogAPI_getApplicationDeployment_args');
+    if ($this->applicationInterfaceId !== null) {
+      $xfer += $output->writeFieldBegin('applicationInterfaceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->applicationInterfaceId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->applicationDeploymentId !== null) {
-      $xfer += $output->writeFieldBegin('applicationDeploymentId', TType::STRING, 1);
+      $xfer += $output->writeFieldBegin('applicationDeploymentId', TType::STRING, 2);
       $xfer += $output->writeString($this->applicationDeploymentId);
       $xfer += $output->writeFieldEnd();
     }

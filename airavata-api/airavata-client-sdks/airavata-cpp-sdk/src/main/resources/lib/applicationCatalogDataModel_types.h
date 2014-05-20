@@ -73,19 +73,19 @@ class SCPDataMovement {
   static const char* ascii_fingerprint; // = "FEB6B2CD28861B4EED855CACA1FEF2CB";
   static const uint8_t binary_fingerprint[16]; // = {0xFE,0xB6,0xB2,0xCD,0x28,0x86,0x1B,0x4E,0xED,0x85,0x5C,0xAC,0xA1,0xFE,0xF2,0xCB};
 
-  SCPDataMovement() : scpDataMovementID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), sshPort(22) {
+  SCPDataMovement() : dataSubmissionDataID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), sshPort(22) {
   }
 
   virtual ~SCPDataMovement() throw() {}
 
-  std::string scpDataMovementID;
+  std::string dataSubmissionDataID;
   SecurityProtocol::type securityProtocol;
   int32_t sshPort;
 
   _SCPDataMovement__isset __isset;
 
-  void __set_scpDataMovementID(const std::string& val) {
-    scpDataMovementID = val;
+  void __set_dataSubmissionDataID(const std::string& val) {
+    dataSubmissionDataID = val;
   }
 
   void __set_securityProtocol(const SecurityProtocol::type val) {
@@ -99,7 +99,7 @@ class SCPDataMovement {
 
   bool operator == (const SCPDataMovement & rhs) const
   {
-    if (!(scpDataMovementID == rhs.scpDataMovementID))
+    if (!(dataSubmissionDataID == rhs.dataSubmissionDataID))
       return false;
     if (!(securityProtocol == rhs.securityProtocol))
       return false;
@@ -133,19 +133,19 @@ class SSHJobSubmission {
   static const char* ascii_fingerprint; // = "FEB6B2CD28861B4EED855CACA1FEF2CB";
   static const uint8_t binary_fingerprint[16]; // = {0xFE,0xB6,0xB2,0xCD,0x28,0x86,0x1B,0x4E,0xED,0x85,0x5C,0xAC,0xA1,0xFE,0xF2,0xCB};
 
-  SSHJobSubmission() : sshJobSubmissionID("DO_NOT_SET_AT_CLIENTS"), resourceJobManager((ResourceJobManager::type)0), sshPort(22) {
+  SSHJobSubmission() : jobSubmissionDataID("DO_NOT_SET_AT_CLIENTS"), resourceJobManager((ResourceJobManager::type)0), sshPort(22) {
   }
 
   virtual ~SSHJobSubmission() throw() {}
 
-  std::string sshJobSubmissionID;
+  std::string jobSubmissionDataID;
   ResourceJobManager::type resourceJobManager;
   int32_t sshPort;
 
   _SSHJobSubmission__isset __isset;
 
-  void __set_sshJobSubmissionID(const std::string& val) {
-    sshJobSubmissionID = val;
+  void __set_jobSubmissionDataID(const std::string& val) {
+    jobSubmissionDataID = val;
   }
 
   void __set_resourceJobManager(const ResourceJobManager::type val) {
@@ -159,7 +159,7 @@ class SSHJobSubmission {
 
   bool operator == (const SSHJobSubmission & rhs) const
   {
-    if (!(sshJobSubmissionID == rhs.sshJobSubmissionID))
+    if (!(jobSubmissionDataID == rhs.jobSubmissionDataID))
       return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
       return false;
@@ -190,23 +190,23 @@ typedef struct _GlobusJobSubmission__isset {
 class GlobusJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "6B87230A5315302FA994567088F60D3A";
-  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x87,0x23,0x0A,0x53,0x15,0x30,0x2F,0xA9,0x94,0x56,0x70,0x88,0xF6,0x0D,0x3A};
+  static const char* ascii_fingerprint; // = "DF4253F78D7B543C16FA461660D38A03";
+  static const uint8_t binary_fingerprint[16]; // = {0xDF,0x42,0x53,0xF7,0x8D,0x7B,0x54,0x3C,0x16,0xFA,0x46,0x16,0x60,0xD3,0x8A,0x03};
 
-  GlobusJobSubmission() : globusJobSubmissionID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), resourceJobManager((ResourceJobManager::type)0), globusGateKeeperEndPoint() {
+  GlobusJobSubmission() : jobSubmissionDataID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), resourceJobManager((ResourceJobManager::type)0) {
   }
 
   virtual ~GlobusJobSubmission() throw() {}
 
-  std::string globusJobSubmissionID;
+  std::string jobSubmissionDataID;
   SecurityProtocol::type securityProtocol;
   ResourceJobManager::type resourceJobManager;
-  std::string globusGateKeeperEndPoint;
+  std::vector<std::string>  globusGateKeeperEndPoint;
 
   _GlobusJobSubmission__isset __isset;
 
-  void __set_globusJobSubmissionID(const std::string& val) {
-    globusJobSubmissionID = val;
+  void __set_jobSubmissionDataID(const std::string& val) {
+    jobSubmissionDataID = val;
   }
 
   void __set_securityProtocol(const SecurityProtocol::type val) {
@@ -217,14 +217,14 @@ class GlobusJobSubmission {
     resourceJobManager = val;
   }
 
-  void __set_globusGateKeeperEndPoint(const std::string& val) {
+  void __set_globusGateKeeperEndPoint(const std::vector<std::string> & val) {
     globusGateKeeperEndPoint = val;
     __isset.globusGateKeeperEndPoint = true;
   }
 
   bool operator == (const GlobusJobSubmission & rhs) const
   {
-    if (!(globusJobSubmissionID == rhs.globusJobSubmissionID))
+    if (!(jobSubmissionDataID == rhs.jobSubmissionDataID))
       return false;
     if (!(securityProtocol == rhs.securityProtocol))
       return false;
@@ -265,12 +265,12 @@ class GSISSHJobSubmission {
   static const char* ascii_fingerprint; // = "6969A7F145C4403B2F9081A498E933FD";
   static const uint8_t binary_fingerprint[16]; // = {0x69,0x69,0xA7,0xF1,0x45,0xC4,0x40,0x3B,0x2F,0x90,0x81,0xA4,0x98,0xE9,0x33,0xFD};
 
-  GSISSHJobSubmission() : gssishJobSubmissionID("DO_NOT_SET_AT_CLIENTS"), resourceJobManager((ResourceJobManager::type)0), sshPort(22), installedPath(), monitorMode() {
+  GSISSHJobSubmission() : jobSubmissionDataID("DO_NOT_SET_AT_CLIENTS"), resourceJobManager((ResourceJobManager::type)0), sshPort(22), installedPath(), monitorMode() {
   }
 
   virtual ~GSISSHJobSubmission() throw() {}
 
-  std::string gssishJobSubmissionID;
+  std::string jobSubmissionDataID;
   ResourceJobManager::type resourceJobManager;
   int32_t sshPort;
   std::set<std::string>  exports;
@@ -281,8 +281,8 @@ class GSISSHJobSubmission {
 
   _GSISSHJobSubmission__isset __isset;
 
-  void __set_gssishJobSubmissionID(const std::string& val) {
-    gssishJobSubmissionID = val;
+  void __set_jobSubmissionDataID(const std::string& val) {
+    jobSubmissionDataID = val;
   }
 
   void __set_resourceJobManager(const ResourceJobManager::type val) {
@@ -321,7 +321,7 @@ class GSISSHJobSubmission {
 
   bool operator == (const GSISSHJobSubmission & rhs) const
   {
-    if (!(gssishJobSubmissionID == rhs.gssishJobSubmissionID))
+    if (!(jobSubmissionDataID == rhs.jobSubmissionDataID))
       return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
       return false;

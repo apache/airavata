@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class GSISSHJobSubmission implements org.apache.thrift.TBase<GSISSHJobSubmission, GSISSHJobSubmission._Fields>, java.io.Serializable, Cloneable, Comparable<GSISSHJobSubmission> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GSISSHJobSubmission");
 
-  private static final org.apache.thrift.protocol.TField GSSISH_JOB_SUBMISSION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gssishJobSubmissionID", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_DATA_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionDataID", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManager", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField SSH_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("sshPort", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField EXPORTS_FIELD_DESC = new org.apache.thrift.protocol.TField("exports", org.apache.thrift.protocol.TType.SET, (short)4);
@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new GSISSHJobSubmissionTupleSchemeFactory());
   }
 
-  private String gssishJobSubmissionID; // required
+  private String jobSubmissionDataID; // required
   private ResourceJobManager resourceJobManager; // required
   private int sshPort; // optional
   private Set<String> exports; // optional
@@ -77,7 +77,7 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    GSSISH_JOB_SUBMISSION_ID((short)1, "gssishJobSubmissionID"),
+    JOB_SUBMISSION_DATA_ID((short)1, "jobSubmissionDataID"),
     /**
      * 
      * @see ResourceJobManager
@@ -103,8 +103,8 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // GSSISH_JOB_SUBMISSION_ID
-          return GSSISH_JOB_SUBMISSION_ID;
+        case 1: // JOB_SUBMISSION_DATA_ID
+          return JOB_SUBMISSION_DATA_ID;
         case 2: // RESOURCE_JOB_MANAGER
           return RESOURCE_JOB_MANAGER;
         case 3: // SSH_PORT
@@ -165,7 +165,7 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.GSSISH_JOB_SUBMISSION_ID, new org.apache.thrift.meta_data.FieldMetaData("gssishJobSubmissionID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.JOB_SUBMISSION_DATA_ID, new org.apache.thrift.meta_data.FieldMetaData("jobSubmissionDataID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_JOB_MANAGER, new org.apache.thrift.meta_data.FieldMetaData("resourceJobManager", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResourceJobManager.class)));
@@ -189,18 +189,18 @@ import org.slf4j.LoggerFactory;
   }
 
   public GSISSHJobSubmission() {
-    this.gssishJobSubmissionID = "DO_NOT_SET_AT_CLIENTS";
+    this.jobSubmissionDataID = "DO_NOT_SET_AT_CLIENTS";
 
     this.sshPort = 22;
 
   }
 
   public GSISSHJobSubmission(
-    String gssishJobSubmissionID,
+    String jobSubmissionDataID,
     ResourceJobManager resourceJobManager)
   {
     this();
-    this.gssishJobSubmissionID = gssishJobSubmissionID;
+    this.jobSubmissionDataID = jobSubmissionDataID;
     this.resourceJobManager = resourceJobManager;
   }
 
@@ -209,8 +209,8 @@ import org.slf4j.LoggerFactory;
    */
   public GSISSHJobSubmission(GSISSHJobSubmission other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetGssishJobSubmissionID()) {
-      this.gssishJobSubmissionID = other.gssishJobSubmissionID;
+    if (other.isSetJobSubmissionDataID()) {
+      this.jobSubmissionDataID = other.jobSubmissionDataID;
     }
     if (other.isSetResourceJobManager()) {
       this.resourceJobManager = other.resourceJobManager;
@@ -242,7 +242,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.gssishJobSubmissionID = "DO_NOT_SET_AT_CLIENTS";
+    this.jobSubmissionDataID = "DO_NOT_SET_AT_CLIENTS";
 
     this.resourceJobManager = null;
     this.sshPort = 22;
@@ -254,26 +254,26 @@ import org.slf4j.LoggerFactory;
     this.monitorMode = null;
   }
 
-  public String getGssishJobSubmissionID() {
-    return this.gssishJobSubmissionID;
+  public String getJobSubmissionDataID() {
+    return this.jobSubmissionDataID;
   }
 
-  public void setGssishJobSubmissionID(String gssishJobSubmissionID) {
-    this.gssishJobSubmissionID = gssishJobSubmissionID;
+  public void setJobSubmissionDataID(String jobSubmissionDataID) {
+    this.jobSubmissionDataID = jobSubmissionDataID;
   }
 
-  public void unsetGssishJobSubmissionID() {
-    this.gssishJobSubmissionID = null;
+  public void unsetJobSubmissionDataID() {
+    this.jobSubmissionDataID = null;
   }
 
-  /** Returns true if field gssishJobSubmissionID is set (has been assigned a value) and false otherwise */
-  public boolean isSetGssishJobSubmissionID() {
-    return this.gssishJobSubmissionID != null;
+  /** Returns true if field jobSubmissionDataID is set (has been assigned a value) and false otherwise */
+  public boolean isSetJobSubmissionDataID() {
+    return this.jobSubmissionDataID != null;
   }
 
-  public void setGssishJobSubmissionIDIsSet(boolean value) {
+  public void setJobSubmissionDataIDIsSet(boolean value) {
     if (!value) {
-      this.gssishJobSubmissionID = null;
+      this.jobSubmissionDataID = null;
     }
   }
 
@@ -492,11 +492,11 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case GSSISH_JOB_SUBMISSION_ID:
+    case JOB_SUBMISSION_DATA_ID:
       if (value == null) {
-        unsetGssishJobSubmissionID();
+        unsetJobSubmissionDataID();
       } else {
-        setGssishJobSubmissionID((String)value);
+        setJobSubmissionDataID((String)value);
       }
       break;
 
@@ -561,8 +561,8 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case GSSISH_JOB_SUBMISSION_ID:
-      return getGssishJobSubmissionID();
+    case JOB_SUBMISSION_DATA_ID:
+      return getJobSubmissionDataID();
 
     case RESOURCE_JOB_MANAGER:
       return getResourceJobManager();
@@ -596,8 +596,8 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case GSSISH_JOB_SUBMISSION_ID:
-      return isSetGssishJobSubmissionID();
+    case JOB_SUBMISSION_DATA_ID:
+      return isSetJobSubmissionDataID();
     case RESOURCE_JOB_MANAGER:
       return isSetResourceJobManager();
     case SSH_PORT:
@@ -629,12 +629,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_gssishJobSubmissionID = true && this.isSetGssishJobSubmissionID();
-    boolean that_present_gssishJobSubmissionID = true && that.isSetGssishJobSubmissionID();
-    if (this_present_gssishJobSubmissionID || that_present_gssishJobSubmissionID) {
-      if (!(this_present_gssishJobSubmissionID && that_present_gssishJobSubmissionID))
+    boolean this_present_jobSubmissionDataID = true && this.isSetJobSubmissionDataID();
+    boolean that_present_jobSubmissionDataID = true && that.isSetJobSubmissionDataID();
+    if (this_present_jobSubmissionDataID || that_present_jobSubmissionDataID) {
+      if (!(this_present_jobSubmissionDataID && that_present_jobSubmissionDataID))
         return false;
-      if (!this.gssishJobSubmissionID.equals(that.gssishJobSubmissionID))
+      if (!this.jobSubmissionDataID.equals(that.jobSubmissionDataID))
         return false;
     }
 
@@ -717,12 +717,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetGssishJobSubmissionID()).compareTo(other.isSetGssishJobSubmissionID());
+    lastComparison = Boolean.valueOf(isSetJobSubmissionDataID()).compareTo(other.isSetJobSubmissionDataID());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetGssishJobSubmissionID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gssishJobSubmissionID, other.gssishJobSubmissionID);
+    if (isSetJobSubmissionDataID()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobSubmissionDataID, other.jobSubmissionDataID);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -817,11 +817,11 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("GSISSHJobSubmission(");
     boolean first = true;
 
-    sb.append("gssishJobSubmissionID:");
-    if (this.gssishJobSubmissionID == null) {
+    sb.append("jobSubmissionDataID:");
+    if (this.jobSubmissionDataID == null) {
       sb.append("null");
     } else {
-      sb.append(this.gssishJobSubmissionID);
+      sb.append(this.jobSubmissionDataID);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -894,8 +894,8 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetGssishJobSubmissionID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gssishJobSubmissionID' is unset! Struct:" + toString());
+    if (!isSetJobSubmissionDataID()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'jobSubmissionDataID' is unset! Struct:" + toString());
     }
 
     if (!isSetResourceJobManager()) {
@@ -941,10 +941,10 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // GSSISH_JOB_SUBMISSION_ID
+          case 1: // JOB_SUBMISSION_DATA_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.gssishJobSubmissionID = iprot.readString();
-              struct.setGssishJobSubmissionIDIsSet(true);
+              struct.jobSubmissionDataID = iprot.readString();
+              struct.setJobSubmissionDataIDIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -968,13 +968,13 @@ import org.slf4j.LoggerFactory;
           case 4: // EXPORTS
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
-                org.apache.thrift.protocol.TSet _set0 = iprot.readSetBegin();
-                struct.exports = new HashSet<String>(2*_set0.size);
-                for (int _i1 = 0; _i1 < _set0.size; ++_i1)
+                org.apache.thrift.protocol.TSet _set8 = iprot.readSetBegin();
+                struct.exports = new HashSet<String>(2*_set8.size);
+                for (int _i9 = 0; _i9 < _set8.size; ++_i9)
                 {
-                  String _elem2;
-                  _elem2 = iprot.readString();
-                  struct.exports.add(_elem2);
+                  String _elem10;
+                  _elem10 = iprot.readString();
+                  struct.exports.add(_elem10);
                 }
                 iprot.readSetEnd();
               }
@@ -986,13 +986,13 @@ import org.slf4j.LoggerFactory;
           case 5: // PRE_JOB_COMMANDS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
-                struct.preJobCommands = new ArrayList<String>(_list3.size);
-                for (int _i4 = 0; _i4 < _list3.size; ++_i4)
+                org.apache.thrift.protocol.TList _list11 = iprot.readListBegin();
+                struct.preJobCommands = new ArrayList<String>(_list11.size);
+                for (int _i12 = 0; _i12 < _list11.size; ++_i12)
                 {
-                  String _elem5;
-                  _elem5 = iprot.readString();
-                  struct.preJobCommands.add(_elem5);
+                  String _elem13;
+                  _elem13 = iprot.readString();
+                  struct.preJobCommands.add(_elem13);
                 }
                 iprot.readListEnd();
               }
@@ -1004,13 +1004,13 @@ import org.slf4j.LoggerFactory;
           case 6: // POST_JOB_COMMANDS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
-                struct.postJobCommands = new ArrayList<String>(_list6.size);
-                for (int _i7 = 0; _i7 < _list6.size; ++_i7)
+                org.apache.thrift.protocol.TList _list14 = iprot.readListBegin();
+                struct.postJobCommands = new ArrayList<String>(_list14.size);
+                for (int _i15 = 0; _i15 < _list14.size; ++_i15)
                 {
-                  String _elem8;
-                  _elem8 = iprot.readString();
-                  struct.postJobCommands.add(_elem8);
+                  String _elem16;
+                  _elem16 = iprot.readString();
+                  struct.postJobCommands.add(_elem16);
                 }
                 iprot.readListEnd();
               }
@@ -1048,9 +1048,9 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.gssishJobSubmissionID != null) {
-        oprot.writeFieldBegin(GSSISH_JOB_SUBMISSION_ID_FIELD_DESC);
-        oprot.writeString(struct.gssishJobSubmissionID);
+      if (struct.jobSubmissionDataID != null) {
+        oprot.writeFieldBegin(JOB_SUBMISSION_DATA_ID_FIELD_DESC);
+        oprot.writeString(struct.jobSubmissionDataID);
         oprot.writeFieldEnd();
       }
       if (struct.resourceJobManager != null) {
@@ -1068,9 +1068,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(EXPORTS_FIELD_DESC);
           {
             oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.exports.size()));
-            for (String _iter9 : struct.exports)
+            for (String _iter17 : struct.exports)
             {
-              oprot.writeString(_iter9);
+              oprot.writeString(_iter17);
             }
             oprot.writeSetEnd();
           }
@@ -1082,9 +1082,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(PRE_JOB_COMMANDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.preJobCommands.size()));
-            for (String _iter10 : struct.preJobCommands)
+            for (String _iter18 : struct.preJobCommands)
             {
-              oprot.writeString(_iter10);
+              oprot.writeString(_iter18);
             }
             oprot.writeListEnd();
           }
@@ -1096,9 +1096,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(POST_JOB_COMMANDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.postJobCommands.size()));
-            for (String _iter11 : struct.postJobCommands)
+            for (String _iter19 : struct.postJobCommands)
             {
-              oprot.writeString(_iter11);
+              oprot.writeString(_iter19);
             }
             oprot.writeListEnd();
           }
@@ -1136,7 +1136,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, GSISSHJobSubmission struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.gssishJobSubmissionID);
+      oprot.writeString(struct.jobSubmissionDataID);
       oprot.writeI32(struct.resourceJobManager.getValue());
       BitSet optionals = new BitSet();
       if (struct.isSetSshPort()) {
@@ -1164,27 +1164,27 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetExports()) {
         {
           oprot.writeI32(struct.exports.size());
-          for (String _iter12 : struct.exports)
+          for (String _iter20 : struct.exports)
           {
-            oprot.writeString(_iter12);
+            oprot.writeString(_iter20);
           }
         }
       }
       if (struct.isSetPreJobCommands()) {
         {
           oprot.writeI32(struct.preJobCommands.size());
-          for (String _iter13 : struct.preJobCommands)
+          for (String _iter21 : struct.preJobCommands)
           {
-            oprot.writeString(_iter13);
+            oprot.writeString(_iter21);
           }
         }
       }
       if (struct.isSetPostJobCommands()) {
         {
           oprot.writeI32(struct.postJobCommands.size());
-          for (String _iter14 : struct.postJobCommands)
+          for (String _iter22 : struct.postJobCommands)
           {
-            oprot.writeString(_iter14);
+            oprot.writeString(_iter22);
           }
         }
       }
@@ -1199,8 +1199,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, GSISSHJobSubmission struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.gssishJobSubmissionID = iprot.readString();
-      struct.setGssishJobSubmissionIDIsSet(true);
+      struct.jobSubmissionDataID = iprot.readString();
+      struct.setJobSubmissionDataIDIsSet(true);
       struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
       struct.setResourceJobManagerIsSet(true);
       BitSet incoming = iprot.readBitSet(6);
@@ -1210,39 +1210,39 @@ import org.slf4j.LoggerFactory;
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TSet _set15 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.exports = new HashSet<String>(2*_set15.size);
-          for (int _i16 = 0; _i16 < _set15.size; ++_i16)
+          org.apache.thrift.protocol.TSet _set23 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.exports = new HashSet<String>(2*_set23.size);
+          for (int _i24 = 0; _i24 < _set23.size; ++_i24)
           {
-            String _elem17;
-            _elem17 = iprot.readString();
-            struct.exports.add(_elem17);
+            String _elem25;
+            _elem25 = iprot.readString();
+            struct.exports.add(_elem25);
           }
         }
         struct.setExportsIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list18 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.preJobCommands = new ArrayList<String>(_list18.size);
-          for (int _i19 = 0; _i19 < _list18.size; ++_i19)
+          org.apache.thrift.protocol.TList _list26 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.preJobCommands = new ArrayList<String>(_list26.size);
+          for (int _i27 = 0; _i27 < _list26.size; ++_i27)
           {
-            String _elem20;
-            _elem20 = iprot.readString();
-            struct.preJobCommands.add(_elem20);
+            String _elem28;
+            _elem28 = iprot.readString();
+            struct.preJobCommands.add(_elem28);
           }
         }
         struct.setPreJobCommandsIsSet(true);
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.postJobCommands = new ArrayList<String>(_list21.size);
-          for (int _i22 = 0; _i22 < _list21.size; ++_i22)
+          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.postJobCommands = new ArrayList<String>(_list29.size);
+          for (int _i30 = 0; _i30 < _list29.size; ++_i30)
           {
-            String _elem23;
-            _elem23 = iprot.readString();
-            struct.postJobCommands.add(_elem23);
+            String _elem31;
+            _elem31 = iprot.readString();
+            struct.postJobCommands.add(_elem31);
           }
         }
         struct.setPostJobCommandsIsSet(true);

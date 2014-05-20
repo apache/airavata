@@ -112,12 +112,12 @@ class ApplicationCatalogAPIHandler : virtual public ApplicationCatalogAPIIf {
     printf("addApplicationDeployment\n");
   }
 
-  void listApplicationDeploymentIds(std::vector<std::string> & _return) {
+  void listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId) {
     // Your implementation goes here
     printf("listApplicationDeploymentIds\n");
   }
 
-  void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationDeploymentId) {
+  void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId) {
     // Your implementation goes here
     printf("getApplicationDeployment\n");
   }

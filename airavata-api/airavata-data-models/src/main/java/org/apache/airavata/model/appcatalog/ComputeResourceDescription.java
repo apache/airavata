@@ -1176,13 +1176,13 @@ import org.slf4j.LoggerFactory;
           case 4: // HOST_ALIASES
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
-                org.apache.thrift.protocol.TSet _set24 = iprot.readSetBegin();
-                struct.hostAliases = new HashSet<String>(2*_set24.size);
-                for (int _i25 = 0; _i25 < _set24.size; ++_i25)
+                org.apache.thrift.protocol.TSet _set32 = iprot.readSetBegin();
+                struct.hostAliases = new HashSet<String>(2*_set32.size);
+                for (int _i33 = 0; _i33 < _set32.size; ++_i33)
                 {
-                  String _elem26;
-                  _elem26 = iprot.readString();
-                  struct.hostAliases.add(_elem26);
+                  String _elem34;
+                  _elem34 = iprot.readString();
+                  struct.hostAliases.add(_elem34);
                 }
                 iprot.readSetEnd();
               }
@@ -1194,13 +1194,13 @@ import org.slf4j.LoggerFactory;
           case 5: // IP_ADDRESSES
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
-                org.apache.thrift.protocol.TSet _set27 = iprot.readSetBegin();
-                struct.ipAddresses = new HashSet<String>(2*_set27.size);
-                for (int _i28 = 0; _i28 < _set27.size; ++_i28)
+                org.apache.thrift.protocol.TSet _set35 = iprot.readSetBegin();
+                struct.ipAddresses = new HashSet<String>(2*_set35.size);
+                for (int _i36 = 0; _i36 < _set35.size; ++_i36)
                 {
-                  String _elem29;
-                  _elem29 = iprot.readString();
-                  struct.ipAddresses.add(_elem29);
+                  String _elem37;
+                  _elem37 = iprot.readString();
+                  struct.ipAddresses.add(_elem37);
                 }
                 iprot.readSetEnd();
               }
@@ -1236,15 +1236,15 @@ import org.slf4j.LoggerFactory;
           case 9: // JOB_SUBMISSION_PROTOCOLS
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map30 = iprot.readMapBegin();
-                struct.jobSubmissionProtocols = new HashMap<String,JobSubmissionProtocol>(2*_map30.size);
-                for (int _i31 = 0; _i31 < _map30.size; ++_i31)
+                org.apache.thrift.protocol.TMap _map38 = iprot.readMapBegin();
+                struct.jobSubmissionProtocols = new HashMap<String,JobSubmissionProtocol>(2*_map38.size);
+                for (int _i39 = 0; _i39 < _map38.size; ++_i39)
                 {
-                  String _key32;
-                  JobSubmissionProtocol _val33;
-                  _key32 = iprot.readString();
-                  _val33 = JobSubmissionProtocol.findByValue(iprot.readI32());
-                  struct.jobSubmissionProtocols.put(_key32, _val33);
+                  String _key40;
+                  JobSubmissionProtocol _val41;
+                  _key40 = iprot.readString();
+                  _val41 = JobSubmissionProtocol.findByValue(iprot.readI32());
+                  struct.jobSubmissionProtocols.put(_key40, _val41);
                 }
                 iprot.readMapEnd();
               }
@@ -1256,15 +1256,15 @@ import org.slf4j.LoggerFactory;
           case 10: // DATA_MOVEMENT_PROTOCOLS
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map34 = iprot.readMapBegin();
-                struct.dataMovementProtocols = new HashMap<String,DataMovementProtocol>(2*_map34.size);
-                for (int _i35 = 0; _i35 < _map34.size; ++_i35)
+                org.apache.thrift.protocol.TMap _map42 = iprot.readMapBegin();
+                struct.dataMovementProtocols = new HashMap<String,DataMovementProtocol>(2*_map42.size);
+                for (int _i43 = 0; _i43 < _map42.size; ++_i43)
                 {
-                  String _key36;
-                  DataMovementProtocol _val37;
-                  _key36 = iprot.readString();
-                  _val37 = DataMovementProtocol.findByValue(iprot.readI32());
-                  struct.dataMovementProtocols.put(_key36, _val37);
+                  String _key44;
+                  DataMovementProtocol _val45;
+                  _key44 = iprot.readString();
+                  _val45 = DataMovementProtocol.findByValue(iprot.readI32());
+                  struct.dataMovementProtocols.put(_key44, _val45);
                 }
                 iprot.readMapEnd();
               }
@@ -1304,9 +1304,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(HOST_ALIASES_FIELD_DESC);
           {
             oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.hostAliases.size()));
-            for (String _iter38 : struct.hostAliases)
+            for (String _iter46 : struct.hostAliases)
             {
-              oprot.writeString(_iter38);
+              oprot.writeString(_iter46);
             }
             oprot.writeSetEnd();
           }
@@ -1318,9 +1318,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(IP_ADDRESSES_FIELD_DESC);
           {
             oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.ipAddresses.size()));
-            for (String _iter39 : struct.ipAddresses)
+            for (String _iter47 : struct.ipAddresses)
             {
-              oprot.writeString(_iter39);
+              oprot.writeString(_iter47);
             }
             oprot.writeSetEnd();
           }
@@ -1352,10 +1352,10 @@ import org.slf4j.LoggerFactory;
         oprot.writeFieldBegin(JOB_SUBMISSION_PROTOCOLS_FIELD_DESC);
         {
           oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, struct.jobSubmissionProtocols.size()));
-          for (Map.Entry<String, JobSubmissionProtocol> _iter40 : struct.jobSubmissionProtocols.entrySet())
+          for (Map.Entry<String, JobSubmissionProtocol> _iter48 : struct.jobSubmissionProtocols.entrySet())
           {
-            oprot.writeString(_iter40.getKey());
-            oprot.writeI32(_iter40.getValue().getValue());
+            oprot.writeString(_iter48.getKey());
+            oprot.writeI32(_iter48.getValue().getValue());
           }
           oprot.writeMapEnd();
         }
@@ -1365,10 +1365,10 @@ import org.slf4j.LoggerFactory;
         oprot.writeFieldBegin(DATA_MOVEMENT_PROTOCOLS_FIELD_DESC);
         {
           oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, struct.dataMovementProtocols.size()));
-          for (Map.Entry<String, DataMovementProtocol> _iter41 : struct.dataMovementProtocols.entrySet())
+          for (Map.Entry<String, DataMovementProtocol> _iter49 : struct.dataMovementProtocols.entrySet())
           {
-            oprot.writeString(_iter41.getKey());
-            oprot.writeI32(_iter41.getValue().getValue());
+            oprot.writeString(_iter49.getKey());
+            oprot.writeI32(_iter49.getValue().getValue());
           }
           oprot.writeMapEnd();
         }
@@ -1396,18 +1396,18 @@ import org.slf4j.LoggerFactory;
       oprot.writeString(struct.hostName);
       {
         oprot.writeI32(struct.jobSubmissionProtocols.size());
-        for (Map.Entry<String, JobSubmissionProtocol> _iter42 : struct.jobSubmissionProtocols.entrySet())
+        for (Map.Entry<String, JobSubmissionProtocol> _iter50 : struct.jobSubmissionProtocols.entrySet())
         {
-          oprot.writeString(_iter42.getKey());
-          oprot.writeI32(_iter42.getValue().getValue());
+          oprot.writeString(_iter50.getKey());
+          oprot.writeI32(_iter50.getValue().getValue());
         }
       }
       {
         oprot.writeI32(struct.dataMovementProtocols.size());
-        for (Map.Entry<String, DataMovementProtocol> _iter43 : struct.dataMovementProtocols.entrySet())
+        for (Map.Entry<String, DataMovementProtocol> _iter51 : struct.dataMovementProtocols.entrySet())
         {
-          oprot.writeString(_iter43.getKey());
-          oprot.writeI32(_iter43.getValue().getValue());
+          oprot.writeString(_iter51.getKey());
+          oprot.writeI32(_iter51.getValue().getValue());
         }
       }
       BitSet optionals = new BitSet();
@@ -1430,18 +1430,18 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetHostAliases()) {
         {
           oprot.writeI32(struct.hostAliases.size());
-          for (String _iter44 : struct.hostAliases)
+          for (String _iter52 : struct.hostAliases)
           {
-            oprot.writeString(_iter44);
+            oprot.writeString(_iter52);
           }
         }
       }
       if (struct.isSetIpAddresses()) {
         {
           oprot.writeI32(struct.ipAddresses.size());
-          for (String _iter45 : struct.ipAddresses)
+          for (String _iter53 : struct.ipAddresses)
           {
-            oprot.writeString(_iter45);
+            oprot.writeString(_iter53);
           }
         }
       }
@@ -1466,54 +1466,54 @@ import org.slf4j.LoggerFactory;
       struct.hostName = iprot.readString();
       struct.setHostNameIsSet(true);
       {
-        org.apache.thrift.protocol.TMap _map46 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, iprot.readI32());
-        struct.jobSubmissionProtocols = new HashMap<String,JobSubmissionProtocol>(2*_map46.size);
-        for (int _i47 = 0; _i47 < _map46.size; ++_i47)
+        org.apache.thrift.protocol.TMap _map54 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, iprot.readI32());
+        struct.jobSubmissionProtocols = new HashMap<String,JobSubmissionProtocol>(2*_map54.size);
+        for (int _i55 = 0; _i55 < _map54.size; ++_i55)
         {
-          String _key48;
-          JobSubmissionProtocol _val49;
-          _key48 = iprot.readString();
-          _val49 = JobSubmissionProtocol.findByValue(iprot.readI32());
-          struct.jobSubmissionProtocols.put(_key48, _val49);
+          String _key56;
+          JobSubmissionProtocol _val57;
+          _key56 = iprot.readString();
+          _val57 = JobSubmissionProtocol.findByValue(iprot.readI32());
+          struct.jobSubmissionProtocols.put(_key56, _val57);
         }
       }
       struct.setJobSubmissionProtocolsIsSet(true);
       {
-        org.apache.thrift.protocol.TMap _map50 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, iprot.readI32());
-        struct.dataMovementProtocols = new HashMap<String,DataMovementProtocol>(2*_map50.size);
-        for (int _i51 = 0; _i51 < _map50.size; ++_i51)
+        org.apache.thrift.protocol.TMap _map58 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, iprot.readI32());
+        struct.dataMovementProtocols = new HashMap<String,DataMovementProtocol>(2*_map58.size);
+        for (int _i59 = 0; _i59 < _map58.size; ++_i59)
         {
-          String _key52;
-          DataMovementProtocol _val53;
-          _key52 = iprot.readString();
-          _val53 = DataMovementProtocol.findByValue(iprot.readI32());
-          struct.dataMovementProtocols.put(_key52, _val53);
+          String _key60;
+          DataMovementProtocol _val61;
+          _key60 = iprot.readString();
+          _val61 = DataMovementProtocol.findByValue(iprot.readI32());
+          struct.dataMovementProtocols.put(_key60, _val61);
         }
       }
       struct.setDataMovementProtocolsIsSet(true);
       BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TSet _set54 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.hostAliases = new HashSet<String>(2*_set54.size);
-          for (int _i55 = 0; _i55 < _set54.size; ++_i55)
+          org.apache.thrift.protocol.TSet _set62 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.hostAliases = new HashSet<String>(2*_set62.size);
+          for (int _i63 = 0; _i63 < _set62.size; ++_i63)
           {
-            String _elem56;
-            _elem56 = iprot.readString();
-            struct.hostAliases.add(_elem56);
+            String _elem64;
+            _elem64 = iprot.readString();
+            struct.hostAliases.add(_elem64);
           }
         }
         struct.setHostAliasesIsSet(true);
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TSet _set57 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.ipAddresses = new HashSet<String>(2*_set57.size);
-          for (int _i58 = 0; _i58 < _set57.size; ++_i58)
+          org.apache.thrift.protocol.TSet _set65 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.ipAddresses = new HashSet<String>(2*_set65.size);
+          for (int _i66 = 0; _i66 < _set65.size; ++_i66)
           {
-            String _elem59;
-            _elem59 = iprot.readString();
-            struct.ipAddresses.add(_elem59);
+            String _elem67;
+            _elem67 = iprot.readString();
+            struct.ipAddresses.add(_elem67);
           }
         }
         struct.setIpAddressesIsSet(true);

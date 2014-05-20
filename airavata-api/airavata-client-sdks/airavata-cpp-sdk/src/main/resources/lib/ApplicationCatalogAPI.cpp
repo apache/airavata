@@ -3956,6 +3956,7 @@ uint32_t ApplicationCatalogAPI_listApplicationDeploymentIds_args::read(::apache:
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_applicationInterfaceId = false;
 
   while (true)
   {
@@ -3963,18 +3964,37 @@ uint32_t ApplicationCatalogAPI_listApplicationDeploymentIds_args::read(::apache:
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->applicationInterfaceId);
+          isset_applicationInterfaceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_applicationInterfaceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
 uint32_t ApplicationCatalogAPI_listApplicationDeploymentIds_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_listApplicationDeploymentIds_args");
+
+  xfer += oprot->writeFieldBegin("applicationInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->applicationInterfaceId);
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -3984,6 +4004,10 @@ uint32_t ApplicationCatalogAPI_listApplicationDeploymentIds_args::write(::apache
 uint32_t ApplicationCatalogAPI_listApplicationDeploymentIds_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_listApplicationDeploymentIds_pargs");
+
+  xfer += oprot->writeFieldBegin("applicationInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->applicationInterfaceId)));
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -4189,6 +4213,7 @@ uint32_t ApplicationCatalogAPI_getApplicationDeployment_args::read(::apache::thr
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_applicationInterfaceId = false;
   bool isset_applicationDeploymentId = false;
 
   while (true)
@@ -4200,6 +4225,14 @@ uint32_t ApplicationCatalogAPI_getApplicationDeployment_args::read(::apache::thr
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->applicationInterfaceId);
+          isset_applicationInterfaceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->applicationDeploymentId);
           isset_applicationDeploymentId = true;
@@ -4216,6 +4249,8 @@ uint32_t ApplicationCatalogAPI_getApplicationDeployment_args::read(::apache::thr
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_applicationInterfaceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_applicationDeploymentId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -4225,7 +4260,11 @@ uint32_t ApplicationCatalogAPI_getApplicationDeployment_args::write(::apache::th
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_getApplicationDeployment_args");
 
-  xfer += oprot->writeFieldBegin("applicationDeploymentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("applicationInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->applicationInterfaceId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("applicationDeploymentId", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->applicationDeploymentId);
   xfer += oprot->writeFieldEnd();
 
@@ -4238,7 +4277,11 @@ uint32_t ApplicationCatalogAPI_getApplicationDeployment_pargs::write(::apache::t
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_getApplicationDeployment_pargs");
 
-  xfer += oprot->writeFieldBegin("applicationDeploymentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("applicationInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->applicationInterfaceId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("applicationDeploymentId", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->applicationDeploymentId)));
   xfer += oprot->writeFieldEnd();
 
@@ -5567,18 +5610,19 @@ void ApplicationCatalogAPIClient::recv_addApplicationDeployment()
   return;
 }
 
-void ApplicationCatalogAPIClient::listApplicationDeploymentIds(std::vector<std::string> & _return)
+void ApplicationCatalogAPIClient::listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId)
 {
-  send_listApplicationDeploymentIds();
+  send_listApplicationDeploymentIds(applicationInterfaceId);
   recv_listApplicationDeploymentIds(_return);
 }
 
-void ApplicationCatalogAPIClient::send_listApplicationDeploymentIds()
+void ApplicationCatalogAPIClient::send_listApplicationDeploymentIds(const std::string& applicationInterfaceId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("listApplicationDeploymentIds", ::apache::thrift::protocol::T_CALL, cseqid);
 
   ApplicationCatalogAPI_listApplicationDeploymentIds_pargs args;
+  args.applicationInterfaceId = &applicationInterfaceId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -5633,18 +5677,19 @@ void ApplicationCatalogAPIClient::recv_listApplicationDeploymentIds(std::vector<
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "listApplicationDeploymentIds failed: unknown result");
 }
 
-void ApplicationCatalogAPIClient::getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationDeploymentId)
+void ApplicationCatalogAPIClient::getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId)
 {
-  send_getApplicationDeployment(applicationDeploymentId);
+  send_getApplicationDeployment(applicationInterfaceId, applicationDeploymentId);
   recv_getApplicationDeployment(_return);
 }
 
-void ApplicationCatalogAPIClient::send_getApplicationDeployment(const std::string& applicationDeploymentId)
+void ApplicationCatalogAPIClient::send_getApplicationDeployment(const std::string& applicationInterfaceId, const std::string& applicationDeploymentId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getApplicationDeployment", ::apache::thrift::protocol::T_CALL, cseqid);
 
   ApplicationCatalogAPI_getApplicationDeployment_pargs args;
+  args.applicationInterfaceId = &applicationInterfaceId;
   args.applicationDeploymentId = &applicationDeploymentId;
   args.write(oprot_);
 
@@ -6860,7 +6905,7 @@ void ApplicationCatalogAPIProcessor::process_listApplicationDeploymentIds(int32_
 
   ApplicationCatalogAPI_listApplicationDeploymentIds_result result;
   try {
-    iface_->listApplicationDeploymentIds(result.success);
+    iface_->listApplicationDeploymentIds(result.success, args.applicationInterfaceId);
     result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -6923,7 +6968,7 @@ void ApplicationCatalogAPIProcessor::process_getApplicationDeployment(int32_t se
 
   ApplicationCatalogAPI_getApplicationDeployment_result result;
   try {
-    iface_->getApplicationDeployment(result.success, args.applicationDeploymentId);
+    iface_->getApplicationDeployment(result.success, args.applicationInterfaceId, args.applicationDeploymentId);
     result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;

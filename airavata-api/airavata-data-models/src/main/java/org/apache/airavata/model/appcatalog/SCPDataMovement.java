@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class SCPDataMovement implements org.apache.thrift.TBase<SCPDataMovement, SCPDataMovement._Fields>, java.io.Serializable, Cloneable, Comparable<SCPDataMovement> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("SCPDataMovement");
 
-  private static final org.apache.thrift.protocol.TField SCP_DATA_MOVEMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("scpDataMovementID", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField DATA_SUBMISSION_DATA_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("dataSubmissionDataID", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField SECURITY_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("securityProtocol", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField SSH_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("sshPort", org.apache.thrift.protocol.TType.I32, (short)3);
 
@@ -61,13 +61,13 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new SCPDataMovementTupleSchemeFactory());
   }
 
-  private String scpDataMovementID; // required
+  private String dataSubmissionDataID; // required
   private SecurityProtocol securityProtocol; // required
   private int sshPort; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    SCP_DATA_MOVEMENT_ID((short)1, "scpDataMovementID"),
+    DATA_SUBMISSION_DATA_ID((short)1, "dataSubmissionDataID"),
     /**
      * 
      * @see SecurityProtocol
@@ -88,8 +88,8 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // SCP_DATA_MOVEMENT_ID
-          return SCP_DATA_MOVEMENT_ID;
+        case 1: // DATA_SUBMISSION_DATA_ID
+          return DATA_SUBMISSION_DATA_ID;
         case 2: // SECURITY_PROTOCOL
           return SECURITY_PROTOCOL;
         case 3: // SSH_PORT
@@ -140,7 +140,7 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.SCP_DATA_MOVEMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("scpDataMovementID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.DATA_SUBMISSION_DATA_ID, new org.apache.thrift.meta_data.FieldMetaData("dataSubmissionDataID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SECURITY_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("securityProtocol", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, SecurityProtocol.class)));
@@ -151,18 +151,18 @@ import org.slf4j.LoggerFactory;
   }
 
   public SCPDataMovement() {
-    this.scpDataMovementID = "DO_NOT_SET_AT_CLIENTS";
+    this.dataSubmissionDataID = "DO_NOT_SET_AT_CLIENTS";
 
     this.sshPort = 22;
 
   }
 
   public SCPDataMovement(
-    String scpDataMovementID,
+    String dataSubmissionDataID,
     SecurityProtocol securityProtocol)
   {
     this();
-    this.scpDataMovementID = scpDataMovementID;
+    this.dataSubmissionDataID = dataSubmissionDataID;
     this.securityProtocol = securityProtocol;
   }
 
@@ -171,8 +171,8 @@ import org.slf4j.LoggerFactory;
    */
   public SCPDataMovement(SCPDataMovement other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetScpDataMovementID()) {
-      this.scpDataMovementID = other.scpDataMovementID;
+    if (other.isSetDataSubmissionDataID()) {
+      this.dataSubmissionDataID = other.dataSubmissionDataID;
     }
     if (other.isSetSecurityProtocol()) {
       this.securityProtocol = other.securityProtocol;
@@ -186,33 +186,33 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.scpDataMovementID = "DO_NOT_SET_AT_CLIENTS";
+    this.dataSubmissionDataID = "DO_NOT_SET_AT_CLIENTS";
 
     this.securityProtocol = null;
     this.sshPort = 22;
 
   }
 
-  public String getScpDataMovementID() {
-    return this.scpDataMovementID;
+  public String getDataSubmissionDataID() {
+    return this.dataSubmissionDataID;
   }
 
-  public void setScpDataMovementID(String scpDataMovementID) {
-    this.scpDataMovementID = scpDataMovementID;
+  public void setDataSubmissionDataID(String dataSubmissionDataID) {
+    this.dataSubmissionDataID = dataSubmissionDataID;
   }
 
-  public void unsetScpDataMovementID() {
-    this.scpDataMovementID = null;
+  public void unsetDataSubmissionDataID() {
+    this.dataSubmissionDataID = null;
   }
 
-  /** Returns true if field scpDataMovementID is set (has been assigned a value) and false otherwise */
-  public boolean isSetScpDataMovementID() {
-    return this.scpDataMovementID != null;
+  /** Returns true if field dataSubmissionDataID is set (has been assigned a value) and false otherwise */
+  public boolean isSetDataSubmissionDataID() {
+    return this.dataSubmissionDataID != null;
   }
 
-  public void setScpDataMovementIDIsSet(boolean value) {
+  public void setDataSubmissionDataIDIsSet(boolean value) {
     if (!value) {
-      this.scpDataMovementID = null;
+      this.dataSubmissionDataID = null;
     }
   }
 
@@ -271,11 +271,11 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case SCP_DATA_MOVEMENT_ID:
+    case DATA_SUBMISSION_DATA_ID:
       if (value == null) {
-        unsetScpDataMovementID();
+        unsetDataSubmissionDataID();
       } else {
-        setScpDataMovementID((String)value);
+        setDataSubmissionDataID((String)value);
       }
       break;
 
@@ -300,8 +300,8 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case SCP_DATA_MOVEMENT_ID:
-      return getScpDataMovementID();
+    case DATA_SUBMISSION_DATA_ID:
+      return getDataSubmissionDataID();
 
     case SECURITY_PROTOCOL:
       return getSecurityProtocol();
@@ -320,8 +320,8 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case SCP_DATA_MOVEMENT_ID:
-      return isSetScpDataMovementID();
+    case DATA_SUBMISSION_DATA_ID:
+      return isSetDataSubmissionDataID();
     case SECURITY_PROTOCOL:
       return isSetSecurityProtocol();
     case SSH_PORT:
@@ -343,12 +343,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_scpDataMovementID = true && this.isSetScpDataMovementID();
-    boolean that_present_scpDataMovementID = true && that.isSetScpDataMovementID();
-    if (this_present_scpDataMovementID || that_present_scpDataMovementID) {
-      if (!(this_present_scpDataMovementID && that_present_scpDataMovementID))
+    boolean this_present_dataSubmissionDataID = true && this.isSetDataSubmissionDataID();
+    boolean that_present_dataSubmissionDataID = true && that.isSetDataSubmissionDataID();
+    if (this_present_dataSubmissionDataID || that_present_dataSubmissionDataID) {
+      if (!(this_present_dataSubmissionDataID && that_present_dataSubmissionDataID))
         return false;
-      if (!this.scpDataMovementID.equals(that.scpDataMovementID))
+      if (!this.dataSubmissionDataID.equals(that.dataSubmissionDataID))
         return false;
     }
 
@@ -386,12 +386,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetScpDataMovementID()).compareTo(other.isSetScpDataMovementID());
+    lastComparison = Boolean.valueOf(isSetDataSubmissionDataID()).compareTo(other.isSetDataSubmissionDataID());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetScpDataMovementID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.scpDataMovementID, other.scpDataMovementID);
+    if (isSetDataSubmissionDataID()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataSubmissionDataID, other.dataSubmissionDataID);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -436,11 +436,11 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("SCPDataMovement(");
     boolean first = true;
 
-    sb.append("scpDataMovementID:");
-    if (this.scpDataMovementID == null) {
+    sb.append("dataSubmissionDataID:");
+    if (this.dataSubmissionDataID == null) {
       sb.append("null");
     } else {
-      sb.append(this.scpDataMovementID);
+      sb.append(this.dataSubmissionDataID);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -463,8 +463,8 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetScpDataMovementID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'scpDataMovementID' is unset! Struct:" + toString());
+    if (!isSetDataSubmissionDataID()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'dataSubmissionDataID' is unset! Struct:" + toString());
     }
 
     if (!isSetSecurityProtocol()) {
@@ -510,10 +510,10 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // SCP_DATA_MOVEMENT_ID
+          case 1: // DATA_SUBMISSION_DATA_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.scpDataMovementID = iprot.readString();
-              struct.setScpDataMovementIDIsSet(true);
+              struct.dataSubmissionDataID = iprot.readString();
+              struct.setDataSubmissionDataIDIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -547,9 +547,9 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.scpDataMovementID != null) {
-        oprot.writeFieldBegin(SCP_DATA_MOVEMENT_ID_FIELD_DESC);
-        oprot.writeString(struct.scpDataMovementID);
+      if (struct.dataSubmissionDataID != null) {
+        oprot.writeFieldBegin(DATA_SUBMISSION_DATA_ID_FIELD_DESC);
+        oprot.writeString(struct.dataSubmissionDataID);
         oprot.writeFieldEnd();
       }
       if (struct.securityProtocol != null) {
@@ -579,7 +579,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, SCPDataMovement struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.scpDataMovementID);
+      oprot.writeString(struct.dataSubmissionDataID);
       oprot.writeI32(struct.securityProtocol.getValue());
       BitSet optionals = new BitSet();
       if (struct.isSetSshPort()) {
@@ -594,8 +594,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, SCPDataMovement struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.scpDataMovementID = iprot.readString();
-      struct.setScpDataMovementIDIsSet(true);
+      struct.dataSubmissionDataID = iprot.readString();
+      struct.setDataSubmissionDataIDIsSet(true);
       struct.securityProtocol = SecurityProtocol.findByValue(iprot.readI32());
       struct.setSecurityProtocolIsSet(true);
       BitSet incoming = iprot.readBitSet(1);
