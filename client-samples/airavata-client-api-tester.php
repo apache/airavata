@@ -29,6 +29,7 @@ require_once '../lib/AiravataClientFactory.php';
 use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
 use Airavata\API\Error\InvalidRequestException;
+use Airavata\API\Error\ExperimentNotFoundException;
 use Airavata\Client\AiravataClientFactory;
 use Thrift\Protocol\TBinaryProtocol;
 use Thrift\Transport\TBufferedTransport;
@@ -41,6 +42,7 @@ use Airavata\Model\Workspace\Experiment\DataObjectType;
 use Airavata\Model\Workspace\Experiment\UserConfigurationData;
 use Airavata\Model\Workspace\Experiment\ComputationalResourceScheduling;
 use Airavata\Model\Workspace\Experiment\DataType;
+use Airavata\Model\Workspace\Experiment\ExperimentState;
 
 /* buffered transport
 $socket = new TSocket('gw111.iu.xsede.org', 8930);
@@ -67,12 +69,13 @@ $airavataclient = new AiravataClient($protocol);
 
 try
 {
-    if ($argc != 4)
+    if ($argc != 2)
     {
-        echo 'php createExperiment.php <username> <experiment_name> <project_ID>';
+        echo 'php airavata-client-api-tester.php <username>';
     }
     else
     {
+
         /* ComputationalResourceScheduling data for Trestles*/
         $cmRST = new ComputationalResourceScheduling();
         $cmRST->resourceHostId = "trestles.sdsc.edu";
@@ -127,33 +130,67 @@ try
         $output->type = DataType::STRING;
         $exOutputs = array($output);
 
-        /* Create Experiment: needs to update using unique project ID. */
+	
+        /* Simple workflow test. */
         $user = $argv[1];
-        $exp_name = $argv[2];
-        $proj = $argv[3];
+        
+        /* Create Project */
+        $project = new Project();
+	$project->owner = $user;
+	$project->name = "LoadTesterProject";
+  	$projId = $airavataclient->createProject($project); 
+	echo "$user created project $projId. \n";
 
+        /* Create Experiment */
         $experiment = new Experiment();
-        $experiment->projectID = $proj;
+        $experiment->projectID = $projId;
         $experiment->userName = $user;
-        $experiment->name = $exp_name;
+        $experiment->name = "LoadTesterExperiment_".time();
         $experiment->applicationId = $appId;
         $experiment->userConfigurationData = $userConfigurationData;
         $experiment->experimentInputs = $exInputs;
         $experiment->experimentOutputs = $exOutputs;
-
         $expId = $airavataclient->createExperiment($experiment);
+	echo "$user created experiment $expId. \n";
+        //var_dump($experiment);
 
-        if ($expId)
-        {
-            var_dump($experiment);
-            echo "Experiment $expId created! \n    ";
-        } 
-        else
-        {
-            echo "Failed to create experiment. \n";
-        }
+	/* Validate experiment */
+	$valid = $airavataclient->validateExperiment($expId);
+	echo "$user experiment $expId validation is $valid. \n";
+
+        /* Launch Experiment */
+	//$airavataclient->launchExperiment($expId, 'airavataToken');
+	//echo "$user experiment $expId is launched.";
+
+	/* Get experiment status */ 
+	$experimentStatus = $airavataclient->getExperimentStatus($expId);
+        $experimentStatusString =  ExperimentState::$__names[$experimentStatus->experimentState];
+	echo "$user experiment $expId status is $experimentStatusString. \n";
+
+        /* Get whole project */
+	$uproj = $airavataclient->getProject($projId);
+ 	echo "$user $projId detail follows: \n";
+	var_dump($uproj);
+
+        /* Get whole experiment */
+	$uexp = $airavataclient->getExperiment($expId);
+        echo "$user experiment $expId detail follows: \n";
+        var_dump($uexp);
+
+
+        /* Get additional information */
+        $version = $airavataclient->GetAPIVersion();
+        echo "$user Airavata Server Version is $version. \n"; 
+
+	$userProjects = $airavataclient->getAllUserProjects($user);
+        echo "$user total number of projects is " . sizeof($userProjects) . ". \n";
+
+	$userExperiments = $airavataclient->getAllUserExperiments($user);
+        echo "$user total number of experiments is " . sizeof($userExperiments) . ". \n";
+
+        $projectExperiments = $airavataclient->getAllExperimentsInProject($projId);
+        echo "$user number of experiments in $projId is " . sizeof($projectExperiments) . ". \n";	
     }
-
 
 }
 catch (InvalidRequestException $ire)
@@ -168,8 +205,10 @@ catch (AiravataSystemException $ase)
 {
     print 'Airavata System Exception: ' . $ase->getMessage()."\n";
 }
-
-
+catch (ExperimentNotFoundException $enf)
+{
+    print 'Experiment Not Found Exception: ' . $enf->getMessage()."\n";
+}
 
 
 

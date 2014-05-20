@@ -3,12 +3,14 @@ namespace Airavata\Client\Samples;
 
 $GLOBALS['THRIFT_ROOT'] = '../lib/Thrift/';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TTransport.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TBufferedTransport.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TSocket.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Protocol/TProtocol.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Protocol/TBinaryProtocol.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TException.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TApplicationException.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TProtocolException.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TTransportException.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Base/TBase.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Type/TType.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Type/TMessageType.php';
@@ -18,8 +20,10 @@ require_once $GLOBALS['THRIFT_ROOT'] . 'StringFunc/Core.php';
 
 $GLOBALS['AIRAVATA_ROOT'] = '../lib/Airavata/';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Airavata.php';
-require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Experiment/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Error/Types.php';
+
+require_once '../lib/AiravataClientFactory.php';
 
 use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
@@ -46,23 +50,39 @@ $airavataclient = $airavataClientFactory->getAiravataClient();
 
 /* this is the same as the factory */
 $transport = new TSocket('gw111.iu.xsede.org', 8930);
+$transport->setRecvTimeout(5000);
+
 $protocol = new TBinaryProtocol($transport);
 $transport->open();
 $airavataclient = new AiravataClient($protocol);
 
 
-try
+try 
 {
-    $version = $airavataclient->GetAPIVersion();
+		  if($argc != 3) 
+		  {
+					 echo 'php updateProject.php <project_id> <project_description>';
+		  }
+		  else
+		  {
+					 $project=$airavataclient->getProject($argv[1]);
+					 $project->description = $argv[2];
+					 $airavataclient->updateProject($project);
+		  }
 }
-catch (TException $texp)
+
+catch (InvalidRequestException $ire)
 {
-    print 'Exception: ' . $texp->getMessage()."\n";
+    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
 }
-
-
-echo 'Airavata server version is ' . $version;
-
+catch (AiravataClientException $ace)
+{
+    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
+}
+catch (AiravataSystemException $ase)
+{
+    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
+}
 
 $transport->close();
 

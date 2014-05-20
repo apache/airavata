@@ -75,9 +75,9 @@ else
 
     $clone = get_experiment($cloneId);
 
-    echo "Created clone named $clone->name:\n\n";
-
     var_dump($clone);
+
+    echo "Created clone with ID $clone->experimentID named $clone->name \n\n";
 }
 
 
@@ -151,11 +151,9 @@ function clone_experiment($expId)
 
     try
     {
-        //create new experiment to receive the clone
         $experiment = $airavataclient->getExperiment($expId);
-        $experiment->name .= time();
 
-        return $airavataclient->cloneExperiment($expId, $experiment);
+        return $airavataclient->cloneExperiment($expId, $experiment->name .= time());
     }
     catch (InvalidRequestException $ire)
     {

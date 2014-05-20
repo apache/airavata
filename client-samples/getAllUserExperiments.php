@@ -61,12 +61,19 @@ $airavataclient = new AiravataClient($protocol);
 
 try
 {
+    if ($argc != 2)
+    {
+        echo 'php getAllUserExperiments.php <username>';
+    }
+    else
+    {
+        $userExperiments = $airavataclient->getAllUserExperiments($argv[1]);
+        echo '# of user experiments = ' . sizeof($userExperiments) . '     ';
+        var_dump($userExperiments);
+    }
 
 
 
-    $userExperiments = $airavataclient->getAllUserExperiments("admin");
-    echo "# of user experiments = " . sizeof($userExperiments) . "<br><br>";
-    var_dump($userExperiments);
 
 
 
