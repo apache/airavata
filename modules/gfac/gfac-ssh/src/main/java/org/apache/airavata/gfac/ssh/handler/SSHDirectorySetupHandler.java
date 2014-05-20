@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.gfac.ssh.handler;
 
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
@@ -101,7 +101,7 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
         }
 	}
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
 
     }
 }

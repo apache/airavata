@@ -132,7 +132,7 @@ public class GSISSHInputHandler extends AbstractHandler {
         }
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
 
     }
 }

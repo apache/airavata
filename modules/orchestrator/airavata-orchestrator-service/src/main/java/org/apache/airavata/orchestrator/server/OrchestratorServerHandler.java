@@ -22,12 +22,11 @@
 package org.apache.airavata.orchestrator.server;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import org.apache.airavata.model.error.LaunchValidationException;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
@@ -95,7 +94,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
                         return false;
                     }
+
+                    //launching the experiment
                     orchestrator.launchExperiment(experiment, workflowNodeDetail, taskID);
+
+                    // after a successful launch update the experiment status to launched
+                    ExperimentStatus status = new ExperimentStatus();
+                    status.setExperimentState(ExperimentState.LAUNCHED);
+                    status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+                    experiment.setExperimentStatus(status);
+                    registry.update(RegistryModelType.EXPERIMENT, experiment, experimentId);
                 }
             }
 

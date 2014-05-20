@@ -36,7 +36,7 @@ import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.util.Properties;
 
 public class GSISSHDirectorySetupHandler extends AbstractHandler {
       private static final Logger log = LoggerFactory.getLogger(GSISSHDirectorySetupHandler.class);
@@ -97,7 +97,7 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler {
         }
 	}
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
 
     }
 }

@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.Properties;
 
 public class HDFSDataMovementHandler implements GFacHandler {
     private static final Logger logger = LoggerFactory.getLogger(HDFSDataMovementHandler.class);
@@ -97,7 +97,7 @@ public class HDFSDataMovementHandler implements GFacHandler {
 
     private void handleOutPath(JobExecutionContext jobExecutionContext){}
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
 
     }
 }

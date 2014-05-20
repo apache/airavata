@@ -22,11 +22,7 @@ package org.apache.airavata.gfac.ssh.handler;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.transport.TransportException;
@@ -52,7 +48,6 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -220,7 +215,7 @@ public class SSHOutputHandler extends AbstractHandler {
 
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
 
     }
 }
