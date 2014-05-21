@@ -189,12 +189,11 @@ public class GFacImpl implements GFac {
      * @return
      * @throws GFacException
      */
-    public JobExecutionContext submitJob(String experimentID,String taskID) throws GFacException {
+    public boolean submitJob(String experimentID,String taskID) throws GFacException {
         JobExecutionContext jobExecutionContext = null;
         try {
             jobExecutionContext = createJEC(experimentID, taskID);
-
-            return  submitJob(jobExecutionContext);
+            return submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
             throw new GFacException(e);
@@ -269,7 +268,7 @@ public class GFacImpl implements GFac {
         return jobExecutionContext;
     }
 
-    public JobExecutionContext submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
+    public boolean submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
         String workflowInstanceID = null;
@@ -281,7 +280,7 @@ public class GFacImpl implements GFac {
         // Register log event listener. This is required in all scenarios.
         jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
         schedule(jobExecutionContext);
-        return jobExecutionContext;
+        return true;
     }
 
     private void schedule(JobExecutionContext jobExecutionContext) throws GFacException {

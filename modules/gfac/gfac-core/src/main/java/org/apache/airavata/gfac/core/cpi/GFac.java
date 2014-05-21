@@ -34,9 +34,9 @@ public interface GFac {
      * And update the registry occordingly, so the users can query the database to retrieve status and output from Registry
      *
      * @param experimentID
-     * @return
+     * @return boolean Successful acceptence of the jobExecution returns a true value
      * @throws org.apache.airavata.gfac.GFacException
      */
-    public JobExecutionContext submitJob(String experimentID,String taskID) throws GFacException;
+    public boolean submitJob(String experimentID,String taskID) throws GFacException;
 
 }

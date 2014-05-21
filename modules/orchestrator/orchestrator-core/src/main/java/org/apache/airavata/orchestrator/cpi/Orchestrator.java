@@ -53,10 +53,10 @@ public interface Orchestrator {
      * We just have to give the experimentID
      *
      * @param experiment
-     * @return jobID
+     * @return launchExperiment status
      * @throws OrchestratorException
      */
-    String launchExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail,
+    boolean launchExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail,
                             TaskDetails taskID) throws OrchestratorException;
 
 

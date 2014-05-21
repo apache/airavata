@@ -55,16 +55,14 @@ public class EmbeddedGFACJobSubmitter implements JobSubmitter {
     }
 
 
-    public JobExecutionContext submit(String experimentID, String taskID) throws OrchestratorException {
-        JobExecutionContext jobExecutionContext;
+    public boolean submit(String experimentID, String taskID) throws OrchestratorException {
         try {
-             jobExecutionContext = gfac.submitJob(experimentID, taskID);
+             return gfac.submitJob(experimentID, taskID);
         } catch (Exception e) {
             String error = "Error launching the job : " + experimentID;
             logger.error(error);
             throw new OrchestratorException(error);
         }
-        return jobExecutionContext;
     }
 
     public GFac getGfac() {
