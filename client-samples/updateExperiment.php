@@ -1,6 +1,8 @@
 <?php
 namespace Airavata\Client\Samples;
 
+require_once 'samples_config.php';
+
 $GLOBALS['THRIFT_ROOT'] = '../lib/Thrift/';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TTransport.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TBufferedTransport.php';
@@ -37,23 +39,9 @@ use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
-/* buffered transport
-$socket = new TSocket('gw111.iu.xsede.org', 8930);
-$transport = new TBufferedTransport($socket, 1024, 1024);
-$protocol = new TBinaryProtocol($transport);
-$airavataclient = new AiravataClient($protocol);
-
-$transport->open();
-*/
-
-/* client factory
-$airavataClientFactory = new AiravataClientFactory(array('airavataServerHost' => "gw111.iu.xsede.org", 'airavataServerPort' => "8930"));
-$airavataclient = $airavataClientFactory->getAiravataClient();
-*/
-
 /* this is the same as the factory */
-$transport = new TSocket('gw111.iu.xsede.org', 8930);
-$transport->setRecvTimeout(5000);
+$transport = new TSocket(AIRAVATA_SERVER, AIRAVATA_PORT);
+$transport->setRecvTimeout(AIRAVATA_TIMEOUT);
 
 $protocol = new TBinaryProtocol($transport);
 $transport->open();

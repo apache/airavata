@@ -14,4 +14,4 @@ $airavataClientFactory = new AiravataClientFactory(array('airavataServerHost' =>
 
 $airavata = $airavataClientFactory->getAiravataClient();
 
-echo "Airavata Server Version is: " . $airavata->GetAPIVersion();
+echo "Airavata Server Version is: " . $airavata->GetAPIVersion()."\n";
