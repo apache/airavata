@@ -39,6 +39,7 @@ import org.apache.airavata.model.appcatalog.ApplicationInterface;
 import org.apache.airavata.model.appcatalog.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.GSISSHJobSubmission;
 import org.apache.airavata.model.appcatalog.GlobusJobSubmission;
+import org.apache.airavata.model.appcatalog.GridFTPDataMovement;
 import org.apache.airavata.model.appcatalog.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.SCPDataMovement;
 import org.apache.airavata.model.appcatalog.SSHJobSubmission;
@@ -228,7 +229,7 @@ public class ApplicationCatalogHandler implements Iface {
 		try {
 			HostDescription hostDescriptor = getRegistry().getHostDescriptor(scpDataMovementResourceId);
 			SCPDataMovement d = new SCPDataMovement();
-			d.setDataSubmissionDataID(scpDataMovementResourceId);
+			d.setDataMovementDataID(scpDataMovementResourceId);
 			if (hostDescriptor.getType() instanceof GlobusHostType){
 				GlobusHostType globusHostType = (GlobusHostType)hostDescriptor.getType();
 				d.setSshPort(22);
@@ -447,13 +448,30 @@ public class ApplicationCatalogHandler implements Iface {
 			HostDescription hostDescriptor = getRegistry().getHostDescriptor(computeResourceId);
 			hostDescriptor.getType().changeType(GlobusHostType.type);
 			GlobusHostType s = (GlobusHostType)hostDescriptor.getType();
-			s.setGlobusGateKeeperEndPointArray(jobSubmission.getGlobusGateKeeperEndPoint().toArray(new String[]{}));
+//			s.setGlobusGateKeeperEndPointArray(dataMovement.getGlobusGateKeeperEndPoint().toArray(new String[]{}));
 			getRegistry().updateHostDescriptor(hostDescriptor);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AiravataSystemException();
 		}
 		
+	}
+
+	@Override
+	public void addGridFTPDataMovementProtocol(String computeResourceId,
+			GridFTPDataMovement dataMovement) throws InvalidRequestException,
+			AiravataClientException, AiravataSystemException, TException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public GridFTPDataMovement getGridFTPDataMovementProtocol(
+			String gridFTPDataMovementResourceId)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	
