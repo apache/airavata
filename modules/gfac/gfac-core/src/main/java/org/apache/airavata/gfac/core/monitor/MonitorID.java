@@ -212,12 +212,4 @@ public class MonitorID {
     public void setJobExecutionContext(JobExecutionContext jobExecutionContext) {
         this.jobExecutionContext = jobExecutionContext;
     }
-
-    //	public String getWorkflowNodeID() {
-//		return workflowNodeID;
-//	}
-//
-//	public void setWorkflowNodeID(String workflowNodeID) {
-//		this.workflowNodeID = workflowNodeID;
-//	}
 }
