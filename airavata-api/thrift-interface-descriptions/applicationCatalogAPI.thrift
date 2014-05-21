@@ -87,6 +87,11 @@ service ApplicationCatalogAPI {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase) 
             
+  void addGridFTPDataMovementProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.GridFTPDataMovement dataMovement)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)             
+            
   list<string> listComputeResourceDescriptions()
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
@@ -113,6 +118,11 @@ service ApplicationCatalogAPI {
             3: airavataErrors.AiravataSystemException ase)     
             
   applicationCatalogDataModel.SCPDataMovement getSCPDataMovementProtocol(1: required string scpDataMovementResourceId)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase) 
+              
+  applicationCatalogDataModel.GridFTPDataMovement getGridFTPDataMovementProtocol(1: required string gridFTPDataMovementResourceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase) 
