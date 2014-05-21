@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.gram.handler;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
+import java.util.Properties;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
@@ -133,7 +133,7 @@ public class  GramDirectorySetupHandler extends AbstractHandler {
         }
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
 
     }
 }

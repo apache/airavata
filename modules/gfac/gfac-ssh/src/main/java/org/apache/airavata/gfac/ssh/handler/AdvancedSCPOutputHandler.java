@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * This handler will copy outputs from airavata installed local directory
@@ -73,14 +73,14 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
 
     private String outputPath;
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
-        password = properties.get("password");
-        passPhrase = properties.get("passPhrase");
-        privateKeyPath = properties.get("privateKeyPath");
-        publicKeyPath = properties.get("publicKeyPath");
-        userName = properties.get("userName");
-        hostName = properties.get("hostName");
-        outputPath = properties.get("outputPath");
+    public void initProperties(Properties properties) throws GFacHandlerException {
+        password = (String)properties.get("password");
+        passPhrase = (String)properties.get("passPhrase");
+        privateKeyPath = (String)properties.get("privateKeyPath");
+        publicKeyPath = (String)properties.get("publicKeyPath");
+        userName = (String)properties.get("userName");
+        hostName = (String)properties.get("hostName");
+        outputPath = (String)properties.get("outputPath");
     }
 
     @Override

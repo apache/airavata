@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Date;
-import java.util.Map;
+import java.util.Properties;
 import java.util.UUID;
 
 public class AppDescriptorCheckHandler implements GFacHandler {
@@ -81,7 +81,7 @@ public class AppDescriptorCheckHandler implements GFacHandler {
         jobExecutionContext.getApplicationContext().setApplicationDeploymentDescription(app);
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
 
     }
 }

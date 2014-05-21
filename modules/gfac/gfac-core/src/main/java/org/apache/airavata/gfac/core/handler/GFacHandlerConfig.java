@@ -21,19 +21,20 @@
 package org.apache.airavata.gfac.core.handler;
 
 import java.util.Map;
+import java.util.Properties;
 
 public class GFacHandlerConfig {
 
-    public GFacHandlerConfig(Map<String, String> properties, String className) {
+    public GFacHandlerConfig(Properties properties, String className) {
         this.properties = properties;
         this.className = className;
     }
 
-    private Map<String,String> properties;
+    private Properties properties;
 
     private String className;
 
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(Properties properties) {
         this.properties = properties;
     }
 
@@ -41,7 +42,7 @@ public class GFacHandlerConfig {
         this.className = className;
     }
 
-    public Map<String, String> getProperties() {
+    public Properties getProperties() {
         return properties;
     }
 

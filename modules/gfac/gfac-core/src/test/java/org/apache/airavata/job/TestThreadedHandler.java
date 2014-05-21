@@ -24,12 +24,12 @@ import junit.framework.Assert;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 
-import java.util.Map;
+import java.util.Properties;
 
 public class TestThreadedHandler extends ThreadedHandler {
 
 
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
     }
 
     public void run() {
