@@ -48,22 +48,22 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class SCPDataMovement implements org.apache.thrift.TBase<SCPDataMovement, SCPDataMovement._Fields>, java.io.Serializable, Cloneable, Comparable<SCPDataMovement> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("SCPDataMovement");
+@SuppressWarnings("all") public class GridFTPDataMovement implements org.apache.thrift.TBase<GridFTPDataMovement, GridFTPDataMovement._Fields>, java.io.Serializable, Cloneable, Comparable<GridFTPDataMovement> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GridFTPDataMovement");
 
   private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_DATA_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementDataID", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField SECURITY_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("securityProtocol", org.apache.thrift.protocol.TType.I32, (short)2);
-  private static final org.apache.thrift.protocol.TField SSH_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("sshPort", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField GRID_FTPEND_POINT_FIELD_DESC = new org.apache.thrift.protocol.TField("gridFTPEndPoint", org.apache.thrift.protocol.TType.LIST, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new SCPDataMovementStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new SCPDataMovementTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new GridFTPDataMovementStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new GridFTPDataMovementTupleSchemeFactory());
   }
 
   private String dataMovementDataID; // required
   private SecurityProtocol securityProtocol; // required
-  private int sshPort; // optional
+  private List<String> gridFTPEndPoint; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -73,7 +73,7 @@ import org.slf4j.LoggerFactory;
      * @see SecurityProtocol
      */
     SECURITY_PROTOCOL((short)2, "securityProtocol"),
-    SSH_PORT((short)3, "sshPort");
+    GRID_FTPEND_POINT((short)3, "gridFTPEndPoint");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -92,8 +92,8 @@ import org.slf4j.LoggerFactory;
           return DATA_MOVEMENT_DATA_ID;
         case 2: // SECURITY_PROTOCOL
           return SECURITY_PROTOCOL;
-        case 3: // SSH_PORT
-          return SSH_PORT;
+        case 3: // GRID_FTPEND_POINT
+          return GRID_FTPEND_POINT;
         default:
           return null;
       }
@@ -134,9 +134,6 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private static final int __SSHPORT_ISSET_ID = 0;
-  private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.SSH_PORT};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -144,44 +141,47 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SECURITY_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("securityProtocol", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, SecurityProtocol.class)));
-    tmpMap.put(_Fields.SSH_PORT, new org.apache.thrift.meta_data.FieldMetaData("sshPort", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.GRID_FTPEND_POINT, new org.apache.thrift.meta_data.FieldMetaData("gridFTPEndPoint", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SCPDataMovement.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GridFTPDataMovement.class, metaDataMap);
   }
 
-  public SCPDataMovement() {
+  public GridFTPDataMovement() {
     this.dataMovementDataID = "DO_NOT_SET_AT_CLIENTS";
 
-    this.sshPort = 22;
-
   }
 
-  public SCPDataMovement(
+  public GridFTPDataMovement(
     String dataMovementDataID,
-    SecurityProtocol securityProtocol)
+    SecurityProtocol securityProtocol,
+    List<String> gridFTPEndPoint)
   {
     this();
     this.dataMovementDataID = dataMovementDataID;
     this.securityProtocol = securityProtocol;
+    this.gridFTPEndPoint = gridFTPEndPoint;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public SCPDataMovement(SCPDataMovement other) {
-    __isset_bitfield = other.__isset_bitfield;
+  public GridFTPDataMovement(GridFTPDataMovement other) {
     if (other.isSetDataMovementDataID()) {
       this.dataMovementDataID = other.dataMovementDataID;
     }
     if (other.isSetSecurityProtocol()) {
       this.securityProtocol = other.securityProtocol;
     }
-    this.sshPort = other.sshPort;
+    if (other.isSetGridFTPEndPoint()) {
+      List<String> __this__gridFTPEndPoint = new ArrayList<String>(other.gridFTPEndPoint);
+      this.gridFTPEndPoint = __this__gridFTPEndPoint;
+    }
   }
 
-  public SCPDataMovement deepCopy() {
-    return new SCPDataMovement(this);
+  public GridFTPDataMovement deepCopy() {
+    return new GridFTPDataMovement(this);
   }
 
   @Override
@@ -189,8 +189,7 @@ import org.slf4j.LoggerFactory;
     this.dataMovementDataID = "DO_NOT_SET_AT_CLIENTS";
 
     this.securityProtocol = null;
-    this.sshPort = 22;
-
+    this.gridFTPEndPoint = null;
   }
 
   public String getDataMovementDataID() {
@@ -247,26 +246,42 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public int getSshPort() {
-    return this.sshPort;
+  public int getGridFTPEndPointSize() {
+    return (this.gridFTPEndPoint == null) ? 0 : this.gridFTPEndPoint.size();
   }
 
-  public void setSshPort(int sshPort) {
-    this.sshPort = sshPort;
-    setSshPortIsSet(true);
+  public java.util.Iterator<String> getGridFTPEndPointIterator() {
+    return (this.gridFTPEndPoint == null) ? null : this.gridFTPEndPoint.iterator();
   }
 
-  public void unsetSshPort() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SSHPORT_ISSET_ID);
+  public void addToGridFTPEndPoint(String elem) {
+    if (this.gridFTPEndPoint == null) {
+      this.gridFTPEndPoint = new ArrayList<String>();
+    }
+    this.gridFTPEndPoint.add(elem);
   }
 
-  /** Returns true if field sshPort is set (has been assigned a value) and false otherwise */
-  public boolean isSetSshPort() {
-    return EncodingUtils.testBit(__isset_bitfield, __SSHPORT_ISSET_ID);
+  public List<String> getGridFTPEndPoint() {
+    return this.gridFTPEndPoint;
   }
 
-  public void setSshPortIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SSHPORT_ISSET_ID, value);
+  public void setGridFTPEndPoint(List<String> gridFTPEndPoint) {
+    this.gridFTPEndPoint = gridFTPEndPoint;
+  }
+
+  public void unsetGridFTPEndPoint() {
+    this.gridFTPEndPoint = null;
+  }
+
+  /** Returns true if field gridFTPEndPoint is set (has been assigned a value) and false otherwise */
+  public boolean isSetGridFTPEndPoint() {
+    return this.gridFTPEndPoint != null;
+  }
+
+  public void setGridFTPEndPointIsSet(boolean value) {
+    if (!value) {
+      this.gridFTPEndPoint = null;
+    }
   }
 
   public void setFieldValue(_Fields field, Object value) {
@@ -287,11 +302,11 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case SSH_PORT:
+    case GRID_FTPEND_POINT:
       if (value == null) {
-        unsetSshPort();
+        unsetGridFTPEndPoint();
       } else {
-        setSshPort((Integer)value);
+        setGridFTPEndPoint((List<String>)value);
       }
       break;
 
@@ -306,8 +321,8 @@ import org.slf4j.LoggerFactory;
     case SECURITY_PROTOCOL:
       return getSecurityProtocol();
 
-    case SSH_PORT:
-      return Integer.valueOf(getSshPort());
+    case GRID_FTPEND_POINT:
+      return getGridFTPEndPoint();
 
     }
     throw new IllegalStateException();
@@ -324,8 +339,8 @@ import org.slf4j.LoggerFactory;
       return isSetDataMovementDataID();
     case SECURITY_PROTOCOL:
       return isSetSecurityProtocol();
-    case SSH_PORT:
-      return isSetSshPort();
+    case GRID_FTPEND_POINT:
+      return isSetGridFTPEndPoint();
     }
     throw new IllegalStateException();
   }
@@ -334,12 +349,12 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof SCPDataMovement)
-      return this.equals((SCPDataMovement)that);
+    if (that instanceof GridFTPDataMovement)
+      return this.equals((GridFTPDataMovement)that);
     return false;
   }
 
-  public boolean equals(SCPDataMovement that) {
+  public boolean equals(GridFTPDataMovement that) {
     if (that == null)
       return false;
 
@@ -361,12 +376,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_sshPort = true && this.isSetSshPort();
-    boolean that_present_sshPort = true && that.isSetSshPort();
-    if (this_present_sshPort || that_present_sshPort) {
-      if (!(this_present_sshPort && that_present_sshPort))
+    boolean this_present_gridFTPEndPoint = true && this.isSetGridFTPEndPoint();
+    boolean that_present_gridFTPEndPoint = true && that.isSetGridFTPEndPoint();
+    if (this_present_gridFTPEndPoint || that_present_gridFTPEndPoint) {
+      if (!(this_present_gridFTPEndPoint && that_present_gridFTPEndPoint))
         return false;
-      if (this.sshPort != that.sshPort)
+      if (!this.gridFTPEndPoint.equals(that.gridFTPEndPoint))
         return false;
     }
 
@@ -379,7 +394,7 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(SCPDataMovement other) {
+  public int compareTo(GridFTPDataMovement other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -406,12 +421,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetSshPort()).compareTo(other.isSetSshPort());
+    lastComparison = Boolean.valueOf(isSetGridFTPEndPoint()).compareTo(other.isSetGridFTPEndPoint());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetSshPort()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.sshPort, other.sshPort);
+    if (isSetGridFTPEndPoint()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gridFTPEndPoint, other.gridFTPEndPoint);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -433,7 +448,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("SCPDataMovement(");
+    StringBuilder sb = new StringBuilder("GridFTPDataMovement(");
     boolean first = true;
 
     sb.append("dataMovementDataID:");
@@ -451,12 +466,14 @@ import org.slf4j.LoggerFactory;
       sb.append(this.securityProtocol);
     }
     first = false;
-    if (isSetSshPort()) {
-      if (!first) sb.append(", ");
-      sb.append("sshPort:");
-      sb.append(this.sshPort);
-      first = false;
+    if (!first) sb.append(", ");
+    sb.append("gridFTPEndPoint:");
+    if (this.gridFTPEndPoint == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.gridFTPEndPoint);
     }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -469,6 +486,10 @@ import org.slf4j.LoggerFactory;
 
     if (!isSetSecurityProtocol()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'securityProtocol' is unset! Struct:" + toString());
+    }
+
+    if (!isSetGridFTPEndPoint()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gridFTPEndPoint' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -484,23 +505,21 @@ import org.slf4j.LoggerFactory;
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
     }
   }
 
-  private static class SCPDataMovementStandardSchemeFactory implements SchemeFactory {
-    public SCPDataMovementStandardScheme getScheme() {
-      return new SCPDataMovementStandardScheme();
+  private static class GridFTPDataMovementStandardSchemeFactory implements SchemeFactory {
+    public GridFTPDataMovementStandardScheme getScheme() {
+      return new GridFTPDataMovementStandardScheme();
     }
   }
 
-  private static class SCPDataMovementStandardScheme extends StandardScheme<SCPDataMovement> {
+  private static class GridFTPDataMovementStandardScheme extends StandardScheme<GridFTPDataMovement> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, SCPDataMovement struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, GridFTPDataMovement struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -526,10 +545,20 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // SSH_PORT
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.sshPort = iprot.readI32();
-              struct.setSshPortIsSet(true);
+          case 3: // GRID_FTPEND_POINT
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.gridFTPEndPoint = new ArrayList<String>(_list0.size);
+                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                {
+                  String _elem2;
+                  _elem2 = iprot.readString();
+                  struct.gridFTPEndPoint.add(_elem2);
+                }
+                iprot.readListEnd();
+              }
+              struct.setGridFTPEndPointIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -543,7 +572,7 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, SCPDataMovement struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, GridFTPDataMovement struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -557,9 +586,16 @@ import org.slf4j.LoggerFactory;
         oprot.writeI32(struct.securityProtocol.getValue());
         oprot.writeFieldEnd();
       }
-      if (struct.isSetSshPort()) {
-        oprot.writeFieldBegin(SSH_PORT_FIELD_DESC);
-        oprot.writeI32(struct.sshPort);
+      if (struct.gridFTPEndPoint != null) {
+        oprot.writeFieldBegin(GRID_FTPEND_POINT_FIELD_DESC);
+        {
+          oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.gridFTPEndPoint.size()));
+          for (String _iter3 : struct.gridFTPEndPoint)
+          {
+            oprot.writeString(_iter3);
+          }
+          oprot.writeListEnd();
+        }
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -568,41 +604,46 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class SCPDataMovementTupleSchemeFactory implements SchemeFactory {
-    public SCPDataMovementTupleScheme getScheme() {
-      return new SCPDataMovementTupleScheme();
+  private static class GridFTPDataMovementTupleSchemeFactory implements SchemeFactory {
+    public GridFTPDataMovementTupleScheme getScheme() {
+      return new GridFTPDataMovementTupleScheme();
     }
   }
 
-  private static class SCPDataMovementTupleScheme extends TupleScheme<SCPDataMovement> {
+  private static class GridFTPDataMovementTupleScheme extends TupleScheme<GridFTPDataMovement> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, SCPDataMovement struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, GridFTPDataMovement struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.dataMovementDataID);
       oprot.writeI32(struct.securityProtocol.getValue());
-      BitSet optionals = new BitSet();
-      if (struct.isSetSshPort()) {
-        optionals.set(0);
-      }
-      oprot.writeBitSet(optionals, 1);
-      if (struct.isSetSshPort()) {
-        oprot.writeI32(struct.sshPort);
+      {
+        oprot.writeI32(struct.gridFTPEndPoint.size());
+        for (String _iter4 : struct.gridFTPEndPoint)
+        {
+          oprot.writeString(_iter4);
+        }
       }
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, SCPDataMovement struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, GridFTPDataMovement struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.dataMovementDataID = iprot.readString();
       struct.setDataMovementDataIDIsSet(true);
       struct.securityProtocol = SecurityProtocol.findByValue(iprot.readI32());
       struct.setSecurityProtocolIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
-      if (incoming.get(0)) {
-        struct.sshPort = iprot.readI32();
-        struct.setSshPortIsSet(true);
+      {
+        org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+        struct.gridFTPEndPoint = new ArrayList<String>(_list5.size);
+        for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+        {
+          String _elem7;
+          _elem7 = iprot.readString();
+          struct.gridFTPEndPoint.add(_elem7);
+        }
       }
+      struct.setGridFTPEndPointIsSet(true);
     }
   }
 

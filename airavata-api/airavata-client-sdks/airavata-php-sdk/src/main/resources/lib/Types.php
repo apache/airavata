@@ -74,7 +74,7 @@ final class SecurityProtocol {
 class SCPDataMovement {
   static $_TSPEC;
 
-  public $dataSubmissionDataID = "DO_NOT_SET_AT_CLIENTS";
+  public $dataMovementDataID = "DO_NOT_SET_AT_CLIENTS";
   public $securityProtocol = null;
   public $sshPort = 22;
 
@@ -82,7 +82,7 @@ class SCPDataMovement {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'dataSubmissionDataID',
+          'var' => 'dataMovementDataID',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -96,8 +96,8 @@ class SCPDataMovement {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['dataSubmissionDataID'])) {
-        $this->dataSubmissionDataID = $vals['dataSubmissionDataID'];
+      if (isset($vals['dataMovementDataID'])) {
+        $this->dataMovementDataID = $vals['dataMovementDataID'];
       }
       if (isset($vals['securityProtocol'])) {
         $this->securityProtocol = $vals['securityProtocol'];
@@ -129,7 +129,7 @@ class SCPDataMovement {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->dataSubmissionDataID);
+            $xfer += $input->readString($this->dataMovementDataID);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -161,9 +161,9 @@ class SCPDataMovement {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('SCPDataMovement');
-    if ($this->dataSubmissionDataID !== null) {
-      $xfer += $output->writeFieldBegin('dataSubmissionDataID', TType::STRING, 1);
-      $xfer += $output->writeString($this->dataSubmissionDataID);
+    if ($this->dataMovementDataID !== null) {
+      $xfer += $output->writeFieldBegin('dataMovementDataID', TType::STRING, 1);
+      $xfer += $output->writeString($this->dataMovementDataID);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->securityProtocol !== null) {
@@ -174,6 +174,144 @@ class SCPDataMovement {
     if ($this->sshPort !== null) {
       $xfer += $output->writeFieldBegin('sshPort', TType::I32, 3);
       $xfer += $output->writeI32($this->sshPort);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class GridFTPDataMovement {
+  static $_TSPEC;
+
+  public $dataMovementDataID = "DO_NOT_SET_AT_CLIENTS";
+  public $securityProtocol = null;
+  public $gridFTPEndPoint = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'dataMovementDataID',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'securityProtocol',
+          'type' => TType::I32,
+          ),
+        3 => array(
+          'var' => 'gridFTPEndPoint',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['dataMovementDataID'])) {
+        $this->dataMovementDataID = $vals['dataMovementDataID'];
+      }
+      if (isset($vals['securityProtocol'])) {
+        $this->securityProtocol = $vals['securityProtocol'];
+      }
+      if (isset($vals['gridFTPEndPoint'])) {
+        $this->gridFTPEndPoint = $vals['gridFTPEndPoint'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'GridFTPDataMovement';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->dataMovementDataID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->securityProtocol);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::LST) {
+            $this->gridFTPEndPoint = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $xfer += $input->readString($elem5);
+              $this->gridFTPEndPoint []= $elem5;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('GridFTPDataMovement');
+    if ($this->dataMovementDataID !== null) {
+      $xfer += $output->writeFieldBegin('dataMovementDataID', TType::STRING, 1);
+      $xfer += $output->writeString($this->dataMovementDataID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->securityProtocol !== null) {
+      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
+      $xfer += $output->writeI32($this->securityProtocol);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gridFTPEndPoint !== null) {
+      if (!is_array($this->gridFTPEndPoint)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('gridFTPEndPoint', TType::LST, 3);
+      {
+        $output->writeListBegin(TType::STRING, count($this->gridFTPEndPoint));
+        {
+          foreach ($this->gridFTPEndPoint as $iter6)
+          {
+            $xfer += $output->writeString($iter6);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -387,14 +525,14 @@ class GlobusJobSubmission {
         case 4:
           if ($ftype == TType::LST) {
             $this->globusGateKeeperEndPoint = array();
-            $_size0 = 0;
-            $_etype3 = 0;
-            $xfer += $input->readListBegin($_etype3, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            $_size7 = 0;
+            $_etype10 = 0;
+            $xfer += $input->readListBegin($_etype10, $_size7);
+            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
             {
-              $elem5 = null;
-              $xfer += $input->readString($elem5);
-              $this->globusGateKeeperEndPoint []= $elem5;
+              $elem12 = null;
+              $xfer += $input->readString($elem12);
+              $this->globusGateKeeperEndPoint []= $elem12;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -437,9 +575,9 @@ class GlobusJobSubmission {
       {
         $output->writeListBegin(TType::STRING, count($this->globusGateKeeperEndPoint));
         {
-          foreach ($this->globusGateKeeperEndPoint as $iter6)
+          foreach ($this->globusGateKeeperEndPoint as $iter13)
           {
-            $xfer += $output->writeString($iter6);
+            $xfer += $output->writeString($iter13);
           }
         }
         $output->writeListEnd();
@@ -585,17 +723,17 @@ class GSISSHJobSubmission {
         case 4:
           if ($ftype == TType::SET) {
             $this->exports = array();
-            $_size7 = 0;
-            $_etype10 = 0;
-            $xfer += $input->readSetBegin($_etype10, $_size7);
-            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
+            $_size14 = 0;
+            $_etype17 = 0;
+            $xfer += $input->readSetBegin($_etype17, $_size14);
+            for ($_i18 = 0; $_i18 < $_size14; ++$_i18)
             {
-              $elem12 = null;
-              $xfer += $input->readString($elem12);
-              if (is_scalar($elem12)) {
-                $this->exports[$elem12] = true;
+              $elem19 = null;
+              $xfer += $input->readString($elem19);
+              if (is_scalar($elem19)) {
+                $this->exports[$elem19] = true;
               } else {
-                $this->exports []= $elem12;
+                $this->exports []= $elem19;
               }
             }
             $xfer += $input->readSetEnd();
@@ -606,14 +744,14 @@ class GSISSHJobSubmission {
         case 5:
           if ($ftype == TType::LST) {
             $this->preJobCommands = array();
-            $_size13 = 0;
-            $_etype16 = 0;
-            $xfer += $input->readListBegin($_etype16, $_size13);
-            for ($_i17 = 0; $_i17 < $_size13; ++$_i17)
+            $_size20 = 0;
+            $_etype23 = 0;
+            $xfer += $input->readListBegin($_etype23, $_size20);
+            for ($_i24 = 0; $_i24 < $_size20; ++$_i24)
             {
-              $elem18 = null;
-              $xfer += $input->readString($elem18);
-              $this->preJobCommands []= $elem18;
+              $elem25 = null;
+              $xfer += $input->readString($elem25);
+              $this->preJobCommands []= $elem25;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -623,14 +761,14 @@ class GSISSHJobSubmission {
         case 6:
           if ($ftype == TType::LST) {
             $this->postJobCommands = array();
-            $_size19 = 0;
-            $_etype22 = 0;
-            $xfer += $input->readListBegin($_etype22, $_size19);
-            for ($_i23 = 0; $_i23 < $_size19; ++$_i23)
+            $_size26 = 0;
+            $_etype29 = 0;
+            $xfer += $input->readListBegin($_etype29, $_size26);
+            for ($_i30 = 0; $_i30 < $_size26; ++$_i30)
             {
-              $elem24 = null;
-              $xfer += $input->readString($elem24);
-              $this->postJobCommands []= $elem24;
+              $elem31 = null;
+              $xfer += $input->readString($elem31);
+              $this->postJobCommands []= $elem31;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -687,12 +825,12 @@ class GSISSHJobSubmission {
       {
         $output->writeSetBegin(TType::STRING, count($this->exports));
         {
-          foreach ($this->exports as $iter25 => $iter26)
+          foreach ($this->exports as $iter32 => $iter33)
           {
-            if (is_scalar($iter26)) {
-            $xfer += $output->writeString($iter25);
+            if (is_scalar($iter33)) {
+            $xfer += $output->writeString($iter32);
             } else {
-            $xfer += $output->writeString($iter26);
+            $xfer += $output->writeString($iter33);
             }
           }
         }
@@ -708,9 +846,9 @@ class GSISSHJobSubmission {
       {
         $output->writeListBegin(TType::STRING, count($this->preJobCommands));
         {
-          foreach ($this->preJobCommands as $iter27)
+          foreach ($this->preJobCommands as $iter34)
           {
-            $xfer += $output->writeString($iter27);
+            $xfer += $output->writeString($iter34);
           }
         }
         $output->writeListEnd();
@@ -725,9 +863,9 @@ class GSISSHJobSubmission {
       {
         $output->writeListBegin(TType::STRING, count($this->postJobCommands));
         {
-          foreach ($this->postJobCommands as $iter28)
+          foreach ($this->postJobCommands as $iter35)
           {
-            $xfer += $output->writeString($iter28);
+            $xfer += $output->writeString($iter35);
           }
         }
         $output->writeListEnd();
@@ -911,17 +1049,17 @@ class ComputeResourceDescription {
         case 4:
           if ($ftype == TType::SET) {
             $this->hostAliases = array();
-            $_size29 = 0;
-            $_etype32 = 0;
-            $xfer += $input->readSetBegin($_etype32, $_size29);
-            for ($_i33 = 0; $_i33 < $_size29; ++$_i33)
+            $_size36 = 0;
+            $_etype39 = 0;
+            $xfer += $input->readSetBegin($_etype39, $_size36);
+            for ($_i40 = 0; $_i40 < $_size36; ++$_i40)
             {
-              $elem34 = null;
-              $xfer += $input->readString($elem34);
-              if (is_scalar($elem34)) {
-                $this->hostAliases[$elem34] = true;
+              $elem41 = null;
+              $xfer += $input->readString($elem41);
+              if (is_scalar($elem41)) {
+                $this->hostAliases[$elem41] = true;
               } else {
-                $this->hostAliases []= $elem34;
+                $this->hostAliases []= $elem41;
               }
             }
             $xfer += $input->readSetEnd();
@@ -932,17 +1070,17 @@ class ComputeResourceDescription {
         case 5:
           if ($ftype == TType::SET) {
             $this->ipAddresses = array();
-            $_size35 = 0;
-            $_etype38 = 0;
-            $xfer += $input->readSetBegin($_etype38, $_size35);
-            for ($_i39 = 0; $_i39 < $_size35; ++$_i39)
+            $_size42 = 0;
+            $_etype45 = 0;
+            $xfer += $input->readSetBegin($_etype45, $_size42);
+            for ($_i46 = 0; $_i46 < $_size42; ++$_i46)
             {
-              $elem40 = null;
-              $xfer += $input->readString($elem40);
-              if (is_scalar($elem40)) {
-                $this->ipAddresses[$elem40] = true;
+              $elem47 = null;
+              $xfer += $input->readString($elem47);
+              if (is_scalar($elem47)) {
+                $this->ipAddresses[$elem47] = true;
               } else {
-                $this->ipAddresses []= $elem40;
+                $this->ipAddresses []= $elem47;
               }
             }
             $xfer += $input->readSetEnd();
@@ -974,26 +1112,6 @@ class ComputeResourceDescription {
         case 9:
           if ($ftype == TType::MAP) {
             $this->jobSubmissionProtocols = array();
-            $_size41 = 0;
-            $_ktype42 = 0;
-            $_vtype43 = 0;
-            $xfer += $input->readMapBegin($_ktype42, $_vtype43, $_size41);
-            for ($_i45 = 0; $_i45 < $_size41; ++$_i45)
-            {
-              $key46 = '';
-              $val47 = 0;
-              $xfer += $input->readString($key46);
-              $xfer += $input->readI32($val47);
-              $this->jobSubmissionProtocols[$key46] = $val47;
-            }
-            $xfer += $input->readMapEnd();
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 10:
-          if ($ftype == TType::MAP) {
-            $this->dataMovementProtocols = array();
             $_size48 = 0;
             $_ktype49 = 0;
             $_vtype50 = 0;
@@ -1004,7 +1122,27 @@ class ComputeResourceDescription {
               $val54 = 0;
               $xfer += $input->readString($key53);
               $xfer += $input->readI32($val54);
-              $this->dataMovementProtocols[$key53] = $val54;
+              $this->jobSubmissionProtocols[$key53] = $val54;
+            }
+            $xfer += $input->readMapEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 10:
+          if ($ftype == TType::MAP) {
+            $this->dataMovementProtocols = array();
+            $_size55 = 0;
+            $_ktype56 = 0;
+            $_vtype57 = 0;
+            $xfer += $input->readMapBegin($_ktype56, $_vtype57, $_size55);
+            for ($_i59 = 0; $_i59 < $_size55; ++$_i59)
+            {
+              $key60 = '';
+              $val61 = 0;
+              $xfer += $input->readString($key60);
+              $xfer += $input->readI32($val61);
+              $this->dataMovementProtocols[$key60] = $val61;
             }
             $xfer += $input->readMapEnd();
           } else {
@@ -1047,12 +1185,12 @@ class ComputeResourceDescription {
       {
         $output->writeSetBegin(TType::STRING, count($this->hostAliases));
         {
-          foreach ($this->hostAliases as $iter55 => $iter56)
+          foreach ($this->hostAliases as $iter62 => $iter63)
           {
-            if (is_scalar($iter56)) {
-            $xfer += $output->writeString($iter55);
+            if (is_scalar($iter63)) {
+            $xfer += $output->writeString($iter62);
             } else {
-            $xfer += $output->writeString($iter56);
+            $xfer += $output->writeString($iter63);
             }
           }
         }
@@ -1068,12 +1206,12 @@ class ComputeResourceDescription {
       {
         $output->writeSetBegin(TType::STRING, count($this->ipAddresses));
         {
-          foreach ($this->ipAddresses as $iter57 => $iter58)
+          foreach ($this->ipAddresses as $iter64 => $iter65)
           {
-            if (is_scalar($iter58)) {
-            $xfer += $output->writeString($iter57);
+            if (is_scalar($iter65)) {
+            $xfer += $output->writeString($iter64);
             } else {
-            $xfer += $output->writeString($iter58);
+            $xfer += $output->writeString($iter65);
             }
           }
         }
@@ -1104,10 +1242,10 @@ class ComputeResourceDescription {
       {
         $output->writeMapBegin(TType::STRING, TType::I32, count($this->jobSubmissionProtocols));
         {
-          foreach ($this->jobSubmissionProtocols as $kiter59 => $viter60)
+          foreach ($this->jobSubmissionProtocols as $kiter66 => $viter67)
           {
-            $xfer += $output->writeString($kiter59);
-            $xfer += $output->writeI32($viter60);
+            $xfer += $output->writeString($kiter66);
+            $xfer += $output->writeI32($viter67);
           }
         }
         $output->writeMapEnd();
@@ -1122,10 +1260,10 @@ class ComputeResourceDescription {
       {
         $output->writeMapBegin(TType::STRING, TType::I32, count($this->dataMovementProtocols));
         {
-          foreach ($this->dataMovementProtocols as $kiter61 => $viter62)
+          foreach ($this->dataMovementProtocols as $kiter68 => $viter69)
           {
-            $xfer += $output->writeString($kiter61);
-            $xfer += $output->writeI32($viter62);
+            $xfer += $output->writeString($kiter68);
+            $xfer += $output->writeI32($viter69);
           }
         }
         $output->writeMapEnd();
@@ -1431,15 +1569,15 @@ class ApplicationInterface {
         case 3:
           if ($ftype == TType::LST) {
             $this->applicationDeployments = array();
-            $_size63 = 0;
-            $_etype66 = 0;
-            $xfer += $input->readListBegin($_etype66, $_size63);
-            for ($_i67 = 0; $_i67 < $_size63; ++$_i67)
+            $_size70 = 0;
+            $_etype73 = 0;
+            $xfer += $input->readListBegin($_etype73, $_size70);
+            for ($_i74 = 0; $_i74 < $_size70; ++$_i74)
             {
-              $elem68 = null;
-              $elem68 = new \ApplicationDeployment();
-              $xfer += $elem68->read($input);
-              $this->applicationDeployments []= $elem68;
+              $elem75 = null;
+              $elem75 = new \ApplicationDeployment();
+              $xfer += $elem75->read($input);
+              $this->applicationDeployments []= $elem75;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1477,9 +1615,9 @@ class ApplicationInterface {
       {
         $output->writeListBegin(TType::STRUCT, count($this->applicationDeployments));
         {
-          foreach ($this->applicationDeployments as $iter69)
+          foreach ($this->applicationDeployments as $iter76)
           {
-            $xfer += $iter69->write($output);
+            $xfer += $iter76->write($output);
           }
         }
         $output->writeListEnd();

@@ -532,14 +532,14 @@ import org.slf4j.LoggerFactory;
           case 3: // APPLICATION_DEPLOYMENTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list68 = iprot.readListBegin();
-                struct.applicationDeployments = new ArrayList<ApplicationDeployment>(_list68.size);
-                for (int _i69 = 0; _i69 < _list68.size; ++_i69)
+                org.apache.thrift.protocol.TList _list76 = iprot.readListBegin();
+                struct.applicationDeployments = new ArrayList<ApplicationDeployment>(_list76.size);
+                for (int _i77 = 0; _i77 < _list76.size; ++_i77)
                 {
-                  ApplicationDeployment _elem70;
-                  _elem70 = new ApplicationDeployment();
-                  _elem70.read(iprot);
-                  struct.applicationDeployments.add(_elem70);
+                  ApplicationDeployment _elem78;
+                  _elem78 = new ApplicationDeployment();
+                  _elem78.read(iprot);
+                  struct.applicationDeployments.add(_elem78);
                 }
                 iprot.readListEnd();
               }
@@ -578,9 +578,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(APPLICATION_DEPLOYMENTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.applicationDeployments.size()));
-            for (ApplicationDeployment _iter71 : struct.applicationDeployments)
+            for (ApplicationDeployment _iter79 : struct.applicationDeployments)
             {
-              _iter71.write(oprot);
+              _iter79.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -619,9 +619,9 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetApplicationDeployments()) {
         {
           oprot.writeI32(struct.applicationDeployments.size());
-          for (ApplicationDeployment _iter72 : struct.applicationDeployments)
+          for (ApplicationDeployment _iter80 : struct.applicationDeployments)
           {
-            _iter72.write(oprot);
+            _iter80.write(oprot);
           }
         }
       }
@@ -639,14 +639,14 @@ import org.slf4j.LoggerFactory;
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list73 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.applicationDeployments = new ArrayList<ApplicationDeployment>(_list73.size);
-          for (int _i74 = 0; _i74 < _list73.size; ++_i74)
+          org.apache.thrift.protocol.TList _list81 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.applicationDeployments = new ArrayList<ApplicationDeployment>(_list81.size);
+          for (int _i82 = 0; _i82 < _list81.size; ++_i82)
           {
-            ApplicationDeployment _elem75;
-            _elem75 = new ApplicationDeployment();
-            _elem75.read(iprot);
-            struct.applicationDeployments.add(_elem75);
+            ApplicationDeployment _elem83;
+            _elem83 = new ApplicationDeployment();
+            _elem83.read(iprot);
+            struct.applicationDeployments.add(_elem83);
           }
         }
         struct.setApplicationDeploymentsIsSet(true);

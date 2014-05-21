@@ -1250,6 +1250,230 @@ uint32_t ApplicationCatalogAPI_addSCPDataMovementProtocol_presult::read(::apache
   return xfer;
 }
 
+uint32_t ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_computeResourceId = false;
+  bool isset_dataMovement = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->computeResourceId);
+          isset_computeResourceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->dataMovement.read(iprot);
+          isset_dataMovement = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_computeResourceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_dataMovement)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args");
+
+  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->computeResourceId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("dataMovement", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += this->dataMovement.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_addGridFTPDataMovementProtocol_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addGridFTPDataMovementProtocol_pargs");
+
+  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->computeResourceId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("dataMovement", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += (*(this->dataMovement)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result");
+
+  if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
 uint32_t ApplicationCatalogAPI_listComputeResourceDescriptions_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
@@ -2545,6 +2769,231 @@ uint32_t ApplicationCatalogAPI_getSCPDataMovementProtocol_result::write(::apache
 }
 
 uint32_t ApplicationCatalogAPI_getSCPDataMovementProtocol_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_getGridFTPDataMovementProtocol_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_gridFTPDataMovementResourceId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gridFTPDataMovementResourceId);
+          isset_gridFTPDataMovementResourceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_gridFTPDataMovementResourceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_getGridFTPDataMovementProtocol_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("ApplicationCatalogAPI_getGridFTPDataMovementProtocol_args");
+
+  xfer += oprot->writeFieldBegin("gridFTPDataMovementResourceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gridFTPDataMovementResourceId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_getGridFTPDataMovementProtocol_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("ApplicationCatalogAPI_getGridFTPDataMovementProtocol_pargs");
+
+  xfer += oprot->writeFieldBegin("gridFTPDataMovementResourceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gridFTPDataMovementResourceId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t ApplicationCatalogAPI_getGridFTPDataMovementProtocol_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -4817,6 +5266,69 @@ void ApplicationCatalogAPIClient::recv_addSCPDataMovementProtocol()
   return;
 }
 
+void ApplicationCatalogAPIClient::addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement)
+{
+  send_addGridFTPDataMovementProtocol(computeResourceId, dataMovement);
+  recv_addGridFTPDataMovementProtocol();
+}
+
+void ApplicationCatalogAPIClient::send_addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("addGridFTPDataMovementProtocol", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  ApplicationCatalogAPI_addGridFTPDataMovementProtocol_pargs args;
+  args.computeResourceId = &computeResourceId;
+  args.dataMovement = &dataMovement;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void ApplicationCatalogAPIClient::recv_addGridFTPDataMovementProtocol()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("addGridFTPDataMovementProtocol") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult result;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  return;
+}
+
 void ApplicationCatalogAPIClient::listComputeResourceDescriptions(std::vector<std::string> & _return)
 {
   send_listComputeResourceDescriptions();
@@ -5216,6 +5728,73 @@ void ApplicationCatalogAPIClient::recv_getSCPDataMovementProtocol( ::SCPDataMove
     throw result.ase;
   }
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getSCPDataMovementProtocol failed: unknown result");
+}
+
+void ApplicationCatalogAPIClient::getGridFTPDataMovementProtocol( ::GridFTPDataMovement& _return, const std::string& gridFTPDataMovementResourceId)
+{
+  send_getGridFTPDataMovementProtocol(gridFTPDataMovementResourceId);
+  recv_getGridFTPDataMovementProtocol(_return);
+}
+
+void ApplicationCatalogAPIClient::send_getGridFTPDataMovementProtocol(const std::string& gridFTPDataMovementResourceId)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getGridFTPDataMovementProtocol", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  ApplicationCatalogAPI_getGridFTPDataMovementProtocol_pargs args;
+  args.gridFTPDataMovementResourceId = &gridFTPDataMovementResourceId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void ApplicationCatalogAPIClient::recv_getGridFTPDataMovementProtocol( ::GridFTPDataMovement& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getGridFTPDataMovementProtocol") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  ApplicationCatalogAPI_getGridFTPDataMovementProtocol_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getGridFTPDataMovementProtocol failed: unknown result");
 }
 
 bool ApplicationCatalogAPIClient::isComputeResourceDescriptionRegistered(const std::string& hostName)
@@ -6128,6 +6707,68 @@ void ApplicationCatalogAPIProcessor::process_addSCPDataMovementProtocol(int32_t 
   }
 }
 
+void ApplicationCatalogAPIProcessor::process_addGridFTPDataMovementProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("ApplicationCatalogAPI.addGridFTPDataMovementProtocol", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "ApplicationCatalogAPI.addGridFTPDataMovementProtocol");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "ApplicationCatalogAPI.addGridFTPDataMovementProtocol");
+  }
+
+  ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "ApplicationCatalogAPI.addGridFTPDataMovementProtocol", bytes);
+  }
+
+  ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result result;
+  try {
+    iface_->addGridFTPDataMovementProtocol(args.computeResourceId, args.dataMovement);
+  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "ApplicationCatalogAPI.addGridFTPDataMovementProtocol");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("addGridFTPDataMovementProtocol", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "ApplicationCatalogAPI.addGridFTPDataMovementProtocol");
+  }
+
+  oprot->writeMessageBegin("addGridFTPDataMovementProtocol", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "ApplicationCatalogAPI.addGridFTPDataMovementProtocol", bytes);
+  }
+}
+
 void ApplicationCatalogAPIProcessor::process_listComputeResourceDescriptions(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
@@ -6503,6 +7144,69 @@ void ApplicationCatalogAPIProcessor::process_getSCPDataMovementProtocol(int32_t 
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->postWrite(ctx, "ApplicationCatalogAPI.getSCPDataMovementProtocol", bytes);
+  }
+}
+
+void ApplicationCatalogAPIProcessor::process_getGridFTPDataMovementProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("ApplicationCatalogAPI.getGridFTPDataMovementProtocol", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "ApplicationCatalogAPI.getGridFTPDataMovementProtocol");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "ApplicationCatalogAPI.getGridFTPDataMovementProtocol");
+  }
+
+  ApplicationCatalogAPI_getGridFTPDataMovementProtocol_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "ApplicationCatalogAPI.getGridFTPDataMovementProtocol", bytes);
+  }
+
+  ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result result;
+  try {
+    iface_->getGridFTPDataMovementProtocol(result.success, args.gridFTPDataMovementResourceId);
+    result.__isset.success = true;
+  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "ApplicationCatalogAPI.getGridFTPDataMovementProtocol");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getGridFTPDataMovementProtocol", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "ApplicationCatalogAPI.getGridFTPDataMovementProtocol");
+  }
+
+  oprot->writeMessageBegin("getGridFTPDataMovementProtocol", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "ApplicationCatalogAPI.getGridFTPDataMovementProtocol", bytes);
   }
 }
 
