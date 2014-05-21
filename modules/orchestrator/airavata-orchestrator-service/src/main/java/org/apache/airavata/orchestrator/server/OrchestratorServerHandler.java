@@ -106,6 +106,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
 
         } catch (Exception e) {
+            // Here we really do not have to do much because only potential failure can happen
+            // is in gfac, if there are errors in gfac, it will handle the experiment/task/job statuses
+            // We might get failures in registry access before submitting the jobs to gfac, in that case we
+            // leave the status of these as created.
             throw new TException(e);
         }
         return true;

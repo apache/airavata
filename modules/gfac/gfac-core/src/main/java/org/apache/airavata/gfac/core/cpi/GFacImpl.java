@@ -429,6 +429,17 @@ public class GFacImpl implements GFac {
                 throw new GFacException("Error Executing a OutFlow Handler", e);
             }
         }
+        // At this point all the execution is finished so we update the task and experiment statuses.
+        // Handler authors does not have to worry about updating experiment or task statuses.
+        monitorPublisher.publish(new
+                ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+                ExperimentState.COMPLETED));
+        // Updating the task status if there's any task associated
+        monitorPublisher.publish(new TaskStatusChangeRequest(
+                new TaskIdentity(jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                        jobExecutionContext.getTaskData().getTaskID()), TaskState.COMPLETED
+        ));
     }
 
 
