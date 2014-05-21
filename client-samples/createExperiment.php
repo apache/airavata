@@ -85,7 +85,7 @@ try
         $cmRST->jobStartTime = 0;
         $cmRST->totalPhysicalMemory = 0;
 
-        /* ComputationalResourceScheduling data for Stampede
+        /* ComputationalResourceScheduling data for Stampede */
         $cmRSS = new ComputationalResourceScheduling();
         $cmRSS->resourceHostId = "stampede.tacc.xsede.org";
         $cmRSS->ComputationalProjectAccount = "TG-STA110014S";
@@ -96,7 +96,6 @@ try
         $cmRSS->wallTimeLimit = 15;
         $cmRSS->jobStartTime = 0;
         $cmRSS->totalPhysicalMemory = 0;
-        */
 
         /* UserConfigurationData using either Trestles or Stampede*/
         //$cmRS = $cmRSS;
