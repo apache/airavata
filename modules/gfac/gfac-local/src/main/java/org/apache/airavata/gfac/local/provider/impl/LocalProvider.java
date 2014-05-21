@@ -40,8 +40,13 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.local.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.local.utils.InputUtils;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.xmlbeans.XmlException;
@@ -207,10 +212,12 @@ public class LocalProvider extends AbstractProvider {
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 
         try {
+        	List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
             String stdOutStr = GFacUtils.readFileToString(app.getStandardOutput());
             String stdErrStr = GFacUtils.readFileToString(app.getStandardError());
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
-            OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+            OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr, outputArray);
+            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
         } catch (XmlException e) {
             throw new GFacProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {
