@@ -187,7 +187,7 @@ public class GFacConfiguration {
 
         NodeList nl = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
         List<GFacHandlerConfig> gFacHandlerConfigs = new ArrayList<GFacHandlerConfig>();
-        Map<String, String> properties = new HashMap<String, String>();
+        Properties properties = new Properties();
         String className = "";
         for (int i = 0; i < nl.getLength(); i++) {
             className = ((Element) nl.item(i)).getAttribute(attribute);

@@ -23,10 +23,10 @@ package org.apache.airavata.job;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 
-import java.util.Map;
+import java.util.Properties;
 
 public class TestGlobalHandler extends AbstractHandler {
-    public void initProperties(Map<String, String> properties) throws GFacHandlerException {
+    public void initProperties(Properties properties) throws GFacHandlerException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 }

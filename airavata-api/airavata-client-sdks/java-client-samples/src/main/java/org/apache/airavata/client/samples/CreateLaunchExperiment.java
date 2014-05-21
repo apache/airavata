@@ -61,24 +61,25 @@ public class CreateLaunchExperiment {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.GetAPIVersion());
-            addDescriptors();
+//            addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createExperimentForTrestles(airavata);
+            final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
-            final String expId = createExperimentForLocalHost(airavata);
+//            final String expId = createExperimentForLocalHost(airavata);
             System.out.println("Experiment ID : " + expId);
-
+            updateExperiment(airavata, expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
             List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
             List<Project> projects = getAllUserProject(airavata, "admin");
             for (Experiment exp : experiments){
                 System.out.println(" exp id : " + exp.getExperimentID());
-                System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
+                if (exp.getExperimentStatus() != null) {
+                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
+                }
             }
-
             for (Project pr : projects){
                 System.out.println(" project name : " + pr.getName());
             }
@@ -221,6 +222,17 @@ public class CreateLaunchExperiment {
     public static String cloneExperiment(Airavata.Client client, String expId) throws TException  {
         try{
             return client.cloneExperiment(expId, "cloneExperiment1");
+        }catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+    }
+
+    public static void updateExperiment(Airavata.Client client, String expId) throws TException  {
+        try{
+            Experiment experiment = client.getExperiment(expId);
+            experiment.setDescription("updatedDescription");
+            client.updateExperiment(expId, experiment );
         }catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
