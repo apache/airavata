@@ -49,7 +49,11 @@ public abstract class AbstractProvider implements GFacProvider{
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         log.debug("Initializing " + this.getClass().getName());
-		registry = RegistryFactory.getDefaultRegistry();
+        if(jobExecutionContext.getRegistry() == null) {
+            registry = RegistryFactory.getDefaultRegistry();
+        }else{
+            registry = jobExecutionContext.getRegistry();
+        }
 		details = new JobDetails();
 		status = new JobStatus();
 		this.jobExecutionContext=jobExecutionContext;
