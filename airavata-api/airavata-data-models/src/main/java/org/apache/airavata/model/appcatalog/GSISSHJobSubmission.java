@@ -968,13 +968,13 @@ import org.slf4j.LoggerFactory;
           case 4: // EXPORTS
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
-                org.apache.thrift.protocol.TSet _set8 = iprot.readSetBegin();
-                struct.exports = new HashSet<String>(2*_set8.size);
-                for (int _i9 = 0; _i9 < _set8.size; ++_i9)
+                org.apache.thrift.protocol.TSet _set16 = iprot.readSetBegin();
+                struct.exports = new HashSet<String>(2*_set16.size);
+                for (int _i17 = 0; _i17 < _set16.size; ++_i17)
                 {
-                  String _elem10;
-                  _elem10 = iprot.readString();
-                  struct.exports.add(_elem10);
+                  String _elem18;
+                  _elem18 = iprot.readString();
+                  struct.exports.add(_elem18);
                 }
                 iprot.readSetEnd();
               }
@@ -986,13 +986,13 @@ import org.slf4j.LoggerFactory;
           case 5: // PRE_JOB_COMMANDS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list11 = iprot.readListBegin();
-                struct.preJobCommands = new ArrayList<String>(_list11.size);
-                for (int _i12 = 0; _i12 < _list11.size; ++_i12)
+                org.apache.thrift.protocol.TList _list19 = iprot.readListBegin();
+                struct.preJobCommands = new ArrayList<String>(_list19.size);
+                for (int _i20 = 0; _i20 < _list19.size; ++_i20)
                 {
-                  String _elem13;
-                  _elem13 = iprot.readString();
-                  struct.preJobCommands.add(_elem13);
+                  String _elem21;
+                  _elem21 = iprot.readString();
+                  struct.preJobCommands.add(_elem21);
                 }
                 iprot.readListEnd();
               }
@@ -1004,13 +1004,13 @@ import org.slf4j.LoggerFactory;
           case 6: // POST_JOB_COMMANDS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list14 = iprot.readListBegin();
-                struct.postJobCommands = new ArrayList<String>(_list14.size);
-                for (int _i15 = 0; _i15 < _list14.size; ++_i15)
+                org.apache.thrift.protocol.TList _list22 = iprot.readListBegin();
+                struct.postJobCommands = new ArrayList<String>(_list22.size);
+                for (int _i23 = 0; _i23 < _list22.size; ++_i23)
                 {
-                  String _elem16;
-                  _elem16 = iprot.readString();
-                  struct.postJobCommands.add(_elem16);
+                  String _elem24;
+                  _elem24 = iprot.readString();
+                  struct.postJobCommands.add(_elem24);
                 }
                 iprot.readListEnd();
               }
@@ -1068,9 +1068,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(EXPORTS_FIELD_DESC);
           {
             oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.exports.size()));
-            for (String _iter17 : struct.exports)
+            for (String _iter25 : struct.exports)
             {
-              oprot.writeString(_iter17);
+              oprot.writeString(_iter25);
             }
             oprot.writeSetEnd();
           }
@@ -1082,9 +1082,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(PRE_JOB_COMMANDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.preJobCommands.size()));
-            for (String _iter18 : struct.preJobCommands)
+            for (String _iter26 : struct.preJobCommands)
             {
-              oprot.writeString(_iter18);
+              oprot.writeString(_iter26);
             }
             oprot.writeListEnd();
           }
@@ -1096,9 +1096,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(POST_JOB_COMMANDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.postJobCommands.size()));
-            for (String _iter19 : struct.postJobCommands)
+            for (String _iter27 : struct.postJobCommands)
             {
-              oprot.writeString(_iter19);
+              oprot.writeString(_iter27);
             }
             oprot.writeListEnd();
           }
@@ -1164,27 +1164,27 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetExports()) {
         {
           oprot.writeI32(struct.exports.size());
-          for (String _iter20 : struct.exports)
+          for (String _iter28 : struct.exports)
           {
-            oprot.writeString(_iter20);
+            oprot.writeString(_iter28);
           }
         }
       }
       if (struct.isSetPreJobCommands()) {
         {
           oprot.writeI32(struct.preJobCommands.size());
-          for (String _iter21 : struct.preJobCommands)
+          for (String _iter29 : struct.preJobCommands)
           {
-            oprot.writeString(_iter21);
+            oprot.writeString(_iter29);
           }
         }
       }
       if (struct.isSetPostJobCommands()) {
         {
           oprot.writeI32(struct.postJobCommands.size());
-          for (String _iter22 : struct.postJobCommands)
+          for (String _iter30 : struct.postJobCommands)
           {
-            oprot.writeString(_iter22);
+            oprot.writeString(_iter30);
           }
         }
       }
@@ -1210,39 +1210,39 @@ import org.slf4j.LoggerFactory;
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TSet _set23 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.exports = new HashSet<String>(2*_set23.size);
-          for (int _i24 = 0; _i24 < _set23.size; ++_i24)
+          org.apache.thrift.protocol.TSet _set31 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.exports = new HashSet<String>(2*_set31.size);
+          for (int _i32 = 0; _i32 < _set31.size; ++_i32)
           {
-            String _elem25;
-            _elem25 = iprot.readString();
-            struct.exports.add(_elem25);
+            String _elem33;
+            _elem33 = iprot.readString();
+            struct.exports.add(_elem33);
           }
         }
         struct.setExportsIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list26 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.preJobCommands = new ArrayList<String>(_list26.size);
-          for (int _i27 = 0; _i27 < _list26.size; ++_i27)
+          org.apache.thrift.protocol.TList _list34 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.preJobCommands = new ArrayList<String>(_list34.size);
+          for (int _i35 = 0; _i35 < _list34.size; ++_i35)
           {
-            String _elem28;
-            _elem28 = iprot.readString();
-            struct.preJobCommands.add(_elem28);
+            String _elem36;
+            _elem36 = iprot.readString();
+            struct.preJobCommands.add(_elem36);
           }
         }
         struct.setPreJobCommandsIsSet(true);
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.postJobCommands = new ArrayList<String>(_list29.size);
-          for (int _i30 = 0; _i30 < _list29.size; ++_i30)
+          org.apache.thrift.protocol.TList _list37 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.postJobCommands = new ArrayList<String>(_list37.size);
+          for (int _i38 = 0; _i38 < _list37.size; ++_i38)
           {
-            String _elem31;
-            _elem31 = iprot.readString();
-            struct.postJobCommands.add(_elem31);
+            String _elem39;
+            _elem39 = iprot.readString();
+            struct.postJobCommands.add(_elem39);
           }
         }
         struct.setPostJobCommandsIsSet(true);
