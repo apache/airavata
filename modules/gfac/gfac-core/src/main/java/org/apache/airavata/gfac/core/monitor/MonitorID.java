@@ -64,7 +64,7 @@ public class MonitorID {
     public MonitorID() {
     }
 
-    public MonitorID(HostDescription host, String jobID,String taskID, String workflowNodeID, String experimentID, String userName) {
+    public MonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID, String experimentID, String userName) {
         this.host = host;
         this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.userName = userName;
@@ -72,6 +72,16 @@ public class MonitorID {
         this.taskID = taskID;
         this.experimentID = experimentID;
         this.workflowNodeID = workflowNodeID;
+    }
+
+    public MonitorID(JobExecutionContext jobExecutionContext) {
+        this.jobExecutionContext = jobExecutionContext;
+        host = jobExecutionContext.getApplicationContext().getHostDescription();
+        userName = jobExecutionContext.getExperiment().getUserName();
+        jobID = jobExecutionContext.getJobDetails().getJobID();
+        taskID = jobExecutionContext.getTaskData().getTaskID();
+        experimentID = jobExecutionContext.getExperiment().getExperimentID();
+        workflowNodeID = jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId();// at this point we only have one node todo: fix this
     }
 
     public HostDescription getHost() {
@@ -114,7 +124,7 @@ public class MonitorID {
         this.jobStartedTime = jobStartedTime;
     }
 
-    public void addParameter(String key,Object value) {
+    public void addParameter(String key, Object value) {
         this.parameters.put(key, value);
     }
 
@@ -162,38 +172,38 @@ public class MonitorID {
         // this logic is going to be useful for fast finishing jobs
         // because in some machines job state vanishes quicckly when the job is done
         // during that case job state comes as unknown.so we handle it here.
-            if (this.state != null && status.equals(JobState.UNKNOWN)) {
-                if (getFailedCount() > 2) {
-                    switch (this.state) {
-                        case ACTIVE:
-                            this.state = JobState.COMPLETE;
-                            break;
-                        case QUEUED:
-                            this.state = JobState.COMPLETE;
-                            break;
-                    }
-                } else {
-                    try {
-                        // when state becomes unknown we sleep for a while
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                    setFailedCount(getFailedCount() + 1);
+        if (this.state != null && status.equals(JobState.UNKNOWN)) {
+            if (getFailedCount() > 2) {
+                switch (this.state) {
+                    case ACTIVE:
+                        this.state = JobState.COMPLETE;
+                        break;
+                    case QUEUED:
+                        this.state = JobState.COMPLETE;
+                        break;
                 }
             } else {
-                // normal scenario
-                this.state = status;
+                try {
+                    // when state becomes unknown we sleep for a while
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+                setFailedCount(getFailedCount() + 1);
             }
+        } else {
+            // normal scenario
+            this.state = status;
+        }
     }
 
-	public String getWorkflowNodeID() {
-		return workflowNodeID;
-	}
+    public String getWorkflowNodeID() {
+        return workflowNodeID;
+    }
 
-	public void setWorkflowNodeID(String workflowNodeID) {
-		this.workflowNodeID = workflowNodeID;
-	}
+    public void setWorkflowNodeID(String workflowNodeID) {
+        this.workflowNodeID = workflowNodeID;
+    }
 
     public JobExecutionContext getJobExecutionContext() {
         return jobExecutionContext;
