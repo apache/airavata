@@ -111,9 +111,15 @@ enum SecurityProtocol {
 
 
 struct SCPDataMovement {
-    1: required string dataSubmissionDataID = DEFAULT_ID,
+    1: required string dataMovementDataID = DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: optional i32 sshPort = 22
+}
+
+struct GridFTPDataMovement {
+    1: required string dataMovementDataID = DEFAULT_ID,
+    2: required SecurityProtocol securityProtocol,
+    3: required list<string>  gridFTPEndPoint
 }
 
 struct SSHJobSubmission {
