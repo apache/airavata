@@ -48,8 +48,8 @@ use Airavata\Model\Workspace\Experiment\ExperimentState;
 
 
 /* this is the same as the factory */
-$transport = new TSocket(AIRAVATA_SERVER, AIRAVATA_PORT);
-$transport->setRecvTimeout(AIRAVATA_TIMEOUT);
+$transport = new TSocket('gw127.iu.xsede.org', 8930);
+$transport->setRecvTimeout(5000);
 
 $protocol = new TBinaryProtocol($transport);
 $transport->open();
@@ -77,7 +77,7 @@ try
         $cmRST->jobStartTime = 0;
         $cmRST->totalPhysicalMemory = 0;
 
-        /* ComputationalResourceScheduling data for Stampede
+        /* ComputationalResourceScheduling data for Stampede */
         $cmRSS = new ComputationalResourceScheduling();
         $cmRSS->resourceHostId = "stampede.tacc.xsede.org";
         $cmRSS->ComputationalProjectAccount = "TG-STA110014S";
@@ -88,7 +88,6 @@ try
         $cmRSS->wallTimeLimit = 15;
         $cmRSS->jobStartTime = 0;
         $cmRSS->totalPhysicalMemory = 0;
-        */
 
         /* UserConfigurationData using either Trestles or Stampede*/
         //$cmRS = $cmRSS;
@@ -143,9 +142,42 @@ try
 	echo "$user created experiment $expId. \n";
         //var_dump($experiment);
 
+        /* Update Project */
+        $update_project = new Project();
+	$update_project->projectID = $projId;
+	$update_project->owner = $user;
+	$update_project->name = "LoadTesterProject";
+	$update_project->description = "Updated project description: ".time();
+	$airavataclient->updateProject($update_project);
+	echo "$user updated project $projId. \n";
+
+	/* Update Experiment */
+        $update_experiment = new Experiment();
+        $update_experiment->userName = $user;
+        $update_experiment->name = "LoadTesterExperiment_".time();
+	$update_experiment->description = "Updated experiment description: ".time();
+	$airavataclient->updateExperiment($expId, $update_experiment);
+	echo "$user updated experiment $expId. \n";
+
+	/* Clone Experiment */
+	$clone_expId = $airavataclient->cloneExperiment($expId, "CloneLoadTesterExperiment_".time());
+	echo "$user cloned experiment $expId as $clone_expId. \n";
+
+	/* Update Experiment Configuration */
+        $update_userConfigurationData = new UserConfigurationData();
+        $update_userConfigurationData->airavataAutoSchedule = 0;
+        $update_userConfigurationData->overrideManualScheduledParams = 0;
+        $update_userConfigurationData->computationalResourceScheduling = $cmRSS; 
+	$airavataclient->updateExperimentConfiguration($expId, $update_userConfigurationData);
+	echo "$user updated user configuration data for experiment $expId. \n";
+
+	/* Update Resource Scheduleing */
+	//$airavataclient->updateResourceScheduleing($expId, $cmRST);
+	//echo "$user updated resource scheduleing for experiment $expId. \n";
+
 	/* Validate experiment */
-	$valid = $airavataclient->validateExperiment($expId);
-	echo "$user experiment $expId validation is $valid. \n";
+	//$valid = $airavataclient->validateExperiment($expId);
+	//echo "$user experiment $expId validation is $valid. \n";
 
         /* Launch Experiment */
 	//$airavataclient->launchExperiment($expId, 'airavataToken');
@@ -177,6 +209,7 @@ try
 	$userExperiments = $airavataclient->getAllUserExperiments($user);
         echo "$user total number of experiments is " . sizeof($userExperiments) . ". \n";
 
+        echo $projId;
         $projectExperiments = $airavataclient->getAllExperimentsInProject($projId);
         echo "$user number of experiments in $projId is " . sizeof($projectExperiments) . ". \n";	
     }
