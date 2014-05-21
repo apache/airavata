@@ -87,9 +87,6 @@ public class AiravataServerHandler implements Airavata.Iface {
         if (name == null || name.equals("") || name.trim().length() == 0){
             valid = false;
         }
-        if (name == null || name.equals("") || name.trim().length() == 0){
-            valid = false;
-        }
         return valid;
     }
 
@@ -189,7 +186,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<Experiment> getAllExperimentsInProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (validateString(projectId)){
+        if (!validateString(projectId)){
             logger.error("Project id cannot be empty. Please provide a valid project ID...");
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
