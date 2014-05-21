@@ -49,7 +49,7 @@ public interface JobSubmitter {
      * just get the request data and do the submission
      * @param experimentID experimentID cannot be null
      * @param taskID taskID cannot be null
-     * @return JobExecutionContext return the jobExecutionContext from GFac
+     * @return boolean return the submit status
      */
-    JobExecutionContext submit(String experimentID, String taskID) throws OrchestratorException;
+    boolean submit(String experimentID, String taskID) throws OrchestratorException;
 }
