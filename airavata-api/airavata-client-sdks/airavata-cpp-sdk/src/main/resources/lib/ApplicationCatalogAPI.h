@@ -21,12 +21,14 @@ class ApplicationCatalogAPIIf {
   virtual void addGSISSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission) = 0;
   virtual void addGlobusJobSubmissionProtocol(const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission) = 0;
   virtual void addSCPDataMovementProtocol(const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement) = 0;
+  virtual void addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement) = 0;
   virtual void listComputeResourceDescriptions(std::vector<std::string> & _return) = 0;
   virtual void getComputeResourceDescription( ::ComputeResourceDescription& _return, const std::string& computeResourceId) = 0;
   virtual void getSSHJobSubmissionProtocol( ::SSHJobSubmission& _return, const std::string& sshJobSubmissionProtocolResourceId) = 0;
   virtual void getGSISSHJobSubmissionProtocol( ::GSISSHJobSubmission& _return, const std::string& gsisshJobSubmissionProtocolResourceId) = 0;
   virtual void getGlobusJobSubmissionProtocol( ::GlobusJobSubmission& _return, const std::string& globusJobSubmissionProtocolResourceId) = 0;
   virtual void getSCPDataMovementProtocol( ::SCPDataMovement& _return, const std::string& scpDataMovementResourceId) = 0;
+  virtual void getGridFTPDataMovementProtocol( ::GridFTPDataMovement& _return, const std::string& gridFTPDataMovementResourceId) = 0;
   virtual bool isComputeResourceDescriptionRegistered(const std::string& hostName) = 0;
   virtual void getComputeResourceDescriptionFromHostName( ::ComputeResourceDescription& _return, const std::string& hostName) = 0;
   virtual void addApplicationInterface(const  ::ApplicationInterface& applicationInterface) = 0;
@@ -82,6 +84,9 @@ class ApplicationCatalogAPINull : virtual public ApplicationCatalogAPIIf {
   void addSCPDataMovementProtocol(const std::string& /* computeResourceId */, const  ::SCPDataMovement& /* dataMovement */) {
     return;
   }
+  void addGridFTPDataMovementProtocol(const std::string& /* computeResourceId */, const  ::GridFTPDataMovement& /* dataMovement */) {
+    return;
+  }
   void listComputeResourceDescriptions(std::vector<std::string> & /* _return */) {
     return;
   }
@@ -98,6 +103,9 @@ class ApplicationCatalogAPINull : virtual public ApplicationCatalogAPIIf {
     return;
   }
   void getSCPDataMovementProtocol( ::SCPDataMovement& /* _return */, const std::string& /* scpDataMovementResourceId */) {
+    return;
+  }
+  void getGridFTPDataMovementProtocol( ::GridFTPDataMovement& /* _return */, const std::string& /* gridFTPDataMovementResourceId */) {
     return;
   }
   bool isComputeResourceDescriptionRegistered(const std::string& /* hostName */) {
@@ -858,6 +866,136 @@ class ApplicationCatalogAPI_addSCPDataMovementProtocol_presult {
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_addSCPDataMovementProtocol_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args {
+ public:
+
+  ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args() : computeResourceId() {
+  }
+
+  virtual ~ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args() throw() {}
+
+  std::string computeResourceId;
+   ::GridFTPDataMovement dataMovement;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_dataMovement(const  ::GridFTPDataMovement& val) {
+    dataMovement = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(dataMovement == rhs.dataMovement))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_pargs {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_addGridFTPDataMovementProtocol_pargs() throw() {}
+
+  const std::string* computeResourceId;
+  const  ::GridFTPDataMovement* dataMovement;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result__isset {
+  _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result__isset() : ire(false), ace(false), ase(false) {}
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result__isset;
+
+class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result {
+ public:
+
+  ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result() {
+  }
+
+  virtual ~ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result() throw() {}
+
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result__isset __isset;
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result & rhs) const
+  {
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult__isset {
+  _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult__isset() : ire(false), ace(false), ase(false) {}
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult__isset;
+
+class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult() throw() {}
+
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -1642,6 +1780,138 @@ class ApplicationCatalogAPI_getSCPDataMovementProtocol_presult {
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_getSCPDataMovementProtocol_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class ApplicationCatalogAPI_getGridFTPDataMovementProtocol_args {
+ public:
+
+  ApplicationCatalogAPI_getGridFTPDataMovementProtocol_args() : gridFTPDataMovementResourceId() {
+  }
+
+  virtual ~ApplicationCatalogAPI_getGridFTPDataMovementProtocol_args() throw() {}
+
+  std::string gridFTPDataMovementResourceId;
+
+  void __set_gridFTPDataMovementResourceId(const std::string& val) {
+    gridFTPDataMovementResourceId = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_getGridFTPDataMovementProtocol_args & rhs) const
+  {
+    if (!(gridFTPDataMovementResourceId == rhs.gridFTPDataMovementResourceId))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_getGridFTPDataMovementProtocol_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_getGridFTPDataMovementProtocol_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class ApplicationCatalogAPI_getGridFTPDataMovementProtocol_pargs {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_getGridFTPDataMovementProtocol_pargs() throw() {}
+
+  const std::string* gridFTPDataMovementResourceId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result__isset {
+  _ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result__isset;
+
+class ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result {
+ public:
+
+  ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result() {
+  }
+
+  virtual ~ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result() throw() {}
+
+   ::GridFTPDataMovement success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result__isset __isset;
+
+  void __set_success(const  ::GridFTPDataMovement& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_getGridFTPDataMovementProtocol_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_getGridFTPDataMovementProtocol_presult__isset {
+  _ApplicationCatalogAPI_getGridFTPDataMovementProtocol_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_getGridFTPDataMovementProtocol_presult__isset;
+
+class ApplicationCatalogAPI_getGridFTPDataMovementProtocol_presult {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_getGridFTPDataMovementProtocol_presult() throw() {}
+
+   ::GridFTPDataMovement* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_getGridFTPDataMovementProtocol_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -2729,6 +2999,9 @@ class ApplicationCatalogAPIClient : virtual public ApplicationCatalogAPIIf {
   void addSCPDataMovementProtocol(const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement);
   void send_addSCPDataMovementProtocol(const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement);
   void recv_addSCPDataMovementProtocol();
+  void addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement);
+  void send_addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement);
+  void recv_addGridFTPDataMovementProtocol();
   void listComputeResourceDescriptions(std::vector<std::string> & _return);
   void send_listComputeResourceDescriptions();
   void recv_listComputeResourceDescriptions(std::vector<std::string> & _return);
@@ -2747,6 +3020,9 @@ class ApplicationCatalogAPIClient : virtual public ApplicationCatalogAPIIf {
   void getSCPDataMovementProtocol( ::SCPDataMovement& _return, const std::string& scpDataMovementResourceId);
   void send_getSCPDataMovementProtocol(const std::string& scpDataMovementResourceId);
   void recv_getSCPDataMovementProtocol( ::SCPDataMovement& _return);
+  void getGridFTPDataMovementProtocol( ::GridFTPDataMovement& _return, const std::string& gridFTPDataMovementResourceId);
+  void send_getGridFTPDataMovementProtocol(const std::string& gridFTPDataMovementResourceId);
+  void recv_getGridFTPDataMovementProtocol( ::GridFTPDataMovement& _return);
   bool isComputeResourceDescriptionRegistered(const std::string& hostName);
   void send_isComputeResourceDescriptionRegistered(const std::string& hostName);
   bool recv_isComputeResourceDescriptionRegistered();
@@ -2792,12 +3068,14 @@ class ApplicationCatalogAPIProcessor : public ::apache::thrift::TDispatchProcess
   void process_addGSISSHJobSubmissionProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addGlobusJobSubmissionProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addSCPDataMovementProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addGridFTPDataMovementProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_listComputeResourceDescriptions(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getComputeResourceDescription(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getSSHJobSubmissionProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getGSISSHJobSubmissionProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getGlobusJobSubmissionProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getSCPDataMovementProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getGridFTPDataMovementProtocol(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_isComputeResourceDescriptionRegistered(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getComputeResourceDescriptionFromHostName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -2815,12 +3093,14 @@ class ApplicationCatalogAPIProcessor : public ::apache::thrift::TDispatchProcess
     processMap_["addGSISSHJobSubmissionProtocol"] = &ApplicationCatalogAPIProcessor::process_addGSISSHJobSubmissionProtocol;
     processMap_["addGlobusJobSubmissionProtocol"] = &ApplicationCatalogAPIProcessor::process_addGlobusJobSubmissionProtocol;
     processMap_["addSCPDataMovementProtocol"] = &ApplicationCatalogAPIProcessor::process_addSCPDataMovementProtocol;
+    processMap_["addGridFTPDataMovementProtocol"] = &ApplicationCatalogAPIProcessor::process_addGridFTPDataMovementProtocol;
     processMap_["listComputeResourceDescriptions"] = &ApplicationCatalogAPIProcessor::process_listComputeResourceDescriptions;
     processMap_["getComputeResourceDescription"] = &ApplicationCatalogAPIProcessor::process_getComputeResourceDescription;
     processMap_["getSSHJobSubmissionProtocol"] = &ApplicationCatalogAPIProcessor::process_getSSHJobSubmissionProtocol;
     processMap_["getGSISSHJobSubmissionProtocol"] = &ApplicationCatalogAPIProcessor::process_getGSISSHJobSubmissionProtocol;
     processMap_["getGlobusJobSubmissionProtocol"] = &ApplicationCatalogAPIProcessor::process_getGlobusJobSubmissionProtocol;
     processMap_["getSCPDataMovementProtocol"] = &ApplicationCatalogAPIProcessor::process_getSCPDataMovementProtocol;
+    processMap_["getGridFTPDataMovementProtocol"] = &ApplicationCatalogAPIProcessor::process_getGridFTPDataMovementProtocol;
     processMap_["isComputeResourceDescriptionRegistered"] = &ApplicationCatalogAPIProcessor::process_isComputeResourceDescriptionRegistered;
     processMap_["getComputeResourceDescriptionFromHostName"] = &ApplicationCatalogAPIProcessor::process_getComputeResourceDescriptionFromHostName;
     processMap_["addApplicationInterface"] = &ApplicationCatalogAPIProcessor::process_addApplicationInterface;
@@ -2912,6 +3192,15 @@ class ApplicationCatalogAPIMultiface : virtual public ApplicationCatalogAPIIf {
     ifaces_[i]->addSCPDataMovementProtocol(computeResourceId, dataMovement);
   }
 
+  void addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->addGridFTPDataMovementProtocol(computeResourceId, dataMovement);
+    }
+    ifaces_[i]->addGridFTPDataMovementProtocol(computeResourceId, dataMovement);
+  }
+
   void listComputeResourceDescriptions(std::vector<std::string> & _return) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -2969,6 +3258,16 @@ class ApplicationCatalogAPIMultiface : virtual public ApplicationCatalogAPIIf {
       ifaces_[i]->getSCPDataMovementProtocol(_return, scpDataMovementResourceId);
     }
     ifaces_[i]->getSCPDataMovementProtocol(_return, scpDataMovementResourceId);
+    return;
+  }
+
+  void getGridFTPDataMovementProtocol( ::GridFTPDataMovement& _return, const std::string& gridFTPDataMovementResourceId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getGridFTPDataMovementProtocol(_return, gridFTPDataMovementResourceId);
+    }
+    ifaces_[i]->getGridFTPDataMovementProtocol(_return, gridFTPDataMovementResourceId);
     return;
   }
 

@@ -73,19 +73,19 @@ class SCPDataMovement {
   static const char* ascii_fingerprint; // = "FEB6B2CD28861B4EED855CACA1FEF2CB";
   static const uint8_t binary_fingerprint[16]; // = {0xFE,0xB6,0xB2,0xCD,0x28,0x86,0x1B,0x4E,0xED,0x85,0x5C,0xAC,0xA1,0xFE,0xF2,0xCB};
 
-  SCPDataMovement() : dataSubmissionDataID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), sshPort(22) {
+  SCPDataMovement() : dataMovementDataID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), sshPort(22) {
   }
 
   virtual ~SCPDataMovement() throw() {}
 
-  std::string dataSubmissionDataID;
+  std::string dataMovementDataID;
   SecurityProtocol::type securityProtocol;
   int32_t sshPort;
 
   _SCPDataMovement__isset __isset;
 
-  void __set_dataSubmissionDataID(const std::string& val) {
-    dataSubmissionDataID = val;
+  void __set_dataMovementDataID(const std::string& val) {
+    dataMovementDataID = val;
   }
 
   void __set_securityProtocol(const SecurityProtocol::type val) {
@@ -99,7 +99,7 @@ class SCPDataMovement {
 
   bool operator == (const SCPDataMovement & rhs) const
   {
-    if (!(dataSubmissionDataID == rhs.dataSubmissionDataID))
+    if (!(dataMovementDataID == rhs.dataMovementDataID))
       return false;
     if (!(securityProtocol == rhs.securityProtocol))
       return false;
@@ -121,6 +121,57 @@ class SCPDataMovement {
 };
 
 void swap(SCPDataMovement &a, SCPDataMovement &b);
+
+
+class GridFTPDataMovement {
+ public:
+
+  static const char* ascii_fingerprint; // = "790EE8B1D56A3B9B76C41DD063726E75";
+  static const uint8_t binary_fingerprint[16]; // = {0x79,0x0E,0xE8,0xB1,0xD5,0x6A,0x3B,0x9B,0x76,0xC4,0x1D,0xD0,0x63,0x72,0x6E,0x75};
+
+  GridFTPDataMovement() : dataMovementDataID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0) {
+  }
+
+  virtual ~GridFTPDataMovement() throw() {}
+
+  std::string dataMovementDataID;
+  SecurityProtocol::type securityProtocol;
+  std::vector<std::string>  gridFTPEndPoint;
+
+  void __set_dataMovementDataID(const std::string& val) {
+    dataMovementDataID = val;
+  }
+
+  void __set_securityProtocol(const SecurityProtocol::type val) {
+    securityProtocol = val;
+  }
+
+  void __set_gridFTPEndPoint(const std::vector<std::string> & val) {
+    gridFTPEndPoint = val;
+  }
+
+  bool operator == (const GridFTPDataMovement & rhs) const
+  {
+    if (!(dataMovementDataID == rhs.dataMovementDataID))
+      return false;
+    if (!(securityProtocol == rhs.securityProtocol))
+      return false;
+    if (!(gridFTPEndPoint == rhs.gridFTPEndPoint))
+      return false;
+    return true;
+  }
+  bool operator != (const GridFTPDataMovement &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const GridFTPDataMovement & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(GridFTPDataMovement &a, GridFTPDataMovement &b);
 
 typedef struct _SSHJobSubmission__isset {
   _SSHJobSubmission__isset() : sshPort(true) {}

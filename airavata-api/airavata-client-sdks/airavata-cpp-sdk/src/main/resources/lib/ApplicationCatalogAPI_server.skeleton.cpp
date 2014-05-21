@@ -52,6 +52,11 @@ class ApplicationCatalogAPIHandler : virtual public ApplicationCatalogAPIIf {
     printf("addSCPDataMovementProtocol\n");
   }
 
+  void addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement) {
+    // Your implementation goes here
+    printf("addGridFTPDataMovementProtocol\n");
+  }
+
   void listComputeResourceDescriptions(std::vector<std::string> & _return) {
     // Your implementation goes here
     printf("listComputeResourceDescriptions\n");
@@ -80,6 +85,11 @@ class ApplicationCatalogAPIHandler : virtual public ApplicationCatalogAPIIf {
   void getSCPDataMovementProtocol( ::SCPDataMovement& _return, const std::string& scpDataMovementResourceId) {
     // Your implementation goes here
     printf("getSCPDataMovementProtocol\n");
+  }
+
+  void getGridFTPDataMovementProtocol( ::GridFTPDataMovement& _return, const std::string& gridFTPDataMovementResourceId) {
+    // Your implementation goes here
+    printf("getGridFTPDataMovementProtocol\n");
   }
 
   bool isComputeResourceDescriptionRegistered(const std::string& hostName) {

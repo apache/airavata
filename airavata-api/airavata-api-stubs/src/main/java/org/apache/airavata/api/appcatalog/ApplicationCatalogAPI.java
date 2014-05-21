@@ -72,6 +72,8 @@ import org.slf4j.LoggerFactory;
 
     public void addSCPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SCPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
+    public void addGridFTPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
     public List<String> listComputeResourceDescriptions() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     public org.apache.airavata.model.appcatalog.ComputeResourceDescription getComputeResourceDescription(String computeResourceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
@@ -83,6 +85,8 @@ import org.slf4j.LoggerFactory;
     public org.apache.airavata.model.appcatalog.GlobusJobSubmission getGlobusJobSubmissionProtocol(String globusJobSubmissionProtocolResourceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     public org.apache.airavata.model.appcatalog.SCPDataMovement getSCPDataMovementProtocol(String scpDataMovementResourceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    public org.apache.airavata.model.appcatalog.GridFTPDataMovement getGridFTPDataMovementProtocol(String gridFTPDataMovementResourceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     public boolean isComputeResourceDescriptionRegistered(String hostName) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
@@ -127,6 +131,8 @@ import org.slf4j.LoggerFactory;
 
     public void addSCPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SCPDataMovement dataMovement, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
+    public void addGridFTPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
     public void listComputeResourceDescriptions(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getComputeResourceDescription(String computeResourceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
@@ -138,6 +144,8 @@ import org.slf4j.LoggerFactory;
     public void getGlobusJobSubmissionProtocol(String globusJobSubmissionProtocolResourceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getSCPDataMovementProtocol(String scpDataMovementResourceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void getGridFTPDataMovementProtocol(String gridFTPDataMovementResourceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void isComputeResourceDescriptionRegistered(String hostName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -348,6 +356,36 @@ import org.slf4j.LoggerFactory;
       return;
     }
 
+    public void addGridFTPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_addGridFTPDataMovementProtocol(computeResourceId, dataMovement);
+      recv_addGridFTPDataMovementProtocol();
+    }
+
+    public void send_addGridFTPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement) throws org.apache.thrift.TException
+    {
+      addGridFTPDataMovementProtocol_args args = new addGridFTPDataMovementProtocol_args();
+      args.setComputeResourceId(computeResourceId);
+      args.setDataMovement(dataMovement);
+      sendBase("addGridFTPDataMovementProtocol", args);
+    }
+
+    public void recv_addGridFTPDataMovementProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      addGridFTPDataMovementProtocol_result result = new addGridFTPDataMovementProtocol_result();
+      receiveBase(result, "addGridFTPDataMovementProtocol");
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      return;
+    }
+
     public List<String> listComputeResourceDescriptions() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_listComputeResourceDescriptions();
@@ -537,6 +575,38 @@ import org.slf4j.LoggerFactory;
         throw result.ase;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getSCPDataMovementProtocol failed: unknown result");
+    }
+
+    public org.apache.airavata.model.appcatalog.GridFTPDataMovement getGridFTPDataMovementProtocol(String gridFTPDataMovementResourceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_getGridFTPDataMovementProtocol(gridFTPDataMovementResourceId);
+      return recv_getGridFTPDataMovementProtocol();
+    }
+
+    public void send_getGridFTPDataMovementProtocol(String gridFTPDataMovementResourceId) throws org.apache.thrift.TException
+    {
+      getGridFTPDataMovementProtocol_args args = new getGridFTPDataMovementProtocol_args();
+      args.setGridFTPDataMovementResourceId(gridFTPDataMovementResourceId);
+      sendBase("getGridFTPDataMovementProtocol", args);
+    }
+
+    public org.apache.airavata.model.appcatalog.GridFTPDataMovement recv_getGridFTPDataMovementProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      getGridFTPDataMovementProtocol_result result = new getGridFTPDataMovementProtocol_result();
+      receiveBase(result, "getGridFTPDataMovementProtocol");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getGridFTPDataMovementProtocol failed: unknown result");
     }
 
     public boolean isComputeResourceDescriptionRegistered(String hostName) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
@@ -1009,6 +1079,41 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public void addGridFTPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      addGridFTPDataMovementProtocol_call method_call = new addGridFTPDataMovementProtocol_call(computeResourceId, dataMovement, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class addGridFTPDataMovementProtocol_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String computeResourceId;
+      private org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement;
+      public addGridFTPDataMovementProtocol_call(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.computeResourceId = computeResourceId;
+        this.dataMovement = dataMovement;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("addGridFTPDataMovementProtocol", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        addGridFTPDataMovementProtocol_args args = new addGridFTPDataMovementProtocol_args();
+        args.setComputeResourceId(computeResourceId);
+        args.setDataMovement(dataMovement);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        (new Client(prot)).recv_addGridFTPDataMovementProtocol();
+      }
+    }
+
     public void listComputeResourceDescriptions(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
       listComputeResourceDescriptions_call method_call = new listComputeResourceDescriptions_call(resultHandler, this, ___protocolFactory, ___transport);
@@ -1195,6 +1300,38 @@ import org.slf4j.LoggerFactory;
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
         return (new Client(prot)).recv_getSCPDataMovementProtocol();
+      }
+    }
+
+    public void getGridFTPDataMovementProtocol(String gridFTPDataMovementResourceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getGridFTPDataMovementProtocol_call method_call = new getGridFTPDataMovementProtocol_call(gridFTPDataMovementResourceId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getGridFTPDataMovementProtocol_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String gridFTPDataMovementResourceId;
+      public getGridFTPDataMovementProtocol_call(String gridFTPDataMovementResourceId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.gridFTPDataMovementResourceId = gridFTPDataMovementResourceId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getGridFTPDataMovementProtocol", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getGridFTPDataMovementProtocol_args args = new getGridFTPDataMovementProtocol_args();
+        args.setGridFTPDataMovementResourceId(gridFTPDataMovementResourceId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public org.apache.airavata.model.appcatalog.GridFTPDataMovement getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getGridFTPDataMovementProtocol();
       }
     }
 
@@ -1476,12 +1613,14 @@ import org.slf4j.LoggerFactory;
       processMap.put("addGSISSHJobSubmissionProtocol", new addGSISSHJobSubmissionProtocol());
       processMap.put("addGlobusJobSubmissionProtocol", new addGlobusJobSubmissionProtocol());
       processMap.put("addSCPDataMovementProtocol", new addSCPDataMovementProtocol());
+      processMap.put("addGridFTPDataMovementProtocol", new addGridFTPDataMovementProtocol());
       processMap.put("listComputeResourceDescriptions", new listComputeResourceDescriptions());
       processMap.put("getComputeResourceDescription", new getComputeResourceDescription());
       processMap.put("getSSHJobSubmissionProtocol", new getSSHJobSubmissionProtocol());
       processMap.put("getGSISSHJobSubmissionProtocol", new getGSISSHJobSubmissionProtocol());
       processMap.put("getGlobusJobSubmissionProtocol", new getGlobusJobSubmissionProtocol());
       processMap.put("getSCPDataMovementProtocol", new getSCPDataMovementProtocol());
+      processMap.put("getGridFTPDataMovementProtocol", new getGridFTPDataMovementProtocol());
       processMap.put("isComputeResourceDescriptionRegistered", new isComputeResourceDescriptionRegistered());
       processMap.put("getComputeResourceDescriptionFromHostName", new getComputeResourceDescriptionFromHostName());
       processMap.put("addApplicationInterface", new addApplicationInterface());
@@ -1653,6 +1792,34 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public static class addGridFTPDataMovementProtocol<I extends Iface> extends org.apache.thrift.ProcessFunction<I, addGridFTPDataMovementProtocol_args> {
+      public addGridFTPDataMovementProtocol() {
+        super("addGridFTPDataMovementProtocol");
+      }
+
+      public addGridFTPDataMovementProtocol_args getEmptyArgsInstance() {
+        return new addGridFTPDataMovementProtocol_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public addGridFTPDataMovementProtocol_result getResult(I iface, addGridFTPDataMovementProtocol_args args) throws org.apache.thrift.TException {
+        addGridFTPDataMovementProtocol_result result = new addGridFTPDataMovementProtocol_result();
+        try {
+          iface.addGridFTPDataMovementProtocol(args.computeResourceId, args.dataMovement);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
     public static class listComputeResourceDescriptions<I extends Iface> extends org.apache.thrift.ProcessFunction<I, listComputeResourceDescriptions_args> {
       public listComputeResourceDescriptions() {
         super("listComputeResourceDescriptions");
@@ -1810,6 +1977,34 @@ import org.slf4j.LoggerFactory;
         getSCPDataMovementProtocol_result result = new getSCPDataMovementProtocol_result();
         try {
           result.success = iface.getSCPDataMovementProtocol(args.scpDataMovementResourceId);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class getGridFTPDataMovementProtocol<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getGridFTPDataMovementProtocol_args> {
+      public getGridFTPDataMovementProtocol() {
+        super("getGridFTPDataMovementProtocol");
+      }
+
+      public getGridFTPDataMovementProtocol_args getEmptyArgsInstance() {
+        return new getGridFTPDataMovementProtocol_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getGridFTPDataMovementProtocol_result getResult(I iface, getGridFTPDataMovementProtocol_args args) throws org.apache.thrift.TException {
+        getGridFTPDataMovementProtocol_result result = new getGridFTPDataMovementProtocol_result();
+        try {
+          result.success = iface.getGridFTPDataMovementProtocol(args.gridFTPDataMovementResourceId);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -2065,12 +2260,14 @@ import org.slf4j.LoggerFactory;
       processMap.put("addGSISSHJobSubmissionProtocol", new addGSISSHJobSubmissionProtocol());
       processMap.put("addGlobusJobSubmissionProtocol", new addGlobusJobSubmissionProtocol());
       processMap.put("addSCPDataMovementProtocol", new addSCPDataMovementProtocol());
+      processMap.put("addGridFTPDataMovementProtocol", new addGridFTPDataMovementProtocol());
       processMap.put("listComputeResourceDescriptions", new listComputeResourceDescriptions());
       processMap.put("getComputeResourceDescription", new getComputeResourceDescription());
       processMap.put("getSSHJobSubmissionProtocol", new getSSHJobSubmissionProtocol());
       processMap.put("getGSISSHJobSubmissionProtocol", new getGSISSHJobSubmissionProtocol());
       processMap.put("getGlobusJobSubmissionProtocol", new getGlobusJobSubmissionProtocol());
       processMap.put("getSCPDataMovementProtocol", new getSCPDataMovementProtocol());
+      processMap.put("getGridFTPDataMovementProtocol", new getGridFTPDataMovementProtocol());
       processMap.put("isComputeResourceDescriptionRegistered", new isComputeResourceDescriptionRegistered());
       processMap.put("getComputeResourceDescriptionFromHostName", new getComputeResourceDescriptionFromHostName());
       processMap.put("addApplicationInterface", new addApplicationInterface());
@@ -2460,6 +2657,72 @@ import org.slf4j.LoggerFactory;
 
       public void start(I iface, addSCPDataMovementProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
         iface.addSCPDataMovementProtocol(args.computeResourceId, args.dataMovement,resultHandler);
+      }
+    }
+
+    public static class addGridFTPDataMovementProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addGridFTPDataMovementProtocol_args, Void> {
+      public addGridFTPDataMovementProtocol() {
+        super("addGridFTPDataMovementProtocol");
+      }
+
+      public addGridFTPDataMovementProtocol_args getEmptyArgsInstance() {
+        return new addGridFTPDataMovementProtocol_args();
+      }
+
+      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Void>() { 
+          public void onComplete(Void o) {
+            addGridFTPDataMovementProtocol_result result = new addGridFTPDataMovementProtocol_result();
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            addGridFTPDataMovementProtocol_result result = new addGridFTPDataMovementProtocol_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, addGridFTPDataMovementProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+        iface.addGridFTPDataMovementProtocol(args.computeResourceId, args.dataMovement,resultHandler);
       }
     }
 
@@ -2862,6 +3125,73 @@ import org.slf4j.LoggerFactory;
 
       public void start(I iface, getSCPDataMovementProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.appcatalog.SCPDataMovement> resultHandler) throws TException {
         iface.getSCPDataMovementProtocol(args.scpDataMovementResourceId,resultHandler);
+      }
+    }
+
+    public static class getGridFTPDataMovementProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getGridFTPDataMovementProtocol_args, org.apache.airavata.model.appcatalog.GridFTPDataMovement> {
+      public getGridFTPDataMovementProtocol() {
+        super("getGridFTPDataMovementProtocol");
+      }
+
+      public getGridFTPDataMovementProtocol_args getEmptyArgsInstance() {
+        return new getGridFTPDataMovementProtocol_args();
+      }
+
+      public AsyncMethodCallback<org.apache.airavata.model.appcatalog.GridFTPDataMovement> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<org.apache.airavata.model.appcatalog.GridFTPDataMovement>() { 
+          public void onComplete(org.apache.airavata.model.appcatalog.GridFTPDataMovement o) {
+            getGridFTPDataMovementProtocol_result result = new getGridFTPDataMovementProtocol_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            getGridFTPDataMovementProtocol_result result = new getGridFTPDataMovementProtocol_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getGridFTPDataMovementProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.appcatalog.GridFTPDataMovement> resultHandler) throws TException {
+        iface.getGridFTPDataMovementProtocol(args.gridFTPDataMovementResourceId,resultHandler);
       }
     }
 
@@ -8946,6 +9276,1014 @@ import org.slf4j.LoggerFactory;
 
   }
 
+  public static class addGridFTPDataMovementProtocol_args implements org.apache.thrift.TBase<addGridFTPDataMovementProtocol_args, addGridFTPDataMovementProtocol_args._Fields>, java.io.Serializable, Cloneable, Comparable<addGridFTPDataMovementProtocol_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addGridFTPDataMovementProtocol_args");
+
+    private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovement", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new addGridFTPDataMovementProtocol_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new addGridFTPDataMovementProtocol_argsTupleSchemeFactory());
+    }
+
+    public String computeResourceId; // required
+    public org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      COMPUTE_RESOURCE_ID((short)1, "computeResourceId"),
+      DATA_MOVEMENT((short)2, "dataMovement");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // COMPUTE_RESOURCE_ID
+            return COMPUTE_RESOURCE_ID;
+          case 2: // DATA_MOVEMENT
+            return DATA_MOVEMENT;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.COMPUTE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("computeResourceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.DATA_MOVEMENT, new org.apache.thrift.meta_data.FieldMetaData("dataMovement", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.GridFTPDataMovement.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addGridFTPDataMovementProtocol_args.class, metaDataMap);
+    }
+
+    public addGridFTPDataMovementProtocol_args() {
+    }
+
+    public addGridFTPDataMovementProtocol_args(
+      String computeResourceId,
+      org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement)
+    {
+      this();
+      this.computeResourceId = computeResourceId;
+      this.dataMovement = dataMovement;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public addGridFTPDataMovementProtocol_args(addGridFTPDataMovementProtocol_args other) {
+      if (other.isSetComputeResourceId()) {
+        this.computeResourceId = other.computeResourceId;
+      }
+      if (other.isSetDataMovement()) {
+        this.dataMovement = new org.apache.airavata.model.appcatalog.GridFTPDataMovement(other.dataMovement);
+      }
+    }
+
+    public addGridFTPDataMovementProtocol_args deepCopy() {
+      return new addGridFTPDataMovementProtocol_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.computeResourceId = null;
+      this.dataMovement = null;
+    }
+
+    public String getComputeResourceId() {
+      return this.computeResourceId;
+    }
+
+    public addGridFTPDataMovementProtocol_args setComputeResourceId(String computeResourceId) {
+      this.computeResourceId = computeResourceId;
+      return this;
+    }
+
+    public void unsetComputeResourceId() {
+      this.computeResourceId = null;
+    }
+
+    /** Returns true if field computeResourceId is set (has been assigned a value) and false otherwise */
+    public boolean isSetComputeResourceId() {
+      return this.computeResourceId != null;
+    }
+
+    public void setComputeResourceIdIsSet(boolean value) {
+      if (!value) {
+        this.computeResourceId = null;
+      }
+    }
+
+    public org.apache.airavata.model.appcatalog.GridFTPDataMovement getDataMovement() {
+      return this.dataMovement;
+    }
+
+    public addGridFTPDataMovementProtocol_args setDataMovement(org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement) {
+      this.dataMovement = dataMovement;
+      return this;
+    }
+
+    public void unsetDataMovement() {
+      this.dataMovement = null;
+    }
+
+    /** Returns true if field dataMovement is set (has been assigned a value) and false otherwise */
+    public boolean isSetDataMovement() {
+      return this.dataMovement != null;
+    }
+
+    public void setDataMovementIsSet(boolean value) {
+      if (!value) {
+        this.dataMovement = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case COMPUTE_RESOURCE_ID:
+        if (value == null) {
+          unsetComputeResourceId();
+        } else {
+          setComputeResourceId((String)value);
+        }
+        break;
+
+      case DATA_MOVEMENT:
+        if (value == null) {
+          unsetDataMovement();
+        } else {
+          setDataMovement((org.apache.airavata.model.appcatalog.GridFTPDataMovement)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case COMPUTE_RESOURCE_ID:
+        return getComputeResourceId();
+
+      case DATA_MOVEMENT:
+        return getDataMovement();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case COMPUTE_RESOURCE_ID:
+        return isSetComputeResourceId();
+      case DATA_MOVEMENT:
+        return isSetDataMovement();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof addGridFTPDataMovementProtocol_args)
+        return this.equals((addGridFTPDataMovementProtocol_args)that);
+      return false;
+    }
+
+    public boolean equals(addGridFTPDataMovementProtocol_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_computeResourceId = true && this.isSetComputeResourceId();
+      boolean that_present_computeResourceId = true && that.isSetComputeResourceId();
+      if (this_present_computeResourceId || that_present_computeResourceId) {
+        if (!(this_present_computeResourceId && that_present_computeResourceId))
+          return false;
+        if (!this.computeResourceId.equals(that.computeResourceId))
+          return false;
+      }
+
+      boolean this_present_dataMovement = true && this.isSetDataMovement();
+      boolean that_present_dataMovement = true && that.isSetDataMovement();
+      if (this_present_dataMovement || that_present_dataMovement) {
+        if (!(this_present_dataMovement && that_present_dataMovement))
+          return false;
+        if (!this.dataMovement.equals(that.dataMovement))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(addGridFTPDataMovementProtocol_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetComputeResourceId()).compareTo(other.isSetComputeResourceId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetComputeResourceId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.computeResourceId, other.computeResourceId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetDataMovement()).compareTo(other.isSetDataMovement());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetDataMovement()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataMovement, other.dataMovement);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("addGridFTPDataMovementProtocol_args(");
+      boolean first = true;
+
+      sb.append("computeResourceId:");
+      if (this.computeResourceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.computeResourceId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("dataMovement:");
+      if (this.dataMovement == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dataMovement);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (computeResourceId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'computeResourceId' was not present! Struct: " + toString());
+      }
+      if (dataMovement == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'dataMovement' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (dataMovement != null) {
+        dataMovement.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class addGridFTPDataMovementProtocol_argsStandardSchemeFactory implements SchemeFactory {
+      public addGridFTPDataMovementProtocol_argsStandardScheme getScheme() {
+        return new addGridFTPDataMovementProtocol_argsStandardScheme();
+      }
+    }
+
+    private static class addGridFTPDataMovementProtocol_argsStandardScheme extends StandardScheme<addGridFTPDataMovementProtocol_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, addGridFTPDataMovementProtocol_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // COMPUTE_RESOURCE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.computeResourceId = iprot.readString();
+                struct.setComputeResourceIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // DATA_MOVEMENT
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.dataMovement = new org.apache.airavata.model.appcatalog.GridFTPDataMovement();
+                struct.dataMovement.read(iprot);
+                struct.setDataMovementIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, addGridFTPDataMovementProtocol_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.computeResourceId != null) {
+          oprot.writeFieldBegin(COMPUTE_RESOURCE_ID_FIELD_DESC);
+          oprot.writeString(struct.computeResourceId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.dataMovement != null) {
+          oprot.writeFieldBegin(DATA_MOVEMENT_FIELD_DESC);
+          struct.dataMovement.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class addGridFTPDataMovementProtocol_argsTupleSchemeFactory implements SchemeFactory {
+      public addGridFTPDataMovementProtocol_argsTupleScheme getScheme() {
+        return new addGridFTPDataMovementProtocol_argsTupleScheme();
+      }
+    }
+
+    private static class addGridFTPDataMovementProtocol_argsTupleScheme extends TupleScheme<addGridFTPDataMovementProtocol_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, addGridFTPDataMovementProtocol_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.computeResourceId);
+        struct.dataMovement.write(oprot);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, addGridFTPDataMovementProtocol_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.computeResourceId = iprot.readString();
+        struct.setComputeResourceIdIsSet(true);
+        struct.dataMovement = new org.apache.airavata.model.appcatalog.GridFTPDataMovement();
+        struct.dataMovement.read(iprot);
+        struct.setDataMovementIsSet(true);
+      }
+    }
+
+  }
+
+  public static class addGridFTPDataMovementProtocol_result implements org.apache.thrift.TBase<addGridFTPDataMovementProtocol_result, addGridFTPDataMovementProtocol_result._Fields>, java.io.Serializable, Cloneable, Comparable<addGridFTPDataMovementProtocol_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addGridFTPDataMovementProtocol_result");
+
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new addGridFTPDataMovementProtocol_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new addGridFTPDataMovementProtocol_resultTupleSchemeFactory());
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addGridFTPDataMovementProtocol_result.class, metaDataMap);
+    }
+
+    public addGridFTPDataMovementProtocol_result() {
+    }
+
+    public addGridFTPDataMovementProtocol_result(
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public addGridFTPDataMovementProtocol_result(addGridFTPDataMovementProtocol_result other) {
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public addGridFTPDataMovementProtocol_result deepCopy() {
+      return new addGridFTPDataMovementProtocol_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public addGridFTPDataMovementProtocol_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public addGridFTPDataMovementProtocol_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public addGridFTPDataMovementProtocol_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof addGridFTPDataMovementProtocol_result)
+        return this.equals((addGridFTPDataMovementProtocol_result)that);
+      return false;
+    }
+
+    public boolean equals(addGridFTPDataMovementProtocol_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(addGridFTPDataMovementProtocol_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("addGridFTPDataMovementProtocol_result(");
+      boolean first = true;
+
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class addGridFTPDataMovementProtocol_resultStandardSchemeFactory implements SchemeFactory {
+      public addGridFTPDataMovementProtocol_resultStandardScheme getScheme() {
+        return new addGridFTPDataMovementProtocol_resultStandardScheme();
+      }
+    }
+
+    private static class addGridFTPDataMovementProtocol_resultStandardScheme extends StandardScheme<addGridFTPDataMovementProtocol_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, addGridFTPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, addGridFTPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class addGridFTPDataMovementProtocol_resultTupleSchemeFactory implements SchemeFactory {
+      public addGridFTPDataMovementProtocol_resultTupleScheme getScheme() {
+        return new addGridFTPDataMovementProtocol_resultTupleScheme();
+      }
+    }
+
+    private static class addGridFTPDataMovementProtocol_resultTupleScheme extends TupleScheme<addGridFTPDataMovementProtocol_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, addGridFTPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetIre()) {
+          optionals.set(0);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(2);
+        }
+        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, addGridFTPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(3);
+        if (incoming.get(0)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
   public static class listComputeResourceDescriptions_args implements org.apache.thrift.TBase<listComputeResourceDescriptions_args, listComputeResourceDescriptions_args._Fields>, java.io.Serializable, Cloneable, Comparable<listComputeResourceDescriptions_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("listComputeResourceDescriptions_args");
 
@@ -14938,6 +16276,1018 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.success = new org.apache.airavata.model.appcatalog.SCPDataMovement();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getGridFTPDataMovementProtocol_args implements org.apache.thrift.TBase<getGridFTPDataMovementProtocol_args, getGridFTPDataMovementProtocol_args._Fields>, java.io.Serializable, Cloneable, Comparable<getGridFTPDataMovementProtocol_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getGridFTPDataMovementProtocol_args");
+
+    private static final org.apache.thrift.protocol.TField GRID_FTPDATA_MOVEMENT_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gridFTPDataMovementResourceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getGridFTPDataMovementProtocol_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getGridFTPDataMovementProtocol_argsTupleSchemeFactory());
+    }
+
+    public String gridFTPDataMovementResourceId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      GRID_FTPDATA_MOVEMENT_RESOURCE_ID((short)1, "gridFTPDataMovementResourceId");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // GRID_FTPDATA_MOVEMENT_RESOURCE_ID
+            return GRID_FTPDATA_MOVEMENT_RESOURCE_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.GRID_FTPDATA_MOVEMENT_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("gridFTPDataMovementResourceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getGridFTPDataMovementProtocol_args.class, metaDataMap);
+    }
+
+    public getGridFTPDataMovementProtocol_args() {
+    }
+
+    public getGridFTPDataMovementProtocol_args(
+      String gridFTPDataMovementResourceId)
+    {
+      this();
+      this.gridFTPDataMovementResourceId = gridFTPDataMovementResourceId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getGridFTPDataMovementProtocol_args(getGridFTPDataMovementProtocol_args other) {
+      if (other.isSetGridFTPDataMovementResourceId()) {
+        this.gridFTPDataMovementResourceId = other.gridFTPDataMovementResourceId;
+      }
+    }
+
+    public getGridFTPDataMovementProtocol_args deepCopy() {
+      return new getGridFTPDataMovementProtocol_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.gridFTPDataMovementResourceId = null;
+    }
+
+    public String getGridFTPDataMovementResourceId() {
+      return this.gridFTPDataMovementResourceId;
+    }
+
+    public getGridFTPDataMovementProtocol_args setGridFTPDataMovementResourceId(String gridFTPDataMovementResourceId) {
+      this.gridFTPDataMovementResourceId = gridFTPDataMovementResourceId;
+      return this;
+    }
+
+    public void unsetGridFTPDataMovementResourceId() {
+      this.gridFTPDataMovementResourceId = null;
+    }
+
+    /** Returns true if field gridFTPDataMovementResourceId is set (has been assigned a value) and false otherwise */
+    public boolean isSetGridFTPDataMovementResourceId() {
+      return this.gridFTPDataMovementResourceId != null;
+    }
+
+    public void setGridFTPDataMovementResourceIdIsSet(boolean value) {
+      if (!value) {
+        this.gridFTPDataMovementResourceId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case GRID_FTPDATA_MOVEMENT_RESOURCE_ID:
+        if (value == null) {
+          unsetGridFTPDataMovementResourceId();
+        } else {
+          setGridFTPDataMovementResourceId((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case GRID_FTPDATA_MOVEMENT_RESOURCE_ID:
+        return getGridFTPDataMovementResourceId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case GRID_FTPDATA_MOVEMENT_RESOURCE_ID:
+        return isSetGridFTPDataMovementResourceId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getGridFTPDataMovementProtocol_args)
+        return this.equals((getGridFTPDataMovementProtocol_args)that);
+      return false;
+    }
+
+    public boolean equals(getGridFTPDataMovementProtocol_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_gridFTPDataMovementResourceId = true && this.isSetGridFTPDataMovementResourceId();
+      boolean that_present_gridFTPDataMovementResourceId = true && that.isSetGridFTPDataMovementResourceId();
+      if (this_present_gridFTPDataMovementResourceId || that_present_gridFTPDataMovementResourceId) {
+        if (!(this_present_gridFTPDataMovementResourceId && that_present_gridFTPDataMovementResourceId))
+          return false;
+        if (!this.gridFTPDataMovementResourceId.equals(that.gridFTPDataMovementResourceId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getGridFTPDataMovementProtocol_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetGridFTPDataMovementResourceId()).compareTo(other.isSetGridFTPDataMovementResourceId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGridFTPDataMovementResourceId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gridFTPDataMovementResourceId, other.gridFTPDataMovementResourceId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getGridFTPDataMovementProtocol_args(");
+      boolean first = true;
+
+      sb.append("gridFTPDataMovementResourceId:");
+      if (this.gridFTPDataMovementResourceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gridFTPDataMovementResourceId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (gridFTPDataMovementResourceId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'gridFTPDataMovementResourceId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getGridFTPDataMovementProtocol_argsStandardSchemeFactory implements SchemeFactory {
+      public getGridFTPDataMovementProtocol_argsStandardScheme getScheme() {
+        return new getGridFTPDataMovementProtocol_argsStandardScheme();
+      }
+    }
+
+    private static class getGridFTPDataMovementProtocol_argsStandardScheme extends StandardScheme<getGridFTPDataMovementProtocol_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getGridFTPDataMovementProtocol_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // GRID_FTPDATA_MOVEMENT_RESOURCE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.gridFTPDataMovementResourceId = iprot.readString();
+                struct.setGridFTPDataMovementResourceIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getGridFTPDataMovementProtocol_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.gridFTPDataMovementResourceId != null) {
+          oprot.writeFieldBegin(GRID_FTPDATA_MOVEMENT_RESOURCE_ID_FIELD_DESC);
+          oprot.writeString(struct.gridFTPDataMovementResourceId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getGridFTPDataMovementProtocol_argsTupleSchemeFactory implements SchemeFactory {
+      public getGridFTPDataMovementProtocol_argsTupleScheme getScheme() {
+        return new getGridFTPDataMovementProtocol_argsTupleScheme();
+      }
+    }
+
+    private static class getGridFTPDataMovementProtocol_argsTupleScheme extends TupleScheme<getGridFTPDataMovementProtocol_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getGridFTPDataMovementProtocol_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.gridFTPDataMovementResourceId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getGridFTPDataMovementProtocol_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.gridFTPDataMovementResourceId = iprot.readString();
+        struct.setGridFTPDataMovementResourceIdIsSet(true);
+      }
+    }
+
+  }
+
+  public static class getGridFTPDataMovementProtocol_result implements org.apache.thrift.TBase<getGridFTPDataMovementProtocol_result, getGridFTPDataMovementProtocol_result._Fields>, java.io.Serializable, Cloneable, Comparable<getGridFTPDataMovementProtocol_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getGridFTPDataMovementProtocol_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getGridFTPDataMovementProtocol_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getGridFTPDataMovementProtocol_resultTupleSchemeFactory());
+    }
+
+    public org.apache.airavata.model.appcatalog.GridFTPDataMovement success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.GridFTPDataMovement.class)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getGridFTPDataMovementProtocol_result.class, metaDataMap);
+    }
+
+    public getGridFTPDataMovementProtocol_result() {
+    }
+
+    public getGridFTPDataMovementProtocol_result(
+      org.apache.airavata.model.appcatalog.GridFTPDataMovement success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getGridFTPDataMovementProtocol_result(getGridFTPDataMovementProtocol_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new org.apache.airavata.model.appcatalog.GridFTPDataMovement(other.success);
+      }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public getGridFTPDataMovementProtocol_result deepCopy() {
+      return new getGridFTPDataMovementProtocol_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public org.apache.airavata.model.appcatalog.GridFTPDataMovement getSuccess() {
+      return this.success;
+    }
+
+    public getGridFTPDataMovementProtocol_result setSuccess(org.apache.airavata.model.appcatalog.GridFTPDataMovement success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public getGridFTPDataMovementProtocol_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public getGridFTPDataMovementProtocol_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public getGridFTPDataMovementProtocol_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((org.apache.airavata.model.appcatalog.GridFTPDataMovement)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getGridFTPDataMovementProtocol_result)
+        return this.equals((getGridFTPDataMovementProtocol_result)that);
+      return false;
+    }
+
+    public boolean equals(getGridFTPDataMovementProtocol_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getGridFTPDataMovementProtocol_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getGridFTPDataMovementProtocol_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getGridFTPDataMovementProtocol_resultStandardSchemeFactory implements SchemeFactory {
+      public getGridFTPDataMovementProtocol_resultStandardScheme getScheme() {
+        return new getGridFTPDataMovementProtocol_resultStandardScheme();
+      }
+    }
+
+    private static class getGridFTPDataMovementProtocol_resultStandardScheme extends StandardScheme<getGridFTPDataMovementProtocol_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getGridFTPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new org.apache.airavata.model.appcatalog.GridFTPDataMovement();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getGridFTPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getGridFTPDataMovementProtocol_resultTupleSchemeFactory implements SchemeFactory {
+      public getGridFTPDataMovementProtocol_resultTupleScheme getScheme() {
+        return new getGridFTPDataMovementProtocol_resultTupleScheme();
+      }
+    }
+
+    private static class getGridFTPDataMovementProtocol_resultTupleScheme extends TupleScheme<getGridFTPDataMovementProtocol_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getGridFTPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getGridFTPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = new org.apache.airavata.model.appcatalog.GridFTPDataMovement();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
         }
