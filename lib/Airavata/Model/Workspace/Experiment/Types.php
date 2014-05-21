@@ -3124,6 +3124,218 @@ class WorkflowNodeDetails {
 
 }
 
+class ValidatorResult {
+  static $_TSPEC;
+
+  public $result = null;
+  public $errorDetails = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'result',
+          'type' => TType::BOOL,
+          ),
+        2 => array(
+          'var' => 'errorDetails',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['result'])) {
+        $this->result = $vals['result'];
+      }
+      if (isset($vals['errorDetails'])) {
+        $this->errorDetails = $vals['errorDetails'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ValidatorResult';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->result);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->errorDetails);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ValidatorResult');
+    if ($this->result !== null) {
+      $xfer += $output->writeFieldBegin('result', TType::BOOL, 1);
+      $xfer += $output->writeBool($this->result);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->errorDetails !== null) {
+      $xfer += $output->writeFieldBegin('errorDetails', TType::STRING, 2);
+      $xfer += $output->writeString($this->errorDetails);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class ValidationResults {
+  static $_TSPEC;
+
+  public $validationState = null;
+  public $validationResultList = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'validationState',
+          'type' => TType::BOOL,
+          ),
+        2 => array(
+          'var' => 'validationResultList',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Workspace\Experiment\ValidatorResult',
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['validationState'])) {
+        $this->validationState = $vals['validationState'];
+      }
+      if (isset($vals['validationResultList'])) {
+        $this->validationResultList = $vals['validationResultList'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ValidationResults';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->validationState);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::LST) {
+            $this->validationResultList = array();
+            $_size77 = 0;
+            $_etype80 = 0;
+            $xfer += $input->readListBegin($_etype80, $_size77);
+            for ($_i81 = 0; $_i81 < $_size77; ++$_i81)
+            {
+              $elem82 = null;
+              $elem82 = new \Airavata\Model\Workspace\Experiment\ValidatorResult();
+              $xfer += $elem82->read($input);
+              $this->validationResultList []= $elem82;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ValidationResults');
+    if ($this->validationState !== null) {
+      $xfer += $output->writeFieldBegin('validationState', TType::BOOL, 1);
+      $xfer += $output->writeBool($this->validationState);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->validationResultList !== null) {
+      if (!is_array($this->validationResultList)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('validationResultList', TType::LST, 2);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->validationResultList));
+        {
+          foreach ($this->validationResultList as $iter83)
+          {
+            $xfer += $iter83->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class Experiment {
   static $_TSPEC;
 
@@ -3415,15 +3627,15 @@ class Experiment {
         case 13:
           if ($ftype == TType::LST) {
             $this->experimentInputs = array();
-            $_size77 = 0;
-            $_etype80 = 0;
-            $xfer += $input->readListBegin($_etype80, $_size77);
-            for ($_i81 = 0; $_i81 < $_size77; ++$_i81)
+            $_size84 = 0;
+            $_etype87 = 0;
+            $xfer += $input->readListBegin($_etype87, $_size84);
+            for ($_i88 = 0; $_i88 < $_size84; ++$_i88)
             {
-              $elem82 = null;
-              $elem82 = new \Airavata\Model\Workspace\Experiment\DataObjectType();
-              $xfer += $elem82->read($input);
-              $this->experimentInputs []= $elem82;
+              $elem89 = null;
+              $elem89 = new \Airavata\Model\Workspace\Experiment\DataObjectType();
+              $xfer += $elem89->read($input);
+              $this->experimentInputs []= $elem89;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3433,15 +3645,15 @@ class Experiment {
         case 14:
           if ($ftype == TType::LST) {
             $this->experimentOutputs = array();
-            $_size83 = 0;
-            $_etype86 = 0;
-            $xfer += $input->readListBegin($_etype86, $_size83);
-            for ($_i87 = 0; $_i87 < $_size83; ++$_i87)
+            $_size90 = 0;
+            $_etype93 = 0;
+            $xfer += $input->readListBegin($_etype93, $_size90);
+            for ($_i94 = 0; $_i94 < $_size90; ++$_i94)
             {
-              $elem88 = null;
-              $elem88 = new \Airavata\Model\Workspace\Experiment\DataObjectType();
-              $xfer += $elem88->read($input);
-              $this->experimentOutputs []= $elem88;
+              $elem95 = null;
+              $elem95 = new \Airavata\Model\Workspace\Experiment\DataObjectType();
+              $xfer += $elem95->read($input);
+              $this->experimentOutputs []= $elem95;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3459,15 +3671,15 @@ class Experiment {
         case 16:
           if ($ftype == TType::LST) {
             $this->stateChangeList = array();
-            $_size89 = 0;
-            $_etype92 = 0;
-            $xfer += $input->readListBegin($_etype92, $_size89);
-            for ($_i93 = 0; $_i93 < $_size89; ++$_i93)
+            $_size96 = 0;
+            $_etype99 = 0;
+            $xfer += $input->readListBegin($_etype99, $_size96);
+            for ($_i100 = 0; $_i100 < $_size96; ++$_i100)
             {
-              $elem94 = null;
-              $elem94 = new \Airavata\Model\Workspace\Experiment\WorkflowNodeStatus();
-              $xfer += $elem94->read($input);
-              $this->stateChangeList []= $elem94;
+              $elem101 = null;
+              $elem101 = new \Airavata\Model\Workspace\Experiment\WorkflowNodeStatus();
+              $xfer += $elem101->read($input);
+              $this->stateChangeList []= $elem101;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3477,15 +3689,15 @@ class Experiment {
         case 17:
           if ($ftype == TType::LST) {
             $this->workflowNodeDetailsList = array();
-            $_size95 = 0;
-            $_etype98 = 0;
-            $xfer += $input->readListBegin($_etype98, $_size95);
-            for ($_i99 = 0; $_i99 < $_size95; ++$_i99)
+            $_size102 = 0;
+            $_etype105 = 0;
+            $xfer += $input->readListBegin($_etype105, $_size102);
+            for ($_i106 = 0; $_i106 < $_size102; ++$_i106)
             {
-              $elem100 = null;
-              $elem100 = new \Airavata\Model\Workspace\Experiment\WorkflowNodeDetails();
-              $xfer += $elem100->read($input);
-              $this->workflowNodeDetailsList []= $elem100;
+              $elem107 = null;
+              $elem107 = new \Airavata\Model\Workspace\Experiment\WorkflowNodeDetails();
+              $xfer += $elem107->read($input);
+              $this->workflowNodeDetailsList []= $elem107;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3495,15 +3707,15 @@ class Experiment {
         case 18:
           if ($ftype == TType::LST) {
             $this->errors = array();
-            $_size101 = 0;
-            $_etype104 = 0;
-            $xfer += $input->readListBegin($_etype104, $_size101);
-            for ($_i105 = 0; $_i105 < $_size101; ++$_i105)
+            $_size108 = 0;
+            $_etype111 = 0;
+            $xfer += $input->readListBegin($_etype111, $_size108);
+            for ($_i112 = 0; $_i112 < $_size108; ++$_i112)
             {
-              $elem106 = null;
-              $elem106 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
-              $xfer += $elem106->read($input);
-              $this->errors []= $elem106;
+              $elem113 = null;
+              $elem113 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
+              $xfer += $elem113->read($input);
+              $this->errors []= $elem113;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3594,9 +3806,9 @@ class Experiment {
       {
         $output->writeListBegin(TType::STRUCT, count($this->experimentInputs));
         {
-          foreach ($this->experimentInputs as $iter107)
+          foreach ($this->experimentInputs as $iter114)
           {
-            $xfer += $iter107->write($output);
+            $xfer += $iter114->write($output);
           }
         }
         $output->writeListEnd();
@@ -3611,9 +3823,9 @@ class Experiment {
       {
         $output->writeListBegin(TType::STRUCT, count($this->experimentOutputs));
         {
-          foreach ($this->experimentOutputs as $iter108)
+          foreach ($this->experimentOutputs as $iter115)
           {
-            $xfer += $iter108->write($output);
+            $xfer += $iter115->write($output);
           }
         }
         $output->writeListEnd();
@@ -3636,9 +3848,9 @@ class Experiment {
       {
         $output->writeListBegin(TType::STRUCT, count($this->stateChangeList));
         {
-          foreach ($this->stateChangeList as $iter109)
+          foreach ($this->stateChangeList as $iter116)
           {
-            $xfer += $iter109->write($output);
+            $xfer += $iter116->write($output);
           }
         }
         $output->writeListEnd();
@@ -3653,9 +3865,9 @@ class Experiment {
       {
         $output->writeListBegin(TType::STRUCT, count($this->workflowNodeDetailsList));
         {
-          foreach ($this->workflowNodeDetailsList as $iter110)
+          foreach ($this->workflowNodeDetailsList as $iter117)
           {
-            $xfer += $iter110->write($output);
+            $xfer += $iter117->write($output);
           }
         }
         $output->writeListEnd();
@@ -3670,9 +3882,9 @@ class Experiment {
       {
         $output->writeListBegin(TType::STRUCT, count($this->errors));
         {
-          foreach ($this->errors as $iter111)
+          foreach ($this->errors as $iter118)
           {
-            $xfer += $iter111->write($output);
+            $xfer += $iter118->write($output);
           }
         }
         $output->writeListEnd();
