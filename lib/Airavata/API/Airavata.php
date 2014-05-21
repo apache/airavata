@@ -859,6 +859,9 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     if ($result->ase !== null) {
       throw $result->ase;
     }
+    if ($result->lve !== null) {
+      throw $result->lve;
+    }
     return;
   }
 
@@ -3930,6 +3933,7 @@ class Airavata_launchExperiment_result {
   public $enf = null;
   public $ace = null;
   public $ase = null;
+  public $lve = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -3954,6 +3958,11 @@ class Airavata_launchExperiment_result {
           'type' => TType::STRUCT,
           'class' => '\Airavata\API\Error\AiravataSystemException',
           ),
+        5 => array(
+          'var' => 'lve',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\LaunchValidationException',
+          ),
         );
     }
     if (is_array($vals)) {
@@ -3968,6 +3977,9 @@ class Airavata_launchExperiment_result {
       }
       if (isset($vals['ase'])) {
         $this->ase = $vals['ase'];
+      }
+      if (isset($vals['lve'])) {
+        $this->lve = $vals['lve'];
       }
     }
   }
@@ -4023,6 +4035,14 @@ class Airavata_launchExperiment_result {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 5:
+          if ($ftype == TType::STRUCT) {
+            $this->lve = new \Airavata\API\Error\LaunchValidationException();
+            $xfer += $this->lve->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -4054,6 +4074,11 @@ class Airavata_launchExperiment_result {
     if ($this->ase !== null) {
       $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 4);
       $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->lve !== null) {
+      $xfer += $output->writeFieldBegin('lve', TType::STRUCT, 5);
+      $xfer += $this->lve->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
