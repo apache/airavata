@@ -73,15 +73,8 @@ public class HPCMonitorID extends MonitorID {
     }
 
     public HPCMonitorID(AuthenticationInfo authenticationInfo, JobExecutionContext jobExecutionContext) {
+        super(jobExecutionContext);
         this.authenticationInfo = authenticationInfo;
-        this.jobExecutionContext = jobExecutionContext;
-        host = jobExecutionContext.getApplicationContext().getHostDescription();
-        userName = jobExecutionContext.getExperiment().getUserName();
-        jobID = jobExecutionContext.getJobDetails().getJobID();
-        taskID = jobExecutionContext.getTaskData().getTaskID();
-        experimentID = jobExecutionContext.getExperiment().getExperimentID();
-        workflowNodeID =  jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId();// at this point we only have one node todo: fix this
-
     }
 
     public HPCMonitorID(HostDescription host, String jobID,String taskID, String workflowNodeID, String experimentID, String userName,AuthenticationInfo authenticationInfo) {
