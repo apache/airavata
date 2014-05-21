@@ -170,6 +170,10 @@ try
 	$airavataclient->updateExperiment($expId, $update_experiment);
 	echo "$user updated experiment $expId. \n";
 
+	/* Clone Experiment */
+	$clone_expId = $airavataclient->cloneExperiment($expId, "CloneLoadTesterExperiment_".time());
+	echo "$user cloned experiment $expId as $clone_expId. \n";
+
 	/* Update Experiment Configuration */
         $update_userConfigurationData = new UserConfigurationData();
         $update_userConfigurationData->airavataAutoSchedule = 0;
