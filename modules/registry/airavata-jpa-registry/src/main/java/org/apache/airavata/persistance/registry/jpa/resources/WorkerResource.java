@@ -488,7 +488,6 @@ public class WorkerResource extends AbstractResource {
            }
         }
         query = query.substring(0, query.length() - 5);
-        System.out.println(query);
         EntityManager em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
         Query q = em.createQuery(query);

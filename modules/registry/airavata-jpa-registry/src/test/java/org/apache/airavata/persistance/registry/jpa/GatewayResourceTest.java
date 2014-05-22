@@ -132,7 +132,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
     
     @Test
     public void testIsExists() throws Exception {
-        assertTrue(gatewayResource.isExists(ResourceType.USER, "admin"));
+        assertTrue(gatewayResource.isExists(ResourceType.GATEWAY_WORKER, "admin"));
         assertTrue(gatewayResource.isExists(ResourceType.PUBLISHED_WORKFLOW, "pubworkflow1"));
         assertTrue(gatewayResource.isExists(ResourceType.HOST_DESCRIPTOR, "testHostDesc"));
         assertTrue(gatewayResource.isExists(ResourceType.SERVICE_DESCRIPTOR, "testServiceDesc"));
@@ -142,7 +142,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
 
     @Test
     public void testGet() throws Exception {
-        assertNotNull(gatewayResource.get(ResourceType.USER, "admin"));
+        assertNotNull(gatewayResource.get(ResourceType.GATEWAY_WORKER, "admin"));
         assertNotNull(gatewayResource.get(ResourceType.PUBLISHED_WORKFLOW, "pubworkflow1"));
         assertNotNull(gatewayResource.get(ResourceType.HOST_DESCRIPTOR, "testHostDesc"));
         assertNotNull(gatewayResource.get(ResourceType.SERVICE_DESCRIPTOR, "testServiceDesc"));
