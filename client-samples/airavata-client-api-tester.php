@@ -149,7 +149,7 @@ try
 
         /* Update Project */
 	$uproj->description = "Updated project description: ".time();
-	$airavataclient->updateProject($uproj);
+	$airavataclient->updateProject($projId, $uproj);
 	echo "$user updated project $projId. \n";
 
         /* Get whole experiment */
@@ -179,8 +179,8 @@ try
 	//echo "$user updated resource scheduleing for experiment $expId. \n";
 
 	/* Validate experiment */
-	//$valid = $airavataclient->validateExperiment($expId);
-	//echo "$user experiment $expId validation is $valid. \n";
+	$valid = $airavataclient->validateExperiment($expId);
+	echo "$user experiment $expId validation is $valid. \n";
 
         /* Launch Experiment */
 	//$airavataclient->launchExperiment($expId, 'airavataToken');

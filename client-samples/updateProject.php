@@ -55,7 +55,7 @@ try
 		  {
 					 $project=$airavataclient->getProject($argv[1]);
 					 $project->description = $argv[2];
-					 $airavataclient->updateProject($project);
+					 $airavataclient->updateProject($argv[1], $project);
 		  }
 }
 
