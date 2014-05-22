@@ -3898,6 +3898,251 @@ class Experiment {
 
 }
 
+class ExperimentSummary {
+  static $_TSPEC;
+
+  public $experimentID = null;
+  public $projectID = null;
+  public $creationTime = null;
+  public $userName = null;
+  public $name = null;
+  public $description = null;
+  public $experimentStatus = null;
+  public $errors = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'experimentID',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'projectID',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'creationTime',
+          'type' => TType::I64,
+          ),
+        4 => array(
+          'var' => 'userName',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'name',
+          'type' => TType::STRING,
+          ),
+        6 => array(
+          'var' => 'description',
+          'type' => TType::STRING,
+          ),
+        7 => array(
+          'var' => 'experimentStatus',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Workspace\Experiment\ExperimentStatus',
+          ),
+        8 => array(
+          'var' => 'errors',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Workspace\Experiment\ErrorDetails',
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['experimentID'])) {
+        $this->experimentID = $vals['experimentID'];
+      }
+      if (isset($vals['projectID'])) {
+        $this->projectID = $vals['projectID'];
+      }
+      if (isset($vals['creationTime'])) {
+        $this->creationTime = $vals['creationTime'];
+      }
+      if (isset($vals['userName'])) {
+        $this->userName = $vals['userName'];
+      }
+      if (isset($vals['name'])) {
+        $this->name = $vals['name'];
+      }
+      if (isset($vals['description'])) {
+        $this->description = $vals['description'];
+      }
+      if (isset($vals['experimentStatus'])) {
+        $this->experimentStatus = $vals['experimentStatus'];
+      }
+      if (isset($vals['errors'])) {
+        $this->errors = $vals['errors'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ExperimentSummary';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->experimentID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->projectID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->creationTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->name);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->description);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 7:
+          if ($ftype == TType::STRUCT) {
+            $this->experimentStatus = new \Airavata\Model\Workspace\Experiment\ExperimentStatus();
+            $xfer += $this->experimentStatus->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 8:
+          if ($ftype == TType::LST) {
+            $this->errors = array();
+            $_size119 = 0;
+            $_etype122 = 0;
+            $xfer += $input->readListBegin($_etype122, $_size119);
+            for ($_i123 = 0; $_i123 < $_size119; ++$_i123)
+            {
+              $elem124 = null;
+              $elem124 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
+              $xfer += $elem124->read($input);
+              $this->errors []= $elem124;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ExperimentSummary');
+    if ($this->experimentID !== null) {
+      $xfer += $output->writeFieldBegin('experimentID', TType::STRING, 1);
+      $xfer += $output->writeString($this->experimentID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->projectID !== null) {
+      $xfer += $output->writeFieldBegin('projectID', TType::STRING, 2);
+      $xfer += $output->writeString($this->projectID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->creationTime !== null) {
+      $xfer += $output->writeFieldBegin('creationTime', TType::I64, 3);
+      $xfer += $output->writeI64($this->creationTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userName !== null) {
+      $xfer += $output->writeFieldBegin('userName', TType::STRING, 4);
+      $xfer += $output->writeString($this->userName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->name !== null) {
+      $xfer += $output->writeFieldBegin('name', TType::STRING, 5);
+      $xfer += $output->writeString($this->name);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->description !== null) {
+      $xfer += $output->writeFieldBegin('description', TType::STRING, 6);
+      $xfer += $output->writeString($this->description);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->experimentStatus !== null) {
+      if (!is_object($this->experimentStatus)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('experimentStatus', TType::STRUCT, 7);
+      $xfer += $this->experimentStatus->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->errors !== null) {
+      if (!is_array($this->errors)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('errors', TType::LST, 8);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->errors));
+        {
+          foreach ($this->errors as $iter125)
+          {
+            $xfer += $iter125->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 $GLOBALS['experimentModel_CONSTANTS']['DEFAULT_ID'] = "DO_NOT_SET_AT_CLIENTS";
 
 $GLOBALS['experimentModel_CONSTANTS']['DEFAULT_PROJECT_NAME'] = "DEFAULT";
