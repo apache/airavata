@@ -255,6 +255,82 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    public List<ExperimentSummary> searchExperimentsByName(String userName, String expName) throws InvalidRequestException,
+                                                                                                   AiravataClientException,
+                                                                                                   AiravataSystemException,
+                                                                                                   TException {
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!ResourceUtils.isUserExist(userName)){
+            logger.error("User does not exist in the system. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("User does not exist in the system. Please provide a valid user..");
+            throw exception;
+        }
+        try {
+            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            registry = RegistryFactory.getDefaultRegistry();
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, expName);
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
+            for (Object object : results) {
+                summaries.add((ExperimentSummary) object);
+            }
+            return summaries;
+        }catch (Exception e) {
+            logger.error("Error while retrieving experiments", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    public List<ExperimentSummary> searchExperimentsByDesc(String userName, String description) throws InvalidRequestException,
+                                                                                                       AiravataClientException,
+                                                                                                       AiravataSystemException,
+                                                                                                       TException {
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!ResourceUtils.isUserExist(userName)){
+            logger.error("User does not exist in the system. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("User does not exist in the system. Please provide a valid user..");
+            throw exception;
+        }
+        try {
+            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            registry = RegistryFactory.getDefaultRegistry();
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC, description);
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
+            for (Object object : results) {
+                summaries.add((ExperimentSummary) object);
+            }
+            return summaries;
+        }catch (Exception e) {
+            logger.error("Error while retrieving experiments", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Get all Experiments within a Project
      *

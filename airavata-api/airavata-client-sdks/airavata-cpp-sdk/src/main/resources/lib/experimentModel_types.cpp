@@ -3071,4 +3071,193 @@ void swap(Experiment &a, Experiment &b) {
   swap(a.__isset, b.__isset);
 }
 
+const char* ExperimentSummary::ascii_fingerprint = "3DCA5B62241F7A586E1E31A64AE87E0A";
+const uint8_t ExperimentSummary::binary_fingerprint[16] = {0x3D,0xCA,0x5B,0x62,0x24,0x1F,0x7A,0x58,0x6E,0x1E,0x31,0xA6,0x4A,0xE8,0x7E,0x0A};
+
+uint32_t ExperimentSummary::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_experimentID = false;
+  bool isset_projectID = false;
+  bool isset_userName = false;
+  bool isset_name = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->experimentID);
+          isset_experimentID = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->projectID);
+          isset_projectID = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->creationTime);
+          this->__isset.creationTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->userName);
+          isset_userName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->name);
+          isset_name = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->description);
+          this->__isset.description = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->experimentStatus.read(iprot);
+          this->__isset.experimentStatus = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->errors.clear();
+            uint32_t _size111;
+            ::apache::thrift::protocol::TType _etype114;
+            xfer += iprot->readListBegin(_etype114, _size111);
+            this->errors.resize(_size111);
+            uint32_t _i115;
+            for (_i115 = 0; _i115 < _size111; ++_i115)
+            {
+              xfer += this->errors[_i115].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.errors = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_experimentID)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_projectID)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_userName)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_name)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t ExperimentSummary::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("ExperimentSummary");
+
+  xfer += oprot->writeFieldBegin("experimentID", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->experimentID);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("projectID", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->projectID);
+  xfer += oprot->writeFieldEnd();
+
+  if (this->__isset.creationTime) {
+    xfer += oprot->writeFieldBegin("creationTime", ::apache::thrift::protocol::T_I64, 3);
+    xfer += oprot->writeI64(this->creationTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString(this->userName);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("name", ::apache::thrift::protocol::T_STRING, 5);
+  xfer += oprot->writeString(this->name);
+  xfer += oprot->writeFieldEnd();
+
+  if (this->__isset.description) {
+    xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeString(this->description);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.experimentStatus) {
+    xfer += oprot->writeFieldBegin("experimentStatus", ::apache::thrift::protocol::T_STRUCT, 7);
+    xfer += this->experimentStatus.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.errors) {
+    xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 8);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
+      std::vector<ErrorDetails> ::const_iterator _iter116;
+      for (_iter116 = this->errors.begin(); _iter116 != this->errors.end(); ++_iter116)
+      {
+        xfer += (*_iter116).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(ExperimentSummary &a, ExperimentSummary &b) {
+  using ::std::swap;
+  swap(a.experimentID, b.experimentID);
+  swap(a.projectID, b.projectID);
+  swap(a.creationTime, b.creationTime);
+  swap(a.userName, b.userName);
+  swap(a.name, b.name);
+  swap(a.description, b.description);
+  swap(a.experimentStatus, b.experimentStatus);
+  swap(a.errors, b.errors);
+  swap(a.__isset, b.__isset);
+}
+
 

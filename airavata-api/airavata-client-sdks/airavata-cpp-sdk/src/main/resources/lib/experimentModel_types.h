@@ -1911,6 +1911,113 @@ class Experiment {
 
 void swap(Experiment &a, Experiment &b);
 
+typedef struct _ExperimentSummary__isset {
+  _ExperimentSummary__isset() : creationTime(false), description(false), experimentStatus(false), errors(false) {}
+  bool creationTime;
+  bool description;
+  bool experimentStatus;
+  bool errors;
+} _ExperimentSummary__isset;
+
+class ExperimentSummary {
+ public:
+
+  static const char* ascii_fingerprint; // = "3DCA5B62241F7A586E1E31A64AE87E0A";
+  static const uint8_t binary_fingerprint[16]; // = {0x3D,0xCA,0x5B,0x62,0x24,0x1F,0x7A,0x58,0x6E,0x1E,0x31,0xA6,0x4A,0xE8,0x7E,0x0A};
+
+  ExperimentSummary() : experimentID(), projectID(), creationTime(0), userName(), name(), description() {
+  }
+
+  virtual ~ExperimentSummary() throw() {}
+
+  std::string experimentID;
+  std::string projectID;
+  int64_t creationTime;
+  std::string userName;
+  std::string name;
+  std::string description;
+  ExperimentStatus experimentStatus;
+  std::vector<ErrorDetails>  errors;
+
+  _ExperimentSummary__isset __isset;
+
+  void __set_experimentID(const std::string& val) {
+    experimentID = val;
+  }
+
+  void __set_projectID(const std::string& val) {
+    projectID = val;
+  }
+
+  void __set_creationTime(const int64_t val) {
+    creationTime = val;
+    __isset.creationTime = true;
+  }
+
+  void __set_userName(const std::string& val) {
+    userName = val;
+  }
+
+  void __set_name(const std::string& val) {
+    name = val;
+  }
+
+  void __set_description(const std::string& val) {
+    description = val;
+    __isset.description = true;
+  }
+
+  void __set_experimentStatus(const ExperimentStatus& val) {
+    experimentStatus = val;
+    __isset.experimentStatus = true;
+  }
+
+  void __set_errors(const std::vector<ErrorDetails> & val) {
+    errors = val;
+    __isset.errors = true;
+  }
+
+  bool operator == (const ExperimentSummary & rhs) const
+  {
+    if (!(experimentID == rhs.experimentID))
+      return false;
+    if (!(projectID == rhs.projectID))
+      return false;
+    if (__isset.creationTime != rhs.__isset.creationTime)
+      return false;
+    else if (__isset.creationTime && !(creationTime == rhs.creationTime))
+      return false;
+    if (!(userName == rhs.userName))
+      return false;
+    if (!(name == rhs.name))
+      return false;
+    if (__isset.description != rhs.__isset.description)
+      return false;
+    else if (__isset.description && !(description == rhs.description))
+      return false;
+    if (__isset.experimentStatus != rhs.__isset.experimentStatus)
+      return false;
+    else if (__isset.experimentStatus && !(experimentStatus == rhs.experimentStatus))
+      return false;
+    if (__isset.errors != rhs.__isset.errors)
+      return false;
+    else if (__isset.errors && !(errors == rhs.errors))
+      return false;
+    return true;
+  }
+  bool operator != (const ExperimentSummary &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ExperimentSummary & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(ExperimentSummary &a, ExperimentSummary &b);
+
 
 
 #endif

@@ -105,6 +105,30 @@ public class ThriftDataModelConversion {
         return null;
     }
 
+    public static ExperimentSummary getExperimentSummary(ExperimentResource experimentResource){
+        if (experimentResource != null){
+            ExperimentSummary experimentSummary = new ExperimentSummary();
+            if (experimentResource.getProject()!= null){
+                experimentSummary.setProjectID(experimentResource.getProject().getId());
+            }
+            experimentSummary.setExperimentID(experimentResource.getExpID());
+            experimentSummary.setCreationTime(experimentResource.getCreationTime().getTime());
+            experimentSummary.setUserName(experimentResource.getExecutionUser());
+            experimentSummary.setName(experimentResource.getExpName());
+            experimentSummary.setDescription(experimentResource.getDescription());
+            StatusResource experimentStatus = experimentResource.getExperimentStatus();
+            if (experimentStatus != null){
+                experimentSummary.setExperimentStatus(getExperimentStatus(experimentStatus));
+            }
+            List<ErrorDetailResource> errorDetails = experimentResource.getErrorDetails();
+            if (errorDetails!= null && !errorDetails.isEmpty()){
+                experimentSummary.setErrors(getErrorDetailList(errorDetails));
+            }
+            return experimentSummary;
+        }
+        return null;
+    }
+
     public static DataObjectType getInputOutput(Object object){
         if (object != null){
             DataObjectType dataObjectType = new DataObjectType();

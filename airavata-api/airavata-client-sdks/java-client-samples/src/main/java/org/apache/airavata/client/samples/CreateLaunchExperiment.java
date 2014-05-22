@@ -69,27 +69,48 @@ public class CreateLaunchExperiment {
 //            final String expId = createExperimentForStampede(airavata);
             final String expId = createExperimentForLocalHost(airavata);
             System.out.println("Experiment ID : " + expId);
-            updateExperiment(airavata, expId);
+//            updateExperiment(airavata, expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
             List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
+            List<ExperimentSummary> searchedExps1 = searchExperimentsByName(airavata, "admin", "echo");
+            List<ExperimentSummary> searchedExps2 = searchExperimentsByDesc(airavata, "admin", "Echo");
             List<Project> projects = getAllUserProject(airavata, "admin");
             List<Project> searchProjects1 = searchProjectsByProjectName(airavata, "admin", "project");
             List<Project> searchProjects2 = searchProjectsByProjectDesc(airavata, "admin", "test");
-            for (Experiment exp : experiments){
-                System.out.println(" exp id : " + exp.getExperimentID());
+//            for (Experiment exp : experiments){
+//                System.out.println(" exp id : " + exp.getExperimentID());
+//                System.out.println("experiment Description : " + exp.getDescription()) ;
+//                if (exp.getExperimentStatus() != null) {
+//                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
+//                }
+//            }
+
+            for (ExperimentSummary exp : searchedExps1){
+                System.out.println("search results by experiment name");
+                System.out.println("experiment ID : " + exp.getExperimentID()) ;
+                System.out.println("experiment Description : " + exp.getDescription()) ;
                 if (exp.getExperimentStatus() != null) {
                     System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
                 }
             }
-            for (Project pr : searchProjects1){
-                System.out.println(" project id : " + pr.getProjectID());
+
+            for (ExperimentSummary exp : searchedExps2){
+                System.out.println("search results by experiment desc");
+                System.out.println("experiment ID : " + exp.getExperimentID()) ;
+                if (exp.getExperimentStatus() != null) {
+                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
+                }
             }
 
-            for (Project pr : searchProjects2){
-                System.out.println(" project id : " + pr.getProjectID());
-                System.out.println(" project desc : " + pr.getDescription());
-            }
+//            for (Project pr : searchProjects1){
+//                System.out.println(" project id : " + pr.getProjectID());
+//            }
+//
+//            for (Project pr : searchProjects2){
+//                System.out.println(" project id : " + pr.getProjectID());
+//                System.out.println(" project desc : " + pr.getDescription());
+//            }
 
             Thread monitor = (new Thread(){
                  public void run() {
@@ -500,6 +521,36 @@ public class CreateLaunchExperiment {
     public static List<Project> searchProjectsByProjectDesc (Airavata.Client client, String user, String desc){
         try {
             return client.searchProjectsByProjectDesc(user, desc);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<ExperimentSummary> searchExperimentsByName (Airavata.Client client, String user, String expName){
+        try {
+            return client.searchExperimentsByName(user, expName);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<ExperimentSummary> searchExperimentsByDesc(Airavata.Client client, String user, String desc){
+        try {
+            return client.searchExperimentsByDesc(user, desc);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
