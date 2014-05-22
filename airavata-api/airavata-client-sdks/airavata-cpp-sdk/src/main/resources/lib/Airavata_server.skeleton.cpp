@@ -32,7 +32,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("createProject\n");
   }
 
-  void updateProject(const  ::Project& project) {
+  void updateProject(const std::string& projectId, const  ::Project& updatedProject) {
     // Your implementation goes here
     printf("updateProject\n");
   }

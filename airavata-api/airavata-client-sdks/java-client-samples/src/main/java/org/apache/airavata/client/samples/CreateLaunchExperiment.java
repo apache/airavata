@@ -78,13 +78,13 @@ public class CreateLaunchExperiment {
             List<Project> projects = getAllUserProject(airavata, "admin");
             List<Project> searchProjects1 = searchProjectsByProjectName(airavata, "admin", "project");
             List<Project> searchProjects2 = searchProjectsByProjectDesc(airavata, "admin", "test");
-//            for (Experiment exp : experiments){
-//                System.out.println(" exp id : " + exp.getExperimentID());
-//                System.out.println("experiment Description : " + exp.getDescription()) ;
-//                if (exp.getExperimentStatus() != null) {
-//                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
-//                }
-//            }
+            for (Experiment exp : experiments){
+                System.out.println(" exp id : " + exp.getExperimentID());
+                System.out.println("experiment Description : " + exp.getDescription()) ;
+                if (exp.getExperimentStatus() != null) {
+                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
+                }
+            }
 
             for (ExperimentSummary exp : searchedExps1){
                 System.out.println("search results by experiment name");
@@ -103,14 +103,14 @@ public class CreateLaunchExperiment {
                 }
             }
 
-//            for (Project pr : searchProjects1){
-//                System.out.println(" project id : " + pr.getProjectID());
-//            }
-//
-//            for (Project pr : searchProjects2){
-//                System.out.println(" project id : " + pr.getProjectID());
-//                System.out.println(" project desc : " + pr.getDescription());
-//            }
+            for (Project pr : searchProjects1){
+                System.out.println(" project id : " + pr.getProjectID());
+            }
+
+            for (Project pr : searchProjects2){
+                System.out.println(" project id : " + pr.getProjectID());
+                System.out.println(" project desc : " + pr.getDescription());
+            }
 
             Thread monitor = (new Thread(){
                  public void run() {

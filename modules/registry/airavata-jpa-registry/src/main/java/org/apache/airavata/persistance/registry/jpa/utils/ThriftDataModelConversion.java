@@ -51,7 +51,7 @@ public class ThriftDataModelConversion {
                     sharedUsers.add(resource.getUserName());
                 }
             }
-            project.setSharedGroups(sharedUsers);
+            project.setSharedUsers(sharedUsers);
             return project;
         }
         return null;
