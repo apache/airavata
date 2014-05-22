@@ -17,7 +17,7 @@ class AiravataIf {
   virtual ~AiravataIf() {}
   virtual void GetAPIVersion(std::string& _return) = 0;
   virtual void createProject(std::string& _return, const  ::Project& project) = 0;
-  virtual void updateProject(const  ::Project& project) = 0;
+  virtual void updateProject(const std::string& projectId, const  ::Project& updatedProject) = 0;
   virtual void getProject( ::Project& _return, const std::string& projectId) = 0;
   virtual void getAllUserProjects(std::vector< ::Project> & _return, const std::string& userName) = 0;
   virtual void searchProjectsByProjectName(std::vector< ::Project> & _return, const std::string& userName, const std::string& projectName) = 0;
@@ -73,7 +73,7 @@ class AiravataNull : virtual public AiravataIf {
   void createProject(std::string& /* _return */, const  ::Project& /* project */) {
     return;
   }
-  void updateProject(const  ::Project& /* project */) {
+  void updateProject(const std::string& /* projectId */, const  ::Project& /* updatedProject */) {
     return;
   }
   void getProject( ::Project& /* _return */, const std::string& /* projectId */) {
@@ -369,20 +369,27 @@ class Airavata_createProject_presult {
 class Airavata_updateProject_args {
  public:
 
-  Airavata_updateProject_args() {
+  Airavata_updateProject_args() : projectId() {
   }
 
   virtual ~Airavata_updateProject_args() throw() {}
 
-   ::Project project;
+  std::string projectId;
+   ::Project updatedProject;
 
-  void __set_project(const  ::Project& val) {
-    project = val;
+  void __set_projectId(const std::string& val) {
+    projectId = val;
+  }
+
+  void __set_updatedProject(const  ::Project& val) {
+    updatedProject = val;
   }
 
   bool operator == (const Airavata_updateProject_args & rhs) const
   {
-    if (!(project == rhs.project))
+    if (!(projectId == rhs.projectId))
+      return false;
+    if (!(updatedProject == rhs.updatedProject))
       return false;
     return true;
   }
@@ -404,7 +411,8 @@ class Airavata_updateProject_pargs {
 
   virtual ~Airavata_updateProject_pargs() throw() {}
 
-  const  ::Project* project;
+  const std::string* projectId;
+  const  ::Project* updatedProject;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -3128,8 +3136,8 @@ class AiravataClient : virtual public AiravataIf {
   void createProject(std::string& _return, const  ::Project& project);
   void send_createProject(const  ::Project& project);
   void recv_createProject(std::string& _return);
-  void updateProject(const  ::Project& project);
-  void send_updateProject(const  ::Project& project);
+  void updateProject(const std::string& projectId, const  ::Project& updatedProject);
+  void send_updateProject(const std::string& projectId, const  ::Project& updatedProject);
   void recv_updateProject();
   void getProject( ::Project& _return, const std::string& projectId);
   void send_getProject(const std::string& projectId);
@@ -3303,13 +3311,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void updateProject(const  ::Project& project) {
+  void updateProject(const std::string& projectId, const  ::Project& updatedProject) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->updateProject(project);
+      ifaces_[i]->updateProject(projectId, updatedProject);
     }
-    ifaces_[i]->updateProject(project);
+    ifaces_[i]->updateProject(projectId, updatedProject);
   }
 
   void getProject( ::Project& _return, const std::string& projectId) {
