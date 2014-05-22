@@ -142,21 +142,24 @@ try
 	echo "$user created experiment $expId. \n";
         //var_dump($experiment);
 
+        /* Get whole project */
+	$uproj = $airavataclient->getProject($projId);
+ 	echo "$user $projId detail follows: \n";
+	var_dump($uproj);
+
         /* Update Project */
-        $update_project = new Project();
-	$update_project->projectID = $projId;
-	$update_project->owner = $user;
-	$update_project->name = "LoadTesterProject";
-	$update_project->description = "Updated project description: ".time();
-	$airavataclient->updateProject($update_project);
+	$uproj->description = "Updated project description: ".time();
+	$airavataclient->updateProject($uproj);
 	echo "$user updated project $projId. \n";
 
+        /* Get whole experiment */
+	$uexp = $airavataclient->getExperiment($expId);
+        echo "$user experiment $expId detail follows: \n";
+        var_dump($uexp);
+
 	/* Update Experiment */
-        $update_experiment = new Experiment();
-        $update_experiment->userName = $user;
-        $update_experiment->name = "LoadTesterExperiment_".time();
-	$update_experiment->description = "Updated experiment description: ".time();
-	$airavataclient->updateExperiment($expId, $update_experiment);
+	$uexp->description = "Updated experiment description: ".time();
+	$airavataclient->updateExperiment($expId, $uexp);
 	echo "$user updated experiment $expId. \n";
 
 	/* Clone Experiment */
@@ -187,17 +190,6 @@ try
 	$experimentStatus = $airavataclient->getExperimentStatus($expId);
         $experimentStatusString =  ExperimentState::$__names[$experimentStatus->experimentState];
 	echo "$user experiment $expId status is $experimentStatusString. \n";
-
-        /* Get whole project */
-	$uproj = $airavataclient->getProject($projId);
- 	echo "$user $projId detail follows: \n";
-	var_dump($uproj);
-
-        /* Get whole experiment */
-	$uexp = $airavataclient->getExperiment($expId);
-        echo "$user experiment $expId detail follows: \n";
-        var_dump($uexp);
-
 
         /* Get additional information */
         $version = $airavataclient->GetAPIVersion();
