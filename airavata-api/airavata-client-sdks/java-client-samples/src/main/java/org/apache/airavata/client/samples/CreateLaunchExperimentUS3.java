@@ -38,7 +38,7 @@ public class CreateLaunchExperimentUS3 {
         try {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavata.GetAPIVersion());
+            System.out.println("API version is " + airavata.getAPIVersion());
 //            addDescriptors();
 //            final String expId = createExperimentForTrestles(airavata);
             final String expId = createUS3ExperimentForTrestles(airavata);
