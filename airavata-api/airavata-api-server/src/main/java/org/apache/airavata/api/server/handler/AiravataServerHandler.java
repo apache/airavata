@@ -51,11 +51,12 @@ public class AiravataServerHandler implements Airavata.Iface {
     public static final String ORCHESTRATOR_SERVER_HOST = "localhost";
 	 //FIXME: these go in a configuration file or a "constants" class. 
     public static final int ORCHESTRATOR_SERVER_PORT = 8940;
+
     /**
      * Query Airavata to fetch the API version
      */
     @Override
-    public String GetAPIVersion() throws TException {
+    public String getAPIVersion() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return airavataAPIConstants.AIRAVATA_API_VERSION;
     }
 

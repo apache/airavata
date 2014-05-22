@@ -44,8 +44,12 @@ public class ExperimentRegistry {
 
     public ExperimentRegistry(GatewayResource gateway, UserResource user) {
         gatewayResource = gateway;
-        workerResource = new WorkerResource(user.getUserName(), gatewayResource);
-        workerResource.save();
+        if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
+            workerResource = ResourceUtils.addGatewayWorker(gateway, user);
+        }else {
+            workerResource = (WorkerResource)ResourceUtils.getWorker(gateway.getGatewayName(), user.getUserName());
+        }
+
     }
 
     public String addExperiment(Experiment experiment) throws Exception {
