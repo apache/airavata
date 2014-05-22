@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Query Airavata to fetch the API version
      */
-    public String GetAPIVersion() throws org.apache.thrift.TException;
+    public String getAPIVersion() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Create a Project
@@ -69,9 +69,10 @@ import org.slf4j.LoggerFactory;
      * Update a Project
      * 
      * 
-     * @param project
+     * @param projectId
+     * @param updatedProject
      */
-    public void updateProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Get a Project by ID
@@ -417,11 +418,11 @@ import org.slf4j.LoggerFactory;
 
   public interface AsyncIface {
 
-    public void GetAPIVersion(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getAPIVersion(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void createProject(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void updateProject(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getProject(String projectId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -485,26 +486,35 @@ import org.slf4j.LoggerFactory;
       super(iprot, oprot);
     }
 
-    public String GetAPIVersion() throws org.apache.thrift.TException
+    public String getAPIVersion() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_GetAPIVersion();
-      return recv_GetAPIVersion();
+      send_getAPIVersion();
+      return recv_getAPIVersion();
     }
 
-    public void send_GetAPIVersion() throws org.apache.thrift.TException
+    public void send_getAPIVersion() throws org.apache.thrift.TException
     {
-      GetAPIVersion_args args = new GetAPIVersion_args();
-      sendBase("GetAPIVersion", args);
+      getAPIVersion_args args = new getAPIVersion_args();
+      sendBase("getAPIVersion", args);
     }
 
-    public String recv_GetAPIVersion() throws org.apache.thrift.TException
+    public String recv_getAPIVersion() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      GetAPIVersion_result result = new GetAPIVersion_result();
-      receiveBase(result, "GetAPIVersion");
+      getAPIVersion_result result = new getAPIVersion_result();
+      receiveBase(result, "getAPIVersion");
       if (result.isSetSuccess()) {
         return result.success;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "GetAPIVersion failed: unknown result");
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result");
     }
 
     public String createProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
@@ -539,16 +549,17 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createProject failed: unknown result");
     }
 
-    public void updateProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_updateProject(project);
+      send_updateProject(projectId, updatedProject);
       recv_updateProject();
     }
 
-    public void send_updateProject(org.apache.airavata.model.workspace.Project project) throws org.apache.thrift.TException
+    public void send_updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject) throws org.apache.thrift.TException
     {
       updateProject_args args = new updateProject_args();
-      args.setProject(project);
+      args.setProjectId(projectId);
+      args.setUpdatedProject(updatedProject);
       sendBase("updateProject", args);
     }
 
@@ -1208,32 +1219,32 @@ import org.slf4j.LoggerFactory;
       super(protocolFactory, clientManager, transport);
     }
 
-    public void GetAPIVersion(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getAPIVersion(org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      GetAPIVersion_call method_call = new GetAPIVersion_call(resultHandler, this, ___protocolFactory, ___transport);
+      getAPIVersion_call method_call = new getAPIVersion_call(resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class GetAPIVersion_call extends org.apache.thrift.async.TAsyncMethodCall {
-      public GetAPIVersion_call(org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+    public static class getAPIVersion_call extends org.apache.thrift.async.TAsyncMethodCall {
+      public getAPIVersion_call(org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("GetAPIVersion", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        GetAPIVersion_args args = new GetAPIVersion_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getAPIVersion", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getAPIVersion_args args = new getAPIVersion_args();
         args.write(prot);
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_GetAPIVersion();
+        return (new Client(prot)).recv_getAPIVersion();
       }
     }
 
@@ -1269,24 +1280,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void updateProject(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      updateProject_call method_call = new updateProject_call(project, resultHandler, this, ___protocolFactory, ___transport);
+      updateProject_call method_call = new updateProject_call(projectId, updatedProject, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class updateProject_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private org.apache.airavata.model.workspace.Project project;
-      public updateProject_call(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String projectId;
+      private org.apache.airavata.model.workspace.Project updatedProject;
+      public updateProject_call(String projectId, org.apache.airavata.model.workspace.Project updatedProject, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.project = project;
+        this.projectId = projectId;
+        this.updatedProject = updatedProject;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateProject", org.apache.thrift.protocol.TMessageType.CALL, 0));
         updateProject_args args = new updateProject_args();
-        args.setProject(project);
+        args.setProjectId(projectId);
+        args.setUpdatedProject(updatedProject);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -1981,7 +1995,7 @@ import org.slf4j.LoggerFactory;
     }
 
     private static <I extends Iface> Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> getProcessMap(Map<String,  org.apache.thrift.ProcessFunction<I, ? extends  org.apache.thrift.TBase>> processMap) {
-      processMap.put("GetAPIVersion", new GetAPIVersion());
+      processMap.put("getAPIVersion", new getAPIVersion());
       processMap.put("createProject", new createProject());
       processMap.put("updateProject", new updateProject());
       processMap.put("getProject", new getProject());
@@ -2007,22 +2021,30 @@ import org.slf4j.LoggerFactory;
       return processMap;
     }
 
-    public static class GetAPIVersion<I extends Iface> extends org.apache.thrift.ProcessFunction<I, GetAPIVersion_args> {
-      public GetAPIVersion() {
-        super("GetAPIVersion");
+    public static class getAPIVersion<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getAPIVersion_args> {
+      public getAPIVersion() {
+        super("getAPIVersion");
       }
 
-      public GetAPIVersion_args getEmptyArgsInstance() {
-        return new GetAPIVersion_args();
+      public getAPIVersion_args getEmptyArgsInstance() {
+        return new getAPIVersion_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public GetAPIVersion_result getResult(I iface, GetAPIVersion_args args) throws org.apache.thrift.TException {
-        GetAPIVersion_result result = new GetAPIVersion_result();
-        result.success = iface.GetAPIVersion();
+      public getAPIVersion_result getResult(I iface, getAPIVersion_args args) throws org.apache.thrift.TException {
+        getAPIVersion_result result = new getAPIVersion_result();
+        try {
+          result.success = iface.getAPIVersion();
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
         return result;
       }
     }
@@ -2071,7 +2093,7 @@ import org.slf4j.LoggerFactory;
       public updateProject_result getResult(I iface, updateProject_args args) throws org.apache.thrift.TException {
         updateProject_result result = new updateProject_result();
         try {
-          iface.updateProject(args.project);
+          iface.updateProject(args.projectId, args.updatedProject);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -2641,7 +2663,7 @@ import org.slf4j.LoggerFactory;
     }
 
     private static <I extends AsyncIface> Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase,?>> getProcessMap(Map<String,  org.apache.thrift.AsyncProcessFunction<I, ? extends  org.apache.thrift.TBase, ?>> processMap) {
-      processMap.put("GetAPIVersion", new GetAPIVersion());
+      processMap.put("getAPIVersion", new getAPIVersion());
       processMap.put("createProject", new createProject());
       processMap.put("updateProject", new updateProject());
       processMap.put("getProject", new getProject());
@@ -2667,20 +2689,20 @@ import org.slf4j.LoggerFactory;
       return processMap;
     }
 
-    public static class GetAPIVersion<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, GetAPIVersion_args, String> {
-      public GetAPIVersion() {
-        super("GetAPIVersion");
+    public static class getAPIVersion<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAPIVersion_args, String> {
+      public getAPIVersion() {
+        super("getAPIVersion");
       }
 
-      public GetAPIVersion_args getEmptyArgsInstance() {
-        return new GetAPIVersion_args();
+      public getAPIVersion_args getEmptyArgsInstance() {
+        return new getAPIVersion_args();
       }
 
       public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<String>() { 
           public void onComplete(String o) {
-            GetAPIVersion_result result = new GetAPIVersion_result();
+            getAPIVersion_result result = new getAPIVersion_result();
             result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -2693,7 +2715,23 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            GetAPIVersion_result result = new GetAPIVersion_result();
+            getAPIVersion_result result = new getAPIVersion_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -2713,8 +2751,8 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, GetAPIVersion_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.GetAPIVersion(resultHandler);
+      public void start(I iface, getAPIVersion_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.getAPIVersion(resultHandler);
       }
     }
 
@@ -2847,7 +2885,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, updateProject_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.updateProject(args.project,resultHandler);
+        iface.updateProject(args.projectId, args.updatedProject,resultHandler);
       }
     }
 
@@ -4165,14 +4203,14 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class GetAPIVersion_args implements org.apache.thrift.TBase<GetAPIVersion_args, GetAPIVersion_args._Fields>, java.io.Serializable, Cloneable, Comparable<GetAPIVersion_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GetAPIVersion_args");
+  public static class getAPIVersion_args implements org.apache.thrift.TBase<getAPIVersion_args, getAPIVersion_args._Fields>, java.io.Serializable, Cloneable, Comparable<getAPIVersion_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAPIVersion_args");
 
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new GetAPIVersion_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new GetAPIVersion_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new getAPIVersion_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getAPIVersion_argsTupleSchemeFactory());
     }
 
 
@@ -4235,20 +4273,20 @@ import org.slf4j.LoggerFactory;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GetAPIVersion_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAPIVersion_args.class, metaDataMap);
     }
 
-    public GetAPIVersion_args() {
+    public getAPIVersion_args() {
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public GetAPIVersion_args(GetAPIVersion_args other) {
+    public getAPIVersion_args(getAPIVersion_args other) {
     }
 
-    public GetAPIVersion_args deepCopy() {
-      return new GetAPIVersion_args(this);
+    public getAPIVersion_args deepCopy() {
+      return new getAPIVersion_args(this);
     }
 
     @Override
@@ -4281,12 +4319,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof GetAPIVersion_args)
-        return this.equals((GetAPIVersion_args)that);
+      if (that instanceof getAPIVersion_args)
+        return this.equals((getAPIVersion_args)that);
       return false;
     }
 
-    public boolean equals(GetAPIVersion_args that) {
+    public boolean equals(getAPIVersion_args that) {
       if (that == null)
         return false;
 
@@ -4299,7 +4337,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(GetAPIVersion_args other) {
+    public int compareTo(getAPIVersion_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -4323,7 +4361,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("GetAPIVersion_args(");
+      StringBuilder sb = new StringBuilder("getAPIVersion_args(");
       boolean first = true;
 
       sb.append(")");
@@ -4351,15 +4389,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class GetAPIVersion_argsStandardSchemeFactory implements SchemeFactory {
-      public GetAPIVersion_argsStandardScheme getScheme() {
-        return new GetAPIVersion_argsStandardScheme();
+    private static class getAPIVersion_argsStandardSchemeFactory implements SchemeFactory {
+      public getAPIVersion_argsStandardScheme getScheme() {
+        return new getAPIVersion_argsStandardScheme();
       }
     }
 
-    private static class GetAPIVersion_argsStandardScheme extends StandardScheme<GetAPIVersion_args> {
+    private static class getAPIVersion_argsStandardScheme extends StandardScheme<getAPIVersion_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, GetAPIVersion_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getAPIVersion_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -4380,7 +4418,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, GetAPIVersion_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getAPIVersion_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -4390,43 +4428,52 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class GetAPIVersion_argsTupleSchemeFactory implements SchemeFactory {
-      public GetAPIVersion_argsTupleScheme getScheme() {
-        return new GetAPIVersion_argsTupleScheme();
+    private static class getAPIVersion_argsTupleSchemeFactory implements SchemeFactory {
+      public getAPIVersion_argsTupleScheme getScheme() {
+        return new getAPIVersion_argsTupleScheme();
       }
     }
 
-    private static class GetAPIVersion_argsTupleScheme extends TupleScheme<GetAPIVersion_args> {
+    private static class getAPIVersion_argsTupleScheme extends TupleScheme<getAPIVersion_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, GetAPIVersion_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, GetAPIVersion_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
       }
     }
 
   }
 
-  public static class GetAPIVersion_result implements org.apache.thrift.TBase<GetAPIVersion_result, GetAPIVersion_result._Fields>, java.io.Serializable, Cloneable, Comparable<GetAPIVersion_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GetAPIVersion_result");
+  public static class getAPIVersion_result implements org.apache.thrift.TBase<getAPIVersion_result, getAPIVersion_result._Fields>, java.io.Serializable, Cloneable, Comparable<getAPIVersion_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAPIVersion_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new GetAPIVersion_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new GetAPIVersion_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new getAPIVersion_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getAPIVersion_resultTupleSchemeFactory());
     }
 
     public String success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4443,6 +4490,12 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
           default:
             return null;
         }
@@ -4488,43 +4541,67 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GetAPIVersion_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAPIVersion_result.class, metaDataMap);
     }
 
-    public GetAPIVersion_result() {
+    public getAPIVersion_result() {
     }
 
-    public GetAPIVersion_result(
-      String success)
+    public getAPIVersion_result(
+      String success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
       this.success = success;
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public GetAPIVersion_result(GetAPIVersion_result other) {
+    public getAPIVersion_result(getAPIVersion_result other) {
       if (other.isSetSuccess()) {
         this.success = other.success;
       }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
     }
 
-    public GetAPIVersion_result deepCopy() {
-      return new GetAPIVersion_result(this);
+    public getAPIVersion_result deepCopy() {
+      return new getAPIVersion_result(this);
     }
 
     @Override
     public void clear() {
       this.success = null;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
     }
 
     public String getSuccess() {
       return this.success;
     }
 
-    public GetAPIVersion_result setSuccess(String success) {
+    public getAPIVersion_result setSuccess(String success) {
       this.success = success;
       return this;
     }
@@ -4544,6 +4621,78 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public getAPIVersion_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public getAPIVersion_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public getAPIVersion_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -4554,6 +4703,30 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
       }
     }
 
@@ -4561,6 +4734,15 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
 
       }
       throw new IllegalStateException();
@@ -4575,6 +4757,12 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
       }
       throw new IllegalStateException();
     }
@@ -4583,12 +4771,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof GetAPIVersion_result)
-        return this.equals((GetAPIVersion_result)that);
+      if (that instanceof getAPIVersion_result)
+        return this.equals((getAPIVersion_result)that);
       return false;
     }
 
-    public boolean equals(GetAPIVersion_result that) {
+    public boolean equals(getAPIVersion_result that) {
       if (that == null)
         return false;
 
@@ -4601,6 +4789,33 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
       return true;
     }
 
@@ -4610,7 +4825,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(GetAPIVersion_result other) {
+    public int compareTo(getAPIVersion_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -4623,6 +4838,36 @@ import org.slf4j.LoggerFactory;
       }
       if (isSetSuccess()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -4644,7 +4889,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("GetAPIVersion_result(");
+      StringBuilder sb = new StringBuilder("getAPIVersion_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -4652,6 +4897,30 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
       }
       first = false;
       sb.append(")");
@@ -4679,15 +4948,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class GetAPIVersion_resultStandardSchemeFactory implements SchemeFactory {
-      public GetAPIVersion_resultStandardScheme getScheme() {
-        return new GetAPIVersion_resultStandardScheme();
+    private static class getAPIVersion_resultStandardSchemeFactory implements SchemeFactory {
+      public getAPIVersion_resultStandardScheme getScheme() {
+        return new getAPIVersion_resultStandardScheme();
       }
     }
 
-    private static class GetAPIVersion_resultStandardScheme extends StandardScheme<GetAPIVersion_result> {
+    private static class getAPIVersion_resultStandardScheme extends StandardScheme<getAPIVersion_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, GetAPIVersion_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getAPIVersion_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -4705,6 +4974,33 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -4716,7 +5012,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, GetAPIVersion_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getAPIVersion_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -4725,40 +5021,88 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.success);
           oprot.writeFieldEnd();
         }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
 
     }
 
-    private static class GetAPIVersion_resultTupleSchemeFactory implements SchemeFactory {
-      public GetAPIVersion_resultTupleScheme getScheme() {
-        return new GetAPIVersion_resultTupleScheme();
+    private static class getAPIVersion_resultTupleSchemeFactory implements SchemeFactory {
+      public getAPIVersion_resultTupleScheme getScheme() {
+        return new getAPIVersion_resultTupleScheme();
       }
     }
 
-    private static class GetAPIVersion_resultTupleScheme extends TupleScheme<GetAPIVersion_result> {
+    private static class getAPIVersion_resultTupleScheme extends TupleScheme<getAPIVersion_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, GetAPIVersion_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
         }
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, GetAPIVersion_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getAPIVersion_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
         }
       }
     }
@@ -5780,7 +6124,8 @@ import org.slf4j.LoggerFactory;
   public static class updateProject_args implements org.apache.thrift.TBase<updateProject_args, updateProject_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateProject_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateProject_args");
 
-    private static final org.apache.thrift.protocol.TField PROJECT_FIELD_DESC = new org.apache.thrift.protocol.TField("project", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField PROJECT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("projectId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField UPDATED_PROJECT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedProject", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -5788,11 +6133,13 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new updateProject_argsTupleSchemeFactory());
     }
 
-    public org.apache.airavata.model.workspace.Project project; // required
+    public String projectId; // required
+    public org.apache.airavata.model.workspace.Project updatedProject; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      PROJECT((short)1, "project");
+      PROJECT_ID((short)1, "projectId"),
+      UPDATED_PROJECT((short)2, "updatedProject");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5807,8 +6154,10 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // PROJECT
-            return PROJECT;
+          case 1: // PROJECT_ID
+            return PROJECT_ID;
+          case 2: // UPDATED_PROJECT
+            return UPDATED_PROJECT;
           default:
             return null;
         }
@@ -5852,7 +6201,9 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.PROJECT, new org.apache.thrift.meta_data.FieldMetaData("project", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+      tmpMap.put(_Fields.PROJECT_ID, new org.apache.thrift.meta_data.FieldMetaData("projectId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.UPDATED_PROJECT, new org.apache.thrift.meta_data.FieldMetaData("updatedProject", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.Project.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateProject_args.class, metaDataMap);
@@ -5862,18 +6213,23 @@ import org.slf4j.LoggerFactory;
     }
 
     public updateProject_args(
-      org.apache.airavata.model.workspace.Project project)
+      String projectId,
+      org.apache.airavata.model.workspace.Project updatedProject)
     {
       this();
-      this.project = project;
+      this.projectId = projectId;
+      this.updatedProject = updatedProject;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public updateProject_args(updateProject_args other) {
-      if (other.isSetProject()) {
-        this.project = new org.apache.airavata.model.workspace.Project(other.project);
+      if (other.isSetProjectId()) {
+        this.projectId = other.projectId;
+      }
+      if (other.isSetUpdatedProject()) {
+        this.updatedProject = new org.apache.airavata.model.workspace.Project(other.updatedProject);
       }
     }
 
@@ -5883,40 +6239,73 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
-      this.project = null;
+      this.projectId = null;
+      this.updatedProject = null;
     }
 
-    public org.apache.airavata.model.workspace.Project getProject() {
-      return this.project;
+    public String getProjectId() {
+      return this.projectId;
     }
 
-    public updateProject_args setProject(org.apache.airavata.model.workspace.Project project) {
-      this.project = project;
+    public updateProject_args setProjectId(String projectId) {
+      this.projectId = projectId;
       return this;
     }
 
-    public void unsetProject() {
-      this.project = null;
+    public void unsetProjectId() {
+      this.projectId = null;
     }
 
-    /** Returns true if field project is set (has been assigned a value) and false otherwise */
-    public boolean isSetProject() {
-      return this.project != null;
+    /** Returns true if field projectId is set (has been assigned a value) and false otherwise */
+    public boolean isSetProjectId() {
+      return this.projectId != null;
     }
 
-    public void setProjectIsSet(boolean value) {
+    public void setProjectIdIsSet(boolean value) {
       if (!value) {
-        this.project = null;
+        this.projectId = null;
+      }
+    }
+
+    public org.apache.airavata.model.workspace.Project getUpdatedProject() {
+      return this.updatedProject;
+    }
+
+    public updateProject_args setUpdatedProject(org.apache.airavata.model.workspace.Project updatedProject) {
+      this.updatedProject = updatedProject;
+      return this;
+    }
+
+    public void unsetUpdatedProject() {
+      this.updatedProject = null;
+    }
+
+    /** Returns true if field updatedProject is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpdatedProject() {
+      return this.updatedProject != null;
+    }
+
+    public void setUpdatedProjectIsSet(boolean value) {
+      if (!value) {
+        this.updatedProject = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case PROJECT:
+      case PROJECT_ID:
         if (value == null) {
-          unsetProject();
+          unsetProjectId();
         } else {
-          setProject((org.apache.airavata.model.workspace.Project)value);
+          setProjectId((String)value);
+        }
+        break;
+
+      case UPDATED_PROJECT:
+        if (value == null) {
+          unsetUpdatedProject();
+        } else {
+          setUpdatedProject((org.apache.airavata.model.workspace.Project)value);
         }
         break;
 
@@ -5925,8 +6314,11 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case PROJECT:
-        return getProject();
+      case PROJECT_ID:
+        return getProjectId();
+
+      case UPDATED_PROJECT:
+        return getUpdatedProject();
 
       }
       throw new IllegalStateException();
@@ -5939,8 +6331,10 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
-      case PROJECT:
-        return isSetProject();
+      case PROJECT_ID:
+        return isSetProjectId();
+      case UPDATED_PROJECT:
+        return isSetUpdatedProject();
       }
       throw new IllegalStateException();
     }
@@ -5958,12 +6352,21 @@ import org.slf4j.LoggerFactory;
       if (that == null)
         return false;
 
-      boolean this_present_project = true && this.isSetProject();
-      boolean that_present_project = true && that.isSetProject();
-      if (this_present_project || that_present_project) {
-        if (!(this_present_project && that_present_project))
+      boolean this_present_projectId = true && this.isSetProjectId();
+      boolean that_present_projectId = true && that.isSetProjectId();
+      if (this_present_projectId || that_present_projectId) {
+        if (!(this_present_projectId && that_present_projectId))
           return false;
-        if (!this.project.equals(that.project))
+        if (!this.projectId.equals(that.projectId))
+          return false;
+      }
+
+      boolean this_present_updatedProject = true && this.isSetUpdatedProject();
+      boolean that_present_updatedProject = true && that.isSetUpdatedProject();
+      if (this_present_updatedProject || that_present_updatedProject) {
+        if (!(this_present_updatedProject && that_present_updatedProject))
+          return false;
+        if (!this.updatedProject.equals(that.updatedProject))
           return false;
       }
 
@@ -5983,12 +6386,22 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetProject()).compareTo(other.isSetProject());
+      lastComparison = Boolean.valueOf(isSetProjectId()).compareTo(other.isSetProjectId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetProject()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.project, other.project);
+      if (isSetProjectId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.projectId, other.projectId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetUpdatedProject()).compareTo(other.isSetUpdatedProject());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUpdatedProject()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.updatedProject, other.updatedProject);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -6013,11 +6426,19 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("updateProject_args(");
       boolean first = true;
 
-      sb.append("project:");
-      if (this.project == null) {
+      sb.append("projectId:");
+      if (this.projectId == null) {
         sb.append("null");
       } else {
-        sb.append(this.project);
+        sb.append(this.projectId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("updatedProject:");
+      if (this.updatedProject == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.updatedProject);
       }
       first = false;
       sb.append(")");
@@ -6026,12 +6447,15 @@ import org.slf4j.LoggerFactory;
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
-      if (project == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'project' was not present! Struct: " + toString());
+      if (projectId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'projectId' was not present! Struct: " + toString());
+      }
+      if (updatedProject == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'updatedProject' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
-      if (project != null) {
-        project.validate();
+      if (updatedProject != null) {
+        updatedProject.validate();
       }
     }
 
@@ -6069,11 +6493,19 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
-            case 1: // PROJECT
+            case 1: // PROJECT_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.projectId = iprot.readString();
+                struct.setProjectIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // UPDATED_PROJECT
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.project = new org.apache.airavata.model.workspace.Project();
-                struct.project.read(iprot);
-                struct.setProjectIsSet(true);
+                struct.updatedProject = new org.apache.airavata.model.workspace.Project();
+                struct.updatedProject.read(iprot);
+                struct.setUpdatedProjectIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -6093,9 +6525,14 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.project != null) {
-          oprot.writeFieldBegin(PROJECT_FIELD_DESC);
-          struct.project.write(oprot);
+        if (struct.projectId != null) {
+          oprot.writeFieldBegin(PROJECT_ID_FIELD_DESC);
+          oprot.writeString(struct.projectId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.updatedProject != null) {
+          oprot.writeFieldBegin(UPDATED_PROJECT_FIELD_DESC);
+          struct.updatedProject.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -6115,15 +6552,18 @@ import org.slf4j.LoggerFactory;
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, updateProject_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
-        struct.project.write(oprot);
+        oprot.writeString(struct.projectId);
+        struct.updatedProject.write(oprot);
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, updateProject_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        struct.project = new org.apache.airavata.model.workspace.Project();
-        struct.project.read(iprot);
-        struct.setProjectIsSet(true);
+        struct.projectId = iprot.readString();
+        struct.setProjectIdIsSet(true);
+        struct.updatedProject = new org.apache.airavata.model.workspace.Project();
+        struct.updatedProject.read(iprot);
+        struct.setUpdatedProjectIsSet(true);
       }
     }
 

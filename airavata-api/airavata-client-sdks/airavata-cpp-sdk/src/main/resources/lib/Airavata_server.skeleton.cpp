@@ -22,9 +22,9 @@ class AiravataHandler : virtual public AiravataIf {
     // Your initialization goes here
   }
 
-  void GetAPIVersion(std::string& _return) {
+  void getAPIVersion(std::string& _return) {
     // Your implementation goes here
-    printf("GetAPIVersion\n");
+    printf("getAPIVersion\n");
   }
 
   void createProject(std::string& _return, const  ::Project& project) {
@@ -32,7 +32,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("createProject\n");
   }
 
-  void updateProject(const  ::Project& project) {
+  void updateProject(const std::string& projectId, const  ::Project& updatedProject) {
     // Your implementation goes here
     printf("updateProject\n");
   }

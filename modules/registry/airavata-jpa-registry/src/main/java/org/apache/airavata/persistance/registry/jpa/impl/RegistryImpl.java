@@ -45,10 +45,19 @@ public class RegistryImpl implements Registry {
 
     public RegistryImpl() {
         try {
-            gatewayResource = (GatewayResource) ResourceUtils.createGateway(ServerSettings.getSystemUserGateway());
-            gatewayResource.save();
-            user = ResourceUtils.createUser(ServerSettings.getSystemUser(), ServerSettings.getSystemUserPassword());
-            user.save();
+            if (!ResourceUtils.isGatewayExist(ServerSettings.getSystemUserGateway())){
+                gatewayResource = (GatewayResource) ResourceUtils.createGateway(ServerSettings.getSystemUserGateway());
+                gatewayResource.save();
+            }else {
+                gatewayResource = (GatewayResource)ResourceUtils.getGateway(ServerSettings.getSystemUserGateway());
+            }
+
+            if (!ResourceUtils.isUserExist(ServerSettings.getSystemUser())){
+                user = ResourceUtils.createUser(ServerSettings.getSystemUser(), ServerSettings.getSystemUserPassword());
+                user.save();
+            }else {
+                user = (UserResource)ResourceUtils.getUser(ServerSettings.getSystemUser());
+            }
             experimentRegistry = new ExperimentRegistry(gatewayResource, user);
             projectRegistry = new ProjectRegistry(gatewayResource, user);
         } catch (ApplicationSettingsException e) {
@@ -57,10 +66,19 @@ public class RegistryImpl implements Registry {
     }
 
     public RegistryImpl(String gateway, String username, String password) {
-        gatewayResource = (GatewayResource) ResourceUtils.createGateway(gateway);
-        gatewayResource.save();
-        user = ResourceUtils.createUser(username, password);
-        user.save();
+        if (!ResourceUtils.isGatewayExist(gateway)){
+            gatewayResource = (GatewayResource) ResourceUtils.createGateway(gateway);
+            gatewayResource.save();
+        }else {
+            gatewayResource = (GatewayResource)ResourceUtils.getGateway(gateway);
+        }
+
+        if (!ResourceUtils.isUserExist(username)){
+            user = ResourceUtils.createUser(username, password);
+            user.save();
+        }else {
+            user = (UserResource)ResourceUtils.getUser(username);
+        }
         experimentRegistry = new ExperimentRegistry(gatewayResource, user);
         projectRegistry = new ProjectRegistry(gatewayResource, user);
     }

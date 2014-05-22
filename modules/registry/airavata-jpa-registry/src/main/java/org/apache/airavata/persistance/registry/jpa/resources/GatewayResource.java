@@ -206,7 +206,7 @@ public class GatewayResource extends AbstractResource {
         QueryGenerator generator;
         Query q;
         switch (type) {
-            case USER:
+            case GATEWAY_WORKER:
                 generator = new QueryGenerator(GATEWAY_WORKER);
                 generator.setParameter(GatewayWorkerConstants.USERNAME, name);
                 generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
@@ -217,6 +217,16 @@ public class GatewayResource extends AbstractResource {
                 em.getTransaction().commit();
                 em.close();
                 return workerResource;
+            case USER:
+                generator = new QueryGenerator(USERS);
+                generator.setParameter(UserConstants.USERNAME, name);
+                q = generator.selectQuery(em);
+                Users user = (Users) q.getSingleResult();
+                UserResource userResource =
+                        (UserResource)Utils.getResource(ResourceType.USER, user);
+                em.getTransaction().commit();
+                em.close();
+                return userResource;
             case PUBLISHED_WORKFLOW:
                 generator = new QueryGenerator(PUBLISHED_WORKFLOW);
                 generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, name);
@@ -449,11 +459,16 @@ public class GatewayResource extends AbstractResource {
         Query q;
         Number count;
         switch (type){
-            case USER:
+            case GATEWAY_WORKER:
                 em = ResourceUtils.getEntityManager();
                 Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayName, name.toString()));
                 em.close();
                 return existingWorker!= null;
+            case USER:
+                em = ResourceUtils.getEntityManager();
+                Users existingUser = em.find(Users.class, name);
+                em.close();
+                return existingUser!= null;
             case PUBLISHED_WORKFLOW:
                 em = ResourceUtils.getEntityManager();
                 Published_Workflow existingWf = em.find(Published_Workflow.class, new Published_Workflow_PK(gatewayName, name.toString()));

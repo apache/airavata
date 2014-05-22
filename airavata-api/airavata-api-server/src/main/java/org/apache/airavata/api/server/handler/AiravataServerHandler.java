@@ -51,11 +51,12 @@ public class AiravataServerHandler implements Airavata.Iface {
     public static final String ORCHESTRATOR_SERVER_HOST = "localhost";
 	 //FIXME: these go in a configuration file or a "constants" class. 
     public static final int ORCHESTRATOR_SERVER_PORT = 8940;
+
     /**
      * Query Airavata to fetch the API version
      */
     @Override
-    public String GetAPIVersion() throws TException {
+    public String getAPIVersion() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return airavataAPIConstants.AIRAVATA_API_VERSION;
     }
 
@@ -82,28 +83,27 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    private boolean validateString(String name){
-        boolean valid = true;
-        if (name == null || name.equals("") || name.trim().length() == 0){
-            valid = false;
-        }
-        return valid;
-    }
-
-    /**
-     * Update a Project
-     *
-     * @param project
-     */
-    @Override
-    public void updateProject(Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (!validateString(project.getName()) || !validateString(project.getOwner())){
-            logger.error("Project name and owner cannot be empty...");
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+    public void updateProject(String projectId, Project updatedProject) throws InvalidRequestException,
+                                                                               AiravataClientException,
+                                                                               AiravataSystemException,
+                                                                               TException {
+        if (!validateString(projectId) || !validateString(projectId)){
+            logger.error("Project id cannot be empty...");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Project id cannot be empty...");
+            throw exception;
         }
         try {
             registry = RegistryFactory.getDefaultRegistry();
-            registry.update(RegistryModelType.PROJECT, project, project.getProjectID());
+            if (!registry.isExist(RegistryModelType.PROJECT, projectId)){
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
+            registry.update(RegistryModelType.PROJECT, updatedProject, projectId);
         } catch (RegistryException e) {
             logger.error("Error while updating the project", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -111,6 +111,15 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Error while updating the project. More info : " + e.getMessage());
             throw exception;
         }
+
+    }
+
+    private boolean validateString(String name){
+        boolean valid = true;
+        if (name == null || name.equals("") || name.trim().length() == 0){
+            valid = false;
+        }
+        return valid;
     }
 
     /**
@@ -817,19 +826,19 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, LaunchValidationException, TException {
         final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
         final String expID = airavataExperimentId;
-        (new Thread(){
-            public void run(){
-                try {
-                    if (orchestratorClient.validateExperiment(expID)) {
+        if (orchestratorClient.validateExperiment(expID)) {
+            (new Thread() {
+                public void run() {
+                    try {
                         orchestratorClient.launchExperiment(expID);
-                    } else {
-                        throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
+                    } catch (TException e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
-                } catch (TException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
-            }
-        }).start();
+            }).start();
+        } else {
+            throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
+        }
     }
 
 	private OrchestratorService.Client getOrchestratorClient() {

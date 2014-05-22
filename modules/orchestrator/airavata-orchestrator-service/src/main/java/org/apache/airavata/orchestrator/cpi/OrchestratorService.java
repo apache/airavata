@@ -82,7 +82,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param experimentId
      */
-    public boolean validateExperiment(String experimentId) throws org.apache.thrift.TException;
+    public boolean validateExperiment(String experimentId) throws org.apache.airavata.model.error.LaunchValidationException, org.apache.thrift.TException;
 
     /**
      *  *
@@ -176,7 +176,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "launchExperiment failed: unknown result");
     }
 
-    public boolean validateExperiment(String experimentId) throws org.apache.thrift.TException
+    public boolean validateExperiment(String experimentId) throws org.apache.airavata.model.error.LaunchValidationException, org.apache.thrift.TException
     {
       send_validateExperiment(experimentId);
       return recv_validateExperiment();
@@ -189,12 +189,15 @@ import org.slf4j.LoggerFactory;
       sendBase("validateExperiment", args);
     }
 
-    public boolean recv_validateExperiment() throws org.apache.thrift.TException
+    public boolean recv_validateExperiment() throws org.apache.airavata.model.error.LaunchValidationException, org.apache.thrift.TException
     {
       validateExperiment_result result = new validateExperiment_result();
       receiveBase(result, "validateExperiment");
       if (result.isSetSuccess()) {
         return result.success;
+      }
+      if (result.lve != null) {
+        throw result.lve;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "validateExperiment failed: unknown result");
     }
@@ -323,7 +326,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public boolean getResult() throws org.apache.thrift.TException {
+      public boolean getResult() throws org.apache.airavata.model.error.LaunchValidationException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -441,8 +444,12 @@ import org.slf4j.LoggerFactory;
 
       public validateExperiment_result getResult(I iface, validateExperiment_args args) throws org.apache.thrift.TException {
         validateExperiment_result result = new validateExperiment_result();
-        result.success = iface.validateExperiment(args.experimentId);
-        result.setSuccessIsSet(true);
+        try {
+          result.success = iface.validateExperiment(args.experimentId);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.model.error.LaunchValidationException lve) {
+          result.lve = lve;
+        }
         return result;
       }
     }
@@ -619,6 +626,12 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             validateExperiment_result result = new validateExperiment_result();
+            if (e instanceof org.apache.airavata.model.error.LaunchValidationException) {
+                        result.lve = (org.apache.airavata.model.error.LaunchValidationException) e;
+                        result.setLveIsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -2349,6 +2362,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("validateExperiment_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField LVE_FIELD_DESC = new org.apache.thrift.protocol.TField("lve", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2357,10 +2371,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public boolean success; // required
+    public org.apache.airavata.model.error.LaunchValidationException lve; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      LVE((short)1, "lve");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2377,6 +2393,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // LVE
+            return LVE;
           default:
             return null;
         }
@@ -2424,6 +2442,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.LVE, new org.apache.thrift.meta_data.FieldMetaData("lve", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(validateExperiment_result.class, metaDataMap);
     }
@@ -2432,11 +2452,13 @@ import org.slf4j.LoggerFactory;
     }
 
     public validateExperiment_result(
-      boolean success)
+      boolean success,
+      org.apache.airavata.model.error.LaunchValidationException lve)
     {
       this();
       this.success = success;
       setSuccessIsSet(true);
+      this.lve = lve;
     }
 
     /**
@@ -2445,6 +2467,9 @@ import org.slf4j.LoggerFactory;
     public validateExperiment_result(validateExperiment_result other) {
       __isset_bitfield = other.__isset_bitfield;
       this.success = other.success;
+      if (other.isSetLve()) {
+        this.lve = new org.apache.airavata.model.error.LaunchValidationException(other.lve);
+      }
     }
 
     public validateExperiment_result deepCopy() {
@@ -2455,6 +2480,7 @@ import org.slf4j.LoggerFactory;
     public void clear() {
       setSuccessIsSet(false);
       this.success = false;
+      this.lve = null;
     }
 
     public boolean isSuccess() {
@@ -2480,6 +2506,30 @@ import org.slf4j.LoggerFactory;
       __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
     }
 
+    public org.apache.airavata.model.error.LaunchValidationException getLve() {
+      return this.lve;
+    }
+
+    public validateExperiment_result setLve(org.apache.airavata.model.error.LaunchValidationException lve) {
+      this.lve = lve;
+      return this;
+    }
+
+    public void unsetLve() {
+      this.lve = null;
+    }
+
+    /** Returns true if field lve is set (has been assigned a value) and false otherwise */
+    public boolean isSetLve() {
+      return this.lve != null;
+    }
+
+    public void setLveIsSet(boolean value) {
+      if (!value) {
+        this.lve = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -2490,6 +2540,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case LVE:
+        if (value == null) {
+          unsetLve();
+        } else {
+          setLve((org.apache.airavata.model.error.LaunchValidationException)value);
+        }
+        break;
+
       }
     }
 
@@ -2497,6 +2555,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return Boolean.valueOf(isSuccess());
+
+      case LVE:
+        return getLve();
 
       }
       throw new IllegalStateException();
@@ -2511,6 +2572,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case LVE:
+        return isSetLve();
       }
       throw new IllegalStateException();
     }
@@ -2534,6 +2597,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_success && that_present_success))
           return false;
         if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_lve = true && this.isSetLve();
+      boolean that_present_lve = true && that.isSetLve();
+      if (this_present_lve || that_present_lve) {
+        if (!(this_present_lve && that_present_lve))
+          return false;
+        if (!this.lve.equals(that.lve))
           return false;
       }
 
@@ -2563,6 +2635,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetLve()).compareTo(other.isSetLve());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetLve()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.lve, other.lve);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -2585,6 +2667,14 @@ import org.slf4j.LoggerFactory;
 
       sb.append("success:");
       sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("lve:");
+      if (this.lve == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.lve);
+      }
       first = false;
       sb.append(")");
       return sb.toString();
@@ -2639,6 +2729,15 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // LVE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.lve = new org.apache.airavata.model.error.LaunchValidationException();
+                struct.lve.read(iprot);
+                struct.setLveIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -2657,6 +2756,11 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.lve != null) {
+          oprot.writeFieldBegin(LVE_FIELD_DESC);
+          struct.lve.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -2680,19 +2784,30 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetLve()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           oprot.writeBool(struct.success);
+        }
+        if (struct.isSetLve()) {
+          struct.lve.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, validateExperiment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.success = iprot.readBool();
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.lve = new org.apache.airavata.model.error.LaunchValidationException();
+          struct.lve.read(iprot);
+          struct.setLveIsSet(true);
         }
       }
     }

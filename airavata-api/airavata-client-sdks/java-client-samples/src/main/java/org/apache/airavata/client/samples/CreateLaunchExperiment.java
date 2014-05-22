@@ -21,7 +21,7 @@
 
 package org.apache.airavata.client.samples;
 
-import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.util.ProjectModelUtil;
@@ -29,9 +29,6 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
@@ -60,7 +57,7 @@ public class CreateLaunchExperiment {
         try {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavata.GetAPIVersion());
+            System.out.println("API version is " + airavata.getAPIVersion());
             addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
@@ -78,13 +75,13 @@ public class CreateLaunchExperiment {
             List<Project> projects = getAllUserProject(airavata, "admin");
             List<Project> searchProjects1 = searchProjectsByProjectName(airavata, "admin", "project");
             List<Project> searchProjects2 = searchProjectsByProjectDesc(airavata, "admin", "test");
-//            for (Experiment exp : experiments){
-//                System.out.println(" exp id : " + exp.getExperimentID());
-//                System.out.println("experiment Description : " + exp.getDescription()) ;
-//                if (exp.getExperimentStatus() != null) {
-//                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
-//                }
-//            }
+            for (Experiment exp : experiments){
+                System.out.println(" exp id : " + exp.getExperimentID());
+                System.out.println("experiment Description : " + exp.getDescription()) ;
+                if (exp.getExperimentStatus() != null) {
+                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
+                }
+            }
 
             for (ExperimentSummary exp : searchedExps1){
                 System.out.println("search results by experiment name");
@@ -103,14 +100,14 @@ public class CreateLaunchExperiment {
                 }
             }
 
-//            for (Project pr : searchProjects1){
-//                System.out.println(" project id : " + pr.getProjectID());
-//            }
-//
-//            for (Project pr : searchProjects2){
-//                System.out.println(" project id : " + pr.getProjectID());
-//                System.out.println(" project desc : " + pr.getDescription());
-//            }
+            for (Project pr : searchProjects1){
+                System.out.println(" project id : " + pr.getProjectID());
+            }
+
+            for (Project pr : searchProjects2){
+                System.out.println(" project id : " + pr.getProjectID());
+                System.out.println(" project desc : " + pr.getDescription());
+            }
 
             Thread monitor = (new Thread(){
                  public void run() {
@@ -446,6 +443,15 @@ public class CreateLaunchExperiment {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
+        } catch (LaunchValidationException e) {
+            logger.error("Validation failed" + e.getErrorMessage());
+            org.apache.airavata.model.error.ValidationResults validationResult = e.getValidationResult();
+            for (org.apache.airavata.model.error.ValidatorResult vResult : validationResult.getValidationResultList()) {
+                if (!vResult.isSetResult()) {
+                    System.out.println("Error:" + vResult.getErrorDetails());
+                }
+            }
+            throw e;
         }catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
