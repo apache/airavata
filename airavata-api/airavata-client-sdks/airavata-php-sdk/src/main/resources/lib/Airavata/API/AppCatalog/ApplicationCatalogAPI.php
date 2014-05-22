@@ -105,7 +105,7 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
   public function addComputeResourceDescription(\ComputeResourceDescription $computeResourceDescription)
   {
     $this->send_addComputeResourceDescription($computeResourceDescription);
-    $this->recv_addComputeResourceDescription();
+    return $this->recv_addComputeResourceDescription();
   }
 
   public function send_addComputeResourceDescription(\ComputeResourceDescription $computeResourceDescription)
@@ -147,6 +147,9 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -156,13 +159,13 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    return;
+    throw new \Exception("addComputeResourceDescription failed: unknown result");
   }
 
   public function addSSHJobSubmissionProtocol($computeResourceId, \SSHJobSubmission $jobSubmission)
   {
     $this->send_addSSHJobSubmissionProtocol($computeResourceId, $jobSubmission);
-    $this->recv_addSSHJobSubmissionProtocol();
+    return $this->recv_addSSHJobSubmissionProtocol();
   }
 
   public function send_addSSHJobSubmissionProtocol($computeResourceId, \SSHJobSubmission $jobSubmission)
@@ -205,6 +208,9 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -214,13 +220,13 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    return;
+    throw new \Exception("addSSHJobSubmissionProtocol failed: unknown result");
   }
 
   public function addGSISSHJobSubmissionProtocol($computeResourceId, \GSISSHJobSubmission $jobSubmission)
   {
     $this->send_addGSISSHJobSubmissionProtocol($computeResourceId, $jobSubmission);
-    $this->recv_addGSISSHJobSubmissionProtocol();
+    return $this->recv_addGSISSHJobSubmissionProtocol();
   }
 
   public function send_addGSISSHJobSubmissionProtocol($computeResourceId, \GSISSHJobSubmission $jobSubmission)
@@ -263,6 +269,9 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -272,13 +281,13 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    return;
+    throw new \Exception("addGSISSHJobSubmissionProtocol failed: unknown result");
   }
 
   public function addGlobusJobSubmissionProtocol($computeResourceId, \GlobusJobSubmission $jobSubmission)
   {
     $this->send_addGlobusJobSubmissionProtocol($computeResourceId, $jobSubmission);
-    $this->recv_addGlobusJobSubmissionProtocol();
+    return $this->recv_addGlobusJobSubmissionProtocol();
   }
 
   public function send_addGlobusJobSubmissionProtocol($computeResourceId, \GlobusJobSubmission $jobSubmission)
@@ -321,6 +330,9 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -330,13 +342,13 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    return;
+    throw new \Exception("addGlobusJobSubmissionProtocol failed: unknown result");
   }
 
   public function addSCPDataMovementProtocol($computeResourceId, \SCPDataMovement $dataMovement)
   {
     $this->send_addSCPDataMovementProtocol($computeResourceId, $dataMovement);
-    $this->recv_addSCPDataMovementProtocol();
+    return $this->recv_addSCPDataMovementProtocol();
   }
 
   public function send_addSCPDataMovementProtocol($computeResourceId, \SCPDataMovement $dataMovement)
@@ -379,6 +391,9 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -388,13 +403,13 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    return;
+    throw new \Exception("addSCPDataMovementProtocol failed: unknown result");
   }
 
   public function addGridFTPDataMovementProtocol($computeResourceId, \GridFTPDataMovement $dataMovement)
   {
     $this->send_addGridFTPDataMovementProtocol($computeResourceId, $dataMovement);
-    $this->recv_addGridFTPDataMovementProtocol();
+    return $this->recv_addGridFTPDataMovementProtocol();
   }
 
   public function send_addGridFTPDataMovementProtocol($computeResourceId, \GridFTPDataMovement $dataMovement)
@@ -437,6 +452,9 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -446,7 +464,7 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    return;
+    throw new \Exception("addGridFTPDataMovementProtocol failed: unknown result");
   }
 
   public function listComputeResourceDescriptions()
@@ -991,7 +1009,7 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
   public function addApplicationInterface(\ApplicationInterface $applicationInterface)
   {
     $this->send_addApplicationInterface($applicationInterface);
-    $this->recv_addApplicationInterface();
+    return $this->recv_addApplicationInterface();
   }
 
   public function send_addApplicationInterface(\ApplicationInterface $applicationInterface)
@@ -1033,6 +1051,9 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -1042,7 +1063,7 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    return;
+    throw new \Exception("addApplicationInterface failed: unknown result");
   }
 
   public function listApplicationInterfaceIds()
@@ -1167,7 +1188,7 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
   public function addApplicationDeployment($applicationInterfaceId, \ApplicationDeployment $applicationDeployment)
   {
     $this->send_addApplicationDeployment($applicationInterfaceId, $applicationDeployment);
-    $this->recv_addApplicationDeployment();
+    return $this->recv_addApplicationDeployment();
   }
 
   public function send_addApplicationDeployment($applicationInterfaceId, \ApplicationDeployment $applicationDeployment)
@@ -1210,6 +1231,9 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
+    if ($result->success !== null) {
+      return $result->success;
+    }
     if ($result->ire !== null) {
       throw $result->ire;
     }
@@ -1219,7 +1243,7 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     if ($result->ase !== null) {
       throw $result->ase;
     }
-    return;
+    throw new \Exception("addApplicationDeployment failed: unknown result");
   }
 
   public function listApplicationDeploymentIds($applicationInterfaceId)
@@ -1549,6 +1573,7 @@ class ApplicationCatalogAPI_addComputeResourceDescription_args {
 class ApplicationCatalogAPI_addComputeResourceDescription_result {
   static $_TSPEC;
 
+  public $success = null;
   public $ire = null;
   public $ace = null;
   public $ase = null;
@@ -1556,6 +1581,10 @@ class ApplicationCatalogAPI_addComputeResourceDescription_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -1574,6 +1603,9 @@ class ApplicationCatalogAPI_addComputeResourceDescription_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -1605,6 +1637,13 @@ class ApplicationCatalogAPI_addComputeResourceDescription_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -1642,6 +1681,11 @@ class ApplicationCatalogAPI_addComputeResourceDescription_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationCatalogAPI_addComputeResourceDescription_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);
@@ -1764,6 +1808,7 @@ class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_args {
 class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result {
   static $_TSPEC;
 
+  public $success = null;
   public $ire = null;
   public $ace = null;
   public $ase = null;
@@ -1771,6 +1816,10 @@ class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -1789,6 +1838,9 @@ class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -1820,6 +1872,13 @@ class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -1857,6 +1916,11 @@ class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);
@@ -1979,6 +2043,7 @@ class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_args {
 class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result {
   static $_TSPEC;
 
+  public $success = null;
   public $ire = null;
   public $ace = null;
   public $ase = null;
@@ -1986,6 +2051,10 @@ class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -2004,6 +2073,9 @@ class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -2035,6 +2107,13 @@ class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -2072,6 +2151,11 @@ class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);
@@ -2194,6 +2278,7 @@ class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_args {
 class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result {
   static $_TSPEC;
 
+  public $success = null;
   public $ire = null;
   public $ace = null;
   public $ase = null;
@@ -2201,6 +2286,10 @@ class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -2219,6 +2308,9 @@ class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -2250,6 +2342,13 @@ class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -2287,6 +2386,11 @@ class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);
@@ -2409,6 +2513,7 @@ class ApplicationCatalogAPI_addSCPDataMovementProtocol_args {
 class ApplicationCatalogAPI_addSCPDataMovementProtocol_result {
   static $_TSPEC;
 
+  public $success = null;
   public $ire = null;
   public $ace = null;
   public $ase = null;
@@ -2416,6 +2521,10 @@ class ApplicationCatalogAPI_addSCPDataMovementProtocol_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -2434,6 +2543,9 @@ class ApplicationCatalogAPI_addSCPDataMovementProtocol_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -2465,6 +2577,13 @@ class ApplicationCatalogAPI_addSCPDataMovementProtocol_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -2502,6 +2621,11 @@ class ApplicationCatalogAPI_addSCPDataMovementProtocol_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationCatalogAPI_addSCPDataMovementProtocol_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);
@@ -2624,6 +2748,7 @@ class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_args {
 class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result {
   static $_TSPEC;
 
+  public $success = null;
   public $ire = null;
   public $ace = null;
   public $ase = null;
@@ -2631,6 +2756,10 @@ class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -2649,6 +2778,9 @@ class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -2680,6 +2812,13 @@ class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -2717,6 +2856,11 @@ class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);
@@ -4748,6 +4892,7 @@ class ApplicationCatalogAPI_addApplicationInterface_args {
 class ApplicationCatalogAPI_addApplicationInterface_result {
   static $_TSPEC;
 
+  public $success = null;
   public $ire = null;
   public $ace = null;
   public $ase = null;
@@ -4755,6 +4900,10 @@ class ApplicationCatalogAPI_addApplicationInterface_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -4773,6 +4922,9 @@ class ApplicationCatalogAPI_addApplicationInterface_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -4804,6 +4956,13 @@ class ApplicationCatalogAPI_addApplicationInterface_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -4841,6 +5000,11 @@ class ApplicationCatalogAPI_addApplicationInterface_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationCatalogAPI_addApplicationInterface_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);
@@ -5392,6 +5556,7 @@ class ApplicationCatalogAPI_addApplicationDeployment_args {
 class ApplicationCatalogAPI_addApplicationDeployment_result {
   static $_TSPEC;
 
+  public $success = null;
   public $ire = null;
   public $ace = null;
   public $ase = null;
@@ -5399,6 +5564,10 @@ class ApplicationCatalogAPI_addApplicationDeployment_result {
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
         1 => array(
           'var' => 'ire',
           'type' => TType::STRUCT,
@@ -5417,6 +5586,9 @@ class ApplicationCatalogAPI_addApplicationDeployment_result {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
       if (isset($vals['ire'])) {
         $this->ire = $vals['ire'];
       }
@@ -5448,6 +5620,13 @@ class ApplicationCatalogAPI_addApplicationDeployment_result {
       }
       switch ($fid)
       {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         case 1:
           if ($ftype == TType::STRUCT) {
             $this->ire = new \Airavata\API\Error\InvalidRequestException();
@@ -5485,6 +5664,11 @@ class ApplicationCatalogAPI_addApplicationDeployment_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationCatalogAPI_addApplicationDeployment_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->ire !== null) {
       $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
       $xfer += $this->ire->write($output);

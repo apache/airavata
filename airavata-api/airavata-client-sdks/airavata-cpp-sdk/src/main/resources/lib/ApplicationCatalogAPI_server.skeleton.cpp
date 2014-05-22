@@ -27,32 +27,32 @@ class ApplicationCatalogAPIHandler : virtual public ApplicationCatalogAPIIf {
     printf("GetAPIVersion\n");
   }
 
-  void addComputeResourceDescription(const  ::ComputeResourceDescription& computeResourceDescription) {
+  void addComputeResourceDescription(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription) {
     // Your implementation goes here
     printf("addComputeResourceDescription\n");
   }
 
-  void addSSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission) {
+  void addSSHJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission) {
     // Your implementation goes here
     printf("addSSHJobSubmissionProtocol\n");
   }
 
-  void addGSISSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission) {
+  void addGSISSHJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission) {
     // Your implementation goes here
     printf("addGSISSHJobSubmissionProtocol\n");
   }
 
-  void addGlobusJobSubmissionProtocol(const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission) {
+  void addGlobusJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission) {
     // Your implementation goes here
     printf("addGlobusJobSubmissionProtocol\n");
   }
 
-  void addSCPDataMovementProtocol(const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement) {
+  void addSCPDataMovementProtocol(std::string& _return, const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement) {
     // Your implementation goes here
     printf("addSCPDataMovementProtocol\n");
   }
 
-  void addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement) {
+  void addGridFTPDataMovementProtocol(std::string& _return, const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement) {
     // Your implementation goes here
     printf("addGridFTPDataMovementProtocol\n");
   }
@@ -102,7 +102,7 @@ class ApplicationCatalogAPIHandler : virtual public ApplicationCatalogAPIIf {
     printf("getComputeResourceDescriptionFromHostName\n");
   }
 
-  void addApplicationInterface(const  ::ApplicationInterface& applicationInterface) {
+  void addApplicationInterface(std::string& _return, const  ::ApplicationInterface& applicationInterface) {
     // Your implementation goes here
     printf("addApplicationInterface\n");
   }
@@ -117,7 +117,7 @@ class ApplicationCatalogAPIHandler : virtual public ApplicationCatalogAPIIf {
     printf("getApplicationInterface\n");
   }
 
-  void addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment) {
+  void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment) {
     // Your implementation goes here
     printf("addApplicationDeployment\n");
   }
