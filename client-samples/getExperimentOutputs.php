@@ -49,8 +49,9 @@ $airavataclient = new AiravataClient($protocol);
 
 
 
-if (count($argv) < 2) {
-    exit("Please provide an experimentID. \n");
+if ($argc != 2)
+{
+    exit("php getExperimentOutputs.php <experiment_id> \n");
 }
 
 $expId = $argv[1];

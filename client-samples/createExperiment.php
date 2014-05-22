@@ -134,7 +134,7 @@ try
         {
             var_dump($experiment);
             echo "Experiment $expId created! \n    ";
-        } 
+        }
         else
         {
             echo "Failed to create experiment. \n";
