@@ -62,32 +62,32 @@ service ApplicationCatalogAPI {
   /**
    * Manage Computer Resources
   */
-  void addComputeResourceDescription(1: required applicationCatalogDataModel.ComputeResourceDescription computeResourceDescription)
+  string addComputeResourceDescription(1: required applicationCatalogDataModel.ComputeResourceDescription computeResourceDescription)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
             
-  void addSSHJobSubmissionProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.SSHJobSubmission jobSubmission)
+  string addSSHJobSubmissionProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.SSHJobSubmission jobSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
             
-  void addGSISSHJobSubmissionProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.GSISSHJobSubmission jobSubmission)
+  string addGSISSHJobSubmissionProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.GSISSHJobSubmission jobSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
             
-  void addGlobusJobSubmissionProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.GlobusJobSubmission jobSubmission)
+  string addGlobusJobSubmissionProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.GlobusJobSubmission jobSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)     
             
-  void addSCPDataMovementProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.SCPDataMovement dataMovement)
+  string addSCPDataMovementProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.SCPDataMovement dataMovement)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase) 
             
-  void addGridFTPDataMovementProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.GridFTPDataMovement dataMovement)
+  string addGridFTPDataMovementProtocol(1: required string computeResourceId, 2: required applicationCatalogDataModel.GridFTPDataMovement dataMovement)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)             
@@ -140,7 +140,7 @@ service ApplicationCatalogAPI {
   /**
    * Manage Application Interfaces
   */
-  void addApplicationInterface(1: required applicationCatalogDataModel.ApplicationInterface applicationInterface)
+  string addApplicationInterface(1: required applicationCatalogDataModel.ApplicationInterface applicationInterface)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
@@ -158,7 +158,7 @@ service ApplicationCatalogAPI {
   /**
    * Manage application deployments
   */
-  void addApplicationDeployment(1: required string applicationInterfaceId, 2: required applicationCatalogDataModel.ApplicationDeployment applicationDeployment)
+  string addApplicationDeployment(1: required string applicationInterfaceId, 2: required applicationCatalogDataModel.ApplicationDeployment applicationDeployment)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)   
