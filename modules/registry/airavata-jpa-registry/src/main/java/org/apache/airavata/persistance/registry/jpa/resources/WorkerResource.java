@@ -502,4 +502,27 @@ public class WorkerResource extends AbstractResource {
         em.close();
         return result;
     }
+
+    public List<ExperimentResource> searchExperiments (Map<String, String> filters){
+        List<ExperimentResource> result = new ArrayList<ExperimentResource>();
+        String query = "SELECT e from Experiment e WHERE ";
+        if (filters != null && filters.size() != 0) {
+            for (String field : filters.keySet()){
+                query += "e." + field + " LIKE '%" + filters.get(field) + "%' AND " ;
+            }
+        }
+        query = query.substring(0, query.length() - 5);
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q = em.createQuery(query);
+        List resultList = q.getResultList();
+        for (Object o : resultList){
+            Experiment experiment = (Experiment) o;
+            ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+            result.add(experimentResource);
+        }
+        em.getTransaction().commit();
+        em.close();
+        return result;
+    }
 }

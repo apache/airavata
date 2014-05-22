@@ -107,7 +107,7 @@ service Airavata {
                   3: airavataErrors.AiravataSystemException ase)
 
   /**
-    * Get all Project for user by project name
+    * Get all Project for user by project description
     *
   */
   list<workspaceModel.Project> searchProjectsByProjectDesc (1: required string userName, 2: required string description)
@@ -115,6 +115,24 @@ service Airavata {
                     2: airavataErrors.AiravataClientException ace,
                     3: airavataErrors.AiravataSystemException ase)
 
+
+  /**
+       * Search Experiments by experiment name
+       *
+    */
+  list<experimentModel.ExperimentSummary> searchExperimentsByName (1: required string userName, 2: required string expName)
+            throws (1: airavataErrors.InvalidRequestException ire,
+                    2: airavataErrors.AiravataClientException ace,
+                    3: airavataErrors.AiravataSystemException ase)
+
+  /**
+       * Search Experiments by experiment name
+       *
+  */
+  list<experimentModel.ExperimentSummary> searchExperimentsByDesc (1: required string userName, 2: required string description)
+              throws (1: airavataErrors.InvalidRequestException ire,
+                      2: airavataErrors.AiravataClientException ace,
+                      3: airavataErrors.AiravataSystemException ase)
 
   /**
      * Get all Experiments within a Project

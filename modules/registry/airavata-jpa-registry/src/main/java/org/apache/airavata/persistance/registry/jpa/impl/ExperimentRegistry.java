@@ -35,9 +35,7 @@ import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ExperimentRegistry {
     private GatewayResource gatewayResource;
@@ -2550,4 +2548,35 @@ public class ExperimentRegistry {
             throw new Exception(e);
         }
     }
+
+    public List<ExperimentSummary> searchExperiments (Map<String, String> filters) throws Exception{
+        Map<String, String> fil = new HashMap<String, String>();
+        if (filters != null && filters.size() != 0){
+            List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
+            try {
+                for (String field : filters.keySet()){
+                    if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)){
+                        fil.put(AbstractResource.ExperimentConstants.EXPERIMENT_NAME, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)){
+                        fil.put(AbstractResource.ExperimentConstants.EXECUTION_USER, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)){
+                        fil.put(AbstractResource.ExperimentConstants.DESCRIPTION, filters.get(field));
+                    }
+                }
+                List<ExperimentResource> experimentResources = workerResource.searchExperiments(fil);
+                if (experimentResources != null && !experimentResources.isEmpty()){
+                    for (ExperimentResource ex : experimentResources){
+                        experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                    }
+                }
+                return experimentSummaries;
+
+            }catch (Exception e){
+                logger.error("Error while retrieving experiment summary from registry", e);
+                throw new Exception(e);
+            }
+        }
+        return null;
+    }
+
 }

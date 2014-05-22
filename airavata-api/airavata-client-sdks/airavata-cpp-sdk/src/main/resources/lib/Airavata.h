@@ -22,6 +22,8 @@ class AiravataIf {
   virtual void getAllUserProjects(std::vector< ::Project> & _return, const std::string& userName) = 0;
   virtual void searchProjectsByProjectName(std::vector< ::Project> & _return, const std::string& userName, const std::string& projectName) = 0;
   virtual void searchProjectsByProjectDesc(std::vector< ::Project> & _return, const std::string& userName, const std::string& description) = 0;
+  virtual void searchExperimentsByName(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& expName) = 0;
+  virtual void searchExperimentsByDesc(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& description) = 0;
   virtual void getAllExperimentsInProject(std::vector< ::Experiment> & _return, const std::string& projectId) = 0;
   virtual void getAllUserExperiments(std::vector< ::Experiment> & _return, const std::string& userName) = 0;
   virtual void createExperiment(std::string& _return, const  ::Experiment& experiment) = 0;
@@ -84,6 +86,12 @@ class AiravataNull : virtual public AiravataIf {
     return;
   }
   void searchProjectsByProjectDesc(std::vector< ::Project> & /* _return */, const std::string& /* userName */, const std::string& /* description */) {
+    return;
+  }
+  void searchExperimentsByName(std::vector< ::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* expName */) {
+    return;
+  }
+  void searchExperimentsByDesc(std::vector< ::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* description */) {
     return;
   }
   void getAllExperimentsInProject(std::vector< ::Experiment> & /* _return */, const std::string& /* projectId */) {
@@ -1018,6 +1026,286 @@ class Airavata_searchProjectsByProjectDesc_presult {
    ::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchProjectsByProjectDesc_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_searchExperimentsByName_args {
+ public:
+
+  Airavata_searchExperimentsByName_args() : userName(), expName() {
+  }
+
+  virtual ~Airavata_searchExperimentsByName_args() throw() {}
+
+  std::string userName;
+  std::string expName;
+
+  void __set_userName(const std::string& val) {
+    userName = val;
+  }
+
+  void __set_expName(const std::string& val) {
+    expName = val;
+  }
+
+  bool operator == (const Airavata_searchExperimentsByName_args & rhs) const
+  {
+    if (!(userName == rhs.userName))
+      return false;
+    if (!(expName == rhs.expName))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_searchExperimentsByName_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_searchExperimentsByName_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_searchExperimentsByName_pargs {
+ public:
+
+
+  virtual ~Airavata_searchExperimentsByName_pargs() throw() {}
+
+  const std::string* userName;
+  const std::string* expName;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_searchExperimentsByName_result__isset {
+  _Airavata_searchExperimentsByName_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_searchExperimentsByName_result__isset;
+
+class Airavata_searchExperimentsByName_result {
+ public:
+
+  Airavata_searchExperimentsByName_result() {
+  }
+
+  virtual ~Airavata_searchExperimentsByName_result() throw() {}
+
+  std::vector< ::ExperimentSummary>  success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_searchExperimentsByName_result__isset __isset;
+
+  void __set_success(const std::vector< ::ExperimentSummary> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_searchExperimentsByName_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_searchExperimentsByName_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_searchExperimentsByName_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_searchExperimentsByName_presult__isset {
+  _Airavata_searchExperimentsByName_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_searchExperimentsByName_presult__isset;
+
+class Airavata_searchExperimentsByName_presult {
+ public:
+
+
+  virtual ~Airavata_searchExperimentsByName_presult() throw() {}
+
+  std::vector< ::ExperimentSummary> * success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_searchExperimentsByName_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_searchExperimentsByDesc_args {
+ public:
+
+  Airavata_searchExperimentsByDesc_args() : userName(), description() {
+  }
+
+  virtual ~Airavata_searchExperimentsByDesc_args() throw() {}
+
+  std::string userName;
+  std::string description;
+
+  void __set_userName(const std::string& val) {
+    userName = val;
+  }
+
+  void __set_description(const std::string& val) {
+    description = val;
+  }
+
+  bool operator == (const Airavata_searchExperimentsByDesc_args & rhs) const
+  {
+    if (!(userName == rhs.userName))
+      return false;
+    if (!(description == rhs.description))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_searchExperimentsByDesc_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_searchExperimentsByDesc_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_searchExperimentsByDesc_pargs {
+ public:
+
+
+  virtual ~Airavata_searchExperimentsByDesc_pargs() throw() {}
+
+  const std::string* userName;
+  const std::string* description;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_searchExperimentsByDesc_result__isset {
+  _Airavata_searchExperimentsByDesc_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_searchExperimentsByDesc_result__isset;
+
+class Airavata_searchExperimentsByDesc_result {
+ public:
+
+  Airavata_searchExperimentsByDesc_result() {
+  }
+
+  virtual ~Airavata_searchExperimentsByDesc_result() throw() {}
+
+  std::vector< ::ExperimentSummary>  success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_searchExperimentsByDesc_result__isset __isset;
+
+  void __set_success(const std::vector< ::ExperimentSummary> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_searchExperimentsByDesc_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_searchExperimentsByDesc_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_searchExperimentsByDesc_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_searchExperimentsByDesc_presult__isset {
+  _Airavata_searchExperimentsByDesc_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_searchExperimentsByDesc_presult__isset;
+
+class Airavata_searchExperimentsByDesc_presult {
+ public:
+
+
+  virtual ~Airavata_searchExperimentsByDesc_presult() throw() {}
+
+  std::vector< ::ExperimentSummary> * success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_searchExperimentsByDesc_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -2855,6 +3143,12 @@ class AiravataClient : virtual public AiravataIf {
   void searchProjectsByProjectDesc(std::vector< ::Project> & _return, const std::string& userName, const std::string& description);
   void send_searchProjectsByProjectDesc(const std::string& userName, const std::string& description);
   void recv_searchProjectsByProjectDesc(std::vector< ::Project> & _return);
+  void searchExperimentsByName(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& expName);
+  void send_searchExperimentsByName(const std::string& userName, const std::string& expName);
+  void recv_searchExperimentsByName(std::vector< ::ExperimentSummary> & _return);
+  void searchExperimentsByDesc(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& description);
+  void send_searchExperimentsByDesc(const std::string& userName, const std::string& description);
+  void recv_searchExperimentsByDesc(std::vector< ::ExperimentSummary> & _return);
   void getAllExperimentsInProject(std::vector< ::Experiment> & _return, const std::string& projectId);
   void send_getAllExperimentsInProject(const std::string& projectId);
   void recv_getAllExperimentsInProject(std::vector< ::Experiment> & _return);
@@ -2919,6 +3213,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getAllUserProjects(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchProjectsByProjectName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_searchProjectsByProjectDesc(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_searchExperimentsByName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_searchExperimentsByDesc(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllExperimentsInProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllUserExperiments(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_createExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -2943,6 +3239,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getAllUserProjects"] = &AiravataProcessor::process_getAllUserProjects;
     processMap_["searchProjectsByProjectName"] = &AiravataProcessor::process_searchProjectsByProjectName;
     processMap_["searchProjectsByProjectDesc"] = &AiravataProcessor::process_searchProjectsByProjectDesc;
+    processMap_["searchExperimentsByName"] = &AiravataProcessor::process_searchExperimentsByName;
+    processMap_["searchExperimentsByDesc"] = &AiravataProcessor::process_searchExperimentsByDesc;
     processMap_["getAllExperimentsInProject"] = &AiravataProcessor::process_getAllExperimentsInProject;
     processMap_["getAllUserExperiments"] = &AiravataProcessor::process_getAllUserExperiments;
     processMap_["createExperiment"] = &AiravataProcessor::process_createExperiment;
@@ -3051,6 +3349,26 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->searchProjectsByProjectDesc(_return, userName, description);
     }
     ifaces_[i]->searchProjectsByProjectDesc(_return, userName, description);
+    return;
+  }
+
+  void searchExperimentsByName(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& expName) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->searchExperimentsByName(_return, userName, expName);
+    }
+    ifaces_[i]->searchExperimentsByName(_return, userName, expName);
+    return;
+  }
+
+  void searchExperimentsByDesc(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& description) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->searchExperimentsByDesc(_return, userName, description);
+    }
+    ifaces_[i]->searchExperimentsByDesc(_return, userName, description);
     return;
   }
 

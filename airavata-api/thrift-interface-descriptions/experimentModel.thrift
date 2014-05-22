@@ -381,3 +381,14 @@ struct Experiment {
     17: optional list<WorkflowNodeDetails> workflowNodeDetailsList,
     18: optional list<ErrorDetails> errors
 }
+
+struct ExperimentSummary {
+    1: required string experimentID,
+    2: required string projectID,
+    3: optional i64 creationTime,
+    4: required string userName,
+    5: required string name,
+    6: optional string description,
+    7: optional ExperimentStatus experimentStatus,
+    8: optional list<ErrorDetails> errors
+}

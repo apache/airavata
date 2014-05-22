@@ -426,6 +426,12 @@ public class RegistryImpl implements Registry {
                         result.add(project);
                     }
                     return result;
+                case EXPERIMENT:
+                    List<ExperimentSummary> experimentSummaries = experimentRegistry.searchExperiments(filters);
+                    for (ExperimentSummary ex : experimentSummaries){
+                        result.add(ex);
+                    }
+                    return result;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
