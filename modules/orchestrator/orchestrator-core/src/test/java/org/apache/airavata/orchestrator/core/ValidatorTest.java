@@ -21,6 +21,7 @@
 package org.apache.airavata.orchestrator.core;
 
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
@@ -95,9 +96,17 @@ public class ValidatorTest extends BaseOrchestratorTest {
 
         simpleExperiment.setExperimentID(null);
 
-        Assert.assertFalse(orchestrator.validateExperiment(simpleExperiment,test,tasks.get(0)).isValidationState());
+        try {
+            orchestrator.validateExperiment(simpleExperiment, test, tasks.get(0)).isValidationState();
+        }catch(LaunchValidationException e){
+            Assert.assertTrue(true);
+        }
         tasks.get(0).setTaskID(null);
-        Assert.assertFalse(orchestrator.validateExperiment(simpleExperiment,test,tasks.get(0)).isValidationState());
+        try {
+            orchestrator.validateExperiment(simpleExperiment, test, tasks.get(0));
+        }catch (LaunchValidationException e){
+            Assert.assertTrue(true);
+        }
     }
 
 }

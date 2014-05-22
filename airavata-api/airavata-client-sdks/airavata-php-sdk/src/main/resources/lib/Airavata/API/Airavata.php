@@ -17,9 +17,9 @@ use Thrift\Exception\TApplicationException;
 
 
 interface AiravataIf {
-  public function GetAPIVersion();
+  public function getAPIVersion();
   public function createProject(\Airavata\Model\Workspace\Project $project);
-  public function updateProject(\Airavata\Model\Workspace\Project $project);
+  public function updateProject($projectId, \Airavata\Model\Workspace\Project $updatedProject);
   public function getProject($projectId);
   public function getAllUserProjects($userName);
   public function searchProjectsByProjectName($userName, $projectName);
@@ -53,33 +53,33 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     $this->output_ = $output ? $output : $input;
   }
 
-  public function GetAPIVersion()
+  public function getAPIVersion()
   {
-    $this->send_GetAPIVersion();
-    return $this->recv_GetAPIVersion();
+    $this->send_getAPIVersion();
+    return $this->recv_getAPIVersion();
   }
 
-  public function send_GetAPIVersion()
+  public function send_getAPIVersion()
   {
-    $args = new \Airavata\API\Airavata_GetAPIVersion_args();
+    $args = new \Airavata\API\Airavata_getAPIVersion_args();
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
-      thrift_protocol_write_binary($this->output_, 'GetAPIVersion', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+      thrift_protocol_write_binary($this->output_, 'getAPIVersion', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
     }
     else
     {
-      $this->output_->writeMessageBegin('GetAPIVersion', TMessageType::CALL, $this->seqid_);
+      $this->output_->writeMessageBegin('getAPIVersion', TMessageType::CALL, $this->seqid_);
       $args->write($this->output_);
       $this->output_->writeMessageEnd();
       $this->output_->getTransport()->flush();
     }
   }
 
-  public function recv_GetAPIVersion()
+  public function recv_getAPIVersion()
   {
     $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
-    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_GetAPIVersion_result', $this->input_->isStrictRead());
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAPIVersion_result', $this->input_->isStrictRead());
     else
     {
       $rseqid = 0;
@@ -93,14 +93,23 @@ class AiravataClient implements \Airavata\API\AiravataIf {
         $this->input_->readMessageEnd();
         throw $x;
       }
-      $result = new \Airavata\API\Airavata_GetAPIVersion_result();
+      $result = new \Airavata\API\Airavata_getAPIVersion_result();
       $result->read($this->input_);
       $this->input_->readMessageEnd();
     }
     if ($result->success !== null) {
       return $result->success;
     }
-    throw new \Exception("GetAPIVersion failed: unknown result");
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("getAPIVersion failed: unknown result");
   }
 
   public function createProject(\Airavata\Model\Workspace\Project $project)
@@ -163,16 +172,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("createProject failed: unknown result");
   }
 
-  public function updateProject(\Airavata\Model\Workspace\Project $project)
+  public function updateProject($projectId, \Airavata\Model\Workspace\Project $updatedProject)
   {
-    $this->send_updateProject($project);
+    $this->send_updateProject($projectId, $updatedProject);
     $this->recv_updateProject();
   }
 
-  public function send_updateProject(\Airavata\Model\Workspace\Project $project)
+  public function send_updateProject($projectId, \Airavata\Model\Workspace\Project $updatedProject)
   {
     $args = new \Airavata\API\Airavata_updateProject_args();
-    $args->project = $project;
+    $args->projectId = $projectId;
+    $args->updatedProject = $updatedProject;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -1406,7 +1416,7 @@ class AiravataClient implements \Airavata\API\AiravataIf {
 
 // HELPER FUNCTIONS AND STRUCTURES
 
-class Airavata_GetAPIVersion_args {
+class Airavata_getAPIVersion_args {
   static $_TSPEC;
 
 
@@ -1418,7 +1428,7 @@ class Airavata_GetAPIVersion_args {
   }
 
   public function getName() {
-    return 'Airavata_GetAPIVersion_args';
+    return 'Airavata_getAPIVersion_args';
   }
 
   public function read($input)
@@ -1448,7 +1458,7 @@ class Airavata_GetAPIVersion_args {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_GetAPIVersion_args');
+    $xfer += $output->writeStructBegin('Airavata_getAPIVersion_args');
     $xfer += $output->writeFieldStop();
     $xfer += $output->writeStructEnd();
     return $xfer;
@@ -1456,10 +1466,13 @@ class Airavata_GetAPIVersion_args {
 
 }
 
-class Airavata_GetAPIVersion_result {
+class Airavata_getAPIVersion_result {
   static $_TSPEC;
 
   public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1468,17 +1481,41 @@ class Airavata_GetAPIVersion_result {
           'var' => 'success',
           'type' => TType::STRING,
           ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['success'])) {
         $this->success = $vals['success'];
       }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
     }
   }
 
   public function getName() {
-    return 'Airavata_GetAPIVersion_result';
+    return 'Airavata_getAPIVersion_result';
   }
 
   public function read($input)
@@ -1503,6 +1540,30 @@ class Airavata_GetAPIVersion_result {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1515,10 +1576,25 @@ class Airavata_GetAPIVersion_result {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('Airavata_GetAPIVersion_result');
+    $xfer += $output->writeStructBegin('Airavata_getAPIVersion_result');
     if ($this->success !== null) {
       $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
       $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -1746,21 +1822,29 @@ class Airavata_createProject_result {
 class Airavata_updateProject_args {
   static $_TSPEC;
 
-  public $project = null;
+  public $projectId = null;
+  public $updatedProject = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'project',
+          'var' => 'projectId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'updatedProject',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Project',
           ),
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['project'])) {
-        $this->project = $vals['project'];
+      if (isset($vals['projectId'])) {
+        $this->projectId = $vals['projectId'];
+      }
+      if (isset($vals['updatedProject'])) {
+        $this->updatedProject = $vals['updatedProject'];
       }
     }
   }
@@ -1785,9 +1869,16 @@ class Airavata_updateProject_args {
       switch ($fid)
       {
         case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->projectId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
           if ($ftype == TType::STRUCT) {
-            $this->project = new \Airavata\Model\Workspace\Project();
-            $xfer += $this->project->read($input);
+            $this->updatedProject = new \Airavata\Model\Workspace\Project();
+            $xfer += $this->updatedProject->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -1805,12 +1896,17 @@ class Airavata_updateProject_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_updateProject_args');
-    if ($this->project !== null) {
-      if (!is_object($this->project)) {
+    if ($this->projectId !== null) {
+      $xfer += $output->writeFieldBegin('projectId', TType::STRING, 1);
+      $xfer += $output->writeString($this->projectId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->updatedProject !== null) {
+      if (!is_object($this->updatedProject)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('project', TType::STRUCT, 1);
-      $xfer += $this->project->write($output);
+      $xfer += $output->writeFieldBegin('updatedProject', TType::STRUCT, 2);
+      $xfer += $this->updatedProject->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

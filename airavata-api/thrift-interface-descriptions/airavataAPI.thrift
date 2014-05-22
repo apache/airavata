@@ -59,7 +59,10 @@ service Airavata {
 */
 
   /** Query Airavata to fetch the API version */
-  string GetAPIVersion(),
+  string getAPIVersion()
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
   
   /**
    * Create a Project
@@ -74,7 +77,8 @@ service Airavata {
    * Update a Project
    *
   */
-  void updateProject (1: required workspaceModel.Project project)
+  void updateProject (1: required string projectId,
+                      2: required workspaceModel.Project updatedProject)
       throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.AiravataClientException ace,
               3: airavataErrors.AiravataSystemException ase)
@@ -272,7 +276,7 @@ service Airavata {
    *
   */
   void updateExperiment(1: required string airavataExperimentId,
-                           2: required experimentModel.Experiment experiment)
+                        2: required experimentModel.Experiment experiment)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
