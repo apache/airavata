@@ -156,7 +156,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 validationResults.addToValidationResultList(vResult);
             }
         }
-        if(validationResults.isSetValidationState()){
+        if(validationResults.isValidationState()){
             return validationResults;
         }else {
             //atleast one validation has failed, so we throw an exception
