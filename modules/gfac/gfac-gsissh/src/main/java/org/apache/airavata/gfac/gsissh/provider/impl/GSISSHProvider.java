@@ -99,20 +99,31 @@ public class GSISSHProvider extends AbstractProvider {
             // to perform monitoring, daemon handlers can be accessed from anywhere
             List<ThreadedHandler> daemonHandlers = GFacImpl.getDaemonHandlers();
             ThreadedHandler pullMonitorHandler = null;
+            ThreadedHandler pushMonitorHandler = null;
+            String monitorMode = ((GsisshHostType) host).getMonitorMode();
             for(ThreadedHandler threadedHandler:daemonHandlers){
                 if("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())){
                     pullMonitorHandler = threadedHandler;
-                    String monitorMode = ((GsisshHostType) host).getMonitorMode();
                     if("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PULL.equals(monitorMode)){
                         log.info("Job is launched successfully now parsing it to monitoring in pull mode, JobID Returned:  " + jobID);
                         pullMonitorHandler.invoke(jobExecutionContext);
                     }else{
-                        log.error("Currently we only support Pull monitoring");
+                        log.error("Currently we only support Pull and Push monitoring and monitorMode should be PULL" +
+                                " to handle by the GridPullMonitorHandler");
+                    }
+                }else if ("org.apache.airavata.gfac.monitor.handlers.GridPushMonitorHandler".equals(threadedHandler.getClass().getName())){
+                    pushMonitorHandler = threadedHandler;
+                    if("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PUSH.equals(monitorMode)){
+                        log.info("Job is launched successfully now parsing it to monitoring in push mode, JobID Returned:  " + jobID);
+                        pushMonitorHandler.invoke(jobExecutionContext);
+                    }else{
+                        log.error("Currently we only support Pull and Push monitoring and monitorMode should be PUSH" +
+                                " to handle by the GridPushMonitorHandler");
                     }
                 }
                 // have to handle the GridPushMonitorHandler logic
             }
-            if(pullMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())){
+            if(pullMonitorHandler == null && pushMonitorHandler==null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())){
                 log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
                         ", execution is configured as asynchronous, so Outhandler will not be invoked");
             }
