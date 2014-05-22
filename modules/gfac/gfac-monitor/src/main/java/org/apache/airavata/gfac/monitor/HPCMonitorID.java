@@ -52,6 +52,11 @@ public class HPCMonitorID extends MonitorID {
     public HPCMonitorID(AuthenticationInfo authenticationInfo, JobExecutionContext jobExecutionContext) {
         super(jobExecutionContext);
         this.authenticationInfo = authenticationInfo;
+        if (this.authenticationInfo != null) {
+            if (this.authenticationInfo instanceof MyProxyAuthenticationInfo) {
+                setUserName(((MyProxyAuthenticationInfo) this.authenticationInfo).getUserName());
+            }
+        }
     }
 
     public HPCMonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID, String experimentID, String userName, AuthenticationInfo authenticationInfo) {
@@ -64,7 +69,6 @@ public class HPCMonitorID extends MonitorID {
                 setUserName(((MyProxyAuthenticationInfo) this.authenticationInfo).getUserName());
             }
         }
-        setUserName(userName);
         setJobID(jobID);
         setTaskID(taskID);
         setExperimentID(experimentID);
