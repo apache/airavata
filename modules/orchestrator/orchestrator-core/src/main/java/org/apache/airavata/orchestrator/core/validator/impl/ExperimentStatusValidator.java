@@ -32,7 +32,7 @@ public class ExperimentStatusValidator implements JobMetadataValidator {
     public ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) {
         String error = "During the validation step experiment status should be CREATED, But this experiment status is : ";
         ValidatorResult validatorResult = new ValidatorResult();
-        if (experiment.getExperimentStatus().equals(ExperimentState.CREATED)) {
+        if (!experiment.getExperimentStatus().getExperimentState().equals(ExperimentState.CREATED)) {
             error += experiment.getExperimentStatus().getExperimentState().toString();
             log.error(error);
             validatorResult.setErrorDetails(error);
