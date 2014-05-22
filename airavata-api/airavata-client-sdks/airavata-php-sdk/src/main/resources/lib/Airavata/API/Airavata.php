@@ -19,7 +19,7 @@ use Thrift\Exception\TApplicationException;
 interface AiravataIf {
   public function GetAPIVersion();
   public function createProject(\Airavata\Model\Workspace\Project $project);
-  public function updateProject(\Airavata\Model\Workspace\Project $project);
+  public function updateProject($projectId, \Airavata\Model\Workspace\Project $updatedProject);
   public function getProject($projectId);
   public function getAllUserProjects($userName);
   public function searchProjectsByProjectName($userName, $projectName);
@@ -163,16 +163,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("createProject failed: unknown result");
   }
 
-  public function updateProject(\Airavata\Model\Workspace\Project $project)
+  public function updateProject($projectId, \Airavata\Model\Workspace\Project $updatedProject)
   {
-    $this->send_updateProject($project);
+    $this->send_updateProject($projectId, $updatedProject);
     $this->recv_updateProject();
   }
 
-  public function send_updateProject(\Airavata\Model\Workspace\Project $project)
+  public function send_updateProject($projectId, \Airavata\Model\Workspace\Project $updatedProject)
   {
     $args = new \Airavata\API\Airavata_updateProject_args();
-    $args->project = $project;
+    $args->projectId = $projectId;
+    $args->updatedProject = $updatedProject;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -1746,21 +1747,29 @@ class Airavata_createProject_result {
 class Airavata_updateProject_args {
   static $_TSPEC;
 
-  public $project = null;
+  public $projectId = null;
+  public $updatedProject = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'project',
+          'var' => 'projectId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'updatedProject',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Project',
           ),
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['project'])) {
-        $this->project = $vals['project'];
+      if (isset($vals['projectId'])) {
+        $this->projectId = $vals['projectId'];
+      }
+      if (isset($vals['updatedProject'])) {
+        $this->updatedProject = $vals['updatedProject'];
       }
     }
   }
@@ -1785,9 +1794,16 @@ class Airavata_updateProject_args {
       switch ($fid)
       {
         case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->projectId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
           if ($ftype == TType::STRUCT) {
-            $this->project = new \Airavata\Model\Workspace\Project();
-            $xfer += $this->project->read($input);
+            $this->updatedProject = new \Airavata\Model\Workspace\Project();
+            $xfer += $this->updatedProject->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -1805,12 +1821,17 @@ class Airavata_updateProject_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_updateProject_args');
-    if ($this->project !== null) {
-      if (!is_object($this->project)) {
+    if ($this->projectId !== null) {
+      $xfer += $output->writeFieldBegin('projectId', TType::STRING, 1);
+      $xfer += $output->writeString($this->projectId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->updatedProject !== null) {
+      if (!is_object($this->updatedProject)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('project', TType::STRUCT, 1);
-      $xfer += $this->project->write($output);
+      $xfer += $output->writeFieldBegin('updatedProject', TType::STRUCT, 2);
+      $xfer += $this->updatedProject->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

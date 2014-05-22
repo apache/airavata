@@ -385,7 +385,8 @@ uint32_t Airavata_updateProject_args::read(::apache::thrift::protocol::TProtocol
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_project = false;
+  bool isset_projectId = false;
+  bool isset_updatedProject = false;
 
   while (true)
   {
@@ -396,9 +397,17 @@ uint32_t Airavata_updateProject_args::read(::apache::thrift::protocol::TProtocol
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->projectId);
+          isset_projectId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->project.read(iprot);
-          isset_project = true;
+          xfer += this->updatedProject.read(iprot);
+          isset_updatedProject = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -412,7 +421,9 @@ uint32_t Airavata_updateProject_args::read(::apache::thrift::protocol::TProtocol
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_project)
+  if (!isset_projectId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_updatedProject)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -421,8 +432,12 @@ uint32_t Airavata_updateProject_args::write(::apache::thrift::protocol::TProtoco
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_updateProject_args");
 
-  xfer += oprot->writeFieldBegin("project", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += this->project.write(oprot);
+  xfer += oprot->writeFieldBegin("projectId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->projectId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("updatedProject", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += this->updatedProject.write(oprot);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -434,8 +449,12 @@ uint32_t Airavata_updateProject_pargs::write(::apache::thrift::protocol::TProtoc
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_updateProject_pargs");
 
-  xfer += oprot->writeFieldBegin("project", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += (*(this->project)).write(oprot);
+  xfer += oprot->writeFieldBegin("projectId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->projectId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("updatedProject", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += (*(this->updatedProject)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -5458,19 +5477,20 @@ void AiravataClient::recv_createProject(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "createProject failed: unknown result");
 }
 
-void AiravataClient::updateProject(const  ::Project& project)
+void AiravataClient::updateProject(const std::string& projectId, const  ::Project& updatedProject)
 {
-  send_updateProject(project);
+  send_updateProject(projectId, updatedProject);
   recv_updateProject();
 }
 
-void AiravataClient::send_updateProject(const  ::Project& project)
+void AiravataClient::send_updateProject(const std::string& projectId, const  ::Project& updatedProject)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateProject", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_updateProject_pargs args;
-  args.project = &project;
+  args.projectId = &projectId;
+  args.updatedProject = &updatedProject;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -6991,7 +7011,7 @@ void AiravataProcessor::process_updateProject(int32_t seqid, ::apache::thrift::p
 
   Airavata_updateProject_result result;
   try {
-    iface_->updateProject(args.project);
+    iface_->updateProject(args.projectId, args.updatedProject);
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
