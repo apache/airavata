@@ -94,6 +94,7 @@ public abstract class AbstractResource implements Resource {
 		public static final String USERNAME = "user_name";
 		public static final String PROJECT_NAME = "project_name";
 		public static final String PROJECT_ID = "project_id";
+		public static final String DESCRIPTION = "description";
 	}
 
     // Project table

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 public class LoggingRegistryImpl implements Registry {
     private final static Logger logger = LoggerFactory.getLogger(LoggingRegistryImpl.class);
@@ -51,6 +52,10 @@ public class LoggingRegistryImpl implements Registry {
 
     public List<Object> get(RegistryModelType dataType, String fieldName, Object value) throws RegistryException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public List<Object> search(RegistryModelType dataType, Map<String, String> filters) throws RegistryException {
+        return null;
     }
 
     public Object getValue(RegistryModelType dataType, Object identifier, String field) throws RegistryException {
