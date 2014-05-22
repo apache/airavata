@@ -198,7 +198,7 @@ public class ResourceUtils {
      * @param gatewayResource
      * @param userResource
      */
-    public static void addGatewayWorker(GatewayResource gatewayResource, UserResource userResource) {
+    public static WorkerResource addGatewayWorker(GatewayResource gatewayResource, UserResource userResource) {
         try {
             EntityManager em = getEntityManager();
             em.getTransaction().begin();
@@ -216,10 +216,12 @@ public class ResourceUtils {
             em.persist(gatewayWorker);
             em.getTransaction().commit();
             em.close();
+            WorkerResource resource = (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
+            return resource;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
-
+        return null;
     }
 
     /**

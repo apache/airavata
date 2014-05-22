@@ -8,7 +8,7 @@
 
 namespace airavata { namespace api {
 
-uint32_t Airavata_GetAPIVersion_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Airavata_getAPIVersion_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -35,25 +35,25 @@ uint32_t Airavata_GetAPIVersion_args::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
-uint32_t Airavata_GetAPIVersion_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Airavata_getAPIVersion_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("Airavata_GetAPIVersion_args");
+  xfer += oprot->writeStructBegin("Airavata_getAPIVersion_args");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t Airavata_GetAPIVersion_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Airavata_getAPIVersion_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("Airavata_GetAPIVersion_pargs");
+  xfer += oprot->writeStructBegin("Airavata_getAPIVersion_pargs");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
 }
 
-uint32_t Airavata_GetAPIVersion_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Airavata_getAPIVersion_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -81,6 +81,30 @@ uint32_t Airavata_GetAPIVersion_result::read(::apache::thrift::protocol::TProtoc
           xfer += iprot->skip(ftype);
         }
         break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -93,15 +117,27 @@ uint32_t Airavata_GetAPIVersion_result::read(::apache::thrift::protocol::TProtoc
   return xfer;
 }
 
-uint32_t Airavata_GetAPIVersion_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t Airavata_getAPIVersion_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("Airavata_GetAPIVersion_result");
+  xfer += oprot->writeStructBegin("Airavata_getAPIVersion_result");
 
   if (this->__isset.success) {
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
     xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -109,7 +145,7 @@ uint32_t Airavata_GetAPIVersion_result::write(::apache::thrift::protocol::TProto
   return xfer;
 }
 
-uint32_t Airavata_GetAPIVersion_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t Airavata_getAPIVersion_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -133,6 +169,30 @@ uint32_t Airavata_GetAPIVersion_presult::read(::apache::thrift::protocol::TProto
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -5353,18 +5413,18 @@ uint32_t Airavata_terminateExperiment_presult::read(::apache::thrift::protocol::
   return xfer;
 }
 
-void AiravataClient::GetAPIVersion(std::string& _return)
+void AiravataClient::getAPIVersion(std::string& _return)
 {
-  send_GetAPIVersion();
-  recv_GetAPIVersion(_return);
+  send_getAPIVersion();
+  recv_getAPIVersion(_return);
 }
 
-void AiravataClient::send_GetAPIVersion()
+void AiravataClient::send_getAPIVersion()
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("GetAPIVersion", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("getAPIVersion", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  Airavata_GetAPIVersion_pargs args;
+  Airavata_getAPIVersion_pargs args;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -5372,7 +5432,7 @@ void AiravataClient::send_GetAPIVersion()
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_GetAPIVersion(std::string& _return)
+void AiravataClient::recv_getAPIVersion(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5392,12 +5452,12 @@ void AiravataClient::recv_GetAPIVersion(std::string& _return)
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("GetAPIVersion") != 0) {
+  if (fname.compare("getAPIVersion") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  Airavata_GetAPIVersion_presult result;
+  Airavata_getAPIVersion_presult result;
   result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
@@ -5407,7 +5467,16 @@ void AiravataClient::recv_GetAPIVersion(std::string& _return)
     // _return pointer has now been filled
     return;
   }
-  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetAPIVersion failed: unknown result");
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAPIVersion failed: unknown result");
 }
 
 void AiravataClient::createProject(std::string& _return, const  ::Project& project)
@@ -6871,38 +6940,47 @@ bool AiravataProcessor::dispatchCall(::apache::thrift::protocol::TProtocol* ipro
   return true;
 }
 
-void AiravataProcessor::process_GetAPIVersion(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void AiravataProcessor::process_getAPIVersion(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("Airavata.GetAPIVersion", callContext);
+    ctx = this->eventHandler_->getContext("Airavata.getAPIVersion", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.GetAPIVersion");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getAPIVersion");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "Airavata.GetAPIVersion");
+    this->eventHandler_->preRead(ctx, "Airavata.getAPIVersion");
   }
 
-  Airavata_GetAPIVersion_args args;
+  Airavata_getAPIVersion_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "Airavata.GetAPIVersion", bytes);
+    this->eventHandler_->postRead(ctx, "Airavata.getAPIVersion", bytes);
   }
 
-  Airavata_GetAPIVersion_result result;
+  Airavata_getAPIVersion_result result;
   try {
-    iface_->GetAPIVersion(result.success);
+    iface_->getAPIVersion(result.success);
     result.__isset.success = true;
+  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "Airavata.GetAPIVersion");
+      this->eventHandler_->handlerError(ctx, "Airavata.getAPIVersion");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("GetAPIVersion", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("getAPIVersion", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -6911,17 +6989,17 @@ void AiravataProcessor::process_GetAPIVersion(int32_t seqid, ::apache::thrift::p
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "Airavata.GetAPIVersion");
+    this->eventHandler_->preWrite(ctx, "Airavata.getAPIVersion");
   }
 
-  oprot->writeMessageBegin("GetAPIVersion", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("getAPIVersion", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "Airavata.GetAPIVersion", bytes);
+    this->eventHandler_->postWrite(ctx, "Airavata.getAPIVersion", bytes);
   }
 }
 
