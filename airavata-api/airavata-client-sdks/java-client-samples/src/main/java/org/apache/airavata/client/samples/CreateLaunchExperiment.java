@@ -21,7 +21,7 @@
 
 package org.apache.airavata.client.samples;
 
-import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.util.ProjectModelUtil;
@@ -29,15 +29,13 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.workspace.experiment.ValidatorResult;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -446,6 +444,15 @@ public class CreateLaunchExperiment {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
+        } catch (LaunchValidationException e) {
+            logger.error("Validation failed" + e.getErrorMessage());
+            org.apache.airavata.model.error.ValidationResults validationResult = e.getValidationResult();
+            for (org.apache.airavata.model.error.ValidatorResult vResult : validationResult.getValidationResultList()) {
+                if (!vResult.isSetResult()) {
+                    System.out.println("Error:" + vResult.getErrorDetails());
+                }
+            }
+            throw e;
         }catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
