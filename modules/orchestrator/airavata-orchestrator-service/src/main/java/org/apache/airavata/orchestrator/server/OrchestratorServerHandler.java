@@ -24,12 +24,14 @@ package org.apache.airavata.orchestrator.server;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
@@ -123,7 +125,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      * @return
      * @throws TException
      */
-    public boolean validateExperiment(String experimentId) throws TException {
+    public boolean validateExperiment(String experimentId) throws TException,LaunchValidationException {
         //TODO: Write the Orchestrator implementaion
         try {
             List<TaskDetails> tasks = orchestrator.createTasks(experimentId);
@@ -146,7 +148,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 }
             }
 
-        } catch (Exception e) {
+        } catch (OrchestratorException e) {
+            throw new TException(e);
+        } catch (RegistryException e) {
             throw new TException(e);
         }
         return false;
