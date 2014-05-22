@@ -65,23 +65,30 @@ public class CreateLaunchExperiment {
 
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForSSHHost(airavata);
-            final String expId = createExperimentForTrestles(airavata);
+//            final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
-//            final String expId = createExperimentForLocalHost(airavata);
+            final String expId = createExperimentForLocalHost(airavata);
             System.out.println("Experiment ID : " + expId);
             updateExperiment(airavata, expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
             List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
             List<Project> projects = getAllUserProject(airavata, "admin");
+            List<Project> searchProjects1 = searchProjectsByProjectName(airavata, "admin", "project");
+            List<Project> searchProjects2 = searchProjectsByProjectDesc(airavata, "admin", "test");
             for (Experiment exp : experiments){
                 System.out.println(" exp id : " + exp.getExperimentID());
                 if (exp.getExperimentStatus() != null) {
                     System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
                 }
             }
-            for (Project pr : projects){
-                System.out.println(" project name : " + pr.getName());
+            for (Project pr : searchProjects1){
+                System.out.println(" project id : " + pr.getProjectID());
+            }
+
+            for (Project pr : searchProjects2){
+                System.out.println(" project id : " + pr.getProjectID());
+                System.out.println(" project desc : " + pr.getDescription());
             }
 
             Thread monitor = (new Thread(){
@@ -463,6 +470,36 @@ public class CreateLaunchExperiment {
     public static List<Project> getAllUserProject (Airavata.Client client, String user){
         try {
             return client.getAllUserProjects(user);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<Project> searchProjectsByProjectName (Airavata.Client client, String user, String projectName){
+        try {
+            return client.searchProjectsByProjectName(user, projectName);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<Project> searchProjectsByProjectDesc (Airavata.Client client, String user, String desc){
+        try {
+            return client.searchProjectsByProjectDesc(user, desc);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {

@@ -204,7 +204,7 @@ public class ProjectResource extends AbstractResource {
      */
     public void save() {
         EntityManager em = ResourceUtils.getEntityManager();
-        Project existingprojectResource = em.find(Project.class, id);
+        Project existingProject = em.find(Project.class, id);
         em.close();
 
         em = ResourceUtils.getEntityManager();
@@ -216,16 +216,18 @@ public class ProjectResource extends AbstractResource {
         project.setGateway(modelGateway);
         Users user = em.find(Users.class, worker.getUser());
         project.setUsers(user);
+        project.setUser_name(user.getUser_name());
         project.setDescription(description);
         project.setCreationTime(creationTime);
 
-        if(existingprojectResource != null){
-           existingprojectResource.setProject_name(name);
-           existingprojectResource.setGateway(modelGateway);
-           existingprojectResource.setUsers(user);
-           existingprojectResource.setDescription(description);
-           existingprojectResource.setCreationTime(creationTime);
-           project = em.merge(existingprojectResource);
+        if(existingProject != null){
+           existingProject.setProject_name(name);
+           existingProject.setGateway(modelGateway);
+           existingProject.setUsers(user);
+           existingProject.setUser_name(user.getUser_name());
+           existingProject.setDescription(description);
+           existingProject.setCreationTime(creationTime);
+           project = em.merge(existingProject);
         }else {
             em.persist(project);
         }

@@ -35,6 +35,10 @@ public class Project {
 
     @Column(name = "DESCRIPTION")
     private String description;
+
+    @Column(name = "USER_NAME")
+    private String user_name;
+
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
@@ -93,6 +97,14 @@ public class Project {
 
     public String getProject_id() {
         return project_id;
+    }
+
+    public String getUser_name() {
+        return user_name;
+    }
+
+    public void setUser_name(String user_name) {
+        this.user_name = user_name;
     }
 }
 

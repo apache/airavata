@@ -98,6 +98,25 @@ service Airavata {
                 3: airavataErrors.AiravataSystemException ase)
 
   /**
+     * Get all Project for user by project name
+     *
+    */
+  list<workspaceModel.Project> searchProjectsByProjectName (1: required string userName, 2: required string projectName)
+          throws (1: airavataErrors.InvalidRequestException ire,
+                  2: airavataErrors.AiravataClientException ace,
+                  3: airavataErrors.AiravataSystemException ase)
+
+  /**
+    * Get all Project for user by project name
+    *
+  */
+  list<workspaceModel.Project> searchProjectsByProjectDesc (1: required string userName, 2: required string description)
+            throws (1: airavataErrors.InvalidRequestException ire,
+                    2: airavataErrors.AiravataClientException ace,
+                    3: airavataErrors.AiravataSystemException ase)
+
+
+  /**
      * Get all Experiments within a Project
      *
   */
@@ -380,7 +399,7 @@ service Airavata {
    * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
    *   The client has to subsequently update this configuration if needed and launch the cloned experiment. 
    *
-   * @param newExperiementName
+   * @param newExperimentName
    *    experiment name that should be used in the cloned experiment
    *
    * @param updatedExperiment
@@ -416,7 +435,7 @@ service Airavata {
    *
   */
   string cloneExperiment(1: string existingExperimentID,
-                         2: string newExperiementName)
+                         2: string newExperimentName)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
