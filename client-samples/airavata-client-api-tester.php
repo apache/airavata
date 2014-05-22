@@ -209,7 +209,7 @@ try
 	$userExperiments = $airavataclient->getAllUserExperiments($user);
         echo "$user total number of experiments is " . sizeof($userExperiments) . ". \n";
 
-        echo $projId;
+        //echo $projId;
         $projectExperiments = $airavataclient->getAllExperimentsInProject($projId);
         echo "$user number of experiments in $projId is " . sizeof($projectExperiments) . ". \n";	
     }
