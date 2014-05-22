@@ -20,6 +20,8 @@ class AiravataIf {
   virtual void updateProject(const  ::Project& project) = 0;
   virtual void getProject( ::Project& _return, const std::string& projectId) = 0;
   virtual void getAllUserProjects(std::vector< ::Project> & _return, const std::string& userName) = 0;
+  virtual void searchProjectsByProjectName(std::vector< ::Project> & _return, const std::string& userName, const std::string& projectName) = 0;
+  virtual void searchProjectsByProjectDesc(std::vector< ::Project> & _return, const std::string& userName, const std::string& description) = 0;
   virtual void getAllExperimentsInProject(std::vector< ::Experiment> & _return, const std::string& projectId) = 0;
   virtual void getAllUserExperiments(std::vector< ::Experiment> & _return, const std::string& userName) = 0;
   virtual void createExperiment(std::string& _return, const  ::Experiment& experiment) = 0;
@@ -32,7 +34,7 @@ class AiravataIf {
   virtual void getExperimentStatus( ::ExperimentStatus& _return, const std::string& airavataExperimentId) = 0;
   virtual void getExperimentOutputs(std::vector< ::DataObjectType> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getJobStatuses(std::map<std::string,  ::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
-  virtual void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperiementName) = 0;
+  virtual void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) = 0;
   virtual void terminateExperiment(const std::string& airavataExperimentId) = 0;
 };
 
@@ -78,6 +80,12 @@ class AiravataNull : virtual public AiravataIf {
   void getAllUserProjects(std::vector< ::Project> & /* _return */, const std::string& /* userName */) {
     return;
   }
+  void searchProjectsByProjectName(std::vector< ::Project> & /* _return */, const std::string& /* userName */, const std::string& /* projectName */) {
+    return;
+  }
+  void searchProjectsByProjectDesc(std::vector< ::Project> & /* _return */, const std::string& /* userName */, const std::string& /* description */) {
+    return;
+  }
   void getAllExperimentsInProject(std::vector< ::Experiment> & /* _return */, const std::string& /* projectId */) {
     return;
   }
@@ -115,7 +123,7 @@ class AiravataNull : virtual public AiravataIf {
   void getJobStatuses(std::map<std::string,  ::JobStatus> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void cloneExperiment(std::string& /* _return */, const std::string& /* existingExperimentID */, const std::string& /* newExperiementName */) {
+  void cloneExperiment(std::string& /* _return */, const std::string& /* existingExperimentID */, const std::string& /* newExperimentName */) {
     return;
   }
   void terminateExperiment(const std::string& /* airavataExperimentId */) {
@@ -730,6 +738,286 @@ class Airavata_getAllUserProjects_presult {
    ::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllUserProjects_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_searchProjectsByProjectName_args {
+ public:
+
+  Airavata_searchProjectsByProjectName_args() : userName(), projectName() {
+  }
+
+  virtual ~Airavata_searchProjectsByProjectName_args() throw() {}
+
+  std::string userName;
+  std::string projectName;
+
+  void __set_userName(const std::string& val) {
+    userName = val;
+  }
+
+  void __set_projectName(const std::string& val) {
+    projectName = val;
+  }
+
+  bool operator == (const Airavata_searchProjectsByProjectName_args & rhs) const
+  {
+    if (!(userName == rhs.userName))
+      return false;
+    if (!(projectName == rhs.projectName))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_searchProjectsByProjectName_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_searchProjectsByProjectName_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_searchProjectsByProjectName_pargs {
+ public:
+
+
+  virtual ~Airavata_searchProjectsByProjectName_pargs() throw() {}
+
+  const std::string* userName;
+  const std::string* projectName;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_searchProjectsByProjectName_result__isset {
+  _Airavata_searchProjectsByProjectName_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_searchProjectsByProjectName_result__isset;
+
+class Airavata_searchProjectsByProjectName_result {
+ public:
+
+  Airavata_searchProjectsByProjectName_result() {
+  }
+
+  virtual ~Airavata_searchProjectsByProjectName_result() throw() {}
+
+  std::vector< ::Project>  success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_searchProjectsByProjectName_result__isset __isset;
+
+  void __set_success(const std::vector< ::Project> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_searchProjectsByProjectName_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_searchProjectsByProjectName_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_searchProjectsByProjectName_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_searchProjectsByProjectName_presult__isset {
+  _Airavata_searchProjectsByProjectName_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_searchProjectsByProjectName_presult__isset;
+
+class Airavata_searchProjectsByProjectName_presult {
+ public:
+
+
+  virtual ~Airavata_searchProjectsByProjectName_presult() throw() {}
+
+  std::vector< ::Project> * success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_searchProjectsByProjectName_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_searchProjectsByProjectDesc_args {
+ public:
+
+  Airavata_searchProjectsByProjectDesc_args() : userName(), description() {
+  }
+
+  virtual ~Airavata_searchProjectsByProjectDesc_args() throw() {}
+
+  std::string userName;
+  std::string description;
+
+  void __set_userName(const std::string& val) {
+    userName = val;
+  }
+
+  void __set_description(const std::string& val) {
+    description = val;
+  }
+
+  bool operator == (const Airavata_searchProjectsByProjectDesc_args & rhs) const
+  {
+    if (!(userName == rhs.userName))
+      return false;
+    if (!(description == rhs.description))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_searchProjectsByProjectDesc_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_searchProjectsByProjectDesc_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_searchProjectsByProjectDesc_pargs {
+ public:
+
+
+  virtual ~Airavata_searchProjectsByProjectDesc_pargs() throw() {}
+
+  const std::string* userName;
+  const std::string* description;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_searchProjectsByProjectDesc_result__isset {
+  _Airavata_searchProjectsByProjectDesc_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_searchProjectsByProjectDesc_result__isset;
+
+class Airavata_searchProjectsByProjectDesc_result {
+ public:
+
+  Airavata_searchProjectsByProjectDesc_result() {
+  }
+
+  virtual ~Airavata_searchProjectsByProjectDesc_result() throw() {}
+
+  std::vector< ::Project>  success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_searchProjectsByProjectDesc_result__isset __isset;
+
+  void __set_success(const std::vector< ::Project> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_searchProjectsByProjectDesc_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_searchProjectsByProjectDesc_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_searchProjectsByProjectDesc_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_searchProjectsByProjectDesc_presult__isset {
+  _Airavata_searchProjectsByProjectDesc_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_searchProjectsByProjectDesc_presult__isset;
+
+class Airavata_searchProjectsByProjectDesc_presult {
+ public:
+
+
+  virtual ~Airavata_searchProjectsByProjectDesc_presult() throw() {}
+
+  std::vector< ::Project> * success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_searchProjectsByProjectDesc_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -2232,21 +2520,21 @@ class Airavata_getJobStatuses_presult {
 };
 
 typedef struct _Airavata_cloneExperiment_args__isset {
-  _Airavata_cloneExperiment_args__isset() : existingExperimentID(false), newExperiementName(false) {}
+  _Airavata_cloneExperiment_args__isset() : existingExperimentID(false), newExperimentName(false) {}
   bool existingExperimentID;
-  bool newExperiementName;
+  bool newExperimentName;
 } _Airavata_cloneExperiment_args__isset;
 
 class Airavata_cloneExperiment_args {
  public:
 
-  Airavata_cloneExperiment_args() : existingExperimentID(), newExperiementName() {
+  Airavata_cloneExperiment_args() : existingExperimentID(), newExperimentName() {
   }
 
   virtual ~Airavata_cloneExperiment_args() throw() {}
 
   std::string existingExperimentID;
-  std::string newExperiementName;
+  std::string newExperimentName;
 
   _Airavata_cloneExperiment_args__isset __isset;
 
@@ -2254,15 +2542,15 @@ class Airavata_cloneExperiment_args {
     existingExperimentID = val;
   }
 
-  void __set_newExperiementName(const std::string& val) {
-    newExperiementName = val;
+  void __set_newExperimentName(const std::string& val) {
+    newExperimentName = val;
   }
 
   bool operator == (const Airavata_cloneExperiment_args & rhs) const
   {
     if (!(existingExperimentID == rhs.existingExperimentID))
       return false;
-    if (!(newExperiementName == rhs.newExperiementName))
+    if (!(newExperimentName == rhs.newExperimentName))
       return false;
     return true;
   }
@@ -2285,7 +2573,7 @@ class Airavata_cloneExperiment_pargs {
   virtual ~Airavata_cloneExperiment_pargs() throw() {}
 
   const std::string* existingExperimentID;
-  const std::string* newExperiementName;
+  const std::string* newExperimentName;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2561,6 +2849,12 @@ class AiravataClient : virtual public AiravataIf {
   void getAllUserProjects(std::vector< ::Project> & _return, const std::string& userName);
   void send_getAllUserProjects(const std::string& userName);
   void recv_getAllUserProjects(std::vector< ::Project> & _return);
+  void searchProjectsByProjectName(std::vector< ::Project> & _return, const std::string& userName, const std::string& projectName);
+  void send_searchProjectsByProjectName(const std::string& userName, const std::string& projectName);
+  void recv_searchProjectsByProjectName(std::vector< ::Project> & _return);
+  void searchProjectsByProjectDesc(std::vector< ::Project> & _return, const std::string& userName, const std::string& description);
+  void send_searchProjectsByProjectDesc(const std::string& userName, const std::string& description);
+  void recv_searchProjectsByProjectDesc(std::vector< ::Project> & _return);
   void getAllExperimentsInProject(std::vector< ::Experiment> & _return, const std::string& projectId);
   void send_getAllExperimentsInProject(const std::string& projectId);
   void recv_getAllExperimentsInProject(std::vector< ::Experiment> & _return);
@@ -2597,8 +2891,8 @@ class AiravataClient : virtual public AiravataIf {
   void getJobStatuses(std::map<std::string,  ::JobStatus> & _return, const std::string& airavataExperimentId);
   void send_getJobStatuses(const std::string& airavataExperimentId);
   void recv_getJobStatuses(std::map<std::string,  ::JobStatus> & _return);
-  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperiementName);
-  void send_cloneExperiment(const std::string& existingExperimentID, const std::string& newExperiementName);
+  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName);
+  void send_cloneExperiment(const std::string& existingExperimentID, const std::string& newExperimentName);
   void recv_cloneExperiment(std::string& _return);
   void terminateExperiment(const std::string& airavataExperimentId);
   void send_terminateExperiment(const std::string& airavataExperimentId);
@@ -2623,6 +2917,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_updateProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllUserProjects(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_searchProjectsByProjectName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_searchProjectsByProjectDesc(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllExperimentsInProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllUserExperiments(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_createExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -2645,6 +2941,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["updateProject"] = &AiravataProcessor::process_updateProject;
     processMap_["getProject"] = &AiravataProcessor::process_getProject;
     processMap_["getAllUserProjects"] = &AiravataProcessor::process_getAllUserProjects;
+    processMap_["searchProjectsByProjectName"] = &AiravataProcessor::process_searchProjectsByProjectName;
+    processMap_["searchProjectsByProjectDesc"] = &AiravataProcessor::process_searchProjectsByProjectDesc;
     processMap_["getAllExperimentsInProject"] = &AiravataProcessor::process_getAllExperimentsInProject;
     processMap_["getAllUserExperiments"] = &AiravataProcessor::process_getAllUserExperiments;
     processMap_["createExperiment"] = &AiravataProcessor::process_createExperiment;
@@ -2733,6 +3031,26 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->getAllUserProjects(_return, userName);
     }
     ifaces_[i]->getAllUserProjects(_return, userName);
+    return;
+  }
+
+  void searchProjectsByProjectName(std::vector< ::Project> & _return, const std::string& userName, const std::string& projectName) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->searchProjectsByProjectName(_return, userName, projectName);
+    }
+    ifaces_[i]->searchProjectsByProjectName(_return, userName, projectName);
+    return;
+  }
+
+  void searchProjectsByProjectDesc(std::vector< ::Project> & _return, const std::string& userName, const std::string& description) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->searchProjectsByProjectDesc(_return, userName, description);
+    }
+    ifaces_[i]->searchProjectsByProjectDesc(_return, userName, description);
     return;
   }
 
@@ -2851,13 +3169,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperiementName) {
+  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->cloneExperiment(_return, existingExperimentID, newExperiementName);
+      ifaces_[i]->cloneExperiment(_return, existingExperimentID, newExperimentName);
     }
-    ifaces_[i]->cloneExperiment(_return, existingExperimentID, newExperiementName);
+    ifaces_[i]->cloneExperiment(_return, existingExperimentID, newExperimentName);
     return;
   }
 

@@ -26,6 +26,8 @@ public class Constants {
         public final class ProjectConstants {
             public static final String PROJECT_ID = "projectID";
             public static final String OWNER = "owner";
+            public static final String PROJECT_NAME = "name";
+            public static final String DESCRIPTION = "description";
         }
 
         public final class ExperimentConstants {

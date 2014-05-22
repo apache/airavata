@@ -21,19 +21,13 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ProjectUserResource;
-import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
-import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
@@ -175,6 +169,35 @@ public class ProjectRegistry {
             throw new Exception(e);
         }
         return projects;
+    }
+
+    public List<Project> searchProjects (Map<String, String> filters) throws Exception{
+        Map<String, String> fil = new HashMap<String, String>();
+        if (filters != null && filters.size() != 0){
+            List<Project> projects = new ArrayList<Project>();
+            try {
+                for (String field : filters.keySet()){
+                    if (field.equals(Constants.FieldConstants.ProjectConstants.PROJECT_NAME)){
+                        fil.put(AbstractResource.ProjectConstants.PROJECT_NAME, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
+                        fil.put(AbstractResource.ProjectConstants.USERNAME, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ProjectConstants.DESCRIPTION)){
+                        fil.put(AbstractResource.ProjectConstants.DESCRIPTION, filters.get(field));
+                    }
+                }
+                List<ProjectResource> projectResources = workerResource.searchProjects(fil);
+                if (projectResources != null && !projectResources.isEmpty()){
+                    for (ProjectResource pr : projectResources){
+                        projects.add(ThriftDataModelConversion.getProject(pr));
+                    }
+                }
+                return projects;
+            }catch (Exception e){
+                logger.error("Error while retrieving project from registry", e);
+                throw new Exception(e);
+            }
+        }
+        return null;
     }
 
     public List<String> getProjectIDs (String fieldName, Object value) throws Exception{
