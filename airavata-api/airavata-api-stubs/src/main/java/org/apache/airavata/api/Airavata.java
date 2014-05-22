@@ -69,9 +69,10 @@ import org.slf4j.LoggerFactory;
      * Update a Project
      * 
      * 
-     * @param project
+     * @param projectId
+     * @param updatedProject
      */
-    public void updateProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Get a Project by ID
@@ -421,7 +422,7 @@ import org.slf4j.LoggerFactory;
 
     public void createProject(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void updateProject(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getProject(String projectId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -539,16 +540,17 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createProject failed: unknown result");
     }
 
-    public void updateProject(org.apache.airavata.model.workspace.Project project) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_updateProject(project);
+      send_updateProject(projectId, updatedProject);
       recv_updateProject();
     }
 
-    public void send_updateProject(org.apache.airavata.model.workspace.Project project) throws org.apache.thrift.TException
+    public void send_updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject) throws org.apache.thrift.TException
     {
       updateProject_args args = new updateProject_args();
-      args.setProject(project);
+      args.setProjectId(projectId);
+      args.setUpdatedProject(updatedProject);
       sendBase("updateProject", args);
     }
 
@@ -1269,24 +1271,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void updateProject(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      updateProject_call method_call = new updateProject_call(project, resultHandler, this, ___protocolFactory, ___transport);
+      updateProject_call method_call = new updateProject_call(projectId, updatedProject, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class updateProject_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private org.apache.airavata.model.workspace.Project project;
-      public updateProject_call(org.apache.airavata.model.workspace.Project project, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String projectId;
+      private org.apache.airavata.model.workspace.Project updatedProject;
+      public updateProject_call(String projectId, org.apache.airavata.model.workspace.Project updatedProject, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.project = project;
+        this.projectId = projectId;
+        this.updatedProject = updatedProject;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateProject", org.apache.thrift.protocol.TMessageType.CALL, 0));
         updateProject_args args = new updateProject_args();
-        args.setProject(project);
+        args.setProjectId(projectId);
+        args.setUpdatedProject(updatedProject);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -2071,7 +2076,7 @@ import org.slf4j.LoggerFactory;
       public updateProject_result getResult(I iface, updateProject_args args) throws org.apache.thrift.TException {
         updateProject_result result = new updateProject_result();
         try {
-          iface.updateProject(args.project);
+          iface.updateProject(args.projectId, args.updatedProject);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -2847,7 +2852,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, updateProject_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
-        iface.updateProject(args.project,resultHandler);
+        iface.updateProject(args.projectId, args.updatedProject,resultHandler);
       }
     }
 
@@ -5780,7 +5785,8 @@ import org.slf4j.LoggerFactory;
   public static class updateProject_args implements org.apache.thrift.TBase<updateProject_args, updateProject_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateProject_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateProject_args");
 
-    private static final org.apache.thrift.protocol.TField PROJECT_FIELD_DESC = new org.apache.thrift.protocol.TField("project", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField PROJECT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("projectId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField UPDATED_PROJECT_FIELD_DESC = new org.apache.thrift.protocol.TField("updatedProject", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -5788,11 +5794,13 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new updateProject_argsTupleSchemeFactory());
     }
 
-    public org.apache.airavata.model.workspace.Project project; // required
+    public String projectId; // required
+    public org.apache.airavata.model.workspace.Project updatedProject; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      PROJECT((short)1, "project");
+      PROJECT_ID((short)1, "projectId"),
+      UPDATED_PROJECT((short)2, "updatedProject");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5807,8 +5815,10 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // PROJECT
-            return PROJECT;
+          case 1: // PROJECT_ID
+            return PROJECT_ID;
+          case 2: // UPDATED_PROJECT
+            return UPDATED_PROJECT;
           default:
             return null;
         }
@@ -5852,7 +5862,9 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.PROJECT, new org.apache.thrift.meta_data.FieldMetaData("project", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+      tmpMap.put(_Fields.PROJECT_ID, new org.apache.thrift.meta_data.FieldMetaData("projectId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.UPDATED_PROJECT, new org.apache.thrift.meta_data.FieldMetaData("updatedProject", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.Project.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateProject_args.class, metaDataMap);
@@ -5862,18 +5874,23 @@ import org.slf4j.LoggerFactory;
     }
 
     public updateProject_args(
-      org.apache.airavata.model.workspace.Project project)
+      String projectId,
+      org.apache.airavata.model.workspace.Project updatedProject)
     {
       this();
-      this.project = project;
+      this.projectId = projectId;
+      this.updatedProject = updatedProject;
     }
 
     /**
      * Performs a deep copy on <i>other</i>.
      */
     public updateProject_args(updateProject_args other) {
-      if (other.isSetProject()) {
-        this.project = new org.apache.airavata.model.workspace.Project(other.project);
+      if (other.isSetProjectId()) {
+        this.projectId = other.projectId;
+      }
+      if (other.isSetUpdatedProject()) {
+        this.updatedProject = new org.apache.airavata.model.workspace.Project(other.updatedProject);
       }
     }
 
@@ -5883,40 +5900,73 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
-      this.project = null;
+      this.projectId = null;
+      this.updatedProject = null;
     }
 
-    public org.apache.airavata.model.workspace.Project getProject() {
-      return this.project;
+    public String getProjectId() {
+      return this.projectId;
     }
 
-    public updateProject_args setProject(org.apache.airavata.model.workspace.Project project) {
-      this.project = project;
+    public updateProject_args setProjectId(String projectId) {
+      this.projectId = projectId;
       return this;
     }
 
-    public void unsetProject() {
-      this.project = null;
+    public void unsetProjectId() {
+      this.projectId = null;
     }
 
-    /** Returns true if field project is set (has been assigned a value) and false otherwise */
-    public boolean isSetProject() {
-      return this.project != null;
+    /** Returns true if field projectId is set (has been assigned a value) and false otherwise */
+    public boolean isSetProjectId() {
+      return this.projectId != null;
     }
 
-    public void setProjectIsSet(boolean value) {
+    public void setProjectIdIsSet(boolean value) {
       if (!value) {
-        this.project = null;
+        this.projectId = null;
+      }
+    }
+
+    public org.apache.airavata.model.workspace.Project getUpdatedProject() {
+      return this.updatedProject;
+    }
+
+    public updateProject_args setUpdatedProject(org.apache.airavata.model.workspace.Project updatedProject) {
+      this.updatedProject = updatedProject;
+      return this;
+    }
+
+    public void unsetUpdatedProject() {
+      this.updatedProject = null;
+    }
+
+    /** Returns true if field updatedProject is set (has been assigned a value) and false otherwise */
+    public boolean isSetUpdatedProject() {
+      return this.updatedProject != null;
+    }
+
+    public void setUpdatedProjectIsSet(boolean value) {
+      if (!value) {
+        this.updatedProject = null;
       }
     }
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case PROJECT:
+      case PROJECT_ID:
         if (value == null) {
-          unsetProject();
+          unsetProjectId();
         } else {
-          setProject((org.apache.airavata.model.workspace.Project)value);
+          setProjectId((String)value);
+        }
+        break;
+
+      case UPDATED_PROJECT:
+        if (value == null) {
+          unsetUpdatedProject();
+        } else {
+          setUpdatedProject((org.apache.airavata.model.workspace.Project)value);
         }
         break;
 
@@ -5925,8 +5975,11 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case PROJECT:
-        return getProject();
+      case PROJECT_ID:
+        return getProjectId();
+
+      case UPDATED_PROJECT:
+        return getUpdatedProject();
 
       }
       throw new IllegalStateException();
@@ -5939,8 +5992,10 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
-      case PROJECT:
-        return isSetProject();
+      case PROJECT_ID:
+        return isSetProjectId();
+      case UPDATED_PROJECT:
+        return isSetUpdatedProject();
       }
       throw new IllegalStateException();
     }
@@ -5958,12 +6013,21 @@ import org.slf4j.LoggerFactory;
       if (that == null)
         return false;
 
-      boolean this_present_project = true && this.isSetProject();
-      boolean that_present_project = true && that.isSetProject();
-      if (this_present_project || that_present_project) {
-        if (!(this_present_project && that_present_project))
+      boolean this_present_projectId = true && this.isSetProjectId();
+      boolean that_present_projectId = true && that.isSetProjectId();
+      if (this_present_projectId || that_present_projectId) {
+        if (!(this_present_projectId && that_present_projectId))
           return false;
-        if (!this.project.equals(that.project))
+        if (!this.projectId.equals(that.projectId))
+          return false;
+      }
+
+      boolean this_present_updatedProject = true && this.isSetUpdatedProject();
+      boolean that_present_updatedProject = true && that.isSetUpdatedProject();
+      if (this_present_updatedProject || that_present_updatedProject) {
+        if (!(this_present_updatedProject && that_present_updatedProject))
+          return false;
+        if (!this.updatedProject.equals(that.updatedProject))
           return false;
       }
 
@@ -5983,12 +6047,22 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetProject()).compareTo(other.isSetProject());
+      lastComparison = Boolean.valueOf(isSetProjectId()).compareTo(other.isSetProjectId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetProject()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.project, other.project);
+      if (isSetProjectId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.projectId, other.projectId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetUpdatedProject()).compareTo(other.isSetUpdatedProject());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUpdatedProject()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.updatedProject, other.updatedProject);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -6013,11 +6087,19 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("updateProject_args(");
       boolean first = true;
 
-      sb.append("project:");
-      if (this.project == null) {
+      sb.append("projectId:");
+      if (this.projectId == null) {
         sb.append("null");
       } else {
-        sb.append(this.project);
+        sb.append(this.projectId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("updatedProject:");
+      if (this.updatedProject == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.updatedProject);
       }
       first = false;
       sb.append(")");
@@ -6026,12 +6108,15 @@ import org.slf4j.LoggerFactory;
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
-      if (project == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'project' was not present! Struct: " + toString());
+      if (projectId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'projectId' was not present! Struct: " + toString());
+      }
+      if (updatedProject == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'updatedProject' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
-      if (project != null) {
-        project.validate();
+      if (updatedProject != null) {
+        updatedProject.validate();
       }
     }
 
@@ -6069,11 +6154,19 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
-            case 1: // PROJECT
+            case 1: // PROJECT_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.projectId = iprot.readString();
+                struct.setProjectIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // UPDATED_PROJECT
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-                struct.project = new org.apache.airavata.model.workspace.Project();
-                struct.project.read(iprot);
-                struct.setProjectIsSet(true);
+                struct.updatedProject = new org.apache.airavata.model.workspace.Project();
+                struct.updatedProject.read(iprot);
+                struct.setUpdatedProjectIsSet(true);
               } else { 
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
@@ -6093,9 +6186,14 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.project != null) {
-          oprot.writeFieldBegin(PROJECT_FIELD_DESC);
-          struct.project.write(oprot);
+        if (struct.projectId != null) {
+          oprot.writeFieldBegin(PROJECT_ID_FIELD_DESC);
+          oprot.writeString(struct.projectId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.updatedProject != null) {
+          oprot.writeFieldBegin(UPDATED_PROJECT_FIELD_DESC);
+          struct.updatedProject.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -6115,15 +6213,18 @@ import org.slf4j.LoggerFactory;
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, updateProject_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
-        struct.project.write(oprot);
+        oprot.writeString(struct.projectId);
+        struct.updatedProject.write(oprot);
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, updateProject_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        struct.project = new org.apache.airavata.model.workspace.Project();
-        struct.project.read(iprot);
-        struct.setProjectIsSet(true);
+        struct.projectId = iprot.readString();
+        struct.setProjectIdIsSet(true);
+        struct.updatedProject = new org.apache.airavata.model.workspace.Project();
+        struct.updatedProject.read(iprot);
+        struct.setUpdatedProjectIsSet(true);
       }
     }
 
