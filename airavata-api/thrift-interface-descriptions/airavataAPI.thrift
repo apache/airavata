@@ -59,7 +59,10 @@ service Airavata {
 */
 
   /** Query Airavata to fetch the API version */
-  string GetAPIVersion(),
+  string getAPIVersion()
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
   
   /**
    * Create a Project

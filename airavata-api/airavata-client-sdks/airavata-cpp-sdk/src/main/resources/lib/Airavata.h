@@ -15,7 +15,7 @@ namespace airavata { namespace api {
 class AiravataIf {
  public:
   virtual ~AiravataIf() {}
-  virtual void GetAPIVersion(std::string& _return) = 0;
+  virtual void getAPIVersion(std::string& _return) = 0;
   virtual void createProject(std::string& _return, const  ::Project& project) = 0;
   virtual void updateProject(const std::string& projectId, const  ::Project& updatedProject) = 0;
   virtual void getProject( ::Project& _return, const std::string& projectId) = 0;
@@ -67,7 +67,7 @@ class AiravataIfSingletonFactory : virtual public AiravataIfFactory {
 class AiravataNull : virtual public AiravataIf {
  public:
   virtual ~AiravataNull() {}
-  void GetAPIVersion(std::string& /* _return */) {
+  void getAPIVersion(std::string& /* _return */) {
     return;
   }
   void createProject(std::string& /* _return */, const  ::Project& /* project */) {
@@ -140,24 +140,24 @@ class AiravataNull : virtual public AiravataIf {
 };
 
 
-class Airavata_GetAPIVersion_args {
+class Airavata_getAPIVersion_args {
  public:
 
-  Airavata_GetAPIVersion_args() {
+  Airavata_getAPIVersion_args() {
   }
 
-  virtual ~Airavata_GetAPIVersion_args() throw() {}
+  virtual ~Airavata_getAPIVersion_args() throw() {}
 
 
-  bool operator == (const Airavata_GetAPIVersion_args & /* rhs */) const
+  bool operator == (const Airavata_getAPIVersion_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const Airavata_GetAPIVersion_args &rhs) const {
+  bool operator != (const Airavata_getAPIVersion_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_GetAPIVersion_args & ) const;
+  bool operator < (const Airavata_getAPIVersion_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -165,69 +165,99 @@ class Airavata_GetAPIVersion_args {
 };
 
 
-class Airavata_GetAPIVersion_pargs {
+class Airavata_getAPIVersion_pargs {
  public:
 
 
-  virtual ~Airavata_GetAPIVersion_pargs() throw() {}
+  virtual ~Airavata_getAPIVersion_pargs() throw() {}
 
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Airavata_GetAPIVersion_result__isset {
-  _Airavata_GetAPIVersion_result__isset() : success(false) {}
+typedef struct _Airavata_getAPIVersion_result__isset {
+  _Airavata_getAPIVersion_result__isset() : success(false), ire(false), ace(false), ase(false) {}
   bool success;
-} _Airavata_GetAPIVersion_result__isset;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAPIVersion_result__isset;
 
-class Airavata_GetAPIVersion_result {
+class Airavata_getAPIVersion_result {
  public:
 
-  Airavata_GetAPIVersion_result() : success() {
+  Airavata_getAPIVersion_result() : success() {
   }
 
-  virtual ~Airavata_GetAPIVersion_result() throw() {}
+  virtual ~Airavata_getAPIVersion_result() throw() {}
 
   std::string success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
 
-  _Airavata_GetAPIVersion_result__isset __isset;
+  _Airavata_getAPIVersion_result__isset __isset;
 
   void __set_success(const std::string& val) {
     success = val;
   }
 
-  bool operator == (const Airavata_GetAPIVersion_result & rhs) const
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getAPIVersion_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
     return true;
   }
-  bool operator != (const Airavata_GetAPIVersion_result &rhs) const {
+  bool operator != (const Airavata_getAPIVersion_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_GetAPIVersion_result & ) const;
+  bool operator < (const Airavata_getAPIVersion_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Airavata_GetAPIVersion_presult__isset {
-  _Airavata_GetAPIVersion_presult__isset() : success(false) {}
+typedef struct _Airavata_getAPIVersion_presult__isset {
+  _Airavata_getAPIVersion_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
   bool success;
-} _Airavata_GetAPIVersion_presult__isset;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAPIVersion_presult__isset;
 
-class Airavata_GetAPIVersion_presult {
+class Airavata_getAPIVersion_presult {
  public:
 
 
-  virtual ~Airavata_GetAPIVersion_presult() throw() {}
+  virtual ~Airavata_getAPIVersion_presult() throw() {}
 
   std::string* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
 
-  _Airavata_GetAPIVersion_presult__isset __isset;
+  _Airavata_getAPIVersion_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -3130,9 +3160,9 @@ class AiravataClient : virtual public AiravataIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void GetAPIVersion(std::string& _return);
-  void send_GetAPIVersion();
-  void recv_GetAPIVersion(std::string& _return);
+  void getAPIVersion(std::string& _return);
+  void send_getAPIVersion();
+  void recv_getAPIVersion(std::string& _return);
   void createProject(std::string& _return, const  ::Project& project);
   void send_createProject(const  ::Project& project);
   void recv_createProject(std::string& _return);
@@ -3214,7 +3244,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef  void (AiravataProcessor::*ProcessFunction)(int32_t, ::apache::thrift::protocol::TProtocol*, ::apache::thrift::protocol::TProtocol*, void*);
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
-  void process_GetAPIVersion(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAPIVersion(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_createProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -3240,7 +3270,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
-    processMap_["GetAPIVersion"] = &AiravataProcessor::process_GetAPIVersion;
+    processMap_["getAPIVersion"] = &AiravataProcessor::process_getAPIVersion;
     processMap_["createProject"] = &AiravataProcessor::process_createProject;
     processMap_["updateProject"] = &AiravataProcessor::process_updateProject;
     processMap_["getProject"] = &AiravataProcessor::process_getProject;
@@ -3291,13 +3321,13 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_.push_back(iface);
   }
  public:
-  void GetAPIVersion(std::string& _return) {
+  void getAPIVersion(std::string& _return) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->GetAPIVersion(_return);
+      ifaces_[i]->getAPIVersion(_return);
     }
-    ifaces_[i]->GetAPIVersion(_return);
+    ifaces_[i]->getAPIVersion(_return);
     return;
   }
 
