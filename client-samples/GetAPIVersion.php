@@ -35,6 +35,7 @@ use Airavata\API\AiravataClient;
 /* this is the same as the factory */
 $transport = new TSocket(AIRAVATA_SERVER, AIRAVATA_PORT);
 $transport->setRecvTimeout(AIRAVATA_TIMEOUT);
+$protocol = new TBinaryProtocol($transport);
 $transport->open();
 $airavataclient = new AiravataClient($protocol);
 
