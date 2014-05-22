@@ -16,12 +16,12 @@ class ApplicationCatalogAPIIf {
  public:
   virtual ~ApplicationCatalogAPIIf() {}
   virtual void GetAPIVersion(std::string& _return) = 0;
-  virtual void addComputeResourceDescription(const  ::ComputeResourceDescription& computeResourceDescription) = 0;
-  virtual void addSSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission) = 0;
-  virtual void addGSISSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission) = 0;
-  virtual void addGlobusJobSubmissionProtocol(const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission) = 0;
-  virtual void addSCPDataMovementProtocol(const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement) = 0;
-  virtual void addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement) = 0;
+  virtual void addComputeResourceDescription(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription) = 0;
+  virtual void addSSHJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission) = 0;
+  virtual void addGSISSHJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission) = 0;
+  virtual void addGlobusJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission) = 0;
+  virtual void addSCPDataMovementProtocol(std::string& _return, const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement) = 0;
+  virtual void addGridFTPDataMovementProtocol(std::string& _return, const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement) = 0;
   virtual void listComputeResourceDescriptions(std::vector<std::string> & _return) = 0;
   virtual void getComputeResourceDescription( ::ComputeResourceDescription& _return, const std::string& computeResourceId) = 0;
   virtual void getSSHJobSubmissionProtocol( ::SSHJobSubmission& _return, const std::string& sshJobSubmissionProtocolResourceId) = 0;
@@ -31,10 +31,10 @@ class ApplicationCatalogAPIIf {
   virtual void getGridFTPDataMovementProtocol( ::GridFTPDataMovement& _return, const std::string& gridFTPDataMovementResourceId) = 0;
   virtual bool isComputeResourceDescriptionRegistered(const std::string& hostName) = 0;
   virtual void getComputeResourceDescriptionFromHostName( ::ComputeResourceDescription& _return, const std::string& hostName) = 0;
-  virtual void addApplicationInterface(const  ::ApplicationInterface& applicationInterface) = 0;
+  virtual void addApplicationInterface(std::string& _return, const  ::ApplicationInterface& applicationInterface) = 0;
   virtual void listApplicationInterfaceIds(std::vector<std::string> & _return) = 0;
   virtual void getApplicationInterface( ::ApplicationInterface& _return, const std::string& applicationInterfaceId) = 0;
-  virtual void addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment) = 0;
+  virtual void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment) = 0;
   virtual void listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId) = 0;
   virtual void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId) = 0;
 };
@@ -69,22 +69,22 @@ class ApplicationCatalogAPINull : virtual public ApplicationCatalogAPIIf {
   void GetAPIVersion(std::string& /* _return */) {
     return;
   }
-  void addComputeResourceDescription(const  ::ComputeResourceDescription& /* computeResourceDescription */) {
+  void addComputeResourceDescription(std::string& /* _return */, const  ::ComputeResourceDescription& /* computeResourceDescription */) {
     return;
   }
-  void addSSHJobSubmissionProtocol(const std::string& /* computeResourceId */, const  ::SSHJobSubmission& /* jobSubmission */) {
+  void addSSHJobSubmissionProtocol(std::string& /* _return */, const std::string& /* computeResourceId */, const  ::SSHJobSubmission& /* jobSubmission */) {
     return;
   }
-  void addGSISSHJobSubmissionProtocol(const std::string& /* computeResourceId */, const  ::GSISSHJobSubmission& /* jobSubmission */) {
+  void addGSISSHJobSubmissionProtocol(std::string& /* _return */, const std::string& /* computeResourceId */, const  ::GSISSHJobSubmission& /* jobSubmission */) {
     return;
   }
-  void addGlobusJobSubmissionProtocol(const std::string& /* computeResourceId */, const  ::GlobusJobSubmission& /* jobSubmission */) {
+  void addGlobusJobSubmissionProtocol(std::string& /* _return */, const std::string& /* computeResourceId */, const  ::GlobusJobSubmission& /* jobSubmission */) {
     return;
   }
-  void addSCPDataMovementProtocol(const std::string& /* computeResourceId */, const  ::SCPDataMovement& /* dataMovement */) {
+  void addSCPDataMovementProtocol(std::string& /* _return */, const std::string& /* computeResourceId */, const  ::SCPDataMovement& /* dataMovement */) {
     return;
   }
-  void addGridFTPDataMovementProtocol(const std::string& /* computeResourceId */, const  ::GridFTPDataMovement& /* dataMovement */) {
+  void addGridFTPDataMovementProtocol(std::string& /* _return */, const std::string& /* computeResourceId */, const  ::GridFTPDataMovement& /* dataMovement */) {
     return;
   }
   void listComputeResourceDescriptions(std::vector<std::string> & /* _return */) {
@@ -115,7 +115,7 @@ class ApplicationCatalogAPINull : virtual public ApplicationCatalogAPIIf {
   void getComputeResourceDescriptionFromHostName( ::ComputeResourceDescription& /* _return */, const std::string& /* hostName */) {
     return;
   }
-  void addApplicationInterface(const  ::ApplicationInterface& /* applicationInterface */) {
+  void addApplicationInterface(std::string& /* _return */, const  ::ApplicationInterface& /* applicationInterface */) {
     return;
   }
   void listApplicationInterfaceIds(std::vector<std::string> & /* _return */) {
@@ -124,7 +124,7 @@ class ApplicationCatalogAPINull : virtual public ApplicationCatalogAPIIf {
   void getApplicationInterface( ::ApplicationInterface& /* _return */, const std::string& /* applicationInterfaceId */) {
     return;
   }
-  void addApplicationDeployment(const std::string& /* applicationInterfaceId */, const  ::ApplicationDeployment& /* applicationDeployment */) {
+  void addApplicationDeployment(std::string& /* _return */, const std::string& /* applicationInterfaceId */, const  ::ApplicationDeployment& /* applicationDeployment */) {
     return;
   }
   void listApplicationDeploymentIds(std::vector<std::string> & /* _return */, const std::string& /* applicationInterfaceId */) {
@@ -275,7 +275,8 @@ class ApplicationCatalogAPI_addComputeResourceDescription_pargs {
 };
 
 typedef struct _ApplicationCatalogAPI_addComputeResourceDescription_result__isset {
-  _ApplicationCatalogAPI_addComputeResourceDescription_result__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addComputeResourceDescription_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -284,16 +285,21 @@ typedef struct _ApplicationCatalogAPI_addComputeResourceDescription_result__isse
 class ApplicationCatalogAPI_addComputeResourceDescription_result {
  public:
 
-  ApplicationCatalogAPI_addComputeResourceDescription_result() {
+  ApplicationCatalogAPI_addComputeResourceDescription_result() : success() {
   }
 
   virtual ~ApplicationCatalogAPI_addComputeResourceDescription_result() throw() {}
 
+  std::string success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_addComputeResourceDescription_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
 
   void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
     ire = val;
@@ -309,6 +315,8 @@ class ApplicationCatalogAPI_addComputeResourceDescription_result {
 
   bool operator == (const ApplicationCatalogAPI_addComputeResourceDescription_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(ace == rhs.ace))
@@ -329,7 +337,8 @@ class ApplicationCatalogAPI_addComputeResourceDescription_result {
 };
 
 typedef struct _ApplicationCatalogAPI_addComputeResourceDescription_presult__isset {
-  _ApplicationCatalogAPI_addComputeResourceDescription_presult__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addComputeResourceDescription_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -341,6 +350,7 @@ class ApplicationCatalogAPI_addComputeResourceDescription_presult {
 
   virtual ~ApplicationCatalogAPI_addComputeResourceDescription_presult() throw() {}
 
+  std::string* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
@@ -405,7 +415,8 @@ class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_pargs {
 };
 
 typedef struct _ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result__isset {
-  _ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -414,16 +425,21 @@ typedef struct _ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result__isset 
 class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result {
  public:
 
-  ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result() {
+  ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result() : success() {
   }
 
   virtual ~ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result() throw() {}
 
+  std::string success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
 
   void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
     ire = val;
@@ -439,6 +455,8 @@ class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result {
 
   bool operator == (const ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(ace == rhs.ace))
@@ -459,7 +477,8 @@ class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result {
 };
 
 typedef struct _ApplicationCatalogAPI_addSSHJobSubmissionProtocol_presult__isset {
-  _ApplicationCatalogAPI_addSSHJobSubmissionProtocol_presult__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addSSHJobSubmissionProtocol_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -471,6 +490,7 @@ class ApplicationCatalogAPI_addSSHJobSubmissionProtocol_presult {
 
   virtual ~ApplicationCatalogAPI_addSSHJobSubmissionProtocol_presult() throw() {}
 
+  std::string* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
@@ -535,7 +555,8 @@ class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_pargs {
 };
 
 typedef struct _ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result__isset {
-  _ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -544,16 +565,21 @@ typedef struct _ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result__iss
 class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result {
  public:
 
-  ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result() {
+  ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result() : success() {
   }
 
   virtual ~ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result() throw() {}
 
+  std::string success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
 
   void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
     ire = val;
@@ -569,6 +595,8 @@ class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result {
 
   bool operator == (const ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(ace == rhs.ace))
@@ -589,7 +617,8 @@ class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result {
 };
 
 typedef struct _ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_presult__isset {
-  _ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_presult__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -601,6 +630,7 @@ class ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_presult {
 
   virtual ~ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_presult() throw() {}
 
+  std::string* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
@@ -665,7 +695,8 @@ class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_pargs {
 };
 
 typedef struct _ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result__isset {
-  _ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -674,16 +705,21 @@ typedef struct _ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result__iss
 class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result {
  public:
 
-  ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result() {
+  ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result() : success() {
   }
 
   virtual ~ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result() throw() {}
 
+  std::string success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
 
   void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
     ire = val;
@@ -699,6 +735,8 @@ class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result {
 
   bool operator == (const ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(ace == rhs.ace))
@@ -719,7 +757,8 @@ class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result {
 };
 
 typedef struct _ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_presult__isset {
-  _ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_presult__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -731,6 +770,7 @@ class ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_presult {
 
   virtual ~ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_presult() throw() {}
 
+  std::string* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
@@ -795,7 +835,8 @@ class ApplicationCatalogAPI_addSCPDataMovementProtocol_pargs {
 };
 
 typedef struct _ApplicationCatalogAPI_addSCPDataMovementProtocol_result__isset {
-  _ApplicationCatalogAPI_addSCPDataMovementProtocol_result__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addSCPDataMovementProtocol_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -804,16 +845,21 @@ typedef struct _ApplicationCatalogAPI_addSCPDataMovementProtocol_result__isset {
 class ApplicationCatalogAPI_addSCPDataMovementProtocol_result {
  public:
 
-  ApplicationCatalogAPI_addSCPDataMovementProtocol_result() {
+  ApplicationCatalogAPI_addSCPDataMovementProtocol_result() : success() {
   }
 
   virtual ~ApplicationCatalogAPI_addSCPDataMovementProtocol_result() throw() {}
 
+  std::string success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_addSCPDataMovementProtocol_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
 
   void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
     ire = val;
@@ -829,6 +875,8 @@ class ApplicationCatalogAPI_addSCPDataMovementProtocol_result {
 
   bool operator == (const ApplicationCatalogAPI_addSCPDataMovementProtocol_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(ace == rhs.ace))
@@ -849,7 +897,8 @@ class ApplicationCatalogAPI_addSCPDataMovementProtocol_result {
 };
 
 typedef struct _ApplicationCatalogAPI_addSCPDataMovementProtocol_presult__isset {
-  _ApplicationCatalogAPI_addSCPDataMovementProtocol_presult__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addSCPDataMovementProtocol_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -861,6 +910,7 @@ class ApplicationCatalogAPI_addSCPDataMovementProtocol_presult {
 
   virtual ~ApplicationCatalogAPI_addSCPDataMovementProtocol_presult() throw() {}
 
+  std::string* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
@@ -925,7 +975,8 @@ class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_pargs {
 };
 
 typedef struct _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result__isset {
-  _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -934,16 +985,21 @@ typedef struct _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result__iss
 class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result {
  public:
 
-  ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result() {
+  ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result() : success() {
   }
 
   virtual ~ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result() throw() {}
 
+  std::string success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
 
   void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
     ire = val;
@@ -959,6 +1015,8 @@ class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result {
 
   bool operator == (const ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(ace == rhs.ace))
@@ -979,7 +1037,8 @@ class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result {
 };
 
 typedef struct _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult__isset {
-  _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -991,6 +1050,7 @@ class ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult {
 
   virtual ~ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult() throw() {}
 
+  std::string* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
@@ -2227,7 +2287,8 @@ class ApplicationCatalogAPI_addApplicationInterface_pargs {
 };
 
 typedef struct _ApplicationCatalogAPI_addApplicationInterface_result__isset {
-  _ApplicationCatalogAPI_addApplicationInterface_result__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addApplicationInterface_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -2236,16 +2297,21 @@ typedef struct _ApplicationCatalogAPI_addApplicationInterface_result__isset {
 class ApplicationCatalogAPI_addApplicationInterface_result {
  public:
 
-  ApplicationCatalogAPI_addApplicationInterface_result() {
+  ApplicationCatalogAPI_addApplicationInterface_result() : success() {
   }
 
   virtual ~ApplicationCatalogAPI_addApplicationInterface_result() throw() {}
 
+  std::string success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_addApplicationInterface_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
 
   void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
     ire = val;
@@ -2261,6 +2327,8 @@ class ApplicationCatalogAPI_addApplicationInterface_result {
 
   bool operator == (const ApplicationCatalogAPI_addApplicationInterface_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(ace == rhs.ace))
@@ -2281,7 +2349,8 @@ class ApplicationCatalogAPI_addApplicationInterface_result {
 };
 
 typedef struct _ApplicationCatalogAPI_addApplicationInterface_presult__isset {
-  _ApplicationCatalogAPI_addApplicationInterface_presult__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addApplicationInterface_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -2293,6 +2362,7 @@ class ApplicationCatalogAPI_addApplicationInterface_presult {
 
   virtual ~ApplicationCatalogAPI_addApplicationInterface_presult() throw() {}
 
+  std::string* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
@@ -2613,7 +2683,8 @@ class ApplicationCatalogAPI_addApplicationDeployment_pargs {
 };
 
 typedef struct _ApplicationCatalogAPI_addApplicationDeployment_result__isset {
-  _ApplicationCatalogAPI_addApplicationDeployment_result__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addApplicationDeployment_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -2622,16 +2693,21 @@ typedef struct _ApplicationCatalogAPI_addApplicationDeployment_result__isset {
 class ApplicationCatalogAPI_addApplicationDeployment_result {
  public:
 
-  ApplicationCatalogAPI_addApplicationDeployment_result() {
+  ApplicationCatalogAPI_addApplicationDeployment_result() : success() {
   }
 
   virtual ~ApplicationCatalogAPI_addApplicationDeployment_result() throw() {}
 
+  std::string success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_addApplicationDeployment_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
 
   void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
     ire = val;
@@ -2647,6 +2723,8 @@ class ApplicationCatalogAPI_addApplicationDeployment_result {
 
   bool operator == (const ApplicationCatalogAPI_addApplicationDeployment_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     if (!(ire == rhs.ire))
       return false;
     if (!(ace == rhs.ace))
@@ -2667,7 +2745,8 @@ class ApplicationCatalogAPI_addApplicationDeployment_result {
 };
 
 typedef struct _ApplicationCatalogAPI_addApplicationDeployment_presult__isset {
-  _ApplicationCatalogAPI_addApplicationDeployment_presult__isset() : ire(false), ace(false), ase(false) {}
+  _ApplicationCatalogAPI_addApplicationDeployment_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
   bool ire;
   bool ace;
   bool ase;
@@ -2679,6 +2758,7 @@ class ApplicationCatalogAPI_addApplicationDeployment_presult {
 
   virtual ~ApplicationCatalogAPI_addApplicationDeployment_presult() throw() {}
 
+  std::string* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
@@ -2984,24 +3064,24 @@ class ApplicationCatalogAPIClient : virtual public ApplicationCatalogAPIIf {
   void GetAPIVersion(std::string& _return);
   void send_GetAPIVersion();
   void recv_GetAPIVersion(std::string& _return);
-  void addComputeResourceDescription(const  ::ComputeResourceDescription& computeResourceDescription);
+  void addComputeResourceDescription(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription);
   void send_addComputeResourceDescription(const  ::ComputeResourceDescription& computeResourceDescription);
-  void recv_addComputeResourceDescription();
-  void addSSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission);
+  void recv_addComputeResourceDescription(std::string& _return);
+  void addSSHJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission);
   void send_addSSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission);
-  void recv_addSSHJobSubmissionProtocol();
-  void addGSISSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission);
+  void recv_addSSHJobSubmissionProtocol(std::string& _return);
+  void addGSISSHJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission);
   void send_addGSISSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission);
-  void recv_addGSISSHJobSubmissionProtocol();
-  void addGlobusJobSubmissionProtocol(const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission);
+  void recv_addGSISSHJobSubmissionProtocol(std::string& _return);
+  void addGlobusJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission);
   void send_addGlobusJobSubmissionProtocol(const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission);
-  void recv_addGlobusJobSubmissionProtocol();
-  void addSCPDataMovementProtocol(const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement);
+  void recv_addGlobusJobSubmissionProtocol(std::string& _return);
+  void addSCPDataMovementProtocol(std::string& _return, const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement);
   void send_addSCPDataMovementProtocol(const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement);
-  void recv_addSCPDataMovementProtocol();
-  void addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement);
+  void recv_addSCPDataMovementProtocol(std::string& _return);
+  void addGridFTPDataMovementProtocol(std::string& _return, const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement);
   void send_addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement);
-  void recv_addGridFTPDataMovementProtocol();
+  void recv_addGridFTPDataMovementProtocol(std::string& _return);
   void listComputeResourceDescriptions(std::vector<std::string> & _return);
   void send_listComputeResourceDescriptions();
   void recv_listComputeResourceDescriptions(std::vector<std::string> & _return);
@@ -3029,18 +3109,18 @@ class ApplicationCatalogAPIClient : virtual public ApplicationCatalogAPIIf {
   void getComputeResourceDescriptionFromHostName( ::ComputeResourceDescription& _return, const std::string& hostName);
   void send_getComputeResourceDescriptionFromHostName(const std::string& hostName);
   void recv_getComputeResourceDescriptionFromHostName( ::ComputeResourceDescription& _return);
-  void addApplicationInterface(const  ::ApplicationInterface& applicationInterface);
+  void addApplicationInterface(std::string& _return, const  ::ApplicationInterface& applicationInterface);
   void send_addApplicationInterface(const  ::ApplicationInterface& applicationInterface);
-  void recv_addApplicationInterface();
+  void recv_addApplicationInterface(std::string& _return);
   void listApplicationInterfaceIds(std::vector<std::string> & _return);
   void send_listApplicationInterfaceIds();
   void recv_listApplicationInterfaceIds(std::vector<std::string> & _return);
   void getApplicationInterface( ::ApplicationInterface& _return, const std::string& applicationInterfaceId);
   void send_getApplicationInterface(const std::string& applicationInterfaceId);
   void recv_getApplicationInterface( ::ApplicationInterface& _return);
-  void addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment);
+  void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment);
   void send_addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment);
-  void recv_addApplicationDeployment();
+  void recv_addApplicationDeployment(std::string& _return);
   void listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId);
   void send_listApplicationDeploymentIds(const std::string& applicationInterfaceId);
   void recv_listApplicationDeploymentIds(std::vector<std::string> & _return);
@@ -3147,58 +3227,64 @@ class ApplicationCatalogAPIMultiface : virtual public ApplicationCatalogAPIIf {
     return;
   }
 
-  void addComputeResourceDescription(const  ::ComputeResourceDescription& computeResourceDescription) {
+  void addComputeResourceDescription(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addComputeResourceDescription(computeResourceDescription);
+      ifaces_[i]->addComputeResourceDescription(_return, computeResourceDescription);
     }
-    ifaces_[i]->addComputeResourceDescription(computeResourceDescription);
+    ifaces_[i]->addComputeResourceDescription(_return, computeResourceDescription);
+    return;
   }
 
-  void addSSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission) {
+  void addSSHJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addSSHJobSubmissionProtocol(computeResourceId, jobSubmission);
+      ifaces_[i]->addSSHJobSubmissionProtocol(_return, computeResourceId, jobSubmission);
     }
-    ifaces_[i]->addSSHJobSubmissionProtocol(computeResourceId, jobSubmission);
+    ifaces_[i]->addSSHJobSubmissionProtocol(_return, computeResourceId, jobSubmission);
+    return;
   }
 
-  void addGSISSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission) {
+  void addGSISSHJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addGSISSHJobSubmissionProtocol(computeResourceId, jobSubmission);
+      ifaces_[i]->addGSISSHJobSubmissionProtocol(_return, computeResourceId, jobSubmission);
     }
-    ifaces_[i]->addGSISSHJobSubmissionProtocol(computeResourceId, jobSubmission);
+    ifaces_[i]->addGSISSHJobSubmissionProtocol(_return, computeResourceId, jobSubmission);
+    return;
   }
 
-  void addGlobusJobSubmissionProtocol(const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission) {
+  void addGlobusJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addGlobusJobSubmissionProtocol(computeResourceId, jobSubmission);
+      ifaces_[i]->addGlobusJobSubmissionProtocol(_return, computeResourceId, jobSubmission);
     }
-    ifaces_[i]->addGlobusJobSubmissionProtocol(computeResourceId, jobSubmission);
+    ifaces_[i]->addGlobusJobSubmissionProtocol(_return, computeResourceId, jobSubmission);
+    return;
   }
 
-  void addSCPDataMovementProtocol(const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement) {
+  void addSCPDataMovementProtocol(std::string& _return, const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addSCPDataMovementProtocol(computeResourceId, dataMovement);
+      ifaces_[i]->addSCPDataMovementProtocol(_return, computeResourceId, dataMovement);
     }
-    ifaces_[i]->addSCPDataMovementProtocol(computeResourceId, dataMovement);
+    ifaces_[i]->addSCPDataMovementProtocol(_return, computeResourceId, dataMovement);
+    return;
   }
 
-  void addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement) {
+  void addGridFTPDataMovementProtocol(std::string& _return, const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addGridFTPDataMovementProtocol(computeResourceId, dataMovement);
+      ifaces_[i]->addGridFTPDataMovementProtocol(_return, computeResourceId, dataMovement);
     }
-    ifaces_[i]->addGridFTPDataMovementProtocol(computeResourceId, dataMovement);
+    ifaces_[i]->addGridFTPDataMovementProtocol(_return, computeResourceId, dataMovement);
+    return;
   }
 
   void listComputeResourceDescriptions(std::vector<std::string> & _return) {
@@ -3290,13 +3376,14 @@ class ApplicationCatalogAPIMultiface : virtual public ApplicationCatalogAPIIf {
     return;
   }
 
-  void addApplicationInterface(const  ::ApplicationInterface& applicationInterface) {
+  void addApplicationInterface(std::string& _return, const  ::ApplicationInterface& applicationInterface) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addApplicationInterface(applicationInterface);
+      ifaces_[i]->addApplicationInterface(_return, applicationInterface);
     }
-    ifaces_[i]->addApplicationInterface(applicationInterface);
+    ifaces_[i]->addApplicationInterface(_return, applicationInterface);
+    return;
   }
 
   void listApplicationInterfaceIds(std::vector<std::string> & _return) {
@@ -3319,13 +3406,14 @@ class ApplicationCatalogAPIMultiface : virtual public ApplicationCatalogAPIIf {
     return;
   }
 
-  void addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment) {
+  void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->addApplicationDeployment(applicationInterfaceId, applicationDeployment);
+      ifaces_[i]->addApplicationDeployment(_return, applicationInterfaceId, applicationDeployment);
     }
-    ifaces_[i]->addApplicationDeployment(applicationInterfaceId, applicationDeployment);
+    ifaces_[i]->addApplicationDeployment(_return, applicationInterfaceId, applicationDeployment);
+    return;
   }
 
   void listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId) {

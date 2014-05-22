@@ -62,17 +62,17 @@ import org.slf4j.LoggerFactory;
      * 
      * @param computeResourceDescription
      */
-    public void addComputeResourceDescription(org.apache.airavata.model.appcatalog.ComputeResourceDescription computeResourceDescription) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public String addComputeResourceDescription(org.apache.airavata.model.appcatalog.ComputeResourceDescription computeResourceDescription) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
-    public void addSSHJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SSHJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public String addSSHJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SSHJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
-    public void addGSISSHJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GSISSHJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public String addGSISSHJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GSISSHJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
-    public void addGlobusJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GlobusJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public String addGlobusJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GlobusJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
-    public void addSCPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SCPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public String addSCPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SCPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
-    public void addGridFTPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public String addGridFTPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     public List<String> listComputeResourceDescriptions() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
@@ -97,7 +97,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param applicationInterface
      */
-    public void addApplicationInterface(org.apache.airavata.model.appcatalog.ApplicationInterface applicationInterface) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public String addApplicationInterface(org.apache.airavata.model.appcatalog.ApplicationInterface applicationInterface) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     public List<String> listApplicationInterfaceIds() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
@@ -109,7 +109,7 @@ import org.slf4j.LoggerFactory;
      * @param applicationInterfaceId
      * @param applicationDeployment
      */
-    public void addApplicationDeployment(String applicationInterfaceId, org.apache.airavata.model.appcatalog.ApplicationDeployment applicationDeployment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public String addApplicationDeployment(String applicationInterfaceId, org.apache.airavata.model.appcatalog.ApplicationDeployment applicationDeployment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     public List<String> listApplicationDeploymentIds(String applicationInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
@@ -207,10 +207,10 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "GetAPIVersion failed: unknown result");
     }
 
-    public void addComputeResourceDescription(org.apache.airavata.model.appcatalog.ComputeResourceDescription computeResourceDescription) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String addComputeResourceDescription(org.apache.airavata.model.appcatalog.ComputeResourceDescription computeResourceDescription) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_addComputeResourceDescription(computeResourceDescription);
-      recv_addComputeResourceDescription();
+      return recv_addComputeResourceDescription();
     }
 
     public void send_addComputeResourceDescription(org.apache.airavata.model.appcatalog.ComputeResourceDescription computeResourceDescription) throws org.apache.thrift.TException
@@ -220,10 +220,13 @@ import org.slf4j.LoggerFactory;
       sendBase("addComputeResourceDescription", args);
     }
 
-    public void recv_addComputeResourceDescription() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_addComputeResourceDescription() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       addComputeResourceDescription_result result = new addComputeResourceDescription_result();
       receiveBase(result, "addComputeResourceDescription");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.ire != null) {
         throw result.ire;
       }
@@ -233,13 +236,13 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addComputeResourceDescription failed: unknown result");
     }
 
-    public void addSSHJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SSHJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String addSSHJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SSHJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_addSSHJobSubmissionProtocol(computeResourceId, jobSubmission);
-      recv_addSSHJobSubmissionProtocol();
+      return recv_addSSHJobSubmissionProtocol();
     }
 
     public void send_addSSHJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SSHJobSubmission jobSubmission) throws org.apache.thrift.TException
@@ -250,10 +253,13 @@ import org.slf4j.LoggerFactory;
       sendBase("addSSHJobSubmissionProtocol", args);
     }
 
-    public void recv_addSSHJobSubmissionProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_addSSHJobSubmissionProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       addSSHJobSubmissionProtocol_result result = new addSSHJobSubmissionProtocol_result();
       receiveBase(result, "addSSHJobSubmissionProtocol");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.ire != null) {
         throw result.ire;
       }
@@ -263,13 +269,13 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addSSHJobSubmissionProtocol failed: unknown result");
     }
 
-    public void addGSISSHJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GSISSHJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String addGSISSHJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GSISSHJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_addGSISSHJobSubmissionProtocol(computeResourceId, jobSubmission);
-      recv_addGSISSHJobSubmissionProtocol();
+      return recv_addGSISSHJobSubmissionProtocol();
     }
 
     public void send_addGSISSHJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GSISSHJobSubmission jobSubmission) throws org.apache.thrift.TException
@@ -280,10 +286,13 @@ import org.slf4j.LoggerFactory;
       sendBase("addGSISSHJobSubmissionProtocol", args);
     }
 
-    public void recv_addGSISSHJobSubmissionProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_addGSISSHJobSubmissionProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       addGSISSHJobSubmissionProtocol_result result = new addGSISSHJobSubmissionProtocol_result();
       receiveBase(result, "addGSISSHJobSubmissionProtocol");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.ire != null) {
         throw result.ire;
       }
@@ -293,13 +302,13 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addGSISSHJobSubmissionProtocol failed: unknown result");
     }
 
-    public void addGlobusJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GlobusJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String addGlobusJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GlobusJobSubmission jobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_addGlobusJobSubmissionProtocol(computeResourceId, jobSubmission);
-      recv_addGlobusJobSubmissionProtocol();
+      return recv_addGlobusJobSubmissionProtocol();
     }
 
     public void send_addGlobusJobSubmissionProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GlobusJobSubmission jobSubmission) throws org.apache.thrift.TException
@@ -310,10 +319,13 @@ import org.slf4j.LoggerFactory;
       sendBase("addGlobusJobSubmissionProtocol", args);
     }
 
-    public void recv_addGlobusJobSubmissionProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_addGlobusJobSubmissionProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       addGlobusJobSubmissionProtocol_result result = new addGlobusJobSubmissionProtocol_result();
       receiveBase(result, "addGlobusJobSubmissionProtocol");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.ire != null) {
         throw result.ire;
       }
@@ -323,13 +335,13 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addGlobusJobSubmissionProtocol failed: unknown result");
     }
 
-    public void addSCPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SCPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String addSCPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SCPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_addSCPDataMovementProtocol(computeResourceId, dataMovement);
-      recv_addSCPDataMovementProtocol();
+      return recv_addSCPDataMovementProtocol();
     }
 
     public void send_addSCPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.SCPDataMovement dataMovement) throws org.apache.thrift.TException
@@ -340,10 +352,13 @@ import org.slf4j.LoggerFactory;
       sendBase("addSCPDataMovementProtocol", args);
     }
 
-    public void recv_addSCPDataMovementProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_addSCPDataMovementProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       addSCPDataMovementProtocol_result result = new addSCPDataMovementProtocol_result();
       receiveBase(result, "addSCPDataMovementProtocol");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.ire != null) {
         throw result.ire;
       }
@@ -353,13 +368,13 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addSCPDataMovementProtocol failed: unknown result");
     }
 
-    public void addGridFTPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String addGridFTPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_addGridFTPDataMovementProtocol(computeResourceId, dataMovement);
-      recv_addGridFTPDataMovementProtocol();
+      return recv_addGridFTPDataMovementProtocol();
     }
 
     public void send_addGridFTPDataMovementProtocol(String computeResourceId, org.apache.airavata.model.appcatalog.GridFTPDataMovement dataMovement) throws org.apache.thrift.TException
@@ -370,10 +385,13 @@ import org.slf4j.LoggerFactory;
       sendBase("addGridFTPDataMovementProtocol", args);
     }
 
-    public void recv_addGridFTPDataMovementProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_addGridFTPDataMovementProtocol() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       addGridFTPDataMovementProtocol_result result = new addGridFTPDataMovementProtocol_result();
       receiveBase(result, "addGridFTPDataMovementProtocol");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.ire != null) {
         throw result.ire;
       }
@@ -383,7 +401,7 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addGridFTPDataMovementProtocol failed: unknown result");
     }
 
     public List<String> listComputeResourceDescriptions() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
@@ -673,10 +691,10 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getComputeResourceDescriptionFromHostName failed: unknown result");
     }
 
-    public void addApplicationInterface(org.apache.airavata.model.appcatalog.ApplicationInterface applicationInterface) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String addApplicationInterface(org.apache.airavata.model.appcatalog.ApplicationInterface applicationInterface) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_addApplicationInterface(applicationInterface);
-      recv_addApplicationInterface();
+      return recv_addApplicationInterface();
     }
 
     public void send_addApplicationInterface(org.apache.airavata.model.appcatalog.ApplicationInterface applicationInterface) throws org.apache.thrift.TException
@@ -686,10 +704,13 @@ import org.slf4j.LoggerFactory;
       sendBase("addApplicationInterface", args);
     }
 
-    public void recv_addApplicationInterface() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_addApplicationInterface() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       addApplicationInterface_result result = new addApplicationInterface_result();
       receiveBase(result, "addApplicationInterface");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.ire != null) {
         throw result.ire;
       }
@@ -699,7 +720,7 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addApplicationInterface failed: unknown result");
     }
 
     public List<String> listApplicationInterfaceIds() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
@@ -765,10 +786,10 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getApplicationInterface failed: unknown result");
     }
 
-    public void addApplicationDeployment(String applicationInterfaceId, org.apache.airavata.model.appcatalog.ApplicationDeployment applicationDeployment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String addApplicationDeployment(String applicationInterfaceId, org.apache.airavata.model.appcatalog.ApplicationDeployment applicationDeployment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       send_addApplicationDeployment(applicationInterfaceId, applicationDeployment);
-      recv_addApplicationDeployment();
+      return recv_addApplicationDeployment();
     }
 
     public void send_addApplicationDeployment(String applicationInterfaceId, org.apache.airavata.model.appcatalog.ApplicationDeployment applicationDeployment) throws org.apache.thrift.TException
@@ -779,10 +800,13 @@ import org.slf4j.LoggerFactory;
       sendBase("addApplicationDeployment", args);
     }
 
-    public void recv_addApplicationDeployment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_addApplicationDeployment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
       addApplicationDeployment_result result = new addApplicationDeployment_result();
       receiveBase(result, "addApplicationDeployment");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
       if (result.ire != null) {
         throw result.ire;
       }
@@ -792,7 +816,7 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      return;
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addApplicationDeployment failed: unknown result");
     }
 
     public List<String> listApplicationDeploymentIds(String applicationInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
@@ -929,13 +953,13 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_addComputeResourceDescription();
+        return (new Client(prot)).recv_addComputeResourceDescription();
       }
     }
 
@@ -964,13 +988,13 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_addSSHJobSubmissionProtocol();
+        return (new Client(prot)).recv_addSSHJobSubmissionProtocol();
       }
     }
 
@@ -999,13 +1023,13 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_addGSISSHJobSubmissionProtocol();
+        return (new Client(prot)).recv_addGSISSHJobSubmissionProtocol();
       }
     }
 
@@ -1034,13 +1058,13 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_addGlobusJobSubmissionProtocol();
+        return (new Client(prot)).recv_addGlobusJobSubmissionProtocol();
       }
     }
 
@@ -1069,13 +1093,13 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_addSCPDataMovementProtocol();
+        return (new Client(prot)).recv_addSCPDataMovementProtocol();
       }
     }
 
@@ -1104,13 +1128,13 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_addGridFTPDataMovementProtocol();
+        return (new Client(prot)).recv_addGridFTPDataMovementProtocol();
       }
     }
 
@@ -1421,13 +1445,13 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_addApplicationInterface();
+        return (new Client(prot)).recv_addApplicationInterface();
       }
     }
 
@@ -1517,13 +1541,13 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        (new Client(prot)).recv_addApplicationDeployment();
+        return (new Client(prot)).recv_addApplicationDeployment();
       }
     }
 
@@ -1668,7 +1692,7 @@ import org.slf4j.LoggerFactory;
       public addComputeResourceDescription_result getResult(I iface, addComputeResourceDescription_args args) throws org.apache.thrift.TException {
         addComputeResourceDescription_result result = new addComputeResourceDescription_result();
         try {
-          iface.addComputeResourceDescription(args.computeResourceDescription);
+          result.success = iface.addComputeResourceDescription(args.computeResourceDescription);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -1696,7 +1720,7 @@ import org.slf4j.LoggerFactory;
       public addSSHJobSubmissionProtocol_result getResult(I iface, addSSHJobSubmissionProtocol_args args) throws org.apache.thrift.TException {
         addSSHJobSubmissionProtocol_result result = new addSSHJobSubmissionProtocol_result();
         try {
-          iface.addSSHJobSubmissionProtocol(args.computeResourceId, args.jobSubmission);
+          result.success = iface.addSSHJobSubmissionProtocol(args.computeResourceId, args.jobSubmission);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -1724,7 +1748,7 @@ import org.slf4j.LoggerFactory;
       public addGSISSHJobSubmissionProtocol_result getResult(I iface, addGSISSHJobSubmissionProtocol_args args) throws org.apache.thrift.TException {
         addGSISSHJobSubmissionProtocol_result result = new addGSISSHJobSubmissionProtocol_result();
         try {
-          iface.addGSISSHJobSubmissionProtocol(args.computeResourceId, args.jobSubmission);
+          result.success = iface.addGSISSHJobSubmissionProtocol(args.computeResourceId, args.jobSubmission);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -1752,7 +1776,7 @@ import org.slf4j.LoggerFactory;
       public addGlobusJobSubmissionProtocol_result getResult(I iface, addGlobusJobSubmissionProtocol_args args) throws org.apache.thrift.TException {
         addGlobusJobSubmissionProtocol_result result = new addGlobusJobSubmissionProtocol_result();
         try {
-          iface.addGlobusJobSubmissionProtocol(args.computeResourceId, args.jobSubmission);
+          result.success = iface.addGlobusJobSubmissionProtocol(args.computeResourceId, args.jobSubmission);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -1780,7 +1804,7 @@ import org.slf4j.LoggerFactory;
       public addSCPDataMovementProtocol_result getResult(I iface, addSCPDataMovementProtocol_args args) throws org.apache.thrift.TException {
         addSCPDataMovementProtocol_result result = new addSCPDataMovementProtocol_result();
         try {
-          iface.addSCPDataMovementProtocol(args.computeResourceId, args.dataMovement);
+          result.success = iface.addSCPDataMovementProtocol(args.computeResourceId, args.dataMovement);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -1808,7 +1832,7 @@ import org.slf4j.LoggerFactory;
       public addGridFTPDataMovementProtocol_result getResult(I iface, addGridFTPDataMovementProtocol_args args) throws org.apache.thrift.TException {
         addGridFTPDataMovementProtocol_result result = new addGridFTPDataMovementProtocol_result();
         try {
-          iface.addGridFTPDataMovementProtocol(args.computeResourceId, args.dataMovement);
+          result.success = iface.addGridFTPDataMovementProtocol(args.computeResourceId, args.dataMovement);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -2089,7 +2113,7 @@ import org.slf4j.LoggerFactory;
       public addApplicationInterface_result getResult(I iface, addApplicationInterface_args args) throws org.apache.thrift.TException {
         addApplicationInterface_result result = new addApplicationInterface_result();
         try {
-          iface.addApplicationInterface(args.applicationInterface);
+          result.success = iface.addApplicationInterface(args.applicationInterface);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -2173,7 +2197,7 @@ import org.slf4j.LoggerFactory;
       public addApplicationDeployment_result getResult(I iface, addApplicationDeployment_args args) throws org.apache.thrift.TException {
         addApplicationDeployment_result result = new addApplicationDeployment_result();
         try {
-          iface.addApplicationDeployment(args.applicationInterfaceId, args.applicationDeployment);
+          result.success = iface.addApplicationDeployment(args.applicationInterfaceId, args.applicationDeployment);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -2330,7 +2354,7 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class addComputeResourceDescription<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addComputeResourceDescription_args, Void> {
+    public static class addComputeResourceDescription<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addComputeResourceDescription_args, String> {
       public addComputeResourceDescription() {
         super("addComputeResourceDescription");
       }
@@ -2339,11 +2363,12 @@ import org.slf4j.LoggerFactory;
         return new addComputeResourceDescription_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
             addComputeResourceDescription_result result = new addComputeResourceDescription_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2391,12 +2416,12 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, addComputeResourceDescription_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+      public void start(I iface, addComputeResourceDescription_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
         iface.addComputeResourceDescription(args.computeResourceDescription,resultHandler);
       }
     }
 
-    public static class addSSHJobSubmissionProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addSSHJobSubmissionProtocol_args, Void> {
+    public static class addSSHJobSubmissionProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addSSHJobSubmissionProtocol_args, String> {
       public addSSHJobSubmissionProtocol() {
         super("addSSHJobSubmissionProtocol");
       }
@@ -2405,11 +2430,12 @@ import org.slf4j.LoggerFactory;
         return new addSSHJobSubmissionProtocol_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
             addSSHJobSubmissionProtocol_result result = new addSSHJobSubmissionProtocol_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2457,12 +2483,12 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, addSSHJobSubmissionProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+      public void start(I iface, addSSHJobSubmissionProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
         iface.addSSHJobSubmissionProtocol(args.computeResourceId, args.jobSubmission,resultHandler);
       }
     }
 
-    public static class addGSISSHJobSubmissionProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addGSISSHJobSubmissionProtocol_args, Void> {
+    public static class addGSISSHJobSubmissionProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addGSISSHJobSubmissionProtocol_args, String> {
       public addGSISSHJobSubmissionProtocol() {
         super("addGSISSHJobSubmissionProtocol");
       }
@@ -2471,11 +2497,12 @@ import org.slf4j.LoggerFactory;
         return new addGSISSHJobSubmissionProtocol_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
             addGSISSHJobSubmissionProtocol_result result = new addGSISSHJobSubmissionProtocol_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2523,12 +2550,12 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, addGSISSHJobSubmissionProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+      public void start(I iface, addGSISSHJobSubmissionProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
         iface.addGSISSHJobSubmissionProtocol(args.computeResourceId, args.jobSubmission,resultHandler);
       }
     }
 
-    public static class addGlobusJobSubmissionProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addGlobusJobSubmissionProtocol_args, Void> {
+    public static class addGlobusJobSubmissionProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addGlobusJobSubmissionProtocol_args, String> {
       public addGlobusJobSubmissionProtocol() {
         super("addGlobusJobSubmissionProtocol");
       }
@@ -2537,11 +2564,12 @@ import org.slf4j.LoggerFactory;
         return new addGlobusJobSubmissionProtocol_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
             addGlobusJobSubmissionProtocol_result result = new addGlobusJobSubmissionProtocol_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2589,12 +2617,12 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, addGlobusJobSubmissionProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+      public void start(I iface, addGlobusJobSubmissionProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
         iface.addGlobusJobSubmissionProtocol(args.computeResourceId, args.jobSubmission,resultHandler);
       }
     }
 
-    public static class addSCPDataMovementProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addSCPDataMovementProtocol_args, Void> {
+    public static class addSCPDataMovementProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addSCPDataMovementProtocol_args, String> {
       public addSCPDataMovementProtocol() {
         super("addSCPDataMovementProtocol");
       }
@@ -2603,11 +2631,12 @@ import org.slf4j.LoggerFactory;
         return new addSCPDataMovementProtocol_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
             addSCPDataMovementProtocol_result result = new addSCPDataMovementProtocol_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2655,12 +2684,12 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, addSCPDataMovementProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+      public void start(I iface, addSCPDataMovementProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
         iface.addSCPDataMovementProtocol(args.computeResourceId, args.dataMovement,resultHandler);
       }
     }
 
-    public static class addGridFTPDataMovementProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addGridFTPDataMovementProtocol_args, Void> {
+    public static class addGridFTPDataMovementProtocol<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addGridFTPDataMovementProtocol_args, String> {
       public addGridFTPDataMovementProtocol() {
         super("addGridFTPDataMovementProtocol");
       }
@@ -2669,11 +2698,12 @@ import org.slf4j.LoggerFactory;
         return new addGridFTPDataMovementProtocol_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
             addGridFTPDataMovementProtocol_result result = new addGridFTPDataMovementProtocol_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -2721,7 +2751,7 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, addGridFTPDataMovementProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+      public void start(I iface, addGridFTPDataMovementProtocol_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
         iface.addGridFTPDataMovementProtocol(args.computeResourceId, args.dataMovement,resultHandler);
       }
     }
@@ -3330,7 +3360,7 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class addApplicationInterface<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addApplicationInterface_args, Void> {
+    public static class addApplicationInterface<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addApplicationInterface_args, String> {
       public addApplicationInterface() {
         super("addApplicationInterface");
       }
@@ -3339,11 +3369,12 @@ import org.slf4j.LoggerFactory;
         return new addApplicationInterface_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
             addApplicationInterface_result result = new addApplicationInterface_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -3391,7 +3422,7 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, addApplicationInterface_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+      public void start(I iface, addApplicationInterface_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
         iface.addApplicationInterface(args.applicationInterface,resultHandler);
       }
     }
@@ -3530,7 +3561,7 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class addApplicationDeployment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addApplicationDeployment_args, Void> {
+    public static class addApplicationDeployment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addApplicationDeployment_args, String> {
       public addApplicationDeployment() {
         super("addApplicationDeployment");
       }
@@ -3539,11 +3570,12 @@ import org.slf4j.LoggerFactory;
         return new addApplicationDeployment_args();
       }
 
-      public AsyncMethodCallback<Void> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
-        return new AsyncMethodCallback<Void>() { 
-          public void onComplete(Void o) {
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
             addApplicationDeployment_result result = new addApplicationDeployment_result();
+            result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
               return;
@@ -3591,7 +3623,7 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, addApplicationDeployment_args args, org.apache.thrift.async.AsyncMethodCallback<Void> resultHandler) throws TException {
+      public void start(I iface, addApplicationDeployment_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
         iface.addApplicationDeployment(args.applicationInterfaceId, args.applicationDeployment,resultHandler);
       }
     }
@@ -4687,6 +4719,7 @@ import org.slf4j.LoggerFactory;
   public static class addComputeResourceDescription_result implements org.apache.thrift.TBase<addComputeResourceDescription_result, addComputeResourceDescription_result._Fields>, java.io.Serializable, Cloneable, Comparable<addComputeResourceDescription_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addComputeResourceDescription_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
@@ -4697,12 +4730,14 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new addComputeResourceDescription_resultTupleSchemeFactory());
     }
 
+    public String success; // required
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
       ASE((short)3, "ase");
@@ -4720,6 +4755,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // IRE
             return IRE;
           case 2: // ACE
@@ -4769,6 +4806,8 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -4783,11 +4822,13 @@ import org.slf4j.LoggerFactory;
     }
 
     public addComputeResourceDescription_result(
+      String success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
       org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
+      this.success = success;
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
@@ -4797,6 +4838,9 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public addComputeResourceDescription_result(addComputeResourceDescription_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
@@ -4814,9 +4858,34 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
+      this.success = null;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public addComputeResourceDescription_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public org.apache.airavata.model.error.InvalidRequestException getIre() {
@@ -4893,6 +4962,14 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
       case IRE:
         if (value == null) {
           unsetIre();
@@ -4922,6 +4999,9 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case IRE:
         return getIre();
 
@@ -4942,6 +5022,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case IRE:
         return isSetIre();
       case ACE:
@@ -4964,6 +5046,15 @@ import org.slf4j.LoggerFactory;
     public boolean equals(addComputeResourceDescription_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_ire = true && this.isSetIre();
       boolean that_present_ire = true && that.isSetIre();
@@ -5008,6 +5099,16 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
       if (lastComparison != 0) {
         return lastComparison;
@@ -5058,6 +5159,14 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("addComputeResourceDescription_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("ire:");
       if (this.ire == null) {
         sb.append("null");
@@ -5124,6 +5233,14 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
@@ -5166,6 +5283,11 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
         if (struct.ire != null) {
           oprot.writeFieldBegin(IRE_FIELD_DESC);
           struct.ire.write(oprot);
@@ -5199,16 +5321,22 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, addComputeResourceDescription_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetIre()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetAce()) {
+        if (struct.isSetIre()) {
           optionals.set(1);
         }
-        if (struct.isSetAse()) {
+        if (struct.isSetAce()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
         if (struct.isSetIre()) {
           struct.ire.write(oprot);
         }
@@ -5223,18 +5351,22 @@ import org.slf4j.LoggerFactory;
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addComputeResourceDescription_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
-        if (incoming.get(1)) {
+        if (incoming.get(2)) {
           struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
-        if (incoming.get(2)) {
+        if (incoming.get(3)) {
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
@@ -5695,6 +5827,7 @@ import org.slf4j.LoggerFactory;
   public static class addSSHJobSubmissionProtocol_result implements org.apache.thrift.TBase<addSSHJobSubmissionProtocol_result, addSSHJobSubmissionProtocol_result._Fields>, java.io.Serializable, Cloneable, Comparable<addSSHJobSubmissionProtocol_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addSSHJobSubmissionProtocol_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
@@ -5705,12 +5838,14 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new addSSHJobSubmissionProtocol_resultTupleSchemeFactory());
     }
 
+    public String success; // required
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
       ASE((short)3, "ase");
@@ -5728,6 +5863,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // IRE
             return IRE;
           case 2: // ACE
@@ -5777,6 +5914,8 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -5791,11 +5930,13 @@ import org.slf4j.LoggerFactory;
     }
 
     public addSSHJobSubmissionProtocol_result(
+      String success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
       org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
+      this.success = success;
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
@@ -5805,6 +5946,9 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public addSSHJobSubmissionProtocol_result(addSSHJobSubmissionProtocol_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
@@ -5822,9 +5966,34 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
+      this.success = null;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public addSSHJobSubmissionProtocol_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public org.apache.airavata.model.error.InvalidRequestException getIre() {
@@ -5901,6 +6070,14 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
       case IRE:
         if (value == null) {
           unsetIre();
@@ -5930,6 +6107,9 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case IRE:
         return getIre();
 
@@ -5950,6 +6130,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case IRE:
         return isSetIre();
       case ACE:
@@ -5972,6 +6154,15 @@ import org.slf4j.LoggerFactory;
     public boolean equals(addSSHJobSubmissionProtocol_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_ire = true && this.isSetIre();
       boolean that_present_ire = true && that.isSetIre();
@@ -6016,6 +6207,16 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
       if (lastComparison != 0) {
         return lastComparison;
@@ -6066,6 +6267,14 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("addSSHJobSubmissionProtocol_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("ire:");
       if (this.ire == null) {
         sb.append("null");
@@ -6132,6 +6341,14 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
@@ -6174,6 +6391,11 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
         if (struct.ire != null) {
           oprot.writeFieldBegin(IRE_FIELD_DESC);
           struct.ire.write(oprot);
@@ -6207,16 +6429,22 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, addSSHJobSubmissionProtocol_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetIre()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetAce()) {
+        if (struct.isSetIre()) {
           optionals.set(1);
         }
-        if (struct.isSetAse()) {
+        if (struct.isSetAce()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
         if (struct.isSetIre()) {
           struct.ire.write(oprot);
         }
@@ -6231,18 +6459,22 @@ import org.slf4j.LoggerFactory;
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addSSHJobSubmissionProtocol_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
-        if (incoming.get(1)) {
+        if (incoming.get(2)) {
           struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
-        if (incoming.get(2)) {
+        if (incoming.get(3)) {
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
@@ -6703,6 +6935,7 @@ import org.slf4j.LoggerFactory;
   public static class addGSISSHJobSubmissionProtocol_result implements org.apache.thrift.TBase<addGSISSHJobSubmissionProtocol_result, addGSISSHJobSubmissionProtocol_result._Fields>, java.io.Serializable, Cloneable, Comparable<addGSISSHJobSubmissionProtocol_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addGSISSHJobSubmissionProtocol_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
@@ -6713,12 +6946,14 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new addGSISSHJobSubmissionProtocol_resultTupleSchemeFactory());
     }
 
+    public String success; // required
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
       ASE((short)3, "ase");
@@ -6736,6 +6971,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // IRE
             return IRE;
           case 2: // ACE
@@ -6785,6 +7022,8 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -6799,11 +7038,13 @@ import org.slf4j.LoggerFactory;
     }
 
     public addGSISSHJobSubmissionProtocol_result(
+      String success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
       org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
+      this.success = success;
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
@@ -6813,6 +7054,9 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public addGSISSHJobSubmissionProtocol_result(addGSISSHJobSubmissionProtocol_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
@@ -6830,9 +7074,34 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
+      this.success = null;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public addGSISSHJobSubmissionProtocol_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public org.apache.airavata.model.error.InvalidRequestException getIre() {
@@ -6909,6 +7178,14 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
       case IRE:
         if (value == null) {
           unsetIre();
@@ -6938,6 +7215,9 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case IRE:
         return getIre();
 
@@ -6958,6 +7238,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case IRE:
         return isSetIre();
       case ACE:
@@ -6980,6 +7262,15 @@ import org.slf4j.LoggerFactory;
     public boolean equals(addGSISSHJobSubmissionProtocol_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_ire = true && this.isSetIre();
       boolean that_present_ire = true && that.isSetIre();
@@ -7024,6 +7315,16 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
       if (lastComparison != 0) {
         return lastComparison;
@@ -7074,6 +7375,14 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("addGSISSHJobSubmissionProtocol_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("ire:");
       if (this.ire == null) {
         sb.append("null");
@@ -7140,6 +7449,14 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
@@ -7182,6 +7499,11 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
         if (struct.ire != null) {
           oprot.writeFieldBegin(IRE_FIELD_DESC);
           struct.ire.write(oprot);
@@ -7215,16 +7537,22 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, addGSISSHJobSubmissionProtocol_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetIre()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetAce()) {
+        if (struct.isSetIre()) {
           optionals.set(1);
         }
-        if (struct.isSetAse()) {
+        if (struct.isSetAce()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
         if (struct.isSetIre()) {
           struct.ire.write(oprot);
         }
@@ -7239,18 +7567,22 @@ import org.slf4j.LoggerFactory;
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addGSISSHJobSubmissionProtocol_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
-        if (incoming.get(1)) {
+        if (incoming.get(2)) {
           struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
-        if (incoming.get(2)) {
+        if (incoming.get(3)) {
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
@@ -7711,6 +8043,7 @@ import org.slf4j.LoggerFactory;
   public static class addGlobusJobSubmissionProtocol_result implements org.apache.thrift.TBase<addGlobusJobSubmissionProtocol_result, addGlobusJobSubmissionProtocol_result._Fields>, java.io.Serializable, Cloneable, Comparable<addGlobusJobSubmissionProtocol_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addGlobusJobSubmissionProtocol_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
@@ -7721,12 +8054,14 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new addGlobusJobSubmissionProtocol_resultTupleSchemeFactory());
     }
 
+    public String success; // required
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
       ASE((short)3, "ase");
@@ -7744,6 +8079,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // IRE
             return IRE;
           case 2: // ACE
@@ -7793,6 +8130,8 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -7807,11 +8146,13 @@ import org.slf4j.LoggerFactory;
     }
 
     public addGlobusJobSubmissionProtocol_result(
+      String success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
       org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
+      this.success = success;
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
@@ -7821,6 +8162,9 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public addGlobusJobSubmissionProtocol_result(addGlobusJobSubmissionProtocol_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
@@ -7838,9 +8182,34 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
+      this.success = null;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public addGlobusJobSubmissionProtocol_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public org.apache.airavata.model.error.InvalidRequestException getIre() {
@@ -7917,6 +8286,14 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
       case IRE:
         if (value == null) {
           unsetIre();
@@ -7946,6 +8323,9 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case IRE:
         return getIre();
 
@@ -7966,6 +8346,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case IRE:
         return isSetIre();
       case ACE:
@@ -7988,6 +8370,15 @@ import org.slf4j.LoggerFactory;
     public boolean equals(addGlobusJobSubmissionProtocol_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_ire = true && this.isSetIre();
       boolean that_present_ire = true && that.isSetIre();
@@ -8032,6 +8423,16 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
       if (lastComparison != 0) {
         return lastComparison;
@@ -8082,6 +8483,14 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("addGlobusJobSubmissionProtocol_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("ire:");
       if (this.ire == null) {
         sb.append("null");
@@ -8148,6 +8557,14 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
@@ -8190,6 +8607,11 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
         if (struct.ire != null) {
           oprot.writeFieldBegin(IRE_FIELD_DESC);
           struct.ire.write(oprot);
@@ -8223,16 +8645,22 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, addGlobusJobSubmissionProtocol_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetIre()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetAce()) {
+        if (struct.isSetIre()) {
           optionals.set(1);
         }
-        if (struct.isSetAse()) {
+        if (struct.isSetAce()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
         if (struct.isSetIre()) {
           struct.ire.write(oprot);
         }
@@ -8247,18 +8675,22 @@ import org.slf4j.LoggerFactory;
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addGlobusJobSubmissionProtocol_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
-        if (incoming.get(1)) {
+        if (incoming.get(2)) {
           struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
-        if (incoming.get(2)) {
+        if (incoming.get(3)) {
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
@@ -8719,6 +9151,7 @@ import org.slf4j.LoggerFactory;
   public static class addSCPDataMovementProtocol_result implements org.apache.thrift.TBase<addSCPDataMovementProtocol_result, addSCPDataMovementProtocol_result._Fields>, java.io.Serializable, Cloneable, Comparable<addSCPDataMovementProtocol_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addSCPDataMovementProtocol_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
@@ -8729,12 +9162,14 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new addSCPDataMovementProtocol_resultTupleSchemeFactory());
     }
 
+    public String success; // required
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
       ASE((short)3, "ase");
@@ -8752,6 +9187,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // IRE
             return IRE;
           case 2: // ACE
@@ -8801,6 +9238,8 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -8815,11 +9254,13 @@ import org.slf4j.LoggerFactory;
     }
 
     public addSCPDataMovementProtocol_result(
+      String success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
       org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
+      this.success = success;
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
@@ -8829,6 +9270,9 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public addSCPDataMovementProtocol_result(addSCPDataMovementProtocol_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
@@ -8846,9 +9290,34 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
+      this.success = null;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public addSCPDataMovementProtocol_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public org.apache.airavata.model.error.InvalidRequestException getIre() {
@@ -8925,6 +9394,14 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
       case IRE:
         if (value == null) {
           unsetIre();
@@ -8954,6 +9431,9 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case IRE:
         return getIre();
 
@@ -8974,6 +9454,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case IRE:
         return isSetIre();
       case ACE:
@@ -8996,6 +9478,15 @@ import org.slf4j.LoggerFactory;
     public boolean equals(addSCPDataMovementProtocol_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_ire = true && this.isSetIre();
       boolean that_present_ire = true && that.isSetIre();
@@ -9040,6 +9531,16 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
       if (lastComparison != 0) {
         return lastComparison;
@@ -9090,6 +9591,14 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("addSCPDataMovementProtocol_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("ire:");
       if (this.ire == null) {
         sb.append("null");
@@ -9156,6 +9665,14 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
@@ -9198,6 +9715,11 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
         if (struct.ire != null) {
           oprot.writeFieldBegin(IRE_FIELD_DESC);
           struct.ire.write(oprot);
@@ -9231,16 +9753,22 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, addSCPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetIre()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetAce()) {
+        if (struct.isSetIre()) {
           optionals.set(1);
         }
-        if (struct.isSetAse()) {
+        if (struct.isSetAce()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
         if (struct.isSetIre()) {
           struct.ire.write(oprot);
         }
@@ -9255,18 +9783,22 @@ import org.slf4j.LoggerFactory;
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addSCPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
-        if (incoming.get(1)) {
+        if (incoming.get(2)) {
           struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
-        if (incoming.get(2)) {
+        if (incoming.get(3)) {
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
@@ -9727,6 +10259,7 @@ import org.slf4j.LoggerFactory;
   public static class addGridFTPDataMovementProtocol_result implements org.apache.thrift.TBase<addGridFTPDataMovementProtocol_result, addGridFTPDataMovementProtocol_result._Fields>, java.io.Serializable, Cloneable, Comparable<addGridFTPDataMovementProtocol_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addGridFTPDataMovementProtocol_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
@@ -9737,12 +10270,14 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new addGridFTPDataMovementProtocol_resultTupleSchemeFactory());
     }
 
+    public String success; // required
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
       ASE((short)3, "ase");
@@ -9760,6 +10295,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // IRE
             return IRE;
           case 2: // ACE
@@ -9809,6 +10346,8 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -9823,11 +10362,13 @@ import org.slf4j.LoggerFactory;
     }
 
     public addGridFTPDataMovementProtocol_result(
+      String success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
       org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
+      this.success = success;
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
@@ -9837,6 +10378,9 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public addGridFTPDataMovementProtocol_result(addGridFTPDataMovementProtocol_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
@@ -9854,9 +10398,34 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
+      this.success = null;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public addGridFTPDataMovementProtocol_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public org.apache.airavata.model.error.InvalidRequestException getIre() {
@@ -9933,6 +10502,14 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
       case IRE:
         if (value == null) {
           unsetIre();
@@ -9962,6 +10539,9 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case IRE:
         return getIre();
 
@@ -9982,6 +10562,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case IRE:
         return isSetIre();
       case ACE:
@@ -10004,6 +10586,15 @@ import org.slf4j.LoggerFactory;
     public boolean equals(addGridFTPDataMovementProtocol_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_ire = true && this.isSetIre();
       boolean that_present_ire = true && that.isSetIre();
@@ -10048,6 +10639,16 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
       if (lastComparison != 0) {
         return lastComparison;
@@ -10098,6 +10699,14 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("addGridFTPDataMovementProtocol_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("ire:");
       if (this.ire == null) {
         sb.append("null");
@@ -10164,6 +10773,14 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
@@ -10206,6 +10823,11 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
         if (struct.ire != null) {
           oprot.writeFieldBegin(IRE_FIELD_DESC);
           struct.ire.write(oprot);
@@ -10239,16 +10861,22 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, addGridFTPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetIre()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetAce()) {
+        if (struct.isSetIre()) {
           optionals.set(1);
         }
-        if (struct.isSetAse()) {
+        if (struct.isSetAce()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
         if (struct.isSetIre()) {
           struct.ire.write(oprot);
         }
@@ -10263,18 +10891,22 @@ import org.slf4j.LoggerFactory;
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addGridFTPDataMovementProtocol_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
-        if (incoming.get(1)) {
+        if (incoming.get(2)) {
           struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
-        if (incoming.get(2)) {
+        if (incoming.get(3)) {
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
@@ -19685,6 +20317,7 @@ import org.slf4j.LoggerFactory;
   public static class addApplicationInterface_result implements org.apache.thrift.TBase<addApplicationInterface_result, addApplicationInterface_result._Fields>, java.io.Serializable, Cloneable, Comparable<addApplicationInterface_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addApplicationInterface_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
@@ -19695,12 +20328,14 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new addApplicationInterface_resultTupleSchemeFactory());
     }
 
+    public String success; // required
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
       ASE((short)3, "ase");
@@ -19718,6 +20353,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // IRE
             return IRE;
           case 2: // ACE
@@ -19767,6 +20404,8 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -19781,11 +20420,13 @@ import org.slf4j.LoggerFactory;
     }
 
     public addApplicationInterface_result(
+      String success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
       org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
+      this.success = success;
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
@@ -19795,6 +20436,9 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public addApplicationInterface_result(addApplicationInterface_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
@@ -19812,9 +20456,34 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
+      this.success = null;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public addApplicationInterface_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public org.apache.airavata.model.error.InvalidRequestException getIre() {
@@ -19891,6 +20560,14 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
       case IRE:
         if (value == null) {
           unsetIre();
@@ -19920,6 +20597,9 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case IRE:
         return getIre();
 
@@ -19940,6 +20620,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case IRE:
         return isSetIre();
       case ACE:
@@ -19962,6 +20644,15 @@ import org.slf4j.LoggerFactory;
     public boolean equals(addApplicationInterface_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_ire = true && this.isSetIre();
       boolean that_present_ire = true && that.isSetIre();
@@ -20006,6 +20697,16 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
       if (lastComparison != 0) {
         return lastComparison;
@@ -20056,6 +20757,14 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("addApplicationInterface_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("ire:");
       if (this.ire == null) {
         sb.append("null");
@@ -20122,6 +20831,14 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
@@ -20164,6 +20881,11 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
         if (struct.ire != null) {
           oprot.writeFieldBegin(IRE_FIELD_DESC);
           struct.ire.write(oprot);
@@ -20197,16 +20919,22 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, addApplicationInterface_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetIre()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetAce()) {
+        if (struct.isSetIre()) {
           optionals.set(1);
         }
-        if (struct.isSetAse()) {
+        if (struct.isSetAce()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
         if (struct.isSetIre()) {
           struct.ire.write(oprot);
         }
@@ -20221,18 +20949,22 @@ import org.slf4j.LoggerFactory;
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addApplicationInterface_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
-        if (incoming.get(1)) {
+        if (incoming.get(2)) {
           struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
-        if (incoming.get(2)) {
+        if (incoming.get(3)) {
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
@@ -22660,6 +23392,7 @@ import org.slf4j.LoggerFactory;
   public static class addApplicationDeployment_result implements org.apache.thrift.TBase<addApplicationDeployment_result, addApplicationDeployment_result._Fields>, java.io.Serializable, Cloneable, Comparable<addApplicationDeployment_result>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addApplicationDeployment_result");
 
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
@@ -22670,12 +23403,14 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new addApplicationDeployment_resultTupleSchemeFactory());
     }
 
+    public String success; // required
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
       ASE((short)3, "ase");
@@ -22693,6 +23428,8 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
           case 1: // IRE
             return IRE;
           case 2: // ACE
@@ -22742,6 +23479,8 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
@@ -22756,11 +23495,13 @@ import org.slf4j.LoggerFactory;
     }
 
     public addApplicationDeployment_result(
+      String success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
       org.apache.airavata.model.error.AiravataSystemException ase)
     {
       this();
+      this.success = success;
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
@@ -22770,6 +23511,9 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public addApplicationDeployment_result(addApplicationDeployment_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
       if (other.isSetIre()) {
         this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
       }
@@ -22787,9 +23531,34 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
+      this.success = null;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public addApplicationDeployment_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
     }
 
     public org.apache.airavata.model.error.InvalidRequestException getIre() {
@@ -22866,6 +23635,14 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
       case IRE:
         if (value == null) {
           unsetIre();
@@ -22895,6 +23672,9 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
       case IRE:
         return getIre();
 
@@ -22915,6 +23695,8 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
       case IRE:
         return isSetIre();
       case ACE:
@@ -22937,6 +23719,15 @@ import org.slf4j.LoggerFactory;
     public boolean equals(addApplicationDeployment_result that) {
       if (that == null)
         return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
 
       boolean this_present_ire = true && this.isSetIre();
       boolean that_present_ire = true && that.isSetIre();
@@ -22981,6 +23772,16 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
       if (lastComparison != 0) {
         return lastComparison;
@@ -23031,6 +23832,14 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("addApplicationDeployment_result(");
       boolean first = true;
 
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
       sb.append("ire:");
       if (this.ire == null) {
         sb.append("null");
@@ -23097,6 +23906,14 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             case 1: // IRE
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
@@ -23139,6 +23956,11 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
         if (struct.ire != null) {
           oprot.writeFieldBegin(IRE_FIELD_DESC);
           struct.ire.write(oprot);
@@ -23172,16 +23994,22 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, addApplicationDeployment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
-        if (struct.isSetIre()) {
+        if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        if (struct.isSetAce()) {
+        if (struct.isSetIre()) {
           optionals.set(1);
         }
-        if (struct.isSetAse()) {
+        if (struct.isSetAce()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
         if (struct.isSetIre()) {
           struct.ire.write(oprot);
         }
@@ -23196,18 +24024,22 @@ import org.slf4j.LoggerFactory;
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addApplicationDeployment_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
           struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
           struct.setIreIsSet(true);
         }
-        if (incoming.get(1)) {
+        if (incoming.get(2)) {
           struct.ace = new org.apache.airavata.model.error.AiravataClientException();
           struct.ace.read(iprot);
           struct.setAceIsSet(true);
         }
-        if (incoming.get(2)) {
+        if (incoming.get(3)) {
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);

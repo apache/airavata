@@ -238,6 +238,14 @@ uint32_t ApplicationCatalogAPI_addComputeResourceDescription_result::read(::apac
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -280,7 +288,11 @@ uint32_t ApplicationCatalogAPI_addComputeResourceDescription_result::write(::apa
 
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addComputeResourceDescription_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -318,6 +330,14 @@ uint32_t ApplicationCatalogAPI_addComputeResourceDescription_presult::read(::apa
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -462,6 +482,14 @@ uint32_t ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result::read(::apache
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -504,7 +532,11 @@ uint32_t ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result::write(::apach
 
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -542,6 +574,14 @@ uint32_t ApplicationCatalogAPI_addSSHJobSubmissionProtocol_presult::read(::apach
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -686,6 +726,14 @@ uint32_t ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result::read(::apa
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -728,7 +776,11 @@ uint32_t ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result::write(::ap
 
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -766,6 +818,14 @@ uint32_t ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_presult::read(::ap
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -910,6 +970,14 @@ uint32_t ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result::read(::apa
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -952,7 +1020,11 @@ uint32_t ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result::write(::ap
 
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -990,6 +1062,14 @@ uint32_t ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_presult::read(::ap
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -1134,6 +1214,14 @@ uint32_t ApplicationCatalogAPI_addSCPDataMovementProtocol_result::read(::apache:
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -1176,7 +1264,11 @@ uint32_t ApplicationCatalogAPI_addSCPDataMovementProtocol_result::write(::apache
 
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addSCPDataMovementProtocol_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -1214,6 +1306,14 @@ uint32_t ApplicationCatalogAPI_addSCPDataMovementProtocol_presult::read(::apache
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -1358,6 +1458,14 @@ uint32_t ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result::read(::apa
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -1400,7 +1508,11 @@ uint32_t ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result::write(::ap
 
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -1438,6 +1550,14 @@ uint32_t ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult::read(::ap
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -3596,6 +3716,14 @@ uint32_t ApplicationCatalogAPI_addApplicationInterface_result::read(::apache::th
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -3638,7 +3766,11 @@ uint32_t ApplicationCatalogAPI_addApplicationInterface_result::write(::apache::t
 
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addApplicationInterface_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -3676,6 +3808,14 @@ uint32_t ApplicationCatalogAPI_addApplicationInterface_presult::read(::apache::t
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -4278,6 +4418,14 @@ uint32_t ApplicationCatalogAPI_addApplicationDeployment_result::read(::apache::t
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -4320,7 +4468,11 @@ uint32_t ApplicationCatalogAPI_addApplicationDeployment_result::write(::apache::
 
   xfer += oprot->writeStructBegin("ApplicationCatalogAPI_addApplicationDeployment_result");
 
-  if (this->__isset.ire) {
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
     xfer += this->ire.write(oprot);
     xfer += oprot->writeFieldEnd();
@@ -4358,6 +4510,14 @@ uint32_t ApplicationCatalogAPI_addApplicationDeployment_presult::read(::apache::
     }
     switch (fid)
     {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ire.read(iprot);
@@ -4952,10 +5112,10 @@ void ApplicationCatalogAPIClient::recv_GetAPIVersion(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "GetAPIVersion failed: unknown result");
 }
 
-void ApplicationCatalogAPIClient::addComputeResourceDescription(const  ::ComputeResourceDescription& computeResourceDescription)
+void ApplicationCatalogAPIClient::addComputeResourceDescription(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription)
 {
   send_addComputeResourceDescription(computeResourceDescription);
-  recv_addComputeResourceDescription();
+  recv_addComputeResourceDescription(_return);
 }
 
 void ApplicationCatalogAPIClient::send_addComputeResourceDescription(const  ::ComputeResourceDescription& computeResourceDescription)
@@ -4972,7 +5132,7 @@ void ApplicationCatalogAPIClient::send_addComputeResourceDescription(const  ::Co
   oprot_->getTransport()->flush();
 }
 
-void ApplicationCatalogAPIClient::recv_addComputeResourceDescription()
+void ApplicationCatalogAPIClient::recv_addComputeResourceDescription(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -4998,10 +5158,15 @@ void ApplicationCatalogAPIClient::recv_addComputeResourceDescription()
     iprot_->getTransport()->readEnd();
   }
   ApplicationCatalogAPI_addComputeResourceDescription_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -5011,13 +5176,13 @@ void ApplicationCatalogAPIClient::recv_addComputeResourceDescription()
   if (result.__isset.ase) {
     throw result.ase;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addComputeResourceDescription failed: unknown result");
 }
 
-void ApplicationCatalogAPIClient::addSSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission)
+void ApplicationCatalogAPIClient::addSSHJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission)
 {
   send_addSSHJobSubmissionProtocol(computeResourceId, jobSubmission);
-  recv_addSSHJobSubmissionProtocol();
+  recv_addSSHJobSubmissionProtocol(_return);
 }
 
 void ApplicationCatalogAPIClient::send_addSSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::SSHJobSubmission& jobSubmission)
@@ -5035,7 +5200,7 @@ void ApplicationCatalogAPIClient::send_addSSHJobSubmissionProtocol(const std::st
   oprot_->getTransport()->flush();
 }
 
-void ApplicationCatalogAPIClient::recv_addSSHJobSubmissionProtocol()
+void ApplicationCatalogAPIClient::recv_addSSHJobSubmissionProtocol(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5061,10 +5226,15 @@ void ApplicationCatalogAPIClient::recv_addSSHJobSubmissionProtocol()
     iprot_->getTransport()->readEnd();
   }
   ApplicationCatalogAPI_addSSHJobSubmissionProtocol_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -5074,13 +5244,13 @@ void ApplicationCatalogAPIClient::recv_addSSHJobSubmissionProtocol()
   if (result.__isset.ase) {
     throw result.ase;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addSSHJobSubmissionProtocol failed: unknown result");
 }
 
-void ApplicationCatalogAPIClient::addGSISSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission)
+void ApplicationCatalogAPIClient::addGSISSHJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission)
 {
   send_addGSISSHJobSubmissionProtocol(computeResourceId, jobSubmission);
-  recv_addGSISSHJobSubmissionProtocol();
+  recv_addGSISSHJobSubmissionProtocol(_return);
 }
 
 void ApplicationCatalogAPIClient::send_addGSISSHJobSubmissionProtocol(const std::string& computeResourceId, const  ::GSISSHJobSubmission& jobSubmission)
@@ -5098,7 +5268,7 @@ void ApplicationCatalogAPIClient::send_addGSISSHJobSubmissionProtocol(const std:
   oprot_->getTransport()->flush();
 }
 
-void ApplicationCatalogAPIClient::recv_addGSISSHJobSubmissionProtocol()
+void ApplicationCatalogAPIClient::recv_addGSISSHJobSubmissionProtocol(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5124,10 +5294,15 @@ void ApplicationCatalogAPIClient::recv_addGSISSHJobSubmissionProtocol()
     iprot_->getTransport()->readEnd();
   }
   ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -5137,13 +5312,13 @@ void ApplicationCatalogAPIClient::recv_addGSISSHJobSubmissionProtocol()
   if (result.__isset.ase) {
     throw result.ase;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addGSISSHJobSubmissionProtocol failed: unknown result");
 }
 
-void ApplicationCatalogAPIClient::addGlobusJobSubmissionProtocol(const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission)
+void ApplicationCatalogAPIClient::addGlobusJobSubmissionProtocol(std::string& _return, const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission)
 {
   send_addGlobusJobSubmissionProtocol(computeResourceId, jobSubmission);
-  recv_addGlobusJobSubmissionProtocol();
+  recv_addGlobusJobSubmissionProtocol(_return);
 }
 
 void ApplicationCatalogAPIClient::send_addGlobusJobSubmissionProtocol(const std::string& computeResourceId, const  ::GlobusJobSubmission& jobSubmission)
@@ -5161,7 +5336,7 @@ void ApplicationCatalogAPIClient::send_addGlobusJobSubmissionProtocol(const std:
   oprot_->getTransport()->flush();
 }
 
-void ApplicationCatalogAPIClient::recv_addGlobusJobSubmissionProtocol()
+void ApplicationCatalogAPIClient::recv_addGlobusJobSubmissionProtocol(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5187,10 +5362,15 @@ void ApplicationCatalogAPIClient::recv_addGlobusJobSubmissionProtocol()
     iprot_->getTransport()->readEnd();
   }
   ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -5200,13 +5380,13 @@ void ApplicationCatalogAPIClient::recv_addGlobusJobSubmissionProtocol()
   if (result.__isset.ase) {
     throw result.ase;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addGlobusJobSubmissionProtocol failed: unknown result");
 }
 
-void ApplicationCatalogAPIClient::addSCPDataMovementProtocol(const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement)
+void ApplicationCatalogAPIClient::addSCPDataMovementProtocol(std::string& _return, const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement)
 {
   send_addSCPDataMovementProtocol(computeResourceId, dataMovement);
-  recv_addSCPDataMovementProtocol();
+  recv_addSCPDataMovementProtocol(_return);
 }
 
 void ApplicationCatalogAPIClient::send_addSCPDataMovementProtocol(const std::string& computeResourceId, const  ::SCPDataMovement& dataMovement)
@@ -5224,7 +5404,7 @@ void ApplicationCatalogAPIClient::send_addSCPDataMovementProtocol(const std::str
   oprot_->getTransport()->flush();
 }
 
-void ApplicationCatalogAPIClient::recv_addSCPDataMovementProtocol()
+void ApplicationCatalogAPIClient::recv_addSCPDataMovementProtocol(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5250,10 +5430,15 @@ void ApplicationCatalogAPIClient::recv_addSCPDataMovementProtocol()
     iprot_->getTransport()->readEnd();
   }
   ApplicationCatalogAPI_addSCPDataMovementProtocol_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -5263,13 +5448,13 @@ void ApplicationCatalogAPIClient::recv_addSCPDataMovementProtocol()
   if (result.__isset.ase) {
     throw result.ase;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addSCPDataMovementProtocol failed: unknown result");
 }
 
-void ApplicationCatalogAPIClient::addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement)
+void ApplicationCatalogAPIClient::addGridFTPDataMovementProtocol(std::string& _return, const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement)
 {
   send_addGridFTPDataMovementProtocol(computeResourceId, dataMovement);
-  recv_addGridFTPDataMovementProtocol();
+  recv_addGridFTPDataMovementProtocol(_return);
 }
 
 void ApplicationCatalogAPIClient::send_addGridFTPDataMovementProtocol(const std::string& computeResourceId, const  ::GridFTPDataMovement& dataMovement)
@@ -5287,7 +5472,7 @@ void ApplicationCatalogAPIClient::send_addGridFTPDataMovementProtocol(const std:
   oprot_->getTransport()->flush();
 }
 
-void ApplicationCatalogAPIClient::recv_addGridFTPDataMovementProtocol()
+void ApplicationCatalogAPIClient::recv_addGridFTPDataMovementProtocol(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5313,10 +5498,15 @@ void ApplicationCatalogAPIClient::recv_addGridFTPDataMovementProtocol()
     iprot_->getTransport()->readEnd();
   }
   ApplicationCatalogAPI_addGridFTPDataMovementProtocol_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -5326,7 +5516,7 @@ void ApplicationCatalogAPIClient::recv_addGridFTPDataMovementProtocol()
   if (result.__isset.ase) {
     throw result.ase;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addGridFTPDataMovementProtocol failed: unknown result");
 }
 
 void ApplicationCatalogAPIClient::listComputeResourceDescriptions(std::vector<std::string> & _return)
@@ -5931,10 +6121,10 @@ void ApplicationCatalogAPIClient::recv_getComputeResourceDescriptionFromHostName
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getComputeResourceDescriptionFromHostName failed: unknown result");
 }
 
-void ApplicationCatalogAPIClient::addApplicationInterface(const  ::ApplicationInterface& applicationInterface)
+void ApplicationCatalogAPIClient::addApplicationInterface(std::string& _return, const  ::ApplicationInterface& applicationInterface)
 {
   send_addApplicationInterface(applicationInterface);
-  recv_addApplicationInterface();
+  recv_addApplicationInterface(_return);
 }
 
 void ApplicationCatalogAPIClient::send_addApplicationInterface(const  ::ApplicationInterface& applicationInterface)
@@ -5951,7 +6141,7 @@ void ApplicationCatalogAPIClient::send_addApplicationInterface(const  ::Applicat
   oprot_->getTransport()->flush();
 }
 
-void ApplicationCatalogAPIClient::recv_addApplicationInterface()
+void ApplicationCatalogAPIClient::recv_addApplicationInterface(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -5977,10 +6167,15 @@ void ApplicationCatalogAPIClient::recv_addApplicationInterface()
     iprot_->getTransport()->readEnd();
   }
   ApplicationCatalogAPI_addApplicationInterface_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -5990,7 +6185,7 @@ void ApplicationCatalogAPIClient::recv_addApplicationInterface()
   if (result.__isset.ase) {
     throw result.ase;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addApplicationInterface failed: unknown result");
 }
 
 void ApplicationCatalogAPIClient::listApplicationInterfaceIds(std::vector<std::string> & _return)
@@ -6126,10 +6321,10 @@ void ApplicationCatalogAPIClient::recv_getApplicationInterface( ::ApplicationInt
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getApplicationInterface failed: unknown result");
 }
 
-void ApplicationCatalogAPIClient::addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment)
+void ApplicationCatalogAPIClient::addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment)
 {
   send_addApplicationDeployment(applicationInterfaceId, applicationDeployment);
-  recv_addApplicationDeployment();
+  recv_addApplicationDeployment(_return);
 }
 
 void ApplicationCatalogAPIClient::send_addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment)
@@ -6147,7 +6342,7 @@ void ApplicationCatalogAPIClient::send_addApplicationDeployment(const std::strin
   oprot_->getTransport()->flush();
 }
 
-void ApplicationCatalogAPIClient::recv_addApplicationDeployment()
+void ApplicationCatalogAPIClient::recv_addApplicationDeployment(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -6173,10 +6368,15 @@ void ApplicationCatalogAPIClient::recv_addApplicationDeployment()
     iprot_->getTransport()->readEnd();
   }
   ApplicationCatalogAPI_addApplicationDeployment_presult result;
+  result.success = &_return;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
 
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
   if (result.__isset.ire) {
     throw result.ire;
   }
@@ -6186,7 +6386,7 @@ void ApplicationCatalogAPIClient::recv_addApplicationDeployment()
   if (result.__isset.ase) {
     throw result.ase;
   }
-  return;
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addApplicationDeployment failed: unknown result");
 }
 
 void ApplicationCatalogAPIClient::listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId)
@@ -6420,7 +6620,8 @@ void ApplicationCatalogAPIProcessor::process_addComputeResourceDescription(int32
 
   ApplicationCatalogAPI_addComputeResourceDescription_result result;
   try {
-    iface_->addComputeResourceDescription(args.computeResourceDescription);
+    iface_->addComputeResourceDescription(result.success, args.computeResourceDescription);
+    result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
@@ -6482,7 +6683,8 @@ void ApplicationCatalogAPIProcessor::process_addSSHJobSubmissionProtocol(int32_t
 
   ApplicationCatalogAPI_addSSHJobSubmissionProtocol_result result;
   try {
-    iface_->addSSHJobSubmissionProtocol(args.computeResourceId, args.jobSubmission);
+    iface_->addSSHJobSubmissionProtocol(result.success, args.computeResourceId, args.jobSubmission);
+    result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
@@ -6544,7 +6746,8 @@ void ApplicationCatalogAPIProcessor::process_addGSISSHJobSubmissionProtocol(int3
 
   ApplicationCatalogAPI_addGSISSHJobSubmissionProtocol_result result;
   try {
-    iface_->addGSISSHJobSubmissionProtocol(args.computeResourceId, args.jobSubmission);
+    iface_->addGSISSHJobSubmissionProtocol(result.success, args.computeResourceId, args.jobSubmission);
+    result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
@@ -6606,7 +6809,8 @@ void ApplicationCatalogAPIProcessor::process_addGlobusJobSubmissionProtocol(int3
 
   ApplicationCatalogAPI_addGlobusJobSubmissionProtocol_result result;
   try {
-    iface_->addGlobusJobSubmissionProtocol(args.computeResourceId, args.jobSubmission);
+    iface_->addGlobusJobSubmissionProtocol(result.success, args.computeResourceId, args.jobSubmission);
+    result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
@@ -6668,7 +6872,8 @@ void ApplicationCatalogAPIProcessor::process_addSCPDataMovementProtocol(int32_t 
 
   ApplicationCatalogAPI_addSCPDataMovementProtocol_result result;
   try {
-    iface_->addSCPDataMovementProtocol(args.computeResourceId, args.dataMovement);
+    iface_->addSCPDataMovementProtocol(result.success, args.computeResourceId, args.dataMovement);
+    result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
@@ -6730,7 +6935,8 @@ void ApplicationCatalogAPIProcessor::process_addGridFTPDataMovementProtocol(int3
 
   ApplicationCatalogAPI_addGridFTPDataMovementProtocol_result result;
   try {
-    iface_->addGridFTPDataMovementProtocol(args.computeResourceId, args.dataMovement);
+    iface_->addGridFTPDataMovementProtocol(result.success, args.computeResourceId, args.dataMovement);
+    result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
@@ -7359,7 +7565,8 @@ void ApplicationCatalogAPIProcessor::process_addApplicationInterface(int32_t seq
 
   ApplicationCatalogAPI_addApplicationInterface_result result;
   try {
-    iface_->addApplicationInterface(args.applicationInterface);
+    iface_->addApplicationInterface(result.success, args.applicationInterface);
+    result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
@@ -7547,7 +7754,8 @@ void ApplicationCatalogAPIProcessor::process_addApplicationDeployment(int32_t se
 
   ApplicationCatalogAPI_addApplicationDeployment_result result;
   try {
-    iface_->addApplicationDeployment(args.applicationInterfaceId, args.applicationDeployment);
+    iface_->addApplicationDeployment(result.success, args.applicationInterfaceId, args.applicationDeployment);
+    result.__isset.success = true;
   } catch ( ::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
