@@ -179,6 +179,82 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    public List<Project> searchProjectsByProjectName(String userName, String projectName) throws InvalidRequestException,
+                                                                                                 AiravataClientException,
+                                                                                                 AiravataSystemException,
+                                                                                                 TException {
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!ResourceUtils.isUserExist(userName)){
+            logger.error("User does not exist in the system. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("User does not exist in the system. Please provide a valid user..");
+            throw exception;
+        }
+        try {
+            List<Project> projects = new ArrayList<Project>();
+            registry = RegistryFactory.getDefaultRegistry();
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            filters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, projectName);
+            List<Object> results = registry.search(RegistryModelType.PROJECT, filters);
+            for (Object object : results) {
+                projects.add((Project)object);
+            }
+            return projects;
+        }catch (Exception e) {
+            logger.error("Error while retrieving projects", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving projects. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    public List<Project> searchProjectsByProjectDesc(String userName, String description) throws InvalidRequestException,
+                                                                                                 AiravataClientException,
+                                                                                                 AiravataSystemException,
+                                                                                                 TException {
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!ResourceUtils.isUserExist(userName)){
+            logger.error("User does not exist in the system. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("User does not exist in the system. Please provide a valid user..");
+            throw exception;
+        }
+        try {
+            List<Project> projects = new ArrayList<Project>();
+            registry = RegistryFactory.getDefaultRegistry();
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            filters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, description);
+            List<Object> results = registry.search(RegistryModelType.PROJECT, filters);
+            for (Object object : results) {
+                projects.add((Project)object);
+            }
+            return projects;
+        }catch (Exception e) {
+            logger.error("Error while retrieving projects", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving projects. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Get all Experiments within a Project
      *

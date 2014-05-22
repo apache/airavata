@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class RegistryImpl implements Registry {
     private GatewayResource gatewayResource;
@@ -413,6 +414,26 @@ public class RegistryImpl implements Registry {
             throw new RegistryException("Error while retrieving the resource..", e);
         }
 
+    }
+
+    public List<Object> search(RegistryModelType dataType, Map<String, String> filters) throws RegistryException {
+        try {
+            List<Object> result = new ArrayList<Object>();
+            switch (dataType) {
+                case PROJECT:
+                    List<Project> projectList = projectRegistry.searchProjects(filters);
+                    for (Project project : projectList ){
+                        result.add(project);
+                    }
+                    return result;
+                default:
+                    logger.error("Unsupported data type...", new UnsupportedOperationException());
+                    throw new UnsupportedOperationException();
+            }
+        } catch (Exception e) {
+            logger.error("Error while retrieving the resource..", new RegistryException(e));
+            throw new RegistryException("Error while retrieving the resource..", e);
+        }
     }
 
     /**

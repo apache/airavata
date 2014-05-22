@@ -1,6 +1,7 @@
 package org.apache.airavata.registry.cpi;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is the interface for Registry CPI
@@ -81,6 +82,15 @@ public interface Registry {
      * @return List of objects according to the given criteria
      */
     public List<Object> get(RegistryModelType dataType, String fieldName, Object value) throws RegistryException;
+
+    /**
+     * This method is to retrieve list of objects according to a given criteria
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param filters filters is a map of field name and value that you need to use for search filtration
+     * @return List of objects according to the given criteria
+     */
+    public List<Object> search(RegistryModelType dataType, Map<String, String> filters) throws RegistryException;
 
     /**
      * This method is to retrieve a specific value for a given field.

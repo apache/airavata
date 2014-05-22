@@ -47,6 +47,16 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllUserProjects\n");
   }
 
+  void searchProjectsByProjectName(std::vector< ::Project> & _return, const std::string& userName, const std::string& projectName) {
+    // Your implementation goes here
+    printf("searchProjectsByProjectName\n");
+  }
+
+  void searchProjectsByProjectDesc(std::vector< ::Project> & _return, const std::string& userName, const std::string& description) {
+    // Your implementation goes here
+    printf("searchProjectsByProjectDesc\n");
+  }
+
   void getAllExperimentsInProject(std::vector< ::Experiment> & _return, const std::string& projectId) {
     // Your implementation goes here
     printf("getAllExperimentsInProject\n");
@@ -107,7 +117,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getJobStatuses\n");
   }
 
-  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperiementName) {
+  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) {
     // Your implementation goes here
     printf("cloneExperiment\n");
   }

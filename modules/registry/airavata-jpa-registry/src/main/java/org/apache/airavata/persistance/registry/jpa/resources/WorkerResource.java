@@ -23,6 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -477,4 +478,28 @@ public class WorkerResource extends AbstractResource {
 	public void removeExperiment(String experimentId){
 		remove(ResourceType.EXPERIMENT, experimentId);
 	}
+
+    public List<ProjectResource> searchProjects (Map<String, String> filters){
+        List<ProjectResource> result = new ArrayList<ProjectResource>();
+        String query = "SELECT p from Project p WHERE ";
+        if (filters != null && filters.size() != 0) {
+           for (String field : filters.keySet()){
+               query += "p." + field + " LIKE '" + filters.get(field) + "%' AND " ;
+           }
+        }
+        query = query.substring(0, query.length() - 5);
+        System.out.println(query);
+        EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q = em.createQuery(query);
+        List resultList = q.getResultList();
+        for (Object o : resultList){
+            Project project = (Project) o;
+            ProjectResource projectResource = (ProjectResource)Utils.getResource(ResourceType.PROJECT, project);
+            result.add(projectResource);
+        }
+        em.getTransaction().commit();
+        em.close();
+        return result;
+    }
 }
