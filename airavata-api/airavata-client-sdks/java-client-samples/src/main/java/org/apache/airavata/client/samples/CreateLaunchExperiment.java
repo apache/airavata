@@ -65,9 +65,9 @@ public class CreateLaunchExperiment {
 
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForSSHHost(airavata);
-            final String expId = createExperimentForTrestles(airavata);
+//            final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
-//            final String expId = createExperimentForLocalHost(airavata);
+            final String expId = createExperimentForLocalHost(airavata);
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
             launchExperiment(airavata, expId);
