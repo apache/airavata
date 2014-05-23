@@ -24,7 +24,6 @@ package org.apache.airavata.api.server;
 import org.apache.airavata.api.appcatalog.ApplicationCatalogAPI;
 import org.apache.airavata.api.server.handler.ApplicationCatalogHandler;
 import org.apache.airavata.api.server.util.Constants;
-import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -55,14 +54,12 @@ public class ApplicationCatalogServer implements IServer{
     public void StartAiravataServer(ApplicationCatalogAPI.Processor<ApplicationCatalogAPI.Iface> appCatalogServerHandler) throws AiravataSystemException {
         try {
             AiravataUtils.setExecutionAsServer();
-            RegistryInitUtil.initializeDB();
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.APP_CATALOG_SERVER_PORT,"8931"));
 			TServerTransport serverTransport = new TServerSocket(serverPort);
 			server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(appCatalogServerHandler));
             new Thread() {
 				public void run() {
 					server.serve();
-					RegistryInitUtil.stopDerbyInServerMode();
 					setStatus(ServerStatus.STOPPED);
 					logger.info("Airavata API Server Stopped.");
 				}
@@ -86,7 +83,6 @@ public class ApplicationCatalogServer implements IServer{
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
-            RegistryInitUtil.stopDerbyInServerMode();
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
     }
