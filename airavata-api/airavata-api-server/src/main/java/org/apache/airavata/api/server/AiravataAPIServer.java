@@ -59,7 +59,9 @@ public class AiravataAPIServer implements IServer{
             RegistryInitUtil.initializeDB();
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.THRIFT_SERVER_PORT,"8930"));
 			TServerTransport serverTransport = new TServerSocket(serverPort);
-			server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(mockAiravataServer));
+            TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
+            options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "30"));
+			server = new TThreadPoolServer(options.processor(mockAiravataServer));
             new Thread() {
 				public void run() {
 					server.serve();
