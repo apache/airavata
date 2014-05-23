@@ -1,8 +1,6 @@
 <?php
 namespace Airavata\Client\Samples;
 
-require_once 'samples_config.php';
-
 $GLOBALS['THRIFT_ROOT'] = '../lib/Thrift/';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TTransport.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TBufferedTransport.php';
@@ -46,15 +44,18 @@ use Airavata\Model\Workspace\Experiment\ComputationalResourceScheduling;
 use Airavata\Model\Workspace\Experiment\DataType;
 use Airavata\Model\Workspace\Experiment\ExperimentState;
 
+$airavataconfig = parse_ini_file("airavata-client-properties.ini");
 
 /* this is the same as the factory */
+/* - Temporarity overriding to connect to test server.
+$transport = new TSocket($airavataconfig['AIRAVATA_SERVER'], $airavataconfig['AIRAVATA_PORT']);
+$transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
+*/
 $transport = new TSocket('gw127.iu.xsede.org', 8930);
 $transport->setRecvTimeout(20000);
-
 $protocol = new TBinaryProtocol($transport);
 $transport->open();
 $airavataclient = new AiravataClient($protocol);
-
 
 try
 {

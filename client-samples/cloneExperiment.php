@@ -1,8 +1,6 @@
 <?php
 namespace Airavata\Client\Samples;
 
-require_once 'samples_config.php';
-
 $GLOBALS['THRIFT_ROOT'] = '../lib/Thrift/';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TTransport.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TBufferedTransport.php';
@@ -40,16 +38,14 @@ use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
 
+$airavataconfig = parse_ini_file("airavata-client-properties.ini");
 
-/* this is the same as the factory */
-$transport = new TSocket(AIRAVATA_SERVER, AIRAVATA_PORT);
-$transport->setRecvTimeout(AIRAVATA_TIMEOUT);
+$transport = new TSocket($airavataconfig['AIRAVATA_SERVER'], $airavataconfig['AIRAVATA_PORT']);
+$transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
 
 $protocol = new TBinaryProtocol($transport);
 $transport->open();
 $airavataclient = new AiravataClient($protocol);
-
-
 
 
 //$expId = 'experiment2_8f9c0ccc-6392-47b3-bcde-f4e82557bc32';
@@ -73,18 +69,7 @@ else
 
 
 
-
-
-
-
-
-
-
 //var_dump($experiment);
-
-
-
-
 
 
 $transport->close();
