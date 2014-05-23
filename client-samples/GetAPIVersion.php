@@ -42,7 +42,7 @@ $airavataclient = new AiravataClient($protocol);
 
 try
 {
-    $version = $airavataclient->GetAPIVersion();
+    $version = $airavataclient->getAPIVersion();
 }
 catch (TException $texp)
 {
