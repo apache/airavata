@@ -21,8 +21,8 @@
 
 package org.apache.airavata.api.server;
 
-import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.server.handler.AiravataServerHandler;
+import org.apache.airavata.api.appcatalog.ApplicationCatalogAPI;
+import org.apache.airavata.api.server.handler.ApplicationCatalogHandler;
 import org.apache.airavata.api.server.util.Constants;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -38,28 +38,27 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AiravataAPIServer implements IServer{
+public class ApplicationCatalogServer implements IServer{
 
-    private final static Logger logger = LoggerFactory.getLogger(AiravataAPIServer.class);
-	private static final String SERVER_NAME = "Airavata API Server";
+    private final static Logger logger = LoggerFactory.getLogger(ApplicationCatalogServer.class);
+	private static final String SERVER_NAME = "Airavata Application Catalog Server";
 	private static final String SERVER_VERSION = "1.0";
 
-    //FIXME: Read the port from airavata-server.config file
     private ServerStatus status;
 
 	private TServer server;
 
-	public AiravataAPIServer() {
+	public ApplicationCatalogServer() {
 		setStatus(ServerStatus.STOPPED);
 	}
 	
-    public void StartAiravataServer(Airavata.Processor<Airavata.Iface> mockAiravataServer) throws AiravataSystemException {
+    public void StartAiravataServer(ApplicationCatalogAPI.Processor<ApplicationCatalogAPI.Iface> appCatalogServerHandler) throws AiravataSystemException {
         try {
             AiravataUtils.setExecutionAsServer();
             RegistryInitUtil.initializeDB();
-            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.THRIFT_SERVER_PORT,"8930"));
+            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.APP_CATALOG_SERVER_PORT,"8931"));
 			TServerTransport serverTransport = new TServerSocket(serverPort);
-			server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(mockAiravataServer));
+			server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(appCatalogServerHandler));
             new Thread() {
 				public void run() {
 					server.serve();
@@ -79,8 +78,8 @@ public class AiravataAPIServer implements IServer{
 					}
 					if (server.isServing()){
 						setStatus(ServerStatus.STARTED);
-			            logger.info("Starting Airavata API Server on Port " + serverPort);
-			            logger.info("Listening to Airavata Clients ....");
+			            logger.info("Starting Airavata Application Catalog Server on Port " + serverPort);
+			            logger.info("Listening to Application Catalog Clients ....");
 					}
 				}
 			}.start();
@@ -94,7 +93,7 @@ public class AiravataAPIServer implements IServer{
 
     public static void main(String[] args) {
     	try {
-			AiravataAPIServer server = new AiravataAPIServer();
+			ApplicationCatalogServer server = new ApplicationCatalogServer();
 			server.start();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -104,9 +103,9 @@ public class AiravataAPIServer implements IServer{
 	@Override
 	public void start() throws Exception {
 		setStatus(ServerStatus.STARTING);
-		Airavata.Processor<Airavata.Iface> mockAiravataServer =
-                new Airavata.Processor<Airavata.Iface>(new AiravataServerHandler());
-    	StartAiravataServer(mockAiravataServer);
+		ApplicationCatalogAPI.Processor<ApplicationCatalogAPI.Iface> server =
+                new ApplicationCatalogAPI.Processor<ApplicationCatalogAPI.Iface>(new ApplicationCatalogHandler());
+    	StartAiravataServer(server);
 	}
 
 	@Override

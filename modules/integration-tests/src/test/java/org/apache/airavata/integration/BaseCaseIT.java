@@ -33,7 +33,13 @@ import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.DataType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.ws.monitor.EventData;
@@ -62,7 +68,7 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
 
     @Test(groups = {"setupTests"})
     public void testSetup() throws Exception {
-        String version = this.client.GetAPIVersion();
+        String version = this.client.getAPIVersion();
         Assert.assertNotNull(version);
         log("Airavata version - " + version);
 

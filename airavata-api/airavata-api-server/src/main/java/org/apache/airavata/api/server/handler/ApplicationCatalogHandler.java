@@ -24,6 +24,7 @@ package org.apache.airavata.api.server.handler;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,12 +38,15 @@ import org.apache.airavata.model.appcatalog.ApplicationDeployment;
 import org.apache.airavata.model.appcatalog.ApplicationDescriptor;
 import org.apache.airavata.model.appcatalog.ApplicationInterface;
 import org.apache.airavata.model.appcatalog.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.GSISSHJobSubmission;
 import org.apache.airavata.model.appcatalog.GlobusJobSubmission;
 import org.apache.airavata.model.appcatalog.GridFTPDataMovement;
 import org.apache.airavata.model.appcatalog.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.SCPDataMovement;
 import org.apache.airavata.model.appcatalog.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.SecurityProtocol;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
@@ -58,9 +62,12 @@ import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.thrift.TException;
 
 public class ApplicationCatalogHandler implements Iface {
-
+	AiravataRegistry2 registry;
 	private AiravataRegistry2 getRegistry() throws RegistryException, AiravataConfigurationException{
-		return AiravataRegistryFactory.getRegistry(new Gateway("default"), new AiravataUser("admin"));
+		 if (registry==null){
+			 registry = AiravataRegistryFactory.getRegistry(new Gateway("default"), new AiravataUser("admin"));
+		 }
+		return registry;
 	}
 	
 	@Override
@@ -69,13 +76,20 @@ public class ApplicationCatalogHandler implements Iface {
 	}
 
 	@Override
-	public void addComputeResourceDescription(
+	public String addComputeResourceDescription(
 			ComputeResourceDescription computeResourceDescription)
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
+		try {
+			if (getRegistry().isHostDescriptorExists(computeResourceDescription.getHostName())){
+				getRegistry().removeHostDescriptor(computeResourceDescription.getHostName());
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
 		HostDescription host = new HostDescription();
-		host.getType().setHostName(generateId(computeResourceDescription.getHostName()));
-		if (computeResourceDescription.getIpAddresses().size()>0){
+		host.getType().setHostName(computeResourceDescription.getHostName());
+		if (computeResourceDescription.getIpAddressesSize()>0){
 			host.getType().setHostAddress(computeResourceDescription.getIpAddresses().iterator().next());	
 		}
 		if (computeResourceDescription.getJobSubmissionProtocolsSize()>0){
@@ -95,12 +109,15 @@ public class ApplicationCatalogHandler implements Iface {
 			case GSISSH:
 				GSISSHJobSubmission gsisshJobSubmissionProtocol = getGSISSHJobSubmissionProtocol(jobSubmissionProtocolDataId);
 				host.getType().changeType(GsisshHostType.type);
+				break;
 				//TODO fill the data
+			default:
 				break;
 			}
 		}
 		try {
 			getRegistry().addHostDescriptor(host);
+			return computeResourceDescription.getHostName();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AiravataSystemException();
@@ -136,14 +153,21 @@ public class ApplicationCatalogHandler implements Iface {
 		try {
 			HostDescription hostDescriptor = getRegistry().getHostDescriptor(computeResourceId);
 			ComputeResourceDescription d = new ComputeResourceDescription();
+			d.setIsEmpty(false);
 			d.setResourceId(computeResourceId);
-			d.getIpAddresses().add(hostDescriptor.getType().getHostAddress());
+			d.setHostName(hostDescriptor.getType().getHostName());
+			if (hostDescriptor.getType().getHostAddress()!=null) {
+				d.addToIpAddresses(hostDescriptor.getType().getHostAddress());
+			}
+			d.setJobSubmissionProtocols(new HashMap<String, JobSubmissionProtocol>());
+			d.setDataMovementProtocols(new HashMap<String, DataMovementProtocol>());
 			if (hostDescriptor.getType() instanceof SSHHostType){
 				d.getJobSubmissionProtocols().put(computeResourceId, JobSubmissionProtocol.SSH);
 			} else if (hostDescriptor.getType() instanceof GsisshHostType){
 				d.getJobSubmissionProtocols().put(computeResourceId, JobSubmissionProtocol.GSISSH);
 			} else if (hostDescriptor.getType() instanceof GlobusHostType){
 				d.getJobSubmissionProtocols().put(computeResourceId, JobSubmissionProtocol.GRAM);
+				d.getDataMovementProtocols().put(computeResourceId, DataMovementProtocol.GridFTP);
 			}
 			return d;
 		} catch (Exception e) {
@@ -208,6 +232,8 @@ public class ApplicationCatalogHandler implements Iface {
 		try {
 			HostDescription hostDescriptor = getRegistry().getHostDescriptor(globusJobSubmissionProtocolResourceId);
 			GlobusJobSubmission d = new GlobusJobSubmission();
+			d.setSecurityProtocol(SecurityProtocol.GSI);
+			d.setResourceJobManager(ResourceJobManager.PBS);
 			d.setJobSubmissionDataID(globusJobSubmissionProtocolResourceId);
 			if (hostDescriptor.getType() instanceof GlobusHostType){
 				GlobusHostType globusHostType = (GlobusHostType)hostDescriptor.getType();
@@ -264,19 +290,37 @@ public class ApplicationCatalogHandler implements Iface {
 	}
 
 	@Override
-	public void addApplicationInterface(
+	public String addApplicationInterface(
 			ApplicationInterface applicationInterface)
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
 		try {
 			ServiceDescription serviceDescription = ServiceDescription.fromXML(applicationInterface.getApplicationInterfaceData());
-			getRegistry().addServiceDescriptor(serviceDescription);
-			List<ApplicationDeployment> applicationDeployments = applicationInterface.getApplicationDeployments();
-			for (ApplicationDeployment deployment : applicationDeployments) {
-				String hostId = deployment.getComputeResourceDescription().getResourceId();
-				ApplicationDescriptor applicationDescriptor = deployment.getApplicationDescriptor();
-				getRegistry().addApplicationDescriptor(serviceDescription.getType().getName(), hostId, ApplicationDescription.fromXML(applicationDescriptor.getApplicationDescriptorData()));
+			try {
+				if (getRegistry().isServiceDescriptorExists(serviceDescription.getType().getName())){
+					getRegistry().removeServiceDescriptor(serviceDescription.getType().getName());
+				}
+			} catch (Exception e1) {
+				e1.printStackTrace();
 			}
+			getRegistry().addServiceDescriptor(serviceDescription);
+			if (applicationInterface.getApplicationDeploymentsSize()>0) {
+				List<ApplicationDeployment> applicationDeployments = applicationInterface
+						.getApplicationDeployments();
+				for (ApplicationDeployment deployment : applicationDeployments) {
+					String hostId = deployment.getComputeResourceDescription()
+							.getResourceId();
+					ApplicationDescriptor applicationDescriptor = deployment
+							.getApplicationDescriptor();
+					getRegistry().addApplicationDescriptor(
+							serviceDescription.getType().getName(),
+							hostId,
+							ApplicationDescription
+									.fromXML(applicationDescriptor
+											.getApplicationDescriptorData()));
+				}
+			}
+			return serviceDescription.getType().getName();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AiravataSystemException();
@@ -328,12 +372,14 @@ public class ApplicationCatalogHandler implements Iface {
 	}
 
 	@Override
-	public void addApplicationDeployment(String applicationInterfaceId,
+	public String addApplicationDeployment(String applicationInterfaceId,
 			ApplicationDeployment applicationDeployment)
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
 		try {
-			getRegistry().addApplicationDescriptor(applicationInterfaceId, applicationDeployment.getComputeResourceDescription().getResourceId(), ApplicationDescription.fromXML(applicationDeployment.getApplicationDescriptor().getApplicationDescriptorData()));
+			ApplicationDescription appDescription = ApplicationDescription.fromXML(applicationDeployment.getApplicationDescriptor().getApplicationDescriptorData());
+			getRegistry().addApplicationDescriptor(applicationInterfaceId, applicationDeployment.getComputeResourceDescription().getResourceId(), appDescription);
+			return appDescription.getType().getApplicationName().getStringValue();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AiravataSystemException();
@@ -383,7 +429,7 @@ public class ApplicationCatalogHandler implements Iface {
 	}
 
 	@Override
-	public void addSSHJobSubmissionProtocol(String computeResourceId,
+	public String addSSHJobSubmissionProtocol(String computeResourceId,
 			SSHJobSubmission jobSubmission) throws InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
 		try {
@@ -391,6 +437,7 @@ public class ApplicationCatalogHandler implements Iface {
 			hostDescriptor.getType().changeType(SSHHostType.type);
 			SSHHostType s = (SSHHostType)hostDescriptor.getType();
 			getRegistry().updateHostDescriptor(hostDescriptor);
+			return computeResourceId;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AiravataSystemException();
@@ -399,7 +446,7 @@ public class ApplicationCatalogHandler implements Iface {
 	}
 
 	@Override
-	public void addGSISSHJobSubmissionProtocol(String computeResourceId,
+	public String addGSISSHJobSubmissionProtocol(String computeResourceId,
 			GSISSHJobSubmission jobSubmission) throws InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
 		try {
@@ -408,16 +455,25 @@ public class ApplicationCatalogHandler implements Iface {
 			GsisshHostType s = (GsisshHostType)hostDescriptor.getType();
 			s.setInstalledPath(jobSubmission.getInstalledPath());
 			ExportProperties exports = s.addNewExports();
-			for(String export: jobSubmission.getExports()){
-				exports.addNewName().setValue(export);
+			if (jobSubmission.getExportsSize()>0) {
+				for (String export : jobSubmission.getExports()) {
+					exports.addNewName().setValue(export);
+				}
 			}
 			s.setExports(exports);
 			s.setJobManager(jobSubmission.getResourceJobManager().toString());
 			s.setMonitorMode(jobSubmission.getMonitorMode());
 			s.setPort(22);
-			s.setPostJobCommandsArray(jobSubmission.getPostJobCommands().toArray(new String[]{}));
-			s.setPreJobCommandsArray(jobSubmission.getPreJobCommands().toArray(new String[]{}));
+			if (jobSubmission.getPostJobCommandsSize()>0) {
+				s.setPostJobCommandsArray(jobSubmission.getPostJobCommands()
+						.toArray(new String[] {}));
+			}
+			if (jobSubmission.getPreJobCommandsSize()>0) {
+				s.setPreJobCommandsArray(jobSubmission.getPreJobCommands()
+						.toArray(new String[] {}));
+			}
 			getRegistry().updateHostDescriptor(hostDescriptor);
+			return computeResourceId;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AiravataSystemException();
@@ -425,15 +481,19 @@ public class ApplicationCatalogHandler implements Iface {
 	}
 
 	@Override
-	public void addGlobusJobSubmissionProtocol(String computeResourceId,
+	public String addGlobusJobSubmissionProtocol(String computeResourceId,
 			GlobusJobSubmission jobSubmission) throws InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
 		try {
 			HostDescription hostDescriptor = getRegistry().getHostDescriptor(computeResourceId);
 			hostDescriptor.getType().changeType(GlobusHostType.type);
 			GlobusHostType s = (GlobusHostType)hostDescriptor.getType();
-			s.setGlobusGateKeeperEndPointArray(jobSubmission.getGlobusGateKeeperEndPoint().toArray(new String[]{}));
+			if (jobSubmission.getGlobusGateKeeperEndPointSize()>0) {
+				s.setGlobusGateKeeperEndPointArray(jobSubmission
+						.getGlobusGateKeeperEndPoint().toArray(new String[] {}));
+			}
 			getRegistry().updateHostDescriptor(hostDescriptor);
+			return computeResourceId;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AiravataSystemException();
@@ -441,7 +501,7 @@ public class ApplicationCatalogHandler implements Iface {
 	}
 
 	@Override
-	public void addSCPDataMovementProtocol(String computeResourceId,
+	public String addSCPDataMovementProtocol(String computeResourceId,
 			SCPDataMovement dataMovement) throws InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
 		try {
@@ -450,6 +510,7 @@ public class ApplicationCatalogHandler implements Iface {
 			GlobusHostType s = (GlobusHostType)hostDescriptor.getType();
 //			s.setGlobusGateKeeperEndPointArray(dataMovement.getGlobusGateKeeperEndPoint().toArray(new String[]{}));
 			getRegistry().updateHostDescriptor(hostDescriptor);
+			return computeResourceId;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AiravataSystemException();
@@ -458,11 +519,23 @@ public class ApplicationCatalogHandler implements Iface {
 	}
 
 	@Override
-	public void addGridFTPDataMovementProtocol(String computeResourceId,
+	public String addGridFTPDataMovementProtocol(String computeResourceId,
 			GridFTPDataMovement dataMovement) throws InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
-		// TODO Auto-generated method stub
-		
+		try {
+			HostDescription hostDescriptor = getRegistry().getHostDescriptor(computeResourceId);
+			hostDescriptor.getType().changeType(GlobusHostType.type);
+			GlobusHostType s = (GlobusHostType)hostDescriptor.getType();
+			if (dataMovement.getGridFTPEndPointSize()>0) {
+				s.setGridFTPEndPointArray(dataMovement.getGridFTPEndPoint()
+						.toArray(new String[] {}));
+			}
+			getRegistry().updateHostDescriptor(hostDescriptor);
+			return computeResourceId;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new AiravataSystemException();
+		}
 	}
 
 	@Override
@@ -470,12 +543,18 @@ public class ApplicationCatalogHandler implements Iface {
 			String gridFTPDataMovementResourceId)
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			GridFTPDataMovement gridFTPDataMovement = new GridFTPDataMovement();
+			gridFTPDataMovement.setDataMovementDataID(gridFTPDataMovementResourceId);
+			HostDescription hostDescriptor = getRegistry().getHostDescriptor(gridFTPDataMovementResourceId);
+			GlobusHostType s = (GlobusHostType)hostDescriptor.getType();
+			gridFTPDataMovement.setGridFTPEndPoint(Arrays.asList(s.getGridFTPEndPointArray()));
+			gridFTPDataMovement.setSecurityProtocol(SecurityProtocol.GSI);
+			return gridFTPDataMovement;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new AiravataSystemException();
+		}
 	}
 	
-	
-	
-	
-
 }
