@@ -68,7 +68,7 @@ $gsissh_protoco_data->installedPath="/usr/bin/";
 $gsissh_protoco_data->sshPort=2222;
 $gsissh_protoco_data->monitorMode="push";
 
-echo "Adding GSISSH deployment to ".$compute_resource_id."...";
+echo "Adding GSISSH protocol data to ".$compute_resource_id."...";
 $airavataclient->addGSISSHJobSubmissionProtocol($compute_resource_id, $gsissh_protoco_data);
 echo "done\n";
 $transport->close();
