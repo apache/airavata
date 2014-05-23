@@ -1,0 +1,90 @@
+<?php
+namespace Airavata\Client\Samples;
+
+$GLOBALS['THRIFT_ROOT'] = '../lib/Thrift/';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TTransport.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TSocket.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Protocol/TProtocol.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Protocol/TBinaryProtocol.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TException.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TApplicationException.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TProtocolException.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Base/TBase.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Type/TType.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Type/TMessageType.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Factory/TStringFuncFactory.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'StringFunc/TStringFunc.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'StringFunc/Core.php';
+
+$GLOBALS['AIRAVATA_ROOT'] = '../lib/Airavata/';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Airavata.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/AppCatalog/ApplicationCatalogAPI.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Experiment/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/AppCatalog/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Error/Types.php';
+
+use Airavata\Model\Workspace\Experiment\ComputationalResourceScheduling;
+use Airavata\Model\Workspace\Experiment\DataObjectType;
+use Airavata\Model\Workspace\Experiment\UserConfigurationData;
+use Airavata\Model\ComputeResourceDescription;
+use Thrift\Protocol\TBinaryProtocol;
+use Thrift\Transport\TSocket;
+use Airavata\API\AiravataClient;
+use Airavata\API\AppCatalog\ApplicationCatalogAPIClient;
+use Airavata\Model\Workspace\Experiment\Experiment;
+use Airavata\Model\AppCatalog\JobSubmissionProtocol;
+use Airavata\Model\AppCatalog\DataMovementProtocol;
+
+//$transport = new TSocket('gw111.iu.xsede.org', 8930);
+$transport = new TSocket('gw111.iu.xsede.org', 8931);
+$protocol = new TBinaryProtocol($transport);
+
+$airavataclient = new ApplicationCatalogAPIClient($protocol);
+$transport->open();
+
+echo "Airavata Server Version is: " . $airavataclient->getAPIVersion() . "\n";
+
+echo "Listing Compute Resources.... "."\n";
+
+$id_list = $airavataclient->listComputeResourceDescriptions();
+
+foreach($id_list as $id){
+	echo "Compute Resource Id : ".$id."\n";
+	$compute_resource = $airavataclient->getComputeResourceDescription($id);
+	echo "\t"."Host name : " . $compute_resource->hostName ."\n";
+	echo "\t"."Aliases : " . implode(",",array_keys($compute_resource->hostAliases)) ."\n";
+	echo "\t"."Ip addresses : " . implode(",",array_keys($compute_resource->ipAddresses)) ."\n";
+	echo "\t"."Job Submission Protocol Data : ".count($compute_resource->jobSubmissionProtocols)."\n";
+	foreach($compute_resource->jobSubmissionProtocols as $protocol_data_id => $protocol_type){
+		echo "\t\t".$protocol_data_id."[".JobSubmissionProtocol::$__names[$protocol_type]. "]"."\n";
+		switch ($protocol_type){
+			case JobSubmissionProtocol::GRAM:
+				$globus_data=$airavataclient->getGlobusJobSubmissionProtocol($protocol_data_id);
+				echo "\t\t\tGate Keeper Endpoint(s) : ".implode(",",($globus_data->globusGateKeeperEndPoint))."\n";
+				break;
+		}
+	}
+	echo "\t"."Data Movement Data : ".count($compute_resource->dataMovementProtocols)."\n";
+	foreach($compute_resource->dataMovementProtocols as $protocol_data_id => $protocol_type){
+		echo "\t\t".$protocol_data_id."[".DataMovementProtocol::$__names[$protocol_type] . "]"."\n";
+			switch ($protocol_type){
+			case DataMovementProtocol::GridFTP:
+				$gridftp_data=$airavataclient->getGridFTPDataMovementProtocol($protocol_data_id);
+				echo "\t\t\tGrid FTP Endpoint(s) : ".implode(",",($gridftp_data->gridFTPEndPoint))."\n";
+				break;
+		}
+	}
+}
+
+//$compute_resource = new \ComputeResourceDescription();
+//$compute_resource->hostName="localhost";
+//$compute_resource->hostAliases=array("localhost");
+//$compute_resource->ipAddresses=array("127.0.0.1");
+
+//Create a Experiment
+$transport->close();
+
+?>
+
+
+
