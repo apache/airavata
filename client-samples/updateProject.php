@@ -56,6 +56,7 @@ try
 					 $project=$airavataclient->getProject($argv[1]);
 					 $project->description = $argv[2];
 					 $airavataclient->updateProject($argv[1], $project);
+					 echo 'Project '.$argv[1] . ' succesfully modified.';
 		  }
 }
 
