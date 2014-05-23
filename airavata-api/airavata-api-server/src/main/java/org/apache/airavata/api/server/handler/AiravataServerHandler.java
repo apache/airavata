@@ -844,10 +844,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
 	private OrchestratorService.Client getOrchestratorClient() {
-		if(orchestratorClient == null){
-            orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(ORCHESTRATOR_SERVER_HOST, ORCHESTRATOR_SERVER_PORT);
-        }
-		return orchestratorClient;
+//		if(orchestratorClient == null){
+            return orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(ORCHESTRATOR_SERVER_HOST, ORCHESTRATOR_SERVER_PORT);
+//        }
 	}
 
     /**
