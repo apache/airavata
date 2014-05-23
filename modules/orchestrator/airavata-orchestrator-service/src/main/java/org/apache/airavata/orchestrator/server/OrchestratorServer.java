@@ -54,7 +54,9 @@ public class OrchestratorServer implements IServer{
 			TServerTransport serverTransport = new TServerSocket(serverPort);
             //server = new TSimpleServer(
               //      new TServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
-            server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
+            TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
+            options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_MIN_THREADS, "30"));
+            server = new TThreadPoolServer(options.processor(orchestratorServerHandlerProcessor));
 
             new Thread() {
 				public void run() {

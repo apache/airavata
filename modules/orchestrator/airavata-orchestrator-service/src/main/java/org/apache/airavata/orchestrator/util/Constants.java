@@ -23,5 +23,6 @@ package org.apache.airavata.orchestrator.util;
 
 public class Constants {
     public static final String ORCHESTRATOT_SERVER_PORT = "orchestrator.server.port";
+    public static final String ORCHESTRATOT_SERVER_MIN_THREADS = "orchestrator.server.min.threads";
 
 }

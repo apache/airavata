@@ -24,5 +24,6 @@ package org.apache.airavata.api.server.util;
 public class Constants {
     public static final String THRIFT_SERVER_PORT = "apiserver.server.port";
     public static final String APP_CATALOG_SERVER_PORT = "app.catalog.server.port";
+    public static final String API_SERVER_MIN_THREADS = "apiserver.server.min.threads";
 
 }
