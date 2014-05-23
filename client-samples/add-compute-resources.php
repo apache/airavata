@@ -37,8 +37,11 @@ use Airavata\Model\AppCatalog\DataMovementProtocol;
 use Airavata\Model\AppCatalog\GSISSHJobSubmission;
 use Airavata\Model\AppCatalog\ResourceJobManager;
 
-//$transport = new TSocket('gw111.iu.xsede.org', 8930);
-$transport = new TSocket('localhost', 8931);
+$airavataconfig = parse_ini_file("airavata-client-properties.ini");
+
+$transport = new TSocket($airavataconfig['APP_CATALOG_SERVER'], $airavataconfig['APP_CATALOG_PORT']);
+$transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
+
 $protocol = new TBinaryProtocol($transport);
 
 $airavataclient = new ApplicationCatalogAPIClient($protocol);
