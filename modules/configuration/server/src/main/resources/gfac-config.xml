@@ -77,7 +77,7 @@
     <Provider class="org.apache.airavata.gfac.gsissh.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl" executionMode="async">
              <InHandlers>
                 <Handler class="org.apache.airavata.gfac.gsissh.handler.GSISSHDirectorySetupHandler"/>
-                 <!--Handler class="org.apache.airavata.gfac.handler.AdvancedSCPInputHandler">
+                 <!--Handler class="org.apache.airavata.gfac.ssh.handler.AdvancedSCPInputHandler">
                             <property name="privateKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa"/>
                             <property name="publicKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa.pub"/>
                         <property name="userName" value="root"/>
@@ -90,7 +90,7 @@
             </InHandlers>
             <OutHandlers>
                 <Handler class="org.apache.airavata.gfac.gsissh.handler.GSISSHOutputHandler"/>
-                <!--Handler class="org.apache.airavata.gfac.handler.AdvancedSCPOutputHandler">
+                <!--Handler class="org.apache.airavata.gfac.ssh.handler.AdvancedSCPOutputHandler">
                             <property name="privateKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa"/>
                             <property name="publicKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa.pub"/>
                         <property name="userName" value="root"/>
