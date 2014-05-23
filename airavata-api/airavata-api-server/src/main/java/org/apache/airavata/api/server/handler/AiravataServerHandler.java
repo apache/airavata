@@ -826,18 +826,20 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, LaunchValidationException, TException {
         final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
         final String expID = airavataExperimentId;
-        if (orchestratorClient.validateExperiment(expID)) {
-            (new Thread() {
-                public void run() {
-                    try {
-                        orchestratorClient.launchExperiment(expID);
-                    } catch (TException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                }
-            }).start();
-        } else {
-            throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
+        synchronized (this) {
+            if (orchestratorClient.validateExperiment(expID)) {
+//                (new Thread() {
+//                    public void run() {
+                        try {
+                            orchestratorClient.launchExperiment(expID);
+                        } catch (TException e) {
+                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        }
+//                    }
+//                }).start();
+            } else {
+                throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
+            }
         }
     }
 
