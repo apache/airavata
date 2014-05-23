@@ -34,9 +34,10 @@ use Airavata\API\AppCatalog\ApplicationCatalogAPIClient;
 use Airavata\Model\Workspace\Experiment\Experiment;
 use Airavata\Model\AppCatalog\JobSubmissionProtocol;
 use Airavata\Model\AppCatalog\DataMovementProtocol;
+use Airavata\Model\AppCatalog\ResourceJobManager;
 
 //$transport = new TSocket('gw111.iu.xsede.org', 8930);
-$transport = new TSocket('gw111.iu.xsede.org', 8931);
+$transport = new TSocket('localhost', 8931);
 $protocol = new TBinaryProtocol($transport);
 
 $airavataclient = new ApplicationCatalogAPIClient($protocol);
@@ -62,6 +63,13 @@ foreach($id_list as $id){
 				$globus_data=$airavataclient->getGlobusJobSubmissionProtocol($protocol_data_id);
 				echo "\t\t\tGate Keeper Endpoint(s) : ".implode(",",($globus_data->globusGateKeeperEndPoint))."\n";
 				break;
+			case JobSubmissionProtocol::GSISSH:
+				$gsissh_data=$airavataclient->getGSISSHJobSubmissionProtocol($protocol_data_id);
+				echo "\t\t\tResource Job Manager : ".ResourceJobManager::$__names[$gsissh_data->resourceJobManager]."\n";
+				echo "\t\t\tInstalled Path : ".$gsissh_data->installedPath."\n";
+				echo "\t\t\tSSH port : ".$gsissh_data->sshPort."\n";
+				echo "\t\t\tMonitor Mode : ".$gsissh_data->monitorMode."\n";
+				break;
 		}
 	}
 	echo "\t"."Data Movement Data : ".count($compute_resource->dataMovementProtocols)."\n";
@@ -85,6 +93,5 @@ foreach($id_list as $id){
 $transport->close();
 
 ?>
-
 
 

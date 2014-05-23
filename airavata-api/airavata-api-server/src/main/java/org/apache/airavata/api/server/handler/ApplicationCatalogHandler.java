@@ -215,6 +215,7 @@ public class ApplicationCatalogHandler implements Iface {
 				d.setPostJobCommands(Arrays.asList(gsisshHostType.getPostJobCommandsArray()));
 				d.setPreJobCommands(Arrays.asList(gsisshHostType.getPreJobCommandsArray()));
 				d.setSshPort(gsisshHostType.getPort());
+				d.setResourceJobManager(ResourceJobManager.SLURM);
 			} else { 
 				throw new Exception("Saved job protocol is not GSISSH");
 			}
