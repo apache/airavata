@@ -156,6 +156,7 @@ public class ApplicationCatalogHandler implements Iface {
 			d.setIsEmpty(false);
 			d.setResourceId(computeResourceId);
 			d.setHostName(hostDescriptor.getType().getHostName());
+			d.addToHostAliases(hostDescriptor.getType().getHostName());
 			if (hostDescriptor.getType().getHostAddress()!=null) {
 				d.addToIpAddresses(hostDescriptor.getType().getHostAddress());
 			}
