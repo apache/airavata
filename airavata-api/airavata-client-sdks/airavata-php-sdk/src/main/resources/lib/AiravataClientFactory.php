@@ -37,23 +37,24 @@ class AiravataClientFactory
         $this->airavataServerHost = isset($options['airavataServerHost']) ? $options['airavataServerHost'] : null;
         $this->airavataServerPort = isset($options['airavataServerPort']) ? $options['airavataServerPort'] : null;
 
-	$this->airavataServerHost = isset($options['appCatalogServerHost']) ? $options['appCatalogServerHost'] : null;
-        $this->airavataServerPort = isset($options['appCatalogServerPort']) ? $options['appCatalogServerPort'] : null;
+		$this->appCatalogServerHost = isset($options['appCatalogServerHost']) ? $options['appCatalogServerHost'] : null;
+        $this->appCatalogServerPort = isset($options['appCatalogServerPort']) ? $options['appCatalogServerPort'] : null;
     }
 
     public function getAiravataClient()
     {
         $transport = new TSocket($this->airavataServerHost, $this->airavataServerPort);
         $protocol = new TBinaryProtocol($transport);
-	$transport->open();
+	    $transport->open();
         return new AiravataClient($protocol);
     }
 
     public function getApplicationCatalogClient()
     {
-        $transport = new TSocket($this->airavataServerHost, $this->airavataServerPort);
+        $transport = new TSocket($this->appCatalogServerHost, $this->appCatalogServerPort);
         $protocol = new TBinaryProtocol($transport);
-	$transport->open();
+		$transport->open();
         return new AiravataClient($protocol);
     }
 }
+
