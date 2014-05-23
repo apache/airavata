@@ -49,7 +49,7 @@ use Airavata\Model\Workspace\Experiment\ExperimentState;
 
 /* this is the same as the factory */
 $transport = new TSocket('gw127.iu.xsede.org', 8930);
-$transport->setRecvTimeout(5000);
+$transport->setRecvTimeout(20000);
 
 $protocol = new TBinaryProtocol($transport);
 $transport->open();
@@ -179,8 +179,8 @@ try
 	//echo "$user updated resource scheduleing for experiment $expId. \n";
 
 	/* Validate experiment */
-	$valid = $airavataclient->validateExperiment($expId);
-	echo "$user experiment $expId validation is $valid. \n";
+	//$valid = $airavataclient->validateExperiment($expId);
+	//echo "$user experiment $expId validation is $valid. \n";
 
         /* Launch Experiment */
 	//$airavataclient->launchExperiment($expId, 'airavataToken');
@@ -192,8 +192,8 @@ try
 	echo "$user experiment $expId status is $experimentStatusString. \n";
 
         /* Get additional information */
-        $version = $airavataclient->GetAPIVersion();
-        echo "$user Airavata Server Version is $version. \n"; 
+        //$version = $airavataclient->GetAPIVersion();
+        //echo "$user Airavata Server Version is $version. \n"; 
 
 	$userProjects = $airavataclient->getAllUserProjects($user);
         echo "$user total number of projects is " . sizeof($userProjects) . ". \n";
