@@ -44,9 +44,8 @@ public class ProjectRegistry {
         }else {
             this.gatewayResource = (GatewayResource)ResourceUtils.getGateway(gatewayResource.getGatewayName());
         }
-        if (!ResourceUtils.isUserExist(user.getUserName())){
-            workerResource = new WorkerResource(user.getUserName(), gatewayResource);
-            workerResource.save();
+        if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
+            workerResource = ResourceUtils.addGatewayWorker(gatewayResource, user);
         }else {
             workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), user.getUserName());
         }
@@ -108,7 +107,11 @@ public class ProjectRegistry {
             existingProject.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
             existingProject.setGateway(gatewayResource);
             UserResource user = (UserResource)ResourceUtils.getUser(project.getOwner());
-            ResourceUtils.addGatewayWorker(gatewayResource, user);
+            if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
+                workerResource = ResourceUtils.addGatewayWorker(gatewayResource, user);
+            }else {
+                workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), user.getUserName());
+            }
             WorkerResource worker = new WorkerResource(project.getOwner(), gatewayResource);
             existingProject.setWorker(worker);
             existingProject.save();
