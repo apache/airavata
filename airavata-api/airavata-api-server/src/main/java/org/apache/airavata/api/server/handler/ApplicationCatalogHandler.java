@@ -60,8 +60,12 @@ import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ApplicationCatalogHandler implements Iface {
+    private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
+
 	AiravataRegistry2 registry;
 	private AiravataRegistry2 getRegistry() throws RegistryException, AiravataConfigurationException{
 		 if (registry==null){
@@ -215,7 +219,7 @@ public class ApplicationCatalogHandler implements Iface {
 				d.setPostJobCommands(Arrays.asList(gsisshHostType.getPostJobCommandsArray()));
 				d.setPreJobCommands(Arrays.asList(gsisshHostType.getPreJobCommandsArray()));
 				d.setSshPort(gsisshHostType.getPort());
-				d.setResourceJobManager(ResourceJobManager.SLURM);
+				d.setResourceJobManager(getResourceJobManager(gsisshHostType.getJobManager()));
 			} else { 
 				throw new Exception("Saved job protocol is not GSISSH");
 			}
@@ -224,6 +228,16 @@ public class ApplicationCatalogHandler implements Iface {
 			e.printStackTrace();
 			throw new AiravataSystemException();
 		}
+	}
+
+	private ResourceJobManager getResourceJobManager(String jobManager) {
+		ResourceJobManager rjm=ResourceJobManager.SLURM;
+		try {
+			rjm = ResourceJobManager.valueOf(jobManager.toUpperCase());
+		} catch (Exception e) {
+			logger.error(jobManager+" does not match a known resource job manager.");
+		}
+		return rjm;
 	}
 
 	@Override
