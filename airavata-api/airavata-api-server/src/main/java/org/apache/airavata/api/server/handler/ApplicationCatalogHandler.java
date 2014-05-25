@@ -155,26 +155,35 @@ public class ApplicationCatalogHandler implements Iface {
 			String computeResourceId) throws InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
 		try {
-			HostDescription hostDescriptor = getRegistry().getHostDescriptor(computeResourceId);
-			ComputeResourceDescription d = new ComputeResourceDescription();
-			d.setIsEmpty(false);
-			d.setResourceId(computeResourceId);
-			d.setHostName(hostDescriptor.getType().getHostName());
-			d.addToHostAliases(hostDescriptor.getType().getHostName());
-			if (hostDescriptor.getType().getHostAddress()!=null) {
-				d.addToIpAddresses(hostDescriptor.getType().getHostAddress());
+			if (getRegistry().isHostDescriptorExists(computeResourceId)) {
+				HostDescription hostDescriptor = getRegistry().getHostDescriptor(computeResourceId);
+				ComputeResourceDescription d = new ComputeResourceDescription();
+				d.setIsEmpty(false);
+				d.setResourceId(computeResourceId);
+				d.setHostName(hostDescriptor.getType().getHostName());
+				d.addToHostAliases(hostDescriptor.getType().getHostName());
+				if (hostDescriptor.getType().getHostAddress() != null) {
+					d.addToIpAddresses(hostDescriptor.getType()
+							.getHostAddress());
+				}
+				d.setJobSubmissionProtocols(new HashMap<String, JobSubmissionProtocol>());
+				d.setDataMovementProtocols(new HashMap<String, DataMovementProtocol>());
+				if (hostDescriptor.getType() instanceof SSHHostType) {
+					d.getJobSubmissionProtocols().put(computeResourceId,
+							JobSubmissionProtocol.SSH);
+				} else if (hostDescriptor.getType() instanceof GsisshHostType) {
+					d.getJobSubmissionProtocols().put(computeResourceId,
+							JobSubmissionProtocol.GSISSH);
+				} else if (hostDescriptor.getType() instanceof GlobusHostType) {
+					d.getJobSubmissionProtocols().put(computeResourceId,
+							JobSubmissionProtocol.GRAM);
+					d.getDataMovementProtocols().put(computeResourceId,
+							DataMovementProtocol.GridFTP);
+				}
+				return d;
+			} else {
+				throw new Exception("Compute Resource Descriptor not found "+computeResourceId+"!!!");
 			}
-			d.setJobSubmissionProtocols(new HashMap<String, JobSubmissionProtocol>());
-			d.setDataMovementProtocols(new HashMap<String, DataMovementProtocol>());
-			if (hostDescriptor.getType() instanceof SSHHostType){
-				d.getJobSubmissionProtocols().put(computeResourceId, JobSubmissionProtocol.SSH);
-			} else if (hostDescriptor.getType() instanceof GsisshHostType){
-				d.getJobSubmissionProtocols().put(computeResourceId, JobSubmissionProtocol.GSISSH);
-			} else if (hostDescriptor.getType() instanceof GlobusHostType){
-				d.getJobSubmissionProtocols().put(computeResourceId, JobSubmissionProtocol.GRAM);
-				d.getDataMovementProtocols().put(computeResourceId, DataMovementProtocol.GridFTP);
-			}
-			return d;
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new AiravataSystemException();
