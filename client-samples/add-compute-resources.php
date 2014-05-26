@@ -53,7 +53,7 @@ echo "Add Compute Resources.... "."\n";
 
 $id_list = $airavataclient->listComputeResourceDescriptions();
 $compute_resource = new ComputeResourceDescription();
-$compute_resource->hostName="stampede-host";
+$compute_resource->hostName="test-stampede-host";
 $compute_resource->hostAliases=array("stampede");
 $compute_resource->ipAddresses=array("stampede.tacc.xsede.org");
 $compute_resource->isEmpty=false;

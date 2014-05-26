@@ -39,6 +39,7 @@ use Airavata\Model\AppCatalog\ResourceJobManager;
 $airavataconfig = parse_ini_file("airavata-client-properties.ini");
 
 $transport = new TSocket($airavataconfig['APP_CATALOG_SERVER'], $airavataconfig['APP_CATALOG_PORT']);
+echo $airavataconfig['AIRAVATA_TIMEOUT']."\n";
 $transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
 
 $protocol = new TBinaryProtocol($transport);
@@ -58,7 +59,7 @@ foreach($id_list as $id){
 	echo "\t"."Host name : " . $compute_resource->hostName ."\n";
 	echo "\t"."Aliases : " . implode(",",array_keys($compute_resource->hostAliases)) ."\n";
 	echo "\t"."Ip addresses : " . implode(",",array_keys($compute_resource->ipAddresses)) ."\n";
-	echo "\t"."Job Submission Protocol Data : ".count($compute_resource->jobSubmissionProtocols)."\n";
+	echo "\t".count($compute_resource->jobSubmissionProtocols)." Job Submission Protocols Supported"."\n";
 	foreach($compute_resource->jobSubmissionProtocols as $protocol_data_id => $protocol_type){
 		echo "\t\t".$protocol_data_id."[".JobSubmissionProtocol::$__names[$protocol_type]. "]"."\n";
 		switch ($protocol_type){
@@ -75,7 +76,7 @@ foreach($id_list as $id){
 				break;
 		}
 	}
-	echo "\t"."Data Movement Data : ".count($compute_resource->dataMovementProtocols)."\n";
+	echo "\t".count($compute_resource->dataMovementProtocols)." Data Movement Protocols Supported"."\n";
 	foreach($compute_resource->dataMovementProtocols as $protocol_data_id => $protocol_type){
 		echo "\t\t".$protocol_data_id."[".DataMovementProtocol::$__names[$protocol_type] . "]"."\n";
 			switch ($protocol_type){

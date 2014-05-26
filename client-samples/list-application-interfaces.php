@@ -56,7 +56,7 @@ foreach($id_list as $id){
 	echo "Application Interface Id : ".$id."\n";
 	$app_interface = $airavataclient->getApplicationInterface($id);
 	echo "\t"."Interface Data : " . $app_interface->applicationInterfaceData."\n";
-	echo "\t"."Deployments : ".count($app_interface->applicationDeployments)."\n";
+	echo "\t".count($app_interface->applicationDeployments)." Deployments"."\n";
 	foreach($app_interface->applicationDeployments as $deployment){
 		echo "\t\t"."Compute Resource : ".$deployment->computeResourceDescription->hostName."\n";
 		echo "\t\t\t"."Application Data".$deployment->applicationDescriptor->applicationDescriptorData."\n";
