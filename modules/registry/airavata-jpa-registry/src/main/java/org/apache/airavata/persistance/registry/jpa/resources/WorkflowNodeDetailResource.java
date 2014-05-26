@@ -361,7 +361,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         return null;
     }
 
-    public StatusResource geTaskStatus(String taskId){
+    public StatusResource getTaskStatus(String taskId){
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource taskStatus = (StatusResource) resource;
@@ -369,8 +369,9 @@ public class WorkflowNodeDetailResource extends AbstractResource {
                 if (taskStatus.getState() == null || taskStatus.getState().equals("") ){
                     taskStatus.setState("UNKNOWN");
                 }
-                return taskStatus;
-            }
+               
+            } 
+            return taskStatus;
         }
         return null;
     }
