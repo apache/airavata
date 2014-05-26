@@ -50,7 +50,7 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler {
             log.error(e.getMessage());
             throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
         } catch (GFacException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        	throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
         }
 
         log.info("Setup SSH job directorties");
@@ -85,6 +85,7 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler {
         } catch (Exception e) {
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();
+            detail.setTransferDescription(e.getLocalizedMessage());
             status.setTransferState(TransferState.FAILED);
             detail.setTransferStatus(status);
             try {

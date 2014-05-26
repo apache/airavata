@@ -93,6 +93,7 @@ public class GSISSHInputHandler extends AbstractHandler {
         } catch (Exception e) {
             log.error(e.getMessage());
             status.setTransferState(TransferState.FAILED);
+            detail.setTransferDescription(e.getLocalizedMessage());
             detail.setTransferStatus(status);
             try {
                 GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
