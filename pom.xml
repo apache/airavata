@@ -332,6 +332,17 @@
                 <role>committer</role>
             </roles>
         </developer>
+	<developer>
+            <id>msmemon</id>
+            <name>Shahbaz Memon</name>
+            <email>msmemon@apache.org</email>
+            <timezone>+1.0</timezone>
+            <organization>Forschungszentrum Juelich GmbH</organization>
+	    <organizationUrl>http://www.fz-juelich.de</organizationUrl>
+            <roles>
+               <role>committer</role>
+            </roles>
+        </developer>
     </developers>
 
     <dependencyManagement>
