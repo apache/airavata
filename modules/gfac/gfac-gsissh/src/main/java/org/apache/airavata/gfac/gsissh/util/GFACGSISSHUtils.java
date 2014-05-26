@@ -97,7 +97,7 @@ public class GFACGSISSHUtils {
                 }
                 pbsCluster = new PBSCluster(serverInfo, authenticationInfo, jConfig);
             } catch (SSHApiException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            	 throw new GFacException("An error occurred while creating GSI security context", e);
             }
 
             context.setPbsCluster(pbsCluster);
