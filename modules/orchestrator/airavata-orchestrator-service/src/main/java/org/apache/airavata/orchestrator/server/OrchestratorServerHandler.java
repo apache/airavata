@@ -80,7 +80,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
      * @param experimentId
      */
     public boolean launchExperiment(String experimentId) throws TException {
-        //TODO: Write the Orchestrator implementaion
+    	Experiment experiment= null;
         try {
             List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL,WorkflowNodeConstants.EXPERIMENT_ID,experimentId);
             for (String workflowNodeId : ids) {
@@ -89,21 +89,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 for (Object o : taskDetailList) {
                     TaskDetails taskID = (TaskDetails) o;
                     //iterate through all the generated tasks and performs the job submisssion+monitoring
-                    Experiment experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentId);
+                    experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentId);
                     if (experiment == null) {
                         log.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
                         return false;
                     }
-
-                    //launching the experiment
-                    orchestrator.launchExperiment(experiment, workflowNodeDetail, taskID);
-
-                    // after a successful launch update the experiment status to launched
                     ExperimentStatus status = new ExperimentStatus();
                     status.setExperimentState(ExperimentState.LAUNCHED);
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
                     experiment.setExperimentStatus(status);
                     registry.update(RegistryModelType.EXPERIMENT, experiment, experimentId);
+                    //launching the experiment
+                    orchestrator.launchExperiment(experiment, workflowNodeDetail, taskID);
                 }
             }
 
@@ -112,6 +109,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             // is in gfac, if there are errors in gfac, it will handle the experiment/task/job statuses
             // We might get failures in registry access before submitting the jobs to gfac, in that case we
             // leave the status of these as created.
+            ExperimentStatus status = new ExperimentStatus();
+            status.setExperimentState(ExperimentState.FAILED);
+            status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+            experiment.setExperimentStatus(status);
+            try {
+				registry.update(RegistryModelType.EXPERIMENT, experiment, experimentId);
+			} catch (RegistryException e1) {
+				 throw new TException(e);
+			}
+      
             throw new TException(e);
         }
         return true;

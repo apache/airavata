@@ -495,7 +495,7 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             StatusResource statusResource;
             if (taskDetail.isTaskStatusExist(taskId)){
-                statusResource = workflowNode.geTaskStatus(taskId);
+                statusResource = workflowNode.getTaskStatus(taskId);
             } else {
                 statusResource = (StatusResource)taskDetail.create(ResourceType.STATUS);
             }
