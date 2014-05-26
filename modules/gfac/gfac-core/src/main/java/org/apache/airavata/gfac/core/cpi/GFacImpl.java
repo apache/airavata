@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import com.google.common.eventbus.EventBus;
+
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -61,9 +62,9 @@ import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.tools.ant.taskdefs.optional.j2ee.HotDeploymentTool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -213,21 +214,23 @@ public class GFacImpl implements GFac {
         if (serviceName == null) {
             throw new GFacException("Error executing the job because there is not Application Name in this Experiment");
         }
-        List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
-        Map<String, ApplicationDescription> applicationDescriptors = airavataRegistry2.getApplicationDescriptors(serviceName);
-        for (String hostDescName : applicationDescriptors.keySet()) {
-            registeredHosts.add(airavataRegistry2.getHostDescriptor(hostDescName));
-        }
-        Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
-        HostScheduler hostScheduler = aClass.newInstance();
-        HostDescription hostDescription = hostScheduler.schedule(registeredHosts);
-
+       
         ServiceDescription serviceDescription = airavataRegistry2.getServiceDescriptor(serviceName);
         String hostName;
+        HostDescription hostDescription = null;
         if(taskData.getTaskScheduling().getResourceHostId() != null){
             hostName = taskData.getTaskScheduling().getResourceHostId();
+            hostDescription = airavataRegistry2.getHostDescriptor(hostName);
         }else{
-            hostName = hostDescription.getType().getHostName();
+        	  List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
+              Map<String, ApplicationDescription> applicationDescriptors = airavataRegistry2.getApplicationDescriptors(serviceName);
+              for (String hostDescName : applicationDescriptors.keySet()) {
+                  registeredHosts.add(airavataRegistry2.getHostDescriptor(hostDescName));
+              }
+              Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
+             HostScheduler hostScheduler = aClass.newInstance();
+            hostDescription = hostScheduler.schedule(registeredHosts);
+        	hostName = hostDescription.getType().getHostName();
         }
 
         ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostName);
