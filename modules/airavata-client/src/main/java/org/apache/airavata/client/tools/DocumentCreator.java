@@ -44,9 +44,9 @@ import org.apache.airavata.schemas.gfac.SSHHostType;
 public class DocumentCreator {
 
     private AiravataAPI airavataAPI = null;
-    private String hpcHostAddress = "trestles.sdsc.edu";
-    private String gramHostName = "gram-trestles";
-    private String gsiSshHostName = "gsissh-trestles";
+    private String trestleshpcHostAddress = "trestles.sdsc.edu";
+    private String lonestarHostAddress = "lonestar.tacc.utexas.edu";
+    private String stampedeHostAddress  = "stampede.tacc.xsede.org";
     private String gridftpAddress = "gsiftp://trestles-dm1.sdsc.edu:2811";
     private String gramAddress = "trestles-login1.sdsc.edu:2119/jobmanager-pbstest2";
 
@@ -111,8 +111,9 @@ public class DocumentCreator {
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-
     }
+    
+  
     
     public void createSSHHostDocs() {
         HostDescription descriptor = new HostDescription(SSHHostType.type);
@@ -178,8 +179,8 @@ public class DocumentCreator {
            creating host descriptor for gram
         */
         HostDescription host = new HostDescription(GlobusHostType.type);
-        host.getType().setHostAddress(hpcHostAddress);
-        host.getType().setHostName(gramHostName);
+        host.getType().setHostAddress(trestleshpcHostAddress);
+        host.getType().setHostName(trestleshpcHostAddress);
         ((GlobusHostType) host.getType()).setGlobusGateKeeperEndPointArray(new String[]{gramAddress});
         ((GlobusHostType) host.getType()).setGridFTPEndPointArray(new String[]{gridftpAddress});
         try {
@@ -258,7 +259,7 @@ public class DocumentCreator {
 
 
         try {
-            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, gramHostName, appDesc);
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, trestleshpcHostAddress, appDesc);
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -266,8 +267,8 @@ public class DocumentCreator {
 
     public void createPBSDocsForOGCE() {
         HostDescription host = new HostDescription(GsisshHostType.type);
-        host.getType().setHostAddress(hpcHostAddress);
-        host.getType().setHostName(gsiSshHostName);
+        host.getType().setHostAddress(trestleshpcHostAddress);
+        host.getType().setHostName(trestleshpcHostAddress);
         ((GsisshHostType) host.getType()).setPort(22);
         ((GsisshHostType) host.getType()).setInstalledPath("/opt/torque/bin/");
 
@@ -346,7 +347,7 @@ public class DocumentCreator {
         app.setInstalledParentPath("/opt/torque/bin/");
 
         try {
-            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, gsiSshHostName, appDesc);
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, trestleshpcHostAddress, appDesc);
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -355,14 +356,13 @@ public class DocumentCreator {
    
     public void createSlurmDocs() {
         HostDescription host = new HostDescription(GsisshHostType.type);
-        host.getType().setHostAddress("stampede.tacc.xsede.org");
-        host.getType().setHostName("stampede-host");
+        host.getType().setHostAddress(stampedeHostAddress);
+        host.getType().setHostName(stampedeHostAddress);
         ((GsisshHostType) host.getType()).setJobManager("slurm");
         ((GsisshHostType) host.getType()).setInstalledPath("/usr/bin/");
         ((GsisshHostType) host.getType()).setPort(2222);
         ((GsisshHostType) host.getType()).setMonitorMode("push");
-//        ((GsisshHostType) host.getType()).setMo(2222);
-
+    
 
         try {
             airavataAPI.getApplicationManager().saveHostDescription(host);
@@ -440,7 +440,7 @@ public class DocumentCreator {
         app.setInstalledParentPath("/usr/bin/");
 
         try {
-            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, "stampede-host", appDesc);
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, stampedeHostAddress, appDesc);
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -448,8 +448,8 @@ public class DocumentCreator {
 
     public void createSGEDocs() {
         HostDescription host = new HostDescription(GsisshHostType.type);
-        host.getType().setHostAddress("lonestar.tacc.utexas.edu");
-        host.getType().setHostName("lonestar-host");
+        host.getType().setHostAddress(lonestarHostAddress);
+        host.getType().setHostName(lonestarHostAddress);
         ((GsisshHostType) host.getType()).setJobManager("sge");
         ((GsisshHostType) host.getType()).setInstalledPath("/opt/sge6.2/bin/lx24-amd64/");
         ((GsisshHostType) host.getType()).setPort(22);
@@ -529,11 +529,179 @@ public class DocumentCreator {
         app.setInstalledParentPath("/opt/sge6.2/bin/lx24-amd64/");
 
         try {
-            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, "lonestar-host", appDesc);
+            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, lonestarHostAddress, appDesc);
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
     }
+
+	public void createEchoHostDocs() {
+		String serviceName = "Echo";
+		ServiceDescription serviceDescription = new ServiceDescription();
+		List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
+		List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
+		serviceDescription.getType().setName(serviceName);
+		serviceDescription.getType().setDescription("Echo service");
+		// Creating input parameters
+		InputParameterType parameter = InputParameterType.Factory.newInstance();
+		parameter.setParameterName("echo_input");
+		parameter.setParameterDescription("echo input");
+		ParameterType parameterType = parameter.addNewParameterType();
+		parameterType.setType(DataType.STRING);
+		parameterType.setName("String");
+		inputParameters.add(parameter);
+
+		// Creating output parameters
+		OutputParameterType outputParameter = OutputParameterType.Factory.newInstance();
+		outputParameter.setParameterName("echo_output");
+		outputParameter.setParameterDescription("Echo output");
+		ParameterType outputParaType = outputParameter.addNewParameterType();
+		outputParaType.setType(DataType.STRING);
+		outputParaType.setName("String");
+		outputParameters.add(outputParameter);
+
+		// Setting input and output parameters to serviceDescriptor
+		serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[] {}));
+		serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[] {}));
+
+		try {
+			airavataAPI.getApplicationManager().saveServiceDescription(serviceDescription);
+		} catch (AiravataAPIInvocationException e) {
+			e.printStackTrace(); // To change body of catch statement use File |
+									// Settings | File Templates.
+		}
+		// Localhost
+		ApplicationDescription applicationDeploymentDescription = new ApplicationDescription();
+		ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType = applicationDeploymentDescription.getType();
+		applicationDeploymentDescriptionType.addNewApplicationName().setStringValue(serviceName);
+		applicationDeploymentDescriptionType.setExecutableLocation("/bin/echo");
+		applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
+
+		try {
+			airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, "localhost", applicationDeploymentDescription);
+		} catch (AiravataAPIInvocationException e) {
+			e.printStackTrace(); // To change body of catch statement use File |
+									// Settings | File Templates.
+		}
+		// Stampede
+		/*
+		 * Application descriptor creation and saving
+		 */
+		ApplicationDescription appDesc1 = new ApplicationDescription(HpcApplicationDeploymentType.type);
+		HpcApplicationDeploymentType app1 = (HpcApplicationDeploymentType) appDesc1.getType();
+		ApplicationDeploymentDescriptionType.ApplicationName name = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+		name.setStringValue(serviceName);
+		app1.setApplicationName(name);
+		ProjectAccountType projectAccountType = app1.addNewProjectAccount();
+		projectAccountType.setProjectAccountNumber("TG-STA110014S");
+
+		QueueType queueType = app1.addNewQueue();
+		queueType.setQueueName("normal");
+
+		app1.setCpuCount(1);
+		app1.setJobType(JobTypeType.SERIAL);
+		app1.setNodeCount(1);
+		app1.setProcessorsPerNode(1);
+		app1.setMaxWallTime(10);
+		/*
+		 * Use bat file if it is compiled on Windows
+		 */
+		app1.setExecutableLocation("/bin/echo");
+
+		/*
+		 * Default tmp location
+		 */
+		String tempDir = "/home1/01437/ogce";
+
+		app1.setScratchWorkingDirectory(tempDir);
+		app1.setInstalledParentPath("/usr/bin/");
+
+		try {
+			airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, stampedeHostAddress, appDesc1);
+		} catch (AiravataAPIInvocationException e) {
+			e.printStackTrace(); // To change body of catch statement use File |
+									// Settings | File Templates.
+		}
+		// Trestles
+		/*
+		 * Application descriptor creation and saving
+		 */
+		ApplicationDescription appDesc2 = new ApplicationDescription(HpcApplicationDeploymentType.type);
+		HpcApplicationDeploymentType app2 = (HpcApplicationDeploymentType) appDesc2.getType();
+		ApplicationDeploymentDescriptionType.ApplicationName name2 = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+		name2.setStringValue(serviceName);
+		app2.setApplicationName(name);
+		ProjectAccountType projectAccountType2 = app2.addNewProjectAccount();
+		projectAccountType2.setProjectAccountNumber("sds128");
+
+		QueueType queueType2 = app2.addNewQueue();
+		queueType2.setQueueName("normal");
+
+		app2.setCpuCount(1);
+		app2.setJobType(JobTypeType.SERIAL);
+		app2.setNodeCount(1);
+		app2.setProcessorsPerNode(1);
+		app2.setMaxWallTime(10);
+		/*
+		 * Use bat file if it is compiled on Windows
+		 */
+		app2.setExecutableLocation("/bin/echo");
+
+		/*
+		 * Default tmp location
+		 */
+		String tempDir2 = "/home/ogce/scratch";
+
+		app2.setScratchWorkingDirectory(tempDir2);
+		app2.setInstalledParentPath("/opt/torque/bin/");
+
+		try {
+			airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, trestleshpcHostAddress, appDesc2);
+		} catch (AiravataAPIInvocationException e) {
+			e.printStackTrace(); // To change body of catch statement use File |
+									// Settings | File Templates.
+		}
+		// Lonestar
+		/*
+		 * Application descriptor creation and saving
+		 */
+		ApplicationDescription appDesc3 = new ApplicationDescription(HpcApplicationDeploymentType.type);
+		HpcApplicationDeploymentType app3 = (HpcApplicationDeploymentType) appDesc3.getType();
+		ApplicationDeploymentDescriptionType.ApplicationName name3 = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+		name3.setStringValue(serviceName);
+		app3.setApplicationName(name);
+		ProjectAccountType projectAccountType3 = app3.addNewProjectAccount();
+		projectAccountType3.setProjectAccountNumber("TG-STA110014S");
+
+		QueueType queueType3 = app3.addNewQueue();
+		queueType3.setQueueName("normal");
+
+		app3.setCpuCount(1);
+		app3.setJobType(JobTypeType.SERIAL);
+		app3.setNodeCount(1);
+		app3.setProcessorsPerNode(1);
+		app3.setMaxWallTime(10);
+		/*
+		 * Use bat file if it is compiled on Windows
+		 */
+		app3.setExecutableLocation("/bin/echo");
+
+		/*
+		 * Default tmp location
+		 */
+		String tempDir3 = "/home1/01437/ogce";
+
+		app3.setScratchWorkingDirectory(tempDir3);
+		app3.setInstalledParentPath("/opt/sge6.2/bin/lx24-amd64/");
+
+		try {
+			airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, lonestarHostAddress, appDesc3);
+		} catch (AiravataAPIInvocationException e) {
+			e.printStackTrace(); // To change body of catch statement use File |
+									// Settings | File Templates.
+		}
+
+	}
     public AiravataAPI getAiravataAPI() {
         return airavataAPI;
     }

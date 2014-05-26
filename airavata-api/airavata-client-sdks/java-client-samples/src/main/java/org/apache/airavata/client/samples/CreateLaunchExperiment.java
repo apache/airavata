@@ -57,10 +57,9 @@ public class CreateLaunchExperiment {
         try {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavata.getAPIVersion());
+//            System.out.println("API version is " + airavata.getAPIVersion());
             addDescriptors();
 
-//            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
@@ -176,6 +175,7 @@ public class CreateLaunchExperiment {
             documentCreator.createPBSDocsForOGCE();
             documentCreator.createSlurmDocs();
             documentCreator.createSGEDocs();
+            documentCreator.createEchoHostDocs();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());
             throw new AiravataAPIInvocationException(e);
@@ -222,7 +222,6 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
-            scheduling.setResourceHostId("gsissh-trestles");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -285,11 +284,10 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "Echo Test", "Echo", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "");
-            scheduling.setResourceHostId("localhost");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -381,7 +379,6 @@ public class CreateLaunchExperiment {
 
             ComputationalResourceScheduling scheduling =
                     ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
-            scheduling.setResourceHostId("stampede-host");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
