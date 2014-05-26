@@ -682,6 +682,18 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public boolean validateExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    	 registry = RegistryFactory.getDefaultRegistry();
+     	try {
+ 			if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+ 			    throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+ 			}
+ 		} catch (RegistryException e1) {
+ 			  logger.error("Error while retrieving projects", e1);
+ 	            AiravataSystemException exception = new AiravataSystemException();
+ 	            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+ 	            exception.setMessage("Error while retrieving projects. More info : " + e1.getMessage());
+ 	            throw exception;
+ 		}
 
         if (getOrchestratorClient().validateExperiment(airavataExperimentId)) {
             return true;
@@ -824,7 +836,20 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public void launchExperiment(String airavataExperimentId, String airavataCredStoreToken) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, LaunchValidationException, TException {
-        final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
+    	 registry = RegistryFactory.getDefaultRegistry();
+    	try {
+			if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+			    throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+			}
+		} catch (RegistryException e1) {
+			  logger.error("Error while retrieving projects", e1);
+	            AiravataSystemException exception = new AiravataSystemException();
+	            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+	            exception.setMessage("Error while retrieving projects. More info : " + e1.getMessage());
+	            throw exception;
+		}
+
+    	final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
         final String expID = airavataExperimentId;
         synchronized (this) {
             if (orchestratorClient.validateExperiment(expID)) {
