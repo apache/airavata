@@ -116,6 +116,7 @@ public class ThriftDataModelConversion {
             experimentSummary.setUserName(experimentResource.getExecutionUser());
             experimentSummary.setName(experimentResource.getExpName());
             experimentSummary.setDescription(experimentResource.getDescription());
+            experimentSummary.setApplicationId(experimentResource.getApplicationId());
             StatusResource experimentStatus = experimentResource.getExperimentStatus();
             if (experimentStatus != null){
                 experimentSummary.setExperimentStatus(getExperimentStatus(experimentStatus));

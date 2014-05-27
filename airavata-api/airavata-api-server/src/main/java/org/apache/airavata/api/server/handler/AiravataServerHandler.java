@@ -888,15 +888,15 @@ public class AiravataServerHandler implements Airavata.Iface {
         final String expID = airavataExperimentId;
         synchronized (this) {
             if (orchestratorClient.validateExperiment(expID)) {
-//                (new Thread() {
-//                    public void run() {
+                (new Thread() {
+                    public void run() {
                         try {
                             orchestratorClient.launchExperiment(expID);
                         } catch (TException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                         }
-//                    }
-//                }).start();
+                    }
+                }).start();
             } else {
                 throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
             }

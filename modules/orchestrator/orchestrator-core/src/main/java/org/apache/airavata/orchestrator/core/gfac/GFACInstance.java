@@ -36,9 +36,12 @@ public class GFACInstance {
 
     private int currentLoad;
 
-    public GFACInstance(String gfacURL, int currentLoad) {
+    private int gfacPort;
+
+
+    public GFACInstance(String gfacURL, int gfacPort) {
         this.gfacURL = gfacURL;
-        this.currentLoad = currentLoad;
+        this.gfacPort = gfacPort;
     }
 
     public String getGfacURL() {
