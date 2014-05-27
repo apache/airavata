@@ -507,7 +507,11 @@ public class WorkerResource extends AbstractResource {
         String query = "SELECT e from Experiment e WHERE ";
         if (filters != null && filters.size() != 0) {
             for (String field : filters.keySet()){
-                query += "e." + field + " LIKE '%" + filters.get(field) + "%' AND " ;
+                if (field.equals(ExperimentConstants.EXECUTION_USER)){
+                    query += "e." + field + "= '" + filters.get(field) + "' AND " ;
+                }else {
+                    query += "e." + field + " LIKE '%" + filters.get(field) + "%' AND " ;
+                }
             }
         }
         query = query.substring(0, query.length() - 5);

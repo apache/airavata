@@ -139,6 +139,15 @@ service Airavata {
                       3: airavataErrors.AiravataSystemException ase)
 
   /**
+       * Search Experiments by application id
+       *
+  */
+  list<experimentModel.ExperimentSummary> searchExperimentsByApplication (1: required string userName, 2: required string applicationId)
+              throws (1: airavataErrors.InvalidRequestException ire,
+                      2: airavataErrors.AiravataClientException ace,
+                      3: airavataErrors.AiravataSystemException ase)
+
+  /**
      * Get all Experiments within a Project
      *
   */
