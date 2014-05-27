@@ -3071,8 +3071,8 @@ void swap(Experiment &a, Experiment &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* ExperimentSummary::ascii_fingerprint = "3DCA5B62241F7A586E1E31A64AE87E0A";
-const uint8_t ExperimentSummary::binary_fingerprint[16] = {0x3D,0xCA,0x5B,0x62,0x24,0x1F,0x7A,0x58,0x6E,0x1E,0x31,0xA6,0x4A,0xE8,0x7E,0x0A};
+const char* ExperimentSummary::ascii_fingerprint = "44FD485ABF32F5EB94D6F393F51241B6";
+const uint8_t ExperimentSummary::binary_fingerprint[16] = {0x44,0xFD,0x48,0x5A,0xBF,0x32,0xF5,0xEB,0x94,0xD6,0xF3,0x93,0xF5,0x12,0x41,0xB6};
 
 uint32_t ExperimentSummary::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -3147,6 +3147,14 @@ uint32_t ExperimentSummary::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 7:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->applicationId);
+          this->__isset.applicationId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->experimentStatus.read(iprot);
           this->__isset.experimentStatus = true;
@@ -3154,7 +3162,7 @@ uint32_t ExperimentSummary::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->errors.clear();
@@ -3224,13 +3232,18 @@ uint32_t ExperimentSummary::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeString(this->description);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.applicationId) {
+    xfer += oprot->writeFieldBegin("applicationId", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeString(this->applicationId);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.experimentStatus) {
-    xfer += oprot->writeFieldBegin("experimentStatus", ::apache::thrift::protocol::T_STRUCT, 7);
+    xfer += oprot->writeFieldBegin("experimentStatus", ::apache::thrift::protocol::T_STRUCT, 8);
     xfer += this->experimentStatus.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.errors) {
-    xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 8);
+    xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
       std::vector<ErrorDetails> ::const_iterator _iter116;
@@ -3255,6 +3268,7 @@ void swap(ExperimentSummary &a, ExperimentSummary &b) {
   swap(a.userName, b.userName);
   swap(a.name, b.name);
   swap(a.description, b.description);
+  swap(a.applicationId, b.applicationId);
   swap(a.experimentStatus, b.experimentStatus);
   swap(a.errors, b.errors);
   swap(a.__isset, b.__isset);
