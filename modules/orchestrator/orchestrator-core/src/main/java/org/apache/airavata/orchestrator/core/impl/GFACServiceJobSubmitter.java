@@ -20,64 +20,44 @@
 */
 package org.apache.airavata.orchestrator.core.impl;
 
-
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.cpi.GFac;
-import org.apache.airavata.gfac.core.cpi.GFacImpl;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.cpi.GfacService;
+import org.apache.airavata.gfac.util.Constants;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
+import org.apache.airavata.orchestrator.core.gfac.GFacClientFactory;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This is the simplest implementation for JobSubmitter,
- * This is calling gfac invocation methods to invoke the gfac embedded mode,so this does not really implement
- * the selectGFACInstance method
+/*
+ * this class is responsible for submitting a job to gfac in service mode,
+ * it will select a gfac instance based on the incoming request and submit to that
+ * gfac instance.
  */
-public class EmbeddedGFACJobSubmitter implements JobSubmitter {
-    private final static Logger logger = LoggerFactory.getLogger(EmbeddedGFACJobSubmitter.class);
+public class GFACServiceJobSubmitter implements JobSubmitter {
+    private final static Logger logger = LoggerFactory.getLogger(GFACServiceJobSubmitter.class);
 
     private OrchestratorContext orchestratorContext;
 
-    private GFac gfac;
-
-
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
-        gfac = new GFacImpl(orchestratorContext.getNewRegistry(), null, orchestratorContext.getRegistry());
     }
 
     public GFACInstance selectGFACInstance() throws OrchestratorException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        // currently we only support one instance but future we have to pick an instance
+        return null;
     }
-
 
     public boolean submit(String experimentID, String taskID) throws OrchestratorException {
+        GfacService.Client localhost = GFacClientFactory.createOrchestratorClient("localhost",
+                Integer.parseInt(ServerSettings.getSetting(Constants.GFAC_SERVER_PORT, "8950")));
         try {
-             return gfac.submitJob(experimentID, taskID);
-        } catch (Exception e) {
-            String error = "Error launching the job : " + experimentID;
-            logger.error(error);
-            throw new OrchestratorException(error);
+            return localhost.submitJob(experimentID, taskID);
+        } catch (TException e) {
+            throw new OrchestratorException(e);
         }
-    }
-
-    public GFac getGfac() {
-        return gfac;
-    }
-
-    public void setGfac(GFac gfac) {
-        this.gfac = gfac;
-    }
-
-    public OrchestratorContext getOrchestratorContext() {
-        return orchestratorContext;
-    }
-
-    public void setOrchestratorContext(OrchestratorContext orchestratorContext) {
-        this.orchestratorContext = orchestratorContext;
     }
 }
