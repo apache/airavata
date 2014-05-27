@@ -389,6 +389,7 @@ struct ExperimentSummary {
     4: required string userName,
     5: required string name,
     6: optional string description,
-    7: optional ExperimentStatus experimentStatus,
-    8: optional list<ErrorDetails> errors
+    7: optional string applicationId,
+    8: optional ExperimentStatus experimentStatus,
+    9: optional list<ErrorDetails> errors
 }

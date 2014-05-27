@@ -57,8 +57,9 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)5);
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentStatus", org.apache.thrift.protocol.TType.STRUCT, (short)7);
-  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField APPLICATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationId", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentStatus", org.apache.thrift.protocol.TType.STRUCT, (short)8);
+  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)9);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -72,6 +73,7 @@ import org.slf4j.LoggerFactory;
   private String userName; // required
   private String name; // required
   private String description; // optional
+  private String applicationId; // optional
   private ExperimentStatus experimentStatus; // optional
   private List<ErrorDetails> errors; // optional
 
@@ -83,8 +85,9 @@ import org.slf4j.LoggerFactory;
     USER_NAME((short)4, "userName"),
     NAME((short)5, "name"),
     DESCRIPTION((short)6, "description"),
-    EXPERIMENT_STATUS((short)7, "experimentStatus"),
-    ERRORS((short)8, "errors");
+    APPLICATION_ID((short)7, "applicationId"),
+    EXPERIMENT_STATUS((short)8, "experimentStatus"),
+    ERRORS((short)9, "errors");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -111,9 +114,11 @@ import org.slf4j.LoggerFactory;
           return NAME;
         case 6: // DESCRIPTION
           return DESCRIPTION;
-        case 7: // EXPERIMENT_STATUS
+        case 7: // APPLICATION_ID
+          return APPLICATION_ID;
+        case 8: // EXPERIMENT_STATUS
           return EXPERIMENT_STATUS;
-        case 8: // ERRORS
+        case 9: // ERRORS
           return ERRORS;
         default:
           return null;
@@ -157,7 +162,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.DESCRIPTION,_Fields.EXPERIMENT_STATUS,_Fields.ERRORS};
+  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.DESCRIPTION,_Fields.APPLICATION_ID,_Fields.EXPERIMENT_STATUS,_Fields.ERRORS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -172,6 +177,8 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("description", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.APPLICATION_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EXPERIMENT_STATUS, new org.apache.thrift.meta_data.FieldMetaData("experimentStatus", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ExperimentStatus.class)));
@@ -219,6 +226,9 @@ import org.slf4j.LoggerFactory;
     if (other.isSetDescription()) {
       this.description = other.description;
     }
+    if (other.isSetApplicationId()) {
+      this.applicationId = other.applicationId;
+    }
     if (other.isSetExperimentStatus()) {
       this.experimentStatus = new ExperimentStatus(other.experimentStatus);
     }
@@ -244,6 +254,7 @@ import org.slf4j.LoggerFactory;
     this.userName = null;
     this.name = null;
     this.description = null;
+    this.applicationId = null;
     this.experimentStatus = null;
     this.errors = null;
   }
@@ -385,6 +396,29 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getApplicationId() {
+    return this.applicationId;
+  }
+
+  public void setApplicationId(String applicationId) {
+    this.applicationId = applicationId;
+  }
+
+  public void unsetApplicationId() {
+    this.applicationId = null;
+  }
+
+  /** Returns true if field applicationId is set (has been assigned a value) and false otherwise */
+  public boolean isSetApplicationId() {
+    return this.applicationId != null;
+  }
+
+  public void setApplicationIdIsSet(boolean value) {
+    if (!value) {
+      this.applicationId = null;
+    }
+  }
+
   public ExperimentStatus getExperimentStatus() {
     return this.experimentStatus;
   }
@@ -496,6 +530,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case APPLICATION_ID:
+      if (value == null) {
+        unsetApplicationId();
+      } else {
+        setApplicationId((String)value);
+      }
+      break;
+
     case EXPERIMENT_STATUS:
       if (value == null) {
         unsetExperimentStatus();
@@ -535,6 +577,9 @@ import org.slf4j.LoggerFactory;
     case DESCRIPTION:
       return getDescription();
 
+    case APPLICATION_ID:
+      return getApplicationId();
+
     case EXPERIMENT_STATUS:
       return getExperimentStatus();
 
@@ -564,6 +609,8 @@ import org.slf4j.LoggerFactory;
       return isSetName();
     case DESCRIPTION:
       return isSetDescription();
+    case APPLICATION_ID:
+      return isSetApplicationId();
     case EXPERIMENT_STATUS:
       return isSetExperimentStatus();
     case ERRORS:
@@ -636,6 +683,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_description && that_present_description))
         return false;
       if (!this.description.equals(that.description))
+        return false;
+    }
+
+    boolean this_present_applicationId = true && this.isSetApplicationId();
+    boolean that_present_applicationId = true && that.isSetApplicationId();
+    if (this_present_applicationId || that_present_applicationId) {
+      if (!(this_present_applicationId && that_present_applicationId))
+        return false;
+      if (!this.applicationId.equals(that.applicationId))
         return false;
     }
 
@@ -733,6 +789,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetApplicationId()).compareTo(other.isSetApplicationId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetApplicationId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationId, other.applicationId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetExperimentStatus()).compareTo(other.isSetExperimentStatus());
     if (lastComparison != 0) {
       return lastComparison;
@@ -817,6 +883,16 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.description);
+      }
+      first = false;
+    }
+    if (isSetApplicationId()) {
+      if (!first) sb.append(", ");
+      sb.append("applicationId:");
+      if (this.applicationId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationId);
       }
       first = false;
     }
@@ -952,7 +1028,15 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // EXPERIMENT_STATUS
+          case 7: // APPLICATION_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.applicationId = iprot.readString();
+              struct.setApplicationIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 8: // EXPERIMENT_STATUS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.experimentStatus = new ExperimentStatus();
               struct.experimentStatus.read(iprot);
@@ -961,7 +1045,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // ERRORS
+          case 9: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list136 = iprot.readListBegin();
@@ -1025,6 +1109,13 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.applicationId != null) {
+        if (struct.isSetApplicationId()) {
+          oprot.writeFieldBegin(APPLICATION_ID_FIELD_DESC);
+          oprot.writeString(struct.applicationId);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.experimentStatus != null) {
         if (struct.isSetExperimentStatus()) {
           oprot.writeFieldBegin(EXPERIMENT_STATUS_FIELD_DESC);
@@ -1074,18 +1165,24 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetDescription()) {
         optionals.set(1);
       }
-      if (struct.isSetExperimentStatus()) {
+      if (struct.isSetApplicationId()) {
         optionals.set(2);
       }
-      if (struct.isSetErrors()) {
+      if (struct.isSetExperimentStatus()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetErrors()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
       if (struct.isSetDescription()) {
         oprot.writeString(struct.description);
+      }
+      if (struct.isSetApplicationId()) {
+        oprot.writeString(struct.applicationId);
       }
       if (struct.isSetExperimentStatus()) {
         struct.experimentStatus.write(oprot);
@@ -1112,7 +1209,7 @@ import org.slf4j.LoggerFactory;
       struct.setUserNameIsSet(true);
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -1122,11 +1219,15 @@ import org.slf4j.LoggerFactory;
         struct.setDescriptionIsSet(true);
       }
       if (incoming.get(2)) {
+        struct.applicationId = iprot.readString();
+        struct.setApplicationIdIsSet(true);
+      }
+      if (incoming.get(3)) {
         struct.experimentStatus = new ExperimentStatus();
         struct.experimentStatus.read(iprot);
         struct.setExperimentStatusIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(4)) {
         {
           org.apache.thrift.protocol.TList _list141 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.errors = new ArrayList<ErrorDetails>(_list141.size);

@@ -30,7 +30,7 @@ import org.apache.airavata.model.workspace.experiment.ComputationalResourceSched
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.core.impl.EmbeddedGFACJobSubmitter;
+import org.apache.airavata.orchestrator.core.impl.GFACEmbeddedJobSubmitter;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
@@ -61,7 +61,7 @@ public class OrchestratorUtils {
 
     public static HostDescription getHostDescription(Orchestrator orchestrator, TaskDetails taskDetails)throws OrchestratorException {
         JobSubmitter jobSubmitter = ((SimpleOrchestratorImpl) orchestrator).getJobSubmitter();
-        AiravataRegistry2 registry = ((EmbeddedGFACJobSubmitter) jobSubmitter).getOrchestratorContext().getRegistry();
+        AiravataRegistry2 registry = ((GFACEmbeddedJobSubmitter) jobSubmitter).getOrchestratorContext().getRegistry();
         ComputationalResourceScheduling taskScheduling = taskDetails.getTaskScheduling();
         String resourceHostId = taskScheduling.getResourceHostId();
         try {
