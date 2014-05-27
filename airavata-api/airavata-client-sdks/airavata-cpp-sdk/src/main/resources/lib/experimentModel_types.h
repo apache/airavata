@@ -1912,9 +1912,10 @@ class Experiment {
 void swap(Experiment &a, Experiment &b);
 
 typedef struct _ExperimentSummary__isset {
-  _ExperimentSummary__isset() : creationTime(false), description(false), experimentStatus(false), errors(false) {}
+  _ExperimentSummary__isset() : creationTime(false), description(false), applicationId(false), experimentStatus(false), errors(false) {}
   bool creationTime;
   bool description;
+  bool applicationId;
   bool experimentStatus;
   bool errors;
 } _ExperimentSummary__isset;
@@ -1922,10 +1923,10 @@ typedef struct _ExperimentSummary__isset {
 class ExperimentSummary {
  public:
 
-  static const char* ascii_fingerprint; // = "3DCA5B62241F7A586E1E31A64AE87E0A";
-  static const uint8_t binary_fingerprint[16]; // = {0x3D,0xCA,0x5B,0x62,0x24,0x1F,0x7A,0x58,0x6E,0x1E,0x31,0xA6,0x4A,0xE8,0x7E,0x0A};
+  static const char* ascii_fingerprint; // = "44FD485ABF32F5EB94D6F393F51241B6";
+  static const uint8_t binary_fingerprint[16]; // = {0x44,0xFD,0x48,0x5A,0xBF,0x32,0xF5,0xEB,0x94,0xD6,0xF3,0x93,0xF5,0x12,0x41,0xB6};
 
-  ExperimentSummary() : experimentID(), projectID(), creationTime(0), userName(), name(), description() {
+  ExperimentSummary() : experimentID(), projectID(), creationTime(0), userName(), name(), description(), applicationId() {
   }
 
   virtual ~ExperimentSummary() throw() {}
@@ -1936,6 +1937,7 @@ class ExperimentSummary {
   std::string userName;
   std::string name;
   std::string description;
+  std::string applicationId;
   ExperimentStatus experimentStatus;
   std::vector<ErrorDetails>  errors;
 
@@ -1967,6 +1969,11 @@ class ExperimentSummary {
     __isset.description = true;
   }
 
+  void __set_applicationId(const std::string& val) {
+    applicationId = val;
+    __isset.applicationId = true;
+  }
+
   void __set_experimentStatus(const ExperimentStatus& val) {
     experimentStatus = val;
     __isset.experimentStatus = true;
@@ -1994,6 +2001,10 @@ class ExperimentSummary {
     if (__isset.description != rhs.__isset.description)
       return false;
     else if (__isset.description && !(description == rhs.description))
+      return false;
+    if (__isset.applicationId != rhs.__isset.applicationId)
+      return false;
+    else if (__isset.applicationId && !(applicationId == rhs.applicationId))
       return false;
     if (__isset.experimentStatus != rhs.__isset.experimentStatus)
       return false;
