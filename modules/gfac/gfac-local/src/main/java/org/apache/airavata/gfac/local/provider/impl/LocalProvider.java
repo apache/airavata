@@ -207,7 +207,7 @@ public class LocalProvider extends AbstractProvider {
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr, outputArray);
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
-       
+            OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr); // todo this will be replaced with app catalog
         } catch (XmlException e) {
             throw new GFacProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {
