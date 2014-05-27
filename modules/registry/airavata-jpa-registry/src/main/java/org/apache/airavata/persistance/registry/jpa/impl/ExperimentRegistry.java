@@ -2565,6 +2565,8 @@ public class ExperimentRegistry {
                         fil.put(AbstractResource.ExperimentConstants.EXECUTION_USER, filters.get(field));
                     }else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)){
                         fil.put(AbstractResource.ExperimentConstants.DESCRIPTION, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)){
+                        fil.put(AbstractResource.ExperimentConstants.APPLICATION_ID, filters.get(field));
                     }
                 }
                 List<ExperimentResource> experimentResources = workerResource.searchExperiments(fil);
