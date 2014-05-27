@@ -67,6 +67,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("searchExperimentsByDesc\n");
   }
 
+  void searchExperimentsByApplication(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId) {
+    // Your implementation goes here
+    printf("searchExperimentsByApplication\n");
+  }
+
   void getAllExperimentsInProject(std::vector< ::Experiment> & _return, const std::string& projectId) {
     // Your implementation goes here
     printf("getAllExperimentsInProject\n");

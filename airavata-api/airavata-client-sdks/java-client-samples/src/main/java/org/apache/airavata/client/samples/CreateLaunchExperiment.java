@@ -71,6 +71,7 @@ public class CreateLaunchExperiment {
             List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
             List<ExperimentSummary> searchedExps1 = searchExperimentsByName(airavata, "admin", "echo");
             List<ExperimentSummary> searchedExps2 = searchExperimentsByDesc(airavata, "admin", "Echo");
+            List<ExperimentSummary> searchedExps3 = searchExperimentsByApplication(airavata, "admin", "cho");
             List<Project> projects = getAllUserProject(airavata, "admin");
             List<Project> searchProjects1 = searchProjectsByProjectName(airavata, "admin", "project");
             List<Project> searchProjects2 = searchProjectsByProjectDesc(airavata, "admin", "test");
@@ -93,6 +94,14 @@ public class CreateLaunchExperiment {
 
             for (ExperimentSummary exp : searchedExps2){
                 System.out.println("search results by experiment desc");
+                System.out.println("experiment ID : " + exp.getExperimentID()) ;
+                if (exp.getExperimentStatus() != null) {
+                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
+                }
+            }
+
+            for (ExperimentSummary exp : searchedExps3){
+                System.out.println("search results by application");
                 System.out.println("experiment ID : " + exp.getExperimentID()) ;
                 if (exp.getExperimentStatus() != null) {
                     System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
@@ -536,6 +545,7 @@ public class CreateLaunchExperiment {
         return null;
     }
 
+
     public static List<ExperimentSummary> searchExperimentsByName (Airavata.Client client, String user, String expName){
         try {
             return client.searchExperimentsByName(user, expName);
@@ -554,6 +564,21 @@ public class CreateLaunchExperiment {
     public static List<ExperimentSummary> searchExperimentsByDesc(Airavata.Client client, String user, String desc){
         try {
             return client.searchExperimentsByDesc(user, desc);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<ExperimentSummary> searchExperimentsByApplication(Airavata.Client client, String user, String app){
+        try {
+            return client.searchExperimentsByApplication(user, app);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
