@@ -212,7 +212,7 @@ public class GFacImpl implements GFac {
         // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
         String serviceName = taskData.getApplicationId();
         if (serviceName == null) {
-            throw new GFacException("Error executing the job because there is not Application Name in this Experiment");
+            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName);
         }
        
         ServiceDescription serviceDescription = airavataRegistry2.getServiceDescriptor(serviceName);
@@ -232,7 +232,9 @@ public class GFacImpl implements GFac {
             hostDescription = hostScheduler.schedule(registeredHosts);
         	hostName = hostDescription.getType().getHostName();
         }
-
+        if(hostDescription == null){
+        	throw new GFacException("Error executing the job as the host is not registered " + hostName);	
+        }
         ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostName);
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         Properties configurationProperties = ServerSettings.getProperties();
