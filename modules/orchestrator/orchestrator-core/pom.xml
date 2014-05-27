@@ -60,17 +60,10 @@ the License. -->
             <artifactId>airavata-gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-	     <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-local</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-gsissh</artifactId>
+            <artifactId>airavata-gfac-service</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -88,7 +81,19 @@ the License. -->
             <artifactId>airavata-model-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-         <dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-gfac-local</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-gfac-gsissh</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <version>${derby.version}</version>

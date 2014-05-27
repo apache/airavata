@@ -196,6 +196,7 @@
                 <include>org.apache.airavata:airavata-data-models:jar</include>
                 <include>org.apache.airavata:airavata-credential-store:jar</include>
                 <include>org.apache.airavata:airavata-gfac-core:jar</include>
+                <include>org.apache.airavata:airavata-gfac-server:jar</include>
                 <include>org.apache.airavata:airavata-gfac-ssh:jar</include>
                 <include>org.apache.airavata:airavata-gfac-local:jar</include>
                 <include>org.apache.airavata:airavata-gfac-gsissh:jar</include>

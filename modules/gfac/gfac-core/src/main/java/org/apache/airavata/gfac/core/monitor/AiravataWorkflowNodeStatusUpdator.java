@@ -63,28 +63,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
         }
     }
 
-    @Subscribe
-    public void setupExperimentStatus(WorkflowNodeStatusChangeRequest nodeStatus){
-    	ExperimentState state=ExperimentState.UNKNOWN;
-    	switch(nodeStatus.getState()){
-    	case CANCELED:
-    		state=ExperimentState.CANCELED; break;
-    	case COMPLETED:
-    		state=ExperimentState.COMPLETED; break;
-    	case INVOKED:
-    		state=ExperimentState.LAUNCHED; break;
-    	case FAILED:
-    		state=ExperimentState.FAILED; break;
-    	case EXECUTING:
-    		state=ExperimentState.EXECUTING; break;
-    	case CANCELING:
-    		state=ExperimentState.CANCELING; break;
-		default:
-			break;
-    	}
-    	logger.debug("Publishing Experiment Status "+state.toString());
-    	monitorPublisher.publish(new ExperimentStatusChangeRequest(nodeStatus.getIdentity(),state));
-    }
+
 
     public  void updateWorkflowNodeStatus(String workflowNodeId, WorkflowNodeState state) throws Exception {
     	WorkflowNodeDetails details = (WorkflowNodeDetails)airavataRegistry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);

@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.server;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.gfac.cpi.GfacService;
@@ -44,8 +45,6 @@ import org.slf4j.LoggerFactory;
 public class GfacServerHandler implements GfacService.Iface {
     private final static Logger logger = LoggerFactory.getLogger(GfacServerHandler.class);
 
-    private GFac gfac;
-
     private Registry registry;
 
     private String registryURL;
@@ -56,9 +55,6 @@ public class GfacServerHandler implements GfacService.Iface {
         registry = RegistryFactory.getDefaultRegistry();
         try {
             setGatewayProperties();
-            gfac = new GFacImpl(registry, null,
-                    AiravataRegistryFactory.getRegistry(new Gateway(getGatewayName()),
-                            new AiravataUser(getAiravataUserName())));
         }catch (Exception e){
            logger.error("Error initialising GFAC",e);
         }
@@ -69,20 +65,18 @@ public class GfacServerHandler implements GfacService.Iface {
     }
 
     public boolean submitJob(String experimentId, String taskId) throws TException {
-        return false;
+        GFac gfac = getGfac();
+        try {
+            return gfac.submitJob(experimentId, taskId);
+        } catch (GFacException e) {
+            throw new TException("Error launching the experiment : " + e.getMessage(), e);
+        }
     }
 
     public boolean cancelJob(String experimentId, String taskId) throws TException {
-        return false;
+        throw new TException("Operation not supported");
     }
 
-    public GFac getGfac() {
-        return gfac;
-    }
-
-    public void setGfac(GFac gfac) {
-        this.gfac = gfac;
-    }
 
     public Registry getRegistry() {
         return registry;
@@ -120,4 +114,16 @@ public class GfacServerHandler implements GfacService.Iface {
          setGatewayName(ServerSettings.getProperties().getProperty("system.gateway"));
          setRegistryURL(ServerSettings.getProperties().getProperty("airavata.server.url"));
      }
+
+    private GFac getGfac()throws TException{
+        try {
+            return new GFacImpl(registry, null,
+                                AiravataRegistryFactory.getRegistry(new Gateway(getGatewayName()),
+                                        new AiravataUser(getAiravataUserName())));
+        } catch (RegistryException e) {
+            throw new TException("Error initializing gfac instance",e);
+        } catch (AiravataConfigurationException e) {
+            throw new TException("Error initializing gfac instance",e);
+        }
+    }
 }

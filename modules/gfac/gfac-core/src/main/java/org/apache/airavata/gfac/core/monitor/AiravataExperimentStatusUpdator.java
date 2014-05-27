@@ -58,6 +58,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
     }
 
     public  void updateExperimentStatus(String experimentId, ExperimentState state) throws Exception {
+        logger.info("Updating the experiment status of experiment: " + experimentId + " to " + state.toString());
     	Experiment details = (Experiment)airavataRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
         if(details == null) {
             details = new Experiment();

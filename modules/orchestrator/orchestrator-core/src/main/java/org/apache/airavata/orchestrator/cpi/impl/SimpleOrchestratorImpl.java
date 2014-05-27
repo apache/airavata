@@ -151,7 +151,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                     vResult.setResult(false);
                     vResult.setErrorDetails("Error loading the validation class: " + e.getMessage());
                     validationResults.setValidationState(false);
-
                 }
                 validationResults.addToValidationResultList(vResult);
             }
