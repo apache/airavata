@@ -167,6 +167,15 @@ public class LocalProvider extends AbstractProvider {
                     .append(" tempDirectory = ").append(app.getScratchWorkingDirectory()).append(" With the status ")
                     .append(String.valueOf(returnValue));
             log.info(buf.toString());
+
+            // updating the job status to complete because there's nothing to monitor in local jobs
+            MonitorID monitorID = new MonitorID(jobExecutionContext.getApplicationContext().getHostDescription(), jobId,
+                    jobExecutionContext.getTaskData().getTaskID(),
+                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
+                    jobExecutionContext.getExperiment().getUserName());
+            JobStatusChangeRequest jobStatusChangeRequest = new JobStatusChangeRequest(monitorID);
+            jobStatusChangeRequest.setState(JobState.COMPLETE);
+            this.getMonitorPublisher().publish(jobStatusChangeRequest);
         } catch (IOException io) {
             throw new GFacProviderException(io.getMessage(), io);
         } catch (InterruptedException e) {
@@ -207,7 +216,7 @@ public class LocalProvider extends AbstractProvider {
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr, outputArray);
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
-            OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr); // todo this will be replaced with app catalog
+            OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
         } catch (XmlException e) {
             throw new GFacProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {
