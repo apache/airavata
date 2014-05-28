@@ -418,7 +418,7 @@ public class DocumentCreator {
         HpcApplicationDeploymentType wrfApp = (HpcApplicationDeploymentType) wrfAppDesc.getType();
         ApplicationDeploymentDescriptionType.ApplicationName wrfName = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
         wrfName.setStringValue("WRF");
-        wrfApp.setApplicationName(name);
+        wrfApp.setApplicationName(wrfName);
         ProjectAccountType wrfprojectAccountType = wrfApp.addNewProjectAccount();
         wrfprojectAccountType.setProjectAccountNumber("sds128");
 
