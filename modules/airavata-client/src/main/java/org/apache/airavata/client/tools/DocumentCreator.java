@@ -358,7 +358,7 @@ public class DocumentCreator {
         */
         String wrfserviceName = "WRF";
         ServiceDescription wrfServ = new ServiceDescription();
-        wrfServ.getType().setName(serviceName);
+        wrfServ.getType().setName(wrfserviceName);
 
         List<InputParameterType> wrfinputList = new ArrayList<InputParameterType>();
         List<OutputParameterType> wrfoutputList = new ArrayList<OutputParameterType>();
@@ -425,11 +425,11 @@ public class DocumentCreator {
         QueueType wrfQueueType = wrfApp.addNewQueue();
         wrfQueueType.setQueueName("normal");
 
-        wrfApp.setCpuCount(1);
-        wrfApp.setJobType(JobTypeType.SERIAL);
-        wrfApp.setNodeCount(1);
+        wrfApp.setCpuCount(32);
+        wrfApp.setJobType(JobTypeType.MPI);
+        wrfApp.setNodeCount(2);
         wrfApp.setProcessorsPerNode(1);
-        wrfApp.setMaxWallTime(10);
+        wrfApp.setMaxWallTime(30);
         /*
            * Use bat file if it is compiled on Windows
            */

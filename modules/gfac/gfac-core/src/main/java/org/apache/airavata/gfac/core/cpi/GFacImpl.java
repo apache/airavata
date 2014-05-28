@@ -212,10 +212,13 @@ public class GFacImpl implements GFac {
         // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
         String serviceName = taskData.getApplicationId();
         if (serviceName == null) {
-            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName);
+            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName );
         }
        
         ServiceDescription serviceDescription = airavataRegistry2.getServiceDescriptor(serviceName);
+        if (serviceDescription == null ) {
+            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName );
+        }
         String hostName;
         HostDescription hostDescription = null;
         if(taskData.getTaskScheduling().getResourceHostId() != null){
