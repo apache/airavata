@@ -425,11 +425,11 @@ public class DocumentCreator {
         QueueType wrfQueueType = wrfApp.addNewQueue();
         wrfQueueType.setQueueName("normal");
 
-        wrfApp.setCpuCount(1);
-        wrfApp.setJobType(JobTypeType.SERIAL);
-        wrfApp.setNodeCount(1);
-        wrfApp.setProcessorsPerNode(1);
-        wrfApp.setMaxWallTime(10);
+        wrfApp.setCpuCount(64);
+        wrfApp.setJobType(JobTypeType.MPI);
+        wrfApp.setNodeCount(2);
+        wrfApp.setProcessorsPerNode(32);
+        wrfApp.setMaxWallTime(15);
         /*
            * Use bat file if it is compiled on Windows
            */
