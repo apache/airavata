@@ -31,6 +31,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -155,7 +156,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
             detail.setTransferDescription("STDERR:" + stdErrStr);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
-
+            //todo this is a mess we have to fix this
             List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             Set<String> keys = output.keySet();
@@ -166,11 +167,14 @@ public class GSISSHOutputHandler extends AbstractHandler {
                     List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
                     if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
                         OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr, outputArray);
-                        for (DataObjectType outputLocation : outputArray){
-                        	  jobExecutionContext.addOutputFile(outputLocation.getValue());
-                              
+                        Map<String, ActualParameter> stringActualParameterMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+                        Set<String> strings = stringActualParameterMap.keySet();
+                        for(String key:strings) {
+                            ActualParameter actualParameter1 = stringActualParameterMap.get(key);
+                            if("URI".equals(actualParameter1.getType().getType().toString())){
+                                jobExecutionContext.addOutputFile(MappingFactory.toString(actualParameter1));
+                            }
                         }
-                        OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
                         break;
                     } else {
                         String valueList = outputList.get(0);
