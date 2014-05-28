@@ -341,13 +341,110 @@ public class DocumentCreator {
         /*
            * Default tmp location
            */
-        String tempDir = "/home/ogce/scratch";
+        String tempDir = "/oasis/scratch/trestles/ogce/temp_project/";
+
      
         app.setScratchWorkingDirectory(tempDir);
         app.setInstalledParentPath("/opt/torque/bin/");
 
         try {
             airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, trestleshpcHostAddress, appDesc);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+         /*
+        * Service Description creation and saving
+        */
+        String wrfserviceName = "WRF";
+        ServiceDescription wrfServ = new ServiceDescription();
+        wrfServ.getType().setName(serviceName);
+
+        List<InputParameterType> wrfinputList = new ArrayList<InputParameterType>();
+        List<OutputParameterType> wrfoutputList = new ArrayList<OutputParameterType>();
+
+
+        InputParameterType wrfinput1 = InputParameterType.Factory.newInstance();
+        wrfinput1.setParameterName("WRF_Namelist");
+        ParameterType wrfparameterType1 = wrfinput1.addNewParameterType();
+        wrfparameterType1.setType(DataType.URI);
+        wrfparameterType1.setName("URI");
+
+        InputParameterType wrfinput2 = InputParameterType.Factory.newInstance();
+        wrfinput2.setParameterName("WRF_Input_File");
+        ParameterType wrfparameterType2 = wrfinput2.addNewParameterType();
+        wrfparameterType2.setType(DataType.URI);
+        wrfparameterType2.setName("URI");
+
+        InputParameterType wrfinput3 = InputParameterType.Factory.newInstance();
+        wrfinput3.setParameterName("WRF_Boundary_File");
+        ParameterType wrfparameterType3 = wrfinput3.addNewParameterType();
+        wrfparameterType3.setType(DataType.URI);
+        wrfparameterType3.setName("URI");
+
+        OutputParameterType wrfOutput1 = OutputParameterType.Factory.newInstance();
+        wrfOutput1.setParameterName("WRF_Output");
+        ParameterType wrfoutparameterType1 = wrfOutput1.addNewParameterType();
+        wrfoutparameterType1.setType(DataType.URI);
+        wrfoutparameterType1.setName("URI");
+
+        OutputParameterType wrfOutput2 = OutputParameterType.Factory.newInstance();
+        wrfOutput2.setParameterName("WRF_Execution_Log");
+        ParameterType wrfoutparameterType2 = wrfOutput2.addNewParameterType();
+        wrfoutparameterType2.setType(DataType.URI);
+        wrfoutparameterType2.setName("URI");
+
+        wrfinputList.add(wrfinput1);
+        wrfinputList.add(wrfinput2);
+        wrfinputList.add(wrfinput3);
+        wrfoutputList.add(wrfOutput1);
+        wrfoutputList.add(wrfOutput2);
+
+        InputParameterType[] wrfinputParamList = wrfinputList.toArray(new InputParameterType[wrfinputList.size()]);
+        OutputParameterType[] wrfoutputParamList = wrfoutputList.toArray(new OutputParameterType[wrfoutputList.size()]);
+
+        wrfServ.getType().setInputParametersArray(wrfinputParamList);
+        wrfServ.getType().setOutputParametersArray(wrfoutputParamList);
+        try {
+            airavataAPI.getApplicationManager().saveServiceDescription(wrfServ);
+        } catch (AiravataAPIInvocationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        /*
+            Application descriptor creation and saving
+         */
+        ApplicationDescription wrfAppDesc = new ApplicationDescription(HpcApplicationDeploymentType.type);
+        HpcApplicationDeploymentType wrfApp = (HpcApplicationDeploymentType) wrfAppDesc.getType();
+        ApplicationDeploymentDescriptionType.ApplicationName wrfName = ApplicationDeploymentDescriptionType.ApplicationName.Factory.newInstance();
+        wrfName.setStringValue("WRF");
+        wrfApp.setApplicationName(name);
+        ProjectAccountType wrfprojectAccountType = wrfApp.addNewProjectAccount();
+        wrfprojectAccountType.setProjectAccountNumber("sds128");
+
+        QueueType wrfQueueType = wrfApp.addNewQueue();
+        wrfQueueType.setQueueName("normal");
+
+        wrfApp.setCpuCount(1);
+        wrfApp.setJobType(JobTypeType.SERIAL);
+        wrfApp.setNodeCount(1);
+        wrfApp.setProcessorsPerNode(1);
+        wrfApp.setMaxWallTime(10);
+        /*
+           * Use bat file if it is compiled on Windows
+           */
+        wrfApp.setExecutableLocation("/home/ogce/apps/wrf_wrapper.sh");
+
+        /*
+           * Default tmp location
+           */
+        String wrfTempDir = "/oasis/scratch/trestles/ogce/temp_project/";
+
+        wrfApp.setScratchWorkingDirectory(wrfTempDir);
+        wrfApp.setInstalledParentPath("/opt/torque/bin/");
+
+        try {
+            airavataAPI.getApplicationManager().saveApplicationDescription(wrfserviceName, trestleshpcHostAddress, wrfAppDesc);
         } catch (AiravataAPIInvocationException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
