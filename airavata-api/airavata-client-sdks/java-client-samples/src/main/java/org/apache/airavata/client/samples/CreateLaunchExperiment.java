@@ -35,6 +35,9 @@ import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.ParameterType;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +67,8 @@ public class CreateLaunchExperiment {
 //            final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
             final String expId = createExperimentForLocalHost(airavata);
+//            final String expId = createExperimentForLonestar(airavata);
+//            final String expId = createExperimentWRFTrestles(airavata);
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
             launchExperiment(airavata, expId);
@@ -137,7 +142,11 @@ public class CreateLaunchExperiment {
                                      }
                                  }
                              }
-                             System.out.println(airavata.getExperimentStatus(expId));
+                             ExperimentStatus experimentStatus = airavata.getExperimentStatus(expId);
+                             if(experimentStatus.getExperimentState().equals(ExperimentState.FAILED)){
+                            	 return;
+                             }
+							System.out.println(experimentStatus);
                              Thread.sleep(5000);
                          } catch (Exception e) {
                              e.printStackTrace();
@@ -231,6 +240,71 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            userConfigurationData.setAiravataAutoSchedule(false);
+            userConfigurationData.setOverrideManualScheduledParams(false);
+            userConfigurationData.setComputationalResourceScheduling(scheduling);
+            simpleExperiment.setUserConfigurationData(userConfigurationData);
+            return client.createExperiment(simpleExperiment);
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        }catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+    }
+    
+    public static String createExperimentWRFTrestles(Airavata.Client client) throws TException  {
+        try{
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("WRF_Namelist");
+            input.setType(DataType.URI);
+            input.setValue("/Users/raminder/Downloads/wrf_sample_inputs/namelist.input");
+            
+            DataObjectType input1 = new DataObjectType();
+            input1.setKey("WRF_Input_File");
+            input1.setType(DataType.URI);
+            input1.setValue("/Users/raminder/Downloads/wrf_sample_inputs/wrfinput_d01");
+            
+            DataObjectType input2 = new DataObjectType();
+            input2.setKey("WRF_Boundary_File");
+            input2.setType(DataType.URI);
+            input2.setValue("/Users/raminder/Downloads/wrf_sample_inputs/wrfbdy_d01");
+            
+            exInputs.add(input);
+            exInputs.add(input1);
+            exInputs.add(input2);
+
+           
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("WRF_Output");
+            output.setType(DataType.URI);
+            output.setValue("");
+            
+            DataObjectType output1 = new DataObjectType();
+            output1.setKey("WRF_Execution_Log");
+            output1.setType(DataType.URI);
+            output1.setValue("");
+            
+            
+            exOut.add(output);
+            exOut.add(output1);
+           
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", "WRF", exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 32, 2, 1, "normal", 0, 0, 1, "sds128");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -428,12 +502,11 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho4", "SimpleEcho4", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho4", "Echo", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =
                     ExperimentModelUtil.createComputationResourceScheduling("lonestar.tacc.utexas.edu", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
-            scheduling.setResourceHostId("lonestar-host");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -463,6 +536,8 @@ public class CreateLaunchExperiment {
             throw new TException(e);
         }
     }
+       
+       
     public static void launchExperiment (Airavata.Client client, String expId)
             throws TException{
         try {

@@ -166,6 +166,10 @@ public class GSISSHOutputHandler extends AbstractHandler {
                     List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
                     if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
                         OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr, outputArray);
+                        for (DataObjectType outputLocation : outputArray){
+                        	  jobExecutionContext.addOutputFile(outputLocation.getValue());
+                              
+                        }
                         OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
                         break;
                     } else {

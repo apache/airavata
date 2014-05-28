@@ -60,9 +60,10 @@ public class OutputUtils {
             } else if ("StdErr".equals(actual.getType().getType().toString())) {
                 ((StdErrParameterType) actual.getType()).setValue(stderr);
                 result.put(paramName, actual);
-            }else if("URI".equals(actual.getType().getType().toString())){
-            	continue;
-            } 
+            }
+//            else if("URI".equals(actual.getType().getType().toString())){
+//            	continue;
+//            } 
             else {
                 String parseStdout = parseStdout(stdout, paramName);
                 if (parseStdout != null) {
@@ -75,47 +76,48 @@ public class OutputUtils {
         return result;
     }
     
-    public static void fillOutputFromStdout1(Map<String, Object> output, String stdout, String stderr,List<DataObjectType> outputArray) throws Exception {
+	public static void fillOutputFromStdout1(Map<String, Object> output, String stdout, String stderr, List<DataObjectType> outputArray) throws Exception {
 
-        if (stdout == null || stdout.equals("")){
-            throw new GFacHandlerException("Standard output is empty.");
-        }
+		if (stdout == null || stdout.equals("")) {
+			throw new GFacHandlerException("Standard output is empty.");
+		}
 
-        Set<String> keys = output.keySet();
-        for (String paramName : keys) {
-        	ActualParameter actual = (ActualParameter) output.get(paramName);
-            // if parameter value is not already set, we let it go
-            
-            if (actual == null) {
-                continue;
-            }
-            if ("StdOut".equals(actual.getType().getType().toString())) {
-                DataObjectType out = new DataObjectType();
-                out.setKey(paramName);
-                out.setType(DataType.STDOUT);
-                out.setValue(stdout);
-                outputArray.add(out);
-            } else if ("StdErr".equals(actual.getType().getType().toString())) {
-                DataObjectType out = new DataObjectType();
-                out.setKey(paramName);
-                out.setType(DataType.STDERR);
-                out.setValue(stderr);
-                outputArray.add(out);
-            }else if("URI".equals(actual.getType().getType().toString())){
-            	continue;
-            } 
-            else {
-                String parseStdout = parseStdout(stdout, paramName);
-                if (parseStdout != null) {
-                    DataObjectType out = new DataObjectType();
-                    out.setKey(paramName);
-                    out.setType(DataType.STRING);
-                    out.setValue(parseStdout);
-                    outputArray.add(out);
-                }
-            }
-        }
-    }
+		Set<String> keys = output.keySet();
+		for (String paramName : keys) {
+			ActualParameter actual = (ActualParameter) output.get(paramName);
+			// if parameter value is not already set, we let it go
+
+			if (actual == null) {
+				continue;
+			}
+			if ("StdOut".equals(actual.getType().getType().toString())) {
+				DataObjectType out = new DataObjectType();
+				out.setKey(paramName);
+				out.setType(DataType.STDOUT);
+				out.setValue(stdout);
+				outputArray.add(out);
+			} else if ("StdErr".equals(actual.getType().getType().toString())) {
+				DataObjectType out = new DataObjectType();
+				out.setKey(paramName);
+				out.setType(DataType.STDERR);
+				out.setValue(stderr);
+				outputArray.add(out);
+			}
+//			else if ("URI".equals(actual.getType().getType().toString())) {
+//				continue;
+//			} 
+			else {
+				String parseStdout = parseStdout(stdout, paramName);
+				if (parseStdout != null) {
+					DataObjectType out = new DataObjectType();
+					out.setKey(paramName);
+					out.setType(DataType.STRING);
+					out.setValue(parseStdout);
+					outputArray.add(out);
+				}
+			}
+		}
+	}
 
     private static String parseStdout(String stdout, String outParam) throws Exception {
         String regex = Pattern.quote(outParam) + regexPattern;
