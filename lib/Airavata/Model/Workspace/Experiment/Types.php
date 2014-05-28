@@ -3907,6 +3907,7 @@ class ExperimentSummary {
   public $userName = null;
   public $name = null;
   public $description = null;
+  public $applicationId = null;
   public $experimentStatus = null;
   public $errors = null;
 
@@ -3938,11 +3939,15 @@ class ExperimentSummary {
           'type' => TType::STRING,
           ),
         7 => array(
+          'var' => 'applicationId',
+          'type' => TType::STRING,
+          ),
+        8 => array(
           'var' => 'experimentStatus',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\ExperimentStatus',
           ),
-        8 => array(
+        9 => array(
           'var' => 'errors',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -3971,6 +3976,9 @@ class ExperimentSummary {
       }
       if (isset($vals['description'])) {
         $this->description = $vals['description'];
+      }
+      if (isset($vals['applicationId'])) {
+        $this->applicationId = $vals['applicationId'];
       }
       if (isset($vals['experimentStatus'])) {
         $this->experimentStatus = $vals['experimentStatus'];
@@ -4043,6 +4051,13 @@ class ExperimentSummary {
           }
           break;
         case 7:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->applicationId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 8:
           if ($ftype == TType::STRUCT) {
             $this->experimentStatus = new \Airavata\Model\Workspace\Experiment\ExperimentStatus();
             $xfer += $this->experimentStatus->read($input);
@@ -4050,7 +4065,7 @@ class ExperimentSummary {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
+        case 9:
           if ($ftype == TType::LST) {
             $this->errors = array();
             $_size119 = 0;
@@ -4111,11 +4126,16 @@ class ExperimentSummary {
       $xfer += $output->writeString($this->description);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->applicationId !== null) {
+      $xfer += $output->writeFieldBegin('applicationId', TType::STRING, 7);
+      $xfer += $output->writeString($this->applicationId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->experimentStatus !== null) {
       if (!is_object($this->experimentStatus)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('experimentStatus', TType::STRUCT, 7);
+      $xfer += $output->writeFieldBegin('experimentStatus', TType::STRUCT, 8);
       $xfer += $this->experimentStatus->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -4123,7 +4143,7 @@ class ExperimentSummary {
       if (!is_array($this->errors)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('errors', TType::LST, 8);
+      $xfer += $output->writeFieldBegin('errors', TType::LST, 9);
       {
         $output->writeListBegin(TType::STRUCT, count($this->errors));
         {
