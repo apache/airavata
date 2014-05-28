@@ -59,7 +59,7 @@ public class DatabaseCreator {
      * @throws Exception
      */
     public static void createRegistryDatabase(Connection conn) throws Exception {
-        createDatabase("registry", conn);
+        createDatabase("database_scripts/registry", conn);
     }
 
 
