@@ -169,10 +169,21 @@ public class GSISSHOutputHandler extends AbstractHandler {
                         OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr, outputArray);
                         Map<String, ActualParameter> stringActualParameterMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
                         Set<String> strings = stringActualParameterMap.keySet();
+                        outputArray.clear();
                         for(String key:strings) {
                             ActualParameter actualParameter1 = stringActualParameterMap.get(key);
                             if("URI".equals(actualParameter1.getType().getType().toString())){
-                                jobExecutionContext.addOutputFile(MappingFactory.toString(actualParameter1));
+                            	String downloadFile = MappingFactory.toString(actualParameter1);
+                            	cluster.scpFrom(downloadFile, outputDataDir);
+                            	String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar)+1, downloadFile.length());
+                            	String localFile = outputDataDir +  File.separator +fileName;
+								jobExecutionContext.addOutputFile(localFile);
+								
+                            	DataObjectType dataObjectType = new DataObjectType();
+                                dataObjectType.setValue(localFile);
+                                dataObjectType.setKey(key);
+                                dataObjectType.setType(DataType.URI);
+                                outputArray.add(dataObjectType);
                             }
                         }
                         break;
