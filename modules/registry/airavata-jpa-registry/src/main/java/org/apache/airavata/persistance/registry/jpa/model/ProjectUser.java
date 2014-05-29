@@ -22,8 +22,11 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.*;
 
+@DataCache
 @Entity
 @IdClass(ProjectUser_PK.class)
 @Table(name = "PROJECT_USER")

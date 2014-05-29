@@ -20,10 +20,13 @@
 */
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
+@DataCache
 @Entity
 @Table(name ="CONFIGURATION")
 @IdClass(Configuration_PK.class)

@@ -34,6 +34,9 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.openjpa.persistence.OpenJPAEntityManagerFactory;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.QueryResultCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -516,6 +519,30 @@ public class WorkerResource extends AbstractResource {
         }
         query = query.substring(0, query.length() - 5);
         EntityManager em = ResourceUtils.getEntityManager();
+        em.getTransaction().begin();
+        Query q = em.createQuery(query);
+        List resultList = q.getResultList();
+        for (Object o : resultList){
+            Experiment experiment = (Experiment) o;
+            ExperimentResource experimentResource = (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
+            result.add(experimentResource);
+        }
+        em.getTransaction().commit();
+        em.close();
+        return result;
+    }
+
+    /**
+     *
+     * @return list of experiments for the user
+     */
+    public List<ExperimentResource> getExperimentsByCaching(String user){
+        List<ExperimentResource> result=new ArrayList<ExperimentResource>();
+        String query = "SELECT e from Experiment e WHERE e.executionUser = '" + user + "'";
+        EntityManager em = ResourceUtils.getEntityManager();
+//        OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(em.getEntityManagerFactory());
+//        QueryResultCache qcache = oemf.getQueryResultCache();
+        // qcache.evictAll(Experiment.class);
         em.getTransaction().begin();
         Query q = em.createQuery(query);
         List resultList = q.getResultList();

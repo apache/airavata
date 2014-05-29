@@ -63,7 +63,9 @@ public class ResourceUtils {
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
-            properties.put("openjpa.Log", "SQL=ERROR");
+            properties.put("openjpa.DataCache","true(CacheSize=5000)");
+            properties.put("openjpa.QueryCache","true(CacheSize=5000)");
+            properties.put("openjpa.RemoteCommitProvider","sjvm");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.ReadLockLevel", "none");
             properties.put("openjpa.WriteLockLevel", "none");
