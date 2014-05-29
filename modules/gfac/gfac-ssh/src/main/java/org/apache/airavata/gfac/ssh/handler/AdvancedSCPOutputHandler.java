@@ -21,6 +21,8 @@
 package org.apache.airavata.gfac.ssh.handler;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -35,12 +37,19 @@ import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.DataType;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * This handler will copy outputs from airavata installed local directory
@@ -99,8 +108,9 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             String standardError = app.getStandardError();
             String standardOutput = app.getStandardOutput();
             String outputDataDirectory = app.getOutputDataDirectory();
-
+            super.invoke(jobExecutionContext);
             AuthenticationInfo authenticationInfo = null;
+            System.out.println("Testing");
             if (password != null) {
                 authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
             } else {
@@ -116,14 +126,27 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             pbsCluster.makeDirectory(outputPath);
             pbsCluster.scpTo(outputPath, standardError);
             pbsCluster.scpTo(outputPath, standardOutput);
+            List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
+            //FIXME: this will not work for if all the parameters are not URI
+            Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
+            List<String> list = new ArrayList<String>(output.keySet());
+            int i = 0;
             for (String files : jobExecutionContext.getOutputFiles()) {
-                pbsCluster.scpTo(outputPath, files);
+            	pbsCluster.scpTo(outputPath, files);
+                String fileName = files.substring(files.lastIndexOf(File.separatorChar)+1, files.length());
+                DataObjectType dataObjectType = new DataObjectType();
+                dataObjectType.setValue(outputPath + File.separatorChar + fileName);
+                dataObjectType.setKey(list.get(i));
+                dataObjectType.setType(DataType.URI);
+                outputArray.add(dataObjectType);
+                i++;
             }
+            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
         } catch (SSHApiException e) {
             log.error("Error transfering files to remote host : " + hostName + " with the user: " + userName);
             log.error(e.getMessage());
             throw new GFacHandlerException(e);
-        } catch (GFacException e) {
+        } catch (Exception e) {
             throw new GFacHandlerException(e);
         }
     }
