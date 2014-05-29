@@ -21,8 +21,11 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.*;
 
+@DataCache
 @Entity
 @Table(name = "APPLICATION_INPUT")
 @IdClass(ApplicationInput_PK.class)

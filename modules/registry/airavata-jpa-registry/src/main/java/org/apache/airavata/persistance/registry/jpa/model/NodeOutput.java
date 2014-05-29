@@ -21,8 +21,11 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.*;
 
+@DataCache
 @Entity
 @Table(name = "NODE_OUTPUT")
 @IdClass(NodeOutput_PK.class)

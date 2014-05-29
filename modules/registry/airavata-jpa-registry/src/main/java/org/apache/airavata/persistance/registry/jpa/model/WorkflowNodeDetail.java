@@ -21,9 +21,12 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 
+@DataCache
 @Entity
 @Table(name = "WORKFLOW_NODE_DETAIL")
 public class WorkflowNodeDetail {

@@ -21,8 +21,11 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.*;
 
+@DataCache
 @Entity
 @Table(name = "ADVANCE_OUTPUT_DATA_HANDLING")
 public class AdvancedOutputDataHandling {

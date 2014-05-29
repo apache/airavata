@@ -20,11 +20,14 @@
 */
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+@DataCache
 @Entity
 @Table(name ="GATEWAY")
 public class Gateway {
