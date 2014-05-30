@@ -31,6 +31,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.ApplicationOutput;
 import org.apache.airavata.persistance.registry.jpa.model.ApplicationOutput_PK;
 import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,61 +83,69 @@ public class ApplicationOutputResource extends AbstractResource {
         this.taskDetailResource = taskDetailResource;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for application output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for application output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for application output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for application output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        ApplicationOutput existingOutput = em.find(ApplicationOutput.class, new ApplicationOutput_PK(outputKey, taskDetailResource.getTaskId()));
-        em.close();
+    
+    public void save() throws RegistryException {
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            ApplicationOutput existingOutput = em.find(ApplicationOutput.class, new ApplicationOutput_PK(outputKey, taskDetailResource.getTaskId()));
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        ApplicationOutput applicationOutput = new ApplicationOutput();
-        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-        applicationOutput.setTask(taskDetail);
-        applicationOutput.setTaskId(taskDetail.getTaskId());
-        applicationOutput.setOutputKey(outputKey);
-        applicationOutput.setOutputKeyType(outputType);
-        applicationOutput.setValue(value);
-        applicationOutput.setMetadata(metadata);
-        
-        if (existingOutput != null){
-        	existingOutput.setTask(taskDetail);
-        	existingOutput.setTaskId(taskDetail.getTaskId());
-        	existingOutput.setOutputKey(outputKey);
-        	existingOutput.setOutputKeyType(outputType);
-        	existingOutput.setValue(value);
-        	existingOutput.setMetadata(metadata);
-        	applicationOutput = em.merge(existingOutput);
-        }else {
-            em.persist(applicationOutput);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            ApplicationOutput applicationOutput = new ApplicationOutput();
+            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+            applicationOutput.setTask(taskDetail);
+            applicationOutput.setTaskId(taskDetail.getTaskId());
+            applicationOutput.setOutputKey(outputKey);
+            applicationOutput.setOutputKeyType(outputType);
+            applicationOutput.setValue(value);
+            applicationOutput.setMetadata(metadata);
+
+            if (existingOutput != null) {
+                existingOutput.setTask(taskDetail);
+                existingOutput.setTaskId(taskDetail.getTaskId());
+                existingOutput.setOutputKey(outputKey);
+                existingOutput.setOutputKeyType(outputType);
+                existingOutput.setValue(value);
+                existingOutput.setMetadata(metadata);
+                applicationOutput = em.merge(existingOutput);
+            } else {
+                em.persist(applicationOutput);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e.getMessage());
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
-
-
     }
 }

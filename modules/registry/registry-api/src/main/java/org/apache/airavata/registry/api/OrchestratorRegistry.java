@@ -21,7 +21,7 @@
 package org.apache.airavata.registry.api;
 
 import org.apache.airavata.common.utils.AiravataJobState;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 
 import java.util.List;
 import java.util.Map;
@@ -32,9 +32,9 @@ public interface OrchestratorRegistry extends AiravataSubRegistry {
     /**
      * this return information about GFAC instances running in the system.
      * @return
-     * @throws RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    Map<String, Integer> getGFACNodeList() throws RegistryException;
+    Map<String, Integer> getGFACNodeList() throws RegException;
 
     /**
      * This is the method to use to add a GFAC Node to registry,
@@ -42,9 +42,9 @@ public interface OrchestratorRegistry extends AiravataSubRegistry {
      * @param uri
      * @param nodeID
      * @return
-     * @throws RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    boolean addGFACNode(String uri, int nodeID)throws RegistryException;
+    boolean addGFACNode(String uri, int nodeID)throws RegException;
 
 
     /**
@@ -53,27 +53,27 @@ public interface OrchestratorRegistry extends AiravataSubRegistry {
      * @param state
      * @param gfacEPR
      * @return
-     * @throws RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    boolean changeStatus(String experimentID,AiravataJobState.State state, String gfacEPR)throws RegistryException;
+    boolean changeStatus(String experimentID,AiravataJobState.State state, String gfacEPR)throws RegException;
     
     /**
      * This can be used to change the status to any valid status
      * @param experimentID
      * @param state
      * @return
-     * @throws RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    boolean changeStatus(String experimentID,AiravataJobState.State state)throws RegistryException;
+    boolean changeStatus(String experimentID,AiravataJobState.State state)throws RegException;
 
 
     /**
      * This method can be used to seek the status of a given experiment
      * @param experimentID
      * @return
-     * @throws RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    AiravataJobState getState(String experimentID)throws RegistryException;
+    AiravataJobState getState(String experimentID)throws RegException;
 
     /**
      * This returns all the jobs with the given state
@@ -87,34 +87,34 @@ public interface OrchestratorRegistry extends AiravataSubRegistry {
      * This will return list of experimentID of jobs which are in
      * ACCEPTED state
      * @return
-     * @throws RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    List<String> getAllAcceptedJobs()throws RegistryException;
+    List<String> getAllAcceptedJobs()throws RegException;
 
 
     /**
      * This will return all the hanged jobs, the logic to determine
      * whether job is hanged or not is depend on the implementation
      * @return
-     * @throws RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    List<String> getAllHangedJobs()throws RegistryException;
+    List<String> getAllHangedJobs()throws RegException;
 
     /**
      * return the number of jobs hanged, it not normal that jobs are hanged
      * all the time, so users can use this method before try to retrieve
      * list of hanged jobs
      * @return  number of hanged jobs
-     * @throws RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    int getHangedJobCount()throws RegistryException;
+    int getHangedJobCount()throws RegException;
 
     /**
      * reset hanged jobs based on previous state
      * @param experimentID
      * @return true if operation is successful
-     * @throws RegistryException
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    boolean resetHangedJob(String experimentID)throws RegistryException;
+    boolean resetHangedJob(String experimentID)throws RegException;
 
 }

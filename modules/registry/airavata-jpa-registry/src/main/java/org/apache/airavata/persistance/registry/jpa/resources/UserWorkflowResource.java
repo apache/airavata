@@ -23,18 +23,14 @@ package org.apache.airavata.persistance.registry.jpa.resources;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.User_Workflow;
 import org.apache.airavata.persistance.registry.jpa.model.User_Workflow_PK;
-import org.apache.airavata.persistance.registry.jpa.model.Users;
-import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserWorkflowResource extends AbstractResource {
@@ -87,84 +83,71 @@ public class UserWorkflowResource extends AbstractResource {
         this.path = path;
     }
 
-    public Resource create(ResourceType type) {
+    public Resource create(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for user workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public void remove(ResourceType type, Object name) {
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for user workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public Resource get(ResourceType type, Object name) {
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for user workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    /**
-     *
-     * @param keys should be in the order of gateway_name,user_name and user_workflow_name
-     * @return resource list
-     */
-    public List<Resource> populate(Object[] keys) {
-        List<Resource> list = new ArrayList<Resource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator queryGenerator = new QueryGenerator(USER_WORKFLOW);
-        queryGenerator.setParameter(UserWorkflowConstants.GATEWAY_NAME, keys[0]);
-        queryGenerator.setParameter(UserWorkflowConstants.OWNER, keys[1]);
-        queryGenerator.setParameter(UserWorkflowConstants.TEMPLATE_NAME, keys[2]);
-        Query q = queryGenerator.selectQuery(em);
-        User_Workflow userWorkflow = (User_Workflow)q.getSingleResult();
-        UserWorkflowResource userWorkflowResource = (UserWorkflowResource)Utils.getResource(
-                ResourceType.USER_WORKFLOW, userWorkflow);
-        em.getTransaction().commit();
-        em.close();
-        list.add(userWorkflowResource);
-        return list;
-    }
 
-    public List<Resource> get(ResourceType type) {
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for user workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        User_Workflow existingWF = em.find(User_Workflow.class, new User_Workflow_PK(name, worker.getUser(), gateway.getGatewayName()));
-        em.close();
+    public void save() throws RegistryException {
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            User_Workflow existingWF = em.find(User_Workflow.class, new User_Workflow_PK(name, worker.getUser(), gateway.getGatewayName()));
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        User_Workflow userWorkflow = new User_Workflow();
-        userWorkflow.setTemplate_name(name);
-        if(lastUpdateDate == null){
-            java.util.Date date= new java.util.Date();
-            lastUpdateDate = new Timestamp(date.getTime());
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            User_Workflow userWorkflow = new User_Workflow();
+            userWorkflow.setTemplate_name(name);
+            if (lastUpdateDate == null) {
+                java.util.Date date = new java.util.Date();
+                lastUpdateDate = new Timestamp(date.getTime());
+            }
+            userWorkflow.setLast_updated_date(lastUpdateDate);
+            byte[] bytes = content.getBytes();
+            userWorkflow.setWorkflow_graph(bytes);
+            userWorkflow.setGateway_name(this.gateway.getGatewayName());
+            userWorkflow.setOwner(this.getWorker().getUser());
+            userWorkflow.setPath(path);
+            if (existingWF != null) {
+                existingWF.setGateway_name(this.gateway.getGatewayName());
+                existingWF.setOwner(this.getWorker().getUser());
+                existingWF.setTemplate_name(name);
+                existingWF.setLast_updated_date(lastUpdateDate);
+                existingWF.setPath(path);
+                existingWF.setWorkflow_graph(bytes);
+                userWorkflow = em.merge(existingWF);
+            } else {
+                em.persist(userWorkflow);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        userWorkflow.setLast_updated_date(lastUpdateDate);
-        byte[] bytes = content.getBytes();
-        userWorkflow.setWorkflow_graph(bytes);
-        userWorkflow.setGateway_name(this.gateway.getGatewayName());
-        userWorkflow.setOwner(this.getWorker().getUser());
-        userWorkflow.setPath(path);
-        if(existingWF != null){
-            existingWF.setGateway_name(this.gateway.getGatewayName());
-            existingWF.setOwner(this.getWorker().getUser());
-            existingWF.setTemplate_name(name);
-            existingWF.setLast_updated_date(lastUpdateDate);
-            existingWF.setPath(path);
-            existingWF.setWorkflow_graph(bytes);
-            userWorkflow = em.merge(existingWF);
-        } else {
-            em.persist(userWorkflow);
-        }
-        em.getTransaction().commit();
-        em.close();
     }
 
-    public boolean isExists(ResourceType type, Object name) {
+    public boolean isExists(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for user workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }

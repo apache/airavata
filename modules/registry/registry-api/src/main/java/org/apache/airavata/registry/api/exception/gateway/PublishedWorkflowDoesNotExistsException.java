@@ -21,9 +21,9 @@
 
 package org.apache.airavata.registry.api.exception.gateway;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 
-public class PublishedWorkflowDoesNotExistsException extends RegistryException {
+public class PublishedWorkflowDoesNotExistsException extends RegException {
 
 	private static final long serialVersionUID = -8006347245307495767L;
 

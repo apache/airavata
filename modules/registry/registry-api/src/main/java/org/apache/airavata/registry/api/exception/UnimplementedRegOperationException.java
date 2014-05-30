@@ -21,12 +21,12 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class AiravataRegistryUninitializedException extends RegistryException {
+public class UnimplementedRegOperationException extends RegException {
 
-	public AiravataRegistryUninitializedException(String message, Throwable e) {
-		super(message, e);
+	private static final long serialVersionUID = 8565882892195989548L;
+
+	public UnimplementedRegOperationException() {
+		super("This operation is not implemented!!!");
 	}
-
-	private static final long serialVersionUID = -6873054164386608256L;
 
 }

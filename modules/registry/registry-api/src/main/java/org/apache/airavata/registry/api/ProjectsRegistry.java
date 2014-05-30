@@ -24,7 +24,7 @@ package org.apache.airavata.registry.api;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.registry.api.exception.worker.ExperimentDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNotExistsException;
@@ -32,19 +32,19 @@ import org.apache.airavata.registry.api.exception.worker.WorkspaceProjectDoesNot
 public interface ProjectsRegistry extends AiravataSubRegistry {
 	
 	//------------Project management
-	public boolean isWorkspaceProjectExists(String projectName) throws RegistryException;
-	public boolean isWorkspaceProjectExists(String projectName, boolean createIfNotExists) throws RegistryException;
-	public void addWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectAlreadyExistsException, RegistryException;
-	public void updateWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectDoesNotExistsException, RegistryException;
-	public void deleteWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException, RegistryException;
-	public WorkspaceProject getWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException, RegistryException;
-	public List<WorkspaceProject> getWorkspaceProjects() throws RegistryException;
+	public boolean isWorkspaceProjectExists(String projectName) throws RegException;
+	public boolean isWorkspaceProjectExists(String projectName, boolean createIfNotExists) throws RegException;
+	public void addWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectAlreadyExistsException, RegException;
+	public void updateWorkspaceProject(WorkspaceProject project) throws WorkspaceProjectDoesNotExistsException, RegException;
+	public void deleteWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException, RegException;
+	public WorkspaceProject getWorkspaceProject(String projectName) throws WorkspaceProjectDoesNotExistsException, RegException;
+	public List<WorkspaceProject> getWorkspaceProjects() throws RegException;
 	
 	//------------Experiment management
-	public void addExperiment(String projectName, AiravataExperiment experiment) throws WorkspaceProjectDoesNotExistsException, ExperimentDoesNotExistsException, RegistryException;
+	public void addExperiment(String projectName, AiravataExperiment experiment) throws WorkspaceProjectDoesNotExistsException, ExperimentDoesNotExistsException, RegException;
 	public void removeExperiment(String experimentId) throws ExperimentDoesNotExistsException;
-	public List<AiravataExperiment> getExperiments() throws RegistryException;
-	public List<AiravataExperiment> getExperiments(String projectName)throws RegistryException;
-	public List<AiravataExperiment> getExperiments(Date from, Date to)throws RegistryException;
-	public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to) throws RegistryException;
+	public List<AiravataExperiment> getExperiments() throws RegException;
+	public List<AiravataExperiment> getExperiments(String projectName)throws RegException;
+	public List<AiravataExperiment> getExperiments(Date from, Date to)throws RegException;
+	public List<AiravataExperiment> getExperiments(String projectName, Date from, Date to) throws RegException;
 }

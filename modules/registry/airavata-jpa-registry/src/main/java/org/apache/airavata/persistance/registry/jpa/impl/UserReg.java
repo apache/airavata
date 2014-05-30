@@ -26,16 +26,15 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 public class UserReg {
-    public WorkerResource getSystemUser() throws ApplicationSettingsException {
-        WorkerResource worker = (WorkerResource)ResourceUtils.getWorker(ServerSettings.getSystemUserGateway(), ServerSettings.getSystemUser());
-        return worker;
+    public WorkerResource getSystemUser() throws ApplicationSettingsException, RegistryException {
+        return (WorkerResource)ResourceUtils.getWorker(ServerSettings.getSystemUserGateway(), ServerSettings.getSystemUser());
     }
 
-    public WorkerResource getExistingUser (String gatewayName, String userName) {
-        WorkerResource worker = (WorkerResource)ResourceUtils.getWorker(gatewayName, userName);
-        return worker;
+    public WorkerResource getExistingUser (String gatewayName, String userName) throws RegistryException {
+        return (WorkerResource)ResourceUtils.getWorker(gatewayName, userName);
     }
 
 

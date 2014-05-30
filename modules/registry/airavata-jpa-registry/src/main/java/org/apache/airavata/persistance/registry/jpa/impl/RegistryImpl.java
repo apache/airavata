@@ -43,7 +43,7 @@ public class RegistryImpl implements Registry {
     private ExperimentRegistry experimentRegistry = null;
     private ProjectRegistry projectRegistry = null;
 
-    public RegistryImpl() {
+    public RegistryImpl() throws RegistryException{
         try {
             if (!ResourceUtils.isGatewayExist(ServerSettings.getSystemUserGateway())){
                 gatewayResource = (GatewayResource) ResourceUtils.createGateway(ServerSettings.getSystemUserGateway());
@@ -65,7 +65,7 @@ public class RegistryImpl implements Registry {
         }
     }
 
-    public RegistryImpl(String gateway, String username, String password) {
+    public RegistryImpl(String gateway, String username, String password) throws RegistryException{
         if (!ResourceUtils.isGatewayExist(gateway)){
             gatewayResource = (GatewayResource) ResourceUtils.createGateway(gateway);
             gatewayResource.save();

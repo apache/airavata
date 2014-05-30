@@ -27,6 +27,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment_Output;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment_Output_PK;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,30 +83,39 @@ public class ExperimentOutputResource extends AbstractResource {
         this.metadata = metadata;
     }
 
-    public Resource create(ResourceType type) {
+    public Resource create(ResourceType type)  throws RegistryException {
         logger.error("Unsupported resource type for experiment output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public void remove(ResourceType type, Object name) {
+    public void remove(ResourceType type, Object name)  throws RegistryException{
         logger.error("Unsupported resource type for experiment output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public Resource get(ResourceType type, Object name) {
+    public Resource get(ResourceType type, Object name)  throws RegistryException{
         logger.error("Unsupported resource type for experiment output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public List<Resource> get(ResourceType type) {
+    public List<Resource> get(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for experiment output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public void save() {
+    public void save() throws RegistryException{
         EntityManager em = ResourceUtils.getEntityManager();
         Experiment_Output existingOutput = em.find(Experiment_Output.class, new Experiment_Output_PK(experimentResource.getExpID(), experimentKey));
-        em.close();
+        try {
+            em.close();
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        }finally {
+            if (em.isOpen()){
+                em.close();
+            }
+        }
 
         em = ResourceUtils.getEntityManager();
         em.getTransaction().begin();
@@ -130,6 +140,15 @@ public class ExperimentOutputResource extends AbstractResource {
             em.persist(exOutput);
         }
         em.getTransaction().commit();
-        em.close();
+        try {
+            em.close();
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        }finally {
+            if (em.isOpen()){
+                em.close();
+            }
+        }
     }
 }

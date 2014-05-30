@@ -22,20 +22,34 @@
 package org.apache.airavata.persistance.registry.jpa.impl;
 
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RegistryFactory {
     private static Registry registry;
+    private static Logger logger = LoggerFactory.getLogger(RegistryFactory.class);
 
-    public static Registry getRegistry(String gateway, String username, String password){
-        if (registry == null){
-            registry = new RegistryImpl(gateway, username, password);
+    public static Registry getRegistry(String gateway, String username, String password) throws RegistryException {
+        try {
+            if (registry == null) {
+                registry = new RegistryImpl(gateway, username, password);
+            }
+        } catch (RegistryException e) {
+            logger.error("Unable to create registry instance", e);
+            throw new RegistryException(e);
         }
         return registry;
     }
 
-    public static Registry getDefaultRegistry () {
-        if (registry == null){
-            registry = new RegistryImpl();
+    public static Registry getDefaultRegistry () throws RegistryException {
+        try {
+            if (registry == null) {
+                registry = new RegistryImpl();
+            }
+        } catch (RegistryException e) {
+            logger.error("Unable to create registry instance", e);
+            throw new RegistryException(e);
         }
         return registry;
     }

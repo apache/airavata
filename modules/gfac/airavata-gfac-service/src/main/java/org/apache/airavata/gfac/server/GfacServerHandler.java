@@ -32,10 +32,7 @@ import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -52,8 +49,8 @@ public class GfacServerHandler implements GfacService.Iface {
     private String airavataUserName;
 
     public GfacServerHandler() {
-        registry = RegistryFactory.getDefaultRegistry();
         try {
+            registry = RegistryFactory.getDefaultRegistry();
             setGatewayProperties();
         }catch (Exception e){
            logger.error("Error initialising GFAC",e);
@@ -120,7 +117,7 @@ public class GfacServerHandler implements GfacService.Iface {
             return new GFacImpl(registry, null,
                                 AiravataRegistryFactory.getRegistry(new Gateway(getGatewayName()),
                                         new AiravataUser(getAiravataUserName())));
-        } catch (RegistryException e) {
+        } catch (RegException e) {
             throw new TException("Error initializing gfac instance",e);
         } catch (AiravataConfigurationException e) {
             throw new TException("Error initializing gfac instance",e);

@@ -27,14 +27,12 @@ import org.apache.airavata.persistance.registry.jpa.model.Gateway;
 import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow;
 import org.apache.airavata.persistance.registry.jpa.model.Published_Workflow_PK;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
-import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PublishWorkflowResource extends AbstractResource {
@@ -155,7 +153,7 @@ public class PublishWorkflowResource extends AbstractResource {
      * @param type type of the child resource
      * @return UnsupportedOperationException
      */
-    public Resource create(ResourceType type) {
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for published workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
@@ -166,7 +164,7 @@ public class PublishWorkflowResource extends AbstractResource {
      * @param type type of the child resource
      * @param name name of the child resource
      */
-    public void remove(ResourceType type, Object name) {
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for published workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
@@ -178,31 +176,9 @@ public class PublishWorkflowResource extends AbstractResource {
      * @param name name of the child resource
      * @return UnsupportedOperationException
      */
-    public Resource get(ResourceType type, Object name) {
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for published workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     *
-     * @param keys object list including gateway name and published workflow name
-     * @return published workflow resource
-     */
-    public List<Resource> populate(Object[] keys) {
-        List<Resource> list = new ArrayList<Resource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator generator = new QueryGenerator(PUBLISHED_WORKFLOW);
-        generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, keys[0]);
-        generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, keys[1]);
-        Query q = generator.selectQuery(em);
-        Published_Workflow publishedWorkflow = (Published_Workflow)q.getSingleResult();
-        PublishWorkflowResource publishWorkflowResource = (PublishWorkflowResource)
-                Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, publishedWorkflow);
-        em.getTransaction().commit();
-        em.close();
-        list.add(publishWorkflowResource);
-        return list;
     }
 
     /**
@@ -211,7 +187,7 @@ public class PublishWorkflowResource extends AbstractResource {
      * @param type type of the child resource
      * @return UnsupportedOperationException
      */
-    public List<Resource> get(ResourceType type) {
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for published workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
@@ -219,38 +195,47 @@ public class PublishWorkflowResource extends AbstractResource {
     /**
      * save published workflow to the database
      */
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        Published_Workflow existingWF = em.find(Published_Workflow.class, new Published_Workflow_PK(gateway.getGatewayName(), name));
-        em.close();
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            Published_Workflow existingWF = em.find(Published_Workflow.class, new Published_Workflow_PK(gateway.getGatewayName(), name));
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Published_Workflow publishedWorkflow = new Published_Workflow();
-        publishedWorkflow.setPublish_workflow_name(getName());
-        publishedWorkflow.setPublished_date(publishedDate);
-        publishedWorkflow.setVersion(version);
-        byte[] bytes = content.getBytes();
-        publishedWorkflow.setWorkflow_content(bytes);
-        Gateway gateway = new Gateway();
-        gateway.setGateway_name(this.gateway.getGatewayName());
-        publishedWorkflow.setGateway(gateway);
-        Users user = new Users();
-        user.setUser_name(createdUser);
-        publishedWorkflow.setUser(user);
-        if(existingWF != null){
-            existingWF.setUser(user);
-            existingWF.setPublished_date(publishedDate);
-            existingWF.setWorkflow_content(bytes);
-            existingWF.setVersion(version);
-            existingWF.setPath(path);
-            publishedWorkflow = em.merge(existingWF);
-        }else {
-            em.merge(publishedWorkflow);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Published_Workflow publishedWorkflow = new Published_Workflow();
+            publishedWorkflow.setPublish_workflow_name(getName());
+            publishedWorkflow.setPublished_date(publishedDate);
+            publishedWorkflow.setVersion(version);
+            byte[] bytes = content.getBytes();
+            publishedWorkflow.setWorkflow_content(bytes);
+            Gateway gateway = new Gateway();
+            gateway.setGateway_name(this.gateway.getGatewayName());
+            publishedWorkflow.setGateway(gateway);
+            Users user = new Users();
+            user.setUser_name(createdUser);
+            publishedWorkflow.setUser(user);
+            if (existingWF != null) {
+                existingWF.setUser(user);
+                existingWF.setPublished_date(publishedDate);
+                existingWF.setWorkflow_content(bytes);
+                existingWF.setVersion(version);
+                existingWF.setPath(path);
+                publishedWorkflow = em.merge(existingWF);
+            } else {
+                em.merge(publishedWorkflow);
+            }
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-
-        em.getTransaction().commit();
-        em.close();
     }
 
 
@@ -261,7 +246,7 @@ public class PublishWorkflowResource extends AbstractResource {
      * @param name name of the child resource
      * @return UnsupportedOperationException
      */
-    public boolean isExists(ResourceType type, Object name) {
+    public boolean isExists(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for published workflow resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }

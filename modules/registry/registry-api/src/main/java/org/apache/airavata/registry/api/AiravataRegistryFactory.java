@@ -38,17 +38,17 @@ public class AiravataRegistryFactory {
 	 * @param gateway
 	 * @param user
 	 * @return
-	 * @throws RegistryAccessorNotFoundException
-	 * @throws RegistryAccessorUndefinedException
-	 * @throws RegistryAccessorInstantiateException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorNotFoundException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorUndefinedException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorInstantiateException
 	 * @throws AiravataConfigurationException
-	 * @throws RegistryAccessorInvalidException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorInvalidException
 	 */
 	public static AiravataRegistry2 getRegistry(Gateway gateway,
-			AiravataUser user) throws RegistryException,
-            RegistryAccessorUndefinedException,
-            RegistryAccessorInstantiateException,
-            AiravataConfigurationException, RegistryAccessorInvalidException {
+			AiravataUser user) throws RegException,
+            RegAccessorUndefinedException,
+            RegAccessorInstantiateException,
+            AiravataConfigurationException, RegAccessorInvalidException {
 		return getRegistry(null, gateway, user, null);
 	}
 	
@@ -60,17 +60,17 @@ public class AiravataRegistryFactory {
 	 * @param user
 	 * @param callback
 	 * @return
-	 * @throws RegistryAccessorNotFoundException
-	 * @throws RegistryAccessorUndefinedException
-	 * @throws RegistryAccessorInstantiateException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorNotFoundException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorUndefinedException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorInstantiateException
 	 * @throws AiravataConfigurationException
-	 * @throws RegistryAccessorInvalidException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorInvalidException
 	 */
 	public static AiravataRegistry2 getRegistry(URI connectionURI, Gateway gateway,
-			AiravataUser user, PasswordCallback callback) throws RegistryException,
-            RegistryAccessorUndefinedException,
-            RegistryAccessorInstantiateException,
-            AiravataConfigurationException, RegistryAccessorInvalidException {
+			AiravataUser user, PasswordCallback callback) throws RegException,
+            RegAccessorUndefinedException,
+            RegAccessorInstantiateException,
+            AiravataConfigurationException, RegAccessorInvalidException {
 		Object registryObj = getRegistryClass(REGISTRY_ACCESSOR_CLASS);
 		if (registryObj instanceof AiravataRegistry2) {
 			AiravataRegistry2 registry = (AiravataRegistry2) registryObj;
@@ -78,7 +78,7 @@ public class AiravataRegistryFactory {
 			registry.initialize();
 			return registry;
 		}
-		throw new RegistryAccessorInvalidException(registryObj.getClass().getName());
+		throw new RegAccessorInvalidException(registryObj.getClass().getName());
 	}
 
 	/***
@@ -87,21 +87,21 @@ public class AiravataRegistryFactory {
 	 *
 	 * @param registryClassKey
 	 * @return
-	 * @throws RegistryAccessorNotFoundException
-	 * @throws RegistryAccessorUndefinedException
-	 * @throws RegistryAccessorInstantiateException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorNotFoundException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorUndefinedException
+	 * @throws org.apache.airavata.registry.api.exception.RegAccessorInstantiateException
 	 * @throws AiravataConfigurationException
 	 */
 	public static Object getRegistryClass(String registryClassKey)
-			throws RegistryAccessorNotFoundException,
-			RegistryAccessorUndefinedException,
-			RegistryAccessorInstantiateException,
+			throws RegAccessorNotFoundException,
+            RegAccessorUndefinedException,
+            RegAccessorInstantiateException,
 			AiravataConfigurationException {
 
         try {
             String regAccessorClass = RegistrySettings.getSetting(registryClassKey);
             if (regAccessorClass == null) {
-                throw new RegistryAccessorUndefinedException();
+                throw new RegAccessorUndefinedException();
             } else {
                 try {
                     Class<?> classInstance = AiravataRegistryFactory.class
@@ -109,13 +109,13 @@ public class AiravataRegistryFactory {
                                     regAccessorClass);
                     return classInstance.newInstance();
                 } catch (ClassNotFoundException e) {
-                    throw new RegistryAccessorNotFoundException(
+                    throw new RegAccessorNotFoundException(
                             regAccessorClass, e);
                 } catch (InstantiationException e) {
-                    throw new RegistryAccessorInstantiateException(
+                    throw new RegAccessorInstantiateException(
                             regAccessorClass, e);
                 } catch (IllegalAccessException e) {
-                    throw new RegistryAccessorInstantiateException(
+                    throw new RegAccessorInstantiateException(
                             regAccessorClass, e);
                 }
             }

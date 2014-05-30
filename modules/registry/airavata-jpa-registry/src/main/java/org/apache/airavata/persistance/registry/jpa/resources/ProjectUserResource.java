@@ -25,6 +25,7 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,57 +54,66 @@ public class ProjectUserResource extends AbstractResource {
         this.userName = userName;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for project resource data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for project resource data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for project resource data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for project resource data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        ProjectUser existingPrUser = em.find(ProjectUser.class, new ProjectUser_PK(projectId, userName));
-        em.close();
+    
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            ProjectUser existingPrUser = em.find(ProjectUser.class, new ProjectUser_PK(projectId, userName));
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        ProjectUser prUser = new ProjectUser();
-        prUser.setProjectID(projectId);
-        prUser.setUserName(userName);
-        Users user = em.find(Users.class, userName);
-        prUser.setUser(user);
-        Project project = em.find(Project.class, projectId);
-        prUser.setProject(project);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            ProjectUser prUser = new ProjectUser();
+            prUser.setProjectID(projectId);
+            prUser.setUserName(userName);
+            Users user = em.find(Users.class, userName);
+            prUser.setUser(user);
+            Project project = em.find(Project.class, projectId);
+            prUser.setProject(project);
 
-        if(existingPrUser != null){
-            existingPrUser.setProjectID(projectId);
-            existingPrUser.setUserName(userName);
-            existingPrUser.setUser(user);
-            existingPrUser.setProject(project);
-            prUser = em.merge(existingPrUser);
-        }else {
-            em.persist(prUser);
+            if (existingPrUser != null) {
+                existingPrUser.setProjectID(projectId);
+                existingPrUser.setUserName(userName);
+                existingPrUser.setUser(user);
+                existingPrUser.setProject(project);
+                prUser = em.merge(existingPrUser);
+            } else {
+                em.persist(prUser);
+            }
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-
-        em.getTransaction().commit();
-        em.close();
     }
 }

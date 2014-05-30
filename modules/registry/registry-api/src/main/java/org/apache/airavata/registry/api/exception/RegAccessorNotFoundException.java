@@ -21,12 +21,12 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class RegistryAccessorInvalidException extends RegistryException {
+public class RegAccessorNotFoundException extends RegException {
 
 	private static final long serialVersionUID = -2679914107485739140L;
 	
-	public RegistryAccessorInvalidException(String className){
-		super("Registry accessor '"+className+"' is not valid!!!");
+	public RegAccessorNotFoundException(String className, Exception e){
+		super("Registry accessor class '"+className+"'  was not found in classpath!!!", e);
 	}
 
 }

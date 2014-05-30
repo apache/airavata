@@ -31,6 +31,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +94,7 @@ public class GatewayResource extends AbstractResource {
      * @param type resource type of the children
      * @return specific child resource type
      */
-    public Resource create(ResourceType type) {
+    public Resource create(ResourceType type) throws RegistryException {
         switch (type) {
             case PROJECT:
                 ProjectResource projectResource = new ProjectResource();
@@ -139,59 +140,67 @@ public class GatewayResource extends AbstractResource {
      * @param type child resource type
      * @param name child resource name
      */
-    public void remove(ResourceType type, Object name) {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Query q;
-        QueryGenerator generator;
-        switch (type){
-            case USER:
-                generator = new QueryGenerator(USERS);
-                generator.setParameter(UserConstants.USERNAME, name);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            case PUBLISHED_WORKFLOW:
-                generator = new QueryGenerator(PUBLISHED_WORKFLOW);
-                generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, name);
-                generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            case HOST_DESCRIPTOR:
-                generator = new QueryGenerator(HOST_DESCRIPTOR);
-                generator.setParameter(HostDescriptorConstants.HOST_DESC_ID, name);
-                generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, gatewayName);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            case SERVICE_DESCRIPTOR:
-                generator = new QueryGenerator(SERVICE_DESCRIPTOR);
-                generator.setParameter(ServiceDescriptorConstants.SERVICE_DESC_ID, name);
-                generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, gatewayName);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            case EXPERIMENT:
-                generator = new QueryGenerator(EXPERIMENT);
-                generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            case APPLICATION_DESCRIPTOR:
-                generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
-                generator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, name);
-                generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            default:
-                logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
-                break;
+    public void remove(ResourceType type, Object name) throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+            QueryGenerator generator;
+            switch (type) {
+                case USER:
+                    generator = new QueryGenerator(USERS);
+                    generator.setParameter(UserConstants.USERNAME, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case PUBLISHED_WORKFLOW:
+                    generator = new QueryGenerator(PUBLISHED_WORKFLOW);
+                    generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, name);
+                    generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case HOST_DESCRIPTOR:
+                    generator = new QueryGenerator(HOST_DESCRIPTOR);
+                    generator.setParameter(HostDescriptorConstants.HOST_DESC_ID, name);
+                    generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case SERVICE_DESCRIPTOR:
+                    generator = new QueryGenerator(SERVICE_DESCRIPTOR);
+                    generator.setParameter(ServiceDescriptorConstants.SERVICE_DESC_ID, name);
+                    generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case EXPERIMENT:
+                    generator = new QueryGenerator(EXPERIMENT);
+                    generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case APPLICATION_DESCRIPTOR:
+                    generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+                    generator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, name);
+                    generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                default:
+                    logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
+                    break;
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-
-        em.getTransaction().commit();
-        em.close();
     }
 
     /**
@@ -200,95 +209,103 @@ public class GatewayResource extends AbstractResource {
      * @param name child resource name
      * @return specific child resource type
      */
-    public Resource get(ResourceType type, Object name) {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator generator;
-        Query q;
-        switch (type) {
-            case GATEWAY_WORKER:
-                generator = new QueryGenerator(GATEWAY_WORKER);
-                generator.setParameter(GatewayWorkerConstants.USERNAME, name);
-                generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                Gateway_Worker worker = (Gateway_Worker) q.getSingleResult();
-                WorkerResource workerResource =
-                        (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, worker);
-                em.getTransaction().commit();
+    public Resource get(ResourceType type, Object name) throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator;
+            Query q;
+            switch (type) {
+                case GATEWAY_WORKER:
+                    generator = new QueryGenerator(GATEWAY_WORKER);
+                    generator.setParameter(GatewayWorkerConstants.USERNAME, name);
+                    generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    Gateway_Worker worker = (Gateway_Worker) q.getSingleResult();
+                    WorkerResource workerResource =
+                            (WorkerResource) Utils.getResource(ResourceType.GATEWAY_WORKER, worker);
+                    em.getTransaction().commit();
+                    em.close();
+                    return workerResource;
+                case USER:
+                    generator = new QueryGenerator(USERS);
+                    generator.setParameter(UserConstants.USERNAME, name);
+                    q = generator.selectQuery(em);
+                    Users user = (Users) q.getSingleResult();
+                    UserResource userResource =
+                            (UserResource) Utils.getResource(ResourceType.USER, user);
+                    em.getTransaction().commit();
+                    em.close();
+                    return userResource;
+                case PUBLISHED_WORKFLOW:
+                    generator = new QueryGenerator(PUBLISHED_WORKFLOW);
+                    generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, name);
+                    generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    Published_Workflow ePub_workflow = (Published_Workflow) q.getSingleResult();
+                    PublishWorkflowResource publishWorkflowResource =
+                            (PublishWorkflowResource) Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, ePub_workflow);
+                    em.getTransaction().commit();
+                    em.close();
+                    return publishWorkflowResource;
+                case HOST_DESCRIPTOR:
+                    generator = new QueryGenerator(HOST_DESCRIPTOR);
+                    generator.setParameter(HostDescriptorConstants.HOST_DESC_ID, name);
+                    generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    Host_Descriptor eHostDesc = (Host_Descriptor) q.getSingleResult();
+                    HostDescriptorResource hostDescriptorResource =
+                            (HostDescriptorResource) Utils.getResource(ResourceType.HOST_DESCRIPTOR, eHostDesc);
+                    em.getTransaction().commit();
+                    em.close();
+                    return hostDescriptorResource;
+                case EXPERIMENT:
+                    generator = new QueryGenerator(EXPERIMENT);
+                    generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
+                    q = generator.selectQuery(em);
+                    Experiment experiment = (Experiment) q.getSingleResult();
+                    ExperimentResource experimentResource =
+                            (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                    em.getTransaction().commit();
+                    em.close();
+                    return experimentResource;
+                case SERVICE_DESCRIPTOR:
+                    generator = new QueryGenerator(SERVICE_DESCRIPTOR);
+                    generator.setParameter(ServiceDescriptorConstants.SERVICE_DESC_ID, name);
+                    generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    Service_Descriptor eServiceDesc = (Service_Descriptor) q.getSingleResult();
+                    ServiceDescriptorResource serviceDescriptorResource =
+                            (ServiceDescriptorResource) Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, eServiceDesc);
+                    em.getTransaction().commit();
+                    em.close();
+                    return serviceDescriptorResource;
+                case APPLICATION_DESCRIPTOR:
+                    generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+                    generator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, name);
+                    generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    Application_Descriptor eAppDesc = (Application_Descriptor) q.getSingleResult();
+                    ApplicationDescriptorResource applicationDescriptorResource =
+                            (ApplicationDescriptorResource) Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, eAppDesc);
+                    em.getTransaction().commit();
+                    em.close();
+                    return applicationDescriptorResource;
+                default:
+                    em.getTransaction().commit();
+                    em.close();
+                    logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
                 em.close();
-                return workerResource;
-            case USER:
-                generator = new QueryGenerator(USERS);
-                generator.setParameter(UserConstants.USERNAME, name);
-                q = generator.selectQuery(em);
-                Users user = (Users) q.getSingleResult();
-                UserResource userResource =
-                        (UserResource)Utils.getResource(ResourceType.USER, user);
-                em.getTransaction().commit();
-                em.close();
-                return userResource;
-            case PUBLISHED_WORKFLOW:
-                generator = new QueryGenerator(PUBLISHED_WORKFLOW);
-                generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, name);
-                generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                Published_Workflow ePub_workflow = (Published_Workflow) q.getSingleResult();
-                PublishWorkflowResource publishWorkflowResource =
-                        (PublishWorkflowResource)Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, ePub_workflow);
-                em.getTransaction().commit();
-                em.close();
-                return publishWorkflowResource;
-            case HOST_DESCRIPTOR:
-                generator = new QueryGenerator(HOST_DESCRIPTOR);
-                generator.setParameter(HostDescriptorConstants.HOST_DESC_ID, name);
-                generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                Host_Descriptor eHostDesc = (Host_Descriptor) q.getSingleResult();
-                HostDescriptorResource hostDescriptorResource =
-                        (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, eHostDesc);
-                em.getTransaction().commit();
-                em.close();
-                return hostDescriptorResource;
-            case EXPERIMENT:
-                generator = new QueryGenerator(EXPERIMENT);
-                generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
-                q = generator.selectQuery(em);
-                Experiment experiment = (Experiment)q.getSingleResult();
-                ExperimentResource experimentResource =
-                        (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
-                em.getTransaction().commit();
-                em.close();
-                return experimentResource;
-            case SERVICE_DESCRIPTOR:
-                generator = new QueryGenerator(SERVICE_DESCRIPTOR);
-                generator.setParameter(ServiceDescriptorConstants.SERVICE_DESC_ID, name);
-                generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                Service_Descriptor eServiceDesc = (Service_Descriptor) q.getSingleResult();
-                ServiceDescriptorResource serviceDescriptorResource =
-                        (ServiceDescriptorResource)Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, eServiceDesc);
-                em.getTransaction().commit();
-                em.close();
-                return serviceDescriptorResource;
-            case APPLICATION_DESCRIPTOR:
-                generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
-                generator.setParameter(ApplicationDescriptorConstants.APPLICATION_DESC_ID, name);
-                generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                Application_Descriptor eAppDesc = (Application_Descriptor) q.getSingleResult();
-                ApplicationDescriptorResource applicationDescriptorResource =
-                        (ApplicationDescriptorResource)Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, eAppDesc);
-                em.getTransaction().commit();
-                em.close();
-                return applicationDescriptorResource;
-            default:
-                em.getTransaction().commit();
-                em.close();
-                logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
-
+            }
         }
-
     }
 
     /**
@@ -296,155 +313,173 @@ public class GatewayResource extends AbstractResource {
      * @param type child resource type
      * @return list of child resources
      */
-    public List<Resource> get(ResourceType type) {
+    public List<Resource> get(ResourceType type) throws RegistryException{
         List<Resource> resourceList = new ArrayList<Resource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Query q;
-        QueryGenerator generator;
-        List results;
-        switch (type){
-            case PROJECT:
-                generator = new QueryGenerator(PROJECT);
-                Gateway gatewayModel = em.find(Gateway.class, gatewayName);
-                generator.setParameter("gateway", gatewayModel);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        Project project = (Project) result;
-                        ProjectResource projectResource =
-                                (ProjectResource)Utils.getResource(ResourceType.PROJECT, project);
-                        resourceList.add(projectResource);
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+            QueryGenerator generator;
+            List results;
+            switch (type) {
+                case PROJECT:
+                    generator = new QueryGenerator(PROJECT);
+                    Gateway gatewayModel = em.find(Gateway.class, gatewayName);
+                    generator.setParameter("gateway", gatewayModel);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Project project = (Project) result;
+                            ProjectResource projectResource =
+                                    (ProjectResource) Utils.getResource(ResourceType.PROJECT, project);
+                            resourceList.add(projectResource);
+                        }
                     }
-                }
-                break;
-            case GATEWAY_WORKER:
-                generator = new QueryGenerator(GATEWAY_WORKER);
-                generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        Gateway_Worker gatewayWorker = (Gateway_Worker) result;
-                        WorkerResource workerResource =
-                                (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
-                        resourceList.add(workerResource);
+                    break;
+                case GATEWAY_WORKER:
+                    generator = new QueryGenerator(GATEWAY_WORKER);
+                    generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Gateway_Worker gatewayWorker = (Gateway_Worker) result;
+                            WorkerResource workerResource =
+                                    (WorkerResource) Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
+                            resourceList.add(workerResource);
+                        }
                     }
-                }
-                break;
-            case  PUBLISHED_WORKFLOW :
-                generator = new QueryGenerator(PUBLISHED_WORKFLOW);
-                generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        Published_Workflow publishedWorkflow = (Published_Workflow) result;
-                        PublishWorkflowResource publishWorkflowResource =
-                                (PublishWorkflowResource)Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, publishedWorkflow);
-                        resourceList.add(publishWorkflowResource);
+                    break;
+                case PUBLISHED_WORKFLOW:
+                    generator = new QueryGenerator(PUBLISHED_WORKFLOW);
+                    generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Published_Workflow publishedWorkflow = (Published_Workflow) result;
+                            PublishWorkflowResource publishWorkflowResource =
+                                    (PublishWorkflowResource) Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, publishedWorkflow);
+                            resourceList.add(publishWorkflowResource);
+                        }
                     }
-                }
-                break;
-            case HOST_DESCRIPTOR:
-                generator = new QueryGenerator(HOST_DESCRIPTOR);
-                generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        Host_Descriptor hostDescriptor = (Host_Descriptor) result;
-                        HostDescriptorResource hostDescriptorResource =
-                                (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, hostDescriptor);
-                        resourceList.add(hostDescriptorResource);
+                    break;
+                case HOST_DESCRIPTOR:
+                    generator = new QueryGenerator(HOST_DESCRIPTOR);
+                    generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Host_Descriptor hostDescriptor = (Host_Descriptor) result;
+                            HostDescriptorResource hostDescriptorResource =
+                                    (HostDescriptorResource) Utils.getResource(ResourceType.HOST_DESCRIPTOR, hostDescriptor);
+                            resourceList.add(hostDescriptorResource);
+                        }
                     }
-                }
-                break;
-            case SERVICE_DESCRIPTOR:
-                generator = new QueryGenerator(SERVICE_DESCRIPTOR);
-                generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        Service_Descriptor serviceDescriptor = (Service_Descriptor) result;
-                        ServiceDescriptorResource serviceDescriptorResource =
-                                (ServiceDescriptorResource)Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, serviceDescriptor);
-                        resourceList.add(serviceDescriptorResource);
+                    break;
+                case SERVICE_DESCRIPTOR:
+                    generator = new QueryGenerator(SERVICE_DESCRIPTOR);
+                    generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Service_Descriptor serviceDescriptor = (Service_Descriptor) result;
+                            ServiceDescriptorResource serviceDescriptorResource =
+                                    (ServiceDescriptorResource) Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, serviceDescriptor);
+                            resourceList.add(serviceDescriptorResource);
+                        }
                     }
-                }
-                break;
-            case APPLICATION_DESCRIPTOR:
-                generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
-                generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                        ApplicationDescriptorResource applicationDescriptorResource =
-                                (ApplicationDescriptorResource)Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
-                        resourceList.add(applicationDescriptorResource);
+                    break;
+                case APPLICATION_DESCRIPTOR:
+                    generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+                    generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
+                            ApplicationDescriptorResource applicationDescriptorResource =
+                                    (ApplicationDescriptorResource) Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
+                            resourceList.add(applicationDescriptorResource);
+                        }
                     }
-                }
-                break;
-            case EXPERIMENT:
-                generator = new QueryGenerator(EXPERIMENT);
-                generator.setParameter(ExperimentConstants.GATEWAY_NAME, gatewayName);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        Experiment experiment = (Experiment) result;
-                        ExperimentResource experimentResource =
-                                (ExperimentResource)Utils.getResource(ResourceType.EXPERIMENT, experiment);
-                        resourceList.add(experimentResource);
+                    break;
+                case EXPERIMENT:
+                    generator = new QueryGenerator(EXPERIMENT);
+                    generator.setParameter(ExperimentConstants.GATEWAY_NAME, gatewayName);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Experiment experiment = (Experiment) result;
+                            ExperimentResource experimentResource =
+                                    (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                            resourceList.add(experimentResource);
+                        }
                     }
-                }
-                break;
-            case USER:
-		        generator = new QueryGenerator(USERS);
-		        q = generator.selectQuery(em);
-		        for (Object o : q.getResultList()) {
-		        	Users user = (Users) o;
-		        	UserResource userResource =
-	                        (UserResource)Utils.getResource(ResourceType.USER, user);
-		        	resourceList.add(userResource);
-		        }
-		        break;
-            default:
-                em.getTransaction().commit();
+                    break;
+                case USER:
+                    generator = new QueryGenerator(USERS);
+                    q = generator.selectQuery(em);
+                    for (Object o : q.getResultList()) {
+                        Users user = (Users) o;
+                        UserResource userResource =
+                                (UserResource) Utils.getResource(ResourceType.USER, user);
+                        resourceList.add(userResource);
+                    }
+                    break;
+                default:
+                    em.getTransaction().commit();
+                    em.close();
+                    logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
                 em.close();
-                logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
+            }
         }
-        em.getTransaction().commit();
-        em.close();
         return resourceList;
     }
 
     /**
      * save the gateway to the database
      */
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        Gateway existingGateway = em.find(Gateway.class, gatewayName);
-        em.close();
+    public void save() throws RegistryException {
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            Gateway existingGateway = em.find(Gateway.class, gatewayName);
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Gateway gateway = new Gateway();
-        gateway.setGateway_name(gatewayName);
-        gateway.setOwner(owner);
-        if (existingGateway != null) {
-            existingGateway.setOwner(owner);
-            gateway = em.merge(existingGateway);
-        } else {
-            em.persist(gateway);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Gateway gateway = new Gateway();
+            gateway.setGateway_name(gatewayName);
+            gateway.setOwner(owner);
+            if (existingGateway != null) {
+                existingGateway.setOwner(owner);
+                gateway = em.merge(existingGateway);
+            } else {
+                em.persist(gateway);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
 
     }
 
@@ -454,50 +489,57 @@ public class GatewayResource extends AbstractResource {
      * @param name name of the child resource
      * @return true or false
      */
-    public boolean isExists(ResourceType type, Object name) {
-        EntityManager em;
-        Query q;
-        Number count;
-        switch (type){
-            case GATEWAY_WORKER:
-                em = ResourceUtils.getEntityManager();
-                Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayName, name.toString()));
+    public boolean isExists(ResourceType type, Object name) throws RegistryException{
+        EntityManager em = null;
+        try {
+            switch (type) {
+                case GATEWAY_WORKER:
+                    em = ResourceUtils.getEntityManager();
+                    Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayName, name.toString()));
+                    em.close();
+                    return existingWorker != null;
+                case USER:
+                    em = ResourceUtils.getEntityManager();
+                    Users existingUser = em.find(Users.class, name);
+                    em.close();
+                    return existingUser != null;
+                case PUBLISHED_WORKFLOW:
+                    em = ResourceUtils.getEntityManager();
+                    Published_Workflow existingWf = em.find(Published_Workflow.class, new Published_Workflow_PK(gatewayName, name.toString()));
+                    em.close();
+                    boolean a = existingWf != null;
+                    return existingWf != null;
+                case HOST_DESCRIPTOR:
+                    em = ResourceUtils.getEntityManager();
+                    Host_Descriptor existingHostDesc = em.find(Host_Descriptor.class, new Host_Descriptor_PK(gatewayName, name.toString()));
+                    em.close();
+                    return existingHostDesc != null;
+                case SERVICE_DESCRIPTOR:
+                    em = ResourceUtils.getEntityManager();
+                    Service_Descriptor existingServiceDesc = em.find(Service_Descriptor.class, new Service_Descriptor_PK(gatewayName, name.toString()));
+                    em.close();
+                    return existingServiceDesc != null;
+                case APPLICATION_DESCRIPTOR:
+                    em = ResourceUtils.getEntityManager();
+                    Application_Descriptor existingAppDesc = em.find(Application_Descriptor.class, new Application_Descriptor_PK(gatewayName, name.toString()));
+                    em.close();
+                    return existingAppDesc != null;
+                case EXPERIMENT:
+                    em = ResourceUtils.getEntityManager();
+                    Experiment existingExp = em.find(Experiment.class, name.toString());
+                    em.close();
+                    return existingExp != null;
+                default:
+                    logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
                 em.close();
-                return existingWorker!= null;
-            case USER:
-                em = ResourceUtils.getEntityManager();
-                Users existingUser = em.find(Users.class, name);
-                em.close();
-                return existingUser!= null;
-            case PUBLISHED_WORKFLOW:
-                em = ResourceUtils.getEntityManager();
-                Published_Workflow existingWf = em.find(Published_Workflow.class, new Published_Workflow_PK(gatewayName, name.toString()));
-                em.close();
-                boolean a = existingWf != null;
-                return existingWf != null;
-            case HOST_DESCRIPTOR:
-                em = ResourceUtils.getEntityManager();
-                Host_Descriptor existingHostDesc = em.find(Host_Descriptor.class, new Host_Descriptor_PK(gatewayName, name.toString()));
-                em.close();
-                return existingHostDesc != null;
-            case SERVICE_DESCRIPTOR:
-                em = ResourceUtils.getEntityManager();
-                Service_Descriptor existingServiceDesc = em.find(Service_Descriptor.class, new Service_Descriptor_PK(gatewayName, name.toString()));
-                em.close();
-                return existingServiceDesc != null;
-            case APPLICATION_DESCRIPTOR:
-                em = ResourceUtils.getEntityManager();
-                Application_Descriptor existingAppDesc = em.find(Application_Descriptor.class, new Application_Descriptor_PK(gatewayName, name.toString()));
-                em.close();
-                return existingAppDesc != null;
-            case EXPERIMENT:
-                em = ResourceUtils.getEntityManager();
-                Experiment existingExp = em.find(Experiment.class, name.toString());
-                em.close();
-                return existingExp != null;
-            default:
-                logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
+            }
         }
     }
 
@@ -506,7 +548,7 @@ public class GatewayResource extends AbstractResource {
      * @param descriptorName host descriptor name
      * @return whether host descriptor already available
      */
-    public boolean isHostDescriptorExists(String descriptorName){
+    public boolean isHostDescriptorExists(String descriptorName) throws RegistryException{
     	return isExists(ResourceType.HOST_DESCRIPTOR, descriptorName);
     }
 
@@ -515,7 +557,7 @@ public class GatewayResource extends AbstractResource {
      * @param hostDescriptorName host descriptor name
      * @return HostDescriptorResource
      */
-    public HostDescriptorResource createHostDescriptorResource(String hostDescriptorName){
+    public HostDescriptorResource createHostDescriptorResource(String hostDescriptorName) throws RegistryException{
     	HostDescriptorResource hdr = (HostDescriptorResource)create(ResourceType.HOST_DESCRIPTOR);
     	hdr.setHostDescName(hostDescriptorName);
     	return hdr;
@@ -526,7 +568,7 @@ public class GatewayResource extends AbstractResource {
      * @param hostDescriptorName host descriptor name
      * @return HostDescriptorResource
      */
-    public HostDescriptorResource getHostDescriptorResource(String hostDescriptorName){
+    public HostDescriptorResource getHostDescriptorResource(String hostDescriptorName) throws RegistryException{
     	return (HostDescriptorResource)get(ResourceType.HOST_DESCRIPTOR,hostDescriptorName);
     }
 
@@ -534,7 +576,7 @@ public class GatewayResource extends AbstractResource {
      *
      * @param descriptorName host descriptor name
      */
-    public void removeHostDescriptor(String descriptorName){
+    public void removeHostDescriptor(String descriptorName) throws RegistryException{
     	remove(ResourceType.HOST_DESCRIPTOR, descriptorName);
     }
 
@@ -542,7 +584,7 @@ public class GatewayResource extends AbstractResource {
      *
      * @return list of host descriptors available for the gateway
      */
-    public List<HostDescriptorResource> getHostDescriptorResources(){
+    public List<HostDescriptorResource> getHostDescriptorResources() throws RegistryException{
     	List<HostDescriptorResource> results=new ArrayList<HostDescriptorResource>();
     	List<Resource> list = get(ResourceType.HOST_DESCRIPTOR);
     	for (Resource resource : list) {
@@ -556,7 +598,7 @@ public class GatewayResource extends AbstractResource {
      * @param descriptorName service descriptor name
      * @return whether service descriptor already available
      */
-    public boolean isServiceDescriptorExists(String descriptorName){
+    public boolean isServiceDescriptorExists(String descriptorName) throws RegistryException{
     	return isExists(ResourceType.SERVICE_DESCRIPTOR, descriptorName);
     }
 
@@ -565,7 +607,7 @@ public class GatewayResource extends AbstractResource {
      * @param descriptorName  service descriptor name
      * @return  ServiceDescriptorResource
      */
-    public ServiceDescriptorResource createServiceDescriptorResource(String descriptorName){
+    public ServiceDescriptorResource createServiceDescriptorResource(String descriptorName) throws RegistryException{
     	ServiceDescriptorResource hdr = (ServiceDescriptorResource)create(ResourceType.SERVICE_DESCRIPTOR);
     	hdr.setServiceDescName(descriptorName);
     	return hdr;
@@ -576,7 +618,7 @@ public class GatewayResource extends AbstractResource {
      * @param descriptorName   service descriptor name
      * @return ServiceDescriptorResource
      */
-    public ServiceDescriptorResource getServiceDescriptorResource(String descriptorName){
+    public ServiceDescriptorResource getServiceDescriptorResource(String descriptorName) throws RegistryException{
     	return (ServiceDescriptorResource)get(ResourceType.SERVICE_DESCRIPTOR,descriptorName);
     }
 
@@ -584,7 +626,7 @@ public class GatewayResource extends AbstractResource {
      *
      * @param descriptorName Service descriptor name
      */
-    public void removeServiceDescriptor(String descriptorName){
+    public void removeServiceDescriptor(String descriptorName) throws RegistryException{
     	remove(ResourceType.SERVICE_DESCRIPTOR, descriptorName);
     }
 
@@ -592,7 +634,7 @@ public class GatewayResource extends AbstractResource {
      *
      * @return list of service descriptors for the gateway
      */
-    public List<ServiceDescriptorResource> getServiceDescriptorResources(){
+    public List<ServiceDescriptorResource> getServiceDescriptorResources() throws RegistryException{
     	List<ServiceDescriptorResource> results=new ArrayList<ServiceDescriptorResource>();
     	List<Resource> list = get(ResourceType.SERVICE_DESCRIPTOR);
     	for (Resource resource : list) {
@@ -606,7 +648,7 @@ public class GatewayResource extends AbstractResource {
      * @param descriptorName application descriptor name
      * @return  whether application descriptor already available
      */
-    public boolean isApplicationDescriptorExists(String descriptorName){
+    public boolean isApplicationDescriptorExists(String descriptorName) throws RegistryException{
     	return isExists(ResourceType.APPLICATION_DESCRIPTOR, descriptorName);
     }
 
@@ -615,7 +657,7 @@ public class GatewayResource extends AbstractResource {
      * @param descriptorName  application descriptor name
      * @return ApplicationDescriptorResource
      */
-    public ApplicationDescriptorResource createApplicationDescriptorResource(String descriptorName){
+    public ApplicationDescriptorResource createApplicationDescriptorResource(String descriptorName) throws RegistryException{
     	ApplicationDescriptorResource hdr = (ApplicationDescriptorResource)create(ResourceType.APPLICATION_DESCRIPTOR);
     	hdr.setName(descriptorName);
     	return hdr;
@@ -626,7 +668,7 @@ public class GatewayResource extends AbstractResource {
      * @param descriptorName application descriptor name
      * @return ApplicationDescriptorResource
      */
-    public ApplicationDescriptorResource getApplicationDescriptorResource(String descriptorName){
+    public ApplicationDescriptorResource getApplicationDescriptorResource(String descriptorName) throws RegistryException{
     	return (ApplicationDescriptorResource)get(ResourceType.APPLICATION_DESCRIPTOR,descriptorName);
     }
 
@@ -634,7 +676,7 @@ public class GatewayResource extends AbstractResource {
      *
      * @param descriptorName  application descriptor name
      */
-    public void removeApplicationDescriptor(String descriptorName){
+    public void removeApplicationDescriptor(String descriptorName) throws RegistryException{
     	remove(ResourceType.APPLICATION_DESCRIPTOR, descriptorName);
     }
 
@@ -642,7 +684,7 @@ public class GatewayResource extends AbstractResource {
      *
      * @return list of application descriptors for the gateway
      */
-    public List<ApplicationDescriptorResource> getApplicationDescriptorResources(){
+    public List<ApplicationDescriptorResource> getApplicationDescriptorResources() throws RegistryException{
     	List<ApplicationDescriptorResource> results=new ArrayList<ApplicationDescriptorResource>();
     	List<Resource> list = get(ResourceType.APPLICATION_DESCRIPTOR);
     	for (Resource resource : list) {
@@ -657,44 +699,53 @@ public class GatewayResource extends AbstractResource {
      * @param hostName host descriptor name
      * @return  list of application descriptors for the gateway
      */
-    public List<ApplicationDescriptorResource> getApplicationDescriptorResources(String serviceName,String hostName){
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        String qString = "SELECT p FROM Application_Descriptor p WHERE " +
-                "p.gateway_name =:gate_name";
-        if (hostName!=null){
-        	qString+=" and p.host_descriptor_ID =:host_name";
-        }
-        if (serviceName!=null){
-        	qString+=" and p.service_descriptor_ID =:service_name";
-        }
-		Query q = em.createQuery(qString);
-        q.setParameter("gate_name", gatewayName);
-        if (serviceName!=null){
-        	q.setParameter("service_name", serviceName);
-        }
-        if (hostName!=null){
-        	q.setParameter("host_name",hostName);
-        }
-        List<?> results = q.getResultList();
-    	List<ApplicationDescriptorResource> resourceList = new ArrayList<ApplicationDescriptorResource>();
-        if (results.size() != 0) {
-            for (Object result : results) {
-                Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                ApplicationDescriptorResource applicationDescriptorResource =
-                        new ApplicationDescriptorResource(
-                                applicationDescriptor.getApplication_descriptor_ID(),
-                                applicationDescriptor.getGateway().getGateway_name());
-                applicationDescriptorResource.setContent(new String(applicationDescriptor.getApplication_descriptor_xml()));
-                applicationDescriptorResource.setUpdatedUser(applicationDescriptor.getUser().getUser_name());
-                applicationDescriptorResource.setHostDescName(applicationDescriptor.getHost_descriptor_ID());
-                applicationDescriptorResource.setServiceDescName(applicationDescriptor.getService_descriptor_ID());
-                resourceList.add(applicationDescriptorResource);
+    public List<ApplicationDescriptorResource> getApplicationDescriptorResources(String serviceName,String hostName) throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            String qString = "SELECT p FROM Application_Descriptor p WHERE " +
+                    "p.gateway_name =:gate_name";
+            if (hostName != null) {
+                qString += " and p.host_descriptor_ID =:host_name";
+            }
+            if (serviceName != null) {
+                qString += " and p.service_descriptor_ID =:service_name";
+            }
+            Query q = em.createQuery(qString);
+            q.setParameter("gate_name", gatewayName);
+            if (serviceName != null) {
+                q.setParameter("service_name", serviceName);
+            }
+            if (hostName != null) {
+                q.setParameter("host_name", hostName);
+            }
+            List<?> results = q.getResultList();
+            List<ApplicationDescriptorResource> resourceList = new ArrayList<ApplicationDescriptorResource>();
+            if (results.size() != 0) {
+                for (Object result : results) {
+                    Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
+                    ApplicationDescriptorResource applicationDescriptorResource =
+                            new ApplicationDescriptorResource(
+                                    applicationDescriptor.getApplication_descriptor_ID(),
+                                    applicationDescriptor.getGateway().getGateway_name());
+                    applicationDescriptorResource.setContent(new String(applicationDescriptor.getApplication_descriptor_xml()));
+                    applicationDescriptorResource.setUpdatedUser(applicationDescriptor.getUser().getUser_name());
+                    applicationDescriptorResource.setHostDescName(applicationDescriptor.getHost_descriptor_ID());
+                    applicationDescriptorResource.setServiceDescName(applicationDescriptor.getService_descriptor_ID());
+                    resourceList.add(applicationDescriptorResource);
+                }
+            }
+            em.getTransaction().commit();
+            return resourceList;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
             }
         }
-        em.getTransaction().commit();
-        em.close();
-        return resourceList;
     }
 
     /**
@@ -702,7 +753,7 @@ public class GatewayResource extends AbstractResource {
      * @param workflowTemplateName published workflow template name
      * @return boolean - whether workflow with the same name exists
      */
-    public boolean isPublishedWorkflowExists(String workflowTemplateName){
+    public boolean isPublishedWorkflowExists(String workflowTemplateName) throws RegistryException{
     	return isExists(ResourceType.PUBLISHED_WORKFLOW, workflowTemplateName);
     }
 
@@ -711,7 +762,7 @@ public class GatewayResource extends AbstractResource {
      * @param workflowTemplateName published workflow template name
      * @return publish workflow resource
      */
-    public PublishWorkflowResource createPublishedWorkflow(String workflowTemplateName){
+    public PublishWorkflowResource createPublishedWorkflow(String workflowTemplateName) throws RegistryException{
     	PublishWorkflowResource publishedWorkflowResource =
                 (PublishWorkflowResource)create(ResourceType.PUBLISHED_WORKFLOW);
     	publishedWorkflowResource.setName(workflowTemplateName);
@@ -725,7 +776,7 @@ public class GatewayResource extends AbstractResource {
      * @param workflowTemplateName published workflow template name
      * @return publish workflow resource
      */
-    public PublishWorkflowResource getPublishedWorkflow(String workflowTemplateName){
+    public PublishWorkflowResource getPublishedWorkflow(String workflowTemplateName) throws RegistryException{
     	return (PublishWorkflowResource)get(ResourceType.PUBLISHED_WORKFLOW,workflowTemplateName);
     }
 
@@ -733,7 +784,7 @@ public class GatewayResource extends AbstractResource {
      *
      * @return list of publish workflows for the gateway
      */
-    public List<PublishWorkflowResource> getPublishedWorkflows(){
+    public List<PublishWorkflowResource> getPublishedWorkflows() throws RegistryException{
     	List<PublishWorkflowResource> result=new ArrayList<PublishWorkflowResource>();
     	List<Resource> list = get(ResourceType.PUBLISHED_WORKFLOW);
     	for (Resource resource : list) {
@@ -746,21 +797,21 @@ public class GatewayResource extends AbstractResource {
      *
      * @param workflowTemplateName published workflow template name
      */
-    public void removePublishedWorkflow(String workflowTemplateName){
+    public void removePublishedWorkflow(String workflowTemplateName) throws RegistryException{
     	remove(ResourceType.PUBLISHED_WORKFLOW, workflowTemplateName);
     }
     
-    public ExperimentResource createExperiment (String experimentID){
+    public ExperimentResource createExperiment (String experimentID) throws RegistryException{
         ExperimentResource metadataResource = (ExperimentResource)create(ResourceType.EXPERIMENT);
         metadataResource.setExpID(experimentID);
         return metadataResource;
     }
 
-    public ExperimentResource getExperiment (String expId){
+    public ExperimentResource getExperiment (String expId) throws RegistryException{
         return (ExperimentResource)get(ResourceType.EXPERIMENT, expId);
     }
 
-    public List<ExperimentResource> getExperiments (){
+    public List<ExperimentResource> getExperiments () throws RegistryException{
         List<ExperimentResource> experiments = new ArrayList<ExperimentResource>();
         List<Resource> resources = get(ResourceType.EXPERIMENT);
         for (Resource resource : resources){

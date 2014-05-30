@@ -50,10 +50,10 @@ public class GfacClientFactoryTest {
         try {
             service = (new GfacServer());
             service.start();
+            registry = RegistryFactory.getDefaultRegistry();
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        registry = RegistryFactory.getDefaultRegistry();
         AiravataUtils.setExecutionAsServer();
         documentCreator = new DocumentCreator(getAiravataAPI());
         documentCreator.createLocalHostDocs();

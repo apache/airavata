@@ -110,10 +110,12 @@ public class TestCreateLaunchExperiment {
 //                }
 //            }
 
-            for (int i = 0; i < 100 ; i++){
+            for (int i = 0; i < 500 ; i++){
                 long time = System.currentTimeMillis();
                 List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
-                System.out.println("Experiment count : " + experiments.size());
+                int count = i+1;
+//                System.out.println("Experiment count : " + experiments.size());
+                System.out.println("iteration : " + String.valueOf(count));
                 System.out.println(System.currentTimeMillis() - time);
             }
 //            List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
