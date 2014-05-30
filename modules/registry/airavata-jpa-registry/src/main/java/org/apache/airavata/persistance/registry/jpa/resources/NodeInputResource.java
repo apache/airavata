@@ -31,6 +31,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.NodeInput;
 import org.apache.airavata.persistance.registry.jpa.model.NodeInput_PK;
 import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,59 +84,69 @@ public class NodeInputResource extends AbstractResource {
         this.value = value;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for node input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for node input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException {
         logger.error("Unsupported resource type for node input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for node input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        NodeInput existingInput = em.find(NodeInput.class, new NodeInput_PK(inputKey, nodeDetailResource.getNodeInstanceId()));
-        em.close();
+    
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            NodeInput existingInput = em.find(NodeInput.class, new NodeInput_PK(inputKey, nodeDetailResource.getNodeInstanceId()));
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        NodeInput nodeInput = new NodeInput();
-        WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, nodeDetailResource.getNodeInstanceId());
-        nodeInput.setNodeDetails(nodeDetail);
-        nodeInput.setNodeId(nodeDetail.getNodeId());
-        nodeInput.setInputKey(inputKey);
-        nodeInput.setInputKeyType(inputType);
-        nodeInput.setValue(value);
-        nodeInput.setMetadata(metadata);
-        
-        if (existingInput != null){
-            existingInput.setNodeDetails(nodeDetail);
-            existingInput.setNodeId(nodeDetail.getNodeId());
-            existingInput.setInputKey(inputKey);
-            existingInput.setInputKeyType(inputType);
-            existingInput.setValue(value);
-            existingInput.setMetadata(metadata);
-            nodeInput = em.merge(existingInput);
-        }else {
-            em.persist(nodeInput);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            NodeInput nodeInput = new NodeInput();
+            WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, nodeDetailResource.getNodeInstanceId());
+            nodeInput.setNodeDetails(nodeDetail);
+            nodeInput.setNodeId(nodeDetail.getNodeId());
+            nodeInput.setInputKey(inputKey);
+            nodeInput.setInputKeyType(inputType);
+            nodeInput.setValue(value);
+            nodeInput.setMetadata(metadata);
+
+            if (existingInput != null){
+                existingInput.setNodeDetails(nodeDetail);
+                existingInput.setNodeId(nodeDetail.getNodeId());
+                existingInput.setInputKey(inputKey);
+                existingInput.setInputKeyType(inputType);
+                existingInput.setValue(value);
+                existingInput.setMetadata(metadata);
+                nodeInput = em.merge(existingInput);
+            }else {
+                em.persist(nodeInput);
+            }
+            em.getTransaction().commit();
+            em.close();
+        }catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        }finally {
+            if (em != null && em.isOpen()){
+                em.close();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
     }
 }

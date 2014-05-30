@@ -21,21 +21,16 @@
 
 package org.apache.airavata.registry.api.exception;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+public class UnknownRegConnectionDataException extends RegException {
 
-public class RegistryAPIVersionIncompatibleException extends RegistryException {
+	private static final long serialVersionUID = -6483101227925383562L;
 
-    private static final long serialVersionUID = -2679914107485739141L;
+	public UnknownRegConnectionDataException(String message) {
+		super(message);
+	}
+	
+	public UnknownRegConnectionDataException(String message, Throwable e) {
+		super(message, e);
+	}
 
-    public RegistryAPIVersionIncompatibleException() {
-        this("Incompatible versions with Airavata registry and Airavata API");
-    }
-
-    public RegistryAPIVersionIncompatibleException(String message) {
-        this(message,null);
-    }
-
-    public RegistryAPIVersionIncompatibleException(String message, Exception e){
-        super(message, e);
-    }
 }

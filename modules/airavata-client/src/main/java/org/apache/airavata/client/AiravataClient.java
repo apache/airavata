@@ -58,7 +58,7 @@ import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
 import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +107,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
 	private static HashMap<String, String> createConfig(URI registryUrl, String gateway,
 			String username, String password) throws RepositoryException,
-			RegistryException, AiravataConfigurationException {
+            RegException, AiravataConfigurationException {
 		HashMap<String, String> config = new HashMap<String, String>();
 		if (registryUrl != null) {
 			config.put(AiravataClient.REGISTRY, registryUrl.toString());
@@ -291,7 +291,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	}
 
 	public AiravataRegistry2 getRegistryClient()
-			throws AiravataConfigurationException, RegistryException {
+			throws AiravataConfigurationException, RegException {
 		if (registry == null) {
 			registry = getRegistry(getRegitryURI(), getGateway(),
 					getCurrentUser(), getCallBack());
@@ -301,7 +301,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
 	public static AiravataRegistry2 getRegistry(URI registryURI,
 			String gateway, String username, PasswordCallback callback)
-			throws RegistryException, AiravataConfigurationException {
+			throws RegException, AiravataConfigurationException {
 		return AiravataRegistryFactory.getRegistry(registryURI, new Gateway(
 				gateway), new AiravataUser(username), callback);
 	}

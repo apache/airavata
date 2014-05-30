@@ -22,7 +22,6 @@
 package org.apache.airavata.client.api;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 
 public interface CredentialStoreManager {
 
@@ -31,7 +30,7 @@ public interface CredentialStoreManager {
 	 * @param String gatewayId
 	 * @param String tokenId
 	 * @return a boolean (true is credential exists, false if not)
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
 	public boolean isCredentialExist(String gatewayId, String tokenId) throws AiravataAPIInvocationException;
 	
@@ -40,7 +39,7 @@ public interface CredentialStoreManager {
 	 * @param String gatewayId
 	 * @param String tokenId
 	 * @return String The public key of the credential
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
 	public String getCredentialPublicKey(String gatewayId, String tokenId) throws AiravataAPIInvocationException;
 	
@@ -50,7 +49,7 @@ public interface CredentialStoreManager {
 	 * @param String gatewayId
 	 * @param String tokenId
 	 * @return String The public key of the credential
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
 	public String createCredential(String gatewayId, String tokenId) throws AiravataAPIInvocationException;
 	
@@ -61,7 +60,7 @@ public interface CredentialStoreManager {
 	 * @param String tokenId
 	 * @param String username
 	 * @return String The public key of the credential
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
 	public String createCredential(String gatewayId, String tokenId, String username) throws AiravataAPIInvocationException;
 }

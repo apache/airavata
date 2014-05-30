@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 public abstract class AbstractResource implements Resource {
 	// table names
@@ -57,7 +58,7 @@ public abstract class AbstractResource implements Resource {
 	public static final String COMPUTATIONAL_RESOURCE_SCHEDULING = "Computational_Resource_Scheduling";
 	public static final String ADVANCE_INPUT_DATA_HANDLING = "AdvancedInputDataHandling";
 	public static final String ADVANCE_OUTPUT_DATA_HANDLING = "AdvancedOutputDataHandling";
-	public static final String QOS_PARAMS = "QosParams";
+	public static final String QOS_PARAMS = "QosParam";
 
 
 	// Gateway Table
@@ -337,7 +338,7 @@ public abstract class AbstractResource implements Resource {
 	protected AbstractResource() {
 	}
 
-	public boolean isExists(ResourceType type, Object name) {
+	public boolean isExists(ResourceType type, Object name) throws RegistryException {
 		try {
 			return get(type, name) != null;
 		} catch (Exception e) {

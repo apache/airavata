@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.api;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 
 public interface CredentialRegistry extends AiravataSubRegistry{
 
@@ -31,19 +31,19 @@ public interface CredentialRegistry extends AiravataSubRegistry{
 	 * @param String gatewayId
 	 * @param String tokenId
 	 * @return a boolean (true is credential exists, false if not)
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
 	
-	public boolean isCredentialExist(String gatewayId, String tokenId) throws RegistryException;
+	public boolean isCredentialExist(String gatewayId, String tokenId) throws RegException;
 	
 	/**
 	 * Get the public key for a credential in the credential store for given gateway and token
 	 * @param String gatewayId
 	 * @param String tokenId
 	 * @return String The public key of the credential
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
-	public String getCredentialPublicKey(String gatewayId, String tokenId) throws RegistryException;
+	public String getCredentialPublicKey(String gatewayId, String tokenId) throws RegException;
 	
 	/**
 	 * Creates a new SSH credential for given gateway and token, encrypts it with a randomly 
@@ -51,9 +51,9 @@ public interface CredentialRegistry extends AiravataSubRegistry{
 	 * @param String gatewayId
 	 * @param String tokenId
 	 * @return String The public key of the credential
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
-	public String createCredential(String gatewayId, String tokenId) throws RegistryException;
+	public String createCredential(String gatewayId, String tokenId) throws RegException;
 	
 	/**
 	 * Creates a new SSH credential for given gateway and token, encrypts it with the given password 
@@ -62,8 +62,8 @@ public interface CredentialRegistry extends AiravataSubRegistry{
 	 * @param String tokenId
 	 * @param String username
 	 * @return String The public key of the credential
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
-	public String createCredential(String gatewayId, String tokenId, String username) throws RegistryException;
+	public String createCredential(String gatewayId, String tokenId, String username) throws RegException;
     
 }

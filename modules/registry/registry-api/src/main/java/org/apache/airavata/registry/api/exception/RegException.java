@@ -21,19 +21,19 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class RegistryException extends Exception {
+public class RegException extends Exception {
 	
     private static final long serialVersionUID = -2849422320139467602L;
 
-    public RegistryException(Throwable e) {
+    public RegException(Throwable e) {
         super(e);
     }
     
-    public RegistryException(String message) {
+    public RegException(String message) {
         super(message, null);
     }
     
-    public RegistryException(String message, Throwable e) {
+    public RegException(String message, Throwable e) {
         super(message, e);
     }
 }

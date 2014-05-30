@@ -32,6 +32,7 @@ import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 import javax.persistence.EntityManager;
 
@@ -67,7 +68,7 @@ public class UserResource extends AbstractResource {
      * @param type child resource type
      * @return child resource
      */
-    public Resource create(ResourceType type) {
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
@@ -77,7 +78,7 @@ public class UserResource extends AbstractResource {
      * @param type child resource type
      * @param name child resource name
      */
-    public void remove(ResourceType type, Object name) {
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
@@ -88,7 +89,7 @@ public class UserResource extends AbstractResource {
      * @param name child resource name
      * @return UnsupportedOperationException
      */
-    public Resource get(ResourceType type, Object name) {
+    public Resource get(ResourceType type, Object name) throws RegistryException {
         logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
@@ -98,7 +99,7 @@ public class UserResource extends AbstractResource {
      * @param type child resource type
      * @return UnsupportedOperationException
      */
-    public List<Resource> get(ResourceType type) {
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
@@ -106,29 +107,20 @@ public class UserResource extends AbstractResource {
     /**
      * save user to the database
      */
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        Users existingUser = em.find(Users.class, userName);
-        em.close();
+    public void save() throws RegistryException {
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            Users existingUser = em.find(Users.class, userName);
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Users user = new Users();
-        user.setUser_name(userName);
-        if (password != null && !password.equals("")){
-            try {
-                user.setPassword(SecurityUtil.digestString(password,
-                        RegistrySettings.getSetting("default.registry.password.hash.method")));
-            } catch (NoSuchAlgorithmException e) {
-                throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
-            } catch (RegistrySettingsException e) {
-                throw new RuntimeException("Error reading hash algorithm from configurations", e);
-            }
-        }
-        if(existingUser != null){
-            if (password != null && !password.equals("")){
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Users user = new Users();
+            user.setUser_name(userName);
+            if (password != null && !password.equals("")) {
                 try {
-                    existingUser.setPassword(SecurityUtil.digestString(password,
+                    user.setPassword(SecurityUtil.digestString(password,
                             RegistrySettings.getSetting("default.registry.password.hash.method")));
                 } catch (NoSuchAlgorithmException e) {
                     throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
@@ -136,12 +128,30 @@ public class UserResource extends AbstractResource {
                     throw new RuntimeException("Error reading hash algorithm from configurations", e);
                 }
             }
-            user = em.merge(existingUser);
-        }else {
-            em.persist(user);
+            if (existingUser != null) {
+                if (password != null && !password.equals("")) {
+                    try {
+                        existingUser.setPassword(SecurityUtil.digestString(password,
+                                RegistrySettings.getSetting("default.registry.password.hash.method")));
+                    } catch (NoSuchAlgorithmException e) {
+                        throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
+                    } catch (RegistrySettingsException e) {
+                        throw new RuntimeException("Error reading hash algorithm from configurations", e);
+                    }
+                }
+                user = em.merge(existingUser);
+            } else {
+                em.persist(user);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
     }
 
     /**
@@ -150,7 +160,7 @@ public class UserResource extends AbstractResource {
      * @param name child resource name
      * @return UnsupportedOperationException
      */
-    public boolean isExists(ResourceType type, Object name) {
+    public boolean isExists(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for user resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }

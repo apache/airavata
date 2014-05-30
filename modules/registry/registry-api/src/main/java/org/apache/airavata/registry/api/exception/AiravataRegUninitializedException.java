@@ -21,16 +21,12 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class UnknownRegistryConnectionDataException extends RegistryException {
+public class AiravataRegUninitializedException extends RegException {
 
-	private static final long serialVersionUID = -6483101227925383562L;
-
-	public UnknownRegistryConnectionDataException(String message) {
-		super(message);
-	}
-	
-	public UnknownRegistryConnectionDataException(String message, Throwable e) {
+	public AiravataRegUninitializedException(String message, Throwable e) {
 		super(message, e);
 	}
+
+	private static final long serialVersionUID = -6873054164386608256L;
 
 }

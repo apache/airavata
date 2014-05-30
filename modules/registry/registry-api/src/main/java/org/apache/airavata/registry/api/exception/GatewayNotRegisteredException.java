@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class GatewayNotRegisteredException extends RegistryException {
+public class GatewayNotRegisteredException extends RegException {
 
 	private static final long serialVersionUID = -139586125325993500L;
 

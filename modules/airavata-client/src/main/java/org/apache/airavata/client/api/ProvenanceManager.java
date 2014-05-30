@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
 import org.apache.airavata.registry.api.workflow.ApplicationJobStatusData;
 import org.apache.airavata.registry.api.workflow.ExperimentData;
 import org.apache.airavata.registry.api.workflow.ExperimentMetadata;
@@ -372,7 +371,7 @@ public interface ProvenanceManager {
       * Returns <code>true</code> if a Application job data is existing in Airavata
       * @param jobId
       * @return
-      * @throws RegistryException
+      * @throws org.apache.airavata.registry.api.exception.RegException
       */
      public boolean isApplicationJobExists(String jobId) throws AiravataAPIInvocationException;
      
@@ -403,7 +402,7 @@ public interface ProvenanceManager {
 	 * Update the status of the job for the current server time
 	 * @param jobId
 	 * @param status
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
      public void updateApplicationJobStatus(String jobId, ApplicationJobStatus status) throws AiravataAPIInvocationException;
      

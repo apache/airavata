@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.api;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 
 import java.net.URI;
 import java.util.Observable;
@@ -42,9 +42,9 @@ public abstract class AiravataRegistry2 extends Observable implements Descriptor
 	
 	/**
 	 * Initialize the Airavata Registry
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
-	protected abstract void initialize() throws RegistryException;
+	protected abstract void initialize() throws RegException;
 	
 	public Gateway getGateway() {
 		return gateway;

@@ -32,7 +32,7 @@ import org.apache.airavata.client.api.ProvenanceManager;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.registry.api.AiravataExperiment;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.registry.api.workflow.ApplicationJobStatusData;
@@ -498,7 +498,7 @@ public class ProvenanceManagerImpl implements ProvenanceManager {
     public void updateWorkflowNodeGramData(WorkflowNodeGramData data) throws AiravataAPIInvocationException {
         try {
             client.getRegistryClient().updateWorkflowNodeGramData(data);
-        } catch (RegistryException e) {
+        } catch (RegException e) {
             throw new AiravataAPIInvocationException(e);
         } catch (AiravataConfigurationException e) {
             throw new AiravataAPIInvocationException(e);

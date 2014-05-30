@@ -35,6 +35,7 @@ import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 
 import java.util.ArrayList;
@@ -66,6 +67,8 @@ public class OrchestratorClientSample {
             documentCreator.createPBSDocsForOGCE();
             storeExperimentDetail();
         } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        } catch (RegistryException e) {
             e.printStackTrace();
         }
 

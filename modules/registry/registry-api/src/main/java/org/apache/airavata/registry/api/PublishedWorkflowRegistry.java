@@ -24,7 +24,7 @@ package org.apache.airavata.registry.api;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowAlreadyExistsException;
 import org.apache.airavata.registry.api.exception.gateway.PublishedWorkflowDoesNotExistsException;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExistsException;
@@ -32,14 +32,14 @@ import org.apache.airavata.registry.api.exception.worker.UserWorkflowDoesNotExis
 
 public interface PublishedWorkflowRegistry extends AiravataSubRegistry {
 	
-	public boolean isPublishedWorkflowExists(String workflowName) throws RegistryException;
-	public void publishWorkflow(String workflowName, String publishWorkflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException, RegistryException;
-	public void publishWorkflow(String workflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException, RegistryException;
+	public boolean isPublishedWorkflowExists(String workflowName) throws RegException;
+	public void publishWorkflow(String workflowName, String publishWorkflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException, RegException;
+	public void publishWorkflow(String workflowName) throws PublishedWorkflowAlreadyExistsException, UserWorkflowDoesNotExistsException, RegException;
 	
-	public String getPublishedWorkflowGraphXML(String workflowName) throws PublishedWorkflowDoesNotExistsException, RegistryException;
-	public List<String> getPublishedWorkflowNames() throws RegistryException;
-	public Map<String,String> getPublishedWorkflows() throws RegistryException;
-	public ResourceMetadata getPublishedWorkflowMetadata(String workflowName) throws RegistryException;
+	public String getPublishedWorkflowGraphXML(String workflowName) throws PublishedWorkflowDoesNotExistsException, RegException;
+	public List<String> getPublishedWorkflowNames() throws RegException;
+	public Map<String,String> getPublishedWorkflows() throws RegException;
+	public ResourceMetadata getPublishedWorkflowMetadata(String workflowName) throws RegException;
 	
-	public void removePublishedWorkflow(String workflowName)throws PublishedWorkflowDoesNotExistsException, RegistryException;
+	public void removePublishedWorkflow(String workflowName)throws PublishedWorkflowDoesNotExistsException, RegException;
 }

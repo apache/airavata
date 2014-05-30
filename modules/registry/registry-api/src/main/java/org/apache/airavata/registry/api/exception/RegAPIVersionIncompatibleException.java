@@ -21,12 +21,19 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class UnimplementedRegistryOperationException extends RegistryException {
+public class RegAPIVersionIncompatibleException extends RegException {
 
-	private static final long serialVersionUID = 8565882892195989548L;
+    private static final long serialVersionUID = -2679914107485739141L;
 
-	public UnimplementedRegistryOperationException() {
-		super("This operation is not implemented!!!");
-	}
+    public RegAPIVersionIncompatibleException() {
+        this("Incompatible versions with Airavata registry and Airavata API");
+    }
 
+    public RegAPIVersionIncompatibleException(String message) {
+        this(message,null);
+    }
+
+    public RegAPIVersionIncompatibleException(String message, Exception e){
+        super(message, e);
+    }
 }

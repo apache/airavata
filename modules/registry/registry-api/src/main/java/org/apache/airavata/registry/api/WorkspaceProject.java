@@ -24,7 +24,7 @@ package org.apache.airavata.registry.api;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 
 import javax.xml.bind.annotation.*;
 
@@ -65,15 +65,15 @@ public class WorkspaceProject{
 		this.projectsRegistry = projectsRegistry;
 	}
 	
-	public void createExperiment(AiravataExperiment experiment) throws RegistryException{
+	public void createExperiment(AiravataExperiment experiment) throws RegException {
 		getProjectsRegistry().addExperiment(getProjectName(), experiment);
 	}
 	
-	public List<AiravataExperiment> getExperiments() throws RegistryException{
+	public List<AiravataExperiment> getExperiments() throws RegException {
 		return getProjectsRegistry().getExperiments(getProjectName());
 	}
 	
-	public List<AiravataExperiment> getExperiments(Date from, Date to) throws RegistryException{
+	public List<AiravataExperiment> getExperiments(Date from, Date to) throws RegException {
 		return getProjectsRegistry().getExperiments(getProjectName(),from, to);
 	}
 

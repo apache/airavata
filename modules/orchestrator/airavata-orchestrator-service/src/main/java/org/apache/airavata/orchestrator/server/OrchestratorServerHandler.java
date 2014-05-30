@@ -64,6 +64,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             orchestrator.initialize();
         }catch (OrchestratorException e) {
             e.printStackTrace();
+        } catch (RegistryException e) {
+            e.printStackTrace();
         }
     }
 

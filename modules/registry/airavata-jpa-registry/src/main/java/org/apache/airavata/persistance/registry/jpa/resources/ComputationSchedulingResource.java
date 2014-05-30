@@ -27,6 +27,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Computational_Resource_Scheduling;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,61 +146,70 @@ public class ComputationSchedulingResource extends AbstractResource {
         this.projectName = projectName;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for computational scheduling resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for computational scheduling resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for computational scheduling resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for computational scheduling resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Computational_Resource_Scheduling scheduling;
-        if (schedulingId != 0){
-            scheduling = em.find(Computational_Resource_Scheduling.class, schedulingId);
-            scheduling.setSchedulingId(schedulingId);
-        }else {
-            scheduling = new Computational_Resource_Scheduling();
+    
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Computational_Resource_Scheduling scheduling;
+            if (schedulingId != 0) {
+                scheduling = em.find(Computational_Resource_Scheduling.class, schedulingId);
+                scheduling.setSchedulingId(schedulingId);
+            } else {
+                scheduling = new Computational_Resource_Scheduling();
+            }
+            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+            if (taskDetailResource != null) {
+                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+                scheduling.setTask(taskDetail);
+                scheduling.setTaskId(taskDetailResource.getTaskId());
+            }
+            scheduling.setExpId(experimentResource.getExpID());
+            scheduling.setExperiment(experiment);
+            scheduling.setResourceHostId(resourceHostId);
+            scheduling.setCpuCount(cpuCount);
+            scheduling.setNodeCount(nodeCount);
+            scheduling.setNumberOfThreads(numberOfThreads);
+            scheduling.setQueueName(queueName);
+            scheduling.setWallTimeLimit(walltimeLimit);
+            scheduling.setJobStartTime(jobStartTime);
+            scheduling.setTotalPhysicalmemory(physicalMemory);
+            scheduling.setProjectName(projectName);
+            em.persist(scheduling);
+            schedulingId = scheduling.getSchedulingId();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        if (taskDetailResource != null){
-            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-            scheduling.setTask(taskDetail);
-            scheduling.setTaskId(taskDetailResource.getTaskId());
-        }
-        scheduling.setExpId(experimentResource.getExpID());
-        scheduling.setExperiment(experiment);
-        scheduling.setResourceHostId(resourceHostId);
-        scheduling.setCpuCount(cpuCount);
-        scheduling.setNodeCount(nodeCount);
-        scheduling.setNumberOfThreads(numberOfThreads);
-        scheduling.setQueueName(queueName);
-        scheduling.setWallTimeLimit(walltimeLimit);
-        scheduling.setJobStartTime(jobStartTime);
-        scheduling.setTotalPhysicalmemory(physicalMemory);
-        scheduling.setProjectName(projectName);
-        em.persist(scheduling);
-        schedulingId = scheduling.getSchedulingId();
-        em.getTransaction().commit();
-        em.close();
     }
 }
