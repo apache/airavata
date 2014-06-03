@@ -258,6 +258,7 @@ public class ExperimentResource extends AbstractResource {
                     break;
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -484,6 +485,7 @@ public class ExperimentResource extends AbstractResource {
                     throw new UnsupportedOperationException();
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -510,12 +512,15 @@ public class ExperimentResource extends AbstractResource {
             Experiment experiment = new Experiment();
             Project projectmodel = em.find(Project.class, project.getId());
             experiment.setProject(projectmodel);
+            experiment.setProjectId(projectmodel.getProject_id());
             Gateway gateway = em.find(Gateway.class, getGateway().getGatewayName());
             experiment.setExpId(expID);
             experiment.setExecutionUser(executionUser);
             Users userModel = em.find(Users.class, executionUser);
             experiment.setUser(userModel);
+            experiment.setExecutionUser(userModel.getUser_name());
             experiment.setGateway(gateway);
+            experiment.setGatewayName(gateway.getGateway_name());
             experiment.setCreationTime(creationTime);
             experiment.setExpName(expName);
             experiment.setExpDesc(description);
@@ -526,9 +531,11 @@ public class ExperimentResource extends AbstractResource {
             experiment.setWorkflowExecutionId(workflowExecutionId);
             if (existingExp != null) {
                 existingExp.setGateway(gateway);
+                existingExp.setGatewayName(gateway.getGateway_name());
                 existingExp.setProject(projectmodel);
                 existingExp.setExecutionUser(executionUser);
-                experiment.setUser(userModel);
+                existingExp.setUser(userModel);
+                existingExp.setProjectId(projectmodel.getProject_id());
                 existingExp.setCreationTime(creationTime);
                 existingExp.setExpName(expName);
                 existingExp.setExpDesc(description);
@@ -539,9 +546,10 @@ public class ExperimentResource extends AbstractResource {
                 existingExp.setWorkflowExecutionId(workflowExecutionId);
                 experiment = em.merge(existingExp);
             } else {
-                em.merge(experiment);
+                em.persist(experiment);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

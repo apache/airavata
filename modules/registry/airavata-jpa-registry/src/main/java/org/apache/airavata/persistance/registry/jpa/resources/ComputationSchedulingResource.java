@@ -203,6 +203,7 @@ public class ComputationSchedulingResource extends AbstractResource {
             em.persist(scheduling);
             schedulingId = scheduling.getSchedulingId();
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

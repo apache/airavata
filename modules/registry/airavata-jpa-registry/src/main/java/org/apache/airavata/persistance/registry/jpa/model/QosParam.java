@@ -24,11 +24,12 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @DataCache
 @Entity
 @Table(name = "QOS_PARAMS")
-public class QosParam {
+public class QosParam implements Serializable {
     @Id
     @GeneratedValue
     @Column(name = "QOS_ID")

@@ -144,6 +144,7 @@ public class UserResource extends AbstractResource {
                 em.persist(user);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

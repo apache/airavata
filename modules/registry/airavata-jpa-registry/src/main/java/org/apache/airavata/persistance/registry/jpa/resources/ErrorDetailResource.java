@@ -185,11 +185,13 @@ public class ErrorDetailResource extends AbstractResource {
             if (taskDetailResource != null) {
                 TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
                 errorDetail.setTask(taskDetail);
+                errorDetail.setTaskId(taskDetail.getTaskId());
             }
 
             if (nodeDetail != null) {
                 WorkflowNodeDetail workflowNodeDetail = em.find(WorkflowNodeDetail.class, nodeDetail.getNodeInstanceId());
                 errorDetail.setNodeDetails(workflowNodeDetail);
+                errorDetail.setNodeId(workflowNodeDetail.getNodeId());
             }
             errorDetail.setCreationTime(creationTime);
             errorDetail.setActualErrorMsg(actualErrorMsg.toCharArray());
@@ -202,6 +204,7 @@ public class ErrorDetailResource extends AbstractResource {
             em.persist(errorDetail);
             errorId = errorDetail.getErrorID();
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

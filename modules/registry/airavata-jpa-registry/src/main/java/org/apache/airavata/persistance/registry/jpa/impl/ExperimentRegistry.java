@@ -1633,8 +1633,8 @@ public class ExperimentRegistry {
             if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                 WorkerResource resource = (WorkerResource)gatewayResource.create(ResourceType.GATEWAY_WORKER);
                 resource.setUser((String)value);
-//                List<ExperimentResource> resources = resource.getExperiments();
-                List<ExperimentResource> resources = resource.getExperimentsByCaching((String)value);
+                List<ExperimentResource> resources = resource.getExperiments();
+//                List<ExperimentResource> resources = resource.getExperimentsByCaching((String)value);
                 for (ExperimentResource experimentResource : resources) {
                     Experiment experiment = ThriftDataModelConversion.getExperiment(experimentResource);
                     experiments.add(experiment);

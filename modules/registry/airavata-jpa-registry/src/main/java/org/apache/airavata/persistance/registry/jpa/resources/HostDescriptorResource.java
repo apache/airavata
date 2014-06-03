@@ -170,6 +170,7 @@ public class HostDescriptorResource extends AbstractResource {
                     }
                 }
                 em.getTransaction().commit();
+                em.close();
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -203,18 +204,22 @@ public class HostDescriptorResource extends AbstractResource {
 //            user.setUser_name(userName);
             hostDescriptor.setHost_descriptor_ID(getHostDescName());
             hostDescriptor.setGateway(existingGateway);
+            hostDescriptor.setGateway_name(existingGateway.getGateway_name());
             byte[] contentBytes = content.getBytes();
             hostDescriptor.setHost_descriptor_xml(contentBytes);
             hostDescriptor.setUser(existingUser);
             if (existingHost_desc != null) {
+                existingHost_desc.setGateway(existingGateway);
+                existingHost_desc.setGateway_name(existingGateway.getGateway_name());
                 existingHost_desc.setUser(existingUser);
                 existingHost_desc.setHost_descriptor_xml(contentBytes);
                 hostDescriptor = em.merge(existingHost_desc);
             } else {
-                em.merge(hostDescriptor);
+                em.persist(hostDescriptor);
             }
 
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

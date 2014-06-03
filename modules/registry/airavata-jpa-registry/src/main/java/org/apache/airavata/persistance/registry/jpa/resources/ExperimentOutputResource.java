@@ -103,50 +103,42 @@ public class ExperimentOutputResource extends AbstractResource {
         throw new UnsupportedOperationException();
     }
 
-    public void save() throws RegistryException{
-        EntityManager em = ResourceUtils.getEntityManager();
-        Experiment_Output existingOutput = em.find(Experiment_Output.class, new Experiment_Output_PK(experimentResource.getExpID(), experimentKey));
+    public void save() throws RegistryException {
+        EntityManager em = null;
         try {
+            em = ResourceUtils.getEntityManager();
+            Experiment_Output existingOutput = em.find(Experiment_Output.class, new Experiment_Output_PK(experimentResource.getExpID(), experimentKey));
             em.close();
-        }catch (Exception e){
-            logger.error(e.getMessage(), e);
-            throw new RegistryException(e);
-        }finally {
-            if (em.isOpen()){
-                em.close();
+
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Experiment_Output exOutput = new Experiment_Output();
+            exOutput.setEx_key(experimentKey);
+            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+            exOutput.setExperiment(experiment);
+            exOutput.setExperiment_id(experiment.getExpId());
+            exOutput.setValue(value);
+            exOutput.setOutputKeyType(outputType);
+            exOutput.setMetadata(metadata);
+
+            if (existingOutput != null) {
+                existingOutput.setEx_key(experimentKey);
+                existingOutput.setExperiment(experiment);
+                existingOutput.setValue(value);
+                existingOutput.setExperiment_id(experiment.getExpId());
+                existingOutput.setOutputKeyType(outputType);
+                existingOutput.setMetadata(metadata);
+                exOutput = em.merge(existingOutput);
+            } else {
+                em.persist(exOutput);
             }
-        }
-
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Experiment_Output exOutput = new Experiment_Output();
-        exOutput.setEx_key(experimentKey);
-        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        exOutput.setExperiment(experiment);
-        exOutput.setExperiment_id(experiment.getExpId());
-        exOutput.setValue(value);
-        exOutput.setOutputKeyType(outputType);
-        exOutput.setMetadata(metadata);
-
-        if (existingOutput != null){
-            existingOutput.setEx_key(experimentKey);
-            existingOutput.setExperiment(experiment);
-            existingOutput.setValue(value);
-            existingOutput.setExperiment_id(experiment.getExpId());
-            existingOutput.setOutputKeyType(outputType);
-            existingOutput.setMetadata(metadata);
-            exOutput = em.merge(existingOutput);
-        }else {
-            em.persist(exOutput);
-        }
-        em.getTransaction().commit();
-        try {
+            em.getTransaction().commit();
             em.close();
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
-        }finally {
-            if (em.isOpen()){
+        } finally {
+            if (em != null && em.isOpen()) {
                 em.close();
             }
         }

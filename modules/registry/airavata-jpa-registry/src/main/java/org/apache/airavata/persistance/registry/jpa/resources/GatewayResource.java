@@ -193,6 +193,7 @@ public class GatewayResource extends AbstractResource {
                     break;
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -439,6 +440,7 @@ public class GatewayResource extends AbstractResource {
                     throw new IllegalArgumentException("Unsupported resource type for gateway resource.");
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -472,6 +474,7 @@ public class GatewayResource extends AbstractResource {
                 em.persist(gateway);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -737,6 +740,7 @@ public class GatewayResource extends AbstractResource {
                 }
             }
             em.getTransaction().commit();
+            em.close();
             return resourceList;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

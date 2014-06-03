@@ -24,12 +24,13 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @DataCache
 @Entity
 @Table(name = "COMPUTATIONAL_RESOURCE_SCHEDULING")
-public class Computational_Resource_Scheduling {
+public class Computational_Resource_Scheduling implements Serializable {
     @Id
     @GeneratedValue
     @Column(name = "RESOURCE_SCHEDULING_ID")

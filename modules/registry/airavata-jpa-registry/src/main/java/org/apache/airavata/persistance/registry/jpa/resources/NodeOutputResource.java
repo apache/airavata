@@ -110,7 +110,6 @@ public class NodeOutputResource extends AbstractResource {
 
     
     public void save() throws RegistryException{
-
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
@@ -140,6 +139,7 @@ public class NodeOutputResource extends AbstractResource {
                 em.persist(nodeOutput);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

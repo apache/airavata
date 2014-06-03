@@ -147,6 +147,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
                     break;
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -312,6 +313,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
                     throw new UnsupportedOperationException();
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
 //            logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -346,9 +348,10 @@ public class WorkflowNodeDetailResource extends AbstractResource {
                 existingNode.setNodeName(nodeName);
                 workflowNodeDetail = em.merge(existingNode);
             } else {
-                em.merge(workflowNodeDetail);
+                em.persist(workflowNodeDetail);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

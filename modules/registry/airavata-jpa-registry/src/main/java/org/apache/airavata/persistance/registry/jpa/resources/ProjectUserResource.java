@@ -107,6 +107,7 @@ public class ProjectUserResource extends AbstractResource {
             }
 
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

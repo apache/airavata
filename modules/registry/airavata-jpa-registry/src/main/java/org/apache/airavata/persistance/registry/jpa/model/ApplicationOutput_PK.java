@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class ApplicationOutput_PK {
+import java.io.Serializable;
+
+public class ApplicationOutput_PK implements Serializable {
     private String taskId;
     private String outputKey;
 

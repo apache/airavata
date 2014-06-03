@@ -121,9 +121,10 @@ public class ConfigDataResource extends AbstractResource {
                 existingConfig.setShareExp(shareExp);
                 configData = em.merge(existingConfig);
             } else {
-                em.merge(configData);
+                em.persist(configData);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

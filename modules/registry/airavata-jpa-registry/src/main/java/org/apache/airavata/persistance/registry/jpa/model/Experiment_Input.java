@@ -24,12 +24,13 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @DataCache
 @Entity
 @Table(name ="EXPERIMENT_INPUT")
 @IdClass(Experiment_Input_PK.class)
-public class Experiment_Input {
+public class Experiment_Input implements Serializable {
     @Id
     @Column(name = "EXPERIMENT_ID")
     private String experiment_id;

@@ -210,14 +210,15 @@ public class PublishWorkflowResource extends AbstractResource {
             publishedWorkflow.setVersion(version);
             byte[] bytes = content.getBytes();
             publishedWorkflow.setWorkflow_content(bytes);
-            Gateway gateway = new Gateway();
-            gateway.setGateway_name(this.gateway.getGatewayName());
-            publishedWorkflow.setGateway(gateway);
-            Users user = new Users();
-            user.setUser_name(createdUser);
+            Gateway existingGateway = em.find(Gateway.class, gateway.getGatewayName());
+            publishedWorkflow.setGateway(existingGateway);
+            publishedWorkflow.setGateway_name(existingGateway.getGateway_name());
+            Users user = em.find(Users.class, createdUser);
             publishedWorkflow.setUser(user);
             if (existingWF != null) {
                 existingWF.setUser(user);
+                existingWF.setGateway(existingGateway);
+                existingWF.setGateway_name(existingGateway.getGateway_name());
                 existingWF.setPublished_date(publishedDate);
                 existingWF.setWorkflow_content(bytes);
                 existingWF.setVersion(version);
@@ -228,6 +229,7 @@ public class PublishWorkflowResource extends AbstractResource {
             }
 
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

@@ -143,6 +143,7 @@ public class AdvancedOutputDataHandlingResource extends AbstractResource {
             em.persist(dataHandling);
             outputDataHandlingId = dataHandling.getOutputDataHandlingId();
             em.getTransaction().commit();
+            em.close();
         }catch (Exception e){
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

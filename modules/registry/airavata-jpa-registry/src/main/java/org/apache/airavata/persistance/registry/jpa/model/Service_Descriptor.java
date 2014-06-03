@@ -21,11 +21,12 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name ="SERVICE_DESCRIPTOR")
 @IdClass(Service_Descriptor_PK.class)
-public class Service_Descriptor {
+public class Service_Descriptor implements Serializable {
     @Id
     @Column(name = "SERVICE_DESCRIPTOR_ID")
     private String service_descriptor_ID;

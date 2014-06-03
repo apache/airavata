@@ -152,7 +152,7 @@ public class AdvanceInputDataHandlingResource extends AbstractResource {
             em.persist(dataHandling);
             dataHandlingId = dataHandling.getDataHandlingId();
             em.getTransaction().commit();
-
+            em.close();
         }catch (Exception e){
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

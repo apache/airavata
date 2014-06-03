@@ -25,12 +25,13 @@ import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.*;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @DataCache
 @Entity
 @Table(name = "ERROR_DETAIL")
-public class ErrorDetail {
+public class ErrorDetail implements Serializable {
     @Id
     @GeneratedValue
     @Column(name = "ERROR_ID")

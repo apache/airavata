@@ -24,11 +24,12 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @DataCache
 @Entity
 @Table(name = "ADVANCE_INPUT_DATA_HANDLING")
-public class AdvancedInputDataHandling {
+public class AdvancedInputDataHandling implements Serializable {
     @Id
     @GeneratedValue
     @Column(name = "INPUT_DATA_HANDLING_ID")

@@ -138,6 +138,7 @@ public class ApplicationInputResource extends AbstractResource {
                 em.persist(applicationInput);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             throw new RegistryException(e.getMessage());
         } finally {

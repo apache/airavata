@@ -21,12 +21,13 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name ="USER_WORKFLOW")
 @IdClass(User_Workflow_PK.class)
-public class User_Workflow {
+public class User_Workflow implements Serializable {
     @Id
     @Column(name = "GATEWAY_NAME")
     private String gateway_name;
