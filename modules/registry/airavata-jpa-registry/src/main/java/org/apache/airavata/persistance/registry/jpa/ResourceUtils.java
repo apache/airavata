@@ -63,12 +63,12 @@ public class ResourceUtils {
             properties.put("openjpa.QueryCache","true(CacheSize=5000, SoftReferenceSize=0)");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
-            properties.put("openjpa.ReadLockLevel", "none");
-            properties.put("openjpa.WriteLockLevel", "none");
-            properties.put("openjpa.LockTimeout", "30000");
-            properties.put("openjpa.LockManager", "none");
+//            properties.put("openjpa.ReadLockLevel", "none");
+//            properties.put("openjpa.WriteLockLevel", "none");
+//            properties.put("openjpa.LockTimeout", "30000");
+//            properties.put("openjpa.LockManager", "none");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
-            properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
+//            properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
 			properties.put("openjpa.jdbc.QuerySQLCache", "false");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
