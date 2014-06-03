@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class Experiment_Output_PK {
+import java.io.Serializable;
+
+public class Experiment_Output_PK implements Serializable {
     private String experiment_id;
     private String ex_key;
 

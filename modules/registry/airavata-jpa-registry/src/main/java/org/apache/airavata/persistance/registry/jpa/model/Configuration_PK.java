@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class Configuration_PK {
+import java.io.Serializable;
+
+public class Configuration_PK implements Serializable {
     private String config_key;
     private String config_val;
     private String category_id;

@@ -130,6 +130,7 @@ public class WorkerResource extends AbstractResource {
                     break;
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e.getMessage());
@@ -183,6 +184,7 @@ public class WorkerResource extends AbstractResource {
                     break;
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             throw new RegistryException(e);
         } finally {
@@ -286,6 +288,7 @@ public class WorkerResource extends AbstractResource {
                     break;
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -310,19 +313,23 @@ public class WorkerResource extends AbstractResource {
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Gateway_Worker gatewayWorker = new Gateway_Worker();
-            Users users = new Users();
-            users.setUser_name(user);
-            gatewayWorker.setUser(users);
-            Gateway gatewaymodel = new Gateway();
-            gatewaymodel.setGateway_name(gateway.getGatewayName());
-            gatewaymodel.setOwner(gateway.getOwner());
+            Users existingUser = em.find(Users.class, this.user);
+            gatewayWorker.setUser(existingUser);
+            gatewayWorker.setUser_name(existingUser.getUser_name());
+            Gateway gatewaymodel = em.find(Gateway.class, gateway.getGatewayName());
             gatewayWorker.setGateway(gatewaymodel);
+            gatewayWorker.setGateway_name(gatewaymodel.getGateway_name());
             if (existingWorker != null) {
+                existingWorker.setUser_name(existingUser.getUser_name());
+                existingWorker.setUser(existingUser);
+                existingWorker.setGateway(gatewaymodel);
+                existingWorker.setGateway_name(gatewaymodel.getGateway_name());
                 gatewayWorker = em.merge(existingWorker);
             } else {
-                em.merge(gatewayWorker);
+                em.persist(gatewayWorker);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -535,6 +542,7 @@ public class WorkerResource extends AbstractResource {
                 result.add(projectResource);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -571,6 +579,7 @@ public class WorkerResource extends AbstractResource {
                 result.add(experimentResource);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -604,6 +613,7 @@ public class WorkerResource extends AbstractResource {
                 result.add(experimentResource);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

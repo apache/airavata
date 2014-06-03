@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class Published_Workflow_PK {
+import java.io.Serializable;
+
+public class Published_Workflow_PK implements Serializable {
     private String gateway_name;
     private String publish_workflow_name;
 

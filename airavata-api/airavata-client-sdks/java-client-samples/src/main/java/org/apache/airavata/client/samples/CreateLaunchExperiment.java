@@ -168,7 +168,7 @@ public class CreateLaunchExperiment {
 										// File | Settings | File Templates.
 			}
 
-            System.out.println(airavata.getExperimentStatus(expId));
+//            System.out.println(airavata.getExperimentStatus(expId));
             List<DataObjectType> output = airavata.getExperimentOutputs(expId);
             for (DataObjectType dataObjectType : output) {
                 System.out.println(dataObjectType.getKey() + " : " + dataObjectType.getType() + " : " + dataObjectType.getValue());

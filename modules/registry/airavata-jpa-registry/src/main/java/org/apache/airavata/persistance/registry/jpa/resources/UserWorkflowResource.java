@@ -137,6 +137,7 @@ public class UserWorkflowResource extends AbstractResource {
                 em.persist(userWorkflow);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

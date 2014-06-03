@@ -136,6 +136,7 @@ public class QosParamResource extends AbstractResource {
             em.persist(qosParam);
             qosId = qosParam.getQosId();
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

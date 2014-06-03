@@ -179,6 +179,7 @@ public class StatusResource extends AbstractResource {
             em.persist(status);
             statusId = status.getStatusId();
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

@@ -115,6 +115,7 @@ public class ServiceDescriptorResource extends AbstractResource {
                     }
                 }
                 em.getTransaction().commit();
+                em.close();
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -140,6 +141,7 @@ public class ServiceDescriptorResource extends AbstractResource {
             serviceDescriptor.setService_descriptor_ID(getServiceDescName());
             Gateway gateway = em.find(Gateway.class, gatewayName);
             serviceDescriptor.setGateway(gateway);
+            serviceDescriptor.setGateway_name(gateway.getGateway_name());
             byte[] bytes = content.getBytes();
             serviceDescriptor.setService_descriptor_xml(bytes);
             Users user = em.find(Users.class, userName);
@@ -147,11 +149,14 @@ public class ServiceDescriptorResource extends AbstractResource {
             if (existingServiceDesc != null) {
                 existingServiceDesc.setUser(user);
                 existingServiceDesc.setService_descriptor_xml(bytes);
+                existingServiceDesc.setGateway(gateway);
+                existingServiceDesc.setGateway_name(gateway.getGateway_name());
                 serviceDescriptor = em.merge(existingServiceDesc);
             } else {
-                em.merge(serviceDescriptor);
+                em.persist(serviceDescriptor);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

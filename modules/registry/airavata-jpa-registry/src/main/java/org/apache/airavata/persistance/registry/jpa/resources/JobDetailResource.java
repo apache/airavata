@@ -128,6 +128,7 @@ public class JobDetailResource extends AbstractResource {
                     break;
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -227,6 +228,7 @@ public class JobDetailResource extends AbstractResource {
                     throw new UnsupportedOperationException();
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             throw new RegistryException(e);
         } finally {
@@ -268,9 +270,10 @@ public class JobDetailResource extends AbstractResource {
                 existingJobDetail.setComputeResourceConsumed(computeResourceConsumed);
                 jobDetail = em.merge(existingJobDetail);
             } else {
-                em.merge(jobDetail);
+                em.persist(jobDetail);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

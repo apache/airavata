@@ -24,12 +24,13 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @DataCache
 @Entity
 @Table(name = "TASK_DETAIL")
-public class TaskDetail {
+public class TaskDetail implements Serializable {
     @Id
     @Column(name = "TASK_ID")
     private String taskId;

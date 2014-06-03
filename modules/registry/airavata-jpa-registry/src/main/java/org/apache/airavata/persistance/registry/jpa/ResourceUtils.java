@@ -44,8 +44,6 @@ public class ResourceUtils {
     private static final String PERSISTENCE_UNIT_NAME = "airavata_data";
     protected static EntityManagerFactory factory;
 
-    private static Lock lock = new ReentrantLock();
-
     public static void reset(){
     	factory=null;
     }
@@ -457,9 +455,4 @@ public class ResourceUtils {
             }
         }
     }
-
-    public static Lock getLock() {
-        return lock;
-    }
-
 }

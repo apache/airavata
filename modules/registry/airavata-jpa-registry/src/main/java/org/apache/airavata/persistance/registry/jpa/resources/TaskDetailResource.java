@@ -210,6 +210,7 @@ public class TaskDetailResource extends AbstractResource {
                     break;
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -438,6 +439,7 @@ public class TaskDetailResource extends AbstractResource {
                     throw new UnsupportedOperationException();
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

@@ -24,12 +24,13 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @DataCache
 @Entity
 @Table(name = "WORKFLOW_NODE_DETAIL")
-public class WorkflowNodeDetail {
+public class WorkflowNodeDetail implements Serializable {
     @Column(name = "EXPERIMENT_ID")
     private String expId;
     @Id

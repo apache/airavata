@@ -111,6 +111,7 @@ public class DataTransferDetailResource extends AbstractResource {
                     break;
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -186,6 +187,7 @@ public class DataTransferDetailResource extends AbstractResource {
                     throw new UnsupportedOperationException();
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -226,9 +228,10 @@ public class DataTransferDetailResource extends AbstractResource {
                 }
                 dataTransferDetail = em.merge(existingDF);
             } else {
-                em.merge(dataTransferDetail);
+                em.persist(dataTransferDetail);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

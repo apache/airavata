@@ -227,6 +227,7 @@ public class ApplicationDescriptorResource extends AbstractResource {
             Gateway gateway = em.find(Gateway.class, gatewayName);
             Users user = em.find(Users.class, updatedUser);
             applicationDescriptor.setGateway(gateway);
+            applicationDescriptor.setGateway_name(gateway.getGateway_name());
             applicationDescriptor.setUser(user);
             byte[] contentBytes = content.getBytes();
             applicationDescriptor.setApplication_descriptor_xml(contentBytes);
@@ -234,6 +235,8 @@ public class ApplicationDescriptorResource extends AbstractResource {
             applicationDescriptor.setHost_descriptor_ID(hostDescName);
             if (existingAppDesc != null) {
                 existingAppDesc.setUser(user);
+                existingAppDesc.setGateway(gateway);
+                existingAppDesc.setGateway_name(gateway.getGateway_name());
                 existingAppDesc.setApplication_descriptor_xml(contentBytes);
                 existingAppDesc.setHost_descriptor_ID(hostDescName);
                 existingAppDesc.setService_descriptor_ID(serviceDescName);
@@ -242,6 +245,7 @@ public class ApplicationDescriptorResource extends AbstractResource {
                 em.persist(applicationDescriptor);
             }
             em.getTransaction().commit();
+            em.close();
         } catch (Exception e){
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
