@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.gfac.core.utils;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,8 +29,8 @@ import java.util.regex.Pattern;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.schemas.gfac.StdErrParameterType;
 import org.apache.airavata.schemas.gfac.StdOutParameterType;
@@ -39,44 +38,7 @@ import org.apache.airavata.schemas.gfac.StdOutParameterType;
 public class OutputUtils {
     private static String regexPattern = "\\s*=\\s*(.*)\\r?\\n";
 
-    public static Map<String, ActualParameter> fillOutputFromStdout(Map<String, Object> output, String stdout, String stderr) throws Exception {
-
-        if (stdout == null || stdout.equals("")){
-            throw new GFacHandlerException("Standard output is empty.");
-        }
-
-        Map<String, ActualParameter> result = new HashMap<String, ActualParameter>();
-        Set<String> keys = output.keySet();
-        for (String paramName : keys) {
-        	ActualParameter actual = (ActualParameter) output.get(paramName);
-            // if parameter value is not already set, we let it go
-            
-            if (actual == null) {
-                continue;
-            }
-            if ("StdOut".equals(actual.getType().getType().toString())) {
-                ((StdOutParameterType) actual.getType()).setValue(stdout);
-                result.put(paramName, actual);
-            } else if ("StdErr".equals(actual.getType().getType().toString())) {
-                ((StdErrParameterType) actual.getType()).setValue(stderr);
-                result.put(paramName, actual);
-            }
-//            else if("URI".equals(actual.getType().getType().toString())){
-//            	continue;
-//            } 
-            else {
-                String parseStdout = parseStdout(stdout, paramName);
-                if (parseStdout != null) {
-                    MappingFactory.fromString(actual, parseStdout);
-                    result.put(paramName, actual);
-                }
-            }
-        }
-
-        return result;
-    }
-    
-	public static void fillOutputFromStdout1(Map<String, Object> output, String stdout, String stderr, List<DataObjectType> outputArray) throws Exception {
+	public static void fillOutputFromStdout(Map<String, Object> output, String stdout, String stderr, List<DataObjectType> outputArray) throws Exception {
 
 		if (stdout == null || stdout.equals("")) {
 			throw new GFacHandlerException("Standard output is empty.");
@@ -91,13 +53,15 @@ public class OutputUtils {
 				continue;
 			}
 			if ("StdOut".equals(actual.getType().getType().toString())) {
-				DataObjectType out = new DataObjectType();
+		        ((StdOutParameterType) actual.getType()).setValue(stdout);
+		        DataObjectType out = new DataObjectType();
 				out.setKey(paramName);
 				out.setType(DataType.STDOUT);
 				out.setValue(stdout);
 				outputArray.add(out);
 			} else if ("StdErr".equals(actual.getType().getType().toString())) {
-				DataObjectType out = new DataObjectType();
+				((StdErrParameterType) actual.getType()).setValue(stderr);
+		        DataObjectType out = new DataObjectType();
 				out.setKey(paramName);
 				out.setType(DataType.STDERR);
 				out.setValue(stderr);
@@ -114,7 +78,8 @@ public class OutputUtils {
 					out.setType(DataType.STRING);
 					out.setValue(parseStdout);
 					outputArray.add(out);
-				}
+					MappingFactory.fromString(actual, parseStdout);
+	          }
 			}
 		}
 	}

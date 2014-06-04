@@ -163,8 +163,7 @@ public class SSHOutputHandler extends AbstractHandler {
 
                     List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
                     if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
-                        OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr,outputArray);
-                        OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+                        OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr,outputArray);
                         break;
                     } else {
                         String valueList = outputList.get(0);
@@ -177,8 +176,7 @@ public class SSHOutputHandler extends AbstractHandler {
                         outputArray.add(dataObjectType);
                     }
                 } else {
-                    OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr,outputArray);
-                    OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+                    OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr,outputArray);
                 }
             }
             if (outputArray == null || outputArray.isEmpty()) {

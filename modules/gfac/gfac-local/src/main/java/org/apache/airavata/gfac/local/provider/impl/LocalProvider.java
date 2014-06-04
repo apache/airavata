@@ -214,9 +214,8 @@ public class LocalProvider extends AbstractProvider {
             String stdOutStr = GFacUtils.readFileToString(app.getStandardOutput());
             String stdErrStr = GFacUtils.readFileToString(app.getStandardError());
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
-            OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr, outputArray);
+            OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
-            OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
         } catch (XmlException e) {
             throw new GFacProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {

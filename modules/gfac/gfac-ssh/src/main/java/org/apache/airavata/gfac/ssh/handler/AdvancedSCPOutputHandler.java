@@ -110,7 +110,6 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             String outputDataDirectory = app.getOutputDataDirectory();
             super.invoke(jobExecutionContext);
             AuthenticationInfo authenticationInfo = null;
-            System.out.println("Testing");
             if (password != null) {
                 authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
             } else {
@@ -127,21 +126,22 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             pbsCluster.scpTo(outputPath, standardError);
             pbsCluster.scpTo(outputPath, standardOutput);
             List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
-            //FIXME: this will not work for if all the parameters are not URI
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
-            List<String> list = new ArrayList<String>(output.keySet());
-            int i = 0;
-            for (String files : jobExecutionContext.getOutputFiles()) {
-            	pbsCluster.scpTo(outputPath, files);
-                String fileName = files.substring(files.lastIndexOf(File.separatorChar)+1, files.length());
-                DataObjectType dataObjectType = new DataObjectType();
-                dataObjectType.setValue(outputPath + File.separatorChar + fileName);
-                dataObjectType.setKey(list.get(i));
-                dataObjectType.setType(DataType.URI);
-                outputArray.add(dataObjectType);
-                i++;
-            }
-            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+            Set<String> keys = output.keySet();
+            for (String paramName : keys) {
+                ActualParameter actualParameter = (ActualParameter) output.get(paramName);
+                if ("URI".equals(actualParameter.getType().getType().toString())) {
+                	String downloadFile = MappingFactory.toString(actualParameter);
+                	pbsCluster.scpTo(outputPath, downloadFile);
+                    String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar)+1, downloadFile.length());
+                    DataObjectType dataObjectType = new DataObjectType();
+                    dataObjectType.setValue(outputPath + File.separatorChar + fileName);
+                    dataObjectType.setKey(paramName);
+                    dataObjectType.setType(DataType.URI);
+                    outputArray.add(dataObjectType);
+                }
+             }
+           registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
         } catch (SSHApiException e) {
             log.error("Error transfering files to remote host : " + hostName + " with the user: " + userName);
             log.error(e.getMessage());

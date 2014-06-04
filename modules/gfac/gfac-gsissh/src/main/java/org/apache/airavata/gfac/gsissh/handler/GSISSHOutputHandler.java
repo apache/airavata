@@ -166,20 +166,19 @@ public class GSISSHOutputHandler extends AbstractHandler {
 
                     List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
                     if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
-                        OutputUtils.fillOutputFromStdout1(output, stdOutStr, stdErrStr, outputArray);
-                        Map<String, ActualParameter> stringActualParameterMap = OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
-                        Set<String> strings = stringActualParameterMap.keySet();
+                        OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
+                        Set<String> strings = output.keySet();
                         outputArray.clear();
                         for(String key:strings) {
-                            ActualParameter actualParameter1 = stringActualParameterMap.get(key);
+                            ActualParameter actualParameter1 = (ActualParameter) output.get(key);
                             if("URI".equals(actualParameter1.getType().getType().toString())){
                             	String downloadFile = MappingFactory.toString(actualParameter1);
                             	cluster.scpFrom(downloadFile, outputDataDir);
                             	String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar)+1, downloadFile.length());
                             	String localFile = outputDataDir +  File.separator +fileName;
 								jobExecutionContext.addOutputFile(localFile);
-								
-                            	DataObjectType dataObjectType = new DataObjectType();
+								MappingFactory.fromString(actualParameter1, localFile);
+								DataObjectType dataObjectType = new DataObjectType();
                                 dataObjectType.setValue(localFile);
                                 dataObjectType.setKey(key);
                                 dataObjectType.setType(DataType.URI);
@@ -198,8 +197,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                         outputArray.add(dataObjectType);
                     }
                 } else {
-                    OutputUtils.fillOutputFromStdout1(output, stdOutStr,stdErrStr, outputArray);
-                    OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr);
+                    OutputUtils.fillOutputFromStdout(output, stdOutStr,stdErrStr, outputArray);
                     break;
                 }
             }

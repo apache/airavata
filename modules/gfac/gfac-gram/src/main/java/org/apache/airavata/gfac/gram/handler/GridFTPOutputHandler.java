@@ -48,6 +48,7 @@ import org.apache.airavata.gfac.gram.security.GSISecurityContext;
 import org.apache.airavata.gfac.gram.external.GridFtp;
 import org.apache.airavata.gfac.gram.util.GramProviderUtils;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -156,7 +157,7 @@ public class GridFTPOutputHandler extends AbstractHandler {
                         log.error("Cannot download stdout/err files. One reason could be the job is not successfully finished:  "+e.getMessage());
                     }
 
-
+                    List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
                     Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
                     Set<String> keys = output.keySet();
                     for (String paramName : keys) {
@@ -166,19 +167,16 @@ public class GridFTPOutputHandler extends AbstractHandler {
                             List<String> outputList = ftp.listDir(outputURI, gssCred);
                             String[] valueList = outputList.toArray(new String[outputList.size()]);
                             ((URIArrayType) actualParameter.getType()).setValueArray(valueList);
-                            // why to instantiate new instance?
-//                            stringMap = new HashMap<String, ActualParameter>();
                             stringMap.put(paramName, actualParameter);
                         }else if ("StringArray".equals(actualParameter.getType().getType().toString())) {
                             String[] valueList = OutputUtils.parseStdoutArray(stdout, paramName);
                             ((StringArrayType) actualParameter.getType()).setValueArray(valueList);
-//                            stringMap = new HashMap<String, ActualParameter>();
                             stringMap.put(paramName, actualParameter);
                         } else if ("URI".equals(actualParameter.getType().getType().toString())) {
                         	  URI outputURI = GramProviderUtils.createGsiftpURI(endpoint, app.getOutputDataDirectory());
                               List<String> outputList = ftp.listDir(outputURI, gssCred);
 							if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
-								stringMap = OutputUtils.fillOutputFromStdout(output, stdout, stderr);
+								OutputUtils.fillOutputFromStdout(output, stdout, stderr,outputArray);
 							} else {
 								String valueList = outputList.get(0);
 								((URIParameterType) actualParameter.getType()).setValue(valueList);
@@ -188,7 +186,7 @@ public class GridFTPOutputHandler extends AbstractHandler {
                         }
                         else {
                             // This is to handle exception during the output parsing.
-                            stringMap = OutputUtils.fillOutputFromStdout(output, stdout, stderr);
+                            OutputUtils.fillOutputFromStdout(output, stdout, stderr,outputArray);
                         }
                         status.setTransferState(TransferState.DOWNLOAD);
     					detail.setTransferStatus(status);
@@ -196,7 +194,7 @@ public class GridFTPOutputHandler extends AbstractHandler {
                         registry.add(ChildDataType.DATA_TRANSFER_DETAIL,detail, jobExecutionContext.getTaskData().getTaskID());
                       
                     }
-                    if (stringMap == null || stringMap.isEmpty()) {
+                    if (outputArray == null || outputArray.isEmpty()) {
                         throw new GFacHandlerException("Empty Output returned from the Application, Double check the application" +
                                 "and ApplicationDescriptor output Parameter Names");
                     }
