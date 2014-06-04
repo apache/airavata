@@ -27,6 +27,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 import javax.persistence.EntityManager;
 import java.sql.Timestamp;
@@ -116,67 +117,76 @@ public class StatusResource extends AbstractResource {
         this.statusType = statusType;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for status resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for status resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for status resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for status resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Status status;
-        if (statusId != 0){
-            status = em.find(Status.class, statusId);
-            status.setStatusId(statusId);
-        }else {
-            status = new Status();
+    
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Status status;
+            if (statusId != 0) {
+                status = em.find(Status.class, statusId);
+                status.setStatusId(statusId);
+            } else {
+                status = new Status();
+            }
+            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+            if (taskDetailResource != null) {
+                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+                status.setTask(taskDetail);
+                status.setTaskId(taskDetailResource.getTaskId());
+            }
+            if (workflowNodeDetail != null) {
+                WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, workflowNodeDetail.getNodeInstanceId());
+                status.setNode(nodeDetail);
+                status.setNodeId(workflowNodeDetail.getNodeInstanceId());
+            }
+            if (dataTransferDetail != null) {
+                DataTransferDetail transferDetail = em.find(DataTransferDetail.class, dataTransferDetail.getTransferId());
+                status.setTransferDetail(transferDetail);
+                status.setTransferId(dataTransferDetail.getTransferId());
+            }
+            status.setExperiment(experiment);
+            status.setJobId(jobId);
+            status.setExpId(experimentResource.getExpID());
+            status.setState(state);
+            status.setStatusUpdateTime(statusUpdateTime);
+            status.setStatusType(statusType);
+            em.persist(status);
+            statusId = status.getStatusId();
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-
-        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        if (taskDetailResource != null){
-            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-            status.setTask(taskDetail);
-            status.setTaskId(taskDetailResource.getTaskId());
-        }
-        if (workflowNodeDetail != null){
-            WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, workflowNodeDetail.getNodeInstanceId());
-            status.setNode(nodeDetail);
-            status.setNodeId(workflowNodeDetail.getNodeInstanceId());
-        }
-        if (dataTransferDetail != null){
-            DataTransferDetail transferDetail = em.find(DataTransferDetail.class, dataTransferDetail.getTransferId());
-            status.setTransferDetail(transferDetail);
-            status.setTransferId(dataTransferDetail.getTransferId());
-        }
-        status.setExperiment(experiment);
-        status.setJobId(jobId);
-        status.setExpId(experimentResource.getExpID());
-        status.setState(state);
-        status.setStatusUpdateTime(statusUpdateTime);
-        status.setStatusType(statusType);
-        em.persist(status);
-        statusId = status.getStatusId();
-        em.getTransaction().commit();
-        em.close();
     }
 }

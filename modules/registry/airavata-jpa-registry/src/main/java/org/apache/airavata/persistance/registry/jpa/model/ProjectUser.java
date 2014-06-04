@@ -22,12 +22,16 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 
-import javax.persistence.*;
+import org.apache.openjpa.persistence.DataCache;
 
+import javax.persistence.*;
+import java.io.Serializable;
+
+@DataCache
 @Entity
 @IdClass(ProjectUser_PK.class)
 @Table(name = "PROJECT_USER")
-public class ProjectUser {
+public class ProjectUser implements Serializable {
     @Id
     @Column(name = "PROJECT_ID")
     private String projectID;

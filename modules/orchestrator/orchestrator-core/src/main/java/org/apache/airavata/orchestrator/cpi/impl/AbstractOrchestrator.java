@@ -46,7 +46,8 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +117,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
 
             /* initializing registry cpi */
             orchestratorContext.setNewRegistry(new RegistryImpl());
-        } catch (RegistryException e) {
+        } catch (RegException e) {
             logger.error("Failed to initializing Orchestrator");
             OrchestratorException orchestratorException = new OrchestratorException(e);
             throw orchestratorException;
@@ -130,7 +131,11 @@ public abstract class AbstractOrchestrator implements Orchestrator {
             throw orchestratorException;
 		} catch (ApplicationSettingsException e) {
 			throw new OrchestratorException(e);
-		}
+		} catch (RegistryException e) {
+            logger.error("Failed to initializing Orchestrator - Error initializing registry");
+            OrchestratorException orchestratorException = new OrchestratorException(e);
+            throw orchestratorException;
+        }
     }
 	
 	//get the registry URL and the credentials from the property file

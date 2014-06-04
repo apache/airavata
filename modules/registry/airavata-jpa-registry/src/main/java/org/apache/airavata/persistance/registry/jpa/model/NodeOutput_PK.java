@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class NodeOutput_PK {
+import java.io.Serializable;
+
+public class NodeOutput_PK implements Serializable {
     private String nodeId;
     private String outputKey;
 

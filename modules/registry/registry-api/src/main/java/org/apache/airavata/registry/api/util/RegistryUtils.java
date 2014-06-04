@@ -32,11 +32,8 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInstantiateException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorInvalidException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorNotFoundException;
-import org.apache.airavata.registry.api.exception.RegistryAccessorUndefinedException;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.*;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +41,7 @@ public class RegistryUtils {
     private static final Logger log = LoggerFactory.getLogger(RegistryUtils.class);
 
 
-    public static String validateAxisService(String urlString)throws RegistryException {
+    public static String validateAxisService(String urlString)throws RegException {
         if(!urlString.endsWith("?wsdl")){
             urlString = urlString + "?wsdl";
         }
@@ -54,24 +51,24 @@ public class RegistryUtils {
             conn.connect();
         } catch (MalformedURLException e) {
             // the URL is not in a valid form
-            throw new RegistryException("Given Axis2 Service URL : " + urlString + " is Invalid",e);
+            throw new RegException("Given Axis2 Service URL : " + urlString + " is Invalid",e);
         } catch (IOException e) {
             // the connection couldn't be established
-            throw new RegistryException("Given Axis2 Service URL : " + urlString + " is Invalid",e);
+            throw new RegException("Given Axis2 Service URL : " + urlString + " is Invalid",e);
         }
         return  urlString;
     }
-    public static String validateURL(String urlString)throws RegistryException{
+    public static String validateURL(String urlString)throws RegException {
         try {
             URL url = new URL(urlString);
             URLConnection conn = url.openConnection();
             conn.connect();
         } catch (MalformedURLException e) {
             // the URL is not in a valid form
-            throw new RegistryException("Given URL: " + urlString + " is Invalid",e);
+            throw new RegException("Given URL: " + urlString + " is Invalid",e);
         } catch (IOException e) {
             // the connection couldn't be established
-            throw new RegistryException("Given URL: " + urlString + " is Invalid",e);
+            throw new RegException("Given URL: " + urlString + " is Invalid",e);
         }
         return  urlString;
     }
@@ -109,17 +106,17 @@ public class RegistryUtils {
                     new AiravataUser(username));
         } catch (AiravataConfigurationException e) {
             log.error("Error initializing AiravataRegistry2");
-        } catch (RegistryAccessorNotFoundException e) {
+        } catch (RegAccessorNotFoundException e) {
             log.error("Error initializing AiravataRegistry2");
-        } catch (RegistryAccessorInstantiateException e) {
+        } catch (RegAccessorInstantiateException e) {
             log.error("Error initializing AiravataRegistry2");
-        } catch (RegistryAccessorInvalidException e) {
+        } catch (RegAccessorInvalidException e) {
             log.error("Error initializing AiravataRegistry2");
-        } catch (RegistryAccessorUndefinedException e) {
+        } catch (RegAccessorUndefinedException e) {
             log.error("Error initializing AiravataRegistry2");
         } catch (ApplicationSettingsException e) {
         	log.error("Error initializing AiravataRegistry2",e);
-		} catch (RegistryException e) {
+		} catch (RegException e) {
             log.error("Error initializing AiravataRegistry2",e);
         }
         return registry;

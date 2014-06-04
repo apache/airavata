@@ -27,6 +27,7 @@ import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -72,7 +73,7 @@ public class ServiceDescriptorResource extends AbstractResource {
         this.content = content;
     }
 
-    public Resource create(ResourceType type) {
+    public Resource create(ResourceType type) throws RegistryException{
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
             ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource();
             applicationDescriptorResource.setGatewayName(gatewayName);
@@ -83,84 +84,91 @@ public class ServiceDescriptorResource extends AbstractResource {
         throw new IllegalArgumentException("Unsupported resource type for service descriptor resource.");
     }
 
-    public void remove(ResourceType type, Object name) {
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for service descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public Resource get(ResourceType type, Object name) {
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for service descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public List<Resource> populate(Object[] keys) {
-        List<Resource> list = new ArrayList<Resource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator generator = new QueryGenerator(SERVICE_DESCRIPTOR);
-        generator.setParameter(ServiceDescriptorConstants.GATEWAY_NAME, keys[0]);
-        generator.setParameter(ServiceDescriptorConstants.SERVICE_DESC_ID, keys[1]);
-        Query q = generator.selectQuery(em);
-        Service_Descriptor serviceDescriptor = (Service_Descriptor)q.getSingleResult();
-        ServiceDescriptorResource serviceDescriptorResource = (ServiceDescriptorResource)Utils.getResource(ResourceType.SERVICE_DESCRIPTOR, serviceDescriptor);
-        em.getTransaction().commit();
-        em.close();
-        list.add(serviceDescriptorResource);
-        return list;
-    }
 
-    public List<Resource> get(ResourceType type) {
+    public List<Resource> get(ResourceType type) throws RegistryException{
         List<Resource> resourceList = new ArrayList<Resource>();
-        if (type == ResourceType.APPLICATION_DESCRIPTOR) {
-            EntityManager em = ResourceUtils.getEntityManager();
-            em.getTransaction().begin();
-            QueryGenerator queryGenerator = new QueryGenerator(APPLICATION_DESCRIPTOR);
-            queryGenerator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
-            queryGenerator.setParameter(ApplicationDescriptorConstants.SERVICE_DESC_ID, serviceDescName);
-            Query q = queryGenerator.selectQuery(em);
-            List results = q.getResultList();
-            if (results.size() != 0) {
-                for (Object result : results) {
-                    Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                    ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource)Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
-                    resourceList.add(applicationDescriptorResource);
+        EntityManager em = null;
+        try {
+            if (type == ResourceType.APPLICATION_DESCRIPTOR) {
+                em = ResourceUtils.getEntityManager();
+                em.getTransaction().begin();
+                QueryGenerator queryGenerator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+                queryGenerator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
+                queryGenerator.setParameter(ApplicationDescriptorConstants.SERVICE_DESC_ID, serviceDescName);
+                Query q = queryGenerator.selectQuery(em);
+                List results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
+                        ApplicationDescriptorResource applicationDescriptorResource = (ApplicationDescriptorResource) Utils.getResource(ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
+                        resourceList.add(applicationDescriptorResource);
+                    }
                 }
+                em.getTransaction().commit();
+                em.close();
             }
-            em.getTransaction().commit();
-            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
         return resourceList;
     }
 
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        Service_Descriptor existingServiceDesc = em.find(Service_Descriptor.class, new Service_Descriptor_PK(gatewayName, serviceDescName));
-        em.close();
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            Service_Descriptor existingServiceDesc = em.find(Service_Descriptor.class, new Service_Descriptor_PK(gatewayName, serviceDescName));
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-
-        Service_Descriptor serviceDescriptor = new Service_Descriptor();
-        serviceDescriptor.setService_descriptor_ID(getServiceDescName());
-        Gateway gateway = em.find(Gateway.class, gatewayName);
-        serviceDescriptor.setGateway(gateway);
-        byte[] bytes = content.getBytes();
-        serviceDescriptor.setService_descriptor_xml(bytes);
-        Users user = em.find(Users.class, userName);
-        serviceDescriptor.setUser(user);
-        if(existingServiceDesc != null) {
-            existingServiceDesc.setUser(user);
-            existingServiceDesc.setService_descriptor_xml(bytes);
-            serviceDescriptor = em.merge(existingServiceDesc);
-        }else {
-            em.merge(serviceDescriptor);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Service_Descriptor serviceDescriptor = new Service_Descriptor();
+            serviceDescriptor.setService_descriptor_ID(getServiceDescName());
+            Gateway gateway = em.find(Gateway.class, gatewayName);
+            serviceDescriptor.setGateway(gateway);
+            serviceDescriptor.setGateway_name(gateway.getGateway_name());
+            byte[] bytes = content.getBytes();
+            serviceDescriptor.setService_descriptor_xml(bytes);
+            Users user = em.find(Users.class, userName);
+            serviceDescriptor.setUser(user);
+            if (existingServiceDesc != null) {
+                existingServiceDesc.setUser(user);
+                existingServiceDesc.setService_descriptor_xml(bytes);
+                existingServiceDesc.setGateway(gateway);
+                existingServiceDesc.setGateway_name(gateway.getGateway_name());
+                serviceDescriptor = em.merge(existingServiceDesc);
+            } else {
+                em.persist(serviceDescriptor);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
 
     }
 
-    public boolean isExists(ResourceType type, Object name) {
+    public boolean isExists(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for service descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }

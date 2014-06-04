@@ -23,7 +23,7 @@ package org.apache.airavata.registry.api;
 
 import java.util.List;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 
 public interface DataRegistry {
@@ -34,17 +34,17 @@ public interface DataRegistry {
      * @param workflowId
      * @param parameters
      * @return
-     * @throws RegistryException 
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    public String saveOutput(String workflowId, List<ActualParameter> parameters) throws RegistryException;
+    public String saveOutput(String workflowId, List<ActualParameter> parameters) throws RegException;
 
     /**
      * Load output from workflow execution.
      * 
      * @param workflowId
      * @return List of parameters
-     * @throws RegistryException 
+     * @throws org.apache.airavata.registry.api.exception.RegException
      */
-    public List<ActualParameter> loadOutput(String workflowId) throws RegistryException;
+    public List<ActualParameter> loadOutput(String workflowId) throws RegException;
 
 }

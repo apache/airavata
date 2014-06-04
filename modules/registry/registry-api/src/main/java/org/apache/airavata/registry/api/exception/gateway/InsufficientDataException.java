@@ -21,9 +21,9 @@
 
 package org.apache.airavata.registry.api.exception.gateway;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 
-public class InsufficientDataException extends RegistryException {
+public class InsufficientDataException extends RegException {
 
     private static final long serialVersionUID = 7706410845538952164L;
 

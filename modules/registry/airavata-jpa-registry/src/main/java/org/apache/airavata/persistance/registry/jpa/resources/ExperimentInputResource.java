@@ -27,6 +27,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment_Input;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment_Input_PK;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,54 +83,64 @@ public class ExperimentInputResource extends AbstractResource {
         this.metadata = metadata;
     }
 
-    public Resource create(ResourceType type) {
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for experiment input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public void remove(ResourceType type, Object name) {
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for experiment input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public Resource get(ResourceType type, Object name) {
+    public Resource get(ResourceType type, Object name) throws RegistryException {
         logger.error("Unsupported resource type for experiment input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public List<Resource> get(ResourceType type) {
+    public List<Resource> get(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for experiment input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        Experiment_Input existingInput = em.find(Experiment_Input.class, new Experiment_Input_PK(experimentResource.getExpID(), experimentKey));
-        em.close();
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            Experiment_Input existingInput = em.find(Experiment_Input.class, new Experiment_Input_PK(experimentResource.getExpID(), experimentKey));
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Experiment_Input exInput = new Experiment_Input();
-        exInput.setEx_key(experimentKey);
-        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        exInput.setExperiment(experiment);
-        exInput.setExperiment_id(experiment.getExpId());
-        exInput.setValue(value);
-        exInput.setInputType(inputType);
-        exInput.setMetadata(metadata);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Experiment_Input exInput = new Experiment_Input();
+            exInput.setEx_key(experimentKey);
+            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+            exInput.setExperiment(experiment);
+            exInput.setExperiment_id(experiment.getExpId());
+            exInput.setValue(value);
+            exInput.setInputType(inputType);
+            exInput.setMetadata(metadata);
 
-        if (existingInput != null){
-            existingInput.setEx_key(experimentKey);
-            existingInput.setExperiment(experiment);
-            existingInput.setExperiment_id(experiment.getExpId());
-            existingInput.setValue(value);
-            existingInput.setInputType(inputType);
-            existingInput.setMetadata(metadata);
-            exInput = em.merge(existingInput);
-        }else {
-            em.persist(exInput);
+            if (existingInput != null) {
+                existingInput.setEx_key(experimentKey);
+                existingInput.setExperiment(experiment);
+                existingInput.setExperiment_id(experiment.getExpId());
+                existingInput.setValue(value);
+                existingInput.setInputType(inputType);
+                existingInput.setMetadata(metadata);
+                exInput = em.merge(existingInput);
+            } else {
+                em.persist(exInput);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
     }
 }

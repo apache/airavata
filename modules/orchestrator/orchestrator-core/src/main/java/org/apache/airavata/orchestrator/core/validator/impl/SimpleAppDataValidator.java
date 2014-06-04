@@ -28,6 +28,7 @@ import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,11 @@ public class SimpleAppDataValidator implements JobMetadataValidator {
     private Registry registry;
 
     public SimpleAppDataValidator() {
-        this.registry = RegistryFactory.getDefaultRegistry();
+        try {
+            this.registry = RegistryFactory.getDefaultRegistry();
+        } catch (RegistryException e) {
+            logger.error("Unable to initialize registry", e);
+        }
     }
 
     public ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) {

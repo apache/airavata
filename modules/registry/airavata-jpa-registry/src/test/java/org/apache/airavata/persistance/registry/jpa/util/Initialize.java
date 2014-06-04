@@ -29,6 +29,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.registry.api.exception.RegistrySettingsException;
 import org.apache.airavata.registry.api.util.RegistrySettings;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -167,6 +168,8 @@ public class Initialize {
           
         } catch (RegistrySettingsException e) {
             logger.error("Unable to read properties", e);
+        } catch (RegistryException e) {
+            logger.error("Error while saving data", e);
         }
     }
 

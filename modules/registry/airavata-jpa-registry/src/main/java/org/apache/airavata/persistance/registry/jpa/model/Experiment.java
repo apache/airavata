@@ -21,12 +21,16 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
 @Table(name = "EXPERIMENT")
-public class Experiment {
+@DataCache
+public class Experiment implements Serializable {
     @Id
     @Column(name = "EXPERIMENT_ID")
     private String expId;

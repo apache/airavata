@@ -20,12 +20,16 @@
 */
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
+@DataCache
 @Entity
 @Table(name ="PROJECT")
-public class Project {
+public class Project implements Serializable {
     @Id
     @Column(name = "PROJECT_ID")
     private String project_id;

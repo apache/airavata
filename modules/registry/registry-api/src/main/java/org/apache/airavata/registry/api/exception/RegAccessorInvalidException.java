@@ -21,20 +21,12 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class RegistryAccessorUndefinedException extends RegistryException {
+public class RegAccessorInvalidException extends RegException {
 
 	private static final long serialVersionUID = -2679914107485739140L;
-
-	public RegistryAccessorUndefinedException() {
-		this("A registry accessor was not defined in the registry settings");
-	}
 	
-	public RegistryAccessorUndefinedException(String message) {
-		this(message,null);
-	}
-	
-	public RegistryAccessorUndefinedException(String message, Exception e){
-		super(message, e);
+	public RegAccessorInvalidException(String className){
+		super("Registry accessor '"+className+"' is not valid!!!");
 	}
 
 }

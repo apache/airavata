@@ -20,12 +20,16 @@
 */
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.*;
+import org.apache.openjpa.persistence.DataCache;
 
+import javax.persistence.*;
+import java.io.Serializable;
+
+@DataCache
 @Entity
 @Table(name ="GATEWAY_WORKER")
 @IdClass(Gateway_Worker_PK.class)
-public class Gateway_Worker {
+public class Gateway_Worker implements Serializable {
     @Id
     @Column(name = "GATEWAY_NAME")
     private String gateway_name;

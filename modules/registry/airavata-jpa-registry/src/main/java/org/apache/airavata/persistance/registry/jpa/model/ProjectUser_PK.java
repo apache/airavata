@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class ProjectUser_PK {
+import java.io.Serializable;
+
+public class ProjectUser_PK implements Serializable {
     private String projectID;
     private String userName;
 

@@ -31,6 +31,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.NodeOutput;
 import org.apache.airavata.persistance.registry.jpa.model.NodeOutput_PK;
 import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,60 +84,69 @@ public class NodeOutputResource extends AbstractResource {
         this.value = value;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for node output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for node output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for node output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for node output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
+    
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            NodeOutput existingOutput = em.find(NodeOutput.class, new NodeOutput_PK(outputKey, nodeDetailResource.getNodeInstanceId()));
+            em.close();
 
-        EntityManager em = ResourceUtils.getEntityManager();
-        NodeOutput existingOutput = em.find(NodeOutput.class, new NodeOutput_PK(outputKey, nodeDetailResource.getNodeInstanceId()));
-        em.close();
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            NodeOutput nodeOutput = new NodeOutput();
+            WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, nodeDetailResource.getNodeInstanceId());
+            nodeOutput.setNode(nodeDetail);
+            nodeOutput.setNodeId(nodeDetail.getNodeId());
+            nodeOutput.setOutputKey(outputKey);
+            nodeOutput.setOutputKeyType(outputType);
+            nodeOutput.setValue(value);
+            nodeOutput.setMetadata(metadata);
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        NodeOutput nodeOutput = new NodeOutput();
-        WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, nodeDetailResource.getNodeInstanceId());
-        nodeOutput.setNode(nodeDetail);
-        nodeOutput.setNodeId(nodeDetail.getNodeId());
-        nodeOutput.setOutputKey(outputKey);
-        nodeOutput.setOutputKeyType(outputType);
-        nodeOutput.setValue(value);
-        nodeOutput.setMetadata(metadata);
-        
-        if (existingOutput != null){
-            existingOutput.setNode(nodeDetail);
-            existingOutput.setNodeId(nodeDetail.getNodeId());
-            existingOutput.setOutputKey(outputKey);
-            existingOutput.setOutputKeyType(outputType);
-            existingOutput.setValue(value);
-            existingOutput.setMetadata(metadata);
-            nodeOutput = em.merge(existingOutput);
-        }else {
-            em.persist(nodeOutput);
+            if (existingOutput != null) {
+                existingOutput.setNode(nodeDetail);
+                existingOutput.setNodeId(nodeDetail.getNodeId());
+                existingOutput.setOutputKey(outputKey);
+                existingOutput.setOutputKeyType(outputType);
+                existingOutput.setValue(value);
+                existingOutput.setMetadata(metadata);
+                nodeOutput = em.merge(existingOutput);
+            } else {
+                em.persist(nodeOutput);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
     }
 }

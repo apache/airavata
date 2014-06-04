@@ -21,38 +21,35 @@
 
 package org.apache.airavata.client.samples;
 
-import org.apache.airavata.model.error.*;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ClientSettings;
-import org.apache.airavata.model.util.ProjectModelUtil;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.model.util.ProjectModelUtil;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.sql.Timestamp;
+import java.util.*;
 
-public class CreateLaunchExperiment {
+public class TestCreateLaunchExperiment {
 
     //FIXME: Read from a config file
     public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 8930;
-    private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
+    private final static Logger logger = LoggerFactory.getLogger(TestCreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
 
@@ -61,123 +58,72 @@ public class CreateLaunchExperiment {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.getAPIVersion());
-            addDescriptors();
+//            addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
-            final String expId = createExperimentForLocalHost(airavata);
-//            final String expId = createExperimentForLonestar(airavata);
-//            final String expId = createExperimentWRFTrestles(airavata);
-            System.out.println("Experiment ID : " + expId);
-//            updateExperiment(airavata, expId);
-            launchExperiment(airavata, expId);
-            System.out.println("Launched successfully");
-            List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
-            List<ExperimentSummary> searchedExps1 = searchExperimentsByName(airavata, "admin", "echo");
-            List<ExperimentSummary> searchedExps2 = searchExperimentsByDesc(airavata, "admin", "Echo");
-            List<ExperimentSummary> searchedExps3 = searchExperimentsByApplication(airavata, "admin", "cho");
-            List<Project> projects = getAllUserProject(airavata, "admin");
-            List<Project> searchProjects1 = searchProjectsByProjectName(airavata, "admin", "project");
-            List<Project> searchProjects2 = searchProjectsByProjectDesc(airavata, "admin", "test");
-            for (Experiment exp : experiments){
-                System.out.println(" exp id : " + exp.getExperimentID());
-                System.out.println("experiment Description : " + exp.getDescription()) ;
-                if (exp.getExperimentStatus() != null) {
-                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
-                }
+//            for (int i = 0 ; i < 100 ; i++){
+//                final String expId = createExperimentForLocalHost(airavata);
+//                System.out.println("Experiment ID : " + expId);
+//                launchExperiment(airavata, expId);
+//                Thread monitor = (new Thread(){
+//                    public void run() {
+//                        Map<String, JobStatus> jobStatuses = null;
+//                        while (true) {
+//                            try {
+//                                jobStatuses = airavata.getJobStatuses(expId);
+//                                Set<String> strings = jobStatuses.keySet();
+//                                for (String key : strings) {
+//                                    JobStatus jobStatus = jobStatuses.get(key);
+//                                    if(jobStatus == null){
+//                                        return;
+//                                    }else {
+//                                        if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
+//                                            System.out.println("Job completed Job ID: " + key);
+//                                            return;
+//                                        }else{
+//                                            System.out.println("Job ID:" + key + jobStatuses.get(key).getJobState().toString());
+//                                        }
+//                                    }
+//                                }
+//                                System.out.println(airavata.getExperimentStatus(expId));
+//                                Thread.sleep(5000);
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//
+//                    }
+//                });
+//                monitor.start();
+//                try {
+//                    monitor.join();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                }
+//                try {
+//                    Thread.sleep(5000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace(); // To change body of catch statement use
+//                    // File | Settings | File Templates.
+//                }
+//            }
+
+            for (int i = 0; i < 500 ; i++){
+                long time = System.currentTimeMillis();
+                List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
+                int count = i+1;
+//                System.out.println("Experiment count : " + experiments.size());
+                System.out.println("iteration : " + String.valueOf(count));
+                System.out.println(System.currentTimeMillis() - time);
             }
+//            List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
+//            System.out.println("Experiment count : " + experiments.size());
+//            for (Experiment ex : experiments){
+//                System.out.println(ex.getExperimentID());
+//            }
 
-            for (ExperimentSummary exp : searchedExps1){
-                System.out.println("search results by experiment name");
-                System.out.println("experiment ID : " + exp.getExperimentID()) ;
-                System.out.println("experiment Description : " + exp.getDescription()) ;
-                if (exp.getExperimentStatus() != null) {
-                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
-                }
-            }
-
-            for (ExperimentSummary exp : searchedExps2){
-                System.out.println("search results by experiment desc");
-                System.out.println("experiment ID : " + exp.getExperimentID()) ;
-                if (exp.getExperimentStatus() != null) {
-                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
-                }
-            }
-
-            for (ExperimentSummary exp : searchedExps3){
-                System.out.println("search results by application");
-                System.out.println("experiment ID : " + exp.getExperimentID()) ;
-                if (exp.getExperimentStatus() != null) {
-                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
-                }
-            }
-
-            for (Project pr : searchProjects1){
-                System.out.println(" project id : " + pr.getProjectID());
-            }
-
-            for (Project pr : searchProjects2){
-                System.out.println(" project id : " + pr.getProjectID());
-                System.out.println(" project desc : " + pr.getDescription());
-            }
-
-            Thread monitor = (new Thread(){
-                 public void run() {
-                     Map<String, JobStatus> jobStatuses = null;
-                     while (true) {
-                         try {
-                             jobStatuses = airavata.getJobStatuses(expId);
-                             Set<String> strings = jobStatuses.keySet();
-                             for (String key : strings) {
-                                 JobStatus jobStatus = jobStatuses.get(key);
-                                 if(jobStatus == null){
-                                     return;
-                                 }else {
-                                     if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
-                                         System.out.println("Job completed Job ID: " + key);
-                                         return;
-                                     }else{
-                                        System.out.println("Job ID:" + key + jobStatuses.get(key).getJobState().toString());
-                                     }
-                                 }
-                             }
-                             ExperimentStatus experimentStatus = airavata.getExperimentStatus(expId);
-                             if(experimentStatus.getExperimentState().equals(ExperimentState.FAILED)){
-                            	 return;
-                             }
-							System.out.println(experimentStatus);
-                             Thread.sleep(5000);
-                         } catch (Exception e) {
-                             e.printStackTrace();
-                         }
-                     }
-
-                 }
-            });
-            monitor.start();
-            try {
-                monitor.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				e.printStackTrace(); // To change body of catch statement use
-										// File | Settings | File Templates.
-			}
-
-//            System.out.println(airavata.getExperimentStatus(expId));
-            List<DataObjectType> output = airavata.getExperimentOutputs(expId);
-            for (DataObjectType dataObjectType : output) {
-                System.out.println(dataObjectType.getKey() + " : " + dataObjectType.getType() + " : " + dataObjectType.getValue());
-                
-				
-			}
-            String clonedExpId = cloneExperiment(airavata, expId);
-            System.out.println("Cloned Experiment ID : " + clonedExpId);
-//            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
@@ -240,71 +186,6 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
-            userConfigurationData.setAiravataAutoSchedule(false);
-            userConfigurationData.setOverrideManualScheduledParams(false);
-            userConfigurationData.setComputationalResourceScheduling(scheduling);
-            simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(simpleExperiment);
-        } catch (AiravataSystemException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new AiravataSystemException(e);
-        } catch (InvalidRequestException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new InvalidRequestException(e);
-        } catch (AiravataClientException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new AiravataClientException(e);
-        }catch (TException e) {
-            logger.error("Error occured while creating the experiment...", e.getMessage());
-            throw new TException(e);
-        }
-    }
-    
-    public static String createExperimentWRFTrestles(Airavata.Client client) throws TException  {
-        try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("WRF_Namelist");
-            input.setType(DataType.URI);
-            input.setValue("/Users/raminder/Downloads/wrf_sample_inputs/namelist.input");
-            
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("WRF_Input_File");
-            input1.setType(DataType.URI);
-            input1.setValue("/Users/raminder/Downloads/wrf_sample_inputs/wrfinput_d01");
-            
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("WRF_Boundary_File");
-            input2.setType(DataType.URI);
-            input2.setValue("/Users/raminder/Downloads/wrf_sample_inputs/wrfbdy_d01");
-            
-            exInputs.add(input);
-            exInputs.add(input1);
-            exInputs.add(input2);
-
-           
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("WRF_Output");
-            output.setType(DataType.URI);
-            output.setValue("");
-            
-            DataObjectType output1 = new DataObjectType();
-            output1.setKey("WRF_Execution_Log");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-            
-            
-            exOut.add(output);
-            exOut.add(output1);
-           
-
-            Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", "WRF", exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
-
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 32, 2, 1, "normal", 0, 0, 1, "sds128");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -502,11 +383,12 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho4", "Echo", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho4", "SimpleEcho4", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =
                     ExperimentModelUtil.createComputationResourceScheduling("lonestar.tacc.utexas.edu", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
+            scheduling.setResourceHostId("lonestar-host");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -536,8 +418,6 @@ public class CreateLaunchExperiment {
             throw new TException(e);
         }
     }
-       
-       
     public static void launchExperiment (Airavata.Client client, String expId)
             throws TException{
         try {

@@ -25,6 +25,7 @@ import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 public abstract class AbstractHandler implements GFacHandler {
 	protected Registry registry = null;
@@ -38,7 +39,11 @@ public abstract class AbstractHandler implements GFacHandler {
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
 		registry = jobExecutionContext.getRegistry();
         if(registry == null){
-            registry = RegistryFactory.getDefaultRegistry();
+            try {
+                registry = RegistryFactory.getDefaultRegistry();
+            } catch (RegistryException e) {
+                throw new GFacHandlerException("unable to create registry instance", e);
+            }
         }
 	}
 

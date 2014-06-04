@@ -21,13 +21,17 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
+@DataCache
 @Entity
 @Table(name = "JOB_DETAIL")
 @IdClass(JobDetails_PK.class)
-public class JobDetail {
+public class JobDetail implements Serializable {
     @Id
     @Column(name = "JOB_ID")
     private String jobId;

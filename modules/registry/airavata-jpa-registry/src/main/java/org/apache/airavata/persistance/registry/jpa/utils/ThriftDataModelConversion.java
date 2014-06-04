@@ -25,6 +25,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,7 @@ import java.util.List;
 public class ThriftDataModelConversion {
     private final static Logger logger = LoggerFactory.getLogger(ThriftDataModelConversion.class);
 
-    public static Project getProject (ProjectResource pr){
+    public static Project getProject (ProjectResource pr) throws RegistryException {
         if (pr != null) {
             Project project = new Project();
             project.setProjectID(pr.getId());
@@ -58,7 +59,7 @@ public class ThriftDataModelConversion {
     }
 
 
-    public static Experiment getExperiment(ExperimentResource experimentResource){
+    public static Experiment getExperiment(ExperimentResource experimentResource) throws RegistryException {
         if (experimentResource != null){
             Experiment experiment = new Experiment();
             if (experimentResource.getProject()!= null){
@@ -105,7 +106,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static ExperimentSummary getExperimentSummary(ExperimentResource experimentResource){
+    public static ExperimentSummary getExperimentSummary(ExperimentResource experimentResource) throws RegistryException {
         if (experimentResource != null){
             ExperimentSummary experimentSummary = new ExperimentSummary();
             if (experimentResource.getProject()!= null){
@@ -336,7 +337,7 @@ public class ThriftDataModelConversion {
         return wfNodeStatuses;
     }
 
-    public static WorkflowNodeDetails getWorkflowNodeDetails(WorkflowNodeDetailResource nodeDetailResource){
+    public static WorkflowNodeDetails getWorkflowNodeDetails(WorkflowNodeDetailResource nodeDetailResource) throws RegistryException {
         if (nodeDetailResource != null){
             WorkflowNodeDetails wfNode = new WorkflowNodeDetails();
             wfNode.setNodeInstanceId(nodeDetailResource.getNodeInstanceId());
@@ -356,7 +357,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<WorkflowNodeDetails> getWfNodeList (List<WorkflowNodeDetailResource> resources){
+    public static List<WorkflowNodeDetails> getWfNodeList (List<WorkflowNodeDetailResource> resources) throws RegistryException {
         List<WorkflowNodeDetails> workflowNodeDetailsList = new ArrayList<WorkflowNodeDetails>();
         if (resources != null && !resources.isEmpty()){
             for (WorkflowNodeDetailResource resource : resources){
@@ -366,7 +367,7 @@ public class ThriftDataModelConversion {
         return workflowNodeDetailsList;
     }
 
-    public static TaskDetails getTaskDetail (TaskDetailResource taskDetailResource){
+    public static TaskDetails getTaskDetail (TaskDetailResource taskDetailResource) throws RegistryException {
         if (taskDetailResource != null){
             TaskDetails taskDetails = new TaskDetails();
             String taskId = taskDetailResource.getTaskId();
@@ -402,7 +403,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<TaskDetails> getTaskDetailsList (List<TaskDetailResource> resources){
+    public static List<TaskDetails> getTaskDetailsList (List<TaskDetailResource> resources) throws RegistryException {
         List<TaskDetails> taskDetailsList = new ArrayList<TaskDetails>();
         if (resources != null && !resources.isEmpty()){
             for (TaskDetailResource resource : resources){
@@ -412,7 +413,7 @@ public class ThriftDataModelConversion {
         return taskDetailsList;
     }
 
-    public static List<JobDetails> getJobDetailsList(List<JobDetailResource> jobs){
+    public static List<JobDetails> getJobDetailsList(List<JobDetailResource> jobs) throws RegistryException {
         List<JobDetails> jobDetailsList = new ArrayList<JobDetails>();
         if (jobs != null && !jobs.isEmpty()){
             for (JobDetailResource resource : jobs){
@@ -423,7 +424,7 @@ public class ThriftDataModelConversion {
     }
 
 
-    public static JobDetails getJobDetail(JobDetailResource jobDetailResource){
+    public static JobDetails getJobDetail(JobDetailResource jobDetailResource) throws RegistryException {
         if (jobDetailResource != null){
             JobDetails jobDetails = new JobDetails();
             jobDetails.setJobID(jobDetailResource.getJobId());
@@ -467,7 +468,7 @@ public class ThriftDataModelConversion {
         return errorDetailsList;
     }
 
-    public static DataTransferDetails getDataTransferDetail (DataTransferDetailResource resource){
+    public static DataTransferDetails getDataTransferDetail (DataTransferDetailResource resource) throws RegistryException {
         if (resource != null){
             DataTransferDetails details = new DataTransferDetails();
             details.setTransferID(resource.getTransferId());
@@ -479,7 +480,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<DataTransferDetails> getDataTransferlList (List<DataTransferDetailResource> resources){
+    public static List<DataTransferDetails> getDataTransferlList (List<DataTransferDetailResource> resources) throws RegistryException {
         List<DataTransferDetails> transferDetailsList = new ArrayList<DataTransferDetails>();
         if (resources != null && !resources.isEmpty()){
             for (DataTransferDetailResource resource : resources){
@@ -490,7 +491,7 @@ public class ThriftDataModelConversion {
     }
 
 
-    public static UserConfigurationData getUserConfigData (ConfigDataResource resource){
+    public static UserConfigurationData getUserConfigData (ConfigDataResource resource) throws RegistryException {
         if (resource != null){
             UserConfigurationData data = new UserConfigurationData();
             data.setAiravataAutoSchedule(resource.isAiravataAutoSchedule());

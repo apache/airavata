@@ -21,9 +21,9 @@
 
 package org.apache.airavata.registry.api.exception.worker;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 
-public class WorkspaceProjectDoesNotExistsException extends RegistryException {
+public class WorkspaceProjectDoesNotExistsException extends RegException {
 
 	private static final long serialVersionUID = -8006347245307495767L;
 

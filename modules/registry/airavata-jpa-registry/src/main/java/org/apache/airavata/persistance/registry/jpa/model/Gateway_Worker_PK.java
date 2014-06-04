@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class Gateway_Worker_PK {
+import java.io.Serializable;
+
+public class Gateway_Worker_PK implements Serializable {
     private String gateway_name;
     private String user_name;
 

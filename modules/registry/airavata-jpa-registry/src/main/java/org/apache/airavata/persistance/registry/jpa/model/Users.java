@@ -20,11 +20,15 @@
 */
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.*;
+import org.apache.openjpa.persistence.DataCache;
 
+import javax.persistence.*;
+import java.io.Serializable;
+
+@DataCache
 @Entity
 @Table(name ="USERS")
-public class Users {
+public class Users implements Serializable {
 
     @Id
     @Column(name = "USER_NAME")

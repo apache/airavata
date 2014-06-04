@@ -54,7 +54,7 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.api.AiravataRegistryFactory;
 import org.apache.airavata.registry.api.AiravataUser;
 import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.schemas.gfac.ExportProperties;
 import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
@@ -67,7 +67,7 @@ public class ApplicationCatalogHandler implements Iface {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
 
 	AiravataRegistry2 registry;
-	private AiravataRegistry2 getRegistry() throws RegistryException, AiravataConfigurationException{
+	private AiravataRegistry2 getRegistry() throws RegException, AiravataConfigurationException{
 		 if (registry==null){
 			 registry = AiravataRegistryFactory.getRegistry(new Gateway("default"), new AiravataUser("admin"));
 		 }

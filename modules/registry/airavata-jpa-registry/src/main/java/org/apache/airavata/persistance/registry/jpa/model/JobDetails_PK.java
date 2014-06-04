@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class JobDetails_PK {
+import java.io.Serializable;
+
+public class JobDetails_PK implements Serializable {
     private String jobId;
     private String taskId;
 

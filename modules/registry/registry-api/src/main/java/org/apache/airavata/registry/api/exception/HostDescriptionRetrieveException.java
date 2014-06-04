@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class HostDescriptionRetrieveException extends RegistryException {
+public class HostDescriptionRetrieveException extends RegException {
     private final static String ERROR_MESSAGE = "Error occured while attempting to retrieve existing hosts";
 
     private static final long serialVersionUID = -2849422320139467602L;

@@ -28,6 +28,7 @@ import org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail;
 import org.apache.airavata.persistance.registry.jpa.model.Status;
 import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,8 +78,8 @@ public class DataTransferDetailResource extends AbstractResource {
         this.transferDescription = transferDescription;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException {
         switch (type){
             case STATUS:
                 StatusResource statusResource = new StatusResource();
@@ -90,119 +91,158 @@ public class DataTransferDetailResource extends AbstractResource {
         }
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Query q;
-        QueryGenerator generator;
-        switch (type){
-            case STATUS:
-                generator = new QueryGenerator(STATUS);
-                generator.setParameter(StatusConstants.TRANSFER_ID, name);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            default:
-                logger.error("Unsupported resource type for data transfer details resource.", new IllegalArgumentException());
-                break;
-        }
-        em.getTransaction().commit();
-        em.close();
-    }
-
-    @Override
-    public Resource get(ResourceType type, Object name) {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator generator;
-        Query q;
-        switch (type) {
-            case STATUS:
-                generator = new QueryGenerator(STATUS);
-                generator.setParameter(StatusConstants.TRANSFER_ID, name);
-                q = generator.selectQuery(em);
-                Status status = (Status)q.getSingleResult();
-                StatusResource statusResource = (StatusResource)Utils.getResource(ResourceType.STATUS, status);
-                em.getTransaction().commit();
+    
+    public void remove(ResourceType type, Object name) throws RegistryException {
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+            QueryGenerator generator;
+            switch (type) {
+                case STATUS:
+                    generator = new QueryGenerator(STATUS);
+                    generator.setParameter(StatusConstants.TRANSFER_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                default:
+                    logger.error("Unsupported resource type for data transfer details resource.", new IllegalArgumentException());
+                    break;
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
                 em.close();
-                return statusResource;
-            default:
-                em.getTransaction().commit();
-                em.close();
-                logger.error("Unsupported resource type for data transfer details resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported resource type for data transfer details resource.");
+            }
         }
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator;
+            Query q;
+            switch (type) {
+                case STATUS:
+                    generator = new QueryGenerator(STATUS);
+                    generator.setParameter(StatusConstants.TRANSFER_ID, name);
+                    q = generator.selectQuery(em);
+                    Status status = (Status) q.getSingleResult();
+                    StatusResource statusResource = (StatusResource) Utils.getResource(ResourceType.STATUS, status);
+                    em.getTransaction().commit();
+                    em.close();
+                    return statusResource;
+                default:
+                    em.getTransaction().commit();
+                    em.close();
+                    logger.error("Unsupported resource type for data transfer details resource.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported resource type for data transfer details resource.");
+            }
+        } catch (Exception e) {
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    
+    public List<Resource> get(ResourceType type) throws RegistryException{
         List<Resource> resourceList = new ArrayList<Resource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Query q;
-        QueryGenerator generator;
-        List results;
-        switch (type){
-            case STATUS:
-                generator = new QueryGenerator(STATUS);
-                generator.setParameter(StatusConstants.TRANSFER_ID, transferId);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        Status status = (Status) result;
-                        StatusResource statusResource =
-                                (StatusResource)Utils.getResource(ResourceType.STATUS, status);
-                        resourceList.add(statusResource);
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+            QueryGenerator generator;
+            List results;
+            switch (type) {
+                case STATUS:
+                    generator = new QueryGenerator(STATUS);
+                    generator.setParameter(StatusConstants.TRANSFER_ID, transferId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Status status = (Status) result;
+                            StatusResource statusResource =
+                                    (StatusResource) Utils.getResource(ResourceType.STATUS, status);
+                            resourceList.add(statusResource);
+                        }
                     }
-                }
-                break;
-            default:
-                em.getTransaction().commit();
+                    break;
+                default:
+                    em.getTransaction().commit();
+                    em.close();
+                    logger.error("Unsupported resource type for workflow node details resource.", new UnsupportedOperationException());
+                    throw new UnsupportedOperationException();
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
                 em.close();
-                logger.error("Unsupported resource type for workflow node details resource.", new UnsupportedOperationException());
-                throw new UnsupportedOperationException();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
         return resourceList;
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        DataTransferDetail existingDF = em.find(DataTransferDetail.class, transferId);
-        em.close();
+    
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            DataTransferDetail existingDF = em.find(DataTransferDetail.class, transferId);
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        DataTransferDetail dataTransferDetail = new DataTransferDetail();
-        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-        dataTransferDetail.setTransferId(transferId);
-        dataTransferDetail.setTask(taskDetail);
-        dataTransferDetail.setTaskId(taskDetailResource.getTaskId());
-        dataTransferDetail.setCreationTime(creationTime);
-        if (transferDescription != null){
-            dataTransferDetail.setTransferDesc(transferDescription.toCharArray());
-        }
-        if (existingDF != null){
-            existingDF.setTransferId(transferId);
-            existingDF.setTask(taskDetail);
-            existingDF.setTaskId(taskDetailResource.getTaskId());
-            existingDF.setCreationTime(creationTime);
-            if (transferDescription != null){
-                existingDF.setTransferDesc(transferDescription.toCharArray());
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            DataTransferDetail dataTransferDetail = new DataTransferDetail();
+            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+            dataTransferDetail.setTransferId(transferId);
+            dataTransferDetail.setTask(taskDetail);
+            dataTransferDetail.setTaskId(taskDetailResource.getTaskId());
+            dataTransferDetail.setCreationTime(creationTime);
+            if (transferDescription != null) {
+                dataTransferDetail.setTransferDesc(transferDescription.toCharArray());
             }
-            dataTransferDetail = em.merge(existingDF);
-        }else {
-            em.merge(dataTransferDetail);
+            if (existingDF != null) {
+                existingDF.setTransferId(transferId);
+                existingDF.setTask(taskDetail);
+                existingDF.setTaskId(taskDetailResource.getTaskId());
+                existingDF.setCreationTime(creationTime);
+                if (transferDescription != null) {
+                    existingDF.setTransferDesc(transferDescription.toCharArray());
+                }
+                dataTransferDetail = em.merge(existingDF);
+            } else {
+                em.persist(dataTransferDetail);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
     }
 
-    public StatusResource getDataTransferStatus (){
+    public StatusResource getDataTransferStatus () throws RegistryException{
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource dataTransferStatus = (StatusResource) resource;

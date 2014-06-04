@@ -25,9 +25,9 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.AdvancedInputDataHandling;
-import org.apache.airavata.persistance.registry.jpa.model.AdvancedOutputDataHandling;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,56 +100,66 @@ public class AdvanceInputDataHandlingResource extends AbstractResource {
         this.cleanAfterJob = cleanAfterJob;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for input data handling resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException {
         logger.error("Unsupported resource type for input data handling resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for input data handling resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for input data handling resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        AdvancedInputDataHandling dataHandling;
-        if (dataHandlingId != 0 ){
-            dataHandling = em.find(AdvancedInputDataHandling.class, dataHandlingId);
-            dataHandling.setDataHandlingId(dataHandlingId);
-        }else {
-            dataHandling = new AdvancedInputDataHandling();
+    
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            AdvancedInputDataHandling dataHandling;
+            if (dataHandlingId != 0) {
+                dataHandling = em.find(AdvancedInputDataHandling.class, dataHandlingId);
+                dataHandling.setDataHandlingId(dataHandlingId);
+            } else {
+                dataHandling = new AdvancedInputDataHandling();
+            }
+            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+            if (taskDetailResource != null) {
+                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+                dataHandling.setTaskId(taskDetailResource.getTaskId());
+                dataHandling.setTask(taskDetail);
+            }
+            dataHandling.setExpId(experimentResource.getExpID());
+            dataHandling.setExperiment(experiment);
+            dataHandling.setWorkingDir(workingDir);
+            dataHandling.setParentWorkingDir(workingDirParent);
+            dataHandling.setStageInputsToWorkingDir(stageInputFiles);
+            dataHandling.setCleanAfterJob(cleanAfterJob);
+            em.persist(dataHandling);
+            dataHandlingId = dataHandling.getDataHandlingId();
+            em.getTransaction().commit();
+            em.close();
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        }finally {
+            if (em != null && em.isOpen()){
+                em.close();
+            }
         }
-        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        if (taskDetailResource !=null){
-            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-            dataHandling.setTaskId(taskDetailResource.getTaskId());
-            dataHandling.setTask(taskDetail);
-        }
-        dataHandling.setExpId(experimentResource.getExpID());
-        dataHandling.setExperiment(experiment);
-        dataHandling.setWorkingDir(workingDir);
-        dataHandling.setParentWorkingDir(workingDirParent);
-        dataHandling.setStageInputsToWorkingDir(stageInputFiles);
-        dataHandling.setCleanAfterJob(cleanAfterJob);
-        em.persist(dataHandling);
-        dataHandlingId = dataHandling.getDataHandlingId();
-        em.getTransaction().commit();
-        em.close();
     }
 }

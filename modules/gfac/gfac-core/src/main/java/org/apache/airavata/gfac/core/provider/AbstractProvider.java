@@ -30,6 +30,7 @@ import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,11 @@ public abstract class AbstractProvider implements GFacProvider{
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         log.debug("Initializing " + this.getClass().getName());
         if(jobExecutionContext.getRegistry() == null) {
-            registry = RegistryFactory.getDefaultRegistry();
+            try {
+                registry = RegistryFactory.getDefaultRegistry();
+            } catch (RegistryException e) {
+                throw new GFacException("Unable to create registry instance", e);
+            }
         }else{
             registry = jobExecutionContext.getRegistry();
         }

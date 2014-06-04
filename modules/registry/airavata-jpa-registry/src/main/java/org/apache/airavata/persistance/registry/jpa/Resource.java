@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.persistance.registry.jpa;
 
+import org.apache.airavata.registry.cpi.RegistryException;
+
 import java.util.List;
 
 public interface Resource {
@@ -28,14 +30,14 @@ public interface Resource {
      * @param type child resource type
      * @return associate child resource
      */
-    Resource create(ResourceType type);
+    Resource create(ResourceType type) throws RegistryException, RegistryException;
 
     /**
      * This method will remove the given child resource from the database
      * @param type child resource type
      * @param name child resource name
      */
-    void remove(ResourceType type, Object name);
+    void remove(ResourceType type, Object name) throws RegistryException;
 
     /**
      *  This method will return the given child resource from the database
@@ -43,19 +45,19 @@ public interface Resource {
      * @param name child resource name
      * @return associate child resource
      */
-    Resource get(ResourceType type, Object name);
+    Resource get(ResourceType type, Object name) throws RegistryException;
 
     /**
      * This method will list all the child resources for the given resource type
      * @param type child resource type
      * @return list of child resources of the given child resource type
      */
-    List<Resource> get(ResourceType type);
+    List<Resource> get(ResourceType type) throws RegistryException;
 
     /**
      * This method will save the resource to the database.
      */
-    void save();
+    void save() throws RegistryException;
 
     /**
      * This method will check whether an entry from the given resource type and resource name
@@ -64,6 +66,6 @@ public interface Resource {
      * @param name child resource name
      * @return whether the entry exists in the database or not
      */
-    boolean isExists(ResourceType type, Object name);
+    boolean isExists(ResourceType type, Object name) throws RegistryException;
 
 }

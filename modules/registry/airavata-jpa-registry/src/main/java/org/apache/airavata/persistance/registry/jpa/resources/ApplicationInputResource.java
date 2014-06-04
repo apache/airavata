@@ -31,6 +31,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.ApplicationInput;
 import org.apache.airavata.persistance.registry.jpa.model.ApplicationInput_PK;
 import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,59 +83,68 @@ public class ApplicationInputResource extends AbstractResource {
         this.taskDetailResource = taskDetailResource;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for application input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for application input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException {
         logger.error("Unsupported resource type for application input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for application input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        ApplicationInput existingInput = em.find(ApplicationInput.class, new ApplicationInput_PK(inputKey, taskDetailResource.getTaskId()));
-        em.close();
+    
+    public void save() throws RegistryException {
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            ApplicationInput existingInput = em.find(ApplicationInput.class, new ApplicationInput_PK(inputKey, taskDetailResource.getTaskId()));
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        ApplicationInput applicationInput = new ApplicationInput();
-        TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-        applicationInput.setTask(taskDetail);
-        applicationInput.setTaskId(taskDetail.getTaskId());
-        applicationInput.setInputKey(inputKey);
-        applicationInput.setInputKeyType(inputType);
-        applicationInput.setValue(value);
-        applicationInput.setMetadata(metadata);
-        
-        if (existingInput != null){
-            existingInput.setTask(taskDetail);
-            existingInput.setTaskId(taskDetail.getTaskId());
-            existingInput.setInputKey(inputKey);
-            existingInput.setInputKeyType(inputType);
-            existingInput.setValue(value);
-            existingInput.setMetadata(metadata);
-            applicationInput = em.merge(existingInput);
-        }else {
-            em.persist(applicationInput);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            ApplicationInput applicationInput = new ApplicationInput();
+            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+            applicationInput.setTask(taskDetail);
+            applicationInput.setTaskId(taskDetail.getTaskId());
+            applicationInput.setInputKey(inputKey);
+            applicationInput.setInputKeyType(inputType);
+            applicationInput.setValue(value);
+            applicationInput.setMetadata(metadata);
+
+            if (existingInput != null) {
+                existingInput.setTask(taskDetail);
+                existingInput.setTaskId(taskDetail.getTaskId());
+                existingInput.setInputKey(inputKey);
+                existingInput.setInputKeyType(inputType);
+                existingInput.setValue(value);
+                existingInput.setMetadata(metadata);
+                applicationInput = em.merge(existingInput);
+            } else {
+                em.persist(applicationInput);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            throw new RegistryException(e.getMessage());
+        } finally {
+                if (em != null && em.isOpen()) {
+                    em.close();
+                }
+            }
         }
-        em.getTransaction().commit();
-        em.close();
-    }
 }
