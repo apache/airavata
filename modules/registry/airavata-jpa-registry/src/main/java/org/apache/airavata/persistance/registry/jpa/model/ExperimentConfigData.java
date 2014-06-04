@@ -21,11 +21,15 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.*;
+import org.apache.openjpa.persistence.DataCache;
 
+import javax.persistence.*;
+import java.io.Serializable;
+
+@DataCache
 @Entity
 @Table(name = "CONFIG_DATA")
-public class ExperimentConfigData {
+public class ExperimentConfigData implements Serializable {
     @Id
     @Column(name = "EXPERIMENT_ID")
     private String expId;

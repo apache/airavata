@@ -21,12 +21,20 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class RegistryAccessorNotFoundException extends RegistryException {
+public class RegAccessorUndefinedException extends RegException {
 
 	private static final long serialVersionUID = -2679914107485739140L;
+
+	public RegAccessorUndefinedException() {
+		this("A registry accessor was not defined in the registry settings");
+	}
 	
-	public RegistryAccessorNotFoundException(String className, Exception e){
-		super("Registry accessor class '"+className+"'  was not found in classpath!!!", e);
+	public RegAccessorUndefinedException(String message) {
+		this(message,null);
+	}
+	
+	public RegAccessorUndefinedException(String message, Exception e){
+		super(message, e);
 	}
 
 }

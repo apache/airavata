@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class ServiceDescriptionRetrieveException extends RegistryException {
+public class ServiceDescriptionRetrieveException extends RegException {
     private final static String ERROR_MESSAGE = "Error occured while attempting to retrieve existing service descriptions";
     /**
 	 * 

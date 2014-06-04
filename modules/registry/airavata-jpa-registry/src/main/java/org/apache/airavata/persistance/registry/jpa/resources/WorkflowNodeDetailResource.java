@@ -29,6 +29,7 @@ import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -75,8 +76,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         this.nodeName = nodeName;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    public Resource create(ResourceType type) throws RegistryException{
         switch (type){
             case TASK_DETAIL:
                 TaskDetailResource taskDetailResource = new TaskDetailResource();
@@ -104,230 +104,265 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         }
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Query q;
-        QueryGenerator generator;
-        switch (type){
-            case TASK_DETAIL:
-                generator = new QueryGenerator(TASK_DETAIL);
-                generator.setParameter(TaskDetailConstants.TASK_ID, name);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            case ERROR_DETAIL:
-                generator = new QueryGenerator(ERROR_DETAIL);
-                generator.setParameter(ErrorDetailConstants.NODE_INSTANCE_ID, name);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            case NODE_INPUT:
-                generator = new QueryGenerator(NODE_INPUT);
-                generator.setParameter(NodeInputConstants.NODE_INSTANCE_ID, name);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            case NODE_OUTPUT:
-                generator = new QueryGenerator(NODE_OUTPUT);
-                generator.setParameter(NodeOutputConstants.NODE_INSTANCE_ID, name);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            case STATUS:
-                generator = new QueryGenerator(STATUS);
-                generator.setParameter(StatusConstants.NODE_INSTANCE_ID, name);
-                q = generator.deleteQuery(em);
-                q.executeUpdate();
-                break;
-            default:
-                logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
-                break;
-        }
-        em.getTransaction().commit();
-        em.close();
-    }
-
-    @Override
-    public Resource get(ResourceType type, Object name) {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator generator;
-        Query q;
-        switch (type) {
-            case TASK_DETAIL:
-                generator = new QueryGenerator(TASK_DETAIL);
-                generator.setParameter(TaskDetailConstants.TASK_ID, name);
-                q = generator.selectQuery(em);
-                TaskDetail taskDetail = (TaskDetail)q.getSingleResult();
-                TaskDetailResource taskDetailResource = (TaskDetailResource)Utils.getResource(ResourceType.TASK_DETAIL, taskDetail);
-                em.getTransaction().commit();
+    public void remove(ResourceType type, Object name) throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+            QueryGenerator generator;
+            switch (type) {
+                case TASK_DETAIL:
+                    generator = new QueryGenerator(TASK_DETAIL);
+                    generator.setParameter(TaskDetailConstants.TASK_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case ERROR_DETAIL:
+                    generator = new QueryGenerator(ERROR_DETAIL);
+                    generator.setParameter(ErrorDetailConstants.NODE_INSTANCE_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case NODE_INPUT:
+                    generator = new QueryGenerator(NODE_INPUT);
+                    generator.setParameter(NodeInputConstants.NODE_INSTANCE_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case NODE_OUTPUT:
+                    generator = new QueryGenerator(NODE_OUTPUT);
+                    generator.setParameter(NodeOutputConstants.NODE_INSTANCE_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case STATUS:
+                    generator = new QueryGenerator(STATUS);
+                    generator.setParameter(StatusConstants.NODE_INSTANCE_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                default:
+                    logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
+                    break;
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
                 em.close();
-                return taskDetailResource;
-            case ERROR_DETAIL:
-                generator = new QueryGenerator(ERROR_DETAIL);
-                generator.setParameter(ErrorDetailConstants.NODE_INSTANCE_ID, name);
-                q = generator.selectQuery(em);
-                ErrorDetail errorDetail = (ErrorDetail)q.getSingleResult();
-                ErrorDetailResource errorDetailResource = (ErrorDetailResource)Utils.getResource(ResourceType.ERROR_DETAIL, errorDetail);
-                em.getTransaction().commit();
-                em.close();
-                return errorDetailResource;
-            case NODE_INPUT:
-                generator = new QueryGenerator(NODE_INPUT);
-                generator.setParameter(NodeInputConstants.NODE_INSTANCE_ID, name);
-                q = generator.selectQuery(em);
-                NodeInput nodeInput = (NodeInput)q.getSingleResult();
-                NodeInputResource nodeInputResource = (NodeInputResource)Utils.getResource(ResourceType.NODE_INPUT, nodeInput);
-                em.getTransaction().commit();
-                em.close();
-                return nodeInputResource;
-            case NODE_OUTPUT:
-                generator = new QueryGenerator(NODE_OUTPUT);
-                generator.setParameter(NodeOutputConstants.NODE_INSTANCE_ID, name);
-                q = generator.selectQuery(em);
-                NodeOutput nodeOutput = (NodeOutput)q.getSingleResult();
-                NodeOutputResource nodeOutputResource = (NodeOutputResource)Utils.getResource(ResourceType.NODE_OUTPUT, nodeOutput);
-                em.getTransaction().commit();
-                em.close();
-                return nodeOutputResource;
-            case STATUS:
-                generator = new QueryGenerator(STATUS);
-                generator.setParameter(StatusConstants.NODE_INSTANCE_ID, name);
-                q = generator.selectQuery(em);
-                Status status = (Status)q.getSingleResult();
-                StatusResource statusResource = (StatusResource)Utils.getResource(ResourceType.STATUS, status);
-                em.getTransaction().commit();
-                em.close();
-                return statusResource;
-            default:
-                em.getTransaction().commit();
-                em.close();
-                logger.error("Unsupported resource type for workflow node resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported resource type for workflow node resource.");
+            }
         }
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    public Resource get(ResourceType type, Object name) throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator;
+            Query q;
+            switch (type) {
+                case TASK_DETAIL:
+                    generator = new QueryGenerator(TASK_DETAIL);
+                    generator.setParameter(TaskDetailConstants.TASK_ID, name);
+                    q = generator.selectQuery(em);
+                    TaskDetail taskDetail = (TaskDetail) q.getSingleResult();
+                    TaskDetailResource taskDetailResource = (TaskDetailResource) Utils.getResource(ResourceType.TASK_DETAIL, taskDetail);
+                    em.getTransaction().commit();
+                    em.close();
+                    return taskDetailResource;
+                case ERROR_DETAIL:
+                    generator = new QueryGenerator(ERROR_DETAIL);
+                    generator.setParameter(ErrorDetailConstants.NODE_INSTANCE_ID, name);
+                    q = generator.selectQuery(em);
+                    ErrorDetail errorDetail = (ErrorDetail) q.getSingleResult();
+                    ErrorDetailResource errorDetailResource = (ErrorDetailResource) Utils.getResource(ResourceType.ERROR_DETAIL, errorDetail);
+                    em.getTransaction().commit();
+                    em.close();
+                    return errorDetailResource;
+                case NODE_INPUT:
+                    generator = new QueryGenerator(NODE_INPUT);
+                    generator.setParameter(NodeInputConstants.NODE_INSTANCE_ID, name);
+                    q = generator.selectQuery(em);
+                    NodeInput nodeInput = (NodeInput) q.getSingleResult();
+                    NodeInputResource nodeInputResource = (NodeInputResource) Utils.getResource(ResourceType.NODE_INPUT, nodeInput);
+                    em.getTransaction().commit();
+                    em.close();
+                    return nodeInputResource;
+                case NODE_OUTPUT:
+                    generator = new QueryGenerator(NODE_OUTPUT);
+                    generator.setParameter(NodeOutputConstants.NODE_INSTANCE_ID, name);
+                    q = generator.selectQuery(em);
+                    NodeOutput nodeOutput = (NodeOutput) q.getSingleResult();
+                    NodeOutputResource nodeOutputResource = (NodeOutputResource) Utils.getResource(ResourceType.NODE_OUTPUT, nodeOutput);
+                    em.getTransaction().commit();
+                    em.close();
+                    return nodeOutputResource;
+                case STATUS:
+                    generator = new QueryGenerator(STATUS);
+                    generator.setParameter(StatusConstants.NODE_INSTANCE_ID, name);
+                    q = generator.selectQuery(em);
+                    Status status = (Status) q.getSingleResult();
+                    StatusResource statusResource = (StatusResource) Utils.getResource(ResourceType.STATUS, status);
+                    em.getTransaction().commit();
+                    em.close();
+                    return statusResource;
+                default:
+                    em.getTransaction().commit();
+                    em.close();
+                    logger.error("Unsupported resource type for workflow node resource.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported resource type for workflow node resource.");
+            }
+        } catch (Exception e) {
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    public List<Resource> get(ResourceType type) throws RegistryException{
         List<Resource> resourceList = new ArrayList<Resource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        Query q;
-        QueryGenerator generator;
-        List results;
-        switch (type){
-            case TASK_DETAIL:
-                generator = new QueryGenerator(TASK_DETAIL);
-                generator.setParameter(TaskDetailConstants.NODE_INSTANCE_ID, nodeInstanceId);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        TaskDetail taskDetail = (TaskDetail) result;
-                        TaskDetailResource taskDetailResource =
-                                (TaskDetailResource)Utils.getResource(ResourceType.TASK_DETAIL, taskDetail);
-                        resourceList.add(taskDetailResource);
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+            QueryGenerator generator;
+            List results;
+            switch (type) {
+                case TASK_DETAIL:
+                    generator = new QueryGenerator(TASK_DETAIL);
+                    generator.setParameter(TaskDetailConstants.NODE_INSTANCE_ID, nodeInstanceId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            TaskDetail taskDetail = (TaskDetail) result;
+                            TaskDetailResource taskDetailResource =
+                                    (TaskDetailResource) Utils.getResource(ResourceType.TASK_DETAIL, taskDetail);
+                            resourceList.add(taskDetailResource);
+                        }
                     }
-                }
-                break;
-            case ERROR_DETAIL:
-                generator = new QueryGenerator(ERROR_DETAIL);
-                generator.setParameter(ErrorDetailConstants.NODE_INSTANCE_ID, nodeInstanceId);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        ErrorDetail errorDetail = (ErrorDetail) result;
-                        ErrorDetailResource errorDetailResource =
-                                (ErrorDetailResource)Utils.getResource(ResourceType.ERROR_DETAIL, errorDetail);
-                        resourceList.add(errorDetailResource);
+                    break;
+                case ERROR_DETAIL:
+                    generator = new QueryGenerator(ERROR_DETAIL);
+                    generator.setParameter(ErrorDetailConstants.NODE_INSTANCE_ID, nodeInstanceId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            ErrorDetail errorDetail = (ErrorDetail) result;
+                            ErrorDetailResource errorDetailResource =
+                                    (ErrorDetailResource) Utils.getResource(ResourceType.ERROR_DETAIL, errorDetail);
+                            resourceList.add(errorDetailResource);
+                        }
                     }
-                }
-                break;
-            case NODE_INPUT:
-                generator = new QueryGenerator(NODE_INPUT);
-                generator.setParameter(NodeInputConstants.NODE_INSTANCE_ID, nodeInstanceId);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        NodeInput nodeInput = (NodeInput) result;
-                        NodeInputResource nodeInputResource =
-                                (NodeInputResource)Utils.getResource(ResourceType.NODE_INPUT, nodeInput);
-                        resourceList.add(nodeInputResource);
+                    break;
+                case NODE_INPUT:
+                    generator = new QueryGenerator(NODE_INPUT);
+                    generator.setParameter(NodeInputConstants.NODE_INSTANCE_ID, nodeInstanceId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            NodeInput nodeInput = (NodeInput) result;
+                            NodeInputResource nodeInputResource =
+                                    (NodeInputResource) Utils.getResource(ResourceType.NODE_INPUT, nodeInput);
+                            resourceList.add(nodeInputResource);
+                        }
                     }
-                }
-                break;
-            case NODE_OUTPUT:
-                generator = new QueryGenerator(NODE_OUTPUT);
-                generator.setParameter(NodeOutputConstants.NODE_INSTANCE_ID, nodeInstanceId);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        NodeOutput nodeOutput = (NodeOutput) result;
-                        NodeOutputResource nodeOutputResource =
-                                (NodeOutputResource)Utils.getResource(ResourceType.NODE_OUTPUT, nodeOutput);
-                        resourceList.add(nodeOutputResource);
+                    break;
+                case NODE_OUTPUT:
+                    generator = new QueryGenerator(NODE_OUTPUT);
+                    generator.setParameter(NodeOutputConstants.NODE_INSTANCE_ID, nodeInstanceId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            NodeOutput nodeOutput = (NodeOutput) result;
+                            NodeOutputResource nodeOutputResource =
+                                    (NodeOutputResource) Utils.getResource(ResourceType.NODE_OUTPUT, nodeOutput);
+                            resourceList.add(nodeOutputResource);
+                        }
                     }
-                }
-                break;
-            case STATUS:
-                generator = new QueryGenerator(STATUS);
-                generator.setParameter(StatusConstants.NODE_INSTANCE_ID, nodeInstanceId);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        Status status = (Status) result;
-                        StatusResource statusResource =
-                                (StatusResource)Utils.getResource(ResourceType.STATUS, status);
-                        resourceList.add(statusResource);
+                    break;
+                case STATUS:
+                    generator = new QueryGenerator(STATUS);
+                    generator.setParameter(StatusConstants.NODE_INSTANCE_ID, nodeInstanceId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Status status = (Status) result;
+                            StatusResource statusResource =
+                                    (StatusResource) Utils.getResource(ResourceType.STATUS, status);
+                            resourceList.add(statusResource);
+                        }
                     }
-                }
-                break;
-            default:
-                em.getTransaction().commit();
+                    break;
+                default:
+                    em.getTransaction().commit();
+                    em.close();
+                    logger.error("Unsupported resource type for workflow node details resource.", new UnsupportedOperationException());
+                    throw new UnsupportedOperationException();
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
                 em.close();
-                logger.error("Unsupported resource type for workflow node details resource.", new UnsupportedOperationException());
-                throw new UnsupportedOperationException();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
         return resourceList;
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        WorkflowNodeDetail existingNode = em.find(WorkflowNodeDetail.class, nodeInstanceId);
-        em.close();
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            WorkflowNodeDetail existingNode = em.find(WorkflowNodeDetail.class, nodeInstanceId);
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        WorkflowNodeDetail workflowNodeDetail = new WorkflowNodeDetail();
-        workflowNodeDetail.setNodeId(nodeInstanceId);
-        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        workflowNodeDetail.setExperiment(experiment);
-        workflowNodeDetail.setExpId(experimentResource.getExpID());
-        workflowNodeDetail.setCreationTime(creationTime);
-        workflowNodeDetail.setNodeName(nodeName);
-        if (existingNode != null){
-            existingNode.setExperiment(experiment);
-            existingNode.setExpId(experimentResource.getExpID());
-            existingNode.setCreationTime(creationTime);
-            existingNode.setNodeName(nodeName);
-            workflowNodeDetail = em.merge(existingNode);
-        }else {
-            em.merge(workflowNodeDetail);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            WorkflowNodeDetail workflowNodeDetail = new WorkflowNodeDetail();
+            workflowNodeDetail.setNodeId(nodeInstanceId);
+            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+            workflowNodeDetail.setExperiment(experiment);
+            workflowNodeDetail.setExpId(experimentResource.getExpID());
+            workflowNodeDetail.setCreationTime(creationTime);
+            workflowNodeDetail.setNodeName(nodeName);
+            if (existingNode != null) {
+                existingNode.setExperiment(experiment);
+                existingNode.setExpId(experimentResource.getExpID());
+                existingNode.setCreationTime(creationTime);
+                existingNode.setNodeName(nodeName);
+                workflowNodeDetail = em.merge(existingNode);
+            } else {
+                em.persist(workflowNodeDetail);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
     }
 
-    public List<NodeInputResource> getNodeInputs(){
+    public List<NodeInputResource> getNodeInputs() throws RegistryException{
         List<NodeInputResource> nodeInputResourceList = new ArrayList<NodeInputResource>();
         List<Resource> resources = get(ResourceType.NODE_INPUT);
         for (Resource resource : resources) {
@@ -337,7 +372,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         return nodeInputResourceList;
     }
 
-    public List<NodeOutputResource> getNodeOutputs(){
+    public List<NodeOutputResource> getNodeOutputs() throws RegistryException{
         List<NodeOutputResource> outputResources = new ArrayList<NodeOutputResource>();
         List<Resource> resources = get(ResourceType.NODE_OUTPUT);
         for (Resource resource : resources) {
@@ -347,7 +382,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         return outputResources;
     }
 
-    public StatusResource getWorkflowNodeStatus(){
+    public StatusResource getWorkflowNodeStatus() throws RegistryException{
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource nodeStatus = (StatusResource) resource;
@@ -361,7 +396,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         return null;
     }
 
-    public StatusResource getTaskStatus(String taskId){
+    public StatusResource getTaskStatus(String taskId) throws RegistryException{
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource taskStatus = (StatusResource) resource;
@@ -376,7 +411,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         return null;
     }
 
-    public List<TaskDetailResource> getTaskDetails(){
+    public List<TaskDetailResource> getTaskDetails() throws RegistryException{
         List<TaskDetailResource> taskDetailResources = new ArrayList<TaskDetailResource>();
         List<Resource> resources = get(ResourceType.TASK_DETAIL);
         for (Resource resource : resources) {
@@ -386,7 +421,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         return taskDetailResources;
     }
 
-    public List<ErrorDetailResource> getErrorDetails(){
+    public List<ErrorDetailResource> getErrorDetails() throws RegistryException{
         List<ErrorDetailResource> errorDetails = new ArrayList<ErrorDetailResource>();
         List<Resource> resources = get(ResourceType.ERROR_DETAIL);
         for (Resource resource : resources) {
@@ -396,7 +431,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         return errorDetails;
     }
 
-    public TaskDetailResource getTaskDetail(String taskId){
+    public TaskDetailResource getTaskDetail(String taskId) throws RegistryException{
         return (TaskDetailResource)get(ResourceType.TASK_DETAIL, taskId);
     }
 }

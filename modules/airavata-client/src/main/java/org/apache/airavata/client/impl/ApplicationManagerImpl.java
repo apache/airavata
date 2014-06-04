@@ -34,8 +34,8 @@ import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.registry.api.exception.UnimplementedRegistryOperationException;
+import org.apache.airavata.registry.api.exception.RegException;
+import org.apache.airavata.registry.api.exception.UnimplementedRegOperationException;
 
 public class ApplicationManagerImpl implements ApplicationManager {
 	private AiravataClient client;
@@ -93,7 +93,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
             throw new DescriptorAlreadyExistsException("Service descriptor "
                     + serviceDescription.getType().getName()
                     + " already exists.", e);
-        } catch (RegistryException e) {
+        } catch (RegException e) {
             throw new AiravataAPIInvocationException("An internal error occurred while trying to add service descriptor"
                     + serviceDescription.getType().getName(),
                     e);
@@ -108,7 +108,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public void updateServiceDescription(ServiceDescription serviceDescription) throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().updateServiceDescriptor(serviceDescription);
-        } catch (RegistryException e) {
+        } catch (RegException e) {
             throw new AiravataAPIInvocationException("An internal error occurred while trying to add service descriptor"
                     + serviceDescription.getType().getName(),
                     e);
@@ -134,7 +134,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	@Override
 	public List<ServiceDescription> searchServiceDescription(String nameRegEx)
 			throws AiravataAPIInvocationException {
-		throw new AiravataAPIInvocationException(new UnimplementedRegistryOperationException());
+		throw new AiravataAPIInvocationException(new UnimplementedRegOperationException());
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
                     applicationDeploymentDescription.getType().getApplicationName().getStringValue()
                     + " already associated to host " + hostDescription.getType().getHostName()
                     + " and service " + serviceDescription.getType().getName(), e);
-        } catch (RegistryException e) {
+        } catch (RegException e) {
 
             throw new AiravataAPIInvocationException("An internal error occurred while trying to add " +
                     "application descriptor " +
@@ -204,7 +204,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
         try {
             getClient().getRegistryClient().updateApplicationDescriptor(serviceDescription.getType().getName(),
                     hostDescription.getType().getHostName(), applicationDeploymentDescription);
-        } catch (RegistryException e) {
+        } catch (RegException e) {
 
             throw new AiravataAPIInvocationException("An internal error occurred while trying to add " +
                     "application descriptor " +
@@ -227,7 +227,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	public List<ApplicationDescription> searchApplicationDescription(
             String serviceName, String hostName)
 			throws AiravataAPIInvocationException {
-		throw new AiravataAPIInvocationException(new UnimplementedRegistryOperationException());
+		throw new AiravataAPIInvocationException(new UnimplementedRegOperationException());
 	}
 
 	@Override
@@ -244,7 +244,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	public List<ApplicationDescription> searchApplicationDescription(
             String serviceName, String hostName, String applicationName)
 			throws AiravataAPIInvocationException {
-		throw new AiravataAPIInvocationException(new UnimplementedRegistryOperationException());
+		throw new AiravataAPIInvocationException(new UnimplementedRegOperationException());
 	}
 
 	@Override
@@ -319,7 +319,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
         } catch (org.apache.airavata.registry.api.exception.gateway.DescriptorAlreadyExistsException e) {
             throw new DescriptorAlreadyExistsException("Host descriptor " + host.getType().getHostName()
                     + " already exists.", e);
-        } catch (RegistryException e) {
+        } catch (RegException e) {
             throw new AiravataAPIInvocationException("An internal error occurred while trying to add host descriptor"
                     + host.getType().getHostName(),
                     e);
@@ -335,7 +335,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     public void updateHostDescription(HostDescription host) throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().updateHostDescriptor(host);
-        } catch (RegistryException e) {
+        } catch (RegException e) {
             throw new AiravataAPIInvocationException("An internal error occurred while trying to add host descriptor"
                     + host.getType().getHostName(),
                     e);
@@ -350,7 +350,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
     @Override
 	public List<HostDescription> searchHostDescription(String regExName)
 			throws AiravataAPIInvocationException {
-		throw new AiravataAPIInvocationException(new UnimplementedRegistryOperationException());
+		throw new AiravataAPIInvocationException(new UnimplementedRegOperationException());
 	}
 
 	@Override
@@ -366,7 +366,7 @@ public class ApplicationManagerImpl implements ApplicationManager {
 	@Override
 	public boolean deployServiceOnHost(String serviceName, String hostName)
 			throws AiravataAPIInvocationException {
-		throw new AiravataAPIInvocationException(new UnimplementedRegistryOperationException());
+		throw new AiravataAPIInvocationException(new UnimplementedRegOperationException());
 	}
 
     @Override

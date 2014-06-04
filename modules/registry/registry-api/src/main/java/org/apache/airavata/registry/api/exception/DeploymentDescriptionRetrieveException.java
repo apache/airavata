@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class DeploymentDescriptionRetrieveException extends RegistryException {
+public class DeploymentDescriptionRetrieveException extends RegException {
     private final static String ERROR_MESSAGE = "Error occured while attempting to retrieve existing deployment descriptions";
     /**
 	 * 

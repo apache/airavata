@@ -26,7 +26,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.ExperimentConfigData;
-import org.apache.airavata.schemas.gfac.BooleanParameterType;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,56 +72,66 @@ public class ConfigDataResource extends AbstractResource {
         this.shareExp = shareExp;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for config data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for config data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for config data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for config data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        ExperimentConfigData existingConfig = em.find(ExperimentConfigData.class, experimentResource.getExpID());
-        em.close();
+    
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            ExperimentConfigData existingConfig = em.find(ExperimentConfigData.class, experimentResource.getExpID());
+            em.close();
 
-        em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        ExperimentConfigData configData = new ExperimentConfigData();
-        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        configData.setExpId(experimentResource.getExpID());
-        configData.setExperiment(experiment);
-        configData.setAiravataAutoSchedule(airavataAutoSchedule);
-        configData.setOverrideManualParams(overrideManualParams);
-        configData.setShareExp(shareExp);
-        if (existingConfig != null){
-            existingConfig.setExpId(experimentResource.getExpID());
-            existingConfig.setExperiment(experiment);
-            existingConfig.setAiravataAutoSchedule(airavataAutoSchedule);
-            existingConfig.setOverrideManualParams(overrideManualParams);
-            existingConfig.setShareExp(shareExp);
-            configData = em.merge(existingConfig);
-        }else {
-            em.merge(configData);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            ExperimentConfigData configData = new ExperimentConfigData();
+            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+            configData.setExpId(experimentResource.getExpID());
+            configData.setExperiment(experiment);
+            configData.setAiravataAutoSchedule(airavataAutoSchedule);
+            configData.setOverrideManualParams(overrideManualParams);
+            configData.setShareExp(shareExp);
+            if (existingConfig != null) {
+                existingConfig.setExpId(experimentResource.getExpID());
+                existingConfig.setExperiment(experiment);
+                existingConfig.setAiravataAutoSchedule(airavataAutoSchedule);
+                existingConfig.setOverrideManualParams(overrideManualParams);
+                existingConfig.setShareExp(shareExp);
+                configData = em.merge(existingConfig);
+            } else {
+                em.persist(configData);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        em.getTransaction().commit();
-        em.close();
     }
 }

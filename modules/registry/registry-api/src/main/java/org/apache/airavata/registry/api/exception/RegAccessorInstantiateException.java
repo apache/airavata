@@ -21,11 +21,11 @@
 
 package org.apache.airavata.registry.api.exception;
 
-public class RegistryAccessorInstantiateException extends RegistryException {
+public class RegAccessorInstantiateException extends RegException {
 
 	private static final long serialVersionUID = -2679914107485739140L;
 	
-	public RegistryAccessorInstantiateException(String className, Exception e){
+	public RegAccessorInstantiateException(String className, Exception e){
 		super("There was an exception instantiating the Registry accessor class '"+className+"'!!!", e);
 	}
 

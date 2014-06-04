@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class User_Workflow_PK {
+import java.io.Serializable;
+
+public class User_Workflow_PK implements Serializable {
     private String template_name;
     private String gateway_name;
     private String owner;

@@ -23,7 +23,7 @@ package org.apache.airavata.registry.api;
 
 import java.util.List;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 
 public interface UserRegistry extends AiravataSubRegistry{
 
@@ -31,9 +31,9 @@ public interface UserRegistry extends AiravataSubRegistry{
 	/**
 	 * Retrieve all the users in the registry
 	 * @return a list of airavata users from the registry
-	 * @throws RegistryException
+	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
 	
-	public List<AiravataUser> getUsers() throws RegistryException;
+	public List<AiravataUser> getUsers() throws RegException;
     
 }

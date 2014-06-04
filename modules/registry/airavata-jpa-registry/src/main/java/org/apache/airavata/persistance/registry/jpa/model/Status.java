@@ -21,12 +21,16 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
+import org.apache.openjpa.persistence.DataCache;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Timestamp;
 
+@DataCache
 @Entity
 @Table(name = "STATUS")
-public class Status {
+public class Status implements Serializable {
     @Id
     @GeneratedValue
     @Column(name = "STATUS_ID")

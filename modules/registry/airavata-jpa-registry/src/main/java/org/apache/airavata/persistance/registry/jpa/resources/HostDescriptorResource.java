@@ -25,6 +25,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,7 +108,7 @@ public class HostDescriptorResource extends AbstractResource {
      * @param type child resource type
      * @return child resource
      */
-    public Resource create(ResourceType type) {
+    public Resource create(ResourceType type) throws RegistryException {
         if (type == ResourceType.APPLICATION_DESCRIPTOR) {
             ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource();
             applicationDescriptorResource.setGatewayName(gatewayName);
@@ -125,7 +126,7 @@ public class HostDescriptorResource extends AbstractResource {
      * @param type child resource type
      * @param name child resource name
      */
-    public void remove(ResourceType type, Object name) {
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for host descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
@@ -136,59 +137,48 @@ public class HostDescriptorResource extends AbstractResource {
      * @param name child resource name
      * @return UnsupportedOperationException
      */
-    public Resource get(ResourceType type, Object name) {
+    public Resource get(ResourceType type, Object name) throws RegistryException {
         logger.error("Unsupported resource type for host descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * key should be host_descriptor_name
-     * @param keys host descriptor names
-     * @return list of host descriptors
-     */
-    public List<Resource> populate(Object[] keys) {
-        List<Resource> list = new ArrayList<Resource>();
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QueryGenerator generator = new QueryGenerator(HOST_DESCRIPTOR);
-        generator.setParameter(HostDescriptorConstants.GATEWAY_NAME, keys [0]);
-        generator.setParameter(HostDescriptorConstants.HOST_DESC_ID, keys[1]);
-        Query q = generator.selectQuery(em);
-        Host_Descriptor hostDescriptor = (Host_Descriptor)q.getSingleResult();
-        HostDescriptorResource hostDescriptorResource =
-                (HostDescriptorResource)Utils.getResource(ResourceType.HOST_DESCRIPTOR, hostDescriptor);
-        em.getTransaction().commit();
-        em.close();
-        list.add(hostDescriptorResource);
-        return list;
-    }
 
     /**
      * Host descriptors can get a list of application descriptors
      * @param type child resource type
      * @return list of child resources
      */
-    public List<Resource> get(ResourceType type) {
+    public List<Resource> get(ResourceType type) throws RegistryException{
         List<Resource> resourceList = new ArrayList<Resource>();
-        if (type == ResourceType.APPLICATION_DESCRIPTOR) {
-            EntityManager em = ResourceUtils.getEntityManager();
-            em.getTransaction().begin();
-            QueryGenerator generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
-            generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
-            generator.setParameter(ApplicationDescriptorConstants.HOST_DESC_ID, getHostDescName());
-            Query q = generator.selectQuery(em);
-            List results = q.getResultList();
-            if (results.size() != 0) {
-                for (Object result : results) {
-                    Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
-                    ApplicationDescriptorResource applicationDescriptorResource =
-                            (ApplicationDescriptorResource)Utils.getResource(
-                                    ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
-                    resourceList.add(applicationDescriptorResource);
+        EntityManager em = null;
+        try {
+            if (type == ResourceType.APPLICATION_DESCRIPTOR) {
+                em = ResourceUtils.getEntityManager();
+                em.getTransaction().begin();
+                QueryGenerator generator = new QueryGenerator(APPLICATION_DESCRIPTOR);
+                generator.setParameter(ApplicationDescriptorConstants.GATEWAY_NAME, gatewayName);
+                generator.setParameter(ApplicationDescriptorConstants.HOST_DESC_ID, getHostDescName());
+                Query q = generator.selectQuery(em);
+                List results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        Application_Descriptor applicationDescriptor = (Application_Descriptor) result;
+                        ApplicationDescriptorResource applicationDescriptorResource =
+                                (ApplicationDescriptorResource) Utils.getResource(
+                                        ResourceType.APPLICATION_DESCRIPTOR, applicationDescriptor);
+                        resourceList.add(applicationDescriptorResource);
+                    }
                 }
+                em.getTransaction().commit();
+                em.close();
             }
-            em.getTransaction().commit();
-            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
         return resourceList;
     }
@@ -196,9 +186,10 @@ public class HostDescriptorResource extends AbstractResource {
     /**
      * save host descriptor to the database
      */
-    public void save() {
+    public void save() throws RegistryException{
+        EntityManager em = null;
         try {
-            EntityManager em = ResourceUtils.getEntityManager();
+            em = ResourceUtils.getEntityManager();
             Host_Descriptor existingHost_desc = em.find(Host_Descriptor.class, new Host_Descriptor_PK(gatewayName, hostDescName));
             em.close();
 
@@ -213,23 +204,30 @@ public class HostDescriptorResource extends AbstractResource {
 //            user.setUser_name(userName);
             hostDescriptor.setHost_descriptor_ID(getHostDescName());
             hostDescriptor.setGateway(existingGateway);
+            hostDescriptor.setGateway_name(existingGateway.getGateway_name());
             byte[] contentBytes = content.getBytes();
             hostDescriptor.setHost_descriptor_xml(contentBytes);
             hostDescriptor.setUser(existingUser);
             if (existingHost_desc != null) {
+                existingHost_desc.setGateway(existingGateway);
+                existingHost_desc.setGateway_name(existingGateway.getGateway_name());
                 existingHost_desc.setUser(existingUser);
                 existingHost_desc.setHost_descriptor_xml(contentBytes);
                 hostDescriptor = em.merge(existingHost_desc);
             } else {
-                em.merge(hostDescriptor);
+                em.persist(hostDescriptor);
             }
 
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-
     }
 
     /**
@@ -238,7 +236,7 @@ public class HostDescriptorResource extends AbstractResource {
      * @param name child resource name
      * @return boolean whether the child resource already exists
      */
-    public boolean isExists(ResourceType type, Object name) {
+    public boolean isExists(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for host descriptor resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }

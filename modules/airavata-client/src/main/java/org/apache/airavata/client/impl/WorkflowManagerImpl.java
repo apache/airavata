@@ -33,7 +33,7 @@ import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.exception.WorkflowAlreadyExistsException;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.registry.api.exception.worker.UserWorkflowAlreadyExistsException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowData;
@@ -111,7 +111,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             throw new WorkflowAlreadyExistsException("Workflow " +
                     workflow.getName()
                     + " already exists in the system.", e);
-        } catch (RegistryException e) {
+        } catch (RegException e) {
             throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
                     workflow.getName(), e);
         } catch (AiravataConfigurationException e) {
@@ -122,7 +122,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         if (owner == null) {
             try {
                 getClient().getRegistryClient().publishWorkflow(workflow.getName());
-            } catch (RegistryException e) {
+            } catch (RegException e) {
                 throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
                         workflow.getName(), e);
             } catch (AiravataConfigurationException e) {
@@ -136,7 +136,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             throws AiravataAPIInvocationException {
         try {
             getClient().getRegistryClient().updateWorkflow(workflow.getName(), workflowAsString);
-        } catch (RegistryException e) {
+        } catch (RegException e) {
             throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
                     workflow.getName(), e);
         } catch (AiravataConfigurationException e) {
@@ -147,7 +147,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         if (owner == null) {
             try {
                 getClient().getRegistryClient().publishWorkflow(workflow.getName());
-            } catch (RegistryException e) {
+            } catch (RegException e) {
                 throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
                         workflow.getName(), e);
             } catch (AiravataConfigurationException e) {

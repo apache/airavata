@@ -25,35 +25,35 @@ import java.net.URI;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 
 public interface ConfigurationRegistry extends AiravataSubRegistry {
-	public Object getConfiguration(String key) throws RegistryException;
-	public List<Object> getConfigurationList(String key) throws RegistryException;
-	public void setConfiguration(String key, String value, Date expire) throws RegistryException;
-	public void addConfiguration(String key, String value, Date expire) throws RegistryException;
-	public void removeAllConfiguration(String key) throws RegistryException;
-	public void removeConfiguration(String key, String value) throws RegistryException;
+	public Object getConfiguration(String key) throws RegException;
+	public List<Object> getConfigurationList(String key) throws RegException;
+	public void setConfiguration(String key, String value, Date expire) throws RegException;
+	public void addConfiguration(String key, String value, Date expire) throws RegException;
+	public void removeAllConfiguration(String key) throws RegException;
+	public void removeConfiguration(String key, String value) throws RegException;
 	
-	public List<URI> getGFacURIs() throws RegistryException;
-	public List<URI> getWorkflowInterpreterURIs() throws RegistryException;
-	public URI getEventingServiceURI() throws RegistryException;
-	public URI getMessageBoxURI() throws RegistryException;
+	public List<URI> getGFacURIs() throws RegException;
+	public List<URI> getWorkflowInterpreterURIs() throws RegException;
+	public URI getEventingServiceURI() throws RegException;
+	public URI getMessageBoxURI() throws RegException;
 	
-	public void addGFacURI(URI uri) throws RegistryException;
-	public void addWorkflowInterpreterURI(URI uri) throws RegistryException;
-	public void setEventingURI(URI uri) throws RegistryException;
-	public void setMessageBoxURI(URI uri) throws RegistryException;
+	public void addGFacURI(URI uri) throws RegException;
+	public void addWorkflowInterpreterURI(URI uri) throws RegException;
+	public void setEventingURI(URI uri) throws RegException;
+	public void setMessageBoxURI(URI uri) throws RegException;
 
-	public void addGFacURI(URI uri, Date expire) throws RegistryException;
-	public void addWorkflowInterpreterURI(URI uri, Date expire) throws RegistryException;
-	public void setEventingURI(URI uri, Date expire) throws RegistryException;
-	public void setMessageBoxURI(URI uri, Date expire) throws RegistryException;
+	public void addGFacURI(URI uri, Date expire) throws RegException;
+	public void addWorkflowInterpreterURI(URI uri, Date expire) throws RegException;
+	public void setEventingURI(URI uri, Date expire) throws RegException;
+	public void setMessageBoxURI(URI uri, Date expire) throws RegException;
 	
-	public void removeGFacURI(URI uri) throws RegistryException;
-	public void removeAllGFacURI() throws RegistryException;
-	public void removeWorkflowInterpreterURI(URI uri) throws RegistryException;
-	public void removeAllWorkflowInterpreterURI() throws RegistryException;
-	public void unsetEventingURI() throws RegistryException;
-	public void unsetMessageBoxURI() throws RegistryException;
+	public void removeGFacURI(URI uri) throws RegException;
+	public void removeAllGFacURI() throws RegException;
+	public void removeWorkflowInterpreterURI(URI uri) throws RegException;
+	public void removeAllWorkflowInterpreterURI() throws RegException;
+	public void unsetEventingURI() throws RegException;
+	public void unsetMessageBoxURI() throws RegException;
 }

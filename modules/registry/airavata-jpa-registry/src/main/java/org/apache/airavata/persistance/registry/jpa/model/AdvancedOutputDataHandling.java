@@ -21,11 +21,15 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.*;
+import org.apache.openjpa.persistence.DataCache;
 
+import javax.persistence.*;
+import java.io.Serializable;
+
+@DataCache
 @Entity
 @Table(name = "ADVANCE_OUTPUT_DATA_HANDLING")
-public class AdvancedOutputDataHandling {
+public class AdvancedOutputDataHandling implements Serializable {
     @Id
     @GeneratedValue
     @Column(name = "OUTPUT_DATA_HANDLING_ID")

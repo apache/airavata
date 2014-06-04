@@ -29,6 +29,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class ProjectRegistry {
     private WorkerResource workerResource;
     private final static Logger logger = LoggerFactory.getLogger(ProjectRegistry.class);
 
-    public ProjectRegistry(GatewayResource gatewayResource, UserResource user) {
+    public ProjectRegistry(GatewayResource gatewayResource, UserResource user) throws RegistryException {
         if (!ResourceUtils.isGatewayExist(gatewayResource.getGatewayName())){
             this.gatewayResource = gatewayResource;
         }else {
@@ -51,7 +52,7 @@ public class ProjectRegistry {
         }
     }
 
-    public String addProject (Project project) throws Exception{
+    public String addProject (Project project) throws RegistryException{
         String projectId;
         try {
             if (!ResourceUtils.isUserExist(project.getOwner())){
@@ -90,7 +91,7 @@ public class ProjectRegistry {
             }
         }catch (Exception e){
             logger.error("Error while saving project to registry", e);
-            throw new Exception(e);
+           throw new RegistryException(e);
         }
         return projectId;
     }
@@ -100,7 +101,7 @@ public class ProjectRegistry {
         return pro + "_" + UUID.randomUUID();
     }
 
-    public void updateProject (Project project, String projectId) throws Exception{
+    public void updateProject (Project project, String projectId) throws RegistryException{
         try {
             ProjectResource existingProject = workerResource.getProject(projectId);
             existingProject.setDescription(project.getDescription());
@@ -137,11 +138,11 @@ public class ProjectRegistry {
             }
         }catch (Exception e){
             logger.error("Error while saving project to registry", e);
-            throw new Exception(e);
+           throw new RegistryException(e);
         }
     }
 
-    public Project getProject (String projectId) throws Exception{
+    public Project getProject (String projectId) throws RegistryException{
         try {
             ProjectResource project = workerResource.getProject(projectId);
             if (project != null){
@@ -149,12 +150,12 @@ public class ProjectRegistry {
             }
         }catch (Exception e){
             logger.error("Error while retrieving project from registry", e);
-            throw new Exception(e);
+           throw new RegistryException(e);
         }
         return null;
     }
 
-    public List<Project> getProjectList (String fieldName, Object value) throws Exception{
+    public List<Project> getProjectList (String fieldName, Object value) throws RegistryException{
         List<Project> projects = new ArrayList<Project>();
         try {
             if (fieldName.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
@@ -169,12 +170,12 @@ public class ProjectRegistry {
             }
         }catch (Exception e){
             logger.error("Error while retrieving project from registry", e);
-            throw new Exception(e);
+           throw new RegistryException(e);
         }
         return projects;
     }
 
-    public List<Project> searchProjects (Map<String, String> filters) throws Exception{
+    public List<Project> searchProjects (Map<String, String> filters) throws RegistryException{
         Map<String, String> fil = new HashMap<String, String>();
         if (filters != null && filters.size() != 0){
             List<Project> projects = new ArrayList<Project>();
@@ -197,13 +198,13 @@ public class ProjectRegistry {
                 return projects;
             }catch (Exception e){
                 logger.error("Error while retrieving project from registry", e);
-                throw new Exception(e);
+               throw new RegistryException(e);
             }
         }
         return null;
     }
 
-    public List<String> getProjectIDs (String fieldName, Object value) throws Exception{
+    public List<String> getProjectIDs (String fieldName, Object value) throws RegistryException{
         List<String> projectIds = new ArrayList<String>();
         try {
             if (fieldName.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
@@ -218,26 +219,26 @@ public class ProjectRegistry {
             }
         }catch (Exception e){
             logger.error("Error while retrieving projects from registry", e);
-            throw new Exception(e);
+           throw new RegistryException(e);
         }
         return projectIds;
     }
 
-    public void removeProject (String projectId) throws Exception {
+    public void removeProject (String projectId) throws RegistryException {
         try {
             workerResource.removeProject(projectId);
         } catch (Exception e) {
             logger.error("Error while removing the project..", e);
-            throw new Exception(e);
+           throw new RegistryException(e);
         }
     }
 
-    public boolean isProjectExist(String projectId) throws Exception {
+    public boolean isProjectExist(String projectId) throws RegistryException {
         try {
             return workerResource.isProjectExists(projectId);
         } catch (Exception e) {
             logger.error("Error while retrieving project...", e);
-            throw new Exception(e);
+           throw new RegistryException(e);
         }
     }
 

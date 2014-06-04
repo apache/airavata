@@ -21,11 +21,12 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name ="HOST_DESCRIPTOR")
 @IdClass(Host_Descriptor_PK.class)
-public class Host_Descriptor {
+public class Host_Descriptor implements Serializable {
     @Id
     @Column(name = "HOST_DESCRIPTOR_ID")
     private String host_descriptor_ID;

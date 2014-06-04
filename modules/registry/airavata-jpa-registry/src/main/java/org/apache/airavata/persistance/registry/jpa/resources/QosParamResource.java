@@ -29,6 +29,7 @@ import org.apache.airavata.persistance.registry.jpa.model.QosParam;
 import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 import javax.persistence.EntityManager;
 import java.util.List;
@@ -90,49 +91,59 @@ public class QosParamResource extends AbstractResource {
         this.noOfRetries = noOfRetries;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for qos params resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for qos params resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for qos params resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for qos params resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        QosParam qosParam = new QosParam();
-        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        if (taskDetailResource != null){
-            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-            qosParam.setTaskId(taskDetailResource.getTaskId());
-            qosParam.setTask(taskDetail);
+    
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            QosParam qosParam = new QosParam();
+            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+            if (taskDetailResource != null) {
+                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+                qosParam.setTaskId(taskDetailResource.getTaskId());
+                qosParam.setTask(taskDetail);
+            }
+            qosParam.setExpId(experimentResource.getExpID());
+            qosParam.setExperiment(experiment);
+            qosParam.setStartExecutionAt(startExecutionAt);
+            qosParam.setExecuteBefore(executeBefore);
+            qosParam.setNoOfRetries(noOfRetries);
+            em.persist(qosParam);
+            qosId = qosParam.getQosId();
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-        qosParam.setExpId(experimentResource.getExpID());
-        qosParam.setExperiment(experiment);
-        qosParam.setStartExecutionAt(startExecutionAt);
-        qosParam.setExecuteBefore(executeBefore);
-        qosParam.setNoOfRetries(noOfRetries);
-        em.persist(qosParam);
-        qosId = qosParam.getQosId();
-        em.getTransaction().commit();
-        em.close();
     }
 }

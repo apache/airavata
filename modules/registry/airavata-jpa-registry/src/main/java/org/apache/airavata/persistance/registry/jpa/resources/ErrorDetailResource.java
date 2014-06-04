@@ -28,6 +28,7 @@ import org.apache.airavata.persistance.registry.jpa.model.ErrorDetail;
 import org.apache.airavata.persistance.registry.jpa.model.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
 import org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,59 +147,71 @@ public class ErrorDetailResource extends AbstractResource {
         this.jobId = jobId;
     }
 
-    @Override
-    public Resource create(ResourceType type) {
+    
+    public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for error details data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void remove(ResourceType type, Object name) {
+    
+    public void remove(ResourceType type, Object name) throws RegistryException {
         logger.error("Unsupported resource type for error details data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Resource get(ResourceType type, Object name) {
+    
+    public Resource get(ResourceType type, Object name) throws RegistryException{
         logger.error("Unsupported resource type for error details data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public List<Resource> get(ResourceType type) {
+    
+    public List<Resource> get(ResourceType type) throws RegistryException{
         logger.error("Unsupported resource type for error details data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void save() {
-        EntityManager em = ResourceUtils.getEntityManager();
-        em.getTransaction().begin();
-        ErrorDetail errorDetail = new ErrorDetail();
-        errorDetail.setErrorID(errorId);
-        Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-        errorDetail.setExperiment(experiment);
-        errorDetail.setExpId(experimentResource.getExpID());
-        if (taskDetailResource != null){
-            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-            errorDetail.setTask(taskDetail);
+    
+    public void save() throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            ErrorDetail errorDetail = new ErrorDetail();
+            errorDetail.setErrorID(errorId);
+            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
+            errorDetail.setExperiment(experiment);
+            errorDetail.setExpId(experimentResource.getExpID());
+            if (taskDetailResource != null) {
+                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
+                errorDetail.setTask(taskDetail);
+                errorDetail.setTaskId(taskDetail.getTaskId());
+            }
+
+            if (nodeDetail != null) {
+                WorkflowNodeDetail workflowNodeDetail = em.find(WorkflowNodeDetail.class, nodeDetail.getNodeInstanceId());
+                errorDetail.setNodeDetails(workflowNodeDetail);
+                errorDetail.setNodeId(workflowNodeDetail.getNodeId());
+            }
+            errorDetail.setCreationTime(creationTime);
+            errorDetail.setActualErrorMsg(actualErrorMsg.toCharArray());
+            errorDetail.setUserFriendlyErrorMsg(userFriendlyErrorMsg);
+            errorDetail.setTransientPersistent(transientPersistent);
+            errorDetail.setErrorCategory(errorCategory);
+            errorDetail.setCorrectiveAction(correctiveAction);
+            errorDetail.setActionableGroup(actionableGroup);
+            errorDetail.setJobId(jobId);
+            em.persist(errorDetail);
+            errorId = errorDetail.getErrorID();
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
-
-        if (nodeDetail != null){
-            WorkflowNodeDetail workflowNodeDetail = em.find(WorkflowNodeDetail.class, nodeDetail.getNodeInstanceId());
-            errorDetail.setNodeDetails(workflowNodeDetail);
-        }
-        errorDetail.setCreationTime(creationTime);
-        errorDetail.setActualErrorMsg(actualErrorMsg.toCharArray());
-        errorDetail.setUserFriendlyErrorMsg(userFriendlyErrorMsg);
-        errorDetail.setTransientPersistent(transientPersistent);
-        errorDetail.setErrorCategory(errorCategory);
-        errorDetail.setCorrectiveAction(correctiveAction);
-        errorDetail.setActionableGroup(actionableGroup);
-        errorDetail.setJobId(jobId);
-        em.persist(errorDetail);
-        errorId = errorDetail.getErrorID();
-        em.getTransaction().commit();
-        em.close();
     }
 }

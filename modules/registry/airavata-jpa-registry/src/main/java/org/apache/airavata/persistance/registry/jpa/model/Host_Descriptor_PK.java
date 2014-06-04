@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-public class Host_Descriptor_PK {
+import java.io.Serializable;
+
+public class Host_Descriptor_PK implements Serializable {
     private String gateway_name;
     private String host_descriptor_ID;
 

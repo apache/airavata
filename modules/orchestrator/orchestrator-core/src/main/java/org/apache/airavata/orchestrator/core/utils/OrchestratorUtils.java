@@ -35,7 +35,7 @@ import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.exception.RegistryException;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public class OrchestratorUtils {
         String resourceHostId = taskScheduling.getResourceHostId();
         try {
             return registry.getHostDescriptor(resourceHostId);
-        } catch (RegistryException e) {
+        } catch (RegException e) {
             throw new OrchestratorException(e);
         }
     }

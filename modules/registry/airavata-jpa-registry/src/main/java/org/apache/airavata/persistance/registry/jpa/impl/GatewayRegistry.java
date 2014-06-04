@@ -25,13 +25,14 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 public class GatewayRegistry {
-    public GatewayResource getDefaultGateway () throws ApplicationSettingsException {
+    public GatewayResource getDefaultGateway () throws ApplicationSettingsException, RegistryException {
         return (GatewayResource)ResourceUtils.getGateway(ServerSettings.getSystemUserGateway());
     }
 
-    public GatewayResource getExistingGateway (String gatewayName) {
+    public GatewayResource getExistingGateway (String gatewayName) throws RegistryException {
         return (GatewayResource)ResourceUtils.getGateway(gatewayName);
     }
 

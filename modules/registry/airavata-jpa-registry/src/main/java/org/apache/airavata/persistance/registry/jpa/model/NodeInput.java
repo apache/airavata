@@ -21,12 +21,16 @@
 
 package org.apache.airavata.persistance.registry.jpa.model;
 
-import javax.persistence.*;
+import org.apache.openjpa.persistence.DataCache;
 
+import javax.persistence.*;
+import java.io.Serializable;
+
+@DataCache
 @Entity
 @Table(name = "NODE_INPUT")
 @IdClass(NodeInput_PK.class)
-public class NodeInput {
+public class NodeInput implements Serializable {
     @Id
     @Column(name = "NODE_INSTANCE_ID")
     private String nodeId;
