@@ -112,18 +112,18 @@ public class TestCreateLaunchExperiment {
 //                }
 //            }
 
-            List<Experiment> experimentList = getExperimentsForUser(airavata, "admin");
-            Experiment experiment = experimentList.get(1);
-            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
-            long timeOfStateChange = experimentStatus.getTimeOfStateChange();
-            System.out.println(timeOfStateChange);
-            Date date = new Date(timeOfStateChange);
-            Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
-            String time1 = format.format(date);
-//                int count = i+1;
-            System.out.println(time1);
+//            List<Experiment> experimentList = getExperimentsForUser(airavata, "admin");
+//            Experiment experiment = experimentList.get(1);
+//            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
+//            long timeOfStateChange = experimentStatus.getTimeOfStateChange();
+//            System.out.println(timeOfStateChange);
+//            Date date = new Date(timeOfStateChange);
+//            Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+//            String time1 = format.format(date);
+////                int count = i+1;
+//            System.out.println(time1);
 
-            for (int i = 0; i < 50 ; i++){
+            for (int i = 0; i < 500 ; i++){
                 long time = System.currentTimeMillis();
                 List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
                 int count = i+1;

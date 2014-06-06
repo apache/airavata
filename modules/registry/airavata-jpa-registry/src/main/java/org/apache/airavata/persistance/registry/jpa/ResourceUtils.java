@@ -116,6 +116,9 @@ public class ResourceUtils {
             throw new RegistryException(e);
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -146,6 +149,9 @@ public class ResourceUtils {
             throw new RegistryException(e);
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -167,6 +173,9 @@ public class ResourceUtils {
             throw new RegistryException(e);
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -187,6 +196,9 @@ public class ResourceUtils {
             throw new RegistryException(e);
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -216,6 +228,9 @@ public class ResourceUtils {
             throw new RegistryException(e);
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -243,6 +258,9 @@ public class ResourceUtils {
             return false;
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -277,6 +295,9 @@ public class ResourceUtils {
             throw new RegistryException(e);
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -306,6 +327,9 @@ public class ResourceUtils {
             return false;
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -338,6 +362,9 @@ public class ResourceUtils {
             logger.error(e.getMessage(), e);
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -407,6 +434,9 @@ public class ResourceUtils {
             throw new RegistryException(e);
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -433,6 +463,9 @@ public class ResourceUtils {
             throw new RegistryException(e);
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -451,6 +484,9 @@ public class ResourceUtils {
             throw new RegistryException(e);
         }finally {
             if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
