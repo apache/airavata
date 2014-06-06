@@ -19,6 +19,7 @@
  */
 
 include "workspaceModel.thrift"
+include "airavataErrors.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model

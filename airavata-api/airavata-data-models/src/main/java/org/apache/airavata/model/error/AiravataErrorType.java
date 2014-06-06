@@ -23,7 +23,11 @@
 package org.apache.airavata.model.error;
 
 
-    /**
+import java.util.Map;
+import java.util.HashMap;
+import org.apache.thrift.TEnum;
+
+/**
  * A list of Airavata API Error Message Types
  * 
  *  UNKNOWN: No information available about the error

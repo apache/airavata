@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script will regenerate the thrift code for Airavata Server Skeltons, Client Stubs and Data Model java beans.
+# This script will regenerate the thrift code for Airavata Server Skeletons, Client Stubs and Data Model java beans.
 #
 # Credit: This script was created referring to Apache Accumulo project and tuned to Airavata Needs.
 
@@ -28,14 +28,14 @@ JAVA_API_SDK_DIR='airavata-api-stubs/src/main/java'
 CPP_SDK_DIR='airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib'
 PHP_SDK_DIR='airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
 
-# The Funcation fail prints error messages on failure and quits the script.
+# The Function fail prints error messages on failure and quits the script.
 fail() {
     echo $@
     exit 1
 }
 
-# The funcation add_license_header adds the ASF V2 license header to all java files within the specified generated
-#   directory. The funcation also adds suppress all warnings annotation to all public classes and enum's
+# The function add_license_header adds the ASF V2 license header to all java files within the specified generated
+#   directory. The function also adds suppress all warnings annotation to all public classes and enum's
 #  To Call:
 #   add_license_header $generated_code_directory
 add_license_header() {
@@ -44,11 +44,11 @@ add_license_header() {
     GENERATED_CODE_DIR=$1
 
     # For all generated thrift code, add the suppress all warnings annotation
-    #  NOTE: In order to save the orginal file as a backup, use sed -i.orig in place of sed -i ''
+    #  NOTE: In order to save the original file as a backup, use sed -i.orig in place of sed -i ''
     find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public class /@SuppressWarnings("all") public class /'
     find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public enum /@SuppressWarnings("all") public enum /'
 
-    # For each java file within the genrated directory, add the ASF V2 LICENSE header
+    # For each java file within the generated directory, add the ASF V2 LICENSE header
     for f in $(find ${GENERATED_CODE_DIR} -name '*.java'); do
       cat - ${f} >${f}-with-license <<EOF
     /*
@@ -72,20 +72,20 @@ EOF
     done
 }
 
-# The funcation compares every generated java file with the one in specified existing source location. If the comparision
+# The function compares every generated java file with the one in specified existing source location. If the comparison
 #   shows a difference, then it replaces with the newly generated file (with added license header).
 #  To Call:
 #   copy_changed_files $generated_code_directory $existing_source_directory
 copy_changed_files() {
 
-    # Read all the funcation arguments
+    # Read all the function arguments
     GENERATED_CODE_DIR=$1
     WORKSPACE_SRC_DIR=$2
 
     echo "Generated sources are in ${GENERATED_CODE_DIR}"
     echo "Destination workspace is in ${WORKSPACE_SRC_DIR}"
 
-    # Check if the newly generated files exist in the targetted workspace, if not copy. Only changed files will be synced.
+    # Check if the newly generated files exist in the targeted workspace, if not copy. Only changed files will be synced.
     #  the extra slash to GENERATED_CODE_DIR is needed to ensure the parent directory itself is not copied.
     rsync -auv ${GENERATED_CODE_DIR}/ ${WORKSPACE_SRC_DIR}
 }
@@ -101,8 +101,8 @@ if [ "$VERSION" -ne 1 ] ; then
     fail "****************************************************"
 fi
 
-# Initialize the thrift arguements.
-#  Since most of the Airavata API and Data Models have includes, use recursive option by defualt.
+# Initialize the thrift arguments.
+#  Since most of the Airavata API and Data Models have includes, use recursive option by default.
 #  Generate all the files in target directory
 THRIFT_ARGS="-r -o ${BASE_TARGET_DIR}"
 # Ensure the required target directories exists, if not create.
@@ -115,10 +115,10 @@ mkdir -p ${BASE_TARGET_DIR}
 #Java Beans generation directory
 JAVA_BEAN_GEN_DIR=${BASE_TARGET_DIR}/gen-javabean
 
-# As a precausion  remove and previously generated files if exists
+# As a precaution  remove and previously generated files if exists
 rm -rf ${JAVA_BEAN_GEN_DIR}
 
-# Generate the Airavata Data Model using thrify Java Beans generator. This will take generate the classes in bean style
+# Generate the Airavata Data Model using thrift Java Beans generator. This will take generate the classes in bean style
 #   with members being private and setters returning voids.
 #   The airavataDataModel.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/airavataDataModel.thrift || fail unable to generate java bean thrift classes on base data model
@@ -132,17 +132,17 @@ add_license_header ${JAVA_BEAN_GEN_DIR}
 copy_changed_files ${JAVA_BEAN_GEN_DIR} ${DATAMODEL_SRC_DIR}
 
 ###############################################################################
-# Generate/Update source used by Airavata Server Skeltons & Java Client Stubs #
+# Generate/Update source used by Airavata Server Skeletons & Java Client Stubs #
 #  JAVA server and client both use generated api-boilerplate-code             #
 ###############################################################################
 
 #Java generation directory
 JAVA_GEN_DIR=${BASE_TARGET_DIR}/gen-java
 
-# As a precausion  remove and previously generated files if exists
+# As a precaution  remove and previously generated files if exists
 rm -rf ${JAVA_GEN_DIR}
 
-# Using thrify Java generator, generate the java classes based on Airavata API. This
+# Using thrift Java generator, generate the java classes based on Airavata API. This
 #   The airavataAPI.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate java thrift classes on AiravataAPI
 
@@ -151,7 +151,7 @@ thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/applicationCatalogAPI.thrift 
 # For the generated java classes add the ASF V2 License header
 add_license_header $JAVA_GEN_DIR
 
-# Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
+# Compare the newly generated classes with existing java generated skeleton/stub sources and replace the changed ones.
 #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
 copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/api ${JAVA_API_SDK_DIR}/org/apache/airavata/api
 
@@ -162,17 +162,17 @@ copy_changed_files ${JAVA_GEN_DIR}/org/apache/airavata/api ${JAVA_API_SDK_DIR}/o
 #CPP generation directory
 CPP_GEN_DIR=${BASE_TARGET_DIR}/gen-cpp
 
-# As a precausion  remove and previously generated files if exists
+# As a precaution  remove and previously generated files if exists
 rm -rf ${CPP_GEN_DIR}
 
-# Using thrify Java generator, generate the java classes based on Airavata API. This
+# Using thrift Java generator, generate the java classes based on Airavata API. This
 #   The airavataAPI.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen cpp ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate C++ thrift classes
 
 # For the generated java classes add the ASF V2 License header
 ## TODO Write C++ license parser
 
-# Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
+# Compare the newly generated classes with existing java generated skeleton/stub sources and replace the changed ones.
 #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
 copy_changed_files ${CPP_GEN_DIR} ${CPP_SDK_DIR}
 
@@ -183,17 +183,17 @@ copy_changed_files ${CPP_GEN_DIR} ${CPP_SDK_DIR}
 #PHP generation directory
 PHP_GEN_DIR=${BASE_TARGET_DIR}/gen-php
 
-# As a precausion  remove and previously generated files if exists
+# As a precaution  remove and previously generated files if exists
 rm -rf ${PHP_GEN_DIR}
 
-# Using thrify Java generator, generate the java classes based on Airavata API. This
+# Using thrift Java generator, generate the java classes based on Airavata API. This
 #   The airavataAPI.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen php:autoload ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate PHP thrift classes
 
 # For the generated java classes add the ASF V2 License header
 ## TODO Write PHP license parser
 
-# Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
+# Compare the newly generated classes with existing java generated skeleton/stub sources and replace the changed ones.
 #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
 copy_changed_files ${PHP_GEN_DIR} ${PHP_SDK_DIR}
 

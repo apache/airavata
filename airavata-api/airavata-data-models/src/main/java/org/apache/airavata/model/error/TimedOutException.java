@@ -28,15 +28,27 @@ import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
+import org.apache.thrift.protocol.TProtocolException;
+import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
-
+import org.apache.thrift.async.AsyncMethodCallback;
+import org.apache.thrift.server.AbstractNonblockingServer.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
+import java.util.BitSet;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    /**
+/**
  * This exception is thrown when RPC timeout gets exceeded.
  */
 @SuppressWarnings("all") public class TimedOutException extends TException implements org.apache.thrift.TBase<TimedOutException, TimedOutException._Fields>, java.io.Serializable, Cloneable, Comparable<TimedOutException> {
@@ -249,8 +261,6 @@ import java.util.Collections;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 
