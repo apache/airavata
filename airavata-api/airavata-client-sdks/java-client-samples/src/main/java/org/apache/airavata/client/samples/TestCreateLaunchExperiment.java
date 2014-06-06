@@ -47,7 +47,7 @@ import java.util.*;
 public class TestCreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(TestCreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
@@ -110,11 +110,11 @@ public class TestCreateLaunchExperiment {
 //                }
 //            }
 
-            for (int i = 0; i < 500 ; i++){
+            for (int i = 0; i < 50 ; i++){
                 long time = System.currentTimeMillis();
                 List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
                 int count = i+1;
-//                System.out.println("Experiment count : " + experiments.size());
+                System.out.println("Experiment count : " + experiments.size());
                 System.out.println("iteration : " + String.valueOf(count));
                 System.out.println(System.currentTimeMillis() - time);
             }

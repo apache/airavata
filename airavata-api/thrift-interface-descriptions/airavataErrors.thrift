@@ -79,6 +79,10 @@ exception ExperimentNotFoundException {
   **/
 }
 
+exception ProjectNotFoundException {
+  1: required string message
+}
+
 /** 
 * This exception is thrown for invalid requests that occur from any reasons like required input parameters are missing, 
 *  or a parameter is malformed.

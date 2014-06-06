@@ -86,6 +86,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public void updateProject(String projectId, Project updatedProject) throws InvalidRequestException,
                                                                                AiravataClientException,
                                                                                AiravataSystemException,
+                                                                               ProjectNotFoundException,
                                                                                TException {
         if (!validateString(projectId) || !validateString(projectId)){
             logger.error("Project id cannot be empty...");
@@ -98,8 +99,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             registry = RegistryFactory.getDefaultRegistry();
             if (!registry.isExist(RegistryModelType.PROJECT, projectId)){
                 logger.error("Project does not exist in the system. Please provide a valid project ID...");
-                AiravataSystemException exception = new AiravataSystemException();
-                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                ProjectNotFoundException exception = new ProjectNotFoundException();
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
@@ -128,21 +128,23 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param projectId
      */
     @Override
-    public Project getProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public Project getProject(String projectId) throws InvalidRequestException,
+                                                       AiravataClientException,
+                                                       AiravataSystemException,
+                                                       ProjectNotFoundException,
+                                                       TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
             if (!registry.isExist(RegistryModelType.PROJECT, projectId)){
                 logger.error("Project does not exist in the system. Please provide a valid project ID...");
-                AiravataSystemException exception = new AiravataSystemException();
-                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                ProjectNotFoundException exception = new ProjectNotFoundException();
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
             return (Project)registry.get(RegistryModelType.PROJECT, projectId);
         } catch (RegistryException e) {
             logger.error("Error while updating the project", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            ProjectNotFoundException exception = new ProjectNotFoundException();
             exception.setMessage("Error while updating the project. More info : " + e.getMessage());
             throw exception;
         }
@@ -381,7 +383,11 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param projectId
      */
     @Override
-    public List<Experiment> getAllExperimentsInProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<Experiment> getAllExperimentsInProject(String projectId) throws InvalidRequestException,
+                                                                                AiravataClientException,
+                                                                                AiravataSystemException,
+                                                                                ProjectNotFoundException,
+                                                                                TException {
         if (!validateString(projectId)){
             logger.error("Project id cannot be empty. Please provide a valid project ID...");
             AiravataSystemException exception = new AiravataSystemException();
@@ -393,19 +399,16 @@ public class AiravataServerHandler implements Airavata.Iface {
             registry = RegistryFactory.getDefaultRegistry();
             if (!registry.isExist(RegistryModelType.PROJECT, projectId)){
                 logger.error("Project does not exist in the system. Please provide a valid project ID...");
-                AiravataSystemException exception = new AiravataSystemException();
-                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                ProjectNotFoundException exception = new ProjectNotFoundException();
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
             List<Experiment> experiments = new ArrayList<Experiment>();
-            if (registry.isExist(RegistryModelType.PROJECT, projectId)){
-	            List<Object> list = registry.get(RegistryModelType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId);
-	            if (list != null && !list.isEmpty()){
-	                for (Object o : list){
-	                    experiments.add((Experiment)o);
-	                }
-	            }
+            List<Object> list = registry.get(RegistryModelType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId);
+            if (list != null && !list.isEmpty()) {
+                for (Object o : list) {
+                    experiments.add((Experiment) o);
+                }
             }
             return experiments;
         } catch (Exception e) {

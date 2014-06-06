@@ -28,16 +28,27 @@ import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
+import org.apache.thrift.protocol.TProtocolException;
+import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
-
+import org.apache.thrift.async.AsyncMethodCallback;
+import org.apache.thrift.server.AbstractNonblockingServer.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    @SuppressWarnings("all") public class LaunchValidationException extends TException implements org.apache.thrift.TBase<LaunchValidationException, LaunchValidationException._Fields>, java.io.Serializable, Cloneable, Comparable<LaunchValidationException> {
+@SuppressWarnings("all") public class LaunchValidationException extends TException implements org.apache.thrift.TBase<LaunchValidationException, LaunchValidationException._Fields>, java.io.Serializable, Cloneable, Comparable<LaunchValidationException> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("LaunchValidationException");
 
   private static final org.apache.thrift.protocol.TField VALIDATION_RESULT_FIELD_DESC = new org.apache.thrift.protocol.TField("validationResult", org.apache.thrift.protocol.TType.STRUCT, (short)1);
@@ -49,8 +60,8 @@ import java.util.BitSet;
     schemes.put(TupleScheme.class, new LaunchValidationExceptionTupleSchemeFactory());
   }
 
-  public ValidationResults validationResult; // required
-  public String errorMessage; // optional
+  private ValidationResults validationResult; // required
+  private String errorMessage; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -126,8 +137,8 @@ import java.util.BitSet;
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(LaunchValidationException.class, metaDataMap);
   }
 
-        public LaunchValidationException() {
-        }
+  public LaunchValidationException() {
+  }
 
   public LaunchValidationException(
     ValidationResults validationResult)
@@ -162,9 +173,8 @@ import java.util.BitSet;
     return this.validationResult;
   }
 
-  public LaunchValidationException setValidationResult(ValidationResults validationResult) {
+  public void setValidationResult(ValidationResults validationResult) {
     this.validationResult = validationResult;
-    return this;
   }
 
   public void unsetValidationResult() {
@@ -186,9 +196,8 @@ import java.util.BitSet;
     return this.errorMessage;
   }
 
-  public LaunchValidationException setErrorMessage(String errorMessage) {
+  public void setErrorMessage(String errorMessage) {
     this.errorMessage = errorMessage;
-    return this;
   }
 
   public void unsetErrorMessage() {
@@ -364,9 +373,10 @@ import java.util.BitSet;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (validationResult == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'validationResult' was not present! Struct: " + toString());
+    if (!isSetValidationResult()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'validationResult' is unset! Struct:" + toString());
     }
+
     // check for sub-struct validity
     if (validationResult != null) {
       validationResult.validate();
@@ -430,8 +440,6 @@ import java.util.BitSet;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

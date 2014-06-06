@@ -14,6 +14,7 @@
 
 #include <thrift/cxxfunctional.h>
 #include "workspaceModel_types.h"
+#include "airavataErrors_types.h"
 
 
 

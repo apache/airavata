@@ -49,38 +49,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This exception is thrown by Airavata Services when a call fails as a result of
- * a problem in the service that could not be changed through client's action.
- * 
- * airavataErrorType:  The message type indicating the error that occurred.
- *   must be one of the values of AiravataErrorType.
- * 
- * message:  This may contain additional information about the error
+ * 1:  optional  string identifier,
+ * 2:  optional  string key
  * 
  */
-@SuppressWarnings("all") public class AiravataSystemException extends TException implements org.apache.thrift.TBase<AiravataSystemException, AiravataSystemException._Fields>, java.io.Serializable, Cloneable, Comparable<AiravataSystemException> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("AiravataSystemException");
+@SuppressWarnings("all") public class ProjectNotFoundException extends TException implements org.apache.thrift.TBase<ProjectNotFoundException, ProjectNotFoundException._Fields>, java.io.Serializable, Cloneable, Comparable<ProjectNotFoundException> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ProjectNotFoundException");
 
-  private static final org.apache.thrift.protocol.TField AIRAVATA_ERROR_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataErrorType", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("message", org.apache.thrift.protocol.TType.STRING, (short)1);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new AiravataSystemExceptionStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new AiravataSystemExceptionTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new ProjectNotFoundExceptionStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new ProjectNotFoundExceptionTupleSchemeFactory());
   }
 
-  private AiravataErrorType airavataErrorType; // required
-  private String message; // optional
+  private String message; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    /**
-     * 
-     * @see AiravataErrorType
-     */
-    AIRAVATA_ERROR_TYPE((short)1, "airavataErrorType"),
-    MESSAGE((short)2, "message");
+    MESSAGE((short)1, "message");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -95,9 +83,7 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // AIRAVATA_ERROR_TYPE
-          return AIRAVATA_ERROR_TYPE;
-        case 2: // MESSAGE
+        case 1: // MESSAGE
           return MESSAGE;
         default:
           return null;
@@ -139,79 +125,41 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.MESSAGE};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.AIRAVATA_ERROR_TYPE, new org.apache.thrift.meta_data.FieldMetaData("airavataErrorType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, AiravataErrorType.class)));
-    tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.MESSAGE, new org.apache.thrift.meta_data.FieldMetaData("message", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(AiravataSystemException.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ProjectNotFoundException.class, metaDataMap);
   }
 
-  public AiravataSystemException() {
+  public ProjectNotFoundException() {
   }
 
-  public AiravataSystemException(
-    AiravataErrorType airavataErrorType)
+  public ProjectNotFoundException(
+    String message)
   {
     this();
-    this.airavataErrorType = airavataErrorType;
+    this.message = message;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public AiravataSystemException(AiravataSystemException other) {
-    if (other.isSetAiravataErrorType()) {
-      this.airavataErrorType = other.airavataErrorType;
-    }
+  public ProjectNotFoundException(ProjectNotFoundException other) {
     if (other.isSetMessage()) {
       this.message = other.message;
     }
   }
 
-  public AiravataSystemException deepCopy() {
-    return new AiravataSystemException(this);
+  public ProjectNotFoundException deepCopy() {
+    return new ProjectNotFoundException(this);
   }
 
   @Override
   public void clear() {
-    this.airavataErrorType = null;
     this.message = null;
-  }
-
-  /**
-   * 
-   * @see AiravataErrorType
-   */
-  public AiravataErrorType getAiravataErrorType() {
-    return this.airavataErrorType;
-  }
-
-  /**
-   * 
-   * @see AiravataErrorType
-   */
-  public void setAiravataErrorType(AiravataErrorType airavataErrorType) {
-    this.airavataErrorType = airavataErrorType;
-  }
-
-  public void unsetAiravataErrorType() {
-    this.airavataErrorType = null;
-  }
-
-  /** Returns true if field airavataErrorType is set (has been assigned a value) and false otherwise */
-  public boolean isSetAiravataErrorType() {
-    return this.airavataErrorType != null;
-  }
-
-  public void setAiravataErrorTypeIsSet(boolean value) {
-    if (!value) {
-      this.airavataErrorType = null;
-    }
   }
 
   public String getMessage() {
@@ -239,14 +187,6 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case AIRAVATA_ERROR_TYPE:
-      if (value == null) {
-        unsetAiravataErrorType();
-      } else {
-        setAiravataErrorType((AiravataErrorType)value);
-      }
-      break;
-
     case MESSAGE:
       if (value == null) {
         unsetMessage();
@@ -260,9 +200,6 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case AIRAVATA_ERROR_TYPE:
-      return getAiravataErrorType();
-
     case MESSAGE:
       return getMessage();
 
@@ -277,8 +214,6 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case AIRAVATA_ERROR_TYPE:
-      return isSetAiravataErrorType();
     case MESSAGE:
       return isSetMessage();
     }
@@ -289,23 +224,14 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof AiravataSystemException)
-      return this.equals((AiravataSystemException)that);
+    if (that instanceof ProjectNotFoundException)
+      return this.equals((ProjectNotFoundException)that);
     return false;
   }
 
-  public boolean equals(AiravataSystemException that) {
+  public boolean equals(ProjectNotFoundException that) {
     if (that == null)
       return false;
-
-    boolean this_present_airavataErrorType = true && this.isSetAiravataErrorType();
-    boolean that_present_airavataErrorType = true && that.isSetAiravataErrorType();
-    if (this_present_airavataErrorType || that_present_airavataErrorType) {
-      if (!(this_present_airavataErrorType && that_present_airavataErrorType))
-        return false;
-      if (!this.airavataErrorType.equals(that.airavataErrorType))
-        return false;
-    }
 
     boolean this_present_message = true && this.isSetMessage();
     boolean that_present_message = true && that.isSetMessage();
@@ -325,23 +251,13 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(AiravataSystemException other) {
+  public int compareTo(ProjectNotFoundException other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetAiravataErrorType()).compareTo(other.isSetAiravataErrorType());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetAiravataErrorType()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.airavataErrorType, other.airavataErrorType);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetMessage()).compareTo(other.isSetMessage());
     if (lastComparison != 0) {
       return lastComparison;
@@ -369,34 +285,24 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("AiravataSystemException(");
+    StringBuilder sb = new StringBuilder("ProjectNotFoundException(");
     boolean first = true;
 
-    sb.append("airavataErrorType:");
-    if (this.airavataErrorType == null) {
+    sb.append("message:");
+    if (this.message == null) {
       sb.append("null");
     } else {
-      sb.append(this.airavataErrorType);
+      sb.append(this.message);
     }
     first = false;
-    if (isSetMessage()) {
-      if (!first) sb.append(", ");
-      sb.append("message:");
-      if (this.message == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.message);
-      }
-      first = false;
-    }
     sb.append(")");
     return sb.toString();
   }
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetAiravataErrorType()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataErrorType' is unset! Struct:" + toString());
+    if (!isSetMessage()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'message' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -418,15 +324,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class AiravataSystemExceptionStandardSchemeFactory implements SchemeFactory {
-    public AiravataSystemExceptionStandardScheme getScheme() {
-      return new AiravataSystemExceptionStandardScheme();
+  private static class ProjectNotFoundExceptionStandardSchemeFactory implements SchemeFactory {
+    public ProjectNotFoundExceptionStandardScheme getScheme() {
+      return new ProjectNotFoundExceptionStandardScheme();
     }
   }
 
-  private static class AiravataSystemExceptionStandardScheme extends StandardScheme<AiravataSystemException> {
+  private static class ProjectNotFoundExceptionStandardScheme extends StandardScheme<ProjectNotFoundException> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, AiravataSystemException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, ProjectNotFoundException struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -436,15 +342,7 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // AIRAVATA_ERROR_TYPE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.airavataErrorType = AiravataErrorType.findByValue(iprot.readI32());
-              struct.setAiravataErrorTypeIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // MESSAGE
+          case 1: // MESSAGE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.message = iprot.readString();
               struct.setMessageIsSet(true);
@@ -461,21 +359,14 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, AiravataSystemException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, ProjectNotFoundException struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.airavataErrorType != null) {
-        oprot.writeFieldBegin(AIRAVATA_ERROR_TYPE_FIELD_DESC);
-        oprot.writeI32(struct.airavataErrorType.getValue());
-        oprot.writeFieldEnd();
-      }
       if (struct.message != null) {
-        if (struct.isSetMessage()) {
-          oprot.writeFieldBegin(MESSAGE_FIELD_DESC);
-          oprot.writeString(struct.message);
-          oprot.writeFieldEnd();
-        }
+        oprot.writeFieldBegin(MESSAGE_FIELD_DESC);
+        oprot.writeString(struct.message);
+        oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -483,38 +374,25 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class AiravataSystemExceptionTupleSchemeFactory implements SchemeFactory {
-    public AiravataSystemExceptionTupleScheme getScheme() {
-      return new AiravataSystemExceptionTupleScheme();
+  private static class ProjectNotFoundExceptionTupleSchemeFactory implements SchemeFactory {
+    public ProjectNotFoundExceptionTupleScheme getScheme() {
+      return new ProjectNotFoundExceptionTupleScheme();
     }
   }
 
-  private static class AiravataSystemExceptionTupleScheme extends TupleScheme<AiravataSystemException> {
+  private static class ProjectNotFoundExceptionTupleScheme extends TupleScheme<ProjectNotFoundException> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, AiravataSystemException struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, ProjectNotFoundException struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeI32(struct.airavataErrorType.getValue());
-      BitSet optionals = new BitSet();
-      if (struct.isSetMessage()) {
-        optionals.set(0);
-      }
-      oprot.writeBitSet(optionals, 1);
-      if (struct.isSetMessage()) {
-        oprot.writeString(struct.message);
-      }
+      oprot.writeString(struct.message);
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, AiravataSystemException struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, ProjectNotFoundException struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.airavataErrorType = AiravataErrorType.findByValue(iprot.readI32());
-      struct.setAiravataErrorTypeIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
-      if (incoming.get(0)) {
-        struct.message = iprot.readString();
-        struct.setMessageIsSet(true);
-      }
+      struct.message = iprot.readString();
+      struct.setMessageIsSet(true);
     }
   }
 

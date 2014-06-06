@@ -81,7 +81,8 @@ service Airavata {
                       2: required workspaceModel.Project updatedProject)
       throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.AiravataClientException ace,
-              3: airavataErrors.AiravataSystemException ase)
+              3: airavataErrors.AiravataSystemException ase,
+              4: airavataErrors.ProjectNotFoundException pnfe)
 
 /**
    * Get a Project by ID
@@ -90,7 +91,8 @@ service Airavata {
   workspaceModel.Project getProject (1: required string projectId)
         throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
-                3: airavataErrors.AiravataSystemException ase)
+                3: airavataErrors.AiravataSystemException ase,
+                4: airavataErrors.ProjectNotFoundException pnfe)
 
 /**
    * Get all Project by user
@@ -154,7 +156,8 @@ service Airavata {
   list<experimentModel.Experiment> getAllExperimentsInProject(1: required string projectId)
           throws (1: airavataErrors.InvalidRequestException ire,
                   2: airavataErrors.AiravataClientException ace,
-                  3: airavataErrors.AiravataSystemException ase)
+                  3: airavataErrors.AiravataSystemException ase,
+                  4: airavataErrors.ProjectNotFoundException pnfe)
 
   /**
      * Get all Experiments by user

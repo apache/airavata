@@ -453,10 +453,11 @@ class Airavata_updateProject_pargs {
 };
 
 typedef struct _Airavata_updateProject_result__isset {
-  _Airavata_updateProject_result__isset() : ire(false), ace(false), ase(false) {}
+  _Airavata_updateProject_result__isset() : ire(false), ace(false), ase(false), pnfe(false) {}
   bool ire;
   bool ace;
   bool ase;
+  bool pnfe;
 } _Airavata_updateProject_result__isset;
 
 class Airavata_updateProject_result {
@@ -470,6 +471,7 @@ class Airavata_updateProject_result {
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
+   ::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_updateProject_result__isset __isset;
 
@@ -485,6 +487,10 @@ class Airavata_updateProject_result {
     ase = val;
   }
 
+  void __set_pnfe(const  ::airavata::api::error::ProjectNotFoundException& val) {
+    pnfe = val;
+  }
+
   bool operator == (const Airavata_updateProject_result & rhs) const
   {
     if (!(ire == rhs.ire))
@@ -492,6 +498,8 @@ class Airavata_updateProject_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(pnfe == rhs.pnfe))
       return false;
     return true;
   }
@@ -507,10 +515,11 @@ class Airavata_updateProject_result {
 };
 
 typedef struct _Airavata_updateProject_presult__isset {
-  _Airavata_updateProject_presult__isset() : ire(false), ace(false), ase(false) {}
+  _Airavata_updateProject_presult__isset() : ire(false), ace(false), ase(false), pnfe(false) {}
   bool ire;
   bool ace;
   bool ase;
+  bool pnfe;
 } _Airavata_updateProject_presult__isset;
 
 class Airavata_updateProject_presult {
@@ -522,6 +531,7 @@ class Airavata_updateProject_presult {
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
+   ::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_updateProject_presult__isset __isset;
 
@@ -575,11 +585,12 @@ class Airavata_getProject_pargs {
 };
 
 typedef struct _Airavata_getProject_result__isset {
-  _Airavata_getProject_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_getProject_result__isset() : success(false), ire(false), ace(false), ase(false), pnfe(false) {}
   bool success;
   bool ire;
   bool ace;
   bool ase;
+  bool pnfe;
 } _Airavata_getProject_result__isset;
 
 class Airavata_getProject_result {
@@ -594,6 +605,7 @@ class Airavata_getProject_result {
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
+   ::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_getProject_result__isset __isset;
 
@@ -613,6 +625,10 @@ class Airavata_getProject_result {
     ase = val;
   }
 
+  void __set_pnfe(const  ::airavata::api::error::ProjectNotFoundException& val) {
+    pnfe = val;
+  }
+
   bool operator == (const Airavata_getProject_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -622,6 +638,8 @@ class Airavata_getProject_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(pnfe == rhs.pnfe))
       return false;
     return true;
   }
@@ -637,11 +655,12 @@ class Airavata_getProject_result {
 };
 
 typedef struct _Airavata_getProject_presult__isset {
-  _Airavata_getProject_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_getProject_presult__isset() : success(false), ire(false), ace(false), ase(false), pnfe(false) {}
   bool success;
   bool ire;
   bool ace;
   bool ase;
+  bool pnfe;
 } _Airavata_getProject_presult__isset;
 
 class Airavata_getProject_presult {
@@ -654,6 +673,7 @@ class Airavata_getProject_presult {
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
+   ::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_getProject_presult__isset __isset;
 
@@ -1539,11 +1559,12 @@ class Airavata_getAllExperimentsInProject_pargs {
 };
 
 typedef struct _Airavata_getAllExperimentsInProject_result__isset {
-  _Airavata_getAllExperimentsInProject_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_getAllExperimentsInProject_result__isset() : success(false), ire(false), ace(false), ase(false), pnfe(false) {}
   bool success;
   bool ire;
   bool ace;
   bool ase;
+  bool pnfe;
 } _Airavata_getAllExperimentsInProject_result__isset;
 
 class Airavata_getAllExperimentsInProject_result {
@@ -1558,6 +1579,7 @@ class Airavata_getAllExperimentsInProject_result {
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
+   ::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_getAllExperimentsInProject_result__isset __isset;
 
@@ -1577,6 +1599,10 @@ class Airavata_getAllExperimentsInProject_result {
     ase = val;
   }
 
+  void __set_pnfe(const  ::airavata::api::error::ProjectNotFoundException& val) {
+    pnfe = val;
+  }
+
   bool operator == (const Airavata_getAllExperimentsInProject_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -1586,6 +1612,8 @@ class Airavata_getAllExperimentsInProject_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(pnfe == rhs.pnfe))
       return false;
     return true;
   }
@@ -1601,11 +1629,12 @@ class Airavata_getAllExperimentsInProject_result {
 };
 
 typedef struct _Airavata_getAllExperimentsInProject_presult__isset {
-  _Airavata_getAllExperimentsInProject_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_getAllExperimentsInProject_presult__isset() : success(false), ire(false), ace(false), ase(false), pnfe(false) {}
   bool success;
   bool ire;
   bool ace;
   bool ase;
+  bool pnfe;
 } _Airavata_getAllExperimentsInProject_presult__isset;
 
 class Airavata_getAllExperimentsInProject_presult {
@@ -1618,6 +1647,7 @@ class Airavata_getAllExperimentsInProject_presult {
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
+   ::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_getAllExperimentsInProject_presult__isset __isset;
 

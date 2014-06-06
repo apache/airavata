@@ -28,17 +28,27 @@ import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
+import org.apache.thrift.protocol.TProtocolException;
 import org.apache.thrift.EncodingUtils;
-
+import org.apache.thrift.TException;
+import org.apache.thrift.async.AsyncMethodCallback;
+import org.apache.thrift.server.AbstractNonblockingServer.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
+import java.util.BitSet;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    @SuppressWarnings("all") public class ValidationResults implements org.apache.thrift.TBase<ValidationResults, ValidationResults._Fields>, java.io.Serializable, Cloneable, Comparable<ValidationResults> {
+@SuppressWarnings("all") public class ValidationResults implements org.apache.thrift.TBase<ValidationResults, ValidationResults._Fields>, java.io.Serializable, Cloneable, Comparable<ValidationResults> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ValidationResults");
 
   private static final org.apache.thrift.protocol.TField VALIDATION_STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("validationState", org.apache.thrift.protocol.TType.BOOL, (short)1);
@@ -50,8 +60,8 @@ import java.util.Collections;
     schemes.put(TupleScheme.class, new ValidationResultsTupleSchemeFactory());
   }
 
-  public boolean validationState; // required
-  public List<ValidatorResult> validationResultList; // required
+  private boolean validationState; // required
+  private List<ValidatorResult> validationResultList; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -172,10 +182,9 @@ import java.util.Collections;
     return this.validationState;
   }
 
-  public ValidationResults setValidationState(boolean validationState) {
+  public void setValidationState(boolean validationState) {
     this.validationState = validationState;
     setValidationStateIsSet(true);
-    return this;
   }
 
   public void unsetValidationState() {
@@ -210,9 +219,8 @@ import java.util.Collections;
     return this.validationResultList;
   }
 
-  public ValidationResults setValidationResultList(List<ValidatorResult> validationResultList) {
+  public void setValidationResultList(List<ValidatorResult> validationResultList) {
     this.validationResultList = validationResultList;
-    return this;
   }
 
   public void unsetValidationResultList() {
@@ -382,10 +390,14 @@ import java.util.Collections;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    // alas, we cannot check 'validationState' because it's a primitive and you chose the non-beans generator.
-    if (validationResultList == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'validationResultList' was not present! Struct: " + toString());
+    if (!isSetValidationState()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'validationState' is unset! Struct:" + toString());
     }
+
+    if (!isSetValidationResultList()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'validationResultList' is unset! Struct:" + toString());
+    }
+
     // check for sub-struct validity
   }
 
@@ -458,11 +470,6 @@ import java.util.Collections;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
-      if (!struct.isSetValidationState()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'validationState' was not found in serialized data! Struct: " + toString());
-      }
       struct.validate();
     }
 

@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
      * @param projectId
      * @param updatedProject
      */
-    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException;
 
     /**
      * Get a Project by ID
@@ -80,7 +80,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param projectId
      */
-    public org.apache.airavata.model.workspace.Project getProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public org.apache.airavata.model.workspace.Project getProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException;
 
     /**
      * Get all Project by user
@@ -141,7 +141,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param projectId
      */
-    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllExperimentsInProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllExperimentsInProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException;
 
     /**
      * Get all Experiments by user
@@ -560,7 +560,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "createProject failed: unknown result");
     }
 
-    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public void updateProject(String projectId, org.apache.airavata.model.workspace.Project updatedProject) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException
     {
       send_updateProject(projectId, updatedProject);
       recv_updateProject();
@@ -574,7 +574,7 @@ import org.slf4j.LoggerFactory;
       sendBase("updateProject", args);
     }
 
-    public void recv_updateProject() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public void recv_updateProject() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException
     {
       updateProject_result result = new updateProject_result();
       receiveBase(result, "updateProject");
@@ -587,10 +587,13 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
+      if (result.pnfe != null) {
+        throw result.pnfe;
+      }
       return;
     }
 
-    public org.apache.airavata.model.workspace.Project getProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.Project getProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException
     {
       send_getProject(projectId);
       return recv_getProject();
@@ -603,7 +606,7 @@ import org.slf4j.LoggerFactory;
       sendBase("getProject", args);
     }
 
-    public org.apache.airavata.model.workspace.Project recv_getProject() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.workspace.Project recv_getProject() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException
     {
       getProject_result result = new getProject_result();
       receiveBase(result, "getProject");
@@ -618,6 +621,9 @@ import org.slf4j.LoggerFactory;
       }
       if (result.ase != null) {
         throw result.ase;
+      }
+      if (result.pnfe != null) {
+        throw result.pnfe;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getProject failed: unknown result");
     }
@@ -819,7 +825,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "searchExperimentsByApplication failed: unknown result");
     }
 
-    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllExperimentsInProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllExperimentsInProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException
     {
       send_getAllExperimentsInProject(projectId);
       return recv_getAllExperimentsInProject();
@@ -832,7 +838,7 @@ import org.slf4j.LoggerFactory;
       sendBase("getAllExperimentsInProject", args);
     }
 
-    public List<org.apache.airavata.model.workspace.experiment.Experiment> recv_getAllExperimentsInProject() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public List<org.apache.airavata.model.workspace.experiment.Experiment> recv_getAllExperimentsInProject() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException
     {
       getAllExperimentsInProject_result result = new getAllExperimentsInProject_result();
       receiveBase(result, "getAllExperimentsInProject");
@@ -847,6 +853,9 @@ import org.slf4j.LoggerFactory;
       }
       if (result.ase != null) {
         throw result.ase;
+      }
+      if (result.pnfe != null) {
+        throw result.pnfe;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAllExperimentsInProject failed: unknown result");
     }
@@ -1349,7 +1358,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public void getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1381,7 +1390,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.model.workspace.Project getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public org.apache.airavata.model.workspace.Project getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -1620,7 +1629,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public List<org.apache.airavata.model.workspace.experiment.Experiment> getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+      public List<org.apache.airavata.model.workspace.experiment.Experiment> getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -2180,6 +2189,8 @@ import org.slf4j.LoggerFactory;
           result.ace = ace;
         } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
+        } catch (org.apache.airavata.model.error.ProjectNotFoundException pnfe) {
+          result.pnfe = pnfe;
         }
         return result;
       }
@@ -2208,6 +2219,8 @@ import org.slf4j.LoggerFactory;
           result.ace = ace;
         } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
+        } catch (org.apache.airavata.model.error.ProjectNotFoundException pnfe) {
+          result.pnfe = pnfe;
         }
         return result;
       }
@@ -2404,6 +2417,8 @@ import org.slf4j.LoggerFactory;
           result.ace = ace;
         } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
           result.ase = ase;
+        } catch (org.apache.airavata.model.error.ProjectNotFoundException pnfe) {
+          result.pnfe = pnfe;
         }
         return result;
       }
@@ -2973,6 +2988,11 @@ import org.slf4j.LoggerFactory;
                         result.setAseIsSet(true);
                         msg = result;
             }
+            else             if (e instanceof org.apache.airavata.model.error.ProjectNotFoundException) {
+                        result.pnfe = (org.apache.airavata.model.error.ProjectNotFoundException) e;
+                        result.setPnfeIsSet(true);
+                        msg = result;
+            }
              else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
@@ -3038,6 +3058,11 @@ import org.slf4j.LoggerFactory;
             else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
                         result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.ProjectNotFoundException) {
+                        result.pnfe = (org.apache.airavata.model.error.ProjectNotFoundException) e;
+                        result.setPnfeIsSet(true);
                         msg = result;
             }
              else 
@@ -3507,6 +3532,11 @@ import org.slf4j.LoggerFactory;
             else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
                         result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
                         result.setAseIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.ProjectNotFoundException) {
+                        result.pnfe = (org.apache.airavata.model.error.ProjectNotFoundException) e;
+                        result.setPnfeIsSet(true);
                         msg = result;
             }
              else 
@@ -6751,6 +6781,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField PNFE_FIELD_DESC = new org.apache.thrift.protocol.TField("pnfe", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -6761,12 +6792,14 @@ import org.slf4j.LoggerFactory;
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.ProjectNotFoundException pnfe; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
-      ASE((short)3, "ase");
+      ASE((short)3, "ase"),
+      PNFE((short)4, "pnfe");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -6787,6 +6820,8 @@ import org.slf4j.LoggerFactory;
             return ACE;
           case 3: // ASE
             return ASE;
+          case 4: // PNFE
+            return PNFE;
           default:
             return null;
         }
@@ -6836,6 +6871,8 @@ import org.slf4j.LoggerFactory;
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.PNFE, new org.apache.thrift.meta_data.FieldMetaData("pnfe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateProject_result.class, metaDataMap);
     }
@@ -6846,12 +6883,14 @@ import org.slf4j.LoggerFactory;
     public updateProject_result(
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
-      org.apache.airavata.model.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.AiravataSystemException ase,
+      org.apache.airavata.model.error.ProjectNotFoundException pnfe)
     {
       this();
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
+      this.pnfe = pnfe;
     }
 
     /**
@@ -6867,6 +6906,9 @@ import org.slf4j.LoggerFactory;
       if (other.isSetAse()) {
         this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
+      if (other.isSetPnfe()) {
+        this.pnfe = new org.apache.airavata.model.error.ProjectNotFoundException(other.pnfe);
+      }
     }
 
     public updateProject_result deepCopy() {
@@ -6878,6 +6920,7 @@ import org.slf4j.LoggerFactory;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+      this.pnfe = null;
     }
 
     public org.apache.airavata.model.error.InvalidRequestException getIre() {
@@ -6952,6 +6995,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public org.apache.airavata.model.error.ProjectNotFoundException getPnfe() {
+      return this.pnfe;
+    }
+
+    public updateProject_result setPnfe(org.apache.airavata.model.error.ProjectNotFoundException pnfe) {
+      this.pnfe = pnfe;
+      return this;
+    }
+
+    public void unsetPnfe() {
+      this.pnfe = null;
+    }
+
+    /** Returns true if field pnfe is set (has been assigned a value) and false otherwise */
+    public boolean isSetPnfe() {
+      return this.pnfe != null;
+    }
+
+    public void setPnfeIsSet(boolean value) {
+      if (!value) {
+        this.pnfe = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case IRE:
@@ -6978,6 +7045,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case PNFE:
+        if (value == null) {
+          unsetPnfe();
+        } else {
+          setPnfe((org.apache.airavata.model.error.ProjectNotFoundException)value);
+        }
+        break;
+
       }
     }
 
@@ -6991,6 +7066,9 @@ import org.slf4j.LoggerFactory;
 
       case ASE:
         return getAse();
+
+      case PNFE:
+        return getPnfe();
 
       }
       throw new IllegalStateException();
@@ -7009,6 +7087,8 @@ import org.slf4j.LoggerFactory;
         return isSetAce();
       case ASE:
         return isSetAse();
+      case PNFE:
+        return isSetPnfe();
       }
       throw new IllegalStateException();
     }
@@ -7050,6 +7130,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_ase && that_present_ase))
           return false;
         if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      boolean this_present_pnfe = true && this.isSetPnfe();
+      boolean that_present_pnfe = true && that.isSetPnfe();
+      if (this_present_pnfe || that_present_pnfe) {
+        if (!(this_present_pnfe && that_present_pnfe))
+          return false;
+        if (!this.pnfe.equals(that.pnfe))
           return false;
       }
 
@@ -7099,6 +7188,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetPnfe()).compareTo(other.isSetPnfe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetPnfe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.pnfe, other.pnfe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -7140,6 +7239,14 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.ase);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("pnfe:");
+      if (this.pnfe == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.pnfe);
       }
       first = false;
       sb.append(")");
@@ -7212,6 +7319,15 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 4: // PNFE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.pnfe = new org.apache.airavata.model.error.ProjectNotFoundException();
+                struct.pnfe.read(iprot);
+                struct.setPnfeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -7242,6 +7358,11 @@ import org.slf4j.LoggerFactory;
           struct.ase.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.pnfe != null) {
+          oprot.writeFieldBegin(PNFE_FIELD_DESC);
+          struct.pnfe.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -7269,7 +7390,10 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetAse()) {
           optionals.set(2);
         }
-        oprot.writeBitSet(optionals, 3);
+        if (struct.isSetPnfe()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
         if (struct.isSetIre()) {
           struct.ire.write(oprot);
         }
@@ -7279,12 +7403,15 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetAse()) {
           struct.ase.write(oprot);
         }
+        if (struct.isSetPnfe()) {
+          struct.pnfe.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, updateProject_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(3);
+        BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
           struct.ire.read(iprot);
@@ -7299,6 +7426,11 @@ import org.slf4j.LoggerFactory;
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.pnfe = new org.apache.airavata.model.error.ProjectNotFoundException();
+          struct.pnfe.read(iprot);
+          struct.setPnfeIsSet(true);
         }
       }
     }
@@ -7659,6 +7791,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField PNFE_FIELD_DESC = new org.apache.thrift.protocol.TField("pnfe", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -7670,13 +7803,15 @@ import org.slf4j.LoggerFactory;
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.ProjectNotFoundException pnfe; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
-      ASE((short)3, "ase");
+      ASE((short)3, "ase"),
+      PNFE((short)4, "pnfe");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -7699,6 +7834,8 @@ import org.slf4j.LoggerFactory;
             return ACE;
           case 3: // ASE
             return ASE;
+          case 4: // PNFE
+            return PNFE;
           default:
             return null;
         }
@@ -7750,6 +7887,8 @@ import org.slf4j.LoggerFactory;
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.PNFE, new org.apache.thrift.meta_data.FieldMetaData("pnfe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getProject_result.class, metaDataMap);
     }
@@ -7761,13 +7900,15 @@ import org.slf4j.LoggerFactory;
       org.apache.airavata.model.workspace.Project success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
-      org.apache.airavata.model.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.AiravataSystemException ase,
+      org.apache.airavata.model.error.ProjectNotFoundException pnfe)
     {
       this();
       this.success = success;
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
+      this.pnfe = pnfe;
     }
 
     /**
@@ -7786,6 +7927,9 @@ import org.slf4j.LoggerFactory;
       if (other.isSetAse()) {
         this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
+      if (other.isSetPnfe()) {
+        this.pnfe = new org.apache.airavata.model.error.ProjectNotFoundException(other.pnfe);
+      }
     }
 
     public getProject_result deepCopy() {
@@ -7798,6 +7942,7 @@ import org.slf4j.LoggerFactory;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+      this.pnfe = null;
     }
 
     public org.apache.airavata.model.workspace.Project getSuccess() {
@@ -7896,6 +8041,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public org.apache.airavata.model.error.ProjectNotFoundException getPnfe() {
+      return this.pnfe;
+    }
+
+    public getProject_result setPnfe(org.apache.airavata.model.error.ProjectNotFoundException pnfe) {
+      this.pnfe = pnfe;
+      return this;
+    }
+
+    public void unsetPnfe() {
+      this.pnfe = null;
+    }
+
+    /** Returns true if field pnfe is set (has been assigned a value) and false otherwise */
+    public boolean isSetPnfe() {
+      return this.pnfe != null;
+    }
+
+    public void setPnfeIsSet(boolean value) {
+      if (!value) {
+        this.pnfe = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -7930,6 +8099,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case PNFE:
+        if (value == null) {
+          unsetPnfe();
+        } else {
+          setPnfe((org.apache.airavata.model.error.ProjectNotFoundException)value);
+        }
+        break;
+
       }
     }
 
@@ -7946,6 +8123,9 @@ import org.slf4j.LoggerFactory;
 
       case ASE:
         return getAse();
+
+      case PNFE:
+        return getPnfe();
 
       }
       throw new IllegalStateException();
@@ -7966,6 +8146,8 @@ import org.slf4j.LoggerFactory;
         return isSetAce();
       case ASE:
         return isSetAse();
+      case PNFE:
+        return isSetPnfe();
       }
       throw new IllegalStateException();
     }
@@ -8016,6 +8198,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_ase && that_present_ase))
           return false;
         if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      boolean this_present_pnfe = true && this.isSetPnfe();
+      boolean that_present_pnfe = true && that.isSetPnfe();
+      if (this_present_pnfe || that_present_pnfe) {
+        if (!(this_present_pnfe && that_present_pnfe))
+          return false;
+        if (!this.pnfe.equals(that.pnfe))
           return false;
       }
 
@@ -8075,6 +8266,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetPnfe()).compareTo(other.isSetPnfe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetPnfe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.pnfe, other.pnfe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -8124,6 +8325,14 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.ase);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("pnfe:");
+      if (this.pnfe == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.pnfe);
       }
       first = false;
       sb.append(")");
@@ -8208,6 +8417,15 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 4: // PNFE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.pnfe = new org.apache.airavata.model.error.ProjectNotFoundException();
+                struct.pnfe.read(iprot);
+                struct.setPnfeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -8243,6 +8461,11 @@ import org.slf4j.LoggerFactory;
           struct.ase.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.pnfe != null) {
+          oprot.writeFieldBegin(PNFE_FIELD_DESC);
+          struct.pnfe.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -8273,7 +8496,10 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetAse()) {
           optionals.set(3);
         }
-        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetPnfe()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
         }
@@ -8286,12 +8512,15 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetAse()) {
           struct.ase.write(oprot);
         }
+        if (struct.isSetPnfe()) {
+          struct.pnfe.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getProject_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           struct.success = new org.apache.airavata.model.workspace.Project();
           struct.success.read(iprot);
@@ -8311,6 +8540,11 @@ import org.slf4j.LoggerFactory;
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
+        }
+        if (incoming.get(4)) {
+          struct.pnfe = new org.apache.airavata.model.error.ProjectNotFoundException();
+          struct.pnfe.read(iprot);
+          struct.setPnfeIsSet(true);
         }
       }
     }
@@ -15517,6 +15751,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
     private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
     private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+    private static final org.apache.thrift.protocol.TField PNFE_FIELD_DESC = new org.apache.thrift.protocol.TField("pnfe", org.apache.thrift.protocol.TType.STRUCT, (short)4);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -15528,13 +15763,15 @@ import org.slf4j.LoggerFactory;
     public org.apache.airavata.model.error.InvalidRequestException ire; // required
     public org.apache.airavata.model.error.AiravataClientException ace; // required
     public org.apache.airavata.model.error.AiravataSystemException ase; // required
+    public org.apache.airavata.model.error.ProjectNotFoundException pnfe; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       SUCCESS((short)0, "success"),
       IRE((short)1, "ire"),
       ACE((short)2, "ace"),
-      ASE((short)3, "ase");
+      ASE((short)3, "ase"),
+      PNFE((short)4, "pnfe");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -15557,6 +15794,8 @@ import org.slf4j.LoggerFactory;
             return ACE;
           case 3: // ASE
             return ASE;
+          case 4: // PNFE
+            return PNFE;
           default:
             return null;
         }
@@ -15609,6 +15848,8 @@ import org.slf4j.LoggerFactory;
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.PNFE, new org.apache.thrift.meta_data.FieldMetaData("pnfe", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAllExperimentsInProject_result.class, metaDataMap);
     }
@@ -15620,13 +15861,15 @@ import org.slf4j.LoggerFactory;
       List<org.apache.airavata.model.workspace.experiment.Experiment> success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
-      org.apache.airavata.model.error.AiravataSystemException ase)
+      org.apache.airavata.model.error.AiravataSystemException ase,
+      org.apache.airavata.model.error.ProjectNotFoundException pnfe)
     {
       this();
       this.success = success;
       this.ire = ire;
       this.ace = ace;
       this.ase = ase;
+      this.pnfe = pnfe;
     }
 
     /**
@@ -15649,6 +15892,9 @@ import org.slf4j.LoggerFactory;
       if (other.isSetAse()) {
         this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
       }
+      if (other.isSetPnfe()) {
+        this.pnfe = new org.apache.airavata.model.error.ProjectNotFoundException(other.pnfe);
+      }
     }
 
     public getAllExperimentsInProject_result deepCopy() {
@@ -15661,6 +15907,7 @@ import org.slf4j.LoggerFactory;
       this.ire = null;
       this.ace = null;
       this.ase = null;
+      this.pnfe = null;
     }
 
     public int getSuccessSize() {
@@ -15774,6 +16021,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public org.apache.airavata.model.error.ProjectNotFoundException getPnfe() {
+      return this.pnfe;
+    }
+
+    public getAllExperimentsInProject_result setPnfe(org.apache.airavata.model.error.ProjectNotFoundException pnfe) {
+      this.pnfe = pnfe;
+      return this;
+    }
+
+    public void unsetPnfe() {
+      this.pnfe = null;
+    }
+
+    /** Returns true if field pnfe is set (has been assigned a value) and false otherwise */
+    public boolean isSetPnfe() {
+      return this.pnfe != null;
+    }
+
+    public void setPnfeIsSet(boolean value) {
+      if (!value) {
+        this.pnfe = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -15808,6 +16079,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case PNFE:
+        if (value == null) {
+          unsetPnfe();
+        } else {
+          setPnfe((org.apache.airavata.model.error.ProjectNotFoundException)value);
+        }
+        break;
+
       }
     }
 
@@ -15824,6 +16103,9 @@ import org.slf4j.LoggerFactory;
 
       case ASE:
         return getAse();
+
+      case PNFE:
+        return getPnfe();
 
       }
       throw new IllegalStateException();
@@ -15844,6 +16126,8 @@ import org.slf4j.LoggerFactory;
         return isSetAce();
       case ASE:
         return isSetAse();
+      case PNFE:
+        return isSetPnfe();
       }
       throw new IllegalStateException();
     }
@@ -15894,6 +16178,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_ase && that_present_ase))
           return false;
         if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      boolean this_present_pnfe = true && this.isSetPnfe();
+      boolean that_present_pnfe = true && that.isSetPnfe();
+      if (this_present_pnfe || that_present_pnfe) {
+        if (!(this_present_pnfe && that_present_pnfe))
+          return false;
+        if (!this.pnfe.equals(that.pnfe))
           return false;
       }
 
@@ -15953,6 +16246,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetPnfe()).compareTo(other.isSetPnfe());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetPnfe()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.pnfe, other.pnfe);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -16002,6 +16305,14 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.ase);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("pnfe:");
+      if (this.pnfe == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.pnfe);
       }
       first = false;
       sb.append(")");
@@ -16093,6 +16404,15 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 4: // PNFE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.pnfe = new org.apache.airavata.model.error.ProjectNotFoundException();
+                struct.pnfe.read(iprot);
+                struct.setPnfeIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -16135,6 +16455,11 @@ import org.slf4j.LoggerFactory;
           struct.ase.write(oprot);
           oprot.writeFieldEnd();
         }
+        if (struct.pnfe != null) {
+          oprot.writeFieldBegin(PNFE_FIELD_DESC);
+          struct.pnfe.write(oprot);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -16165,7 +16490,10 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetAse()) {
           optionals.set(3);
         }
-        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetPnfe()) {
+          optionals.set(4);
+        }
+        oprot.writeBitSet(optionals, 5);
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
@@ -16184,12 +16512,15 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetAse()) {
           struct.ase.write(oprot);
         }
+        if (struct.isSetPnfe()) {
+          struct.pnfe.write(oprot);
+        }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getAllExperimentsInProject_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(4);
+        BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           {
             org.apache.thrift.protocol.TList _list53 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
@@ -16218,6 +16549,11 @@ import org.slf4j.LoggerFactory;
           struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
           struct.ase.read(iprot);
           struct.setAseIsSet(true);
+        }
+        if (incoming.get(4)) {
+          struct.pnfe = new org.apache.airavata.model.error.ProjectNotFoundException();
+          struct.pnfe.read(iprot);
+          struct.setPnfeIsSet(true);
         }
       }
     }

@@ -28,16 +28,27 @@ import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
+import org.apache.thrift.protocol.TProtocolException;
+import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
-
+import org.apache.thrift.async.AsyncMethodCallback;
+import org.apache.thrift.server.AbstractNonblockingServer.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    /**
+/**
  * This exception is thrown by Airavata Services when a call fails as a result of
  * a problem that a client may be able to resolve.  For example, if the user
  * attempts to execute an application on a resource gateway does not have access to.
@@ -64,12 +75,8 @@ import java.util.BitSet;
     schemes.put(TupleScheme.class, new AiravataClientExceptionTupleSchemeFactory());
   }
 
-  /**
-   * 
-   * @see AiravataErrorType
-   */
-  public AiravataErrorType airavataErrorType; // required
-  public String parameter; // optional
+  private AiravataErrorType airavataErrorType; // required
+  private String parameter; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -193,9 +200,8 @@ import java.util.BitSet;
    * 
    * @see AiravataErrorType
    */
-  public AiravataClientException setAiravataErrorType(AiravataErrorType airavataErrorType) {
+  public void setAiravataErrorType(AiravataErrorType airavataErrorType) {
     this.airavataErrorType = airavataErrorType;
-    return this;
   }
 
   public void unsetAiravataErrorType() {
@@ -217,9 +223,8 @@ import java.util.BitSet;
     return this.parameter;
   }
 
-  public AiravataClientException setParameter(String parameter) {
+  public void setParameter(String parameter) {
     this.parameter = parameter;
-    return this;
   }
 
   public void unsetParameter() {
@@ -395,9 +400,10 @@ import java.util.BitSet;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (airavataErrorType == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataErrorType' was not present! Struct: " + toString());
+    if (!isSetAiravataErrorType()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataErrorType' is unset! Struct:" + toString());
     }
+
     // check for sub-struct validity
   }
 
@@ -457,8 +463,6 @@ import java.util.BitSet;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

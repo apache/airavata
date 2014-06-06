@@ -566,6 +566,14 @@ uint32_t Airavata_updateProject_result::read(::apache::thrift::protocol::TProtoc
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->pnfe.read(iprot);
+          this->__isset.pnfe = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -595,6 +603,10 @@ uint32_t Airavata_updateProject_result::write(::apache::thrift::protocol::TProto
   } else if (this->__isset.ase) {
     xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
     xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.pnfe) {
+    xfer += oprot->writeFieldBegin("pnfe", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->pnfe.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -642,6 +654,14 @@ uint32_t Airavata_updateProject_presult::read(::apache::thrift::protocol::TProto
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ase.read(iprot);
           this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->pnfe.read(iprot);
+          this->__isset.pnfe = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -779,6 +799,14 @@ uint32_t Airavata_getProject_result::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->pnfe.read(iprot);
+          this->__isset.pnfe = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -812,6 +840,10 @@ uint32_t Airavata_getProject_result::write(::apache::thrift::protocol::TProtocol
   } else if (this->__isset.ase) {
     xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
     xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.pnfe) {
+    xfer += oprot->writeFieldBegin("pnfe", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->pnfe.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -867,6 +899,14 @@ uint32_t Airavata_getProject_presult::read(::apache::thrift::protocol::TProtocol
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ase.read(iprot);
           this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->pnfe.read(iprot);
+          this->__isset.pnfe = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -2653,6 +2693,14 @@ uint32_t Airavata_getAllExperimentsInProject_result::read(::apache::thrift::prot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->pnfe.read(iprot);
+          this->__isset.pnfe = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2694,6 +2742,10 @@ uint32_t Airavata_getAllExperimentsInProject_result::write(::apache::thrift::pro
   } else if (this->__isset.ase) {
     xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
     xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.pnfe) {
+    xfer += oprot->writeFieldBegin("pnfe", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->pnfe.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -2761,6 +2813,14 @@ uint32_t Airavata_getAllExperimentsInProject_presult::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ase.read(iprot);
           this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->pnfe.read(iprot);
+          this->__isset.pnfe = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -5882,6 +5942,9 @@ void AiravataClient::recv_updateProject()
   if (result.__isset.ase) {
     throw result.ase;
   }
+  if (result.__isset.pnfe) {
+    throw result.pnfe;
+  }
   return;
 }
 
@@ -5948,6 +6011,9 @@ void AiravataClient::recv_getProject( ::Project& _return)
   }
   if (result.__isset.ase) {
     throw result.ase;
+  }
+  if (result.__isset.pnfe) {
+    throw result.pnfe;
   }
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getProject failed: unknown result");
 }
@@ -6422,6 +6488,9 @@ void AiravataClient::recv_getAllExperimentsInProject(std::vector< ::Experiment> 
   }
   if (result.__isset.ase) {
     throw result.ase;
+  }
+  if (result.__isset.pnfe) {
+    throw result.pnfe;
   }
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllExperimentsInProject failed: unknown result");
 }
@@ -7443,6 +7512,9 @@ void AiravataProcessor::process_updateProject(int32_t seqid, ::apache::thrift::p
   } catch ( ::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
+  } catch ( ::airavata::api::error::ProjectNotFoundException &pnfe) {
+    result.pnfe = pnfe;
+    result.__isset.pnfe = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "Airavata.updateProject");
@@ -7506,6 +7578,9 @@ void AiravataProcessor::process_getProject(int32_t seqid, ::apache::thrift::prot
   } catch ( ::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
+  } catch ( ::airavata::api::error::ProjectNotFoundException &pnfe) {
+    result.pnfe = pnfe;
+    result.__isset.pnfe = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "Airavata.getProject");
@@ -7947,6 +8022,9 @@ void AiravataProcessor::process_getAllExperimentsInProject(int32_t seqid, ::apac
   } catch ( ::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
+  } catch ( ::airavata::api::error::ProjectNotFoundException &pnfe) {
+    result.pnfe = pnfe;
+    result.__isset.pnfe = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "Airavata.getAllExperimentsInProject");

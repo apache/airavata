@@ -28,15 +28,27 @@ import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
+import org.apache.thrift.protocol.TProtocolException;
+import org.apache.thrift.EncodingUtils;
 import org.apache.thrift.TException;
-
+import org.apache.thrift.async.AsyncMethodCallback;
+import org.apache.thrift.server.AbstractNonblockingServer.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
+import java.util.BitSet;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    /**
+/**
  * This exception is thrown for invalid requests that occur from any reasons like required input parameters are missing,
  *  or a parameter is malformed.
  * 
@@ -53,7 +65,7 @@ import java.util.Collections;
     schemes.put(TupleScheme.class, new InvalidRequestExceptionTupleSchemeFactory());
   }
 
-  public String message; // required
+  private String message; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -155,9 +167,8 @@ import java.util.Collections;
     return this.message;
   }
 
-  public InvalidRequestException setMessage(String message) {
+  public void setMessage(String message) {
     this.message = message;
-    return this;
   }
 
   public void unsetMessage() {
@@ -291,9 +302,10 @@ import java.util.Collections;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (message == null) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'message' was not present! Struct: " + toString());
+    if (!isSetMessage()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'message' is unset! Struct:" + toString());
     }
+
     // check for sub-struct validity
   }
 
@@ -345,8 +357,6 @@ import java.util.Collections;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
       struct.validate();
     }
 

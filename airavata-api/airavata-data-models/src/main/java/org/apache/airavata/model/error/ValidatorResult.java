@@ -28,16 +28,27 @@ import org.apache.thrift.scheme.StandardScheme;
 
 import org.apache.thrift.scheme.TupleScheme;
 import org.apache.thrift.protocol.TTupleProtocol;
+import org.apache.thrift.protocol.TProtocolException;
 import org.apache.thrift.EncodingUtils;
-
+import org.apache.thrift.TException;
+import org.apache.thrift.async.AsyncMethodCallback;
+import org.apache.thrift.server.AbstractNonblockingServer.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.EnumMap;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.EnumSet;
 import java.util.Collections;
 import java.util.BitSet;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    @SuppressWarnings("all") public class ValidatorResult implements org.apache.thrift.TBase<ValidatorResult, ValidatorResult._Fields>, java.io.Serializable, Cloneable, Comparable<ValidatorResult> {
+@SuppressWarnings("all") public class ValidatorResult implements org.apache.thrift.TBase<ValidatorResult, ValidatorResult._Fields>, java.io.Serializable, Cloneable, Comparable<ValidatorResult> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ValidatorResult");
 
   private static final org.apache.thrift.protocol.TField RESULT_FIELD_DESC = new org.apache.thrift.protocol.TField("result", org.apache.thrift.protocol.TType.BOOL, (short)1);
@@ -49,8 +60,8 @@ import java.util.BitSet;
     schemes.put(TupleScheme.class, new ValidatorResultTupleSchemeFactory());
   }
 
-  public boolean result; // required
-  public String errorDetails; // optional
+  private boolean result; // required
+  private String errorDetails; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -165,10 +176,9 @@ import java.util.BitSet;
     return this.result;
   }
 
-  public ValidatorResult setResult(boolean result) {
+  public void setResult(boolean result) {
     this.result = result;
     setResultIsSet(true);
-    return this;
   }
 
   public void unsetResult() {
@@ -188,9 +198,8 @@ import java.util.BitSet;
     return this.errorDetails;
   }
 
-  public ValidatorResult setErrorDetails(String errorDetails) {
+  public void setErrorDetails(String errorDetails) {
     this.errorDetails = errorDetails;
-    return this;
   }
 
   public void unsetErrorDetails() {
@@ -362,7 +371,10 @@ import java.util.BitSet;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    // alas, we cannot check 'result' because it's a primitive and you chose the non-beans generator.
+    if (!isSetResult()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'result' is unset! Struct:" + toString());
+    }
+
     // check for sub-struct validity
   }
 
@@ -424,11 +436,6 @@ import java.util.BitSet;
         iprot.readFieldEnd();
       }
       iprot.readStructEnd();
-
-      // check for required fields of primitive type, which can't be checked in the validate method
-      if (!struct.isSetResult()) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'result' was not found in serialized data! Struct: " + toString());
-      }
       struct.validate();
     }
 

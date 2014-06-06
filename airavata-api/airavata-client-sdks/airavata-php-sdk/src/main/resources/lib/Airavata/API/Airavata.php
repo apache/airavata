@@ -228,6 +228,9 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     if ($result->ase !== null) {
       throw $result->ase;
     }
+    if ($result->pnfe !== null) {
+      throw $result->pnfe;
+    }
     return;
   }
 
@@ -287,6 +290,9 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     }
     if ($result->ase !== null) {
       throw $result->ase;
+    }
+    if ($result->pnfe !== null) {
+      throw $result->pnfe;
     }
     throw new \Exception("getProject failed: unknown result");
   }
@@ -712,6 +718,9 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     }
     if ($result->ase !== null) {
       throw $result->ase;
+    }
+    if ($result->pnfe !== null) {
+      throw $result->pnfe;
     }
     throw new \Exception("getAllExperimentsInProject failed: unknown result");
   }
@@ -1984,6 +1993,7 @@ class Airavata_updateProject_result {
   public $ire = null;
   public $ace = null;
   public $ase = null;
+  public $pnfe = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -2003,6 +2013,11 @@ class Airavata_updateProject_result {
           'type' => TType::STRUCT,
           'class' => '\Airavata\API\Error\AiravataSystemException',
           ),
+        4 => array(
+          'var' => 'pnfe',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\ProjectNotFoundException',
+          ),
         );
     }
     if (is_array($vals)) {
@@ -2014,6 +2029,9 @@ class Airavata_updateProject_result {
       }
       if (isset($vals['ase'])) {
         $this->ase = $vals['ase'];
+      }
+      if (isset($vals['pnfe'])) {
+        $this->pnfe = $vals['pnfe'];
       }
     }
   }
@@ -2061,6 +2079,14 @@ class Airavata_updateProject_result {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->pnfe = new \Airavata\API\Error\ProjectNotFoundException();
+            $xfer += $this->pnfe->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2087,6 +2113,11 @@ class Airavata_updateProject_result {
     if ($this->ase !== null) {
       $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
       $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->pnfe !== null) {
+      $xfer += $output->writeFieldBegin('pnfe', TType::STRUCT, 4);
+      $xfer += $this->pnfe->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -2175,6 +2206,7 @@ class Airavata_getProject_result {
   public $ire = null;
   public $ace = null;
   public $ase = null;
+  public $pnfe = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -2199,6 +2231,11 @@ class Airavata_getProject_result {
           'type' => TType::STRUCT,
           'class' => '\Airavata\API\Error\AiravataSystemException',
           ),
+        4 => array(
+          'var' => 'pnfe',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\ProjectNotFoundException',
+          ),
         );
     }
     if (is_array($vals)) {
@@ -2213,6 +2250,9 @@ class Airavata_getProject_result {
       }
       if (isset($vals['ase'])) {
         $this->ase = $vals['ase'];
+      }
+      if (isset($vals['pnfe'])) {
+        $this->pnfe = $vals['pnfe'];
       }
     }
   }
@@ -2268,6 +2308,14 @@ class Airavata_getProject_result {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->pnfe = new \Airavata\API\Error\ProjectNotFoundException();
+            $xfer += $this->pnfe->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2302,6 +2350,11 @@ class Airavata_getProject_result {
     if ($this->ase !== null) {
       $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
       $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->pnfe !== null) {
+      $xfer += $output->writeFieldBegin('pnfe', TType::STRUCT, 4);
+      $xfer += $this->pnfe->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -3918,6 +3971,7 @@ class Airavata_getAllExperimentsInProject_result {
   public $ire = null;
   public $ace = null;
   public $ase = null;
+  public $pnfe = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -3946,6 +4000,11 @@ class Airavata_getAllExperimentsInProject_result {
           'type' => TType::STRUCT,
           'class' => '\Airavata\API\Error\AiravataSystemException',
           ),
+        4 => array(
+          'var' => 'pnfe',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\ProjectNotFoundException',
+          ),
         );
     }
     if (is_array($vals)) {
@@ -3960,6 +4019,9 @@ class Airavata_getAllExperimentsInProject_result {
       }
       if (isset($vals['ase'])) {
         $this->ase = $vals['ase'];
+      }
+      if (isset($vals['pnfe'])) {
+        $this->pnfe = $vals['pnfe'];
       }
     }
   }
@@ -4025,6 +4087,14 @@ class Airavata_getAllExperimentsInProject_result {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->pnfe = new \Airavata\API\Error\ProjectNotFoundException();
+            $xfer += $this->pnfe->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -4068,6 +4138,11 @@ class Airavata_getAllExperimentsInProject_result {
     if ($this->ase !== null) {
       $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
       $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->pnfe !== null) {
+      $xfer += $output->writeFieldBegin('pnfe', TType::STRUCT, 4);
+      $xfer += $this->pnfe->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
