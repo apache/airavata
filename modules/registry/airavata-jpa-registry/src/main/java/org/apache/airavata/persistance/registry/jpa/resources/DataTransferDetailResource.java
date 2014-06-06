@@ -117,6 +117,9 @@ public class DataTransferDetailResource extends AbstractResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -150,6 +153,9 @@ public class DataTransferDetailResource extends AbstractResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -193,6 +199,9 @@ public class DataTransferDetailResource extends AbstractResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -237,6 +246,9 @@ public class DataTransferDetailResource extends AbstractResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
