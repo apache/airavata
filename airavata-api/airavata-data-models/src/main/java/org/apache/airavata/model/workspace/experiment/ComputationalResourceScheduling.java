@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField WALL_TIME_LIMIT_FIELD_DESC = new org.apache.thrift.protocol.TField("wallTimeLimit", org.apache.thrift.protocol.TType.I32, (short)6);
   private static final org.apache.thrift.protocol.TField JOB_START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("jobStartTime", org.apache.thrift.protocol.TType.I32, (short)7);
   private static final org.apache.thrift.protocol.TField TOTAL_PHYSICAL_MEMORY_FIELD_DESC = new org.apache.thrift.protocol.TField("totalPhysicalMemory", org.apache.thrift.protocol.TType.I32, (short)8);
-  private static final org.apache.thrift.protocol.TField COMPUTATIONAL_PROJECT_ACCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("ComputationalProjectAccount", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField COMPUTATIONAL_PROJECT_ACCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("computationalProjectAccount", org.apache.thrift.protocol.TType.STRING, (short)9);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -79,7 +79,7 @@ import org.slf4j.LoggerFactory;
   private int wallTimeLimit; // optional
   private int jobStartTime; // optional
   private int totalPhysicalMemory; // optional
-  private String ComputationalProjectAccount; // optional
+  private String computationalProjectAccount; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -91,7 +91,7 @@ import org.slf4j.LoggerFactory;
     WALL_TIME_LIMIT((short)6, "wallTimeLimit"),
     JOB_START_TIME((short)7, "jobStartTime"),
     TOTAL_PHYSICAL_MEMORY((short)8, "totalPhysicalMemory"),
-    COMPUTATIONAL_PROJECT_ACCOUNT((short)9, "ComputationalProjectAccount");
+    COMPUTATIONAL_PROJECT_ACCOUNT((short)9, "computationalProjectAccount");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -191,7 +191,7 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.TOTAL_PHYSICAL_MEMORY, new org.apache.thrift.meta_data.FieldMetaData("totalPhysicalMemory", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields.COMPUTATIONAL_PROJECT_ACCOUNT, new org.apache.thrift.meta_data.FieldMetaData("ComputationalProjectAccount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.COMPUTATIONAL_PROJECT_ACCOUNT, new org.apache.thrift.meta_data.FieldMetaData("computationalProjectAccount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputationalResourceScheduling.class, metaDataMap);
@@ -218,7 +218,7 @@ import org.slf4j.LoggerFactory;
     this.jobStartTime = other.jobStartTime;
     this.totalPhysicalMemory = other.totalPhysicalMemory;
     if (other.isSetComputationalProjectAccount()) {
-      this.ComputationalProjectAccount = other.ComputationalProjectAccount;
+      this.computationalProjectAccount = other.computationalProjectAccount;
     }
   }
 
@@ -242,7 +242,7 @@ import org.slf4j.LoggerFactory;
     this.jobStartTime = 0;
     setTotalPhysicalMemoryIsSet(false);
     this.totalPhysicalMemory = 0;
-    this.ComputationalProjectAccount = null;
+    this.computationalProjectAccount = null;
   }
 
   public String getResourceHostId() {
@@ -424,25 +424,25 @@ import org.slf4j.LoggerFactory;
   }
 
   public String getComputationalProjectAccount() {
-    return this.ComputationalProjectAccount;
+    return this.computationalProjectAccount;
   }
 
-  public void setComputationalProjectAccount(String ComputationalProjectAccount) {
-    this.ComputationalProjectAccount = ComputationalProjectAccount;
+  public void setComputationalProjectAccount(String computationalProjectAccount) {
+    this.computationalProjectAccount = computationalProjectAccount;
   }
 
   public void unsetComputationalProjectAccount() {
-    this.ComputationalProjectAccount = null;
+    this.computationalProjectAccount = null;
   }
 
-  /** Returns true if field ComputationalProjectAccount is set (has been assigned a value) and false otherwise */
+  /** Returns true if field computationalProjectAccount is set (has been assigned a value) and false otherwise */
   public boolean isSetComputationalProjectAccount() {
-    return this.ComputationalProjectAccount != null;
+    return this.computationalProjectAccount != null;
   }
 
   public void setComputationalProjectAccountIsSet(boolean value) {
     if (!value) {
-      this.ComputationalProjectAccount = null;
+      this.computationalProjectAccount = null;
     }
   }
 
@@ -670,12 +670,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_ComputationalProjectAccount = true && this.isSetComputationalProjectAccount();
-    boolean that_present_ComputationalProjectAccount = true && that.isSetComputationalProjectAccount();
-    if (this_present_ComputationalProjectAccount || that_present_ComputationalProjectAccount) {
-      if (!(this_present_ComputationalProjectAccount && that_present_ComputationalProjectAccount))
+    boolean this_present_computationalProjectAccount = true && this.isSetComputationalProjectAccount();
+    boolean that_present_computationalProjectAccount = true && that.isSetComputationalProjectAccount();
+    if (this_present_computationalProjectAccount || that_present_computationalProjectAccount) {
+      if (!(this_present_computationalProjectAccount && that_present_computationalProjectAccount))
         return false;
-      if (!this.ComputationalProjectAccount.equals(that.ComputationalProjectAccount))
+      if (!this.computationalProjectAccount.equals(that.computationalProjectAccount))
         return false;
     }
 
@@ -780,7 +780,7 @@ import org.slf4j.LoggerFactory;
       return lastComparison;
     }
     if (isSetComputationalProjectAccount()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ComputationalProjectAccount, other.ComputationalProjectAccount);
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.computationalProjectAccount, other.computationalProjectAccount);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -862,11 +862,11 @@ import org.slf4j.LoggerFactory;
     }
     if (isSetComputationalProjectAccount()) {
       if (!first) sb.append(", ");
-      sb.append("ComputationalProjectAccount:");
-      if (this.ComputationalProjectAccount == null) {
+      sb.append("computationalProjectAccount:");
+      if (this.computationalProjectAccount == null) {
         sb.append("null");
       } else {
-        sb.append(this.ComputationalProjectAccount);
+        sb.append(this.computationalProjectAccount);
       }
       first = false;
     }
@@ -981,7 +981,7 @@ import org.slf4j.LoggerFactory;
             break;
           case 9: // COMPUTATIONAL_PROJECT_ACCOUNT
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.ComputationalProjectAccount = iprot.readString();
+              struct.computationalProjectAccount = iprot.readString();
               struct.setComputationalProjectAccountIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -1044,10 +1044,10 @@ import org.slf4j.LoggerFactory;
         oprot.writeI32(struct.totalPhysicalMemory);
         oprot.writeFieldEnd();
       }
-      if (struct.ComputationalProjectAccount != null) {
+      if (struct.computationalProjectAccount != null) {
         if (struct.isSetComputationalProjectAccount()) {
           oprot.writeFieldBegin(COMPUTATIONAL_PROJECT_ACCOUNT_FIELD_DESC);
-          oprot.writeString(struct.ComputationalProjectAccount);
+          oprot.writeString(struct.computationalProjectAccount);
           oprot.writeFieldEnd();
         }
       }
@@ -1122,7 +1122,7 @@ import org.slf4j.LoggerFactory;
         oprot.writeI32(struct.totalPhysicalMemory);
       }
       if (struct.isSetComputationalProjectAccount()) {
-        oprot.writeString(struct.ComputationalProjectAccount);
+        oprot.writeString(struct.computationalProjectAccount);
       }
     }
 
@@ -1163,7 +1163,7 @@ import org.slf4j.LoggerFactory;
         struct.setTotalPhysicalMemoryIsSet(true);
       }
       if (incoming.get(8)) {
-        struct.ComputationalProjectAccount = iprot.readString();
+        struct.computationalProjectAccount = iprot.readString();
         struct.setComputationalProjectAccountIsSet(true);
       }
     }

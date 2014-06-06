@@ -212,7 +212,7 @@ struct ComputationalResourceScheduling {
     6: optional i32 wallTimeLimit,
     7: optional i32 jobStartTime,
     8: optional i32 totalPhysicalMemory,
-    9: optional string ComputationalProjectAccount
+    9: optional string computationalProjectAccount
 }
 
 /**

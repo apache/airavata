@@ -909,7 +909,7 @@ class ComputationalResourceScheduling {
   public $wallTimeLimit = null;
   public $jobStartTime = null;
   public $totalPhysicalMemory = null;
-  public $ComputationalProjectAccount = null;
+  public $computationalProjectAccount = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -947,7 +947,7 @@ class ComputationalResourceScheduling {
           'type' => TType::I32,
           ),
         9 => array(
-          'var' => 'ComputationalProjectAccount',
+          'var' => 'computationalProjectAccount',
           'type' => TType::STRING,
           ),
         );
@@ -977,8 +977,8 @@ class ComputationalResourceScheduling {
       if (isset($vals['totalPhysicalMemory'])) {
         $this->totalPhysicalMemory = $vals['totalPhysicalMemory'];
       }
-      if (isset($vals['ComputationalProjectAccount'])) {
-        $this->ComputationalProjectAccount = $vals['ComputationalProjectAccount'];
+      if (isset($vals['computationalProjectAccount'])) {
+        $this->computationalProjectAccount = $vals['computationalProjectAccount'];
       }
     }
   }
@@ -1060,7 +1060,7 @@ class ComputationalResourceScheduling {
           break;
         case 9:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->ComputationalProjectAccount);
+            $xfer += $input->readString($this->computationalProjectAccount);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -1118,9 +1118,9 @@ class ComputationalResourceScheduling {
       $xfer += $output->writeI32($this->totalPhysicalMemory);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->ComputationalProjectAccount !== null) {
-      $xfer += $output->writeFieldBegin('ComputationalProjectAccount', TType::STRING, 9);
-      $xfer += $output->writeString($this->ComputationalProjectAccount);
+    if ($this->computationalProjectAccount !== null) {
+      $xfer += $output->writeFieldBegin('computationalProjectAccount', TType::STRING, 9);
+      $xfer += $output->writeString($this->computationalProjectAccount);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

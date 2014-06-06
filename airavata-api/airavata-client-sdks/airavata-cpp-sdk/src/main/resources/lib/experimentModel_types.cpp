@@ -898,8 +898,8 @@ uint32_t ComputationalResourceScheduling::read(::apache::thrift::protocol::TProt
         break;
       case 9:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->ComputationalProjectAccount);
-          this->__isset.ComputationalProjectAccount = true;
+          xfer += iprot->readString(this->computationalProjectAccount);
+          this->__isset.computationalProjectAccount = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -960,9 +960,9 @@ uint32_t ComputationalResourceScheduling::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeI32(this->totalPhysicalMemory);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.ComputationalProjectAccount) {
-    xfer += oprot->writeFieldBegin("ComputationalProjectAccount", ::apache::thrift::protocol::T_STRING, 9);
-    xfer += oprot->writeString(this->ComputationalProjectAccount);
+  if (this->__isset.computationalProjectAccount) {
+    xfer += oprot->writeFieldBegin("computationalProjectAccount", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeString(this->computationalProjectAccount);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -980,7 +980,7 @@ void swap(ComputationalResourceScheduling &a, ComputationalResourceScheduling &b
   swap(a.wallTimeLimit, b.wallTimeLimit);
   swap(a.jobStartTime, b.jobStartTime);
   swap(a.totalPhysicalMemory, b.totalPhysicalMemory);
-  swap(a.ComputationalProjectAccount, b.ComputationalProjectAccount);
+  swap(a.computationalProjectAccount, b.computationalProjectAccount);
   swap(a.__isset, b.__isset);
 }
 
