@@ -42,12 +42,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TestCreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+    public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(TestCreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
@@ -109,6 +111,17 @@ public class TestCreateLaunchExperiment {
 //                    // File | Settings | File Templates.
 //                }
 //            }
+
+            List<Experiment> experimentList = getExperimentsForUser(airavata, "admin");
+            Experiment experiment = experimentList.get(1);
+            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
+            long timeOfStateChange = experimentStatus.getTimeOfStateChange();
+            System.out.println(timeOfStateChange);
+            Date date = new Date(timeOfStateChange);
+            Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+            String time1 = format.format(date);
+//                int count = i+1;
+            System.out.println(time1);
 
             for (int i = 0; i < 50 ; i++){
                 long time = System.currentTimeMillis();

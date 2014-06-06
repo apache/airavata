@@ -551,7 +551,7 @@ class DataObjectType {
 void swap(DataObjectType &a, DataObjectType &b);
 
 typedef struct _ComputationalResourceScheduling__isset {
-  _ComputationalResourceScheduling__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), jobStartTime(false), totalPhysicalMemory(false), ComputationalProjectAccount(false) {}
+  _ComputationalResourceScheduling__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), jobStartTime(false), totalPhysicalMemory(false), computationalProjectAccount(false) {}
   bool resourceHostId;
   bool totalCPUCount;
   bool nodeCount;
@@ -560,7 +560,7 @@ typedef struct _ComputationalResourceScheduling__isset {
   bool wallTimeLimit;
   bool jobStartTime;
   bool totalPhysicalMemory;
-  bool ComputationalProjectAccount;
+  bool computationalProjectAccount;
 } _ComputationalResourceScheduling__isset;
 
 class ComputationalResourceScheduling {
@@ -569,7 +569,7 @@ class ComputationalResourceScheduling {
   static const char* ascii_fingerprint; // = "32AC7AC41AD3753A7224A32FD6EB4B5D";
   static const uint8_t binary_fingerprint[16]; // = {0x32,0xAC,0x7A,0xC4,0x1A,0xD3,0x75,0x3A,0x72,0x24,0xA3,0x2F,0xD6,0xEB,0x4B,0x5D};
 
-  ComputationalResourceScheduling() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), jobStartTime(0), totalPhysicalMemory(0), ComputationalProjectAccount() {
+  ComputationalResourceScheduling() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), jobStartTime(0), totalPhysicalMemory(0), computationalProjectAccount() {
   }
 
   virtual ~ComputationalResourceScheduling() throw() {}
@@ -582,7 +582,7 @@ class ComputationalResourceScheduling {
   int32_t wallTimeLimit;
   int32_t jobStartTime;
   int32_t totalPhysicalMemory;
-  std::string ComputationalProjectAccount;
+  std::string computationalProjectAccount;
 
   _ComputationalResourceScheduling__isset __isset;
 
@@ -626,9 +626,9 @@ class ComputationalResourceScheduling {
     __isset.totalPhysicalMemory = true;
   }
 
-  void __set_ComputationalProjectAccount(const std::string& val) {
-    ComputationalProjectAccount = val;
-    __isset.ComputationalProjectAccount = true;
+  void __set_computationalProjectAccount(const std::string& val) {
+    computationalProjectAccount = val;
+    __isset.computationalProjectAccount = true;
   }
 
   bool operator == (const ComputationalResourceScheduling & rhs) const
@@ -665,9 +665,9 @@ class ComputationalResourceScheduling {
       return false;
     else if (__isset.totalPhysicalMemory && !(totalPhysicalMemory == rhs.totalPhysicalMemory))
       return false;
-    if (__isset.ComputationalProjectAccount != rhs.__isset.ComputationalProjectAccount)
+    if (__isset.computationalProjectAccount != rhs.__isset.computationalProjectAccount)
       return false;
-    else if (__isset.ComputationalProjectAccount && !(ComputationalProjectAccount == rhs.ComputationalProjectAccount))
+    else if (__isset.computationalProjectAccount && !(computationalProjectAccount == rhs.computationalProjectAccount))
       return false;
     return true;
   }
