@@ -23,6 +23,7 @@ package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
@@ -47,10 +48,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private Registry registry;
 	private OrchestratorService.Client orchestratorClient;
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
-	 //FIXME: these go in a configuration file or a "constants" class. 
-    public static final String ORCHESTRATOR_SERVER_HOST = "localhost";
-	 //FIXME: these go in a configuration file or a "constants" class. 
-    public static final int ORCHESTRATOR_SERVER_PORT = 8940;
+	
 
     /**
      * Query Airavata to fetch the API version
@@ -907,7 +905,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
 	private OrchestratorService.Client getOrchestratorClient() {
-            return orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(ORCHESTRATOR_SERVER_HOST, ORCHESTRATOR_SERVER_PORT);
+		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.api.server.util.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
+        final String serverHost = ServerSettings.getSetting(org.apache.airavata.api.server.util.Constants.ORCHESTRATOR_SERVER_HOST, null);
+        return orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
 	}
 
     /**

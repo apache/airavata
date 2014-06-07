@@ -21,6 +21,8 @@
 
 package org.apache.airavata.orchestrator.server;
 
+import java.net.InetSocketAddress;
+
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
@@ -51,7 +53,17 @@ public class OrchestratorServer implements IServer{
             throws Exception {
         try {
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT,"8940"));
-			TServerTransport serverTransport = new TServerSocket(serverPort);
+            final String serverHost = ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_HOST, null);
+            
+			TServerTransport serverTransport;
+			
+			if(serverHost == null){
+				serverTransport = new TServerSocket(serverPort);
+			}else{
+				InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
+				serverTransport = new TServerSocket(inetSocketAddress);
+			}
+			
             //server = new TSimpleServer(
               //      new TServer.Args(serverTransport).processor(orchestratorServerHandlerProcessor));
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);

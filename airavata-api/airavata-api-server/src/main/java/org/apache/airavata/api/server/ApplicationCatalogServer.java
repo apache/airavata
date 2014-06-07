@@ -21,6 +21,8 @@
 
 package org.apache.airavata.api.server;
 
+import java.net.InetSocketAddress;
+
 import org.apache.airavata.api.appcatalog.ApplicationCatalogAPI;
 import org.apache.airavata.api.server.handler.ApplicationCatalogHandler;
 import org.apache.airavata.api.server.util.Constants;
@@ -55,7 +57,17 @@ public class ApplicationCatalogServer implements IServer{
         try {
             AiravataUtils.setExecutionAsServer();
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.APP_CATALOG_SERVER_PORT,"8931"));
-			TServerTransport serverTransport = new TServerSocket(serverPort);
+            final String serverHost = ServerSettings.getSetting(Constants.APP_CATALOG_SERVER_HOST, null);
+            
+			TServerTransport serverTransport;
+			
+			if(serverHost == null){
+				serverTransport = new TServerSocket(serverPort);
+			}else{
+				InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
+				serverTransport = new TServerSocket(inetSocketAddress);
+			}
+			
 			server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).processor(appCatalogServerHandler));
             new Thread() {
 				public void run() {
