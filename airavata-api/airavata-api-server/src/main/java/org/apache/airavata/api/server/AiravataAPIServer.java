@@ -21,6 +21,8 @@
 
 package org.apache.airavata.api.server;
 
+import java.net.InetSocketAddress;
+
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.util.Constants;
@@ -57,8 +59,18 @@ public class AiravataAPIServer implements IServer{
         try {
             AiravataUtils.setExecutionAsServer();
             RegistryInitUtil.initializeDB();
-            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.THRIFT_SERVER_PORT,"8930"));
-			TServerTransport serverTransport = new TServerSocket(serverPort);
+            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT,"8930"));
+            final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
+            
+			TServerTransport serverTransport;
+			
+			if(serverHost == null){
+				serverTransport = new TServerSocket(serverPort);
+			}else{
+				InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
+				serverTransport = new TServerSocket(inetSocketAddress);
+			}
+			
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
             options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "30"));
 			server = new TThreadPoolServer(options.processor(mockAiravataServer));
