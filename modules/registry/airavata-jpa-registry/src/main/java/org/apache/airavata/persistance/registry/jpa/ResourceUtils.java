@@ -20,24 +20,21 @@
 */
 package org.apache.airavata.persistance.registry.jpa;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ResourceUtils {
     private final static Logger logger = LoggerFactory.getLogger(ResourceUtils.class);
@@ -52,15 +49,15 @@ public class ResourceUtils {
         if (factory == null) {
             String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" + Utils.getJDBCURL() + "," +
                     "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword() + ",validationQuery=" +
-            Utils.getValidationQuery() + "," + Utils.getJPAConnectionProperties();
+            Utils.getValidationQuery();
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
-            properties.put("openjpa.DataCache","true(CacheSize=5000, SoftReferenceSize=0)");
-            properties.put("openjpa.QueryCache","true(CacheSize=5000, SoftReferenceSize=0)");
+            properties.put("openjpa.DataCache","true(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
+            properties.put("openjpa.QueryCache","true(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
 //            properties.put("openjpa.ReadLockLevel", "none");

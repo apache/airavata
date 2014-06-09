@@ -20,18 +20,16 @@
  */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import java.net.URI;
-
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.JPAConstants;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.*;
-import org.apache.airavata.registry.api.AiravataRegistryConnectionDataProvider;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.exception.RegistrySettingsException;
-import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.net.URI;
 
 
 public class Utils {
@@ -47,8 +45,8 @@ public class Utils {
 
     public static String getJDBCURL(){
     	try {
-            return getProvider().getValue(JPAConstants.KEY_JDBC_URL).toString();
-		} catch (RegistrySettingsException e) {
+            return ServerSettings.getSetting(JPAConstants.KEY_JDBC_URL);
+		} catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             return null;
         }
@@ -78,6 +76,16 @@ public class Utils {
         }
     }
 
+    public static int getJPACacheSize (){
+        try {
+            String cache = ServerSettings.getSetting(JPAConstants.JPA_CACHE_SIZE, "5000");
+            return Integer.valueOf(cache);
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            return -1;
+        }
+    }
+
     public static String getDBType(){
         try{
             String jdbcURL = getJDBCURL();
@@ -92,36 +100,21 @@ public class Utils {
 
     public static boolean isDerbyStartEnabled(){
         try {
-            String s = getProvider().getValue(JPAConstants.KEY_DERBY_START_ENABLE).toString();
+            String s = ServerSettings.getSetting(JPAConstants.KEY_DERBY_START_ENABLE);
             if("true".equals(s)){
                 return true;
             }
-        } catch (RegistrySettingsException e) {
+        } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             return false;
         }
         return false;
     }
 
-	private static AiravataRegistryConnectionDataProvider getProvider() {
-		return AiravataRegistryFactory.getRegistryConnectionDataProvider();
-	}
-
-    static {
-        if(AiravataRegistryFactory.getRegistryConnectionDataProvider() == null){
-            AiravataRegistryFactory.registerRegistryConnectionDataProvider(new AiravataRegistryConnectionDataProviderImpl());
-        }
-
-    }
-
     public static String getJDBCUser(){
     	try {
-			if (getProvider()!=null){
-				return getProvider().getValue(JPAConstants.KEY_JDBC_USER).toString();
-			} else {
-                return RegistrySettings.getSetting(JPAConstants.KEY_JDBC_USER);
-            }
-		} catch (RegistrySettingsException e) {
+		    return ServerSettings.getSetting(JPAConstants.KEY_JDBC_USER);
+		} catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             return null;
 		}
@@ -129,35 +122,8 @@ public class Utils {
 
     public static String getValidationQuery(){
     	try {
-			if (getProvider()!=null){
-                if(getProvider().getValue(JPAConstants.VALIDATION_QUERY) != null){
-				    return getProvider().getValue(JPAConstants.VALIDATION_QUERY).toString();
-                }
-			} else {
-                if(getProvider().getValue(JPAConstants.VALIDATION_QUERY) != null){
-                    return RegistrySettings.getSetting(JPAConstants.VALIDATION_QUERY);
-                }
-            }
-            return "";
-		} catch (RegistrySettingsException e) {
-            logger.error(e.getMessage(), e);
-            return null;
-		}
-    }
-
-     public static String getJPAConnectionProperties(){
-    	try {
-			if (getProvider()!=null){
-                if(getProvider().getValue(JPAConstants.CONNECTION_JPA_PROPERTY) != null){
-				    return getProvider().getValue(JPAConstants.CONNECTION_JPA_PROPERTY).toString();
-                }
-			} else {
-                if(getProvider().getValue(JPAConstants.CONNECTION_JPA_PROPERTY) != null){
-                    return RegistrySettings.getSetting(JPAConstants.CONNECTION_JPA_PROPERTY);
-                }
-            }
-            return "";
-		} catch (RegistrySettingsException e) {
+            return ServerSettings.getSetting(JPAConstants.VALIDATION_QUERY);
+		} catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             return null;
 		}
@@ -165,12 +131,8 @@ public class Utils {
 
     public static String getJDBCPassword(){
     	try {
-			if (getProvider()!=null){
-				return getProvider().getValue(JPAConstants.KEY_JDBC_PASSWORD).toString();
-			}else {
-                return RegistrySettings.getSetting(JPAConstants.KEY_JDBC_PASSWORD);
-            }
-		} catch (RegistrySettingsException e) {
+            return ServerSettings.getSetting(JPAConstants.KEY_JDBC_PASSWORD);
+		} catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             return null;
 		}
@@ -179,12 +141,8 @@ public class Utils {
 
     public static String getJDBCDriver(){
     	try {
-			if (getProvider()!=null){
-				return getProvider().getValue(JPAConstants.KEY_JDBC_DRIVER).toString();
-			}  else {
-                return RegistrySettings.getSetting(JPAConstants.KEY_JDBC_DRIVER);
-            }
-		} catch (RegistrySettingsException e) {
+            return ServerSettings.getSetting(JPAConstants.KEY_JDBC_DRIVER);
+		} catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             return null;
 		}

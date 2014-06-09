@@ -40,7 +40,7 @@ public class JPAUtils {
     private static final String APPCATALOG_JDBC_USER = "appcatalog.jdbc.user";
     private static final String APPCATALOG_JDBC_PWD = "appcatalog.jdbc.password";
     private static final String APPCATALOG_VALIDATION_QUERY = "appcatalog.validationQuery";
-    private static final String JPA_CONNECTION_PROPERTIES = "jpa.connection.properties";
+    private static final String JPA_CACHE_SIZE = "jpa.cache.size";
     protected static EntityManagerFactory factory;
 
     public static EntityManager getEntityManager() throws ApplicationSettingsException {
@@ -49,22 +49,18 @@ public class JPAUtils {
                     "Url=" + readServerProperties(APPCATALOG_JDBC_URL) + "," +
                     "Username=" + readServerProperties(APPCATALOG_JDBC_USER) + "," +
                     "Password=" + readServerProperties(APPCATALOG_JDBC_PWD) +
-                    ",validationQuery=" + readServerProperties(APPCATALOG_VALIDATION_QUERY) + "," +
-                    readServerProperties(JPA_CONNECTION_PROPERTIES);
+                    ",validationQuery=" + readServerProperties(APPCATALOG_VALIDATION_QUERY);
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
-            properties.put("openjpa.Log", "SQL=ERROR");
+            properties.put("openjpa.DataCache","true(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE))  + ", SoftReferenceSize=0)");
+            properties.put("openjpa.QueryCache","true(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE))  + ", SoftReferenceSize=0)");
+            properties.put("openjpa.RemoteCommitProvider","sjvm");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
-            properties.put("openjpa.ReadLockLevel", "none");
-            properties.put("openjpa.WriteLockLevel", "none");
-            properties.put("openjpa.LockTimeout", "30000");
-            properties.put("openjpa.LockManager", "none");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
-            properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000");
             properties.put("openjpa.jdbc.QuerySQLCache", "false");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
