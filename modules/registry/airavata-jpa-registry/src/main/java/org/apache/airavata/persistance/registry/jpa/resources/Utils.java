@@ -79,7 +79,7 @@ public class Utils {
     public static int getJPACacheSize (){
         try {
             String cache = ServerSettings.getSetting(JPAConstants.JPA_CACHE_SIZE, "5000");
-            return Integer.valueOf(cache);
+            return Integer.parseInt(cache);
         }catch (Exception e){
             logger.error(e.getMessage(), e);
             return -1;

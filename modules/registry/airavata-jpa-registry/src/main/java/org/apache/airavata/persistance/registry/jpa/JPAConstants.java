@@ -28,5 +28,5 @@ public class JPAConstants {
 	public static final String KEY_JDBC_DRIVER = "registry.jdbc.driver";
 	public static final String KEY_DERBY_START_ENABLE = "start.derby.server.mode";
     public static final String VALIDATION_QUERY = "validationQuery";
-    public static final String JPA_CACHE_SIZE = "jpa.connection.properties";
+    public static final String JPA_CACHE_SIZE = "jpa.cache.size";
 }
