@@ -27,23 +27,24 @@ import java.util.List;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
-import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
-import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,23 +66,31 @@ public class ExperimentSample {
 	AiravataAPI airavataAPI = getAiravataAPI();
 	DocumentCreator documentCreator = new DocumentCreator(airavataAPI);
         documentCreator.createLocalHostDocs();
+        String user = "admin";
 
+        Project project=new Project();
+        project.setName("project1");
+        project.setProjectID("project1");
+		project.setOwner(user);
+        Client client = getClient();
+		String projectId=client.createProject(project);
+		System.out.println("Created new project '"+project.getName()+"' with project id "+projectId);
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
         input.setKey("echo_input");
-//        input.setType(DataType.STRING.toString());
+        input.setType(DataType.STRING);
         input.setValue("echo_output=Hello World");
         exInputs.add(input);
 
         List<DataObjectType> exOut = new ArrayList<DataObjectType>();
         DataObjectType output = new DataObjectType();
         output.setKey("echo_output");
-        output.setType(DataType.STRING.toString());
+        output.setType(DataType.STDOUT);
         output.setValue("");
         exOut.add(output);
 
         Experiment simpleExperiment =
-                ExperimentModelUtil.createSimpleExperiment("project1", "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
+                ExperimentModelUtil.createSimpleExperiment(projectId, user, "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "sds128");
@@ -93,7 +102,7 @@ public class ExperimentSample {
         simpleExperiment.setUserConfigurationData(userConfigurationData);
 
 
-        Client client = getClient();
+
 		final String expId = client.createExperiment(simpleExperiment);
         System.out.println("Experiment Id returned : " + expId);
 
