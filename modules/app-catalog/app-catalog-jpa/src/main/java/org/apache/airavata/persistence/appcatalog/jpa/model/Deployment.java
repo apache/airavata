@@ -27,20 +27,60 @@ public class Deployment {
     @Column(name = "EXECUTION_PATH")
     private String executionPath;
 
+    @Column(name = "QUEUE_NAME")
+    private String queueName;
+
     @Column(name = "CPU_COUNT")
-    private String cpuCount;
+    private int cpuCount;
 
     @Column(name = "NODE_COUNT")
-    private String nodeCount;
+    private int nodeCount;
 
-    @Column(name = "WALLTIME")
-    private String walltime;
+    @Column(name = "WALLTIME_LIMIT")
+    private int walltime;
 
+    @Column(name = "NO_OF_THREADS")
+    private int numberOfThreads;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "COMPUTE_RESOURCE_ID")
     private ComputeResource computeResource;
 
+    public String getQueueName() {
+        return queueName;
+    }
+
+    public void setQueueName(String queueName) {
+        this.queueName = queueName;
+    }
+
+    public void setCpuCount(int cpuCount) {
+        this.cpuCount = cpuCount;
+    }
+
+    public void setNodeCount(int nodeCount) {
+        this.nodeCount = nodeCount;
+    }
+
+    public void setWalltime(int walltime) {
+        this.walltime = walltime;
+    }
+
+    public int getNumberOfThreads() {
+        return numberOfThreads;
+    }
+
+    public void setNumberOfThreads(int numberOfThreads) {
+        this.numberOfThreads = numberOfThreads;
+    }
+
+    public ComputeResource getComputeResource() {
+        return computeResource;
+    }
+
+    public void setComputeResource(ComputeResource computeResource) {
+        this.computeResource = computeResource;
+    }
 
     public String getApplicationID() {
         return applicationID;
@@ -98,27 +138,15 @@ public class Deployment {
         this.executionPath = executionPath;
     }
 
-    public String getCpuCount() {
+    public int getCpuCount() {
         return cpuCount;
     }
 
-    public void setCpuCount(String cpuCount) {
-        this.cpuCount = cpuCount;
-    }
-
-    public String getNodeCount() {
+    public int getNodeCount() {
         return nodeCount;
     }
 
-    public void setNodeCount(String nodeCount) {
-        this.nodeCount = nodeCount;
-    }
-
-    public String getWalltime() {
+    public int getWalltime() {
         return walltime;
-    }
-
-    public void setWalltime(String walltime) {
-        this.walltime = walltime;
     }
 }
