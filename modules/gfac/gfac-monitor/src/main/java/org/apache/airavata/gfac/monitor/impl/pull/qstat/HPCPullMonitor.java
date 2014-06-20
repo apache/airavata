@@ -21,8 +21,10 @@
 package org.apache.airavata.gfac.monitor.impl.pull.qstat;
 
 import com.google.common.eventbus.EventBus;
+
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.notification.MonitorPublisher;
@@ -34,6 +36,7 @@ import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.openjpa.lib.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,7 +159,11 @@ public class HPCPullMonitor extends PullMonitor {
                         // After successful monitoring perform following actions to cleanup the queue, if necessary
                         if (jobStatus.getState().equals(JobState.COMPLETE)) {
                             completedJobs.add(iMonitorID);
-                            CommonUtils.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
+                            try {
+								CommonUtils.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
+							} catch (GFacException e) {
+								logger.info(e.getLocalizedMessage(),e);
+							}
                         } else if (iMonitorID.getFailedCount() > 2 && iMonitorID.getStatus().equals(JobState.UNKNOWN)) {
                             logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
