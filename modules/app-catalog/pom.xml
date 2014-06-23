@@ -30,7 +30,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>app-catalog-data</module>
+                <!--module>app-catalog-data</module-->
                 <module>app-catalog-jpa</module>
             </modules>
         </profile>
