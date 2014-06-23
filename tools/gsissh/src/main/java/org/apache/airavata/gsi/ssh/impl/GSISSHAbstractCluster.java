@@ -135,7 +135,7 @@ public class GSISSHAbstractCluster implements Cluster {
             logDebug("The private key file for vanilla SSH " + privateKeyFile);
 
             String publicKeyFile = sshPublicKeyFileAuthentication.
-                    getPrivateKeyFile(serverInfo.getUserName(), serverInfo.getHost());
+                    getPublicKeyFile(serverInfo.getUserName(), serverInfo.getHost());
 
             logDebug("The public key file for vanilla SSH " + publicKeyFile);
 
@@ -372,6 +372,22 @@ public class GSISSHAbstractCluster implements Cluster {
         } catch (JSchException e) {
             throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
                     + serverInfo.getHost() + ":rFile", e);
+        }
+    }
+    
+    public void scpThirdParty(String remoteFileSource, String remoteFileTarget) throws SSHApiException {
+        try {
+            if(!session.isConnected()){
+                session.connect();
+            }
+            log.info("Transfering from:" + remoteFileSource + " To: " + remoteFileTarget);
+            SSHUtils.scpThirdParty(remoteFileSource, remoteFileTarget, session);
+        } catch (IOException e) {
+            throw new SSHApiException("Failed during scping  file:" + remoteFileSource + " to remote file "
+                    +remoteFileTarget , e);
+        } catch (JSchException e) {
+            throw new SSHApiException("Failed during scping  file:" + remoteFileSource + " to remote file "
+                    +remoteFileTarget, e);
         }
     }
 

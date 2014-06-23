@@ -72,6 +72,14 @@ public interface Cluster {
     public void scpFrom(String remoteFile, String localFile) throws SSHApiException;
 
     /**
+     * This will copy a remote file in path rFile to local file lFile
+     * @param remoteFile remote file path, this has to be a full qualified path
+     * @param localFile This is the local file to copy, this can be a directory too
+     * @throws SSHApiException
+     */
+    public void scpThirdParty(String remoteFileSorce, String remoteFileTarget) throws SSHApiException;
+    
+    /**
      * This will create directories in computing resources
      * @param directoryPath the full qualified path for the directory user wants to create
      * @throws SSHApiException throws during error
