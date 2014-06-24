@@ -500,6 +500,7 @@
                 <module>modules/registry</module>
                 <module>modules/app-catalog</module>
                 <module>modules/airavata-client</module>
+                <module>modules/security</module>
                 <module>modules/credential-store-service</module>
                 <module>modules/orchestrator</module>
                 <module>tools</module>
