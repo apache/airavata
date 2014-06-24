@@ -310,11 +310,10 @@ public class DBUtil {
      *
      * @return DBUtil object.
      * @throws Exception
-     *             If an error occurred while reading configurations or while creating database object.
+     * If an error occurred while reading configurations or while creating database object.
      */
     public static DBUtil getCredentialStoreDBUtil() throws ApplicationSettingsException, IllegalAccessException,
             ClassNotFoundException, InstantiationException {
-          /* todo fix this
         String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
         String userName = ServerSettings.getCredentialStoreDBUser();
         String password = ServerSettings.getCredentialStoreDBPassword();
@@ -330,8 +329,6 @@ public class DBUtil {
         dbUtil.init();
 
         return dbUtil;
-        */
-        return null;
     }
 
 }
