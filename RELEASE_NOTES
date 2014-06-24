@@ -2,9 +2,146 @@ Apache Airavata Release Notes
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+Apache Airavata Version 0.12 Released on 2014-06-27
+===================================================
+This release is a first iteration of using Apache thrift as a framework to implement Airavata API.
+Below you will find the detail list of JIRA tasks/issues resolutions incorporated in 0.12.
 
-Apache Airavata Version 0.12 Released on TBD
-==================================================
+Release Notes - Airavata - Version 0.12
+
+** Sub-task
+    * [AIRAVATA-762] - Advanced Job scripts based on job manager type
+    * [AIRAVATA-982] - Changing registry to support orchestrator registry functionality
+    * [AIRAVATA-983] - Creating orchestrator-service and orchestrator-core components
+    * [AIRAVATA-984] - Implement the embeddedGFAc job submitter to orchestrator
+    * [AIRAVATA-987] - Incorporate orchestrator changes with GFAC to store statuses
+    * [AIRAVATA-988] - Implement pulling information and submitting to gfac embedded mode
+    * [AIRAVATA-1007] - Craft the Orchestrator CPI
+    * [AIRAVATA-1008] - Craft the GFac CPI
+    * [AIRAVATA-1018] - Craft monitoring data model
+    * [AIRAVATA-1020] - Add database creation at server startup
+    * [AIRAVATA-1022] - Implement an AMQP based monitor to use in xsede resources
+    * [AIRAVATA-1023] - Implement qstat based monitor to poll the status
+    * [AIRAVATA-1025] - Add unit tests for new data models
+    * [AIRAVATA-1032] - Change GFAC to use ConfigurationData to replace context header
+    * [AIRAVATA-1037] - Create a New Airavata Distribution with the API server and Clients
+    * [AIRAVATA-1043] - Update GFAC to save JobDetails for monitoring data
+    * [AIRAVATA-1046] - Airavata Standalone Server : Create a class to start Airavata API and CPI servers
+    * [AIRAVATA-1047] - Update standalone airavata server startup script
+    * [AIRAVATA-1055] - Update integration tests defined in the integration-test module
+    * [AIRAVATA-1061] - Test experiment execution using local providers
+    * [AIRAVATA-1065] - Create C++ Samples using Airavata Thrift API Client SDKs
+    * [AIRAVATA-1094] - Integration Test 1 - Create Experiment
+    * [AIRAVATA-1095] - Integration Test 1 - Modify Experiment
+    * [AIRAVATA-1096] - Integration Test 1 - Clone Experiment
+    * [AIRAVATA-1097] - Integration Test 1 - Delete Experiment
+    * [AIRAVATA-1099] - Integration Test 2 - List Experiments
+    * [AIRAVATA-1100] - Integration Test 2 - Launch Experiment
+    * [AIRAVATA-1101] - Integration Test 2 - Monitor Experiment
+    * [AIRAVATA-1102] - Integration Test 2 - List Experiment Intermediate Results
+    * [AIRAVATA-1103] - Integration Test 2 - Download Experiment Intermediate Results
+    * [AIRAVATA-1104] - Integration Test 2 - Notification when Experiment Completes/Fails
+    * [AIRAVATA-1105] - Integration Test 2 - Notifications when Results available for Download
+    * [AIRAVATA-1106] - Integration Test 2 - Download Experiment Final Results
+    * [AIRAVATA-1107] - Integration Test 2 - View Experiment Errors
+    * [AIRAVATA-1129] - GFAC needs a README
+    * [AIRAVATA-1170] - User creates a new project
+    * [AIRAVATA-1171] - User creates an experiment in a project
+    * [AIRAVATA-1173] - Launch experiment
+    * [AIRAVATA-1176] - User edits an existing experiment
+    * [AIRAVATA-1177] - User clones an experiment
+    * [AIRAVATA-1178] - User searches experiments
+    * [AIRAVATA-1179] - User selects a previous experiment and gets information.
+    * [AIRAVATA-1189] - User creates an experiment in a project
+    * [AIRAVATA-1191] - Launch Experiment
+    * [AIRAVATA-1195] - User clones an experiment
+    * [AIRAVATA-1203] - Define Thrift Data Models for the Application Catalog
+    * [AIRAVATA-1236] - Database design for Application Catalog
+
+** Bug
+    * [AIRAVATA-637] - Update tomcat deployment script and instruction
+    * [AIRAVATA-725] - Some of the messages from EventDataListener are without experimentId
+    * [AIRAVATA-825] - Airavata Client error in case workflow scheduling context is not right
+    * [AIRAVATA-976] - Same INSTALL, README, NOTICE files are duplicated in many places
+    * [AIRAVATA-981] - Download links for current release hashes etc must use main ASF server
+    * [AIRAVATA-1001] - Not able to run a Grid job using trunk
+    * [AIRAVATA-1010] - Creating a cpi package for gfac
+    * [AIRAVATA-1011] - Creating orchestrator cpi
+    * [AIRAVATA-1034] - Fixing build error in Xbaya
+    * [AIRAVATA-1045] - Update airavata server distribution to support the new architecture
+    * [AIRAVATA-1048] - cleaning up multiple configurations in monitor and orchestrator
+    * [AIRAVATA-1050] - Making launchExepriment call as non-blocking
+    * [AIRAVATA-1051] - Airavata-Client distribution doesn't work with the old API anymore
+    * [AIRAVATA-1057] - Implementing support for SLURM for AIRAVATA
+    * [AIRAVATA-1066] - GSISSH Monitoring error-Error retrieving the job status
+    * [AIRAVATA-1074] - Sample application documents created with staticWorkingDirectory
+    * [AIRAVATA-1078] - Supporting advanced input/output handling in gfac
+    * [AIRAVATA-1080] - Implementing Advanced Input/Output Handling
+    * [AIRAVATA-1088] - Removing registry dependency from job-monitor
+    * [AIRAVATA-1089] - Enabling SSH job monitoring
+    * [AIRAVATA-1139] - Cannot get all user projects
+    * [AIRAVATA-1141] - getAllUserExperiments() ignores input
+    * [AIRAVATA-1142] - getAllExperimentsInProject throws exeption instead of empty result
+    * [AIRAVATA-1143] - Airavata PHP Thrift Client Distribution
+    * [AIRAVATA-1147] - Throw full stack trace to client side in airavata server handler
+    * [AIRAVATA-1148] - No documentation in Thrift-generated PHP SDK
+    * [AIRAVATA-1161] - Clone experiment does not work properly
+    * [AIRAVATA-1163] - CreateLaunchExperiment client launch experiment is not working
+    * [AIRAVATA-1164] - AiravataTaskStatusUpdator.updateTaskStatus has java.lang.NullPointerException
+    * [AIRAVATA-1182] - createProject doesn't warn that project already exists
+    * [AIRAVATA-1185] - Output values are not populated when the experiment finish
+    * [AIRAVATA-1227] - Update server handler class to throw error message to client side
+    * [AIRAVATA-1264] - When creating Registry instance, instead of updating, add checks to see whether user and gateway exists
+    * [AIRAVATA-1266] - Thrift -out of sequence response on validateexperiment
+    * [AIRAVATA-1273] - Experiment status was coming as Launched and output value as empty
+    * [AIRAVATA-1279] - When server initialize, db scripts are not read from db-scripts folder
+    * [AIRAVATA-1283] - local host is hard coded in all the thrift clients
+    * [AIRAVATA-1297] - Error while reading cache size from airavata-server.properties
+    * [AIRAVATA-1298] - ClassNotFoundException when running CreateLaunchExperiment for local experiments
+
+** Documentation
+    * [AIRAVATA-1086] - INSTALL is out of date
+    * [AIRAVATA-1122] - Airavata Architecture - Sequence Diagram
+    * [AIRAVATA-1138] - Preperation of QA Test cases for Airavata API
+    * [AIRAVATA-1262] - CCGrid tutorial documentation preparation for PHP scripts
+    * [AIRAVATA-1263] - CCGrid tutorial documentation preparation for PHP reference gateway
+
+** Epic
+    * [AIRAVATA-759] - GSISSH-Grid security provider to run remote jobs
+    * [AIRAVATA-964] - Add single job support as a first class simple Apache Airavata Execution
+    * [AIRAVATA-1039] - Add Airavata Client Samples
+    * [AIRAVATA-1158] - Test different API functions in Airavata API using PHP client
+
+** Improvement
+    * [AIRAVATA-934] - Update SSHProvider to use Jcraft API
+    * [AIRAVATA-942] - GFAC SchedulerTest is obsolete
+    * [AIRAVATA-949] - Update release management page step 11
+    * [AIRAVATA-1076] - Make input/output data location in GFAC configurable
+    * [AIRAVATA-1081] - Airavata README is obsolete
+    * [AIRAVATA-1082] - Make SSH provider(Fork jobs) work with JCraft
+    * [AIRAVATA-1118] - Adding Permission attribute to XBaya main jar to follow recent JAVA security update guide line
+    * [AIRAVATA-1249] - Add search project by name and description
+    * [AIRAVATA-1257] - Define experiment summary data model for search experiments
+    * [AIRAVATA-1258] - Add API methods to search experiments by name and description
+    * [AIRAVATA-1278] - Search experiments with resource id and application id
+    * [AIRAVATA-1285] - Enable openJPA caching to improve the performance
+
+** New Feature
+    * [AIRAVATA-1033] - Write Airavata Thrift Server Startup Scripts
+
+** Story
+    * [AIRAVATA-1019] - Airavata Server distribution with new Thrift server
+    * [AIRAVATA-1093] - Integration Test 1 - Manage Unlaunched Experiments
+    * [AIRAVATA-1098] - Integration Test 2 - Manage Launched Experiments
+
+** Task
+    * [AIRAVATA-905] - Unify SSH Libraries across Airavata
+    * [AIRAVATA-1021] - Implementing new Monitoring component which handle different types of monitoring mechanisms
+    * [AIRAVATA-1060] - Disable the obsolete modules from the trunk build
+    * [AIRAVATA-1124] - Cleaning up unused modules in the trunk for 0.12 release
+    * [AIRAVATA-1140] - Create client samples that'll be distributed
+    * [AIRAVATA-1144] - Airavata CPP Thrift Client Distribution
+    * [AIRAVATA-1145] - Update Experiment Status when Job Status Changes
 
 
 Apache Airavata Version 0.11 Released on 2013-12-20

@@ -1,8 +1,12 @@
 For detailed installation and further instructions please refer http://airavata.apache.org/:
 Documentation section in left hand panel. The website lists step by step instructions
 
-Installing  Apache Airavata 0.9
+Installing  Apache Airavata 0.12
 ------------------------------------------------
+
+IMPORTANT Note: The installation instructions are out of date. 0.12 release is a developer oriented release. Please
+contact the developer mailing list for help. A subsequent release 0.13 will soon supercede.
+
 
 Prerequisites
 -------------
