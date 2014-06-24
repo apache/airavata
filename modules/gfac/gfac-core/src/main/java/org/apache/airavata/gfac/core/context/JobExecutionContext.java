@@ -21,6 +21,7 @@
 
 package org.apache.airavata.gfac.core.context;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +38,7 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.registry.cpi.Registry;
 
-public class JobExecutionContext extends AbstractContext{
+public class JobExecutionContext extends AbstractContext implements Serializable{
 
     private GFacConfiguration gfacConfiguration;
 

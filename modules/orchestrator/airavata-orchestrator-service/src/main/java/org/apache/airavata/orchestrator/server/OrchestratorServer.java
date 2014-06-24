@@ -53,6 +53,7 @@ public class OrchestratorServer implements IServer{
             throws Exception {
         try {
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT,"8940"));
+
             final String serverHost = ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_HOST, null);
             
 			TServerTransport serverTransport;

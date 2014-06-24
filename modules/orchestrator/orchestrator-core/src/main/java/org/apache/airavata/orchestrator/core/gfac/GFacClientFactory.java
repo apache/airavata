@@ -28,7 +28,7 @@ import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 public class GFacClientFactory {
-    public static GfacService.Client createOrchestratorClient(String serverHost, int serverPort){
+    public static GfacService.Client createGFacClient(String serverHost, int serverPort){
           try {
               TTransport transport = new TSocket(serverHost, serverPort);
               transport.open();
