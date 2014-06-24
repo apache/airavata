@@ -76,7 +76,6 @@ public class GFACServiceJobSubmitter implements JobSubmitter,Watcher{
                     mutex.wait();
                 }
             }
-            AiravataZKUtils.
             String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
             String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
             List<String> children = zk.getChildren(gfacServer, this);
