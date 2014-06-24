@@ -32,6 +32,8 @@ import java.util.*;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.gfac.Constants;
@@ -48,6 +50,8 @@ import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.axiom.om.OMElement;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -656,6 +660,23 @@ public class GFacUtils {
             }
         }
         return stringObjectHashMap;
+    }
+
+    public static GfacExperimentState getZKExperimentState(ZooKeeper zk,JobExecutionContext jobExecutionContext)
+            throws ApplicationSettingsException, KeeperException, InterruptedException {
+        String expState = AiravataZKUtils.getExpState(zk, jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getTaskData().getTaskID());
+        return GfacExperimentState.findByValue(Integer.parseInt(expState));
+    }
+
+    public static int getZKExperimentStateValue(ZooKeeper zk, JobExecutionContext jobExecutionContext)
+            throws ApplicationSettingsException, KeeperException, InterruptedException {
+        String expState = AiravataZKUtils.getExpState(zk, jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getTaskData().getTaskID());
+        if(expState == null){
+            return -1;
+        }
+        return Integer.parseInt(expState);
     }
 
 

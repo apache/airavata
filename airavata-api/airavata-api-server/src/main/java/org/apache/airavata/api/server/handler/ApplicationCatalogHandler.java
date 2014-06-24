@@ -64,7 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ApplicationCatalogHandler implements Iface {
-    private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationCatalogHandler.class);
 
 	AiravataRegistry2 registry;
 	private AiravataRegistry2 getRegistry() throws RegException, AiravataConfigurationException{

@@ -23,6 +23,7 @@ package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.workspace.Project;
@@ -35,20 +36,91 @@ import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
+import org.apache.tools.ant.types.selectors.FileSelector;
+import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
-public class AiravataServerHandler implements Airavata.Iface {
-
-    private Registry registry;
-	private OrchestratorService.Client orchestratorClient;
+public class AiravataServerHandler implements Airavata.Iface, Watcher {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
-	
+    private Registry registry;
+    private OrchestratorService.Client orchestratorClient;
+
+    private ZooKeeper zk;
+    private static Integer mutex = -1;
+
+
+    public AiravataServerHandler() {
+        try {
+            String zkhostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_HOST)
+                    + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_PORT);
+            String airavataServerHostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_HOST)
+                                + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_PORT);
+            try {
+                zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
+                String apiServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_API_SERVER_NODE,"/airavata-server");
+                String OrchServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE,"/orchestrator-server");
+                String gfacServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_SERVER_NODE,"/gfac-server");
+                String gfacExperiments = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE,"/gfac-experiments");
+
+                synchronized (mutex) {
+                    mutex.wait();  // waiting for the syncConnected event
+                }
+                Stat zkStat = zk.exists(apiServer, false);
+                if (zkStat == null) {
+                    zk.create(apiServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                            CreateMode.PERSISTENT);
+                }
+                String instantNode = apiServer + File.separator + String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+                zkStat = zk.exists(instantNode, false);
+                if (zkStat == null) {
+                    zk.create(instantNode,
+                            airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                            CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
+                    logger.info("Successfully created airavata-server node");
+                }
+
+                zkStat = zk.exists(OrchServer, false);
+                if (zkStat == null) {
+                    zk.create(OrchServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                            CreateMode.PERSISTENT);
+                    logger.info("Successfully created orchestrator-server node");
+                }
+                zkStat = zk.exists(gfacServer, false);
+                if (zkStat == null) {
+                    zk.create(gfacServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                            CreateMode.PERSISTENT);
+                    logger.info("Successfully created gfac-server node");
+                }
+                zkStat = zk.exists(gfacServer, false);
+                if (zkStat == null) {
+                    zk.create(gfacExperiments, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                            CreateMode.PERSISTENT);
+                    logger.info("Successfully created gfac-server node");
+                }
+                logger.info("Finished starting ZK: " + zk);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (KeeperException e) {
+                e.printStackTrace();
+            }
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        }
+    }
+
+    synchronized public void process(WatchedEvent watchedEvent) {
+        synchronized (mutex) {
+            mutex.notify();
+        }
+    }
 
     /**
      * Query Airavata to fetch the API version
@@ -905,8 +977,8 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
 	private OrchestratorService.Client getOrchestratorClient() {
-		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.api.server.util.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
-        final String serverHost = ServerSettings.getSetting(org.apache.airavata.api.server.util.Constants.ORCHESTRATOR_SERVER_HOST, null);
+		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
+        final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
         return orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
 	}
 

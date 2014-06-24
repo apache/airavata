@@ -24,6 +24,7 @@ package org.apache.airavata.gfac.core.provider;
 import com.google.common.eventbus.EventBus;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
@@ -44,8 +45,11 @@ public abstract class AbstractProvider implements GFacProvider{
 
     protected MonitorPublisher monitorPublisher;
 
-    protected AbstractProvider() {
+    protected AbstractProvider() {                                            //todo this has to be fixed
         this.monitorPublisher = GFacImpl.getMonitorPublisher();
+        if(this.monitorPublisher == null){
+            this.monitorPublisher = BetterGfacImpl.getMonitorPublisher();
+        }
     }
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
