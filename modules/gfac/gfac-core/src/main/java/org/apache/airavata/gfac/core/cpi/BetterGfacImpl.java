@@ -276,7 +276,7 @@ public class BetterGfacImpl implements GFac {
                 serviceDescription.getType().getOutputParametersArray())));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
-
+        jobExecutionContext.setGfac(this);
         return jobExecutionContext;
     }
 
@@ -626,6 +626,10 @@ public class BetterGfacImpl implements GFac {
         }
     }
 
+
+    public static void setMonitorPublisher(MonitorPublisher monitorPublisher) {
+        BetterGfacImpl.monitorPublisher = monitorPublisher;
+    }
 
     public AiravataAPI getAiravataAPI() {
         return airavataAPI;

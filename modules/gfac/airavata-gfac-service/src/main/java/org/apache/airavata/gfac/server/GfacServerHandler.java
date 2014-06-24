@@ -125,6 +125,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         }
         try {
             publisher = new MonitorPublisher(new EventBus());
+            BetterGfacImpl.setMonitorPublisher(publisher);
             registry = RegistryFactory.getDefaultRegistry();
             setGatewayProperties();
             BetterGfacImpl.startDaemonHandlers();

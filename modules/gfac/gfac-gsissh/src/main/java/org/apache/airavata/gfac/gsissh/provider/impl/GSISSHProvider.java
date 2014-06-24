@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.gsissh.provider.impl;
 import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
@@ -98,6 +99,9 @@ public class GSISSHProvider extends AbstractProvider {
             // Now job has submitted to the resource, its up to the Provider to parse the information to daemon handler
             // to perform monitoring, daemon handlers can be accessed from anywhere
             List<ThreadedHandler> daemonHandlers = GFacImpl.getDaemonHandlers();
+            if(daemonHandlers == null){
+                daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+            }
             ThreadedHandler pullMonitorHandler = null;
             ThreadedHandler pushMonitorHandler = null;
             String monitorMode = ((GsisshHostType) host).getMonitorMode();

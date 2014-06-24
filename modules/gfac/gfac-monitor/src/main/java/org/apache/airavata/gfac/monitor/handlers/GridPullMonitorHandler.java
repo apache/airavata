@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.monitor.handlers;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
@@ -60,7 +61,11 @@ public class GridPullMonitorHandler extends ThreadedHandler {
             String myProxyServer = ServerSettings.getSetting("myproxy.server");
             setAuthenticationInfo(new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
                     7512, 17280000, certPath));
-            hpcPullMonitor = new HPCPullMonitor(GFacImpl.getMonitorPublisher());
+            if(GFacImpl.getMonitorPublisher() != null){
+                hpcPullMonitor = new HPCPullMonitor(GFacImpl.getMonitorPublisher());    // todo remove the GFacImpl
+            }else {
+                hpcPullMonitor = new HPCPullMonitor(BetterGfacImpl.getMonitorPublisher());
+            }
         } catch (ApplicationSettingsException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
@@ -72,6 +77,7 @@ public class GridPullMonitorHandler extends ThreadedHandler {
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         super.invoke(jobExecutionContext);
+        hpcPullMonitor.setGfac(jobExecutionContext.getGfac());
         MonitorID monitorID = new HPCMonitorID(getAuthenticationInfo(), jobExecutionContext);
         try {
             CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID);
