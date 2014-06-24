@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.core.monitor.state;
 
 import org.apache.airavata.gfac.core.monitor.JobIdentity;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.workspace.experiment.GfacExperimentState;
+import org.apache.airavata.gfac.core.utils.GfacExperimentState;
 
 public class GfacExperimentStateChangeRequest {
     private GfacExperimentState state;

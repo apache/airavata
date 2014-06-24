@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.LaunchValidationException;
@@ -73,8 +74,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface, Wat
     public OrchestratorServerHandler() {
         // registering with zk
         try {
-            String zkhostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_HOST)
-                    + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_PORT);
+            String zkhostPort = AiravataZKUtils.getZKhostPort();
             String airavataServerHostPort = ServerSettings.getSetting(Constants.ORCHESTRATOR_SERVER_HOST)
                     + ":" + ServerSettings.getSetting(Constants.ORCHESTRATOR_SERVER_PORT);
             try {
@@ -121,6 +121,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface, Wat
             e.printStackTrace();
         }
     }
+
 
 
 
