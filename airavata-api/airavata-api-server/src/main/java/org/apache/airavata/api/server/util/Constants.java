@@ -27,6 +27,4 @@ public class Constants {
     public static final String APP_CATALOG_SERVER_PORT = "app.catalog.server.port";
     public static final String APP_CATALOG_SERVER_HOST = "app.catalog.server.host";
     public static final String API_SERVER_MIN_THREADS = "apiserver.server.min.threads";
-    public static final String ORCHESTRATOR_SERVER_HOST = "orchestrator.server.host";
-    public static final String ORCHESTRATOR_SERVER_PORT = "orchestrator.server.port";
 }

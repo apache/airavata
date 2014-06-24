@@ -45,6 +45,7 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.monitor.*;
 import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangeRequest;
+import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
 import org.apache.airavata.gfac.core.notification.MonitorPublisher;
@@ -76,7 +77,7 @@ import javax.xml.xpath.XPathExpressionException;
  * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
  * the resource, required data for the job has to be stored in registry prior to invoke this object.
  */
-public class GFacImpl implements GFac {
+public class BetterGfacImpl implements GFac {
     private static final Logger log = LoggerFactory.getLogger(GFacImpl.class);
     public static final String ERROR_SENT = "ErrorSent";
 
@@ -86,13 +87,13 @@ public class GFacImpl implements GFac {
 
     private AiravataRegistry2 airavataRegistry2;
 
-    private ZooKeeper zk;
+    private ZooKeeper zk;                       // we are not storing zk instance in to jobExecution context
     
-    private static List<ThreadedHandler> daemonHandlers;
+    private static List<ThreadedHandler> daemonHandlers = new ArrayList<ThreadedHandler>();
 
-    private File gfacConfigFile;
+    private static File gfacConfigFile;
 
-    private List<AbstractActivityListener> activityListeners;
+    private static List<AbstractActivityListener> activityListeners =  new ArrayList<AbstractActivityListener>();
 
     private static MonitorPublisher monitorPublisher;
 
@@ -102,28 +103,27 @@ public class GFacImpl implements GFac {
      * @param registry
      * @param airavataAPI
      * @param airavataRegistry2
+     * @param zooKeeper
      */
-    public GFacImpl(Registry registry, AiravataAPI airavataAPI, AiravataRegistry2 airavataRegistry2) {
+    public BetterGfacImpl(Registry registry, AiravataAPI airavataAPI, AiravataRegistry2 airavataRegistry2, ZooKeeper zooKeeper,
+                          MonitorPublisher publisher) {
         this.registry = registry;
         this.airavataAPI = airavataAPI;
         this.airavataRegistry2 = airavataRegistry2;
-        daemonHandlers = new ArrayList<ThreadedHandler>();
-        activityListeners = new ArrayList<AbstractActivityListener>();
-        monitorPublisher = new MonitorPublisher(new EventBus());     // This is a EventBus common for gfac
-        startStatusUpdators();
-        startDaemonHandlers();
+        monitorPublisher = publisher;     // This is a EventBus common for gfac
+        this.zk = zooKeeper;
     }
 
-    private void startStatusUpdators() {
+    public static void startStatusUpdators(Registry registry,ZooKeeper zk,MonitorPublisher publisher) {
         try {
             String[] listenerClassList = ServerSettings.getActivityListeners();
             for (String listenerClass : listenerClassList) {
                 Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
                 AbstractActivityListener abstractActivityListener = aClass.newInstance();
                 activityListeners.add(abstractActivityListener);
-                abstractActivityListener.setup(getMonitorPublisher(), registry);
+                abstractActivityListener.setup(publisher, registry,zk);
                 log.info("Registering listener: " + listenerClass);
-                getMonitorPublisher().registerListener(abstractActivityListener);
+                publisher.registerListener(abstractActivityListener);
             }
         }catch (ClassNotFoundException e) {
             log.error("Error loading the listener classes configured in airavata-server.properties",e);
@@ -135,7 +135,7 @@ public class GFacImpl implements GFac {
             log.error("Error loading the listener classes configured in airavata-server.properties",e);
         }
     }
-    private void startDaemonHandlers()  {
+    public static void startDaemonHandlers()  {
         List<GFacHandlerConfig> daemonHandlerConfig = null;
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         gfacConfigFile = new File(resource.getPath());
@@ -181,7 +181,7 @@ public class GFacImpl implements GFac {
     /**
      * This can be used to submit jobs for testing purposes just by filling parameters by hand (JobExecutionContext)
      */
-    public GFacImpl() {
+    public BetterGfacImpl() {
         daemonHandlers = new ArrayList<ThreadedHandler>();
         startDaemonHandlers();
     }
@@ -312,9 +312,11 @@ public class GFacImpl implements GFac {
             // We get the provider instance and execute it.
             GFacProvider provider = jobExecutionContext.getProvider();
             if (provider != null) {
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.PROVIDERINVOKING));
                 initProvider(provider, jobExecutionContext);
                 executeProvider(provider, jobExecutionContext);
                 disposeProvider(provider, jobExecutionContext);
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.PROVIDERINVOKED));
             }
             if (GFacUtils.isSynchronousMode(jobExecutionContext)) {
                 invokeOutFlowHandlers(jobExecutionContext);
@@ -335,6 +337,7 @@ public class GFacImpl implements GFac {
                         new JobIdentity(jobExecutionContext.getExperimentID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                         jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getJobDetails().getJobID()), JobState.FAILED));
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.FAILED));
             } catch (NullPointerException e1) {
                 log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
                         "NullPointerException occurred because at this point there might not have Job Created", e1, e);
@@ -380,6 +383,8 @@ public class GFacImpl implements GFac {
 
     private void invokeInFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getInHandlers();
+        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                                           ,GfacExperimentState.INHANDLERSINVOKING));
         for (GFacHandlerConfig handlerClassName : handlers) {
             Class<? extends GFacHandler> handlerClass;
             GFacHandler handler;
@@ -400,6 +405,8 @@ public class GFacImpl implements GFac {
                 throw new GFacException("Error Executing a InFlow Handler", e.getCause());
             }
         }
+        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                                           ,GfacExperimentState.INHANDLERSINVOKED));
     }
 
     public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
@@ -416,6 +423,7 @@ public class GFacImpl implements GFac {
             }
             schedule(jobExecutionContext);
         }
+        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.OUTHANDLERSINVOKING));
         for (GFacHandlerConfig handlerClassName : handlers) {
             Class<? extends GFacHandler> handlerClass;
             GFacHandler handler;
@@ -439,9 +447,9 @@ public class GFacImpl implements GFac {
                 // TODO: Better error reporting.
                 throw new GFacException("Error Executing a OutFlow Handler", e);
             }
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.OUTHANDLERSINVOKED));
         }
 
-        monitorPublisher.publish(GfacExperimentState.COMPLETED);
         // At this point all the execution is finished so we update the task and experiment statuses.
         // Handler authors does not have to worry about updating experiment or task statuses.
         monitorPublisher.publish(new
@@ -453,6 +461,8 @@ public class GFacImpl implements GFac {
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                         jobExecutionContext.getTaskData().getTaskID()), TaskState.COMPLETED
         ));
+
+        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.COMPLETED));
     }
 
 
@@ -482,5 +492,13 @@ public class GFacImpl implements GFac {
 
     public Registry getRegistry() {
         return registry;
+    }
+
+    public ZooKeeper getZk() {
+        return zk;
+    }
+
+    public void setZk(ZooKeeper zk) {
+        this.zk = zk;
     }
 }

@@ -118,6 +118,8 @@ rm -rf ${JAVA_GEN_DIR}
 # Using thrify Java generator, generate the java classes based on Airavata API. This
 #   The airavataAPI.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen java gfac.cpi.service.thrift || fail unable to generate java thrift classes
+thrift ${THRIFT_ARGS} --gen java gfacDataModel.thrift || fail unable to generate java thrift classes
+
 
 # For the generated java classes add the ASF V2 License header
 add_license_header $JAVA_GEN_DIR

@@ -78,10 +78,14 @@ public class MonitorID {
         this.jobExecutionContext = jobExecutionContext;
         host = jobExecutionContext.getApplicationContext().getHostDescription();
         userName = jobExecutionContext.getExperiment().getUserName();
-        jobID = jobExecutionContext.getJobDetails().getJobID();
         taskID = jobExecutionContext.getTaskData().getTaskID();
         experimentID = jobExecutionContext.getExperiment().getExperimentID();
         workflowNodeID = jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId();// at this point we only have one node todo: fix this
+        try {
+            jobID = jobExecutionContext.getJobDetails().getJobID();
+        }catch(NullPointerException e){
+            logger.error("There is not job created at this point");
+        }
     }
 
     public HostDescription getHost() {

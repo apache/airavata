@@ -120,6 +120,12 @@
             <version>${xmlbeans.version}</version>
         </dependency>
         <!-- this is the dependency for amqp implementation -->
+        <!-- zookeeper dependencies -->
+        <dependency>
+        	<groupId>org.apache.zookeeper</groupId>
+        	<artifactId>zookeeper</artifactId>
+        	<version>3.4.0</version>
+        </dependency>
     </dependencies>
 
     <build>
