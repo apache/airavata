@@ -28,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.google.common.eventbus.EventBus;
-
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -59,12 +57,12 @@ import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.gfac.workspace.experiment.GfacExperimentState;
+import org.apache.airavata.gfac.core.utils.GfacExperimentState;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.tools.ant.taskdefs.optional.j2ee.HotDeploymentTool;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,12 +86,12 @@ public class BetterGfacImpl implements GFac {
     private AiravataRegistry2 airavataRegistry2;
 
     private ZooKeeper zk;                       // we are not storing zk instance in to jobExecution context
-    
+
     private static List<ThreadedHandler> daemonHandlers = new ArrayList<ThreadedHandler>();
 
     private static File gfacConfigFile;
 
-    private static List<AbstractActivityListener> activityListeners =  new ArrayList<AbstractActivityListener>();
+    private static List<AbstractActivityListener> activityListeners = new ArrayList<AbstractActivityListener>();
 
     private static MonitorPublisher monitorPublisher;
 
@@ -114,35 +112,36 @@ public class BetterGfacImpl implements GFac {
         this.zk = zooKeeper;
     }
 
-    public static void startStatusUpdators(Registry registry,ZooKeeper zk,MonitorPublisher publisher) {
+    public static void startStatusUpdators(Registry registry, ZooKeeper zk, MonitorPublisher publisher) {
         try {
             String[] listenerClassList = ServerSettings.getActivityListeners();
             for (String listenerClass : listenerClassList) {
                 Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
                 AbstractActivityListener abstractActivityListener = aClass.newInstance();
                 activityListeners.add(abstractActivityListener);
-                abstractActivityListener.setup(publisher, registry,zk);
+                abstractActivityListener.setup(publisher, registry, zk);
                 log.info("Registering listener: " + listenerClass);
                 publisher.registerListener(abstractActivityListener);
             }
-        }catch (ClassNotFoundException e) {
-            log.error("Error loading the listener classes configured in airavata-server.properties",e);
+        } catch (ClassNotFoundException e) {
+            log.error("Error loading the listener classes configured in airavata-server.properties", e);
         } catch (InstantiationException e) {
-            log.error("Error loading the listener classes configured in airavata-server.properties",e);
+            log.error("Error loading the listener classes configured in airavata-server.properties", e);
         } catch (IllegalAccessException e) {
-            log.error("Error loading the listener classes configured in airavata-server.properties",e);
-        } catch (ApplicationSettingsException e){
-            log.error("Error loading the listener classes configured in airavata-server.properties",e);
+            log.error("Error loading the listener classes configured in airavata-server.properties", e);
+        } catch (ApplicationSettingsException e) {
+            log.error("Error loading the listener classes configured in airavata-server.properties", e);
         }
     }
-    public static void startDaemonHandlers()  {
+
+    public static void startDaemonHandlers() {
         List<GFacHandlerConfig> daemonHandlerConfig = null;
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         gfacConfigFile = new File(resource.getPath());
         try {
             daemonHandlerConfig = GFacConfiguration.getDaemonHandlers(gfacConfigFile);
         } catch (ParserConfigurationException e) {
-            log.error("Error parsing gfac-config.xml, double check the xml configuration",e);
+            log.error("Error parsing gfac-config.xml, double check the xml configuration", e);
         } catch (IOException e) {
             log.error("Error parsing gfac-config.xml, double check the xml configuration", e);
         } catch (SAXException e) {
@@ -151,14 +150,14 @@ public class BetterGfacImpl implements GFac {
             log.error("Error parsing gfac-config.xml, double check the xml configuration", e);
         }
 
-        for(GFacHandlerConfig handlerConfig:daemonHandlerConfig){
+        for (GFacHandlerConfig handlerConfig : daemonHandlerConfig) {
             String className = handlerConfig.getClassName();
             try {
                 Class<?> aClass = Class.forName(className).asSubclass(ThreadedHandler.class);
                 ThreadedHandler threadedHandler = (ThreadedHandler) aClass.newInstance();
                 threadedHandler.initProperties(handlerConfig.getProperties());
                 daemonHandlers.add(threadedHandler);
-            }catch (ClassNotFoundException e){
+            } catch (ClassNotFoundException e) {
                 log.error("Error initializing the handler: " + className);
                 log.error(className + " class has to implement " + ThreadedHandler.class);
             } catch (InstantiationException e) {
@@ -173,7 +172,7 @@ public class BetterGfacImpl implements GFac {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
-        for(ThreadedHandler tHandler:daemonHandlers){
+        for (ThreadedHandler tHandler : daemonHandlers) {
             (new Thread(tHandler)).start();
         }
     }
@@ -194,7 +193,7 @@ public class BetterGfacImpl implements GFac {
      * @return
      * @throws GFacException
      */
-    public boolean submitJob(String experimentID,String taskID) throws GFacException {
+    public boolean submitJob(String experimentID, String taskID) throws GFacException {
         JobExecutionContext jobExecutionContext = null;
         try {
             jobExecutionContext = createJEC(experimentID, taskID);
@@ -216,31 +215,31 @@ public class BetterGfacImpl implements GFac {
         // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
         String serviceName = taskData.getApplicationId();
         if (serviceName == null) {
-            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName );
+            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName);
         }
-       
+
         ServiceDescription serviceDescription = airavataRegistry2.getServiceDescriptor(serviceName);
-        if (serviceDescription == null ) {
-            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName );
+        if (serviceDescription == null) {
+            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName);
         }
         String hostName;
         HostDescription hostDescription = null;
-        if(taskData.getTaskScheduling().getResourceHostId() != null){
+        if (taskData.getTaskScheduling().getResourceHostId() != null) {
             hostName = taskData.getTaskScheduling().getResourceHostId();
             hostDescription = airavataRegistry2.getHostDescriptor(hostName);
-        }else{
-        	  List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
-              Map<String, ApplicationDescription> applicationDescriptors = airavataRegistry2.getApplicationDescriptors(serviceName);
-              for (String hostDescName : applicationDescriptors.keySet()) {
-                  registeredHosts.add(airavataRegistry2.getHostDescriptor(hostDescName));
-              }
-              Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
-             HostScheduler hostScheduler = aClass.newInstance();
+        } else {
+            List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
+            Map<String, ApplicationDescription> applicationDescriptors = airavataRegistry2.getApplicationDescriptors(serviceName);
+            for (String hostDescName : applicationDescriptors.keySet()) {
+                registeredHosts.add(airavataRegistry2.getHostDescriptor(hostDescName));
+            }
+            Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
+            HostScheduler hostScheduler = aClass.newInstance();
             hostDescription = hostScheduler.schedule(registeredHosts);
-        	hostName = hostDescription.getType().getHostName();
+            hostName = hostDescription.getType().getHostName();
         }
-        if(hostDescription == null){
-        	throw new GFacException("Error executing the job as the host is not registered " + hostName);	
+        if (hostDescription == null) {
+            throw new GFacException("Error executing the job as the host is not registered " + hostName);
         }
         ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostName);
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
@@ -283,6 +282,8 @@ public class BetterGfacImpl implements GFac {
     public boolean submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
+        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                           , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
         String workflowInstanceID = null;
         if ((workflowInstanceID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_INSTANCE_ID)) != null) {
             // This mean we need to register workflow tracking listener.
@@ -291,11 +292,11 @@ public class BetterGfacImpl implements GFac {
         }
         // Register log event listener. This is required in all scenarios.
         jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
-        schedule(jobExecutionContext);
+        launch(jobExecutionContext);
         return true;
     }
 
-    private void schedule(JobExecutionContext jobExecutionContext) throws GFacException {
+    private void launch(JobExecutionContext jobExecutionContext) throws GFacException {
         // Scheduler will decide the execution flow of handlers and provider which handles
         // the job.
         String experimentID = jobExecutionContext.getExperimentID();
@@ -303,27 +304,33 @@ public class BetterGfacImpl implements GFac {
             Scheduler.schedule(jobExecutionContext);
 
             // Executing in handlers in the order as they have configured in GFac configuration
-            invokeInFlowHandlers(jobExecutionContext);
+            // here we do not skip handler if some handler does not have to be run again during re-run it can implement
+            // that logic in to the handler
+            int stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);
+            if(stateVal >=2){
+                reInvokeInFlowHandlers(jobExecutionContext);
+            }else {
+                invokeInFlowHandlers(jobExecutionContext);               // to keep the consistency we always try to re-run to avoid complexity
+            }
 //            if (experimentID != null){
 //                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
 //            }
 
             // After executing the in handlers provider instance should be set to job execution context.
             // We get the provider instance and execute it.
-            GFacProvider provider = jobExecutionContext.getProvider();
-            if (provider != null) {
-                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.PROVIDERINVOKING));
-                initProvider(provider, jobExecutionContext);
-                executeProvider(provider, jobExecutionContext);
-                disposeProvider(provider, jobExecutionContext);
-                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.PROVIDERINVOKED));
-            }
-            if (GFacUtils.isSynchronousMode(jobExecutionContext)) {
-                invokeOutFlowHandlers(jobExecutionContext);
+            stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);
+            if (stateVal == 4) {         // if the job is completed during resubmission we handle it here
+                reInvokeProvider(jobExecutionContext);
+            }else if(stateVal == 3){
+                invokeProvider(jobExecutionContext);
+            }else{
+                log.info("We skip invoking Handler, because the experiment state is beyond the Provider Invocation !!!");
+                log.info("ExperimentId: " + experimentID + " taskId: " + jobExecutionContext.getTaskData().getTaskID());
             }
         } catch (Exception e) {
             try {
                 // we make the experiment as failed due to exception scenario
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
                 monitorPublisher.publish(new
                         ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
                         ExperimentState.FAILED));
@@ -335,9 +342,9 @@ public class BetterGfacImpl implements GFac {
                 ));
                 monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
                         new JobIdentity(jobExecutionContext.getExperimentID(),
-                        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                        jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getJobDetails().getJobID()), JobState.FAILED));
-                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.FAILED));
+                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                                jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getJobDetails().getJobID()), JobState.FAILED
+                ));
             } catch (NullPointerException e1) {
                 log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
                         "NullPointerException occurred because at this point there might not have Job Created", e1, e);
@@ -347,6 +354,35 @@ public class BetterGfacImpl implements GFac {
             throw new GFacException(e.getMessage(), e);
         }
     }
+
+    private void invokeProvider(JobExecutionContext jobExecutionContext) throws GFacException {
+        GFacProvider provider = jobExecutionContext.getProvider();
+        if (provider != null) {
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
+            initProvider(provider, jobExecutionContext);
+            executeProvider(provider, jobExecutionContext);
+            disposeProvider(provider, jobExecutionContext);
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
+        }
+        if (GFacUtils.isSynchronousMode(jobExecutionContext)) {
+            invokeOutFlowHandlers(jobExecutionContext);
+        }
+    }
+
+    private void reInvokeProvider(JobExecutionContext jobExecutionContext) throws GFacException {
+        GFacProvider provider = jobExecutionContext.getProvider();
+        if (provider != null) {
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
+            initProvider(provider, jobExecutionContext);
+            executeProvider(provider, jobExecutionContext);
+            disposeProvider(provider, jobExecutionContext);
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
+        }
+        if (GFacUtils.isSynchronousMode(jobExecutionContext)) {
+            invokeOutFlowHandlers(jobExecutionContext);
+        }
+    }
+
 
     private void initProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
         try {
@@ -358,7 +394,7 @@ public class BetterGfacImpl implements GFac {
 
     private void executeProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
         try {
-             provider.execute(jobExecutionContext);
+            provider.execute(jobExecutionContext);
         } catch (Exception e) {
             throw new GFacException("Error while executing provider " + provider.getClass().getName() + " functionality.", e);
         }
@@ -383,86 +419,203 @@ public class BetterGfacImpl implements GFac {
 
     private void invokeInFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getInHandlers();
-        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-                                           ,GfacExperimentState.INHANDLERSINVOKING));
-        for (GFacHandlerConfig handlerClassName : handlers) {
-            Class<? extends GFacHandler> handlerClass;
-            GFacHandler handler;
-            try {
-                handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
-                handler = handlerClass.newInstance();
-                handler.initProperties(handlerClassName.getProperties());
-            } catch (ClassNotFoundException e) {
-                throw new GFacException("Cannot load handler class " + handlerClassName, e);
-            } catch (InstantiationException e) {
-                throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-            } catch (IllegalAccessException e) {
-                throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+        try {
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                    , GfacExperimentState.INHANDLERSINVOKING));
+            for (GFacHandlerConfig handlerClassName : handlers) {
+                Class<? extends GFacHandler> handlerClass;
+                GFacHandler handler;
+                try {
+                    handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
+                    handler = handlerClass.newInstance();
+                    handler.initProperties(handlerClassName.getProperties());
+                } catch (ClassNotFoundException e) {
+                    throw new GFacException("Cannot load handler class " + handlerClassName, e);
+                } catch (InstantiationException e) {
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                } catch (IllegalAccessException e) {
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                }
+                try {
+                    handler.invoke(jobExecutionContext);
+                } catch (GFacHandlerException e) {
+                    throw new GFacException("Error Executing a InFlow Handler", e.getCause());
+                }
             }
-            try {
-                handler.invoke(jobExecutionContext);
-            } catch (GFacHandlerException e) {
-                throw new GFacException("Error Executing a InFlow Handler", e.getCause());
-            }
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                    , GfacExperimentState.INHANDLERSINVOKED));
+        } catch (Exception e) {
+            throw new GFacException("Error invoking ZK", e);
         }
-        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-                                           ,GfacExperimentState.INHANDLERSINVOKED));
+    }
+
+    private void reInvokeInFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
+        List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getInHandlers();
+        try {
+            int stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);
+            if (stateVal == 8 || stateVal == -1) {
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                        , GfacExperimentState.INHANDLERSINVOKING));
+                for (GFacHandlerConfig handlerClassName : handlers) {
+                    Class<? extends GFacHandler> handlerClass;
+                    GFacHandler handler;
+                    try {
+                        handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
+                        handler = handlerClass.newInstance();
+                        handler.initProperties(handlerClassName.getProperties());
+                    } catch (ClassNotFoundException e) {
+                        throw new GFacException("Cannot load handler class " + handlerClassName, e);
+                    } catch (InstantiationException e) {
+                        throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                    } catch (IllegalAccessException e) {
+                        throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                    }
+                    try {
+                        handler.invoke(jobExecutionContext);
+                    } catch (GFacHandlerException e) {
+                        throw new GFacException("Error Executing a InFlow Handler", e.getCause());
+                    }
+                }
+            }
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                    , GfacExperimentState.INHANDLERSINVOKED));
+        } catch (Exception e) {
+            throw new GFacException("Error invoking ZK", e);
+        }
+    }
+
+    public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
+        int stateVal = -1;
+        try {
+            stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (stateVal >= 0 && stateVal < 6) {
+            GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
+            List<GFacHandlerConfig> handlers = null;
+            if (gFacConfiguration != null) {
+                handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
+            } else {
+                try {
+                    jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID());
+                } catch (Exception e) {
+                    log.error("Error constructing job execution context during outhandler invocation");
+                    throw new GFacException(e);
+                }
+                launch(jobExecutionContext);
+            }
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKING));
+            for (GFacHandlerConfig handlerClassName : handlers) {
+                Class<? extends GFacHandler> handlerClass;
+                GFacHandler handler;
+                try {
+                    handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
+                    handler = handlerClass.newInstance();
+                    handler.initProperties(handlerClassName.getProperties());
+                } catch (ClassNotFoundException e) {
+                    log.error(e.getMessage());
+                    throw new GFacException("Cannot load handler class " + handlerClassName, e);
+                } catch (InstantiationException e) {
+                    log.error(e.getMessage());
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                } catch (IllegalAccessException e) {
+                    log.error(e.getMessage());
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                }
+                try {
+                    handler.invoke(jobExecutionContext);
+                } catch (Exception e) {
+                    // TODO: Better error reporting.
+                    throw new GFacException("Error Executing a OutFlow Handler", e);
+                }
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKED));
+            }
+
+            // At this point all the execution is finished so we update the task and experiment statuses.
+            // Handler authors does not have to worry about updating experiment or task statuses.
+            monitorPublisher.publish(new
+                    ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+                    ExperimentState.COMPLETED));
+            // Updating the task status if there's any task associated
+            monitorPublisher.publish(new TaskStatusChangeRequest(
+                    new TaskIdentity(jobExecutionContext.getExperimentID(),
+                            jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                            jobExecutionContext.getTaskData().getTaskID()), TaskState.COMPLETED
+            ));
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.COMPLETED));
+        }
     }
 
     public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
-        GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
-        List<GFacHandlerConfig> handlers = null;
-        if(gFacConfiguration != null){
-         handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
-        }else {
-            try {
-                jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID());
-            } catch (Exception e) {
-                log.error("Error constructing job execution context during outhandler invocation");
-                throw new GFacException(e);
-            }
-            schedule(jobExecutionContext);
+        int stateVal = -1;
+        try {
+            stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.OUTHANDLERSINVOKING));
-        for (GFacHandlerConfig handlerClassName : handlers) {
-            Class<? extends GFacHandler> handlerClass;
-            GFacHandler handler;
-            try {
-                handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
-                handler = handlerClass.newInstance();
-                handler.initProperties(handlerClassName.getProperties());
-            } catch (ClassNotFoundException e) {
-                log.error(e.getMessage());
-                throw new GFacException("Cannot load handler class " + handlerClassName, e);
-            } catch (InstantiationException e) {
-                log.error(e.getMessage());
-                throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-            } catch (IllegalAccessException e) {
-                log.error(e.getMessage());
-                throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+        if (stateVal >= 0 && stateVal < 6) {
+            GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
+            List<GFacHandlerConfig> handlers = null;
+            if (gFacConfiguration != null) {
+                handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
+            } else {
+                try {
+                    jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID());
+                } catch (Exception e) {
+                    log.error("Error constructing job execution context during outhandler invocation");
+                    throw new GFacException(e);
+                }
+                launch(jobExecutionContext);
             }
-            try {
-                handler.invoke(jobExecutionContext);
-            } catch (Exception e) {
-                // TODO: Better error reporting.
-                throw new GFacException("Error Executing a OutFlow Handler", e);
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKING));
+            for (GFacHandlerConfig handlerClassName : handlers) {
+                Class<? extends GFacHandler> handlerClass;
+                GFacHandler handler;
+                try {
+                    handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
+                    handler = handlerClass.newInstance();
+                    handler.initProperties(handlerClassName.getProperties());
+                } catch (ClassNotFoundException e) {
+                    log.error(e.getMessage());
+                    throw new GFacException("Cannot load handler class " + handlerClassName, e);
+                } catch (InstantiationException e) {
+                    log.error(e.getMessage());
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                } catch (IllegalAccessException e) {
+                    log.error(e.getMessage());
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                }
+                try {
+                    handler.invoke(jobExecutionContext);
+                } catch (Exception e) {
+                    // TODO: Better error reporting.
+                    throw new GFacException("Error Executing a OutFlow Handler", e);
+                }
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKED));
             }
-            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.OUTHANDLERSINVOKED));
+
+            // At this point all the execution is finished so we update the task and experiment statuses.
+            // Handler authors does not have to worry about updating experiment or task statuses.
+            monitorPublisher.publish(new
+                    ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+                    ExperimentState.COMPLETED));
+            // Updating the task status if there's any task associated
+            monitorPublisher.publish(new TaskStatusChangeRequest(
+                    new TaskIdentity(jobExecutionContext.getExperimentID(),
+                            jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                            jobExecutionContext.getTaskData().getTaskID()), TaskState.COMPLETED
+            ));
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.COMPLETED));
         }
-
-        // At this point all the execution is finished so we update the task and experiment statuses.
-        // Handler authors does not have to worry about updating experiment or task statuses.
-        monitorPublisher.publish(new
-                ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
-                ExperimentState.COMPLETED));
-        // Updating the task status if there's any task associated
-        monitorPublisher.publish(new TaskStatusChangeRequest(
-                new TaskIdentity(jobExecutionContext.getExperimentID(),
-                        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                        jobExecutionContext.getTaskData().getTaskID()), TaskState.COMPLETED
-        ));
-
-        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext),GfacExperimentState.COMPLETED));
     }
 
 

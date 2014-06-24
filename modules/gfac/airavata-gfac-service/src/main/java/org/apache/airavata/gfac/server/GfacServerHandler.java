@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.server;
 import com.google.common.eventbus.EventBus;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.GFacException;
@@ -74,8 +75,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
     public GfacServerHandler() {
         // registering with zk
         try {
-            String zkhostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_HOST)
-                    + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_PORT);
+            String zkhostPort = AiravataZKUtils.getZKhostPort();
             String airavataServerHostPort = ServerSettings.getSetting(Constants.GFAC_SERVER_HOST)
                     + ":" + ServerSettings.getSetting(Constants.GFAC_SERVER_PORT);
             try {
@@ -140,6 +140,15 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             if (state == Event.KeeperState.SyncConnected) {
                 mutex.notify();
                 connected = true;
+            } else if(state == Event.KeeperState.Expired ||
+                    state == Event.KeeperState.Disconnected){
+                try {
+                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(),6000,this);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ApplicationSettingsException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

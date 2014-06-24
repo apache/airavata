@@ -22,14 +22,11 @@ package org.apache.airavata.gfac.core.monitor;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
-import org.apache.airavata.gfac.workspace.experiment.GfacExperimentState;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +39,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
 
     private ZooKeeper zk;
 
-    private Integer mutex = -1;
+    private static Integer mutex = -1;
 
     @Subscribe
     public void updateZK(GfacExperimentStateChangeRequest statusChangeRequest) throws KeeperException, InterruptedException, ApplicationSettingsException {
@@ -73,16 +70,23 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Stat state = zk.exists(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+        if(state == null) {
+            // state znode has to be created
+            zk.create(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
+                    String.valueOf(statusChangeRequest.getState().getValue()).getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        }else {
+            zk.setData(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
+                    String.valueOf(statusChangeRequest.getState().getValue()).getBytes(), state.getVersion());
+        }
         switch (statusChangeRequest.getState()) {
             case COMPLETED:
-                zk.delete(experimentPath, exists.getVersion());
+//                ZKUtil.deleteRecursive(zk,experimentPath);
                 break;
             case FAILED:
-                zk.delete(experimentPath, exists.getVersion());
+                ZKUtil.deleteRecursive(zk,experimentPath);
                 break;
             default:
-                zk.setData(experimentPath, (statusChangeRequest.getMonitorID().getJobID() +
-                        "," + statusChangeRequest.getMonitorID().getWorkflowNodeID()).getBytes(), exists.getVersion());
         }
     }
 

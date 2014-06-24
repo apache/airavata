@@ -671,7 +671,7 @@ public class DocumentCreator {
 		ApplicationDescription applicationDeploymentDescription = new ApplicationDescription();
 		ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType = applicationDeploymentDescription.getType();
 		applicationDeploymentDescriptionType.addNewApplicationName().setStringValue(serviceName);
-		applicationDeploymentDescriptionType.setExecutableLocation("/tmp/echo.sh");
+		applicationDeploymentDescriptionType.setExecutableLocation("/bin/echo");
 		applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
 
 		try {

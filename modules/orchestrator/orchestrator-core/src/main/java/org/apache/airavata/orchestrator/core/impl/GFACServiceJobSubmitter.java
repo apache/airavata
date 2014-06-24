@@ -21,9 +21,11 @@
 package org.apache.airavata.orchestrator.core.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.cpi.GfacService;
+import org.apache.airavata.gfac.core.utils.GfacExperimentState;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
@@ -74,6 +76,7 @@ public class GFACServiceJobSubmitter implements JobSubmitter,Watcher{
                     mutex.wait();
                 }
             }
+            AiravataZKUtils.
             String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
             String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
             List<String> children = zk.getChildren(gfacServer, this);
@@ -92,6 +95,9 @@ public class GFACServiceJobSubmitter implements JobSubmitter,Watcher{
                 if (exists1 == null) {
                     zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
                             CreateMode.PERSISTENT);
+
+                    zk.create(newExpNode + File.separator + "state", GfacExperimentState.LAUNCHED.toString().getBytes(),
+                            ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
                 } else {
                     logger.info("ExperimentID: " + experimentID + " taskID: " + taskID + " is re-running due to gfac failure");
                 }
