@@ -59,7 +59,9 @@ public abstract class AbstractOrchestrator implements Orchestrator {
 	protected OrchestratorConfiguration orchestratorConfiguration;
 
     private String registryURL;
+
     private String gatewayName;
+
     private String airavataUserName;
    
     public String getRegistryURL() {
@@ -162,4 +164,16 @@ public abstract class AbstractOrchestrator implements Orchestrator {
        }
        return airavataAPI;
    }
+
+    public AiravataRegistry2 getAiravataRegistry() {
+        return airavataRegistry;
+    }
+
+    public OrchestratorContext getOrchestratorContext() {
+        return orchestratorContext;
+    }
+
+    public OrchestratorConfiguration getOrchestratorConfiguration() {
+        return orchestratorConfiguration;
+    }
 }

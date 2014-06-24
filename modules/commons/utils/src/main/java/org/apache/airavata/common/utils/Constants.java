@@ -31,4 +31,19 @@ public final class Constants {
     public static final String GFAC_CONFIG_XML = "gfac-config.xml";
     public static final String PUSH = "push";
     public static final String PULL = "pull";
+    public static final String API_SERVER_PORT = "apiserver.server.port";
+    public static final String API_SERVER_HOST = "apiserver.server.host";
+    public static final String ORCHESTRATOR_SERVER_HOST = "orchestrator.server.host";
+    public static final String ORCHESTRATOR_SERVER_PORT = "orchestrator.server.port";
+    public static final String GFAC_SERVER_HOST = "gfac.server.host";
+    public static final String GFAC_SERVER_PORT = "gfac.server.port";
+    public static final String ZOOKEEPER_SERVER_HOST = "zookeeper.server.host";
+    public static final String ZOOKEEPER_SERVER_PORT = "zookeeper.server.port";
+    public static final String ZOOKEEPER_API_SERVER_NODE = "airavata-server";
+    public static final String ZOOKEEPER_ORCHESTRATOR_SERVER_NODE = "orchestrator-server";
+    public static final String ZOOKEEPER_GFAC_SERVER_NODE = "gfac-server";
+    public static final String ZOOKEEPER_GFAC_EXPERIMENT_NODE = "gfac-experiments";
+    public static final String ZOOKEEPER_GFAC_SERVER_NAME = "gfac-server-name";
+    public static final String ZOOKEEPER_ORCHESTRATOR_SERVER_NAME = "orchestrator-server-name";
+    public static final String ZOOKEEPER_API_SERVER_NAME = "api-server-name";
 }
