@@ -28,6 +28,7 @@ import edu.uiuc.ncsa.myproxy.oa4mp.client.servlet.ClientServlet;
 import edu.uiuc.ncsa.security.core.exceptions.GeneralException;
 import edu.uiuc.ncsa.security.servlet.JSPUtil;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.credential.store.credential.CommunityUser;
@@ -69,6 +70,7 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         DBUtil dbUtil;
 
         try {
+            AiravataUtils.setExecutionAsServer();
             dbUtil = DBUtil.getCredentialStoreDBUtil();
         } catch (Exception e) {
             throw new ServletException("Error initializing database operations.", e);
