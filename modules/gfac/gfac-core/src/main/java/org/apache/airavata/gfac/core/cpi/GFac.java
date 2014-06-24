@@ -39,4 +39,18 @@ public interface GFac {
      */
     public boolean submitJob(String experimentID,String taskID) throws GFacException;
 
+    /**
+     * This method can be used in a handler to ivvoke outhandler asynchronously
+     * @param jobExecutionContext
+     * @throws GFacException
+     */
+    public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException;
+
+    /**
+     * This method can be used to handle re-run case asynchronously
+     * @param jobExecutionContext
+     * @throws GFacException
+     */
+    public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException;
+
 }

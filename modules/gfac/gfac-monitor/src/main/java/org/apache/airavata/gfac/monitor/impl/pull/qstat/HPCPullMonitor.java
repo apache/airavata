@@ -25,6 +25,7 @@ import com.google.common.eventbus.EventBus;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.notification.MonitorPublisher;
@@ -60,6 +61,9 @@ public class HPCPullMonitor extends PullMonitor {
     private Map<String, ResourceConnection> connections;
 
     private MonitorPublisher publisher;
+
+
+    private GFac gfac;
 
     public HPCPullMonitor(){
         connections = new HashMap<String, ResourceConnection>();
@@ -160,7 +164,7 @@ public class HPCPullMonitor extends PullMonitor {
                         if (jobStatus.getState().equals(JobState.COMPLETE)) {
                             completedJobs.add(iMonitorID);
                             try {
-								CommonUtils.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
+								gfac.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
 							} catch (GFacException e) {
 								logger.info(e.getLocalizedMessage(),e);
 							}
@@ -294,5 +298,13 @@ public class HPCPullMonitor extends PullMonitor {
 
     public void setStartPulling(boolean startPulling) {
         this.startPulling = startPulling;
+    }
+
+    public GFac getGfac() {
+        return gfac;
+    }
+
+    public void setGfac(GFac gfac) {
+        this.gfac = gfac;
     }
 }

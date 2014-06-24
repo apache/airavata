@@ -275,7 +275,7 @@ public class GFacImpl implements GFac {
                 serviceDescription.getType().getOutputParametersArray())));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
-
+        jobExecutionContext.setGfac(this);
         return jobExecutionContext;
     }
 
@@ -399,6 +399,10 @@ public class GFacImpl implements GFac {
                 throw new GFacException("Error Executing a InFlow Handler", e.getCause());
             }
         }
+    }
+
+    public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
+        this.invokeOutFlowHandlers(jobExecutionContext);
     }
 
     public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {

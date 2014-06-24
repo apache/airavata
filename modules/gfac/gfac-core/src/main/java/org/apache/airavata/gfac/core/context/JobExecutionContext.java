@@ -30,6 +30,7 @@ import java.util.Map;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
+import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.notification.GFacNotifier;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -57,6 +58,8 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     private JobDetails jobDetails;
 
     private WorkflowNodeDetails workflowNodeDetails;
+
+    GFac gfac;
 
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -273,5 +276,13 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public void setWorkflowNodeDetails(WorkflowNodeDetails workflowNodeDetails) {
         this.workflowNodeDetails = workflowNodeDetails;
+    }
+
+    public GFac getGfac() {
+        return gfac;
+    }
+
+    public void setGfac(GFac gfac) {
+        this.gfac = gfac;
     }
 }
