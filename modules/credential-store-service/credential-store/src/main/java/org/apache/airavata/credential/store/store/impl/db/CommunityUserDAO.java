@@ -44,7 +44,7 @@ public class CommunityUserDAO extends ParentDAO {
     public void addCommunityUser(CommunityUser user, String token, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "insert into community_user values (?, ?, ?, ?)";
+        String sql = "INSERT INTO COMMUNITY_USER VALUES (?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
 
@@ -78,7 +78,7 @@ public class CommunityUserDAO extends ParentDAO {
 
     public void deleteCommunityUser(CommunityUser user, Connection connection) throws CredentialStoreException {
 
-        String sql = "delete from community_user where gateway_name=? and community_user_name=?";
+        String sql = "DELETE FROM COMMUNITY_USER WHERE GATEWAY_NAME=? AND COMMUNITY_USER_NAME=?";
 
         PreparedStatement preparedStatement = null;
 
@@ -108,7 +108,7 @@ public class CommunityUserDAO extends ParentDAO {
     public void deleteCommunityUserByToken(CommunityUser user, String token, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "delete from community_user where gateway_name=? and community_user_name=? and token_id=?";
+        String sql = "DELETE FROM COMMUNITY_USER WHERE GATEWAY_NAME=? AND COMMUNITY_USER_NAME=? AND TOKEN_ID=?";
 
         PreparedStatement preparedStatement = null;
 
@@ -144,7 +144,7 @@ public class CommunityUserDAO extends ParentDAO {
     public CommunityUser getCommunityUser(String gatewayName, String communityUserName, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "select * from community_user where gateway_name=? and community_user_name=?";
+        String sql = "SELECT * FROM COMMUNITY_USER WHERE GATEWAY_NAME=? AND COMMUNITY_USER_NAME=?";
 
         PreparedStatement preparedStatement = null;
 
@@ -181,7 +181,7 @@ public class CommunityUserDAO extends ParentDAO {
     public CommunityUser getCommunityUserByToken(String gatewayName, String tokenId, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "select * from community_user where gateway_name=? and token_id=?";
+        String sql = "SELECT * FROM COMMUNITY_USER WHERE GATEWAY_NAME=? AND TOKEN_ID=?";
 
         PreparedStatement preparedStatement = null;
 
@@ -194,7 +194,7 @@ public class CommunityUserDAO extends ParentDAO {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                String communityUserName = resultSet.getString("community_user_name");
+                String communityUserName = resultSet.getString("COMMUNITY_USER_NAME");
                 String email = resultSet.getString("COMMUNITY_USER_EMAIL"); // TODO fix typo
 
                 return new CommunityUser(gatewayName, communityUserName, email);
@@ -221,7 +221,7 @@ public class CommunityUserDAO extends ParentDAO {
 
         List<CommunityUser> userList = new ArrayList<CommunityUser>();
 
-        String sql = "select * from community_user where gateway_name=?";
+        String sql = "SELECT * FROM COMMUNITY_USER WHERE GATEWAY_NAME=?";
 
         PreparedStatement preparedStatement = null;
 

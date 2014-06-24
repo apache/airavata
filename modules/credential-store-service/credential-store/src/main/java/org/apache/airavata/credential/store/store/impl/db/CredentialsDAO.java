@@ -86,7 +86,7 @@ public class CredentialsDAO extends ParentDAO {
     public void addCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "insert into credentials values (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO CREDENTIALS VALUES (?, ?, ?, ?, ?)";
 
         PreparedStatement preparedStatement = null;
 
@@ -125,7 +125,7 @@ public class CredentialsDAO extends ParentDAO {
     public void deleteCredentials(String gatewayName, String tokenId, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "delete from credentials where GATEWAY_ID=? and TOKEN_ID=?";
+        String sql = "DELETE FROM CREDENTIALS WHERE GATEWAY_ID=? AND TOKEN_ID=?";
 
         PreparedStatement preparedStatement = null;
 
@@ -160,7 +160,7 @@ public class CredentialsDAO extends ParentDAO {
     public void updateCredentials(String gatewayId, Credential credential, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "update CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
+        String sql = "UPDATE CREDENTIALS set CREDENTIAL = ?, PORTAL_USER_ID = ?, TIME_PERSISTED = ? where GATEWAY_ID = ? and TOKEN_ID = ?";
 
         PreparedStatement preparedStatement = null;
 
@@ -203,7 +203,7 @@ public class CredentialsDAO extends ParentDAO {
     public Credential getCredential(String gatewayName, String tokenId, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "select * from credentials where GATEWAY_ID=? and TOKEN_ID=?";
+        String sql = "SELECT * FROM CREDENTIALS WHERE GATEWAY_ID=? AND TOKEN_ID=?";
 
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -256,7 +256,7 @@ public class CredentialsDAO extends ParentDAO {
 
         List<Credential> credentialList = new ArrayList<Credential>();
 
-        String sql = "select * from credentials where GATEWAY_ID=?";
+        String sql = "SELECT * FROM CREDENTIALS WHERE GATEWAY_ID=?";
 
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -307,7 +307,7 @@ public class CredentialsDAO extends ParentDAO {
 
         List<Credential> credentialList = new ArrayList<Credential>();
 
-        String sql = "select * from credentials";
+        String sql = "SELECT * FROM CREDENTIALS";
 
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
