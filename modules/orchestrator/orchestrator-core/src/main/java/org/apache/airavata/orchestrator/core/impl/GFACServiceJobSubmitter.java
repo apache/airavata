@@ -21,11 +21,10 @@
 package org.apache.airavata.orchestrator.core.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.cpi.GfacService;
-import org.apache.airavata.gfac.core.utils.GfacExperimentState;
+import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;

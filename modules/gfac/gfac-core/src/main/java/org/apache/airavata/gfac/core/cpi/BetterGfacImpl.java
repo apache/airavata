@@ -56,8 +56,9 @@ import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
+import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.gfac.core.utils.GfacExperimentState;
+import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.RegistryModelType;
@@ -426,6 +427,7 @@ public class BetterGfacImpl implements GFac {
                 Class<? extends GFacHandler> handlerClass;
                 GFacHandler handler;
                 try {
+                    GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName());
                     handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                     handler = handlerClass.newInstance();
                     handler.initProperties(handlerClassName.getProperties());
@@ -438,6 +440,8 @@ public class BetterGfacImpl implements GFac {
                 }
                 try {
                     handler.invoke(jobExecutionContext);
+                    GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKED);
+                    // if exception thrown before that we do not make it finished
                 } catch (GFacHandlerException e) {
                     throw new GFacException("Error Executing a InFlow Handler", e.getCause());
                 }
@@ -581,6 +585,7 @@ public class BetterGfacImpl implements GFac {
                 Class<? extends GFacHandler> handlerClass;
                 GFacHandler handler;
                 try {
+                    GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName());
                     handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                     handler = handlerClass.newInstance();
                     handler.initProperties(handlerClassName.getProperties());
@@ -593,9 +598,12 @@ public class BetterGfacImpl implements GFac {
                 } catch (IllegalAccessException e) {
                     log.error(e.getMessage());
                     throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                } catch (Exception e) {
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
                 }
                 try {
                     handler.invoke(jobExecutionContext);
+                    GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKED);
                 } catch (Exception e) {
                     // TODO: Better error reporting.
                     throw new GFacException("Error Executing a OutFlow Handler", e);
