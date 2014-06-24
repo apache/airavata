@@ -26,7 +26,7 @@
     <artifactId>airavata</artifactId>
     <packaging>pom</packaging>
     <name>Airavata</name>
-    <version>0.13-SNAPSHOT</version>
+    <version>0.12-SNAPSHOT</version>
 
     <url>http://airavata.apache.org/</url>
     <inceptionYear>2011</inceptionYear>
