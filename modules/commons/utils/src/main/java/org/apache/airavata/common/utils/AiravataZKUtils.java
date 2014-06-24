@@ -37,6 +37,13 @@ public class AiravataZKUtils {
                 + experimentId + "+" + taskId;
     }
 
+    public static String getExpZnodeHandlerPath(String experimentId, String taskId,String className) throws ApplicationSettingsException {
+        return ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE) +
+                File.separator +
+                ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator
+                + experimentId + "+" + taskId + File.separator + className;
+    }
+
     public static String getZKhostPort() throws ApplicationSettingsException {
         return ServerSettings.getSetting(Constants.ZOOKEEPER_SERVER_HOST)
                 + ":" + ServerSettings.getSetting(Constants.ZOOKEEPER_SERVER_PORT);

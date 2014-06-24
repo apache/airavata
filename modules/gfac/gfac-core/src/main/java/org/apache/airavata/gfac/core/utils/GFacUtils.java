@@ -20,11 +20,7 @@
 */
 package org.apache.airavata.gfac.core.utils;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
@@ -41,6 +37,8 @@ import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.states.GfacExperimentState;
+import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.api.workflow.ApplicationJob;
@@ -50,8 +48,11 @@ import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.axiom.om.OMElement;
+import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,16 +93,18 @@ public class GFacUtils {
 
     /**
      * this can be used to do framework opertaions specific to different modes
+     *
      * @param jobExecutionContext
      * @return
      */
-    public static boolean isSynchronousMode(JobExecutionContext jobExecutionContext){
+    public static boolean isSynchronousMode(JobExecutionContext jobExecutionContext) {
         GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
-        if(ExecutionMode.ASYNCHRONOUS.equals(gFacConfiguration.getExecutionMode())){
+        if (ExecutionMode.ASYNCHRONOUS.equals(gFacConfiguration.getExecutionMode())) {
             return false;
         }
         return true;
     }
+
     public static String readFileToString(String file) throws FileNotFoundException, IOException {
         BufferedReader instream = null;
         try {
@@ -139,9 +142,6 @@ public class GFacUtils {
     }
 
 
-
-
-
     public static String createGsiftpURIAsString(String host, String localPath) throws URISyntaxException {
         StringBuffer buf = new StringBuffer();
         if (!host.startsWith("gsiftp://"))
@@ -159,7 +159,7 @@ public class GFacUtils {
             actualParameter = new ActualParameter(StringParameterType.type);
             if (!"".equals(element.getValue())) {
                 ((StringParameterType) actualParameter.getType()).setValue(element.getValue());
-            }  else {
+            } else {
                 ((StringParameterType) actualParameter.getType()).setValue("");
             }
         } else if ("Double".equals(parameter.getParameterType().getName())) {
@@ -203,8 +203,7 @@ public class GFacUtils {
                 ((StdOutParameterType) actualParameter.getType()).setValue("");
             }
 
-        }
-        else if ("StdErr".equals(parameter.getParameterType().getName())) {
+        } else if ("StdErr".equals(parameter.getParameterType().getName())) {
             actualParameter = new ActualParameter(StdErrParameterType.type);
             if (!"".equals(element.getValue())) {
                 ((StdErrParameterType) actualParameter.getType()).setValue(element.getValue());
@@ -215,6 +214,7 @@ public class GFacUtils {
         }
         return actualParameter;
     }
+
     public static ActualParameter getInputActualParameter(Parameter parameter, OMElement element) {
         OMElement innerelement = null;
         ActualParameter actualParameter = new ActualParameter();
@@ -394,7 +394,7 @@ public class GFacUtils {
         return actualParameter;
     }
 
-    public static ActualParameter getInputActualParameter(Parameter parameter, String inputVal) throws GFacException{
+    public static ActualParameter getInputActualParameter(Parameter parameter, String inputVal) throws GFacException {
         OMElement innerelement = null;
         ActualParameter actualParameter = new ActualParameter();
         if ("String".equals(parameter.getParameterType().getName())) {
@@ -474,7 +474,7 @@ public class GFacUtils {
                 innerelement = (OMElement) value.next();
                 ((URIArrayType) actualParameter.getType()).insertValue(i++, innerelement.getText());
             }
-        } else{
+        } else {
             throw new GFacException("Input parameters are not configured properly ");
         }
         return actualParameter;
@@ -604,55 +604,57 @@ public class GFacUtils {
             log.error("Error in persisting application job data for application job " + job.getJobId() + "!!!", e);
         }
     }
-    public static void saveJobStatus(JobExecutionContext jobExecutionContext, JobDetails details, JobState state) throws GFacException {
-		try {
-			Registry registry = jobExecutionContext.getRegistry();
-			JobStatus status = new JobStatus();
-			status.setJobState(state);
-        	details.setJobStatus(status);
-			registry.add(ChildDataType.JOB_DETAIL,details, new CompositeIdentifier(jobExecutionContext.getTaskData().getTaskID(), details.getJobID()));
-		} catch (Exception e) {
-			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
-		}
-	}
 
-    public static void updateJobStatus(JobExecutionContext jobExecutionContext,JobDetails details, JobState state) throws GFacException {
-		try {
+    public static void saveJobStatus(JobExecutionContext jobExecutionContext, JobDetails details, JobState state) throws GFacException {
+        try {
             Registry registry = jobExecutionContext.getRegistry();
-			JobStatus status = new JobStatus();
-			status.setJobState(state);
-			status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-        	details.setJobStatus(status);
-			registry.update(org.apache.airavata.registry.cpi.RegistryModelType.JOB_DETAIL, details, details.getJobID());
-		} catch (Exception e) {
-			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
-		}
-	}
+            JobStatus status = new JobStatus();
+            status.setJobState(state);
+            details.setJobStatus(status);
+            registry.add(ChildDataType.JOB_DETAIL, details, new CompositeIdentifier(jobExecutionContext.getTaskData().getTaskID(), details.getJobID()));
+        } catch (Exception e) {
+            throw new GFacException("Error persisting job status" + e.getLocalizedMessage(), e);
+        }
+    }
+
+    public static void updateJobStatus(JobExecutionContext jobExecutionContext, JobDetails details, JobState state) throws GFacException {
+        try {
+            Registry registry = jobExecutionContext.getRegistry();
+            JobStatus status = new JobStatus();
+            status.setJobState(state);
+            status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+            details.setJobStatus(status);
+            registry.update(org.apache.airavata.registry.cpi.RegistryModelType.JOB_DETAIL, details, details.getJobID());
+        } catch (Exception e) {
+            throw new GFacException("Error persisting job status" + e.getLocalizedMessage(), e);
+        }
+    }
+
     public static void saveErrorDetails(JobExecutionContext jobExecutionContext, String errorMessage, CorrectiveAction action, ErrorCategory errorCatogory) throws GFacException {
-    	try {
-    	Registry registry = RegistryFactory.getDefaultRegistry();
-		ErrorDetails details = new ErrorDetails();
-    	details.setActualErrorMessage(errorMessage);
-    	details.setCorrectiveAction(action);
-    	details.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS);
-    	details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-    	details.setErrorCategory(errorCatogory);
-    	registry.add(ChildDataType.ERROR_DETAIL, details, jobExecutionContext.getTaskData().getTaskID());
-    	} catch (Exception e) {
-			throw new GFacException("Error persisting job status" + e.getLocalizedMessage(),e);
-		}
+        try {
+            Registry registry = RegistryFactory.getDefaultRegistry();
+            ErrorDetails details = new ErrorDetails();
+            details.setActualErrorMessage(errorMessage);
+            details.setCorrectiveAction(action);
+            details.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS);
+            details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+            details.setErrorCategory(errorCatogory);
+            registry.add(ChildDataType.ERROR_DETAIL, details, jobExecutionContext.getTaskData().getTaskID());
+        } catch (Exception e) {
+            throw new GFacException("Error persisting job status" + e.getLocalizedMessage(), e);
+        }
     }
 
 
     public static Map<String, Object> getMessageContext(List<DataObjectType> experimentData,
                                                         Parameter[] parameters) throws GFacException {
         HashMap<String, Object> stringObjectHashMap = new HashMap<String, Object>();
-        Map<String,DataObjectType> map = new HashMap<String,DataObjectType>();
-        for(DataObjectType objectType : experimentData){
-        	map.put(objectType.getKey(), objectType);
+        Map<String, DataObjectType> map = new HashMap<String, DataObjectType>();
+        for (DataObjectType objectType : experimentData) {
+            map.put(objectType.getKey(), objectType);
         }
         for (int i = 0; i < parameters.length; i++) {
-        	DataObjectType input = map.get(parameters[i].getParameterName());
+            DataObjectType input = map.get(parameters[i].getParameterName());
             if (input != null) {
                 stringObjectHashMap.put(parameters[i].getParameterName(), GFacUtils.getInputActualParameter(parameters[i], input));
             } else {
@@ -662,7 +664,7 @@ public class GFacUtils {
         return stringObjectHashMap;
     }
 
-    public static GfacExperimentState getZKExperimentState(ZooKeeper zk,JobExecutionContext jobExecutionContext)
+    public static GfacExperimentState getZKExperimentState(ZooKeeper zk, JobExecutionContext jobExecutionContext)
             throws ApplicationSettingsException, KeeperException, InterruptedException {
         String expState = AiravataZKUtils.getExpState(zk, jobExecutionContext.getExperimentID(),
                 jobExecutionContext.getTaskData().getTaskID());
@@ -673,11 +675,102 @@ public class GFacUtils {
             throws ApplicationSettingsException, KeeperException, InterruptedException {
         String expState = AiravataZKUtils.getExpState(zk, jobExecutionContext.getExperimentID(),
                 jobExecutionContext.getTaskData().getTaskID());
-        if(expState == null){
+        if (expState == null) {
             return -1;
         }
         return Integer.parseInt(expState);
     }
 
+
+    public static boolean createPluginZnode(ZooKeeper zk, JobExecutionContext jobExecutionContext, String className)
+            throws ApplicationSettingsException, KeeperException, InterruptedException {
+        String expState = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getTaskData().getTaskID(), className);
+        Stat exists = zk.exists(expState, false);
+        if (exists == null) {
+            zk.create(expState, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
+
+            zk.create(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
+                    new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
+        } else {
+            exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+            if (exists == null) {
+                zk.create(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
+                        new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
+            }
+        }
+
+        exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+        if (exists != null) {
+            zk.setData(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, GfacPluginState.INVOKING.toString().getBytes(),
+                    exists.getVersion());
+        }
+        return true;
+    }
+
+    public static boolean createPluginZnode(ZooKeeper zk, JobExecutionContext jobExecutionContext, String className,
+                                            GfacPluginState state)throws ApplicationSettingsException, KeeperException, InterruptedException {
+            String expState = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
+                    jobExecutionContext.getTaskData().getTaskID(), className);
+            Stat exists = zk.exists(expState, false);
+            if (exists == null) {
+                zk.create(expState, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
+
+                zk.create(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
+                        new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
+            } else {
+                exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+                if (exists == null) {
+                    zk.create(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
+                            new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                            CreateMode.PERSISTENT);
+                }
+            }
+
+            exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+            if (exists != null) {
+                zk.setData(expState + File.separator +
+                                AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, String.valueOf(state.getValue()).getBytes(),
+                        exists.getVersion());
+            }
+            return true;
+        }
+
+    public static boolean updatePluginState(ZooKeeper zk, JobExecutionContext jobExecutionContext, String className,
+                                            GfacPluginState state)
+            throws ApplicationSettingsException, KeeperException, InterruptedException {
+        String expState = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getTaskData().getTaskID(), className);
+
+        Stat exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+        if (exists != null) {
+            zk.setData(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, String.valueOf(state.getValue()).getBytes(),
+                    exists.getVersion());
+        }else {
+            createPluginZnode(zk, jobExecutionContext, className,state);
+        }
+        return true;
+    }
+
+    public static boolean getPluginState(ZooKeeper zk, JobExecutionContext jobExecutionContext, String className) {
+        try {
+            String expState = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
+                    jobExecutionContext.getTaskData().getTaskID(), className);
+
+            Stat exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+            if (exists != null) {
+                return Boolean.valueOf(new String(zk.getData(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false, exists)));
+            }
+            return false;        // if the node doesn't exist or any other error we return false
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 }
