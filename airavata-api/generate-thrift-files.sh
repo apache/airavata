@@ -123,7 +123,7 @@ rm -rf ${JAVA_BEAN_GEN_DIR}
 #   The airavataDataModel.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/airavataDataModel.thrift || fail unable to generate java bean thrift classes on base data model
 
-thrift ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/applicationCatalogDataModel.thrift || fail unable to generate java bean thrift classes on app catalog data model
+thrift ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/computeHostModel.thrift || fail unable to generate java bean thrift classes on app catalog data model
 
 # For the generated java beans add the ASF V2 License header
 add_license_header ${JAVA_BEAN_GEN_DIR}

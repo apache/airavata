@@ -13,7 +13,7 @@
 #include <thrift/transport/TTransport.h>
 
 #include <thrift/cxxfunctional.h>
-#include "applicationCatalogDataModel_types.h"
+#include "computeHostModel_types.h"
 
 
 
@@ -1309,10 +1309,12 @@ class DataTransferDetails {
 void swap(DataTransferDetails &a, DataTransferDetails &b);
 
 typedef struct _TaskDetails__isset {
-  _TaskDetails__isset() : creationTime(false), applicationId(false), applicationVersion(false), applicationInputs(false), applicationOutputs(false), taskScheduling(false), advancedInputDataHandling(false), advancedOutputDataHandling(false), taskStatus(false), jobDetailsList(false), dataTransferDetailsList(false), errors(false) {}
+  _TaskDetails__isset() : creationTime(false), applicationId(false), applicationVersion(false), hostDescriptorId(false), applicationDescriptorId(false), applicationInputs(false), applicationOutputs(false), taskScheduling(false), advancedInputDataHandling(false), advancedOutputDataHandling(false), taskStatus(false), jobDetailsList(false), dataTransferDetailsList(false), errors(false) {}
   bool creationTime;
   bool applicationId;
   bool applicationVersion;
+  bool hostDescriptorId;
+  bool applicationDescriptorId;
   bool applicationInputs;
   bool applicationOutputs;
   bool taskScheduling;
@@ -1327,10 +1329,10 @@ typedef struct _TaskDetails__isset {
 class TaskDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "5C32F41DCA106A1E9170C3F02C8F0431";
-  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x32,0xF4,0x1D,0xCA,0x10,0x6A,0x1E,0x91,0x70,0xC3,0xF0,0x2C,0x8F,0x04,0x31};
+  static const char* ascii_fingerprint; // = "B61C8F58DF00FE6B55A62F6A457038DD";
+  static const uint8_t binary_fingerprint[16]; // = {0xB6,0x1C,0x8F,0x58,0xDF,0x00,0xFE,0x6B,0x55,0xA6,0x2F,0x6A,0x45,0x70,0x38,0xDD};
 
-  TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion() {
+  TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), hostDescriptorId(), applicationDescriptorId() {
   }
 
   virtual ~TaskDetails() throw() {}
@@ -1339,6 +1341,8 @@ class TaskDetails {
   int64_t creationTime;
   std::string applicationId;
   std::string applicationVersion;
+  std::string hostDescriptorId;
+  std::string applicationDescriptorId;
   std::vector<DataObjectType>  applicationInputs;
   std::vector<DataObjectType>  applicationOutputs;
   ComputationalResourceScheduling taskScheduling;
@@ -1368,6 +1372,16 @@ class TaskDetails {
   void __set_applicationVersion(const std::string& val) {
     applicationVersion = val;
     __isset.applicationVersion = true;
+  }
+
+  void __set_hostDescriptorId(const std::string& val) {
+    hostDescriptorId = val;
+    __isset.hostDescriptorId = true;
+  }
+
+  void __set_applicationDescriptorId(const std::string& val) {
+    applicationDescriptorId = val;
+    __isset.applicationDescriptorId = true;
   }
 
   void __set_applicationInputs(const std::vector<DataObjectType> & val) {
@@ -1430,6 +1444,14 @@ class TaskDetails {
     if (__isset.applicationVersion != rhs.__isset.applicationVersion)
       return false;
     else if (__isset.applicationVersion && !(applicationVersion == rhs.applicationVersion))
+      return false;
+    if (__isset.hostDescriptorId != rhs.__isset.hostDescriptorId)
+      return false;
+    else if (__isset.hostDescriptorId && !(hostDescriptorId == rhs.hostDescriptorId))
+      return false;
+    if (__isset.applicationDescriptorId != rhs.__isset.applicationDescriptorId)
+      return false;
+    else if (__isset.applicationDescriptorId && !(applicationDescriptorId == rhs.applicationDescriptorId))
       return false;
     if (__isset.applicationInputs != rhs.__isset.applicationInputs)
       return false;
@@ -1495,8 +1517,8 @@ typedef struct _WorkflowNodeDetails__isset {
 class WorkflowNodeDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "5CF3D3D65F04E5D784A8123C81AAD941";
-  static const uint8_t binary_fingerprint[16]; // = {0x5C,0xF3,0xD3,0xD6,0x5F,0x04,0xE5,0xD7,0x84,0xA8,0x12,0x3C,0x81,0xAA,0xD9,0x41};
+  static const char* ascii_fingerprint; // = "6E949ACD99A7BCD6F92F530611379555";
+  static const uint8_t binary_fingerprint[16]; // = {0x6E,0x94,0x9A,0xCD,0x99,0xA7,0xBC,0xD6,0xF9,0x2F,0x53,0x06,0x11,0x37,0x95,0x55};
 
   WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE") {
   }
@@ -1715,8 +1737,8 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "9991CE776AFA4D20B5AA55C2BB0136D4";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0xCE,0x77,0x6A,0xFA,0x4D,0x20,0xB5,0xAA,0x55,0xC2,0xBB,0x01,0x36,0xD4};
+  static const char* ascii_fingerprint; // = "66FE530838E2F6F20D72C4DB3F430EF8";
+  static const uint8_t binary_fingerprint[16]; // = {0x66,0xFE,0x53,0x08,0x38,0xE2,0xF6,0xF2,0x0D,0x72,0xC4,0xDB,0x3F,0x43,0x0E,0xF8};
 
   Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), workflowExecutionInstanceId() {
   }
