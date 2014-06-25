@@ -288,4 +288,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface, Wat
             }
         }
     }
+
+
+	@Override
+	public boolean launchTask(String taskId) throws TException {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
