@@ -75,7 +75,7 @@ public class OrchestratorRecoveryHandler implements Watcher {
         }
         List<String> children = zk.getChildren(ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE)
                 + File.separator + gfacId, false);
-        log.info("------------------ Recovering Experiments started ------------------------ ");
+            log.info("------------------ Recovering Experiments started ----------------------------------");
         for (String expId : children) {
             log.info("Recovering Experiment: " + expId.split("\\+")[0]);
             log.info("------------------------------------------------------------------------------------");

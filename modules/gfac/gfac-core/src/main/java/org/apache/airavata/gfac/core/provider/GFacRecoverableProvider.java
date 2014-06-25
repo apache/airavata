@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.core.provider;
 
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 
 /**
@@ -39,5 +40,5 @@ public interface GFacRecoverableProvider extends GFacProvider {
      *
      * @param jobExecutionContext
      */
-    public void recover(JobExecutionContext jobExecutionContext);
+    public void recover(JobExecutionContext jobExecutionContext)throws GFacProviderException,GFacException;
 }

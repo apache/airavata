@@ -25,6 +25,7 @@ import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooKeeper;
@@ -91,19 +92,10 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
 
 
         logger.info("Recoverable data is saving to zk: " + data.toString());
-        try {
-            ZooKeeper zk = jobExecutionContext.getZk();
-            if (zk != null) {
-                String expZnodeHandlerPath = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
-                        jobExecutionContext.getTaskData().getTaskID(), this.getClass().getName());
-                Stat exists = zk.exists(expZnodeHandlerPath, false);
-                jobExecutionContext.getZk().setData(expZnodeHandlerPath, data.toString().getBytes(), exists.getVersion());
-            }
-        } catch (Exception e) {
-            throw new GFacHandlerException(e);
-        }
-
+        GFacUtils.savePluginData(jobExecutionContext, data,this.getClass().getName());
     }
+
+
 
     public void initProperties(Properties properties) throws GFacHandlerException {
 
@@ -113,20 +105,14 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
         ApplicationDescription app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType appDesc = app.getType();
         try {
-            ZooKeeper zk = jobExecutionContext.getZk();
-            if (zk != null) {
-                String expZnodeHandlerPath = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
-                        jobExecutionContext.getTaskData().getTaskID(), this.getClass().getName());
-                Stat exists = zk.exists(expZnodeHandlerPath, false);
-                String s = new String(jobExecutionContext.getZk().getData(expZnodeHandlerPath, false, exists));
-                String[] split = s.split(",");
-                appDesc.setScratchWorkingDirectory(split[0]);
-                appDesc.setStaticWorkingDirectory(split[1]);
-                appDesc.setInputDataDirectory(split[2]);
-                appDesc.setOutputDataDirectory(split[3]);
-                appDesc.setStandardOutput(split[4]);
-                appDesc.setStandardError(split[5]);
-            }
+            String s = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
+            String[] split = s.split(",");
+            appDesc.setScratchWorkingDirectory(split[0]);
+            appDesc.setStaticWorkingDirectory(split[1]);
+            appDesc.setInputDataDirectory(split[2]);
+            appDesc.setOutputDataDirectory(split[3]);
+            appDesc.setStandardOutput(split[4]);
+            appDesc.setStandardError(split[5]);
         } catch (Exception e) {
             throw new GFacHandlerException(e);
         }

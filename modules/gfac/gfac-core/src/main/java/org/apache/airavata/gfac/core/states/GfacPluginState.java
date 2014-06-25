@@ -22,8 +22,8 @@ package org.apache.airavata.gfac.core.states;
 
 public enum GfacPluginState {
     INVOKING(0),
-
-    INVOKED(1);
+    INVOKED(1),
+    COMPLETED(2);
 
     private final int value;
 

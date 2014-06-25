@@ -37,6 +37,7 @@ import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -702,41 +703,42 @@ public class GFacUtils {
 
         exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
         if (exists != null) {
-            zk.setData(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, GfacPluginState.INVOKING.toString().getBytes(),
+            zk.setData(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, String.valueOf(GfacPluginState.INVOKING.getValue()).getBytes(),
                     exists.getVersion());
         }
         return true;
     }
 
     public static boolean createPluginZnode(ZooKeeper zk, JobExecutionContext jobExecutionContext, String className,
-                                            GfacPluginState state)throws ApplicationSettingsException, KeeperException, InterruptedException {
-            String expState = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
-                    jobExecutionContext.getTaskData().getTaskID(), className);
-            Stat exists = zk.exists(expState, false);
-            if (exists == null) {
-                zk.create(expState, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
+                                            GfacPluginState state) throws ApplicationSettingsException, KeeperException, InterruptedException {
+        String expState = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getTaskData().getTaskID(), className);
+        Stat exists = zk.exists(expState, false);
+        if (exists == null) {
+            zk.create(expState, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
 
+            zk.create(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
+                    new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
+        } else {
+            exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+            if (exists == null) {
                 zk.create(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
                         new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
                         CreateMode.PERSISTENT);
-            } else {
-                exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
-                if (exists == null) {
-                    zk.create(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
-                            new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.PERSISTENT);
-                }
             }
-
-            exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
-            if (exists != null) {
-                zk.setData(expState + File.separator +
-                                AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, String.valueOf(state.getValue()).getBytes(),
-                        exists.getVersion());
-            }
-            return true;
         }
+
+        exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+        if (exists != null) {
+            zk.setData(expState + File.separator +
+                            AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, String.valueOf(state.getValue()).getBytes(),
+                    exists.getVersion()
+            );
+        }
+        return true;
+    }
 
     public static boolean updatePluginState(ZooKeeper zk, JobExecutionContext jobExecutionContext, String className,
                                             GfacPluginState state)
@@ -748,25 +750,25 @@ public class GFacUtils {
         if (exists != null) {
             zk.setData(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, String.valueOf(state.getValue()).getBytes(),
                     exists.getVersion());
-        }else {
-            createPluginZnode(zk, jobExecutionContext, className,state);
+        } else {
+            createPluginZnode(zk, jobExecutionContext, className, state);
         }
         return true;
     }
 
-    public static boolean getPluginState(ZooKeeper zk, JobExecutionContext jobExecutionContext, String className) {
+    public static String getPluginState(ZooKeeper zk, JobExecutionContext jobExecutionContext, String className) {
         try {
             String expState = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
                     jobExecutionContext.getTaskData().getTaskID(), className);
 
             Stat exists = zk.exists(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
             if (exists != null) {
-                return Boolean.valueOf(new String(zk.getData(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false, exists)));
+                return new String(zk.getData(expState + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false, exists));
             }
-            return false;        // if the node doesn't exist or any other error we return false
+            return null;        // if the node doesn't exist or any other error we return false
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 
@@ -781,42 +783,51 @@ public class GFacUtils {
             for (String gfacServerNode : runningGfacNodeNames) {
                 if (!gfacServerNode.equals(pickedChild)) {
                     foundExperimentPath = experimentNode + File.separator + gfacServerNode +
-                                                File.separator + experimentID + "+" + taskID;
+                            File.separator + experimentID + "+" + taskID;
                     exists1 = zk.exists(foundExperimentPath, false);
-                    break;
+                    if(exists1 != null) {               // when the experiment is found we break the loop
+                        break;
+                    }
                 }
             }
             if (exists1 == null) {  // OK this is a pretty new experiment so we are going to create a new node
+                log.info("This is a new Job, so creating all the experiment docs from the scratch");
                 zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
                         CreateMode.PERSISTENT);
 
                 zk.create(newExpNode + File.separator + "state", String.valueOf(GfacExperimentState.LAUNCHED.getValue()).getBytes(),
                         ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 
-            }else {
+            } else {
                 // ohhh this node exists in some other failed gfac folder, we have to move it to this gfac experiment list,safely
-                zk.create(newExpNode, zk.getData(foundExperimentPath,false,exists1), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                                        CreateMode.PERSISTENT);
+                log.info("This is an old Job, so copying data from old experiment location");
+                zk.create(newExpNode, zk.getData(foundExperimentPath, false, exists1), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
 
                 List<String> children = zk.getChildren(foundExperimentPath, false);
-                for(String childNode1:children){
-                    String level1 = foundExperimentPath+File.separator+childNode1;
-                    Stat exists2 = zk.exists(level1,false);             // no need to check exists
-                    String newLeve1 = newExpNode+File.separator+childNode1;
-                    zk.create(newLeve1,zk.getData(
-                                    level1,false,exists2),ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                                                            CreateMode.PERSISTENT);
-                    for(String childNode2:zk.getChildren(level1,false)){
-                        String level2 = level1+File.separator+childNode2;
-                        Stat exists3 = zk.exists(level2,false);             // no need to check exists
-                        String newLeve2 = newLeve1+File.separator+childNode2;
-                        zk.create(newLeve2,zk.getData(level2,false,exists3),ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                                                                                    CreateMode.PERSISTENT);
-                        zk.delete(level2, exists3.getVersion());
+                for (String childNode1 : children) {
+                    String level1 = foundExperimentPath + File.separator + childNode1;
+                    Stat exists2 = zk.exists(level1, false);             // no need to check exists
+                    String newLeve1 = newExpNode + File.separator + childNode1;
+                    log.info("Creating new znode: " + newLeve1);       // these has to be info logs
+                    zk.create(newLeve1, zk.getData(
+                                    level1, false, exists2), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                            CreateMode.PERSISTENT
+                    );
+                    for (String childNode2 : zk.getChildren(level1, false)) {
+                        String level2 = level1 + File.separator + childNode2;
+                        Stat exists3 = zk.exists(level2, false);             // no need to check exists
+                        String newLeve2 = newLeve1 + File.separator + childNode2;
+                        log.info("Creating new znode: " + newLeve2);
+                        zk.create(newLeve2, zk.getData(level2, false, exists3), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                                CreateMode.PERSISTENT);
                     }
-                    zk.delete(level1,exists2.getVersion());
                 }
-                zk.delete(foundExperimentPath,exists1.getVersion());
+                // After all the files are successfully transfered we delete the old experiment,otherwise we do
+                // not delete a single file
+                log.info("After a successful copying of experiment data for an old experiment we delete the old data");
+                log.info("Deleting experiment data: " + foundExperimentPath);
+                ZKUtil.deleteRecursive(zk,foundExperimentPath);
             }
         } else {
             log.error("ExperimentID: " + experimentID + " taskID: " + taskID + " is already running by this Gfac instance");
@@ -828,10 +839,35 @@ public class GFacUtils {
                     break;
                 }
             }
-            ZKUtil.deleteRecursive(zk,foundExperimentPath);
+            ZKUtil.deleteRecursive(zk, foundExperimentPath);
             return false;
         }
         return true;
+    }
+
+    public static void savePluginData(JobExecutionContext jobExecutionContext, StringBuffer data, String className) throws GFacHandlerException {
+        try {
+            ZooKeeper zk = jobExecutionContext.getZk();
+            if (zk != null) {
+                String expZnodeHandlerPath = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getTaskData().getTaskID(), className);
+                Stat exists = zk.exists(expZnodeHandlerPath, false);
+                zk.setData(expZnodeHandlerPath, data.toString().getBytes(), exists.getVersion());
+            }
+        } catch (Exception e) {
+            throw new GFacHandlerException(e);
+        }
+    }
+
+    public static String getPluginData(JobExecutionContext jobExecutionContext, String className) throws ApplicationSettingsException, KeeperException, InterruptedException {
+        ZooKeeper zk = jobExecutionContext.getZk();
+        if (zk != null) {
+            String expZnodeHandlerPath =  AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
+                    jobExecutionContext.getTaskData().getTaskID(), className);
+            Stat exists = zk.exists(expZnodeHandlerPath, false);
+            return new String(jobExecutionContext.getZk().getData(expZnodeHandlerPath, false, exists));
+        }
+        return null;
     }
 
 }
