@@ -45,6 +45,16 @@ service OrchestratorService {
   bool launchExperiment (1: required string experimentId),
 
     /**
+     * In order to run single applications users should create an associating 
+     * WorkflowNodeDetails and a TaskDetails for it and hand it over for execution
+     *
+     * @param taskId
+     * @return sucess/failure
+     *
+    **/
+  bool launchTask (1: required string taskId),
+
+    /**
      *
      * Validate funcations which can verify if the experiment is ready to be launced.
      *
