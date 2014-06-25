@@ -18,7 +18,7 @@
  *
  */
 
-include "applicationCatalogDataModel.thrift"
+include "computeHostModel.thrift"
 
 namespace java org.apache.airavata.model.workspace.experiment
 namespace php Airavata.Model.Workspace.Experiment
@@ -301,15 +301,17 @@ struct TaskDetails {
     2: optional i64 creationTime,
     3: optional string applicationId,
     4: optional string applicationVersion,
-    5: optional list<DataObjectType> applicationInputs,
-    6: optional list<DataObjectType> applicationOutputs,
-    7: optional ComputationalResourceScheduling taskScheduling,
-    8: optional AdvancedInputDataHandling advancedInputDataHandling,
-    9: optional AdvancedOutputDataHandling advancedOutputDataHandling,
-    10: optional TaskStatus taskStatus,
-    11: optional list<JobDetails> jobDetailsList,
-    12: optional list<DataTransferDetails> dataTransferDetailsList,
-    13: optional list<ErrorDetails> errors
+    5: optional string hostDescriptorId,
+    6: optional string applicationDescriptorId,
+    7: optional list<DataObjectType> applicationInputs,
+    8: optional list<DataObjectType> applicationOutputs,
+    9: optional ComputationalResourceScheduling taskScheduling,
+    10: optional AdvancedInputDataHandling advancedInputDataHandling,
+    11: optional AdvancedOutputDataHandling advancedOutputDataHandling,
+    12: optional TaskStatus taskStatus,
+    13: optional list<JobDetails> jobDetailsList,
+    14: optional list<DataTransferDetails> dataTransferDetailsList,
+    15: optional list<ErrorDetails> errors
 }
 
 /**

@@ -54,7 +54,7 @@ public class SSHDemo {
         JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gsi.ssh.GSSContextX509");
         JSch.setConfig("userauth.gssapi-with-mic", "com.jcraft.jsch.UserAuthGSSAPIWithMICGSSCredentials");
         System.setProperty("X509_CERT_DIR",
-                "/Users/thejaka/development/apache/airavata/sandbox/grid-tools/certificates");
+                "/Users/smarru/deploy/certificates");
     }
 
     public static void main(String[] arg) {
