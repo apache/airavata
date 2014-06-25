@@ -30,6 +30,7 @@ import java.util.Properties;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -41,6 +42,7 @@ import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.handler.*;
 import org.apache.airavata.gfac.core.monitor.*;
 import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
@@ -50,12 +52,9 @@ import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.gfac.core.notification.events.ExecutionFailEvent;
 import org.apache.airavata.gfac.core.notification.listeners.LoggingListener;
 import org.apache.airavata.gfac.core.notification.listeners.WorkflowTrackingListener;
-import org.apache.airavata.gfac.core.handler.GFacHandler;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
+import org.apache.airavata.gfac.core.provider.GFacRecoverableProvider;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
-import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
-import org.apache.airavata.gfac.core.handler.GFacHandlerException;
-import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
@@ -64,6 +63,7 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZKUtil;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -277,27 +277,48 @@ public class BetterGfacImpl implements GFac {
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setGfac(this);
+        jobExecutionContext.setZk(zk);
         return jobExecutionContext;
     }
 
     public boolean submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
-        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-                           , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
-        String workflowInstanceID = null;
-        if ((workflowInstanceID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_INSTANCE_ID)) != null) {
-            // This mean we need to register workflow tracking listener.
-            //todo implement WorkflowTrackingListener properly
-            registerWorkflowTrackingListener(workflowInstanceID, jobExecutionContext);
+        try {
+            int stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                    , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
+            String workflowInstanceID = null;
+            if ((workflowInstanceID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_INSTANCE_ID)) != null) {
+                // This mean we need to register workflow tracking listener.
+                //todo implement WorkflowTrackingListener properly
+                registerWorkflowTrackingListener(workflowInstanceID, jobExecutionContext);
+            }
+            // Register log event listener. This is required in all scenarios.
+            jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
+            if (stateVal < 2) {
+                // In this scenario We do everything from the beginning
+                launch(jobExecutionContext);
+            } else if (stateVal >= 8) {
+                log.info("There is nothing to recover in this job so we do not re-submit");
+                ZKUtil.deleteRecursive(zk,
+                        AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID(),jobExecutionContext.getTaskData().getTaskID()));
+            } else {
+                // Now we know this is an old Job, so we have to handle things gracefully
+                reLaunch(jobExecutionContext, stateVal);
+            }
+            return true;
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
-        // Register log event listener. This is required in all scenarios.
-        jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
-        launch(jobExecutionContext);
         return true;
     }
 
-    private void launch(JobExecutionContext jobExecutionContext) throws GFacException {
+    private void reLaunch(JobExecutionContext jobExecutionContext,int stateVal) throws GFacException {
         // Scheduler will decide the execution flow of handlers and provider which handles
         // the job.
         String experimentID = jobExecutionContext.getExperimentID();
@@ -307,27 +328,69 @@ public class BetterGfacImpl implements GFac {
             // Executing in handlers in the order as they have configured in GFac configuration
             // here we do not skip handler if some handler does not have to be run again during re-run it can implement
             // that logic in to the handler
-            int stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);
-            if(stateVal >=2){
-                reInvokeInFlowHandlers(jobExecutionContext);
-            }else {
-                invokeInFlowHandlers(jobExecutionContext);               // to keep the consistency we always try to re-run to avoid complexity
-            }
-//            if (experimentID != null){
-//                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
-//            }
+            reInvokeInFlowHandlers(jobExecutionContext);
 
             // After executing the in handlers provider instance should be set to job execution context.
             // We get the provider instance and execute it.
-            stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);
-            if (stateVal == 4) {         // if the job is completed during resubmission we handle it here
+            if(stateVal == 2 || stateVal == 3){
+                invokeProvider(jobExecutionContext);     // provider never ran in previous invocation
+            }else if(stateVal == 4){   // whether sync or async job have to invoke the recovering because it crashed in the Handler
                 reInvokeProvider(jobExecutionContext);
-            }else if(stateVal == 3){
-                invokeProvider(jobExecutionContext);
-            }else{
+            }else if(stateVal >= 5 && GFacUtils.isSynchronousMode(jobExecutionContext)){
+                // In this case we do nothing because provider ran successfully, no need to re-run the job
+                log.info("Provider does not have to be recovered because it ran successfully for experiment: " + experimentID);
+            } else if(stateVal == 5 && !GFacUtils.isSynchronousMode(jobExecutionContext)){
+                // this is async mode where monitoring of jobs is hapenning, we have to recover
+                reInvokeProvider(jobExecutionContext);
+            } else{
                 log.info("We skip invoking Handler, because the experiment state is beyond the Provider Invocation !!!");
                 log.info("ExperimentId: " + experimentID + " taskId: " + jobExecutionContext.getTaskData().getTaskID());
             }
+        } catch (Exception e) {
+            try {
+                // we make the experiment as failed due to exception scenario
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
+                monitorPublisher.publish(new
+                        ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+                        ExperimentState.FAILED));
+                // Updating the task status if there's any task associated
+                monitorPublisher.publish(new TaskStatusChangeRequest(
+                        new TaskIdentity(jobExecutionContext.getExperimentID(),
+                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                                jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED
+                ));
+                monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
+                        new JobIdentity(jobExecutionContext.getExperimentID(),
+                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                                jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getJobDetails().getJobID()), JobState.FAILED
+                ));
+            } catch (NullPointerException e1) {
+                log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
+                        "NullPointerException occurred because at this point there might not have Job Created", e1, e);
+            }
+            jobExecutionContext.setProperty(ERROR_SENT, "true");
+            jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
+            throw new GFacException(e.getMessage(), e);
+        }
+    }
+
+    private void launch(JobExecutionContext jobExecutionContext) throws GFacException {
+        // Scheduler will decide the execution flow of handlers and provider which handles
+        // the job.
+        try {
+            Scheduler.schedule(jobExecutionContext);
+
+            // Executing in handlers in the order as they have configured in GFac configuration
+            // here we do not skip handler if some handler does not have to be run again during re-run it can implement
+            // that logic in to the handler
+            invokeInFlowHandlers(jobExecutionContext);               // to keep the consistency we always try to re-run to avoid complexity
+            //            if (experimentID != null){
+            //                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
+            //            }
+
+            // After executing the in handlers provider instance should be set to job execution context.
+            // We get the provider instance and execute it.
+            invokeProvider(jobExecutionContext);
         } catch (Exception e) {
             try {
                 // we make the experiment as failed due to exception scenario
@@ -374,9 +437,13 @@ public class BetterGfacImpl implements GFac {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
-            initProvider(provider, jobExecutionContext);
-            executeProvider(provider, jobExecutionContext);
-            disposeProvider(provider, jobExecutionContext);
+            if (provider instanceof GFacRecoverableProvider) {
+                ((GFacRecoverableProvider) provider).recover(jobExecutionContext);
+            } else {
+                initProvider(provider, jobExecutionContext);
+                executeProvider(provider, jobExecutionContext);
+                disposeProvider(provider, jobExecutionContext);
+            }
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
         }
         if (GFacUtils.isSynchronousMode(jobExecutionContext)) {
@@ -453,32 +520,43 @@ public class BetterGfacImpl implements GFac {
         }
     }
 
+    /**
+     * If handlers ran successfully we re-run only recoverable handlers
+     * If handler never ran we run the normal invoke method
+     * @param jobExecutionContext
+     * @throws GFacException
+     */
     private void reInvokeInFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getInHandlers();
         try {
-            int stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);
-            if (stateVal == 8 || stateVal == -1) {
-                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-                        , GfacExperimentState.INHANDLERSINVOKING));
-                for (GFacHandlerConfig handlerClassName : handlers) {
-                    Class<? extends GFacHandler> handlerClass;
-                    GFacHandler handler;
-                    try {
-                        handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
-                        handler = handlerClass.newInstance();
+            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                    , GfacExperimentState.INHANDLERSINVOKING));
+            for (GFacHandlerConfig handlerClassName : handlers) {
+                Class<? extends GFacHandler> handlerClass;
+                GFacHandler handler;
+                try {
+                    handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
+                    handler = handlerClass.newInstance();
+                    if (!GFacUtils.getPluginState(zk, jobExecutionContext, handlerClassName.getClassName())) {
+                        GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
                         handler.initProperties(handlerClassName.getProperties());
-                    } catch (ClassNotFoundException e) {
-                        throw new GFacException("Cannot load handler class " + handlerClassName, e);
-                    } catch (InstantiationException e) {
-                        throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-                    } catch (IllegalAccessException e) {
-                        throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-                    }
-                    try {
                         handler.invoke(jobExecutionContext);
-                    } catch (GFacHandlerException e) {
-                        throw new GFacException("Error Executing a InFlow Handler", e.getCause());
+                        GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKED);
+                    } else {
+                        if (handler instanceof GFacRecoverableHandler) {
+                            // if these already ran we re-run only recoverable handlers
+                            ((GFacRecoverableHandler) handler).recover(jobExecutionContext);
+                            GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKED);
+                        }
                     }
+                } catch (GFacHandlerException e) {
+                    throw new GFacException("Error Executing a InFlow Handler", e.getCause());
+                } catch (ClassNotFoundException e) {
+                    throw new GFacException("Cannot load handler class " + handlerClassName, e);
+                } catch (InstantiationException e) {
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                } catch (IllegalAccessException e) {
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
                 }
             }
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
