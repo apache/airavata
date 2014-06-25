@@ -29,7 +29,6 @@ include "airavataDataModel.thrift"
 include "experimentModel.thrift"
 include "workspaceModel.thrift"
 include "applicationCatalogAPI.thrift"
-include "gfacDataMode.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
