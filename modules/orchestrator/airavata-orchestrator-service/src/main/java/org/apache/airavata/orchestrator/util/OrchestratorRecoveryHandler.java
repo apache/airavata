@@ -38,29 +38,27 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class OrchestratorRecoveryHandler implements Watcher{
+public class OrchestratorRecoveryHandler implements Watcher {
     private static Logger log = LoggerFactory.getLogger(OrchestratorRecoveryHandler.class);
 
     private ZooKeeper zk;
 
     private String gfacId;
 
-    private String zkExperimentPath;
-
     private static Integer mutex = -1;
 
     private OrchestratorServerHandler serverHandler;
 
-    public OrchestratorRecoveryHandler(OrchestratorServerHandler handler,String zkExpPath) {
+    public OrchestratorRecoveryHandler(OrchestratorServerHandler handler, String zkExpPath) {
         this.zk = zk;
         int index = zkExpPath.split(File.separator).length - 1;
         this.gfacId = zkExpPath.split(File.separator)[index];
-        this.zkExperimentPath = zkExpPath;
         this.serverHandler = handler;
     }
 
     /**
      * This method return the list of experimentId
+     *
      * @return
      * @throws OrchestratorException
      * @throws ApplicationSettingsException
@@ -77,20 +75,17 @@ public class OrchestratorRecoveryHandler implements Watcher{
         }
         List<String> children = zk.getChildren(ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE)
                 + File.separator + gfacId, false);
+        log.info("------------------ Recovering Experiments started ------------------------ ");
         for (String expId : children) {
-            log.info("Recovering1 Experiment: " + expId.split("\\+")[0]);
+            log.info("Recovering Experiment: " + expId.split("\\+")[0]);
+            log.info("------------------------------------------------------------------------------------");
             try {
                 serverHandler.launchExperiment(expId.split("\\+")[0]);
-                //return of above call gaurantee that experiment is persist some gfac node in the cluster
-                Stat exists = zk.exists(ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE)
-                                + File.separator + gfacId + File.separator + expId, false);
-                if(exists != null) {
-                    zk.delete(ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE)
-                                                    + File.separator + gfacId + File.separator + expId, exists.getVersion());
-                }
+                // we do not move the old experiment in to new gfac node, gfac will do it
             } catch (Exception e) {       // we attempt all the experiments
                 e.printStackTrace();
             }
+            log.info("------------------------------------------------------------------------------------");
         }
     }
 

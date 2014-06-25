@@ -48,10 +48,7 @@ import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.axiom.om.OMElement;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -771,6 +768,70 @@ public class GFacUtils {
             e.printStackTrace();
             return false;
         }
+    }
+
+    // This method is dangerous because  of moving the experiment data
+    public static boolean createExperimentEntry(String experimentID, String taskID, ZooKeeper zk, String experimentNode, String pickedChild) throws KeeperException, InterruptedException {
+        String experimentPath = experimentNode + File.separator + pickedChild;
+        String newExpNode = experimentPath + File.separator + experimentID + "+" + taskID;
+        Stat exists1 = zk.exists(newExpNode, false);
+        String foundExperimentPath = null;
+        if (exists1 == null) {
+            List<String> runningGfacNodeNames = AiravataZKUtils.getAllGfacNodeNames(zk); // here we take old gfac servers too
+            for (String gfacServerNode : runningGfacNodeNames) {
+                if (!gfacServerNode.equals(pickedChild)) {
+                    foundExperimentPath = experimentNode + File.separator + gfacServerNode +
+                                                File.separator + experimentID + "+" + taskID;
+                    exists1 = zk.exists(foundExperimentPath, false);
+                    break;
+                }
+            }
+            if (exists1 == null) {  // OK this is a pretty new experiment so we are going to create a new node
+                zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
+
+                zk.create(newExpNode + File.separator + "state", String.valueOf(GfacExperimentState.LAUNCHED.getValue()).getBytes(),
+                        ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+
+            }else {
+                // ohhh this node exists in some other failed gfac folder, we have to move it to this gfac experiment list,safely
+                zk.create(newExpNode, zk.getData(foundExperimentPath,false,exists1), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                                        CreateMode.PERSISTENT);
+
+                List<String> children = zk.getChildren(foundExperimentPath, false);
+                for(String childNode1:children){
+                    String level1 = foundExperimentPath+File.separator+childNode1;
+                    Stat exists2 = zk.exists(level1,false);             // no need to check exists
+                    String newLeve1 = newExpNode+File.separator+childNode1;
+                    zk.create(newLeve1,zk.getData(
+                                    level1,false,exists2),ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                                                            CreateMode.PERSISTENT);
+                    for(String childNode2:zk.getChildren(level1,false)){
+                        String level2 = level1+File.separator+childNode2;
+                        Stat exists3 = zk.exists(level2,false);             // no need to check exists
+                        String newLeve2 = newLeve1+File.separator+childNode2;
+                        zk.create(newLeve2,zk.getData(level2,false,exists3),ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                                                                                    CreateMode.PERSISTENT);
+                        zk.delete(level2, exists3.getVersion());
+                    }
+                    zk.delete(level1,exists2.getVersion());
+                }
+                zk.delete(foundExperimentPath,exists1.getVersion());
+            }
+        } else {
+            log.error("ExperimentID: " + experimentID + " taskID: " + taskID + " is already running by this Gfac instance");
+            List<String> runningGfacNodeNames = AiravataZKUtils.getAllGfacNodeNames(zk); // here we take old gfac servers too
+            for (String gfacServerNode : runningGfacNodeNames) {
+                if (!gfacServerNode.equals(pickedChild)) {
+                    foundExperimentPath = experimentNode + File.separator + gfacServerNode +
+                            File.separator + experimentID + "+" + taskID;
+                    break;
+                }
+            }
+            ZKUtil.deleteRecursive(zk,foundExperimentPath);
+            return false;
+        }
+        return true;
     }
 
 }

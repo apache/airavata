@@ -20,10 +20,15 @@
 */
 package org.apache.airavata.gfac.core.handler;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,17 +37,18 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
 
-public class AppDescriptorCheckHandler implements GFacHandler {
+public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
     private static final Logger logger = LoggerFactory.getLogger(AppDescriptorCheckHandler.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         logger.info("Invoking ApplicationDescriptorCheckHandler ...");
+        StringBuffer data = new StringBuffer();
         ApplicationDescription app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType appDesc = app.getType();
+
         if (appDesc.getScratchWorkingDirectory() == null) {
             appDesc.setScratchWorkingDirectory("/tmp");
         }
-
         /*
         * Working dir
         */
@@ -56,7 +62,9 @@ public class AppDescriptorCheckHandler implements GFacHandler {
 
             appDesc.setStaticWorkingDirectory(tmpDir);
         }
-        //FIXME: Move this input/output to application descrpitor 
+        data.append(appDesc.getScratchWorkingDirectory());
+        data.append(",").append(appDesc.getStaticWorkingDirectory());
+        //FIXME: Move this input/output to application descrpitor
         /*
         * Input and Output Directory
         */
@@ -67,6 +75,7 @@ public class AppDescriptorCheckHandler implements GFacHandler {
             appDesc.setOutputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
         }
 
+        data.append(",").append(appDesc.getInputDataDirectory()).append(",").append(appDesc.getOutputDataDirectory());
         /*
         * Stdout and Stderr for Shell
         */
@@ -78,10 +87,48 @@ public class AppDescriptorCheckHandler implements GFacHandler {
             appDesc.setStandardError(appDesc.getStaticWorkingDirectory() + File.separator
                     + appDesc.getApplicationName().getStringValue() + ".stderr");
         }
-        jobExecutionContext.getApplicationContext().setApplicationDeploymentDescription(app);
+        data.append(",").append(appDesc.getStandardOutput()).append(",").append(appDesc.getStandardError());
+
+
+        logger.info("Recoverable data is saving to zk: " + data.toString());
+        try {
+            ZooKeeper zk = jobExecutionContext.getZk();
+            if (zk != null) {
+                String expZnodeHandlerPath = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getTaskData().getTaskID(), this.getClass().getName());
+                Stat exists = zk.exists(expZnodeHandlerPath, false);
+                jobExecutionContext.getZk().setData(expZnodeHandlerPath, data.toString().getBytes(), exists.getVersion());
+            }
+        } catch (Exception e) {
+            throw new GFacHandlerException(e);
+        }
+
     }
 
     public void initProperties(Properties properties) throws GFacHandlerException {
 
+    }
+
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        ApplicationDescription app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
+        ApplicationDeploymentDescriptionType appDesc = app.getType();
+        try {
+            ZooKeeper zk = jobExecutionContext.getZk();
+            if (zk != null) {
+                String expZnodeHandlerPath = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getTaskData().getTaskID(), this.getClass().getName());
+                Stat exists = zk.exists(expZnodeHandlerPath, false);
+                String s = new String(jobExecutionContext.getZk().getData(expZnodeHandlerPath, false, exists));
+                String[] split = s.split(",");
+                appDesc.setScratchWorkingDirectory(split[0]);
+                appDesc.setStaticWorkingDirectory(split[1]);
+                appDesc.setInputDataDirectory(split[2]);
+                appDesc.setOutputDataDirectory(split[3]);
+                appDesc.setStandardOutput(split[4]);
+                appDesc.setStandardError(split[5]);
+            }
+        } catch (Exception e) {
+            throw new GFacHandlerException(e);
+        }
     }
 }

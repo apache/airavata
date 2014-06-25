@@ -21,8 +21,10 @@
 package org.apache.airavata.orchestrator.core.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
@@ -87,19 +89,9 @@ public class GFACServiceJobSubmitter implements JobSubmitter,Watcher{
             String[] split = gfacNodeData.split(":");
             GfacService.Client localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
             if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {      // before submitting the job we check again the state of the node
-                String experimentPath = experimentNode + File.separator + pickedChild;
-                String newExpNode = experimentPath + File.separator + experimentID + "+" + taskID;
-                Stat exists1 = zk.exists(newExpNode, this);
-                if (exists1 == null) {
-                    zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.PERSISTENT);
-
-                    zk.create(newExpNode + File.separator + "state", GfacExperimentState.LAUNCHED.toString().getBytes(),
-                            ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-                } else {
-                    logger.info("ExperimentID: " + experimentID + " taskID: " + taskID + " is re-running due to gfac failure");
+                if(GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild)) {
+                    return localhost.submitJob(experimentID, taskID);
                 }
-                return localhost.submitJob(experimentID, taskID);
             }
         } catch (TException e) {
             throw new OrchestratorException(e);
@@ -114,6 +106,8 @@ public class GFACServiceJobSubmitter implements JobSubmitter,Watcher{
         }
         return false;
     }
+
+
 
     synchronized public void process(WatchedEvent event) {
         synchronized (mutex) {

@@ -38,6 +38,7 @@ import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.zookeeper.ZooKeeper;
 
 public class JobExecutionContext extends AbstractContext implements Serializable{
 
@@ -59,7 +60,9 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     private WorkflowNodeDetails workflowNodeDetails;
 
-    GFac gfac;
+    private GFac gfac;
+
+    private ZooKeeper zk;
 
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -284,5 +287,13 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public void setGfac(GFac gfac) {
         this.gfac = gfac;
+    }
+
+    public ZooKeeper getZk() {
+        return zk;
+    }
+
+    public void setZk(ZooKeeper zk) {
+        this.zk = zk;
     }
 }

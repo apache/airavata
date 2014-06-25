@@ -81,7 +81,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         }
         switch (statusChangeRequest.getState()) {
             case COMPLETED:
-//                ZKUtil.deleteRecursive(zk,experimentPath);
+                ZKUtil.deleteRecursive(zk,experimentPath);
                 break;
             case FAILED:
                 ZKUtil.deleteRecursive(zk,experimentPath);

@@ -39,6 +39,6 @@ public interface GFacRecoverableHandler extends GFacHandler {
      * GfacAbstract Handler or GFacHandler or leave this recover method empty.
      * @param jobExecutionContext
      */
-    public void recover(JobExecutionContext jobExecutionContext);
+    public void recover(JobExecutionContext jobExecutionContext)throws GFacHandlerException;
 
 }
