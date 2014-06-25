@@ -62,32 +62,32 @@ service ApplicationCatalogAPI {
   /**
    * Manage Computer Resources
   */
-  string addComputeResourceDescription(1: required computeHostModel.thrift.ComputeResourceDescription computeResourceDescription)
+  string addComputeResourceDescription(1: required computeHostModel.ComputeResourceDescription computeResourceDescription)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
             
-  string addSSHJobSubmissionProtocol(1: required string computeResourceId, 2: required computeHostModel.thrift.SSHJobSubmission jobSubmission)
+  string addSSHJobSubmissionProtocol(1: required string computeResourceId, 2: required computeHostModel.SSHJobSubmission jobSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
             
-  string addGSISSHJobSubmissionProtocol(1: required string computeResourceId, 2: required computeHostModel.thrift.GSISSHJobSubmission jobSubmission)
+  string addGSISSHJobSubmissionProtocol(1: required string computeResourceId, 2: required computeHostModel.GSISSHJobSubmission jobSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
             
-  string addGlobusJobSubmissionProtocol(1: required string computeResourceId, 2: required computeHostModel.thrift.GlobusJobSubmission jobSubmission)
+  string addGlobusJobSubmissionProtocol(1: required string computeResourceId, 2: required computeHostModel.GlobusJobSubmission jobSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)     
             
-  string addSCPDataMovementProtocol(1: required string computeResourceId, 2: required computeHostModel.thrift.SCPDataMovement dataMovement)
+  string addSCPDataMovementProtocol(1: required string computeResourceId, 2: required computeHostModel.SCPDataMovement dataMovement)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase) 
             
-  string addGridFTPDataMovementProtocol(1: required string computeResourceId, 2: required computeHostModel.thrift.GridFTPDataMovement dataMovement)
+  string addGridFTPDataMovementProtocol(1: required string computeResourceId, 2: required computeHostModel.GridFTPDataMovement dataMovement)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)             
@@ -97,32 +97,32 @@ service ApplicationCatalogAPI {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
 
-  computeHostModel.thrift.ComputeResourceDescription getComputeResourceDescription(1: required string computeResourceId)
+  computeHostModel.ComputeResourceDescription getComputeResourceDescription(1: required string computeResourceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
 
-  computeHostModel.thrift.SSHJobSubmission getSSHJobSubmissionProtocol(1: required string sshJobSubmissionProtocolResourceId)
+  computeHostModel.SSHJobSubmission getSSHJobSubmissionProtocol(1: required string sshJobSubmissionProtocolResourceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
             
-  computeHostModel.thrift.GSISSHJobSubmission getGSISSHJobSubmissionProtocol(1: required string gsisshJobSubmissionProtocolResourceId)
+  computeHostModel.GSISSHJobSubmission getGSISSHJobSubmissionProtocol(1: required string gsisshJobSubmissionProtocolResourceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
             
-  computeHostModel.thrift.GlobusJobSubmission getGlobusJobSubmissionProtocol(1: required string globusJobSubmissionProtocolResourceId)
+  computeHostModel.GlobusJobSubmission getGlobusJobSubmissionProtocol(1: required string globusJobSubmissionProtocolResourceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)     
             
-  computeHostModel.thrift.SCPDataMovement getSCPDataMovementProtocol(1: required string scpDataMovementResourceId)
+  computeHostModel.SCPDataMovement getSCPDataMovementProtocol(1: required string scpDataMovementResourceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase) 
               
-  computeHostModel.thrift.GridFTPDataMovement getGridFTPDataMovementProtocol(1: required string gridFTPDataMovementResourceId)
+  computeHostModel.GridFTPDataMovement getGridFTPDataMovementProtocol(1: required string gridFTPDataMovementResourceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase) 
@@ -132,7 +132,7 @@ service ApplicationCatalogAPI {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
 
-  computeHostModel.thrift.ComputeResourceDescription getComputeResourceDescriptionFromHostName(1: required string hostName)
+  computeHostModel.ComputeResourceDescription getComputeResourceDescriptionFromHostName(1: required string hostName)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
@@ -140,7 +140,7 @@ service ApplicationCatalogAPI {
   /**
    * Manage Application Interfaces
   */
-  string addApplicationInterface(1: required computeHostModel.thrift.ApplicationInterface applicationInterface)
+  string addApplicationInterface(1: required computeHostModel.ApplicationInterface applicationInterface)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
@@ -150,7 +150,7 @@ service ApplicationCatalogAPI {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)  
 
-  computeHostModel.thrift.ApplicationInterface getApplicationInterface(1: required string applicationInterfaceId)
+  computeHostModel.ApplicationInterface getApplicationInterface(1: required string applicationInterfaceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)  
@@ -158,7 +158,7 @@ service ApplicationCatalogAPI {
   /**
    * Manage application deployments
   */
-  string addApplicationDeployment(1: required string applicationInterfaceId, 2: required computeHostModel.thrift.ApplicationDeployment applicationDeployment)
+  string addApplicationDeployment(1: required string applicationInterfaceId, 2: required computeHostModel.ApplicationDeployment applicationDeployment)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)   
@@ -168,7 +168,7 @@ service ApplicationCatalogAPI {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)  
 
-  computeHostModel.thrift.ApplicationDeployment getApplicationDeployment(1: required string applicationInterfaceId, 2: required string applicationDeploymentId)
+  computeHostModel.ApplicationDeployment getApplicationDeployment(1: required string applicationInterfaceId, 2: required string applicationDeploymentId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)  
