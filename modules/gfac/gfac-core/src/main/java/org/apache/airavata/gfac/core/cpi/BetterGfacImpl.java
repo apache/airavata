@@ -613,7 +613,13 @@ public class BetterGfacImpl implements GFac {
                     handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                     handler = handlerClass.newInstance();
                     String plState = GFacUtils.getPluginState(zk, jobExecutionContext, handlerClassName.getClassName());
-                    if (Integer.valueOf(plState) >= GfacPluginState.INVOKED.getValue()) {
+                    int state = 0;
+                    try {
+                        state = Integer.valueOf(plState);
+                    } catch (NumberFormatException e) {
+
+                    }
+                    if (state >= GfacPluginState.INVOKED.getValue()) {
                         if (handler instanceof GFacRecoverableHandler) {
                             // if these already ran we re-run only recoverable handlers
                             log.info(handlerClassName.getClassName() + " is a recoverable handler so we recover the handler");

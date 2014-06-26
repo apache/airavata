@@ -24,6 +24,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
+import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class GSISSHDirectorySetupHandler extends AbstractHandler {
+public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
       private static final Logger log = LoggerFactory.getLogger(GSISSHDirectorySetupHandler.class);
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
@@ -97,6 +98,10 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler {
             throw new GFacHandlerException("Error executing the Handler: " + GSISSHDirectorySetupHandler.class, e);
         }
 	}
+
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+         this.invoke(jobExecutionContext);
+    }
 
     public void initProperties(Properties properties) throws GFacHandlerException {
 

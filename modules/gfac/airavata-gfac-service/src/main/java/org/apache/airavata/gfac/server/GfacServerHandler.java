@@ -159,6 +159,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
     }
 
     public boolean submitJob(String experimentId, String taskId) throws TException {
+        logger.info("GFac Recieved the Experiment: " + experimentId + " TaskId: " + taskId);
         GFac gfac = getGfac();
         try {
             return gfac.submitJob(experimentId, taskId);
