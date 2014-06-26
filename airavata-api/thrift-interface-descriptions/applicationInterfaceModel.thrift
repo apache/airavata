@@ -73,7 +73,7 @@ struct ApplicationInterfaceDescription {
     1: required bool isEmpty = 0,
     2: required string applicationInterfaceId = DEFAULT_ID,
     3: required string applicationName,
-    4: optional string appDeploymentId,
+    4: optional list<appModuleId> applicationModules,
     5: optional list<InputDataObjectType> applicationInputs,
     6: optional list<outputDataObjectType> applicationOutputs,
 }
