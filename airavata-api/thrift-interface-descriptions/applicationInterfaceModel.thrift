@@ -46,7 +46,7 @@ struct InputDataObjectType {
     3: optional DataType type,
     4: optional string metaData
     5: optional string applicationParameter,
-    5: optional string applicationUIDescription
+    6: optional string applicationUIDescription
 }
 
 /**
@@ -63,29 +63,17 @@ struct OutputDataObjectType {
 /**
  * Application Interface Description
  *
- * resourceId:
  *
- * hostName:
- *   Fully Qualified Host Name.
+ * appDeploymentId:
+ *   Corelated the interface to a particular application deployment
  *
- * ipAddress:
- *   IP Addresse of the Hostname.
- *
- * resourceDescription:
- *  A user friendly description of the hostname.
- *
- * JobSubmissionProtocols:
- *  A computational resources may have one or more ways of submitting Jobs. This structure
- *  will hold all available mechanisms to interact with the resource.
- *
- * DataMovementProtocol:
- *  Option to specify a prefered data movement mechanism of the available options.
  *
 */
 struct ApplicationInterfaceDescription {
     1: required bool isEmpty = 0,
     2: required string applicationInterfaceId = DEFAULT_ID,
     3: required string applicationName,
-    7: optional list<InputDataObjectType> applicationInputs,
-    8: optional list<outputDataObjectType> applicationOutputs,
+    4: optional string appDeploymentId,
+    5: optional list<InputDataObjectType> applicationInputs,
+    6: optional list<outputDataObjectType> applicationOutputs,
 }
