@@ -344,8 +344,10 @@ public class BetterGfacImpl implements GFac {
             } else if (stateVal == 5 && !GFacUtils.isSynchronousMode(jobExecutionContext)) {
                 // this is async mode where monitoring of jobs is hapenning, we have to recover
                 reInvokeProvider(jobExecutionContext);
-            } else {
-                log.info("We skip invoking Handler, because the experiment state is beyond the Provider Invocation !!!");
+            } else if( stateVal == 6){
+                reInvokeOutFlowHandlers(jobExecutionContext);
+            } else{
+                log.info("We skip invoking Handler, because the experiment:" + stateVal +" state is beyond the Provider Invocation !!!");
                 log.info("ExperimentId: " + experimentID + " taskId: " + jobExecutionContext.getTaskData().getTaskID());
             }
         } catch (Exception e) {
@@ -692,8 +694,6 @@ public class BetterGfacImpl implements GFac {
                     handler.invoke(jobExecutionContext);
                     GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
                 }
-                handler.initProperties(handlerClassName.getProperties());
-                handler.invoke(jobExecutionContext);
             } catch (ClassNotFoundException e) {
                 log.error(e.getMessage());
                 throw new GFacException("Cannot load handler class " + handlerClassName, e);
