@@ -123,8 +123,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface, Wat
     }
 
 
-
-
     /**
      * * After creating the experiment Data user have the
      * * experimentID as the handler to the experiment, during the launchExperiment
@@ -239,7 +237,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface, Wat
         return true;
     }
 
-    /** This method gracefully handler gfac node failures */
+    /**
+     * This method gracefully handler gfac node failures
+     */
     synchronized public void process(WatchedEvent watchedEvent) {
         synchronized (mutex) {
             try {
@@ -270,12 +270,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface, Wat
                             final OrchestratorServerHandler handler = this;
                             (new Thread() {
                                 public void run() {
-                                    try {
-                                        (new OrchestratorRecoveryHandler(handler, event.getPath())).recover();     // run this task in a separate thread
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                        log.error("error recovering the jobs for gfac-node: " + event.getPath());
+                                    int retry = 0;
+                                    while (retry < 3) {
+                                        try {
+                                            (new OrchestratorRecoveryHandler(handler, event.getPath())).recover();
+                                            break;
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            log.error("error recovering the jobs for gfac-node: " + event.getPath());
+                                            log.error("Retrying again to recover jobs and retry attempt: " + ++retry);
+                                        }
                                     }
+
                                 }
                             }).start();
                             break;
@@ -290,9 +296,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface, Wat
     }
 
 
-	@Override
-	public boolean launchTask(String taskId) throws TException {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean launchTask(String taskId) throws TException {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }

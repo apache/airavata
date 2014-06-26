@@ -47,15 +47,39 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Recoverability for this handler assumes the same input values will come in the second
+ * run, and assume nobody is changing registry during the original submission and re-submission
+ */
 public class GSISSHInputHandler extends AbstractRecoverableHandler {
     private static final Logger log = LoggerFactory.getLogger(GSISSHInputHandler.class);
 
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        super.invoke(jobExecutionContext);
+        int index = 0;
+        int oldIndex = 0;
+        List<String> oldFiles = new ArrayList<String>();
         MessageContext inputNew = new MessageContext();
         DataTransferDetails detail = new DataTransferDetails();
         TransferStatus status = new TransferStatus();
+        StringBuffer data = new StringBuffer("|");
         try {
+            String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
+            if (pluginData != null) {
+                try {
+                    oldIndex = Integer.parseInt(pluginData.split("\\|")[0].trim());
+                    oldFiles = Arrays.asList(pluginData.split("\\|")[1].split(","));
+                    if (oldIndex == oldFiles.size()) {
+                        log.info("Old data looks good !!!!");
+                    } else {
+                        oldIndex = 0;
+                        oldFiles.clear();
+                    }
+                } catch (NumberFormatException e) {
+                    log.error("Previously stored data " + pluginData +" is wrong so we continue the operations");
+                }
+            }
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
                 try {
                     GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
@@ -65,8 +89,6 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                 }
             }
             log.info("Invoking SCPInputHandler");
-            super.invoke(jobExecutionContext);
-
 
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
@@ -75,17 +97,36 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                 String paramValue = MappingFactory.toString(actualParameter);
                 //TODO: Review this with type
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
-                    ((URIParameterType) actualParameter.getType()).setValue(stageInputFiles(jobExecutionContext, paramValue));
+                    if (index < oldIndex) {
+                        log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
+                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+                        data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
+                    } else {
+                        String s = stageInputFiles(jobExecutionContext, paramValue);
+                        ((URIParameterType) actualParameter.getType()).setValue(s);
+                        StringBuffer temp = new StringBuffer(data.append(s).append(",").toString());
+                        GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+                    }
                 } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
                     List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
                     List<String> newFiles = new ArrayList<String>();
                     for (String paramValueEach : split) {
-                        String stageInputFiles = stageInputFiles(jobExecutionContext, paramValueEach);
-                        status.setTransferState(TransferState.UPLOAD);
-                        detail.setTransferStatus(status);
-                        detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
-                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                        newFiles.add(stageInputFiles);
+                        if (index < oldIndex) {
+                            log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
+                            ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+                            data.append(oldFiles.get(index++)).append(",");
+                        } else {
+                            String stageInputFiles = stageInputFiles(jobExecutionContext, paramValueEach);
+                            GFacUtils.savePluginData(jobExecutionContext, new StringBuffer(String.valueOf(index++)), this.getClass().getName());
+                            status.setTransferState(TransferState.UPLOAD);
+                            detail.setTransferStatus(status);
+                            detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
+                            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                            StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
+                            GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+                            newFiles.add(stageInputFiles);
+                        }
+
                     }
                     ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
                 }
@@ -139,6 +180,6 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
     }
 
     public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-
+        this.invoke(jobExecutionContext);
     }
 }
