@@ -33,6 +33,7 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
  */
 public interface GFacRecoverableHandler extends GFacHandler {
 
+
     /**
      * This method can be used to implement recovering part of the stateful handler
      * If you do not want to recover an already ran handler you can simply implement

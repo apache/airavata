@@ -25,6 +25,7 @@ import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.zookeeper.KeeperException;
@@ -43,6 +44,12 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         logger.info("Invoking ApplicationDescriptorCheckHandler ...");
+        try {
+            GFacUtils.updatePluginState(jobExecutionContext.getZk(), jobExecutionContext, this.getClass().getName(), GfacPluginState.INVOKED);
+        } catch (Exception e) {
+            logger.info("Error saving plugin status to ZK");
+        }
+
         StringBuffer data = new StringBuffer();
         ApplicationDescription app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType appDesc = app.getType();
@@ -106,7 +113,7 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
         ApplicationDeploymentDescriptionType appDesc = app.getType();
         try {
             String s = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
-            String[] split = s.split(",");
+            String[] split = s.split(",");                   // this is ugly code but nobody else is saving or reading this data, so this is the fastest way
             appDesc.setScratchWorkingDirectory(split[0]);
             appDesc.setStaticWorkingDirectory(split[1]);
             appDesc.setInputDataDirectory(split[2]);

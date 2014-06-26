@@ -28,6 +28,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
+import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
@@ -46,7 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class GSISSHInputHandler extends AbstractHandler {
+public class GSISSHInputHandler extends AbstractRecoverableHandler {
     private static final Logger log = LoggerFactory.getLogger(GSISSHInputHandler.class);
 
 
@@ -134,6 +135,10 @@ public class GSISSHInputHandler extends AbstractHandler {
     }
 
     public void initProperties(Properties properties) throws GFacHandlerException {
+
+    }
+
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
 
     }
 }

@@ -23,11 +23,16 @@ package org.apache.airavata.gfac.core.handler;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.gfac.core.notification.MonitorPublisher;
+import org.apache.airavata.gfac.core.states.GfacPluginState;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRecoverableHandler implements GFacRecoverableHandler {
+    private static final Logger logger = LoggerFactory.getLogger(AppDescriptorCheckHandler.class);
     protected Registry registry = null;
 
     protected MonitorPublisher publisher = null;
@@ -37,15 +42,20 @@ public abstract class AbstractRecoverableHandler implements GFacRecoverableHandl
     }
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-		registry = jobExecutionContext.getRegistry();
-        if(registry == null){
+        try {
+            GFacUtils.updatePluginState(jobExecutionContext.getZk(), jobExecutionContext, this.getClass().getName(), GfacPluginState.INVOKED);
+        } catch (Exception e) {
+            logger.error("Error saving Recoverable provider state", e);
+        }
+        registry = jobExecutionContext.getRegistry();
+        if (registry == null) {
             try {
                 registry = RegistryFactory.getDefaultRegistry();
             } catch (RegistryException e) {
                 throw new GFacHandlerException("unable to create registry instance", e);
             }
         }
-	}
+    }
 
     public MonitorPublisher getPublisher() {
         return publisher;
