@@ -148,7 +148,7 @@ struct GSISSHJobSubmission {
 }
 
 /**
- * Computational Resource Description
+ * Gateway Profile
  *
  * resourceId:
  *
@@ -169,36 +169,11 @@ struct GSISSHJobSubmission {
  *  Option to specify a prefered data movement mechanism of the available options.
  *
 */
-struct ComputeResourceDescription {
-    1: required bool isEmpty = 0,
-    2: required string resourceId = DEFAULT_ID,
-    3: required string hostName,
-    4: optional set<string> hostAliases,
-    5: optional set<string> ipAddresses,
-    6: optional string resourceDescription,
-    7: optional string scratchLocation,
-    8: optional string preferredJobSubmissionProtocol,
-    9: required map<string, JobSubmissionProtocol> jobSubmissionProtocols,
-    10: required map<string, DataMovementProtocol> dataMovementProtocols
-}
 
-/**
- * Following structs are added for completeness of the application catalog
-*/
 
-struct ApplicationDescriptor {
-    1: required string applicationDescriptorId = DEFAULT_ID,
-	2: optional string applicationDescriptorData //serialized ApplicationDescriptor
-}
-
-struct ApplicationDeployment {
-    1: required string deploymentId = DEFAULT_ID,
-	2: required ComputeResourceDescription computeResourceDescription,
-	3: required ApplicationDescriptor applicationDescriptor,
-}
-
-struct ApplicationInterface {
-    1: required string applicationInterfaceId = DEFAULT_ID,
-    2: optional string applicationInterfaceData, //serialized ServiceDescriptor
-	3: optional list<ApplicationDeployment> applicationDeployments
+struct GatewayProfile {
+    1: required string gatewayID = DEFAULT_ID,
+    2: required string gatewayName,
+    3: optional string gatewayDescription,
+    4: optional string preferedResource
 }
