@@ -34,6 +34,7 @@
         <class>org.apache.aiaravata.application.catalog.data.model.HostIPAddress</class>
         <class>org.apache.aiaravata.application.catalog.data.model.JobSubmissionProtocol</class>
         <class>org.apache.aiaravata.application.catalog.data.model.SCPDataMovement</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.GridFTPDataMovement</class>
         <class>org.apache.aiaravata.application.catalog.data.model.SSHSubmission</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
