@@ -24,29 +24,21 @@ package org.apache.aiaravata.application.catalog.data.model;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "SCP_DATAMOVEMENT")
-public class SCPDataMovement {
-    @Column(name = "RESOURCE_ID")
-    private String resourceID;
+@Table(name = "GRID_FTP_DATAMOVEMENT")
+public class GridFTPDataMovement {
     @Id
     @Column(name = "DATA_MOVE_ID")
     private String dataMoveID;
+    @Column(name = "RESOURCE_ID")
+    private String resourceID;
     @Column(name = "SECURITY_PROTOCOL")
     private String securityProtocol;
-    @Column(name = "SSH_PORT")
-    private int sshPort;
+    @Column(name = "GRID_FTP_EP")
+    private String gridFTPEP;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "RESOURCE_ID")
     private ComputeResource computeResource;
-
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
-    }
 
     public String getDataMoveID() {
         return dataMoveID;
@@ -54,6 +46,14 @@ public class SCPDataMovement {
 
     public void setDataMoveID(String dataMoveID) {
         this.dataMoveID = dataMoveID;
+    }
+
+    public String getResourceID() {
+        return resourceID;
+    }
+
+    public void setResourceID(String resourceID) {
+        this.resourceID = resourceID;
     }
 
     public String getSecurityProtocol() {
@@ -64,12 +64,12 @@ public class SCPDataMovement {
         this.securityProtocol = securityProtocol;
     }
 
-    public int getSshPort() {
-        return sshPort;
+    public String getGridFTPEP() {
+        return gridFTPEP;
     }
 
-    public void setSshPort(int sshPort) {
-        this.sshPort = sshPort;
+    public void setGridFTPEP(String gridFTPEP) {
+        this.gridFTPEP = gridFTPEP;
     }
 
     public ComputeResource getComputeResource() {
