@@ -18,8 +18,8 @@
  *
  */
 
-namespace java org.apache.airavata.model.appcatalog
-namespace php Airavata.Model.AppCatalog
+namespace java org.apache.airavata.model.computehost
+namespace php Airavata.Model.ComputeHost
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
@@ -109,8 +109,6 @@ enum SecurityProtocol {
     OAUTH
 }
 
-
-
 struct SCPDataMovement {
     1: required string dataMovementDataID = DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
@@ -150,7 +148,7 @@ struct GSISSHJobSubmission {
 /**
  * Computational Resource Description
  *
- * resourceId:
+ * resourceId: Airavata Internal Unique Job ID. This is set by the registry.
  *
  * hostName:
  *   Fully Qualified Host Name.
@@ -176,29 +174,7 @@ struct ComputeResourceDescription {
     4: optional set<string> hostAliases,
     5: optional set<string> ipAddresses,
     6: optional string resourceDescription,
-    7: optional string scratchLocation,
     8: optional string preferredJobSubmissionProtocol,
     9: required map<string, JobSubmissionProtocol> jobSubmissionProtocols,
     10: required map<string, DataMovementProtocol> dataMovementProtocols
-}
-
-/**
- * Following structs are added for completeness of the application catalog
-*/
-
-struct ApplicationDescriptor {
-    1: required string applicationDescriptorId = DEFAULT_ID,
-	2: optional string applicationDescriptorData //serialized ApplicationDescriptor
-}
-
-struct ApplicationDeployment {
-    1: required string deploymentId = DEFAULT_ID,
-	2: required ComputeResourceDescription computeResourceDescription,
-	3: required ApplicationDescriptor applicationDescriptor,
-}
-
-struct ApplicationInterface {
-    1: required string applicationInterfaceId = DEFAULT_ID,
-    2: optional string applicationInterfaceData, //serialized ServiceDescriptor
-	3: optional list<ApplicationDeployment> applicationDeployments
 }
