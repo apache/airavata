@@ -47,12 +47,14 @@ service OrchestratorService {
     /**
      * In order to run single applications users should create an associating 
      * WorkflowNodeDetails and a TaskDetails for it and hand it over for execution
+     * along with a credential store token for authentication
      *
      * @param taskId
+     * @param airavataCredStoreToken
      * @return sucess/failure
      *
     **/
-  bool launchTask (1: required string taskId),
+  bool launchTask (1: required string taskId, 2: required string airavataCredStoreToken),
 
     /**
      *
