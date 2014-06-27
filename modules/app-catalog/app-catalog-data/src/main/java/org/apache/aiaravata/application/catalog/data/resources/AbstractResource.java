@@ -47,13 +47,103 @@ public abstract class AbstractResource implements Resource{
     public static final String APPLICATION_OUTPUT = "ApplicationOutput";
     public static final String GATEWAY_PROFILE = "GatewayProfile";
 
-    // Gateway Table
+    // Compute Resource Table
     public final class ComputeResourceConstants {
         public static final String RESOURCE_ID = "resourceID";
         public static final String HOST_NAME = "hostName";
         public static final String DESCRIPTION = "description";
         public static final String SCRATCH_LOC = "scratchLocation";
         public static final String PREFERED_SUBMISSION_PROTOCOL = "preferredJobSubProtocol";
+    }
+
+    // Host Alias Table
+    public final class HostAliasConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String ALIAS = "alias";
+    }
+
+    // Host IPAddress Table
+    public final class HostIPAddressConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String IP_ADDRESS = "ipaddress";
+    }
+
+    // GSSISSH Submission Table
+    public final class GSISSHSubmissionConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
+        public static final String RESOURCE_JOB_MANAGER = "resourceJobManager";
+        public static final String SSH_PORT = "sshPort";
+        public static final String INSTALLED_PATH = "installedPath";
+        public static final String MONITOR_MODE = "monitorMode";
+    }
+
+    // GSSISSH Export Table
+    public final class GSISSHExportConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String EXPORT = "export";
+    }
+
+    // GSSISSH Pre Job Command Table
+    public final class GSISSHPreJobCommandConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String COMMAND = "command";
+    }
+
+    // GSSISSH Post Job Command Table
+    public final class GSISSHPostJobCommandConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String COMMAND = "command";
+    }
+
+    // GSSISSH Post Job Command Table
+    public final class GlobusJobSubmissionConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
+        public static final String resourceJobManager = "RESOURCE_JOB_MANAGER";
+        public static final String securityProtocol = "SECURITY_PROTOCAL";
+        public static final String globusEP = "GLOBUS_GATEKEEPER_EP";
+    }
+
+    // GSSISSH Post Job Command Table
+    public final class SSHSubmissionConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
+        public static final String RESOURCE_JOB_MANAGER = "resourceJobManager";
+        public static final String SSH_PORT = "sshPort";
+    }
+
+    public final class SCPDataMovementConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String DATA_MOVE_ID = "dataMoveID";
+        public static final String SECURITY_PROTOCOL = "securityProtocol";
+        public static final String SSH_PORT = "sshPort";
+    }
+
+    public final class GridFTPDataMovementConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String DATA_MOVE_ID = "dataMoveID";
+        public static final String SECURITY_PROTOCOL = "securityProtocol";
+        public static final String GRID_FTP_EP = "gridFTPEP";
+    }
+
+    public final class JobSubmissionProtocolConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
+        public static final String JOB_TYPE = "jobType";
+    }
+
+    public final class DataMoveProtocolConstants {
+        public static final String RESOURCE_ID = "resourceID";
+        public static final String DATA_MOVE_ID = "submissionID";
+        public static final String JOB_TYPE = "jobType";
+    }
+
+    public final class ApplicationModuleConstants {
+        public static final String MODULE_ID = "moduleID";
+        public static final String MODULE_NAME = "moduleName";
+        public static final String MODULE_VERSION = "moduleVersion";
+        public static final String MODULE_DESC = "moduleDesc";
     }
 
 
