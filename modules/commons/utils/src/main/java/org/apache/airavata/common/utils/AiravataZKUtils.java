@@ -58,6 +58,15 @@ public class AiravataZKUtils {
                 "state";
     }
 
+    public static String getExpTokenId(ZooKeeper zk, String expId, String tId) throws ApplicationSettingsException,
+            KeeperException, InterruptedException {
+        Stat exists = zk.exists(getExpZnodePath(expId, tId), false);
+        if (exists != null) {
+            return new String(zk.getData(getExpZnodePath(expId, tId), false, exists));
+        }
+        return null;
+    }
+
     public static String getExpState(ZooKeeper zk, String expId, String tId) throws ApplicationSettingsException,
             KeeperException, InterruptedException {
         Stat exists = zk.exists(getExpStatePath(expId, tId), false);
