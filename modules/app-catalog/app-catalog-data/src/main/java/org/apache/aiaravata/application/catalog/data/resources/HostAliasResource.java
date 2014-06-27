@@ -7,7 +7,6 @@ import org.apache.aiaravata.application.catalog.data.model.HostAliasPK;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,14 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HostAliasResource extends AbstractResource {
-
     private final static Logger logger = LoggerFactory.getLogger(HostAliasResource.class);
-
     private String resourceID;
     private String alias;
     private ComputeHostResource computeHostResource;
-
-
 
     public void remove(Object identifier) throws AppCatalogException {
 
@@ -35,7 +30,6 @@ public class HostAliasResource extends AbstractResource {
     }
 
     public List<Resource> get(String fieldName, Object value) throws AppCatalogException {
-
         List<Resource> hostAliasResources = new ArrayList<Resource>();
         EntityManager em = null;
         try {
@@ -156,7 +150,6 @@ public class HostAliasResource extends AbstractResource {
                 ComputeResource computeResource = em.find(ComputeResource.class, computeHostResource.getResoureId());
                 existingHostAlias.setComputeResource(computeResource);
                 existingHostAlias.setResourceID(resourceID);
-
                 em.merge(existingHostAlias);
             }else {
                 HostAlias hostAlias = new HostAlias();
@@ -164,7 +157,6 @@ public class HostAliasResource extends AbstractResource {
                 hostAlias.setResourceID(resourceID);
                 ComputeResource computeResource = em.find(ComputeResource.class, computeHostResource.getResoureId());
                 hostAlias.setComputeResource(computeResource);
-
                 em.persist(computeResource);
             }
             em.getTransaction().commit();

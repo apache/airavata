@@ -146,5 +146,69 @@ public abstract class AbstractResource implements Resource{
         public static final String MODULE_DESC = "moduleDesc";
     }
 
+    public final class ApplicationDeploymentConstants {
+        public static final String APP_MODULE_ID = "appModuleID";
+        public static final String DEPLOYMENT_ID = "deployementID";
+        public static final String COMPUTE_HOST_ID = "hostID";
+        public static final String EXECUTABLE_PATH = "executablePath";
+        public static final String APPLICATION_DESC = "applicationDesc";
+        public static final String ENV_MODULE_LOAD_CMD = "envModuleLoaString";
+    }
+
+    public final class LibraryPrepandPathConstants {
+        public static final String DEPLOYMENT_ID = "deployementID";
+        public static final String NAME = "name";
+        public static final String VALUE = "value";
+    }
+
+    public final class LibraryApendPathConstants {
+        public static final String DEPLOYMENT_ID = "deployementID";
+        public static final String NAME = "name";
+        public static final String VALUE = "value";
+    }
+
+    public final class AppEnvironmentConstants {
+        public static final String DEPLOYMENT_ID = "deployementID";
+        public static final String NAME = "name";
+        public static final String VALUE = "value";
+    }
+
+    public final class ApplicationInterfaceConstants {
+        public static final String INTERFACE_ID = "interfaceID";
+        public static final String APPLICATION_NAME = "appName";
+    }
+
+    public final class AppModuleMappingConstants {
+        public static final String INTERFACE_ID = "interfaceID";
+        public static final String MODULE_ID = "moduleID";
+    }
+
+    public final class AppInputConstants {
+        public static final String INTERFACE_ID = "interfaceID";
+        public static final String INPUT_KEY = "inputKey";
+        public static final String INPUT_VALUE = "inputVal";
+        public static final String DATA_TYPE = "dataType";
+        public static final String METADATA = "metadata";
+        public static final String APP_PARAMETER = "appParameter";
+        public static final String APP_UI_DESCRIPTION = "appUIDesc";
+    }
+
+    public final class AppOutputConstants {
+        public static final String INTERFACE_ID = "interfaceID";
+        public static final String OUTPUT_KEY = "outputKey";
+        public static final String OUTPUT_VALUE = "outputVal";
+        public static final String DATA_TYPE = "dataType";
+        public static final String METADATA = "metadata";
+    }
+
+    public final class GatewayProfileConstants {
+        public static final String GATEWAY_ID = "gatewayID";
+        public static final String GATEWAY_NAME = "gatewayName";
+        public static final String GATEWAY_DESC = "gatewayDesc";
+        public static final String PREFERED_RESOURCE = "preferedResource";
+    }
+
+
+
 
 }
