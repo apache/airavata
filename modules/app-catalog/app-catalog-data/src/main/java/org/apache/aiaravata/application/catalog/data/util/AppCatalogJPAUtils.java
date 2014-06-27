@@ -21,6 +21,8 @@
 
 package org.apache.aiaravata.application.catalog.data.util;
 
+import org.apache.aiaravata.application.catalog.data.resources.ComputeHostResource;
+import org.apache.aiaravata.application.catalog.data.resources.Resource;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.slf4j.Logger;
@@ -32,8 +34,8 @@ import javax.persistence.Persistence;
 import java.util.HashMap;
 import java.util.Map;
 
-public class JPAUtils {
-    private final static Logger logger = LoggerFactory.getLogger(JPAUtils.class);
+public class AppCatalogJPAUtils {
+    private final static Logger logger = LoggerFactory.getLogger(AppCatalogJPAUtils.class);
     private static final String PERSISTENCE_UNIT_NAME = "appcatalog_data";
     private static final String APPCATALOG_JDBC_DRIVER = "appcatalog.jdbc.driver";
     private static final String APPCATALOG_JDBC_URL = "appcatalog.jdbc.url";
@@ -74,6 +76,36 @@ public class JPAUtils {
             logger.error("Unable to read airavata-server.properties...", e);
             throw new ApplicationSettingsException("Unable to read airavata-server.properties...");
         }
+    }
 
+    /**
+     *
+     * @param type model type
+     * @param o model type instance
+     * @return corresponding resource object
+     */
+    public static Resource getResource(AppCatalogResourceType type, Object o) {
+        switch (type){
+            case COMPUTE_RESOURCE:
+                if (o instanceof ComputeHostResource){
+                    return createComputeResource((ComputeHostResource)o);
+                }else {
+                    logger.error("Object should be a Compute Resource.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Compute Resource.");
+                }
+            default:
+                logger.error("Illegal data type..", new IllegalArgumentException());
+                throw new IllegalArgumentException("Illegal data type..");
+        }
+    }
+
+    private static Resource createComputeResource(ComputeHostResource o) {
+        ComputeHostResource hostResource = new ComputeHostResource();
+        hostResource.setResoureId(o.getResoureId());
+        hostResource.setHostName(o.getHostName());
+        hostResource.setDescription(o.getDescription());
+        hostResource.setScratchLocation(o.getScratchLocation());
+        hostResource.setPreferredJobSubmissionProtocol(o.getPreferredJobSubmissionProtocol());
+        return hostResource;
     }
 }

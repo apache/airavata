@@ -26,43 +26,50 @@ import java.util.List;
 
 public interface Resource {
 
-        /**
-         * This method will create associate resource objects for the given resource type.
-         * @return associated resource
-         */
-        Resource create() throws AppCatalogException;
+    /**
+     * This method will remove the given resource from the database
+     *
+     * @param identifier identifier that can uniquely identify a single instance of the resource
+     */
+    void remove(Object identifier) throws AppCatalogException;
 
-        /**
-         * This method will remove the given resource from the database
-         * @param name resource name
-         */
-        void remove(Object name) throws AppCatalogException;
+    /**
+     * This method will return the given resource from the database
+     *
+     * @param identifier identifier that can uniquely identify a single instance of the resource
+     * @return associate resource
+     */
+    Resource get(Object identifier) throws AppCatalogException;
 
-        /**
-         *  This method will return the given resource from the database
-         * @param name resource name
-         * @return associate resource
-         */
-        Resource get(Object name) throws AppCatalogException;
+    /**
+     * This method will list all the resources according to the filtering criteria
+     * @param fieldName field name
+     * @param value value of the field
+     * @return list of resources
+     */
+    List<Resource> get(String fieldName, Object value) throws AppCatalogException;
 
-        /**
-         * This method will list all the child resources for the given resource type
-         * @return list of child resources of the given child resource type
-         */
-        List<Resource> get() throws AppCatalogException;
+    /** This method will return list of resource ids according to given criteria
+     * @param fieldName field name
+     * @param value value of the field
+     * @return list of resource Ids
+     * @throws AppCatalogException
+     */
+    List<String> getIds(String fieldName, Object value) throws AppCatalogException;
 
-        /**
-         * This method will save the resource to the database.
-         */
-        void save() throws AppCatalogException;
+    /**
+     * This method will save the resource to the database.
+     */
+    void save() throws AppCatalogException;
 
-        /**
-         * This method will check whether an entry from the given resource type and resource name
-         * exists in the database
-         * @param name resource name
-         * @return whether the entry exists in the database or not
-         */
-        boolean isExists(Object name) throws AppCatalogException;
+    /**
+     * This method will check whether an entry from the given resource and resource name
+     * exists in the database
+     *
+     * @param identifier identifier that can uniquely identify a single instance of the resource
+     * @return whether the entry exists in the database or not
+     */
+    boolean isExists(Object identifier) throws AppCatalogException;
 
 
 }

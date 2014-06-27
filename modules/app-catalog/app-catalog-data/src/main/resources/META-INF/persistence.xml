@@ -36,6 +36,16 @@
         <class>org.apache.aiaravata.application.catalog.data.model.SCPDataMovement</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GridFTPDataMovement</class>
         <class>org.apache.aiaravata.application.catalog.data.model.SSHSubmission</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.ApplicationModule</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.LibraryPrepandPath</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.LibraryApendPath</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.AppEnvironment</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.ApplicationInterface</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.AppModuleMapping</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.ApplicationInput</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.ApplicationOutput</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.GatewayProfile</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>
