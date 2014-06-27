@@ -224,26 +224,29 @@ public class BetterGfacImpl implements GFac {
         if (serviceDescription == null) {
             throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName);
         }
-        String hostName;
-        HostDescription hostDescription = null;
-        if (taskData.getTaskScheduling().getResourceHostId() != null) {
-            hostName = taskData.getTaskScheduling().getResourceHostId();
-            hostDescription = airavataRegistry2.getHostDescriptor(hostName);
-        } else {
-            List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
-            Map<String, ApplicationDescription> applicationDescriptors = airavataRegistry2.getApplicationDescriptors(serviceName);
-            for (String hostDescName : applicationDescriptors.keySet()) {
-                registeredHosts.add(airavataRegistry2.getHostDescriptor(hostDescName));
-            }
-            Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
-            HostScheduler hostScheduler = aClass.newInstance();
-            hostDescription = hostScheduler.schedule(registeredHosts);
-            hostName = hostDescription.getType().getHostName();
-        }
-        if (hostDescription == null) {
-            throw new GFacException("Error executing the job as the host is not registered " + hostName);
-        }
-        ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostName);
+//        String hostName;
+//        HostDescription hostDescription = null;
+//        if (taskData.getTaskScheduling().getResourceHostId() != null) {
+//            hostName = taskData.getTaskScheduling().getResourceHostId();
+//            hostDescription = airavataRegistry2.getHostDescriptor(hostName);
+//        } else {
+//            List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
+//            Map<String, ApplicationDescription> applicationDescriptors = airavataRegistry2.getApplicationDescriptors(serviceName);
+//            for (String hostDescName : applicationDescriptors.keySet()) {
+//                registeredHosts.add(airavataRegistry2.getHostDescriptor(hostDescName));
+//            }
+//            Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
+//            HostScheduler hostScheduler = aClass.newInstance();
+//            hostDescription = hostScheduler.schedule(registeredHosts);
+//            hostName = hostDescription.getType().getHostName();
+//        }
+//        if (hostDescription == null) {
+//            throw new GFacException("Error executing the job as the host is not registered " + hostName);
+//        }
+//        ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostName);
+        HostDescription hostDescription = airavataRegistry2.getHostDescriptor(taskData.getHostDescriptorId());
+        ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptor(serviceName, taskData.getHostDescriptorId(), taskData.getApplicationDescriptorId());
+        
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         Properties configurationProperties = ServerSettings.getProperties();
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);

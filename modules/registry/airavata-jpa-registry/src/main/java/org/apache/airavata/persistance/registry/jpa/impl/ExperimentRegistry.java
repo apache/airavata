@@ -901,6 +901,8 @@ public class ExperimentRegistry {
             taskDetail.setApplicationId(taskDetails.getApplicationId());
             taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
             taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));
+            taskDetail.setHostDescriptorId(taskDetails.getHostDescriptorId());
+            taskDetail.setApplicationDescriptorId(taskDetails.getApplicationDescriptorId());
             taskDetail.save();
             List<DataObjectType> applicationInputs = taskDetails.getApplicationInputs();
             if (applicationInputs != null) {
@@ -1624,7 +1626,6 @@ public class ExperimentRegistry {
             logger.error("Error while updating scheduling data...", e);
             throw new RegistryException(e);
         }
-
     }
 
     public List<Experiment> getExperimentList(String fieldName, Object value) throws RegistryException {
@@ -1655,6 +1656,20 @@ public class ExperimentRegistry {
                     experiments.add(experiment);
                 }
                 return experiments;
+            } if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_NODE_LIST)) {
+            	if (value instanceof List<?>){
+            		return getExperimentList(fieldName,((List<?>) value).get(0));
+            	}else if (value instanceof WorkflowNodeDetails){
+            		WorkflowNodeDetailResource nodeDetailResource = getWorkflowNodeDetailResource(((WorkflowNodeDetails) value).getNodeInstanceId());
+					if (nodeDetailResource!=null) {
+						return Arrays.asList(new Experiment[] { ThriftDataModelConversion
+										.getExperiment(nodeDetailResource
+												.getExperimentResource()) });
+					}
+            	}else{
+            		logger.error("Unsupported field value to retrieve workflow node detail list...");	
+            	}
+ 
             } else {
                 logger.error("Unsupported field name to retrieve experiment list...");
             }
@@ -1670,7 +1685,21 @@ public class ExperimentRegistry {
             if (fieldName.equals(Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID)) {
                 ExperimentResource experiment = gatewayResource.getExperiment((String) value);
                 List<WorkflowNodeDetailResource> workflowNodeDetails = experiment.getWorkflowNodeDetails();
+                
                 return ThriftDataModelConversion.getWfNodeList(workflowNodeDetails);
+            } if (fieldName.equals(Constants.FieldConstants.WorkflowNodeConstants.TASK_LIST)) {
+            	if (value instanceof List<?>){
+            		return getWFNodeDetails(fieldName,((List<?>) value).get(0));
+            	}else if (value instanceof TaskDetails){
+            		TaskDetailResource taskDetailResource = getTaskDetailResource(((TaskDetails) value).getTaskID());
+					if (taskDetailResource!=null) {
+						return Arrays.asList(new WorkflowNodeDetails[] { ThriftDataModelConversion
+										.getWorkflowNodeDetails(taskDetailResource
+												.getWorkflowNodeDetailResource()) });
+					}
+            	}else{
+            		logger.error("Unsupported field value to retrieve workflow node detail list...");	
+            	}
             } else {
                 logger.error("Unsupported field name to retrieve workflow detail list...");
             }
@@ -1978,6 +2007,16 @@ public class ExperimentRegistry {
         return null;
     }
 
+    private WorkflowNodeDetailResource getWorkflowNodeDetailResource(String nodeId) throws RegistryException {
+        try {
+            ExperimentResource resource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+            return resource.getWorkflowNode(nodeId);
+        } catch (Exception e) {
+            logger.error("Error while getting workflow node details...", e);
+            throw new RegistryException(e);
+        }
+    }
+    
     public WorkflowNodeDetails getWorkflowNodeDetails(String nodeId) throws RegistryException {
         try {
             ExperimentResource resource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
@@ -2015,9 +2054,7 @@ public class ExperimentRegistry {
 
     public TaskDetails getTaskDetails(String taskId) throws RegistryException {
         try {
-            ExperimentResource resource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
-            TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
+            TaskDetailResource taskDetail = getTaskDetailResource(taskId);
             return ThriftDataModelConversion.getTaskDetail(taskDetail);
         } catch (Exception e) {
             logger.error("Error while getting task details..", e);
@@ -2025,6 +2062,17 @@ public class ExperimentRegistry {
         }
     }
 
+    private TaskDetailResource getTaskDetailResource(String taskId) throws RegistryException {
+        try {
+            ExperimentResource resource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
+            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
+            return workflowNode.getTaskDetail(taskId);
+        } catch (Exception e) {
+            logger.error("Error while getting task details..", e);
+            throw new RegistryException(e);
+        }
+    }
+    
     public List<DataObjectType> getApplicationOutputs(String taskId) throws RegistryException {
         try {
             ExperimentResource resource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);

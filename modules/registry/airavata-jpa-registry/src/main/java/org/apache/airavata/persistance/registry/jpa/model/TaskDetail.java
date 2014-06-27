@@ -43,6 +43,11 @@ public class TaskDetail implements Serializable {
     @Column(name = "APPLICATION_VERSION")
     private String appVersion;
 
+    @Column(name = "HOST_ID")
+    private String hostDescriptorId;
+    @Column(name = "APPLICATION_DESC_ID")
+    private String applicationDescriptorId;
+    
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "NODE_INSTANCE_ID")
     private WorkflowNodeDetail nodeDetail;
@@ -94,4 +99,20 @@ public class TaskDetail implements Serializable {
     public void setNodeDetail(WorkflowNodeDetail nodeDetail) {
         this.nodeDetail = nodeDetail;
     }
+
+	public String getHostDescriptorId() {
+		return hostDescriptorId;
+	}
+
+	public void setHostDescriptorId(String hostDescriptorId) {
+		this.hostDescriptorId = hostDescriptorId;
+	}
+
+	public String getApplicationDescriptorId() {
+		return applicationDescriptorId;
+	}
+
+	public void setApplicationDescriptorId(String applicationDescriptorId) {
+		this.applicationDescriptorId = applicationDescriptorId;
+	}
 }

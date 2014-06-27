@@ -22,7 +22,6 @@ package org.apache.airavata.server;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class ServerMain {
 	private static int serverPID=-1;
 	private static final String serverStartedFileNamePrefix = "server-start";
 	private static boolean systemShutDown=false;
-	private static boolean shutdownHookCalledBefore=false;
+//	private static boolean shutdownHookCalledBefore=false;
     static{
 		servers = new ArrayList<IServer>();
     }
@@ -194,19 +193,19 @@ public class ServerMain {
 		}
 	}
 	
-	private static void deleteOldStartRecords(){
-		File[] files = new File(".").listFiles();
-		for (File file : files) {
-			if (file.getName().contains(serverStartedFileNamePrefix)){
-				try {
-					new FileOutputStream(file);
-					file.delete();
-				} catch (Exception e) {
-					//file is locked which means there's an active process using it
-				}
-			}
-		}
-	}
+//	private static void deleteOldStartRecords(){
+//		File[] files = new File(".").listFiles();
+//		for (File file : files) {
+//			if (file.getName().contains(serverStartedFileNamePrefix)){
+//				try {
+//					new FileOutputStream(file);
+//					file.delete();
+//				} catch (Exception e) {
+//					//file is locked which means there's an active process using it
+//				}
+//			}
+//		}
+//	}
 	
 	private static boolean isServerRunning(){
 		if (serverPID==-1){
@@ -261,6 +260,7 @@ public class ServerMain {
 		}
 		for (IServer server : servers) {
 			try {
+				server.configure();
 				server.start();
 				waitForServerToStart(server,null);
 			} catch (Exception e) {

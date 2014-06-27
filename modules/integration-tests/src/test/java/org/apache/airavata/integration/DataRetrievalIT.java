@@ -84,7 +84,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 
     private void addProjects() throws TException {
         for (int i = 0; i < projects.length; i++){
-            Project project = ProjectModelUtil.createProject(projects[i], "admin", "test project");
+        	Project project = ProjectModelUtil.createProject(projects[i], "admin", "test project");
             String projectId = getClient().createProject(project);
             projectIds.add(projectId);
         }
@@ -140,7 +140,6 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 			List<Project> listUserProjects = listUserProjects(user);
 			List<String> data = getData(1, user, 2);
 			data.add("default");
-            System.out.println(data.size());
             log.info("\t"+user+" : "+data.size()+" projects");
 			Assert.assertEquals(listUserProjects.size(), 4);
 //			for (Project project : listUserProjects) {
