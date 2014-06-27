@@ -413,7 +413,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	}
 
 	@Override
-	public boolean launchTask(String taskId) throws TException {
+	public boolean launchTask(String taskId, String airavataCredStoreToken) throws TException {
 		try {
 			TaskDetails taskData = (TaskDetails) registry.get(
 					RegistryModelType.TASK_DETAIL, taskId);

@@ -991,12 +991,13 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
 
     	final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
         final String expID = airavataExperimentId;
+        final String token = airavataCredStoreToken;
         synchronized (this) {
             if (orchestratorClient.validateExperiment(expID)) {
                 (new Thread() {
                     public void run() {
                         try {
-                            launchSingleAppExperiment(expID, orchestratorClient);
+                            launchSingleAppExperiment(expID, token, orchestratorClient);
                         } catch (TException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                         }
@@ -1008,7 +1009,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
         }
     }
 
-    private boolean launchSingleAppExperiment(String experimentId, OrchestratorService.Client orchestratorClient) throws TException {
+    private boolean launchSingleAppExperiment(String experimentId, String airavataCredStoreToken, OrchestratorService.Client orchestratorClient) throws TException {
         Experiment experiment = null;
         try {
             List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL, WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
@@ -1030,7 +1031,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
                     registry.update(RegistryModelType.EXPERIMENT, experiment, experimentId);
                     registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskID());
                     //launching the experiment
-                    orchestratorClient.launchTask(taskData.getTaskID());
+                    orchestratorClient.launchTask(taskData.getTaskID(),airavataCredStoreToken);
                 }
             }
 
