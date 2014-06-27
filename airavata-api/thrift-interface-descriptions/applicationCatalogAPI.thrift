@@ -27,6 +27,7 @@
 include "airavataErrors.thrift"
 include "airavataDataModel.thrift"
 include "computeHostModel.thrift"
+include "applicationDeploymentModel.thrift"
 
 namespace java org.apache.airavata.api.appcatalog
 namespace php Airavata.API.AppCatalog
@@ -156,8 +157,35 @@ service ApplicationCatalogAPI {
             3: airavataErrors.AiravataSystemException ase)  
 
   /**
-   * Manage application deployments
+   * Manage application modules
   */
+
+  string registerAppicationModule(1: required applicationDeploymentModel.ApplicationModule applicationModule,
+            2:optional bool publish)
+    	throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+  applicationDeploymentModel.ApplicationModule getAppicationModule(1: required string appModuleId)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  bool updateAppicationModule(1: required string appModuleId,
+            2: required applicationDeploymentModel.ApplicationModule applicationModule)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  bool deleteAppicationModule(1: required string appModuleId)
+         	throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Manage application modules
+  */
+
   string addApplicationDeployment(1: required string applicationInterfaceId, 2: required computeHostModel.ApplicationDeployment applicationDeployment)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
