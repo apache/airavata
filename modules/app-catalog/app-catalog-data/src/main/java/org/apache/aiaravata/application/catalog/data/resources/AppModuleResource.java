@@ -22,7 +22,7 @@
 package org.apache.aiaravata.application.catalog.data.resources;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.model.ComputeResource;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationModule;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
@@ -35,52 +35,43 @@ import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComputeHostResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(ComputeHostResource.class);
-    private String resoureId;
-    private String hostName;
-    private String description;
-    private String scratchLocation;
-    private String preferredJobSubmissionProtocol;
+public class AppModuleResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(AppModuleResource.class);
+    private String moduleId;
+    private String moduleName;
+    private String moduleVersion;
+    private String moduleDesc;
 
-    public String getResoureId() {
-        return resoureId;
+    public String getModuleId() {
+        return moduleId;
     }
 
-    public void setResoureId(String resoureId) {
-        this.resoureId = resoureId;
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 
-    public String getHostName() {
-        return hostName;
+    public String getModuleName() {
+        return moduleName;
     }
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
     }
 
-    public String getDescription() {
-        return description;
+    public String getModuleVersion() {
+        return moduleVersion;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setModuleVersion(String moduleVersion) {
+        this.moduleVersion = moduleVersion;
     }
 
-    public String getScratchLocation() {
-        return scratchLocation;
+    public String getModuleDesc() {
+        return moduleDesc;
     }
 
-    public void setScratchLocation(String scratchLocation) {
-        this.scratchLocation = scratchLocation;
-    }
-
-    public String getPreferredJobSubmissionProtocol() {
-        return preferredJobSubmissionProtocol;
-    }
-
-    public void setPreferredJobSubmissionProtocol(String preferredJobSubmissionProtocol) {
-        this.preferredJobSubmissionProtocol = preferredJobSubmissionProtocol;
+    public void setModuleDesc(String moduleDesc) {
+        this.moduleDesc = moduleDesc;
     }
 
     @Override
@@ -89,8 +80,8 @@ public class ComputeHostResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(COMPUTE_RESOURCE);
-            generator.setParameter(ComputeResourceConstants.RESOURCE_ID, identifier);
+            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(APPLICATION_MODULE);
+            generator.setParameter(ApplicationModuleConstants.MODULE_ID, identifier);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -114,15 +105,15 @@ public class ComputeHostResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(COMPUTE_RESOURCE);
-            generator.setParameter(ComputeResourceConstants.RESOURCE_ID, identifier);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_MODULE);
+            generator.setParameter(ApplicationModuleConstants.MODULE_ID, identifier);
             Query q = generator.selectQuery(em);
-            ComputeResource computeResource = (ComputeResource) q.getSingleResult();
-            ComputeHostResource computeHostResource =
-                    (ComputeHostResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE, computeResource);
+            ApplicationModule applicationModule = (ApplicationModule) q.getSingleResult();
+            AppModuleResource appModuleResource =
+                    (AppModuleResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APPLICATION_MODULE, applicationModule);
             em.getTransaction().commit();
             em.close();
-            return computeHostResource;
+            return appModuleResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -138,43 +129,31 @@ public class ComputeHostResource extends AbstractResource {
 
     @Override
     public List<Resource> get(String fieldName, Object value) throws AppCatalogException {
-        List<Resource> computeHostResources = new ArrayList<Resource>();
+        List<Resource> moduleResources = new ArrayList<Resource>();
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(COMPUTE_RESOURCE);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_MODULE);
             List results;
-            if (fieldName.equals(ComputeResourceConstants.HOST_NAME)) {
-                generator.setParameter(ComputeResourceConstants.HOST_NAME, value);
+            if (fieldName.equals(ApplicationModuleConstants.MODULE_NAME)) {
+                generator.setParameter(ApplicationModuleConstants.MODULE_NAME, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ComputeResource computeResource = (ComputeResource) result;
-                        ComputeHostResource computeHostResource =
-                                (ComputeHostResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE, computeResource);
-                        computeHostResources.add(computeHostResource);
-                    }
-                }
-            } else if (fieldName.equals(ComputeResourceConstants.PREFERED_SUBMISSION_PROTOCOL)) {
-                generator.setParameter(ComputeResourceConstants.PREFERED_SUBMISSION_PROTOCOL, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        ComputeResource computeResource = (ComputeResource) result;
-                        ComputeHostResource projectResource =
-                                (ComputeHostResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE, computeResource);
-                        computeHostResources.add(projectResource);
+                        ApplicationModule applicationModule = (ApplicationModule) result;
+                        AppModuleResource moduleResource =
+                                (AppModuleResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APPLICATION_MODULE, applicationModule);
+                        moduleResources.add(moduleResource);
                     }
                 }
             } else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for compute resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for compute resource.");
+                logger.error("Unsupported field name for app module resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for app module resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -189,44 +168,34 @@ public class ComputeHostResource extends AbstractResource {
                 em.close();
             }
         }
-        return computeHostResources;
+        return moduleResources;
     }
 
     @Override
     public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
-        List<String> computeHostResourceIDs = new ArrayList<String>();
+        List<String> moduleResources = new ArrayList<String>();
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(COMPUTE_RESOURCE);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_MODULE);
             List results;
-            if (fieldName.equals(ComputeResourceConstants.HOST_NAME)) {
-                generator.setParameter(ComputeResourceConstants.HOST_NAME, value);
+            if (fieldName.equals(ApplicationModuleConstants.MODULE_NAME)) {
+                generator.setParameter(ApplicationModuleConstants.MODULE_NAME, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ComputeResource computeResource = (ComputeResource) result;
-                        computeHostResourceIDs.add(computeResource.getResourceID());
-                    }
-                }
-            } else if (fieldName.equals(ComputeResourceConstants.PREFERED_SUBMISSION_PROTOCOL)) {
-                generator.setParameter(ComputeResourceConstants.PREFERED_SUBMISSION_PROTOCOL, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        ComputeResource computeResource = (ComputeResource) result;
-                        computeHostResourceIDs.add(computeResource.getResourceID());
+                        ApplicationModule applicationModule = (ApplicationModule) result;
+                        moduleResources.add(applicationModule.getModuleID());
                     }
                 }
             } else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for compute resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for compute resource.");
+                logger.error("Unsupported field name for app module resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for app module resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -241,7 +210,7 @@ public class ComputeHostResource extends AbstractResource {
                 em.close();
             }
         }
-        return computeHostResourceIDs;
+        return moduleResources;
     }
 
     @Override
@@ -249,25 +218,23 @@ public class ComputeHostResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            ComputeResource existingComputeResource = em.find(ComputeResource.class, resoureId);
+            ApplicationModule existingModule = em.find(ApplicationModule.class, moduleId);
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            if (existingComputeResource !=  null){
-                existingComputeResource.setHostName(hostName);
-                existingComputeResource.setDescription(description);
-                existingComputeResource.setPreferredJobSubProtocol(preferredJobSubmissionProtocol);
-                existingComputeResource.setScratchLocation(scratchLocation);
-                em.merge(existingComputeResource);
+            if (existingModule !=  null){
+                existingModule.setModuleName(moduleName);
+                existingModule.setModuleVersion(moduleVersion);
+                existingModule.setModuleDesc(moduleDesc);
+                em.merge(existingModule);
             }else {
-                ComputeResource computeResource = new ComputeResource();
-                computeResource.setResourceID(resoureId);
-                computeResource.setHostName(hostName);
-                computeResource.setDescription(description);
-                computeResource.setPreferredJobSubProtocol(preferredJobSubmissionProtocol);
-                computeResource.setScratchLocation(scratchLocation);
-                em.persist(computeResource);
+                ApplicationModule applicationModule = new ApplicationModule();
+                applicationModule.setModuleID(moduleId);
+                applicationModule.setModuleName(moduleName);
+                applicationModule.setModuleVersion(moduleVersion);
+                applicationModule.setModuleDesc(moduleDesc);
+                em.persist(applicationModule);
             }
             em.getTransaction().commit();
             em.close();
@@ -289,9 +256,9 @@ public class ComputeHostResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            ComputeResource computeResource = em.find(ComputeResource.class, identifier);
+            ApplicationModule applicationModule = em.find(ApplicationModule.class, identifier);
             em.close();
-            return computeResource != null;
+            return applicationModule != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);

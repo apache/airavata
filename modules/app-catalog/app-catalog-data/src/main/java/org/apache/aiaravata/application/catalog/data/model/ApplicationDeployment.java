@@ -37,16 +37,17 @@ public class ApplicationDeployment {
     private String executablePath;
     @Column(name = "APPLICATION_DESC")
     private String applicationDesc;
-    @Column(name = "APPLICATION_VERSION")
-    private String applicationVersion;
-    @Column(name = "MODULE_LOAD_STRING")
-    private String moduleLoadString;
     @Column(name = "ENV_MODULE_LOAD_CMD")
     private String envModuleLoaString;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "APP_MODULE_ID")
     private ApplicationModule applicationModule;
+
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "COMPUTE_HOSTID")
+    private ComputeResource computeResource;
+
 
     public String getDeployementID() {
         return deployementID;
@@ -88,22 +89,6 @@ public class ApplicationDeployment {
         this.applicationDesc = applicationDesc;
     }
 
-    public String getApplicationVersion() {
-        return applicationVersion;
-    }
-
-    public void setApplicationVersion(String applicationVersion) {
-        this.applicationVersion = applicationVersion;
-    }
-
-    public String getModuleLoadString() {
-        return moduleLoadString;
-    }
-
-    public void setModuleLoadString(String moduleLoadString) {
-        this.moduleLoadString = moduleLoadString;
-    }
-
     public String getEnvModuleLoaString() {
         return envModuleLoaString;
     }
@@ -118,5 +103,13 @@ public class ApplicationDeployment {
 
     public void setApplicationModule(ApplicationModule applicationModule) {
         this.applicationModule = applicationModule;
+    }
+
+    public ComputeResource getComputeResource() {
+        return computeResource;
+    }
+
+    public void setComputeResource(ComputeResource computeResource) {
+        this.computeResource = computeResource;
     }
 }
