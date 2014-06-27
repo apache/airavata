@@ -74,15 +74,18 @@ import org.slf4j.LoggerFactory;
     /**
      *  * In order to run single applications users should create an associating
      *  * WorkflowNodeDetails and a TaskDetails for it and hand it over for execution
+     *  * along with a credential store token for authentication
      *  *
      *  * @param taskId
+     *  * @param airavataCredStoreToken
      *  * @return sucess/failure
      *  *
      * *
      * 
      * @param taskId
+     * @param airavataCredStoreToken
      */
-    public boolean launchTask(String taskId) throws org.apache.thrift.TException;
+    public boolean launchTask(String taskId, String airavataCredStoreToken) throws org.apache.thrift.TException;
 
     /**
      *  *
@@ -118,7 +121,7 @@ import org.slf4j.LoggerFactory;
 
     public void launchExperiment(String experimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void launchTask(String taskId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void launchTask(String taskId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void validateExperiment(String experimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -191,16 +194,17 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "launchExperiment failed: unknown result");
     }
 
-    public boolean launchTask(String taskId) throws org.apache.thrift.TException
+    public boolean launchTask(String taskId, String airavataCredStoreToken) throws org.apache.thrift.TException
     {
-      send_launchTask(taskId);
+      send_launchTask(taskId, airavataCredStoreToken);
       return recv_launchTask();
     }
 
-    public void send_launchTask(String taskId) throws org.apache.thrift.TException
+    public void send_launchTask(String taskId, String airavataCredStoreToken) throws org.apache.thrift.TException
     {
       launchTask_args args = new launchTask_args();
       args.setTaskId(taskId);
+      args.setAiravataCredStoreToken(airavataCredStoreToken);
       sendBase("launchTask", args);
     }
 
@@ -342,24 +346,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void launchTask(String taskId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void launchTask(String taskId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      launchTask_call method_call = new launchTask_call(taskId, resultHandler, this, ___protocolFactory, ___transport);
+      launchTask_call method_call = new launchTask_call(taskId, airavataCredStoreToken, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class launchTask_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String taskId;
-      public launchTask_call(String taskId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String airavataCredStoreToken;
+      public launchTask_call(String taskId, String airavataCredStoreToken, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.taskId = taskId;
+        this.airavataCredStoreToken = airavataCredStoreToken;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("launchTask", org.apache.thrift.protocol.TMessageType.CALL, 0));
         launchTask_args args = new launchTask_args();
         args.setTaskId(taskId);
+        args.setAiravataCredStoreToken(airavataCredStoreToken);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -515,7 +522,7 @@ import org.slf4j.LoggerFactory;
 
       public launchTask_result getResult(I iface, launchTask_args args) throws org.apache.thrift.TException {
         launchTask_result result = new launchTask_result();
-        result.success = iface.launchTask(args.taskId);
+        result.success = iface.launchTask(args.taskId, args.airavataCredStoreToken);
         result.setSuccessIsSet(true);
         return result;
       }
@@ -739,7 +746,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, launchTask_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.launchTask(args.taskId,resultHandler);
+        iface.launchTask(args.taskId, args.airavataCredStoreToken,resultHandler);
       }
     }
 
@@ -2160,6 +2167,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("launchTask_args");
 
     private static final org.apache.thrift.protocol.TField TASK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("taskId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField AIRAVATA_CRED_STORE_TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("airavataCredStoreToken", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2168,10 +2176,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public String taskId; // required
+    public String airavataCredStoreToken; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      TASK_ID((short)1, "taskId");
+      TASK_ID((short)1, "taskId"),
+      AIRAVATA_CRED_STORE_TOKEN((short)2, "airavataCredStoreToken");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2188,6 +2198,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 1: // TASK_ID
             return TASK_ID;
+          case 2: // AIRAVATA_CRED_STORE_TOKEN
+            return AIRAVATA_CRED_STORE_TOKEN;
           default:
             return null;
         }
@@ -2233,6 +2245,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.TASK_ID, new org.apache.thrift.meta_data.FieldMetaData("taskId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.AIRAVATA_CRED_STORE_TOKEN, new org.apache.thrift.meta_data.FieldMetaData("airavataCredStoreToken", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(launchTask_args.class, metaDataMap);
     }
@@ -2241,10 +2255,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public launchTask_args(
-      String taskId)
+      String taskId,
+      String airavataCredStoreToken)
     {
       this();
       this.taskId = taskId;
+      this.airavataCredStoreToken = airavataCredStoreToken;
     }
 
     /**
@@ -2253,6 +2269,9 @@ import org.slf4j.LoggerFactory;
     public launchTask_args(launchTask_args other) {
       if (other.isSetTaskId()) {
         this.taskId = other.taskId;
+      }
+      if (other.isSetAiravataCredStoreToken()) {
+        this.airavataCredStoreToken = other.airavataCredStoreToken;
       }
     }
 
@@ -2263,6 +2282,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.taskId = null;
+      this.airavataCredStoreToken = null;
     }
 
     public String getTaskId() {
@@ -2289,6 +2309,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public String getAiravataCredStoreToken() {
+      return this.airavataCredStoreToken;
+    }
+
+    public launchTask_args setAiravataCredStoreToken(String airavataCredStoreToken) {
+      this.airavataCredStoreToken = airavataCredStoreToken;
+      return this;
+    }
+
+    public void unsetAiravataCredStoreToken() {
+      this.airavataCredStoreToken = null;
+    }
+
+    /** Returns true if field airavataCredStoreToken is set (has been assigned a value) and false otherwise */
+    public boolean isSetAiravataCredStoreToken() {
+      return this.airavataCredStoreToken != null;
+    }
+
+    public void setAiravataCredStoreTokenIsSet(boolean value) {
+      if (!value) {
+        this.airavataCredStoreToken = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case TASK_ID:
@@ -2299,6 +2343,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case AIRAVATA_CRED_STORE_TOKEN:
+        if (value == null) {
+          unsetAiravataCredStoreToken();
+        } else {
+          setAiravataCredStoreToken((String)value);
+        }
+        break;
+
       }
     }
 
@@ -2306,6 +2358,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case TASK_ID:
         return getTaskId();
+
+      case AIRAVATA_CRED_STORE_TOKEN:
+        return getAiravataCredStoreToken();
 
       }
       throw new IllegalStateException();
@@ -2320,6 +2375,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case TASK_ID:
         return isSetTaskId();
+      case AIRAVATA_CRED_STORE_TOKEN:
+        return isSetAiravataCredStoreToken();
       }
       throw new IllegalStateException();
     }
@@ -2346,6 +2403,15 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
+      boolean this_present_airavataCredStoreToken = true && this.isSetAiravataCredStoreToken();
+      boolean that_present_airavataCredStoreToken = true && that.isSetAiravataCredStoreToken();
+      if (this_present_airavataCredStoreToken || that_present_airavataCredStoreToken) {
+        if (!(this_present_airavataCredStoreToken && that_present_airavataCredStoreToken))
+          return false;
+        if (!this.airavataCredStoreToken.equals(that.airavataCredStoreToken))
+          return false;
+      }
+
       return true;
     }
 
@@ -2368,6 +2434,16 @@ import org.slf4j.LoggerFactory;
       }
       if (isSetTaskId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.taskId, other.taskId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAiravataCredStoreToken()).compareTo(other.isSetAiravataCredStoreToken());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAiravataCredStoreToken()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.airavataCredStoreToken, other.airavataCredStoreToken);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -2399,6 +2475,14 @@ import org.slf4j.LoggerFactory;
         sb.append(this.taskId);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("airavataCredStoreToken:");
+      if (this.airavataCredStoreToken == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.airavataCredStoreToken);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -2407,6 +2491,9 @@ import org.slf4j.LoggerFactory;
       // check for required fields
       if (taskId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'taskId' was not present! Struct: " + toString());
+      }
+      if (airavataCredStoreToken == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'airavataCredStoreToken' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
     }
@@ -2453,6 +2540,14 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // AIRAVATA_CRED_STORE_TOKEN
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.airavataCredStoreToken = iprot.readString();
+                struct.setAiravataCredStoreTokenIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -2473,6 +2568,11 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.taskId);
           oprot.writeFieldEnd();
         }
+        if (struct.airavataCredStoreToken != null) {
+          oprot.writeFieldBegin(AIRAVATA_CRED_STORE_TOKEN_FIELD_DESC);
+          oprot.writeString(struct.airavataCredStoreToken);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -2491,6 +2591,7 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, launchTask_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.taskId);
+        oprot.writeString(struct.airavataCredStoreToken);
       }
 
       @Override
@@ -2498,6 +2599,8 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.taskId = iprot.readString();
         struct.setTaskIdIsSet(true);
+        struct.airavataCredStoreToken = iprot.readString();
+        struct.setAiravataCredStoreTokenIsSet(true);
       }
     }
 
