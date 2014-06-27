@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.gsissh.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -30,7 +31,9 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
+import org.apache.airavata.gfac.gsissh.security.TokenizedMyProxyAuthInfo;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
@@ -57,28 +60,22 @@ public class GFACGSISSHUtils {
     public static final String SUN_GRID_ENGINE_JOB_MANAGER = "sge";
 
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
-        RequestData requestData = new RequestData("default");
-        GSISecurityContext context = null;
-        try {
-            //todo fix this
-            context = new GSISecurityContext(null, requestData);
-        } catch (Exception e) {
-            throw new GFacException("An error occurred while creating GSI security context", e);
-        }
         HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
         if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
                 || registeredHost.getType() instanceof SSHHostType) {
             logger.error("This is a wrong method to invoke to non ssh host types,please check your gfac-config.xml");
         } else if (registeredHost.getType() instanceof GsisshHostType) {
-            GSIAuthenticationInfo authenticationInfo
-                    = new MyProxyAuthenticationInfo(requestData.getMyProxyUserName(), requestData.getMyProxyPassword(), requestData.getMyProxyServerUrl(),
-                    requestData.getMyProxyPort(), requestData.getMyProxyLifeTime(), System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY));
-            GsisshHostType gsisshHostType = (GsisshHostType) registeredHost.getType();
-            ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress(),
-                    gsisshHostType.getPort());
-
-            Cluster pbsCluster = null;
+            String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
+            RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
+            requestData.setTokenId(credentialStoreToken);
+            PBSCluster pbsCluster = null;
+            GSISecurityContext context = null;
             try {
+                TokenizedMyProxyAuthInfo tokenizedMyProxyAuthInfo = new TokenizedMyProxyAuthInfo(GFacUtils.getCredentialReader(), requestData);
+                GsisshHostType gsisshHostType = (GsisshHostType) registeredHost.getType();
+                ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress(),
+                        gsisshHostType.getPort());
+
                 JobManagerConfiguration jConfig = null;
                 String installedParentPath = ((HpcApplicationDeploymentType)
                         jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
@@ -95,15 +92,15 @@ public class GFACGSISSHUtils {
                         jConfig = CommonUtils.getSGEJobManager(installedParentPath);
                     }
                 }
-                pbsCluster = new PBSCluster(serverInfo, authenticationInfo, jConfig);
-            } catch (SSHApiException e) {
-            	 throw new GFacException("An error occurred while creating GSI security context", e);
+                pbsCluster = new PBSCluster(serverInfo, tokenizedMyProxyAuthInfo, jConfig);
+                context = new GSISecurityContext(GFacUtils.getCredentialReader(), requestData,pbsCluster);
+            } catch (Exception e) {
+                throw new GFacException("An error occurred while creating GSI security context", e);
             }
-
-            context.setPbsCluster(pbsCluster);
+            jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
         }
-        jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT,context);
     }
+
     public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext,
                                                     ApplicationDeploymentDescriptionType app, Cluster cluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
