@@ -159,18 +159,14 @@ public class RegistryInitUtil {
     }
     
     public static void stopDerbyInServerMode() {
-        try {
             System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "false");
             if (server!=null){
-            	server.shutdown();
+            	try {
+					server.shutdown();
+				} catch (Exception e) {
+		            logger.error("Error when stopping the derby server : "+e.getLocalizedMessage());
+				}
             }
-        } catch (IOException e) {
-            logger.error("Unable to start Apache derby in the server mode! Check whether " +
-                    "specified port is available");
-        } catch (Exception e) {
-            logger.error("Unable to start Apache derby in the server mode! Check whether " +
-                    "specified port is available");
-        }
     }
 
     public static int getPort(String jdbcURL){

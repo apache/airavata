@@ -21,37 +21,68 @@
 
 package org.apache.airavata.api.server.handler;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.error.*;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.error.LaunchValidationException;
+import org.apache.airavata.model.error.ProjectNotFoundException;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
+import org.apache.airavata.model.workspace.experiment.ExperimentSummary;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
+import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.ParentDataType;
+import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
+import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
 import org.apache.thrift.TException;
-import org.apache.tools.ant.types.selectors.FileSelector;
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
 public class AiravataServerHandler implements Airavata.Iface, Watcher {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
     private Registry registry;
-    private OrchestratorService.Client orchestratorClient;
 
     private ZooKeeper zk;
+
     private static Integer mutex = -1;
 
 
@@ -61,6 +92,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
                     + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_PORT);
             String airavataServerHostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_HOST)
                                 + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_PORT);
+
             try {
                 zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
                 String apiServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_API_SERVER_NODE,"/airavata-server");
@@ -964,7 +996,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
                 (new Thread() {
                     public void run() {
                         try {
-                            orchestratorClient.launchExperiment(expID);
+                            launchSingleAppExperiment(expID, orchestratorClient);
                         } catch (TException e) {
                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                         }
@@ -976,10 +1008,56 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
         }
     }
 
+    private boolean launchSingleAppExperiment(String experimentId, OrchestratorService.Client orchestratorClient) throws TException {
+        Experiment experiment = null;
+        try {
+            List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL, WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
+            for (String workflowNodeId : ids) {
+//                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
+                List<Object> taskDetailList = registry.get(RegistryModelType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
+                for (Object o : taskDetailList) {
+                    TaskDetails taskData = (TaskDetails) o;
+                    //iterate through all the generated tasks and performs the job submisssion+monitoring
+                    experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentId);
+                    if (experiment == null) {
+                        logger.error("Error retrieving the Experiment by the given experimentID: " + experimentId);
+                        return false;
+                    }
+                    ExperimentStatus status = new ExperimentStatus();
+                    status.setExperimentState(ExperimentState.LAUNCHED);
+                    status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+                    experiment.setExperimentStatus(status);
+                    registry.update(RegistryModelType.EXPERIMENT, experiment, experimentId);
+                    registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskID());
+                    //launching the experiment
+                    orchestratorClient.launchTask(taskData.getTaskID());
+                }
+            }
+
+        } catch (Exception e) {
+            // Here we really do not have to do much because only potential failure can happen
+            // is in gfac, if there are errors in gfac, it will handle the experiment/task/job statuses
+            // We might get failures in registry access before submitting the jobs to gfac, in that case we
+            // leave the status of these as created.
+            ExperimentStatus status = new ExperimentStatus();
+            status.setExperimentState(ExperimentState.FAILED);
+            status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+            experiment.setExperimentStatus(status);
+            try {
+                registry.update(RegistryModelType.EXPERIMENT, experiment, experimentId);
+            } catch (RegistryException e1) {
+                throw new TException(e);
+            }
+
+            throw new TException(e);
+        }
+        return true;
+    }
+    
 	private OrchestratorService.Client getOrchestratorClient() {
 		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
         final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
-        return orchestratorClient = OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+        return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
 	}
 
     /**

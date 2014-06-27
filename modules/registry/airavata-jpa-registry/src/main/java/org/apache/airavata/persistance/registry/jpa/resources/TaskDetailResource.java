@@ -45,6 +45,8 @@ public class TaskDetailResource extends AbstractResource {
     private Timestamp creationTime;
     private String applicationId;
     private String applicationVersion;
+    private String hostDescriptorId;
+    private String applicationDescriptorId;
 
     public String getTaskId() {
         return taskId;
@@ -465,29 +467,18 @@ public class TaskDetailResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            TaskDetail existingTaskDetail = em.find(TaskDetail.class, taskId);
+            TaskDetail taskDetail = em.find(TaskDetail.class, taskId);
             em.close();
-
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            TaskDetail taskDetail = new TaskDetail();
-            taskDetail.setTaskId(taskId);
             WorkflowNodeDetail workflowNodeDetail = em.find(WorkflowNodeDetail.class, workflowNodeDetailResource.getNodeInstanceId());
-            taskDetail.setNodeDetail(workflowNodeDetail);
-            taskDetail.setNodeId(workflowNodeDetailResource.getNodeInstanceId());
-            taskDetail.setCreationTime(creationTime);
-            taskDetail.setAppId(applicationId);
-            taskDetail.setAppVersion(applicationVersion);
-            if (existingTaskDetail != null) {
-                existingTaskDetail.setTaskId(taskId);
-                existingTaskDetail.setNodeDetail(workflowNodeDetail);
-                existingTaskDetail.setNodeId(workflowNodeDetailResource.getNodeInstanceId());
-                existingTaskDetail.setCreationTime(creationTime);
-                existingTaskDetail.setAppId(applicationId);
-                existingTaskDetail.setAppVersion(applicationVersion);
-                taskDetail = em.merge(existingTaskDetail);
-            } else {
+            if (taskDetail != null) {
+            	updateTaskDetail(taskDetail, workflowNodeDetail);
                 em.merge(taskDetail);
+            } else {
+                taskDetail = new TaskDetail();
+                updateTaskDetail(taskDetail, workflowNodeDetail);                
+                em.persist(taskDetail);
             }
             em.getTransaction().commit();
         } catch (Exception e) {
@@ -502,6 +493,18 @@ public class TaskDetailResource extends AbstractResource {
             }
         }
     }
+
+	private void updateTaskDetail(TaskDetail taskDetail,
+			WorkflowNodeDetail workflowNodeDetail) {
+		taskDetail.setTaskId(taskId);
+		taskDetail.setNodeDetail(workflowNodeDetail);
+		taskDetail.setNodeId(workflowNodeDetailResource.getNodeInstanceId());
+		taskDetail.setCreationTime(creationTime);
+		taskDetail.setAppId(applicationId);
+		taskDetail.setAppVersion(applicationVersion);
+		taskDetail.setHostDescriptorId(getHostDescriptorId());
+		taskDetail.setApplicationDescriptorId(getApplicationDescriptorId());
+	}
 
     public List<ApplicationInputResource> getApplicationInputs() throws RegistryException{
         List<ApplicationInputResource> applicationInputResources = new ArrayList<ApplicationInputResource>();
@@ -596,4 +599,20 @@ public class TaskDetailResource extends AbstractResource {
     public  boolean isTaskStatusExist (String taskId) throws RegistryException{
         return isExists(ResourceType.STATUS, taskId);
     }
+
+	public String getApplicationDescriptorId() {
+		return applicationDescriptorId;
+	}
+
+	public void setApplicationDescriptorId(String applicationDescriptorId) {
+		this.applicationDescriptorId = applicationDescriptorId;
+	}
+
+	public String getHostDescriptorId() {
+		return hostDescriptorId;
+	}
+
+	public void setHostDescriptorId(String hostDescriptorId) {
+		this.hostDescriptorId = hostDescriptorId;
+	}
 }

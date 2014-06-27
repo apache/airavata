@@ -636,6 +636,8 @@ public class Utils {
             taskDetailResource.setTaskId(o.getTaskId());
             taskDetailResource.setApplicationId(o.getAppId());
             taskDetailResource.setApplicationVersion(o.getAppVersion());
+            taskDetailResource.setHostDescriptorId(o.getHostDescriptorId());
+            taskDetailResource.setApplicationDescriptorId(o.getApplicationDescriptorId());
         }
         return taskDetailResource;
     }
