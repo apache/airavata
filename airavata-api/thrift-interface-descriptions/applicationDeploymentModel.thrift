@@ -18,21 +18,52 @@
  *
  */
 
+/**
+ * This file describes the definitions of the Data Structures related to deployment of Application on
+ *  computational resources.
+ *
+*/
+
 namespace java org.apache.airavata.model.application.deployment
 namespace php Airavata.Model.Application.Deployment
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
+/**
+ * Key Value pairs to be used to set environments
+ *
+ * name:
+ *   Name of the environment variable such as PATH, LD_LIBRARY_PATH, NETCDF_HOME.
+ *
+ * value:
+ *   Value of the environment variable to set
+*/
 struct SetEnvPaths {
     1: required string name,
     2: required string value
 }
 
+/**
+ * Application Module Information. A module has to be registered before registering a deployment.
+ *
+ * appModuleId: Airavata Internal Unique Job ID. This is set by the registry.
+ *
+ * appModuleName:
+ *   Name of the application module.
+ *
+ * appModuleVersion:
+ *   Version of the application.
+ *
+ * appModuleDescription:
+ *    Descriprion of the Module
+ *
+*/
 struct ApplicationModule {
-    1: required string appModuleId = DEFAULT_ID,
-    2: required string appModuleName,
-    3: optional string appModuleVersion,
-    4: optional string appModuleDescription
+    1: required bool isEmpty = 0,
+    2: required string appModuleId = DEFAULT_ID,
+    3: required string appModuleName,
+    4: optional string appModuleVersion,
+    5: optional string appModuleDescription
 }
 
 /**
@@ -47,7 +78,7 @@ struct ApplicationModule {
  *   This ID maps application deployment to a particular resource previously described within Airavata.
  *   Example: Stampede is first registered and refered when registering WRF.
  *
- * envModuleLoadCmd:
+ * moduleLoadCmd:
  *  Command string to load modules. This will be placed in the job submisison
  *  Ex: module load amber
  *
@@ -62,14 +93,14 @@ struct ApplicationModule {
  *
 */
 struct ApplicationDeploymentDescription {
-    1: required string appDeploymentId = DEFAULT_ID,
-    2: required string appModuleId,
-    3: required string computeHostId,
-    4: required string executablePath,
-	5: optional string appDeploymentDescription,
-	6: optional string envModuleLoadCmd,
-	7: optional list<SetEnvPaths> libPrependPaths,
-	8: optional list<SetEnvPaths> libAppendPaths,
-	9: optional list<SetEnvPaths> setEnvironment,
+    1: required bool isEmpty = 0,
+    2: required string appDeploymentId = DEFAULT_ID,
+    3: required string appModuleId,
+    4: required string computeHostId,
+    5: required string executablePath,
+	6: optional string appDeploymentDescription,
+	7: optional string moduleLoadCmd,
+	8: optional list<SetEnvPaths> libPrependPaths,
+	9: optional list<SetEnvPaths> libAppendPaths,
+	10: optional list<SetEnvPaths> setEnvironment,
 }
-
