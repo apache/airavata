@@ -22,10 +22,11 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "COMPUTE_RESOURCE")
-public class ComputeResource {
+public class ComputeResource implements Serializable {
     @Id
     @Column(name = "RESOURCE_ID")
     private String resourceID;

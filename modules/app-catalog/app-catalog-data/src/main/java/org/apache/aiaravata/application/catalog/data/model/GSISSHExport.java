@@ -24,11 +24,12 @@ package org.apache.aiaravata.application.catalog.data.model;
 import org.apache.airavata.model.appcatalog.GSISSHJobSubmission;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "GSISSH_EXPORT")
 @IdClass(GSISSHExportPK.class)
-public class GSISSHExport {
+public class GSISSHExport implements Serializable {
     @Id
     @Column(name = "SUBMISSION_ID")
     private String submissionID;

@@ -21,7 +21,9 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-public class JobSubmissionProtocolPK {
+import java.io.Serializable;
+
+public class JobSubmissionProtocolPK implements Serializable {
     private String resourceID;
     private String submissionID;
     private String jobType;
