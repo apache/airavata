@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog;
+package org.apache.airavata.model.computehost;
 
 
 import java.util.Map;
@@ -28,27 +28,27 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * Enumeration of security authentication and authorization mechanisms supported by Airavata. This enumeration just
- *  describes the supported mechanism. The corresponding security credentials are registered with Airavata Credential
- *  store.
+ * Enumeration of Airavata supported Job Submission Mechanisms for High Perforamance Computing Clusters.
  * 
- * USERNAME_PASSWORD:
- *  A User Name.
+ * SSH:
+ *  Execute remote job submission commands using via secure shell protocol.
  * 
- * SSH_KEYS:
- *  SSH Keys
+ * GRAM:
+ *  Execute remote jobs via Globus GRAM service.
+ * 
+ * UNICORE:
+ *  Execute remote jobs via Unicore services
  * 
  */
-@SuppressWarnings("all") public enum SecurityProtocol implements org.apache.thrift.TEnum {
-  USERNAME_PASSWORD(0),
-  SSH_KEYS(1),
-  GSI(2),
-  KERBEROS(3),
-  OAUTH(4);
+@SuppressWarnings("all") public enum JobSubmissionProtocol implements org.apache.thrift.TEnum {
+  SSH(0),
+  GSISSH(1),
+  GRAM(2),
+  UNICORE(3);
 
   private final int value;
 
-  private SecurityProtocol(int value) {
+  private JobSubmissionProtocol(int value) {
     this.value = value;
   }
 
@@ -63,18 +63,16 @@ import org.apache.thrift.TEnum;
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static SecurityProtocol findByValue(int value) { 
+  public static JobSubmissionProtocol findByValue(int value) { 
     switch (value) {
       case 0:
-        return USERNAME_PASSWORD;
+        return SSH;
       case 1:
-        return SSH_KEYS;
+        return GSISSH;
       case 2:
-        return GSI;
+        return GRAM;
       case 3:
-        return KERBEROS;
-      case 4:
-        return OAUTH;
+        return UNICORE;
       default:
         return null;
     }

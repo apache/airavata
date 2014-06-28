@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog;
+package org.apache.airavata.model.computehost;
 
 
 import java.util.Map;
@@ -28,30 +28,27 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * Enumeration of local resource job managers supported by Airavata
+ * Enumeration of security authentication and authorization mechanisms supported by Airavata. This enumeration just
+ *  describes the supported mechanism. The corresponding security credentials are registered with Airavata Credential
+ *  store.
  * 
- * FORK:
- *  Forking of commands without any job manager
+ * USERNAME_PASSWORD:
+ *  A User Name.
  * 
- * PBS:
- *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
- * 
- * UGE:
- *  Univa Grid Engine, a variation of PBS implementation.
- * 
- * SLURM:
- *  The Simple Linux Utility for Resource Management is a open source workload manager.
+ * SSH_KEYS:
+ *  SSH Keys
  * 
  */
-@SuppressWarnings("all") public enum ResourceJobManager implements org.apache.thrift.TEnum {
-  FORK(0),
-  PBS(1),
-  UGE(2),
-  SLURM(3);
+@SuppressWarnings("all") public enum SecurityProtocol implements org.apache.thrift.TEnum {
+  USERNAME_PASSWORD(0),
+  SSH_KEYS(1),
+  GSI(2),
+  KERBEROS(3),
+  OAUTH(4);
 
   private final int value;
 
-  private ResourceJobManager(int value) {
+  private SecurityProtocol(int value) {
     this.value = value;
   }
 
@@ -66,16 +63,18 @@ import org.apache.thrift.TEnum;
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static ResourceJobManager findByValue(int value) { 
+  public static SecurityProtocol findByValue(int value) { 
     switch (value) {
       case 0:
-        return FORK;
+        return USERNAME_PASSWORD;
       case 1:
-        return PBS;
+        return SSH_KEYS;
       case 2:
-        return UGE;
+        return GSI;
       case 3:
-        return SLURM;
+        return KERBEROS;
+      case 4:
+        return OAUTH;
       default:
         return null;
     }

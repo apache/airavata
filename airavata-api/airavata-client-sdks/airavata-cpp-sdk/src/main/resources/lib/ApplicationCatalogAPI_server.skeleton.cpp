@@ -102,7 +102,7 @@ class ApplicationCatalogAPIHandler : virtual public ApplicationCatalogAPIIf {
     printf("getComputeResourceDescriptionFromHostName\n");
   }
 
-  void addApplicationInterface(std::string& _return, const  ::ApplicationInterface& applicationInterface) {
+  void addApplicationInterface(std::string& _return, const  ::ApplicationInterfaceDescription& applicationInterface) {
     // Your implementation goes here
     printf("addApplicationInterface\n");
   }
@@ -112,12 +112,32 @@ class ApplicationCatalogAPIHandler : virtual public ApplicationCatalogAPIIf {
     printf("listApplicationInterfaceIds\n");
   }
 
-  void getApplicationInterface( ::ApplicationInterface& _return, const std::string& applicationInterfaceId) {
+  void getApplicationInterface( ::ApplicationInterfaceDescription& _return, const std::string& applicationInterfaceId) {
     // Your implementation goes here
     printf("getApplicationInterface\n");
   }
 
-  void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment) {
+  void registerAppicationModule(std::string& _return, const  ::ApplicationModule& applicationModule, const bool publish) {
+    // Your implementation goes here
+    printf("registerAppicationModule\n");
+  }
+
+  void getAppicationModule( ::ApplicationModule& _return, const std::string& appModuleId) {
+    // Your implementation goes here
+    printf("getAppicationModule\n");
+  }
+
+  bool updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule) {
+    // Your implementation goes here
+    printf("updateAppicationModule\n");
+  }
+
+  bool deleteAppicationModule(const std::string& appModuleId) {
+    // Your implementation goes here
+    printf("deleteAppicationModule\n");
+  }
+
+  void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeploymentDescription& applicationDeployment) {
     // Your implementation goes here
     printf("addApplicationDeployment\n");
   }
@@ -127,7 +147,7 @@ class ApplicationCatalogAPIHandler : virtual public ApplicationCatalogAPIIf {
     printf("listApplicationDeploymentIds\n");
   }
 
-  void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId) {
+  void getApplicationDeployment( ::ApplicationDeploymentDescription& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId) {
     // Your implementation goes here
     printf("getApplicationDeployment\n");
   }
