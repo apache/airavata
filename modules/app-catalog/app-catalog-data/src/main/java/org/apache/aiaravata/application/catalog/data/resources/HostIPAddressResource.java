@@ -215,16 +215,16 @@ public class HostIPAddressResource extends AbstractResource{
             em.getTransaction().begin();
             if (existingHostIP !=  null){
                 existingHostIP.setIpaddress(ipaddress);
-                ComputeResource computeResource = em.find(ComputeResource.class, computeHostResource.getResoureId());
-                existingHostIP.setComputeResource(computeResource);
                 existingHostIP.setResourceID(resourceID);
+                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
+                existingHostIP.setComputeResource(computeResource);
 
                 em.merge(existingHostIP);
             }else {
                 HostIPAddress hostIPAddress = new HostIPAddress();
                 hostIPAddress.setIpaddress(ipaddress);
                 hostIPAddress.setResourceID(resourceID);
-                ComputeResource computeResource = em.find(ComputeResource.class, computeHostResource.getResoureId());
+                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 hostIPAddress.setComputeResource(computeResource);
 
                 em.persist(hostIPAddress);

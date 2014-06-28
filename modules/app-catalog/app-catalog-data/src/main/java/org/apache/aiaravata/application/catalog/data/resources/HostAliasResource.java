@@ -211,7 +211,7 @@ public class HostAliasResource extends AbstractResource {
             em.getTransaction().begin();
             if (existingHostAlias !=  null){
                 existingHostAlias.setAlias(alias);
-                ComputeResource computeResource = em.find(ComputeResource.class, computeHostResource.getResoureId());
+                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingHostAlias.setComputeResource(computeResource);
                 existingHostAlias.setResourceID(resourceID);
 
@@ -220,7 +220,7 @@ public class HostAliasResource extends AbstractResource {
                 HostAlias hostAlias = new HostAlias();
                 hostAlias.setAlias(alias);
                 hostAlias.setResourceID(resourceID);
-                ComputeResource computeResource = em.find(ComputeResource.class, computeHostResource.getResoureId());
+                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 hostAlias.setComputeResource(computeResource);
 
                 em.persist(hostAlias);
