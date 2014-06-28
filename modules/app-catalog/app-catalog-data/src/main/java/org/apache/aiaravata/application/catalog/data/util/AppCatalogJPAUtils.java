@@ -135,6 +135,27 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Library Apend path.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Library Apend.");
                 }
+            case APP_ENVIRONMENT:
+                if (o instanceof AppEnvironment){
+                    return createAppEnvironmentResource((AppEnvironment) o);
+                }else {
+                    logger.error("Object should be a Library Apend path.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Library Apend.");
+                }
+            case APPLICATION_INTERFACE:
+                if (o instanceof ApplicationInterface){
+                    return createAppInterfaceResource((ApplicationInterface) o);
+                }else {
+                    logger.error("Object should be a Library Apend path.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Library Apend.");
+                }
+            case APP_MODULE_MAPPING:
+                if (o instanceof ApplicationInterface){
+                    return createAppModMappingResource((AppModuleMapping) o);
+                }else {
+                    logger.error("Object should be a Library Apend path.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Library Apend.");
+                }
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
                 throw new IllegalArgumentException("Illegal data type..");
@@ -182,8 +203,8 @@ public class AppCatalogJPAUtils {
         resource.setEnvModuleLoadCMD(o.getEnvModuleLoaString());
         resource.setHostId(o.getHostID());
         resource.setExecutablePath(o.getExecutablePath());
-        resource.setModuleResource((AppModuleResource)createApplicationModule(o.getApplicationModule()));
-        resource.setHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
+        resource.setHostResource((ComputeHostResource) createComputeResource(o.getComputeResource()));
         return resource;
     }
 
@@ -192,7 +213,7 @@ public class AppCatalogJPAUtils {
         resource.setDeploymentId(o.getDeploymentID());
         resource.setName(o.getName());
         resource.setValue(o.getValue());
-        resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
         return resource;
     }
 
@@ -202,6 +223,29 @@ public class AppCatalogJPAUtils {
         resource.setName(o.getName());
         resource.setValue(o.getValue());
         resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        return resource;
+    }
+
+    private static Resource createAppEnvironmentResource(AppEnvironment o) {
+        AppEnvironmentResource resource = new AppEnvironmentResource();
+        resource.setDeploymentId(o.getDeploymentID());
+        resource.setName(o.getName());
+        resource.setValue(o.getValue());
+        resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        return resource;
+    }
+
+    private static Resource createAppInterfaceResource(ApplicationInterface o) {
+        AppInterfaceResource resource = new AppInterfaceResource();
+        resource.setInterfaceId(o.getInterfaceID());
+        resource.setAppName(o.getAppName());
+        return resource;
+    }
+
+    private static Resource createAppModMappingResource(AppModuleMapping o) {
+        AppModuleMappingResource resource = new AppModuleMappingResource();
+        resource.setInterfaceId(o.getInterfaceID());
+        resource.setModuleId(o.getModuleID());
         return resource;
     }
 }

@@ -22,9 +22,9 @@
 package org.apache.aiaravata.application.catalog.data.resources;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.model.AppEnvironment;
+import org.apache.aiaravata.application.catalog.data.model.AppEnvironment_PK;
 import org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment;
-import org.apache.aiaravata.application.catalog.data.model.LibraryApendPath;
-import org.apache.aiaravata.application.catalog.data.model.LibraryApendPath_PK;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
@@ -39,8 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LibraryApendPathResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(LibraryApendPathResource.class);
+public class AppEnvironmentResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(AppEnvironmentResource.class);
     private String deploymentId;
     private String name;
     private String value;
@@ -91,9 +91,9 @@ public class LibraryApendPathResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(LIBRARY_APEND_PATH);
-            generator.setParameter(LibraryApendPathConstants.DEPLOYMENT_ID, ids.get(LibraryApendPathConstants.DEPLOYMENT_ID));
-            generator.setParameter(LibraryApendPathConstants.NAME, ids.get(LibraryApendPathConstants.NAME));
+            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(APP_ENVIRONMENT);
+            generator.setParameter(AppEnvironmentConstants.DEPLOYMENT_ID, ids.get(AppEnvironmentConstants.DEPLOYMENT_ID));
+            generator.setParameter(AppEnvironmentConstants.NAME, ids.get(AppEnvironmentConstants.NAME));
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -124,13 +124,13 @@ public class LibraryApendPathResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(LIBRARY_APEND_PATH);
-            generator.setParameter(LibraryApendPathConstants.DEPLOYMENT_ID, ids.get(LibraryApendPathConstants.DEPLOYMENT_ID));
-            generator.setParameter(LibraryApendPathConstants.NAME, ids.get(LibraryApendPathConstants.NAME));
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APP_ENVIRONMENT);
+            generator.setParameter(AppEnvironmentConstants.DEPLOYMENT_ID, ids.get(AppEnvironmentConstants.DEPLOYMENT_ID));
+            generator.setParameter(AppEnvironmentConstants.NAME, ids.get(AppEnvironmentConstants.NAME));
             Query q = generator.selectQuery(em);
-            LibraryApendPath libraryApendPath = (LibraryApendPath) q.getSingleResult();
-            LibraryApendPathResource resource =
-                    (LibraryApendPathResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LIBRARY_APEND_PATH, libraryApendPath);
+            AppEnvironment appEnvironment = (AppEnvironment) q.getSingleResult();
+            AppEnvironmentResource resource =
+                    (AppEnvironmentResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_ENVIRONMENT, appEnvironment);
             em.getTransaction().commit();
             em.close();
             return resource;
@@ -149,43 +149,43 @@ public class LibraryApendPathResource extends AbstractResource {
 
     @Override
     public List<Resource> get(String fieldName, Object value) throws AppCatalogException {
-        List<Resource> libApPathList = new ArrayList<Resource>();
+        List<Resource> appEnvironmentList = new ArrayList<Resource>();
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(LIBRARY_APEND_PATH);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APP_ENVIRONMENT);
             List results;
-            if (fieldName.equals(LibraryApendPathConstants.DEPLOYMENT_ID)) {
-                generator.setParameter(LibraryApendPathConstants.DEPLOYMENT_ID, value);
+            if (fieldName.equals(AppEnvironmentConstants.DEPLOYMENT_ID)) {
+                generator.setParameter(AppEnvironmentConstants.DEPLOYMENT_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        LibraryApendPath prepandPath = (LibraryApendPath) result;
-                        LibraryApendPathResource resource =
-                                (LibraryApendPathResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LIBRARY_APEND_PATH, prepandPath);
-                        libApPathList.add(resource);
+                        AppEnvironment appEnvironment = (AppEnvironment) result;
+                        AppEnvironmentResource resource =
+                                (AppEnvironmentResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_ENVIRONMENT, appEnvironment);
+                        appEnvironmentList.add(resource);
                     }
                 }
-            } else if (fieldName.equals(LibraryApendPathConstants.NAME)) {
-                generator.setParameter(LibraryApendPathConstants.NAME, value);
+            } else if (fieldName.equals(AppEnvironmentConstants.NAME)) {
+                generator.setParameter(AppEnvironmentConstants.NAME, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        LibraryApendPath prepandPath = (LibraryApendPath) result;
-                        LibraryApendPathResource resource =
-                                (LibraryApendPathResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LIBRARY_APEND_PATH, prepandPath);
-                        libApPathList.add(resource);
+                        AppEnvironment appEnvironment = (AppEnvironment) result;
+                        AppEnvironmentResource resource =
+                                (AppEnvironmentResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_ENVIRONMENT, appEnvironment);
+                        appEnvironmentList.add(resource);
                     }
                 }
             }else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for libraryApendPath resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for libraryApendPath resource.");
+                logger.error("Unsupported field name for App Environment resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for App Environment resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -200,7 +200,7 @@ public class LibraryApendPathResource extends AbstractResource {
                 em.close();
             }
         }
-        return libApPathList;
+        return appEnvironmentList;
     }
 
     @Override
@@ -214,24 +214,24 @@ public class LibraryApendPathResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            LibraryApendPath existigApendPath = em.find(LibraryApendPath.class, new LibraryApendPath_PK(deploymentId, name));
+            AppEnvironment existigAppEnv = em.find(AppEnvironment.class, new AppEnvironment_PK(deploymentId, name));
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
 
             ApplicationDeployment deployment = em.find(ApplicationDeployment.class, deploymentId);
-            if (existigApendPath !=  null){
-                existigApendPath.setValue(value);
-                existigApendPath.setApplicationDeployment(deployment);
-                em.merge(existigApendPath);
+            if (existigAppEnv !=  null){
+                existigAppEnv.setValue(value);
+                existigAppEnv.setApplicationDeployment(deployment);
+                em.merge(existigAppEnv);
             }else {
-                LibraryApendPath prepandPath = new LibraryApendPath();
-                prepandPath.setDeploymentID(deploymentId);
-                prepandPath.setName(name);
-                prepandPath.setValue(value);
-                prepandPath.setApplicationDeployment(deployment);
-                em.persist(prepandPath);
+                AppEnvironment appEnvironment = new AppEnvironment();
+                appEnvironment.setDeploymentID(deploymentId);
+                appEnvironment.setName(name);
+                appEnvironment.setValue(value);
+                appEnvironment.setApplicationDeployment(deployment);
+                em.persist(appEnvironment);
             }
             em.getTransaction().commit();
             em.close();
@@ -260,11 +260,11 @@ public class LibraryApendPathResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            LibraryApendPath apendPath = em.find(LibraryApendPath.class,
-                    new LibraryApendPath_PK(ids.get(LibraryApendPathConstants.DEPLOYMENT_ID),
-                            ids.get(LibraryApendPathConstants.NAME)));
+            AppEnvironment appEnvironment = em.find(AppEnvironment.class,
+                    new AppEnvironment_PK(ids.get(AppEnvironmentConstants.DEPLOYMENT_ID),
+                            ids.get(AppEnvironmentConstants.NAME)));
             em.close();
-            return apendPath != null;
+            return appEnvironment != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);

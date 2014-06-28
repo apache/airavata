@@ -22,9 +22,10 @@
 package org.apache.aiaravata.application.catalog.data.resources;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment;
-import org.apache.aiaravata.application.catalog.data.model.LibraryApendPath;
-import org.apache.aiaravata.application.catalog.data.model.LibraryApendPath_PK;
+import org.apache.aiaravata.application.catalog.data.model.AppModuleMapping;
+import org.apache.aiaravata.application.catalog.data.model.AppModuleMapping_PK;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationInterface;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationModule;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
@@ -39,43 +40,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class LibraryApendPathResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(LibraryApendPathResource.class);
-    private String deploymentId;
-    private String name;
-    private String value;
-    private AppDeploymentResource appDeploymentResource;
+public class AppModuleMappingResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(AppModuleMappingResource.class);
+    private String interfaceId;
+    private String moduleId;
+    private AppInterfaceResource appInterfaceResource;
+    private AppModuleResource moduleResource;
 
-    public String getDeploymentId() {
-        return deploymentId;
+
+    public String getModuleId() {
+        return moduleId;
     }
 
-    public void setDeploymentId(String deploymentId) {
-        this.deploymentId = deploymentId;
+    public void setModuleId(String moduleId) {
+        this.moduleId = moduleId;
     }
 
-    public String getName() {
-        return name;
+    public String getInterfaceId() {
+        return interfaceId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setInterfaceId(String interfaceId) {
+        this.interfaceId = interfaceId;
     }
 
-    public String getValue() {
-        return value;
+    public AppInterfaceResource getAppInterfaceResource() {
+        return appInterfaceResource;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setAppInterfaceResource(AppInterfaceResource appInterfaceResource) {
+        this.appInterfaceResource = appInterfaceResource;
     }
 
-    public AppDeploymentResource getAppDeploymentResource() {
-        return appDeploymentResource;
+    public AppModuleResource getModuleResource() {
+        return moduleResource;
     }
 
-    public void setAppDeploymentResource(AppDeploymentResource appDeploymentResource) {
-        this.appDeploymentResource = appDeploymentResource;
+    public void setModuleResource(AppModuleResource moduleResource) {
+        this.moduleResource = moduleResource;
     }
 
     @Override
@@ -91,9 +93,9 @@ public class LibraryApendPathResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(LIBRARY_APEND_PATH);
-            generator.setParameter(LibraryApendPathConstants.DEPLOYMENT_ID, ids.get(LibraryApendPathConstants.DEPLOYMENT_ID));
-            generator.setParameter(LibraryApendPathConstants.NAME, ids.get(LibraryApendPathConstants.NAME));
+            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(APP_MODULE_MAPPING);
+            generator.setParameter(AppModuleMappingConstants.INTERFACE_ID, ids.get(AppModuleMappingConstants.INTERFACE_ID));
+            generator.setParameter(AppModuleMappingConstants.MODULE_ID, ids.get(AppModuleMappingConstants.MODULE_ID));
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -124,13 +126,13 @@ public class LibraryApendPathResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(LIBRARY_APEND_PATH);
-            generator.setParameter(LibraryApendPathConstants.DEPLOYMENT_ID, ids.get(LibraryApendPathConstants.DEPLOYMENT_ID));
-            generator.setParameter(LibraryApendPathConstants.NAME, ids.get(LibraryApendPathConstants.NAME));
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APP_MODULE_MAPPING);
+            generator.setParameter(AppModuleMappingConstants.INTERFACE_ID, ids.get(AppModuleMappingConstants.INTERFACE_ID));
+            generator.setParameter(AppModuleMappingConstants.MODULE_ID, ids.get(AppModuleMappingConstants.MODULE_ID));
             Query q = generator.selectQuery(em);
-            LibraryApendPath libraryApendPath = (LibraryApendPath) q.getSingleResult();
-            LibraryApendPathResource resource =
-                    (LibraryApendPathResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LIBRARY_APEND_PATH, libraryApendPath);
+            AppModuleMapping result = (AppModuleMapping) q.getSingleResult();
+            AppModuleResource resource =
+                    (AppModuleResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_MODULE_MAPPING, result);
             em.getTransaction().commit();
             em.close();
             return resource;
@@ -149,43 +151,43 @@ public class LibraryApendPathResource extends AbstractResource {
 
     @Override
     public List<Resource> get(String fieldName, Object value) throws AppCatalogException {
-        List<Resource> libApPathList = new ArrayList<Resource>();
+        List<Resource> resourceList = new ArrayList<Resource>();
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(LIBRARY_APEND_PATH);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APP_MODULE_MAPPING);
             List results;
-            if (fieldName.equals(LibraryApendPathConstants.DEPLOYMENT_ID)) {
-                generator.setParameter(LibraryApendPathConstants.DEPLOYMENT_ID, value);
+            if (fieldName.equals(AppModuleMappingConstants.INTERFACE_ID)) {
+                generator.setParameter(AppModuleMappingConstants.INTERFACE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        LibraryApendPath prepandPath = (LibraryApendPath) result;
-                        LibraryApendPathResource resource =
-                                (LibraryApendPathResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LIBRARY_APEND_PATH, prepandPath);
-                        libApPathList.add(resource);
+                        AppModuleMapping moduleMapping = (AppModuleMapping) result;
+                        AppModuleMappingResource resource =
+                                (AppModuleMappingResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_MODULE_MAPPING, moduleMapping);
+                        resourceList.add(resource);
                     }
                 }
-            } else if (fieldName.equals(LibraryApendPathConstants.NAME)) {
-                generator.setParameter(LibraryApendPathConstants.NAME, value);
+            } else if (fieldName.equals(AppModuleMappingConstants.MODULE_ID)) {
+                generator.setParameter(AppModuleMappingConstants.MODULE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        LibraryApendPath prepandPath = (LibraryApendPath) result;
-                        LibraryApendPathResource resource =
-                                (LibraryApendPathResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LIBRARY_APEND_PATH, prepandPath);
-                        libApPathList.add(resource);
+                        AppModuleMapping moduleMapping = (AppModuleMapping) result;
+                        AppModuleMappingResource resource =
+                                (AppModuleMappingResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_MODULE_MAPPING, moduleMapping);
+                        resourceList.add(resource);
                     }
                 }
             }else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for libraryApendPath resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for libraryApendPath resource.");
+                logger.error("Unsupported field name for app module mapping resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for app module mapping resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -200,7 +202,7 @@ public class LibraryApendPathResource extends AbstractResource {
                 em.close();
             }
         }
-        return libApPathList;
+        return resourceList;
     }
 
     @Override
@@ -214,24 +216,24 @@ public class LibraryApendPathResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            LibraryApendPath existigApendPath = em.find(LibraryApendPath.class, new LibraryApendPath_PK(deploymentId, name));
+            AppModuleMapping existngModuleMap = em.find(AppModuleMapping.class, new AppModuleMapping_PK(interfaceId, moduleId));
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-
-            ApplicationDeployment deployment = em.find(ApplicationDeployment.class, deploymentId);
-            if (existigApendPath !=  null){
-                existigApendPath.setValue(value);
-                existigApendPath.setApplicationDeployment(deployment);
-                em.merge(existigApendPath);
+            ApplicationInterface applicationInterface = em.find(ApplicationInterface.class, interfaceId);
+            ApplicationModule applicationModule = em.find(ApplicationModule.class, moduleId);
+            if (existngModuleMap !=  null){
+                existngModuleMap.setApplicationInterface(applicationInterface);
+                existngModuleMap.setApplicationModule(applicationModule);
+                em.merge(existngModuleMap);
             }else {
-                LibraryApendPath prepandPath = new LibraryApendPath();
-                prepandPath.setDeploymentID(deploymentId);
-                prepandPath.setName(name);
-                prepandPath.setValue(value);
-                prepandPath.setApplicationDeployment(deployment);
-                em.persist(prepandPath);
+                AppModuleMapping appModuleMapping = new AppModuleMapping();
+                appModuleMapping.setInterfaceID(interfaceId);
+                appModuleMapping.setApplicationInterface(applicationInterface);
+                appModuleMapping.setModuleID(moduleId);
+                appModuleMapping.setApplicationModule(applicationModule);
+                em.persist(appModuleMapping);
             }
             em.getTransaction().commit();
             em.close();
@@ -260,11 +262,11 @@ public class LibraryApendPathResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            LibraryApendPath apendPath = em.find(LibraryApendPath.class,
-                    new LibraryApendPath_PK(ids.get(LibraryApendPathConstants.DEPLOYMENT_ID),
-                            ids.get(LibraryApendPathConstants.NAME)));
+            AppModuleMapping moduleMapping = em.find(AppModuleMapping.class,
+                    new AppModuleMapping_PK(ids.get(AppModuleMappingConstants.INTERFACE_ID),
+                            ids.get(AppModuleMappingConstants.MODULE_ID)));
             em.close();
-            return apendPath != null;
+            return moduleMapping != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
