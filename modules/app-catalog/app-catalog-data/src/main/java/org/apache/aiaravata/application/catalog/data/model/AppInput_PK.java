@@ -21,7 +21,9 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-public class AppInput_PK {
+import java.io.Serializable;
+
+public class AppInput_PK implements Serializable {
     private String interfaceID;
     private String inputKey;
 

@@ -21,7 +21,9 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-public class LibraryPrepandPath_PK {
+import java.io.Serializable;
+
+public class LibraryPrepandPath_PK implements Serializable {
     private String deploymentID;
     private String name;
 

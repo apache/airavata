@@ -22,10 +22,11 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "GSISSH_SUBMISSION")
-public class GSISSHSubmission {
+public class GSISSHSubmission implements Serializable {
     @Column(name = "RESOURCE_ID")
     private String resourceID;
     @Id
