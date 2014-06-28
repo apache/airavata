@@ -2,8 +2,8 @@ package org.apache.aiaravata.application.catalog.data.resources;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.model.ComputeResource;
-import org.apache.aiaravata.application.catalog.data.model.HostAlias;
-import org.apache.aiaravata.application.catalog.data.model.HostAliasPK;
+import org.apache.aiaravata.application.catalog.data.model.HostIPAddress;
+import org.apache.aiaravata.application.catalog.data.model.HostIPAddressPK;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
@@ -13,14 +13,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class HostAliasResource extends AbstractResource {
+public class HostIPAddressResource extends AbstractResource{
 
-    private final static Logger logger = LoggerFactory.getLogger(HostAliasResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(HostIPAddressResource.class);
 
     private String resourceID;
-    private String alias;
+    private String ipaddress;
     private ComputeHostResource computeHostResource;
 
     public void remove(Object identifier) throws AppCatalogException {
@@ -36,9 +39,9 @@ public class HostAliasResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(HOST_ALIAS);
-            generator.setParameter(HostAliasConstants.RESOURCE_ID, ids.get(HostAliasConstants.RESOURCE_ID));
-            generator.setParameter(HostAliasConstants.ALIAS, ids.get(HostAliasConstants.ALIAS));
+            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(HOST_IPADDRESS);
+            generator.setParameter(HostIPAddressConstants.RESOURCE_ID, ids.get(HostIPAddressConstants.RESOURCE_ID));
+            generator.setParameter(HostIPAddressConstants.IP_ADDRESS, ids.get(HostIPAddressConstants.IP_ADDRESS));
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -54,6 +57,7 @@ public class HostAliasResource extends AbstractResource {
                 em.close();
             }
         }
+
     }
 
     public Resource get(Object identifier) throws AppCatalogException {
@@ -69,16 +73,16 @@ public class HostAliasResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(HOST_ALIAS);
-            generator.setParameter(HostAliasConstants.RESOURCE_ID, ids.get(HostAliasConstants.RESOURCE_ID));
-            generator.setParameter(HostAliasConstants.ALIAS, ids.get(HostAliasConstants.ALIAS));
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(HOST_IPADDRESS);
+            generator.setParameter(HostIPAddressConstants.RESOURCE_ID, ids.get(HostIPAddressConstants.RESOURCE_ID));
+            generator.setParameter(HostIPAddressConstants.IP_ADDRESS, ids.get(HostIPAddressConstants.IP_ADDRESS));
             Query q = generator.selectQuery(em);
-            HostAlias hostAlias = (HostAlias) q.getSingleResult();
-            HostAliasResource hostAliasResource =
-                    (HostAliasResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.HOST_ALIAS, hostAlias);
+            HostIPAddress hostIPAddress = (HostIPAddress) q.getSingleResult();
+            HostIPAddressResource hostIPAddressResource =
+                    (HostIPAddressResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.HOST_IPADDRESS, hostIPAddress);
             em.getTransaction().commit();
             em.close();
-            return hostAliasResource;
+            return hostIPAddressResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -94,43 +98,43 @@ public class HostAliasResource extends AbstractResource {
 
     public List<Resource> get(String fieldName, Object value) throws AppCatalogException {
 
-        List<Resource> hostAliasResources = new ArrayList<Resource>();
+        List<Resource> hostIPAddressResources = new ArrayList<Resource>();
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(HOST_ALIAS);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(HOST_IPADDRESS);
             List results;
-            if (fieldName.equals(HostAliasConstants.ALIAS)) {
-                generator.setParameter(HostAliasConstants.ALIAS, value);
+            if (fieldName.equals(HostIPAddressConstants.IP_ADDRESS)) {
+                generator.setParameter(HostIPAddressConstants.IP_ADDRESS, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        HostAlias hostAlias = (HostAlias) result;
-                        HostAliasResource hostAliasResource =
-                                (HostAliasResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.HOST_ALIAS, hostAlias);
-                        hostAliasResources.add(hostAliasResource);
+                        HostIPAddress hostIPAddress = (HostIPAddress) result;
+                        HostIPAddressResource hostIPAddressResource =
+                                (HostIPAddressResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.HOST_IPADDRESS, hostIPAddress);
+                        hostIPAddressResources.add(hostIPAddressResource);
                     }
                 }
-            } else if (fieldName.equals(HostAliasConstants.RESOURCE_ID)) {
-                generator.setParameter(HostAliasConstants.RESOURCE_ID, value);
+            } else if (fieldName.equals(HostIPAddressConstants.RESOURCE_ID)) {
+                generator.setParameter(HostIPAddressConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        HostAlias hostAlias = (HostAlias) result;
-                        HostAliasResource hostAliasResource =
-                                (HostAliasResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.HOST_ALIAS, hostAlias);
-                        hostAliasResources.add(hostAliasResource);
+                        HostIPAddress hostIPAddress = (HostIPAddress) result;
+                        HostIPAddressResource hostIPAddressResource =
+                                (HostIPAddressResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.HOST_IPADDRESS, hostIPAddress);
+                        hostIPAddressResources.add(hostIPAddressResource);
                     }
                 }
             } else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for Host Alias Resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for Host Alias Resource.");
+                logger.error("Unsupported field name for Host IPAddress Resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for Host IPAddress Resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -145,44 +149,44 @@ public class HostAliasResource extends AbstractResource {
                 em.close();
             }
         }
-        return hostAliasResources;
+        return hostIPAddressResources;
     }
 
     public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
 
-        List<String> hostAliasResourceIDs = new ArrayList<String>();
+        List<String> hostIPAddressResourceIDs = new ArrayList<String>();
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(HOST_ALIAS);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(HOST_IPADDRESS);
             List results;
-            if (fieldName.equals(HostAliasConstants.ALIAS)) {
-                generator.setParameter(HostAliasConstants.ALIAS, value);
+            if (fieldName.equals(HostIPAddressConstants.IP_ADDRESS)) {
+                generator.setParameter(HostIPAddressConstants.IP_ADDRESS, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        HostAlias hostAlias = (HostAlias) result;
-                        hostAliasResourceIDs.add(hostAlias.getResourceID());
+                        HostIPAddress hostIPAddress = (HostIPAddress) result;
+                        hostIPAddressResourceIDs.add(hostIPAddress.getResourceID());
                     }
                 }
-            } else if (fieldName.equals(HostAliasConstants.RESOURCE_ID)) {
-                generator.setParameter(HostAliasConstants.RESOURCE_ID, value);
+            } else if (fieldName.equals(HostIPAddressConstants.RESOURCE_ID)) {
+                generator.setParameter(HostIPAddressConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        HostAlias hostAlias = (HostAlias) result;
-                        hostAliasResourceIDs.add(hostAlias.getResourceID());
+                        HostIPAddress hostIPAddress = (HostIPAddress) result;
+                        hostIPAddressResourceIDs.add(hostIPAddress.getResourceID());
                     }
                 }
             } else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for Host Alias resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for Host Alias Resource.");
+                logger.error("Unsupported field name for Host IP Address resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for Host IPAddress Resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -197,33 +201,33 @@ public class HostAliasResource extends AbstractResource {
                 em.close();
             }
         }
-        return hostAliasResourceIDs;
+        return hostIPAddressResourceIDs;
     }
 
     public void save() throws AppCatalogException {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            HostAlias existingHostAlias = em.find(HostAlias.class, new HostAliasPK(resourceID, alias));
+            HostIPAddress existingHostIP = em.find(HostIPAddress.class, new HostIPAddressPK(resourceID,ipaddress));
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            if (existingHostAlias !=  null){
-                existingHostAlias.setAlias(alias);
+            if (existingHostIP !=  null){
+                existingHostIP.setIpaddress(ipaddress);
                 ComputeResource computeResource = em.find(ComputeResource.class, computeHostResource.getResoureId());
-                existingHostAlias.setComputeResource(computeResource);
-                existingHostAlias.setResourceID(resourceID);
+                existingHostIP.setComputeResource(computeResource);
+                existingHostIP.setResourceID(resourceID);
 
-                em.merge(existingHostAlias);
+                em.merge(existingHostIP);
             }else {
-                HostAlias hostAlias = new HostAlias();
-                hostAlias.setAlias(alias);
-                hostAlias.setResourceID(resourceID);
+                HostIPAddress hostIPAddress = new HostIPAddress();
+                hostIPAddress.setIpaddress(ipaddress);
+                hostIPAddress.setResourceID(resourceID);
                 ComputeResource computeResource = em.find(ComputeResource.class, computeHostResource.getResoureId());
-                hostAlias.setComputeResource(computeResource);
+                hostIPAddress.setComputeResource(computeResource);
 
-                em.persist(hostAlias);
+                em.persist(hostIPAddress);
             }
             em.getTransaction().commit();
             em.close();
@@ -238,10 +242,10 @@ public class HostAliasResource extends AbstractResource {
                 em.close();
             }
         }
+
     }
 
     public boolean isExists(Object identifier) throws AppCatalogException {
-
         HashMap<String, String> ids;
         if (identifier instanceof Map){
             ids = (HashMap)identifier;
@@ -253,11 +257,11 @@ public class HostAliasResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            HostAlias hostAlias = em.find(HostAlias.class, new HostAliasPK(ids.get(HostAliasConstants.RESOURCE_ID),
-                    ids.get(HostAliasConstants.ALIAS)));
+            HostIPAddress hostIPAddress = em.find(HostIPAddress.class, new HostIPAddressPK(ids.get(HostIPAddressConstants.RESOURCE_ID),
+                    ids.get(HostIPAddressConstants.IP_ADDRESS)));
 
             em.close();
-            return hostAlias != null;
+            return hostIPAddress != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -269,7 +273,6 @@ public class HostAliasResource extends AbstractResource {
                 em.close();
             }
         }
-
     }
 
     public String getResourceID() {
@@ -280,12 +283,12 @@ public class HostAliasResource extends AbstractResource {
         this.resourceID = resourceID;
     }
 
-    public String getAlias() {
-        return alias;
+    public String getIpaddress() {
+        return ipaddress;
     }
 
-    public void setAlias(String alias) {
-        this.alias = alias;
+    public void setIpaddress(String ipaddress) {
+        this.ipaddress = ipaddress;
     }
 
     public ComputeHostResource getComputeHostResource() {
