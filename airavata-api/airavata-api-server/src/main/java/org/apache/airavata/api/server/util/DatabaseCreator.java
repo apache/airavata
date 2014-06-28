@@ -58,8 +58,8 @@ public class DatabaseCreator {
      *
      * @throws Exception
      */
-    public static void createRegistryDatabase(Connection conn) throws Exception {
-        createDatabase("database_scripts/registry", conn);
+    public static void createRegistryDatabase(String prefix, Connection conn) throws Exception {
+        createDatabase(prefix, conn);
     }
 
 
@@ -175,7 +175,7 @@ public class DatabaseCreator {
                 return checkType(databaseProductName);
             }
         } catch (SQLException e) {
-            String msg = "Failed to create Airavatadatabase." + e.getMessage();
+            String msg = "Failed to create Airavata database." + e.getMessage();
             log.error(msg, e);
             throw new Exception(msg, e);
         }
