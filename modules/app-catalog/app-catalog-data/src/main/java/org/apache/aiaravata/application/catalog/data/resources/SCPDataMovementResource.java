@@ -2,7 +2,7 @@ package org.apache.aiaravata.application.catalog.data.resources;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.model.ComputeResource;
-import org.apache.aiaravata.application.catalog.data.model.SSHSubmission;
+import org.apache.aiaravata.application.catalog.data.model.SCPDataMovement;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
@@ -15,23 +15,23 @@ import javax.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SSHSubmissionResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(SSHSubmissionResource.class);
+public class SCPDataMovementResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(SCPDataMovementResource.class);
 
     private String resourceID;
-    private String submissionID;
-    private String resourceJobManager;
+    private String dataMoveID;
+    private String securityProtocol;
     private int sshPort;
-    private ComputeHostResource computeHostResource;
 
+    private ComputeHostResource computeHostResource;
 
     public void remove(Object identifier) throws AppCatalogException {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_SUBMISSION);
-            generator.setParameter(SSHSubmissionConstants.SUBMISSION_ID, identifier);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SCP_DATAMOVEMENT);
+            generator.setParameter(SCPDataMovementConstants.DATA_MOVE_ID, identifier);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -47,6 +47,7 @@ public class SSHSubmissionResource extends AbstractResource {
                 em.close();
             }
         }
+
     }
 
     public Resource get(Object identifier) throws AppCatalogException {
@@ -54,15 +55,15 @@ public class SSHSubmissionResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_SUBMISSION);
-            generator.setParameter(SSHSubmissionConstants.SUBMISSION_ID, identifier);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SCP_DATAMOVEMENT);
+            generator.setParameter(SCPDataMovementConstants.DATA_MOVE_ID, identifier);
             Query q = generator.selectQuery(em);
-            SSHSubmission sshSubmission = (SSHSubmission) q.getSingleResult();
-            SSHSubmissionResource sshSubmissionResource =
-                    (SSHSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_SUBMISSION, sshSubmission);
+            SCPDataMovement scpDataMovement = (SCPDataMovement) q.getSingleResult();
+            SCPDataMovementResource scpDataMovementResource =
+                    (SCPDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SCP_DATAMOVEMENT, scpDataMovement);
             em.getTransaction().commit();
             em.close();
-            return sshSubmissionResource;
+            return scpDataMovementResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -77,67 +78,67 @@ public class SSHSubmissionResource extends AbstractResource {
     }
 
     public List<Resource> get(String fieldName, Object value) throws AppCatalogException {
-        List<Resource> sshSubmissionResourceList = new ArrayList<Resource>();
+        List<Resource> scpDataMoveResources = new ArrayList<Resource>();
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_SUBMISSION);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SCP_DATAMOVEMENT);
             List results;
-            if (fieldName.equals(SSHSubmissionConstants.SUBMISSION_ID)) {
-                generator.setParameter(SSHSubmissionConstants.SUBMISSION_ID, value);
+            if (fieldName.equals(SCPDataMovementConstants.DATA_MOVE_ID)) {
+                generator.setParameter(SCPDataMovementConstants.DATA_MOVE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        SSHSubmissionResource sshSubmissionResource =
-                                (SSHSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_SUBMISSION, sshSubmission);
-                        sshSubmissionResourceList.add(sshSubmissionResource);
+                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
+                        SCPDataMovementResource scpDataMovementResource =
+                                (SCPDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SCP_DATAMOVEMENT, scpDataMovement);
+                        scpDataMoveResources.add(scpDataMovementResource);
                     }
                 }
-            } else if (fieldName.equals(SSHSubmissionConstants.RESOURCE_ID)) {
-                generator.setParameter(SSHSubmissionConstants.RESOURCE_ID, value);
+            } else if (fieldName.equals(SCPDataMovementConstants.RESOURCE_ID)) {
+                generator.setParameter(SCPDataMovementConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        SSHSubmissionResource sshSubmissionResource =
-                                (SSHSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_SUBMISSION, sshSubmission);
-                        sshSubmissionResourceList.add(sshSubmissionResource);
+                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
+                        SCPDataMovementResource scpDataMovementResource =
+                                (SCPDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SCP_DATAMOVEMENT, scpDataMovement);
+                        scpDataMoveResources.add(scpDataMovementResource);
                     }
                 }
-            } else if (fieldName.equals(SSHSubmissionConstants.SSH_PORT)) {
-                generator.setParameter(SSHSubmissionConstants.SSH_PORT, value);
+            } else if (fieldName.equals(SCPDataMovementConstants.SSH_PORT)) {
+                generator.setParameter(SCPDataMovementConstants.SSH_PORT, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        SSHSubmissionResource sshSubmissionResource =
-                                (SSHSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_SUBMISSION, sshSubmission);
-                        sshSubmissionResourceList.add(sshSubmissionResource);
+                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
+                        SCPDataMovementResource scpDataMovementResource =
+                                (SCPDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SCP_DATAMOVEMENT, scpDataMovement);
+                        scpDataMoveResources.add(scpDataMovementResource);
                     }
                 }
-            } else if (fieldName.equals(SSHSubmissionConstants.RESOURCE_JOB_MANAGER)) {
-                generator.setParameter(SSHSubmissionConstants.RESOURCE_JOB_MANAGER, value);
+            } else if (fieldName.equals(SCPDataMovementConstants.SECURITY_PROTOCOL)) {
+                generator.setParameter(SCPDataMovementConstants.SECURITY_PROTOCOL, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        SSHSubmissionResource sshSubmissionResource =
-                                (SSHSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_SUBMISSION, sshSubmission);
-                        sshSubmissionResourceList.add(sshSubmissionResource);
+                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
+                        SCPDataMovementResource scpDataMovementResource =
+                                (SCPDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SCP_DATAMOVEMENT, scpDataMovement);
+                        scpDataMoveResources.add(scpDataMovementResource);
                     }
                 }
             } else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for SSH submission resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for SSH Submission resource.");
+                logger.error("Unsupported field name for SCP Data Movement resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for SCP Data Movement resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -152,63 +153,63 @@ public class SSHSubmissionResource extends AbstractResource {
                 em.close();
             }
         }
-        return sshSubmissionResourceList;
+        return scpDataMoveResources;
     }
 
     public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
-        List<String> sshSubmissionResourceIDs = new ArrayList<String>();
+        List<String> scpDataMoveIDs = new ArrayList<String>();
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_SUBMISSION);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SCP_DATAMOVEMENT);
             List results;
-            if (fieldName.equals(SSHSubmissionConstants.SUBMISSION_ID)) {
-                generator.setParameter(SSHSubmissionConstants.SUBMISSION_ID, value);
+            if (fieldName.equals(SCPDataMovementConstants.DATA_MOVE_ID)) {
+                generator.setParameter(SCPDataMovementConstants.DATA_MOVE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        sshSubmissionResourceIDs.add(sshSubmission.getSubmissionID());
+                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
+                        scpDataMoveIDs.add(scpDataMovement.getDataMoveID());
                     }
                 }
-            } else if (fieldName.equals(SSHSubmissionConstants.RESOURCE_ID)) {
-                generator.setParameter(SSHSubmissionConstants.RESOURCE_ID, value);
+            }else if (fieldName.equals(SCPDataMovementConstants.SSH_PORT)) {
+                generator.setParameter(SCPDataMovementConstants.SSH_PORT, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        sshSubmissionResourceIDs.add(sshSubmission.getSubmissionID());
+                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
+                        scpDataMoveIDs.add(scpDataMovement.getDataMoveID());
                     }
                 }
-            } else if (fieldName.equals(SSHSubmissionConstants.RESOURCE_JOB_MANAGER)) {
-                generator.setParameter(SSHSubmissionConstants.RESOURCE_JOB_MANAGER, value);
+            }else if (fieldName.equals(SCPDataMovementConstants.RESOURCE_ID)) {
+                generator.setParameter(SCPDataMovementConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        sshSubmissionResourceIDs.add(sshSubmission.getSubmissionID());
+                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
+                        scpDataMoveIDs.add(scpDataMovement.getDataMoveID());
                     }
                 }
-            } else if (fieldName.equals(SSHSubmissionConstants.SSH_PORT)) {
-                generator.setParameter(SSHSubmissionConstants.SSH_PORT, value);
+            }else if (fieldName.equals(SCPDataMovementConstants.SECURITY_PROTOCOL)) {
+                generator.setParameter(SCPDataMovementConstants.SECURITY_PROTOCOL, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        sshSubmissionResourceIDs.add(sshSubmission.getSubmissionID());
+                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
+                        scpDataMoveIDs.add(scpDataMovement.getDataMoveID());
                     }
                 }
             } else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for SSH Submission resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for SSH Submission resource.");
+                logger.error("Unsupported field name for SCP Data movement resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for SCP Data movement resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -223,36 +224,36 @@ public class SSHSubmissionResource extends AbstractResource {
                 em.close();
             }
         }
-        return sshSubmissionResourceIDs;
+        return scpDataMoveIDs;
     }
 
     public void save() throws AppCatalogException {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            SSHSubmission existingSSHSubmission = em.find(SSHSubmission.class, submissionID);
+            SCPDataMovement existingSCPDataMovement = em.find(SCPDataMovement.class, dataMoveID);
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            if (existingSSHSubmission != null) {
-                existingSSHSubmission.setSubmissionID(submissionID);
-                existingSSHSubmission.setResourceID(resourceID);
-                existingSSHSubmission.setSshPort(sshPort);
-                existingSSHSubmission.setResourceJobManager(resourceJobManager);
+            if (existingSCPDataMovement !=  null){
+                existingSCPDataMovement.setDataMoveID(dataMoveID);
+                existingSCPDataMovement.setResourceID(resourceID);
+                existingSCPDataMovement.setSshPort(sshPort);
+                existingSCPDataMovement.setSecurityProtocol(securityProtocol);
                 ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
-                existingSSHSubmission.setComputeResource(computeResource);
+                existingSCPDataMovement.setComputeResource(computeResource);
 
-                em.merge(existingSSHSubmission);
-            } else {
-                SSHSubmission sshSubmission = new SSHSubmission();
-                sshSubmission.setResourceID(resourceID);
-                sshSubmission.setSubmissionID(submissionID);
-                sshSubmission.setSshPort(sshPort);
-                sshSubmission.setResourceJobManager(resourceJobManager);
+                em.merge(existingSCPDataMovement);
+            }else {
+                SCPDataMovement scpDataMovement = new SCPDataMovement();
+                scpDataMovement.setResourceID(resourceID);
+                scpDataMovement.setDataMoveID(dataMoveID);
+                scpDataMovement.setSshPort(sshPort);
+                scpDataMovement.setSecurityProtocol(securityProtocol);
                 ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
-                sshSubmission.setComputeResource(computeResource);
-                em.persist(sshSubmission);
+                scpDataMovement.setComputeResource(computeResource);
+                em.persist(scpDataMovement);
             }
             em.getTransaction().commit();
             em.close();
@@ -261,21 +262,22 @@ public class SSHSubmissionResource extends AbstractResource {
             throw new AppCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()) {
+                if (em.getTransaction().isActive()){
                     em.getTransaction().rollback();
                 }
                 em.close();
             }
         }
+
     }
 
     public boolean isExists(Object identifier) throws AppCatalogException {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            SSHSubmission sshSubmission = em.find(SSHSubmission.class, identifier);
+            SCPDataMovement scpDataMovement = em.find(SCPDataMovement.class, identifier);
             em.close();
-            return sshSubmission != null;
+            return scpDataMovement != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -297,20 +299,20 @@ public class SSHSubmissionResource extends AbstractResource {
         this.resourceID = resourceID;
     }
 
-    public String getSubmissionID() {
-        return submissionID;
+    public String getDataMoveID() {
+        return dataMoveID;
     }
 
-    public void setSubmissionID(String submissionID) {
-        this.submissionID = submissionID;
+    public void setDataMoveID(String dataMoveID) {
+        this.dataMoveID = dataMoveID;
     }
 
-    public String getResourceJobManager() {
-        return resourceJobManager;
+    public String getSecurityProtocol() {
+        return securityProtocol;
     }
 
-    public void setResourceJobManager(String resourceJobManager) {
-        this.resourceJobManager = resourceJobManager;
+    public void setSecurityProtocol(String securityProtocol) {
+        this.securityProtocol = securityProtocol;
     }
 
     public int getSshPort() {

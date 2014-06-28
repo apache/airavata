@@ -38,7 +38,7 @@ public class GSISSHExport {
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "SUBMISSION_ID")
-    private GSISSHJobSubmission gsisshJobSubmission;
+    private GSISSHSubmission gsisshJobSubmission;
 
     public String getSubmissionID() {
         return submissionID;
@@ -56,11 +56,11 @@ public class GSISSHExport {
         this.export = export;
     }
 
-    public GSISSHJobSubmission getGsisshJobSubmission() {
+    public GSISSHSubmission getGsisshJobSubmission() {
         return gsisshJobSubmission;
     }
 
-    public void setGsisshJobSubmission(GSISSHJobSubmission gsisshJobSubmission) {
+    public void setGsisshJobSubmission(GSISSHSubmission gsisshJobSubmission) {
         this.gsisshJobSubmission = gsisshJobSubmission;
     }
 }
