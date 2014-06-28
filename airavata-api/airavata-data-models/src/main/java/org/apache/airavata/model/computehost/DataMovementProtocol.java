@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog;
+package org.apache.airavata.model.computehost;
 
 
 import java.util.Map;
@@ -28,27 +28,30 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * Enumeration of Airavata supported Job Submission Mechanisms for High Perforamance Computing Clusters.
+ * Enumeration of data movement supported by Airavata
  * 
- * SSH:
- *  Execute remote job submission commands using via secure shell protocol.
+ * SCP:
+ *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
  * 
- * GRAM:
- *  Execute remote jobs via Globus GRAM service.
+ * SFTP:
+ *  The Simple Linux Utility for Resource Management is a open source workload manager.
  * 
- * UNICORE:
- *  Execute remote jobs via Unicore services
+ * GridFTP:
+ *  Globus File Transfer Protocol
+ * 
+ * UNICORE_STORAGE_SERVICE:
+ *  Storage Service Provided by Unicore
  * 
  */
-@SuppressWarnings("all") public enum JobSubmissionProtocol implements org.apache.thrift.TEnum {
-  SSH(0),
-  GSISSH(1),
-  GRAM(2),
-  UNICORE(3);
+@SuppressWarnings("all") public enum DataMovementProtocol implements org.apache.thrift.TEnum {
+  SCP(0),
+  SFTP(1),
+  GridFTP(2),
+  UNICORE_STORAGE_SERVICE(3);
 
   private final int value;
 
-  private JobSubmissionProtocol(int value) {
+  private DataMovementProtocol(int value) {
     this.value = value;
   }
 
@@ -63,16 +66,16 @@ import org.apache.thrift.TEnum;
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static JobSubmissionProtocol findByValue(int value) { 
+  public static DataMovementProtocol findByValue(int value) { 
     switch (value) {
       case 0:
-        return SSH;
+        return SCP;
       case 1:
-        return GSISSH;
+        return SFTP;
       case 2:
-        return GRAM;
+        return GridFTP;
       case 3:
-        return UNICORE;
+        return UNICORE_STORAGE_SERVICE;
       default:
         return null;
     }

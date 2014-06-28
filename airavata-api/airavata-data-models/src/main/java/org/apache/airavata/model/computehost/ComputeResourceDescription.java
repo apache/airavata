@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog;
+package org.apache.airavata.model.computehost;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Computational Resource Description
  * 
- * resourceId:
+ * resourceId: Airavata Internal Unique Job ID. This is set by the registry.
  * 
  * hostName:
  *   Fully Qualified Host Name.
@@ -79,7 +79,6 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField HOST_ALIASES_FIELD_DESC = new org.apache.thrift.protocol.TField("hostAliases", org.apache.thrift.protocol.TType.SET, (short)4);
   private static final org.apache.thrift.protocol.TField IP_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("ipAddresses", org.apache.thrift.protocol.TType.SET, (short)5);
   private static final org.apache.thrift.protocol.TField RESOURCE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceDescription", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField SCRATCH_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("scratchLocation", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField PREFERRED_JOB_SUBMISSION_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredJobSubmissionProtocol", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_PROTOCOLS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionProtocols", org.apache.thrift.protocol.TType.MAP, (short)9);
   private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_PROTOCOLS_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementProtocols", org.apache.thrift.protocol.TType.MAP, (short)10);
@@ -96,7 +95,6 @@ import org.slf4j.LoggerFactory;
   private Set<String> hostAliases; // optional
   private Set<String> ipAddresses; // optional
   private String resourceDescription; // optional
-  private String scratchLocation; // optional
   private String preferredJobSubmissionProtocol; // optional
   private Map<String,JobSubmissionProtocol> jobSubmissionProtocols; // required
   private Map<String,DataMovementProtocol> dataMovementProtocols; // required
@@ -109,7 +107,6 @@ import org.slf4j.LoggerFactory;
     HOST_ALIASES((short)4, "hostAliases"),
     IP_ADDRESSES((short)5, "ipAddresses"),
     RESOURCE_DESCRIPTION((short)6, "resourceDescription"),
-    SCRATCH_LOCATION((short)7, "scratchLocation"),
     PREFERRED_JOB_SUBMISSION_PROTOCOL((short)8, "preferredJobSubmissionProtocol"),
     JOB_SUBMISSION_PROTOCOLS((short)9, "jobSubmissionProtocols"),
     DATA_MOVEMENT_PROTOCOLS((short)10, "dataMovementProtocols");
@@ -139,8 +136,6 @@ import org.slf4j.LoggerFactory;
           return IP_ADDRESSES;
         case 6: // RESOURCE_DESCRIPTION
           return RESOURCE_DESCRIPTION;
-        case 7: // SCRATCH_LOCATION
-          return SCRATCH_LOCATION;
         case 8: // PREFERRED_JOB_SUBMISSION_PROTOCOL
           return PREFERRED_JOB_SUBMISSION_PROTOCOL;
         case 9: // JOB_SUBMISSION_PROTOCOLS
@@ -189,7 +184,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __ISEMPTY_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.SCRATCH_LOCATION,_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL};
+  private _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -206,8 +201,6 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.RESOURCE_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("resourceDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.SCRATCH_LOCATION, new org.apache.thrift.meta_data.FieldMetaData("scratchLocation", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("preferredJobSubmissionProtocol", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -269,9 +262,6 @@ import org.slf4j.LoggerFactory;
     if (other.isSetResourceDescription()) {
       this.resourceDescription = other.resourceDescription;
     }
-    if (other.isSetScratchLocation()) {
-      this.scratchLocation = other.scratchLocation;
-    }
     if (other.isSetPreferredJobSubmissionProtocol()) {
       this.preferredJobSubmissionProtocol = other.preferredJobSubmissionProtocol;
     }
@@ -321,7 +311,6 @@ import org.slf4j.LoggerFactory;
     this.hostAliases = null;
     this.ipAddresses = null;
     this.resourceDescription = null;
-    this.scratchLocation = null;
     this.preferredJobSubmissionProtocol = null;
     this.jobSubmissionProtocols = null;
     this.dataMovementProtocols = null;
@@ -494,29 +483,6 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getScratchLocation() {
-    return this.scratchLocation;
-  }
-
-  public void setScratchLocation(String scratchLocation) {
-    this.scratchLocation = scratchLocation;
-  }
-
-  public void unsetScratchLocation() {
-    this.scratchLocation = null;
-  }
-
-  /** Returns true if field scratchLocation is set (has been assigned a value) and false otherwise */
-  public boolean isSetScratchLocation() {
-    return this.scratchLocation != null;
-  }
-
-  public void setScratchLocationIsSet(boolean value) {
-    if (!value) {
-      this.scratchLocation = null;
-    }
-  }
-
   public String getPreferredJobSubmissionProtocol() {
     return this.preferredJobSubmissionProtocol;
   }
@@ -658,14 +624,6 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case SCRATCH_LOCATION:
-      if (value == null) {
-        unsetScratchLocation();
-      } else {
-        setScratchLocation((String)value);
-      }
-      break;
-
     case PREFERRED_JOB_SUBMISSION_PROTOCOL:
       if (value == null) {
         unsetPreferredJobSubmissionProtocol();
@@ -713,9 +671,6 @@ import org.slf4j.LoggerFactory;
     case RESOURCE_DESCRIPTION:
       return getResourceDescription();
 
-    case SCRATCH_LOCATION:
-      return getScratchLocation();
-
     case PREFERRED_JOB_SUBMISSION_PROTOCOL:
       return getPreferredJobSubmissionProtocol();
 
@@ -748,8 +703,6 @@ import org.slf4j.LoggerFactory;
       return isSetIpAddresses();
     case RESOURCE_DESCRIPTION:
       return isSetResourceDescription();
-    case SCRATCH_LOCATION:
-      return isSetScratchLocation();
     case PREFERRED_JOB_SUBMISSION_PROTOCOL:
       return isSetPreferredJobSubmissionProtocol();
     case JOB_SUBMISSION_PROTOCOLS:
@@ -824,15 +777,6 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_resourceDescription && that_present_resourceDescription))
         return false;
       if (!this.resourceDescription.equals(that.resourceDescription))
-        return false;
-    }
-
-    boolean this_present_scratchLocation = true && this.isSetScratchLocation();
-    boolean that_present_scratchLocation = true && that.isSetScratchLocation();
-    if (this_present_scratchLocation || that_present_scratchLocation) {
-      if (!(this_present_scratchLocation && that_present_scratchLocation))
-        return false;
-      if (!this.scratchLocation.equals(that.scratchLocation))
         return false;
     }
 
@@ -939,16 +883,6 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetScratchLocation()).compareTo(other.isSetScratchLocation());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetScratchLocation()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.scratchLocation, other.scratchLocation);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetPreferredJobSubmissionProtocol()).compareTo(other.isSetPreferredJobSubmissionProtocol());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1045,16 +979,6 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.resourceDescription);
-      }
-      first = false;
-    }
-    if (isSetScratchLocation()) {
-      if (!first) sb.append(", ");
-      sb.append("scratchLocation:");
-      if (this.scratchLocation == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.scratchLocation);
       }
       first = false;
     }
@@ -1217,14 +1141,6 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // SCRATCH_LOCATION
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.scratchLocation = iprot.readString();
-              struct.setScratchLocationIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           case 8: // PREFERRED_JOB_SUBMISSION_PROTOCOL
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.preferredJobSubmissionProtocol = iprot.readString();
@@ -1334,13 +1250,6 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.scratchLocation != null) {
-        if (struct.isSetScratchLocation()) {
-          oprot.writeFieldBegin(SCRATCH_LOCATION_FIELD_DESC);
-          oprot.writeString(struct.scratchLocation);
-          oprot.writeFieldEnd();
-        }
-      }
       if (struct.preferredJobSubmissionProtocol != null) {
         if (struct.isSetPreferredJobSubmissionProtocol()) {
           oprot.writeFieldBegin(PREFERRED_JOB_SUBMISSION_PROTOCOL_FIELD_DESC);
@@ -1420,13 +1329,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetResourceDescription()) {
         optionals.set(2);
       }
-      if (struct.isSetScratchLocation()) {
+      if (struct.isSetPreferredJobSubmissionProtocol()) {
         optionals.set(3);
       }
-      if (struct.isSetPreferredJobSubmissionProtocol()) {
-        optionals.set(4);
-      }
-      oprot.writeBitSet(optionals, 5);
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetHostAliases()) {
         {
           oprot.writeI32(struct.hostAliases.size());
@@ -1447,9 +1353,6 @@ import org.slf4j.LoggerFactory;
       }
       if (struct.isSetResourceDescription()) {
         oprot.writeString(struct.resourceDescription);
-      }
-      if (struct.isSetScratchLocation()) {
-        oprot.writeString(struct.scratchLocation);
       }
       if (struct.isSetPreferredJobSubmissionProtocol()) {
         oprot.writeString(struct.preferredJobSubmissionProtocol);
@@ -1491,7 +1394,7 @@ import org.slf4j.LoggerFactory;
         }
       }
       struct.setDataMovementProtocolsIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         {
           org.apache.thrift.protocol.TSet _set70 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
@@ -1523,10 +1426,6 @@ import org.slf4j.LoggerFactory;
         struct.setResourceDescriptionIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.scratchLocation = iprot.readString();
-        struct.setScratchLocationIsSet(true);
-      }
-      if (incoming.get(4)) {
         struct.preferredJobSubmissionProtocol = iprot.readString();
         struct.setPreferredJobSubmissionProtocolIsSet(true);
       }

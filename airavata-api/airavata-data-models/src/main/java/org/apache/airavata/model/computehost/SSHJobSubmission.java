@@ -20,7 +20,7 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.appcatalog;
+package org.apache.airavata.model.computehost;
 
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
@@ -48,31 +48,31 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class SCPDataMovement implements org.apache.thrift.TBase<SCPDataMovement, SCPDataMovement._Fields>, java.io.Serializable, Cloneable, Comparable<SCPDataMovement> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("SCPDataMovement");
+@SuppressWarnings("all") public class SSHJobSubmission implements org.apache.thrift.TBase<SSHJobSubmission, SSHJobSubmission._Fields>, java.io.Serializable, Cloneable, Comparable<SSHJobSubmission> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("SSHJobSubmission");
 
-  private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_DATA_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementDataID", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField SECURITY_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("securityProtocol", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_DATA_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionDataID", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManager", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField SSH_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("sshPort", org.apache.thrift.protocol.TType.I32, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new SCPDataMovementStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new SCPDataMovementTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new SSHJobSubmissionStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new SSHJobSubmissionTupleSchemeFactory());
   }
 
-  private String dataMovementDataID; // required
-  private SecurityProtocol securityProtocol; // required
+  private String jobSubmissionDataID; // required
+  private ResourceJobManager resourceJobManager; // required
   private int sshPort; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    DATA_MOVEMENT_DATA_ID((short)1, "dataMovementDataID"),
+    JOB_SUBMISSION_DATA_ID((short)1, "jobSubmissionDataID"),
     /**
      * 
-     * @see SecurityProtocol
+     * @see ResourceJobManager
      */
-    SECURITY_PROTOCOL((short)2, "securityProtocol"),
+    RESOURCE_JOB_MANAGER((short)2, "resourceJobManager"),
     SSH_PORT((short)3, "sshPort");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -88,10 +88,10 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // DATA_MOVEMENT_DATA_ID
-          return DATA_MOVEMENT_DATA_ID;
-        case 2: // SECURITY_PROTOCOL
-          return SECURITY_PROTOCOL;
+        case 1: // JOB_SUBMISSION_DATA_ID
+          return JOB_SUBMISSION_DATA_ID;
+        case 2: // RESOURCE_JOB_MANAGER
+          return RESOURCE_JOB_MANAGER;
         case 3: // SSH_PORT
           return SSH_PORT;
         default:
@@ -140,110 +140,110 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.DATA_MOVEMENT_DATA_ID, new org.apache.thrift.meta_data.FieldMetaData("dataMovementDataID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.JOB_SUBMISSION_DATA_ID, new org.apache.thrift.meta_data.FieldMetaData("jobSubmissionDataID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.SECURITY_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("securityProtocol", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, SecurityProtocol.class)));
+    tmpMap.put(_Fields.RESOURCE_JOB_MANAGER, new org.apache.thrift.meta_data.FieldMetaData("resourceJobManager", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResourceJobManager.class)));
     tmpMap.put(_Fields.SSH_PORT, new org.apache.thrift.meta_data.FieldMetaData("sshPort", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SCPDataMovement.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SSHJobSubmission.class, metaDataMap);
   }
 
-  public SCPDataMovement() {
-    this.dataMovementDataID = "DO_NOT_SET_AT_CLIENTS";
+  public SSHJobSubmission() {
+    this.jobSubmissionDataID = "DO_NOT_SET_AT_CLIENTS";
 
     this.sshPort = 22;
 
   }
 
-  public SCPDataMovement(
-    String dataMovementDataID,
-    SecurityProtocol securityProtocol)
+  public SSHJobSubmission(
+    String jobSubmissionDataID,
+    ResourceJobManager resourceJobManager)
   {
     this();
-    this.dataMovementDataID = dataMovementDataID;
-    this.securityProtocol = securityProtocol;
+    this.jobSubmissionDataID = jobSubmissionDataID;
+    this.resourceJobManager = resourceJobManager;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public SCPDataMovement(SCPDataMovement other) {
+  public SSHJobSubmission(SSHJobSubmission other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetDataMovementDataID()) {
-      this.dataMovementDataID = other.dataMovementDataID;
+    if (other.isSetJobSubmissionDataID()) {
+      this.jobSubmissionDataID = other.jobSubmissionDataID;
     }
-    if (other.isSetSecurityProtocol()) {
-      this.securityProtocol = other.securityProtocol;
+    if (other.isSetResourceJobManager()) {
+      this.resourceJobManager = other.resourceJobManager;
     }
     this.sshPort = other.sshPort;
   }
 
-  public SCPDataMovement deepCopy() {
-    return new SCPDataMovement(this);
+  public SSHJobSubmission deepCopy() {
+    return new SSHJobSubmission(this);
   }
 
   @Override
   public void clear() {
-    this.dataMovementDataID = "DO_NOT_SET_AT_CLIENTS";
+    this.jobSubmissionDataID = "DO_NOT_SET_AT_CLIENTS";
 
-    this.securityProtocol = null;
+    this.resourceJobManager = null;
     this.sshPort = 22;
 
   }
 
-  public String getDataMovementDataID() {
-    return this.dataMovementDataID;
+  public String getJobSubmissionDataID() {
+    return this.jobSubmissionDataID;
   }
 
-  public void setDataMovementDataID(String dataMovementDataID) {
-    this.dataMovementDataID = dataMovementDataID;
+  public void setJobSubmissionDataID(String jobSubmissionDataID) {
+    this.jobSubmissionDataID = jobSubmissionDataID;
   }
 
-  public void unsetDataMovementDataID() {
-    this.dataMovementDataID = null;
+  public void unsetJobSubmissionDataID() {
+    this.jobSubmissionDataID = null;
   }
 
-  /** Returns true if field dataMovementDataID is set (has been assigned a value) and false otherwise */
-  public boolean isSetDataMovementDataID() {
-    return this.dataMovementDataID != null;
+  /** Returns true if field jobSubmissionDataID is set (has been assigned a value) and false otherwise */
+  public boolean isSetJobSubmissionDataID() {
+    return this.jobSubmissionDataID != null;
   }
 
-  public void setDataMovementDataIDIsSet(boolean value) {
+  public void setJobSubmissionDataIDIsSet(boolean value) {
     if (!value) {
-      this.dataMovementDataID = null;
+      this.jobSubmissionDataID = null;
     }
   }
 
   /**
    * 
-   * @see SecurityProtocol
+   * @see ResourceJobManager
    */
-  public SecurityProtocol getSecurityProtocol() {
-    return this.securityProtocol;
+  public ResourceJobManager getResourceJobManager() {
+    return this.resourceJobManager;
   }
 
   /**
    * 
-   * @see SecurityProtocol
+   * @see ResourceJobManager
    */
-  public void setSecurityProtocol(SecurityProtocol securityProtocol) {
-    this.securityProtocol = securityProtocol;
+  public void setResourceJobManager(ResourceJobManager resourceJobManager) {
+    this.resourceJobManager = resourceJobManager;
   }
 
-  public void unsetSecurityProtocol() {
-    this.securityProtocol = null;
+  public void unsetResourceJobManager() {
+    this.resourceJobManager = null;
   }
 
-  /** Returns true if field securityProtocol is set (has been assigned a value) and false otherwise */
-  public boolean isSetSecurityProtocol() {
-    return this.securityProtocol != null;
+  /** Returns true if field resourceJobManager is set (has been assigned a value) and false otherwise */
+  public boolean isSetResourceJobManager() {
+    return this.resourceJobManager != null;
   }
 
-  public void setSecurityProtocolIsSet(boolean value) {
+  public void setResourceJobManagerIsSet(boolean value) {
     if (!value) {
-      this.securityProtocol = null;
+      this.resourceJobManager = null;
     }
   }
 
@@ -271,19 +271,19 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case DATA_MOVEMENT_DATA_ID:
+    case JOB_SUBMISSION_DATA_ID:
       if (value == null) {
-        unsetDataMovementDataID();
+        unsetJobSubmissionDataID();
       } else {
-        setDataMovementDataID((String)value);
+        setJobSubmissionDataID((String)value);
       }
       break;
 
-    case SECURITY_PROTOCOL:
+    case RESOURCE_JOB_MANAGER:
       if (value == null) {
-        unsetSecurityProtocol();
+        unsetResourceJobManager();
       } else {
-        setSecurityProtocol((SecurityProtocol)value);
+        setResourceJobManager((ResourceJobManager)value);
       }
       break;
 
@@ -300,11 +300,11 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case DATA_MOVEMENT_DATA_ID:
-      return getDataMovementDataID();
+    case JOB_SUBMISSION_DATA_ID:
+      return getJobSubmissionDataID();
 
-    case SECURITY_PROTOCOL:
-      return getSecurityProtocol();
+    case RESOURCE_JOB_MANAGER:
+      return getResourceJobManager();
 
     case SSH_PORT:
       return Integer.valueOf(getSshPort());
@@ -320,10 +320,10 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case DATA_MOVEMENT_DATA_ID:
-      return isSetDataMovementDataID();
-    case SECURITY_PROTOCOL:
-      return isSetSecurityProtocol();
+    case JOB_SUBMISSION_DATA_ID:
+      return isSetJobSubmissionDataID();
+    case RESOURCE_JOB_MANAGER:
+      return isSetResourceJobManager();
     case SSH_PORT:
       return isSetSshPort();
     }
@@ -334,30 +334,30 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof SCPDataMovement)
-      return this.equals((SCPDataMovement)that);
+    if (that instanceof SSHJobSubmission)
+      return this.equals((SSHJobSubmission)that);
     return false;
   }
 
-  public boolean equals(SCPDataMovement that) {
+  public boolean equals(SSHJobSubmission that) {
     if (that == null)
       return false;
 
-    boolean this_present_dataMovementDataID = true && this.isSetDataMovementDataID();
-    boolean that_present_dataMovementDataID = true && that.isSetDataMovementDataID();
-    if (this_present_dataMovementDataID || that_present_dataMovementDataID) {
-      if (!(this_present_dataMovementDataID && that_present_dataMovementDataID))
+    boolean this_present_jobSubmissionDataID = true && this.isSetJobSubmissionDataID();
+    boolean that_present_jobSubmissionDataID = true && that.isSetJobSubmissionDataID();
+    if (this_present_jobSubmissionDataID || that_present_jobSubmissionDataID) {
+      if (!(this_present_jobSubmissionDataID && that_present_jobSubmissionDataID))
         return false;
-      if (!this.dataMovementDataID.equals(that.dataMovementDataID))
+      if (!this.jobSubmissionDataID.equals(that.jobSubmissionDataID))
         return false;
     }
 
-    boolean this_present_securityProtocol = true && this.isSetSecurityProtocol();
-    boolean that_present_securityProtocol = true && that.isSetSecurityProtocol();
-    if (this_present_securityProtocol || that_present_securityProtocol) {
-      if (!(this_present_securityProtocol && that_present_securityProtocol))
+    boolean this_present_resourceJobManager = true && this.isSetResourceJobManager();
+    boolean that_present_resourceJobManager = true && that.isSetResourceJobManager();
+    if (this_present_resourceJobManager || that_present_resourceJobManager) {
+      if (!(this_present_resourceJobManager && that_present_resourceJobManager))
         return false;
-      if (!this.securityProtocol.equals(that.securityProtocol))
+      if (!this.resourceJobManager.equals(that.resourceJobManager))
         return false;
     }
 
@@ -379,29 +379,29 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(SCPDataMovement other) {
+  public int compareTo(SSHJobSubmission other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetDataMovementDataID()).compareTo(other.isSetDataMovementDataID());
+    lastComparison = Boolean.valueOf(isSetJobSubmissionDataID()).compareTo(other.isSetJobSubmissionDataID());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetDataMovementDataID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataMovementDataID, other.dataMovementDataID);
+    if (isSetJobSubmissionDataID()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobSubmissionDataID, other.jobSubmissionDataID);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetSecurityProtocol()).compareTo(other.isSetSecurityProtocol());
+    lastComparison = Boolean.valueOf(isSetResourceJobManager()).compareTo(other.isSetResourceJobManager());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetSecurityProtocol()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.securityProtocol, other.securityProtocol);
+    if (isSetResourceJobManager()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.resourceJobManager, other.resourceJobManager);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -433,22 +433,22 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("SCPDataMovement(");
+    StringBuilder sb = new StringBuilder("SSHJobSubmission(");
     boolean first = true;
 
-    sb.append("dataMovementDataID:");
-    if (this.dataMovementDataID == null) {
+    sb.append("jobSubmissionDataID:");
+    if (this.jobSubmissionDataID == null) {
       sb.append("null");
     } else {
-      sb.append(this.dataMovementDataID);
+      sb.append(this.jobSubmissionDataID);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("securityProtocol:");
-    if (this.securityProtocol == null) {
+    sb.append("resourceJobManager:");
+    if (this.resourceJobManager == null) {
       sb.append("null");
     } else {
-      sb.append(this.securityProtocol);
+      sb.append(this.resourceJobManager);
     }
     first = false;
     if (isSetSshPort()) {
@@ -463,12 +463,12 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetDataMovementDataID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'dataMovementDataID' is unset! Struct:" + toString());
+    if (!isSetJobSubmissionDataID()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'jobSubmissionDataID' is unset! Struct:" + toString());
     }
 
-    if (!isSetSecurityProtocol()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'securityProtocol' is unset! Struct:" + toString());
+    if (!isSetResourceJobManager()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'resourceJobManager' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -492,15 +492,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class SCPDataMovementStandardSchemeFactory implements SchemeFactory {
-    public SCPDataMovementStandardScheme getScheme() {
-      return new SCPDataMovementStandardScheme();
+  private static class SSHJobSubmissionStandardSchemeFactory implements SchemeFactory {
+    public SSHJobSubmissionStandardScheme getScheme() {
+      return new SSHJobSubmissionStandardScheme();
     }
   }
 
-  private static class SCPDataMovementStandardScheme extends StandardScheme<SCPDataMovement> {
+  private static class SSHJobSubmissionStandardScheme extends StandardScheme<SSHJobSubmission> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, SCPDataMovement struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, SSHJobSubmission struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -510,18 +510,18 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // DATA_MOVEMENT_DATA_ID
+          case 1: // JOB_SUBMISSION_DATA_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.dataMovementDataID = iprot.readString();
-              struct.setDataMovementDataIDIsSet(true);
+              struct.jobSubmissionDataID = iprot.readString();
+              struct.setJobSubmissionDataIDIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // SECURITY_PROTOCOL
+          case 2: // RESOURCE_JOB_MANAGER
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.securityProtocol = SecurityProtocol.findByValue(iprot.readI32());
-              struct.setSecurityProtocolIsSet(true);
+              struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
+              struct.setResourceJobManagerIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -543,18 +543,18 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, SCPDataMovement struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, SSHJobSubmission struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.dataMovementDataID != null) {
-        oprot.writeFieldBegin(DATA_MOVEMENT_DATA_ID_FIELD_DESC);
-        oprot.writeString(struct.dataMovementDataID);
+      if (struct.jobSubmissionDataID != null) {
+        oprot.writeFieldBegin(JOB_SUBMISSION_DATA_ID_FIELD_DESC);
+        oprot.writeString(struct.jobSubmissionDataID);
         oprot.writeFieldEnd();
       }
-      if (struct.securityProtocol != null) {
-        oprot.writeFieldBegin(SECURITY_PROTOCOL_FIELD_DESC);
-        oprot.writeI32(struct.securityProtocol.getValue());
+      if (struct.resourceJobManager != null) {
+        oprot.writeFieldBegin(RESOURCE_JOB_MANAGER_FIELD_DESC);
+        oprot.writeI32(struct.resourceJobManager.getValue());
         oprot.writeFieldEnd();
       }
       if (struct.isSetSshPort()) {
@@ -568,19 +568,19 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class SCPDataMovementTupleSchemeFactory implements SchemeFactory {
-    public SCPDataMovementTupleScheme getScheme() {
-      return new SCPDataMovementTupleScheme();
+  private static class SSHJobSubmissionTupleSchemeFactory implements SchemeFactory {
+    public SSHJobSubmissionTupleScheme getScheme() {
+      return new SSHJobSubmissionTupleScheme();
     }
   }
 
-  private static class SCPDataMovementTupleScheme extends TupleScheme<SCPDataMovement> {
+  private static class SSHJobSubmissionTupleScheme extends TupleScheme<SSHJobSubmission> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, SCPDataMovement struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, SSHJobSubmission struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.dataMovementDataID);
-      oprot.writeI32(struct.securityProtocol.getValue());
+      oprot.writeString(struct.jobSubmissionDataID);
+      oprot.writeI32(struct.resourceJobManager.getValue());
       BitSet optionals = new BitSet();
       if (struct.isSetSshPort()) {
         optionals.set(0);
@@ -592,12 +592,12 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, SCPDataMovement struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, SSHJobSubmission struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.dataMovementDataID = iprot.readString();
-      struct.setDataMovementDataIDIsSet(true);
-      struct.securityProtocol = SecurityProtocol.findByValue(iprot.readI32());
-      struct.setSecurityProtocolIsSet(true);
+      struct.jobSubmissionDataID = iprot.readString();
+      struct.setJobSubmissionDataIDIsSet(true);
+      struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
+      struct.setResourceJobManagerIsSet(true);
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         struct.sshPort = iprot.readI32();

@@ -31,12 +31,16 @@ class ApplicationCatalogAPIIf {
   virtual void getGridFTPDataMovementProtocol( ::GridFTPDataMovement& _return, const std::string& gridFTPDataMovementResourceId) = 0;
   virtual bool isComputeResourceDescriptionRegistered(const std::string& hostName) = 0;
   virtual void getComputeResourceDescriptionFromHostName( ::ComputeResourceDescription& _return, const std::string& hostName) = 0;
-  virtual void addApplicationInterface(std::string& _return, const  ::ApplicationInterface& applicationInterface) = 0;
+  virtual void addApplicationInterface(std::string& _return, const  ::ApplicationInterfaceDescription& applicationInterface) = 0;
   virtual void listApplicationInterfaceIds(std::vector<std::string> & _return) = 0;
-  virtual void getApplicationInterface( ::ApplicationInterface& _return, const std::string& applicationInterfaceId) = 0;
-  virtual void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment) = 0;
+  virtual void getApplicationInterface( ::ApplicationInterfaceDescription& _return, const std::string& applicationInterfaceId) = 0;
+  virtual void registerAppicationModule(std::string& _return, const  ::ApplicationModule& applicationModule, const bool publish) = 0;
+  virtual void getAppicationModule( ::ApplicationModule& _return, const std::string& appModuleId) = 0;
+  virtual bool updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule) = 0;
+  virtual bool deleteAppicationModule(const std::string& appModuleId) = 0;
+  virtual void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeploymentDescription& applicationDeployment) = 0;
   virtual void listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId) = 0;
-  virtual void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId) = 0;
+  virtual void getApplicationDeployment( ::ApplicationDeploymentDescription& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId) = 0;
 };
 
 class ApplicationCatalogAPIIfFactory {
@@ -115,22 +119,36 @@ class ApplicationCatalogAPINull : virtual public ApplicationCatalogAPIIf {
   void getComputeResourceDescriptionFromHostName( ::ComputeResourceDescription& /* _return */, const std::string& /* hostName */) {
     return;
   }
-  void addApplicationInterface(std::string& /* _return */, const  ::ApplicationInterface& /* applicationInterface */) {
+  void addApplicationInterface(std::string& /* _return */, const  ::ApplicationInterfaceDescription& /* applicationInterface */) {
     return;
   }
   void listApplicationInterfaceIds(std::vector<std::string> & /* _return */) {
     return;
   }
-  void getApplicationInterface( ::ApplicationInterface& /* _return */, const std::string& /* applicationInterfaceId */) {
+  void getApplicationInterface( ::ApplicationInterfaceDescription& /* _return */, const std::string& /* applicationInterfaceId */) {
     return;
   }
-  void addApplicationDeployment(std::string& /* _return */, const std::string& /* applicationInterfaceId */, const  ::ApplicationDeployment& /* applicationDeployment */) {
+  void registerAppicationModule(std::string& /* _return */, const  ::ApplicationModule& /* applicationModule */, const bool /* publish */) {
+    return;
+  }
+  void getAppicationModule( ::ApplicationModule& /* _return */, const std::string& /* appModuleId */) {
+    return;
+  }
+  bool updateAppicationModule(const std::string& /* appModuleId */, const  ::ApplicationModule& /* applicationModule */) {
+    bool _return = false;
+    return _return;
+  }
+  bool deleteAppicationModule(const std::string& /* appModuleId */) {
+    bool _return = false;
+    return _return;
+  }
+  void addApplicationDeployment(std::string& /* _return */, const std::string& /* applicationInterfaceId */, const  ::ApplicationDeploymentDescription& /* applicationDeployment */) {
     return;
   }
   void listApplicationDeploymentIds(std::vector<std::string> & /* _return */, const std::string& /* applicationInterfaceId */) {
     return;
   }
-  void getApplicationDeployment( ::ApplicationDeployment& /* _return */, const std::string& /* applicationInterfaceId */, const std::string& /* applicationDeploymentId */) {
+  void getApplicationDeployment( ::ApplicationDeploymentDescription& /* _return */, const std::string& /* applicationInterfaceId */, const std::string& /* applicationDeploymentId */) {
     return;
   }
 };
@@ -2250,9 +2268,9 @@ class ApplicationCatalogAPI_addApplicationInterface_args {
 
   virtual ~ApplicationCatalogAPI_addApplicationInterface_args() throw() {}
 
-   ::ApplicationInterface applicationInterface;
+   ::ApplicationInterfaceDescription applicationInterface;
 
-  void __set_applicationInterface(const  ::ApplicationInterface& val) {
+  void __set_applicationInterface(const  ::ApplicationInterfaceDescription& val) {
     applicationInterface = val;
   }
 
@@ -2280,7 +2298,7 @@ class ApplicationCatalogAPI_addApplicationInterface_pargs {
 
   virtual ~ApplicationCatalogAPI_addApplicationInterface_pargs() throw() {}
 
-  const  ::ApplicationInterface* applicationInterface;
+  const  ::ApplicationInterfaceDescription* applicationInterface;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2558,14 +2576,14 @@ class ApplicationCatalogAPI_getApplicationInterface_result {
 
   virtual ~ApplicationCatalogAPI_getApplicationInterface_result() throw() {}
 
-   ::ApplicationInterface success;
+   ::ApplicationInterfaceDescription success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_getApplicationInterface_result__isset __isset;
 
-  void __set_success(const  ::ApplicationInterface& val) {
+  void __set_success(const  ::ApplicationInterfaceDescription& val) {
     success = val;
   }
 
@@ -2618,12 +2636,562 @@ class ApplicationCatalogAPI_getApplicationInterface_presult {
 
   virtual ~ApplicationCatalogAPI_getApplicationInterface_presult() throw() {}
 
-   ::ApplicationInterface* success;
+   ::ApplicationInterfaceDescription* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_getApplicationInterface_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+typedef struct _ApplicationCatalogAPI_registerAppicationModule_args__isset {
+  _ApplicationCatalogAPI_registerAppicationModule_args__isset() : publish(false) {}
+  bool publish;
+} _ApplicationCatalogAPI_registerAppicationModule_args__isset;
+
+class ApplicationCatalogAPI_registerAppicationModule_args {
+ public:
+
+  ApplicationCatalogAPI_registerAppicationModule_args() : publish(0) {
+  }
+
+  virtual ~ApplicationCatalogAPI_registerAppicationModule_args() throw() {}
+
+   ::ApplicationModule applicationModule;
+  bool publish;
+
+  _ApplicationCatalogAPI_registerAppicationModule_args__isset __isset;
+
+  void __set_applicationModule(const  ::ApplicationModule& val) {
+    applicationModule = val;
+  }
+
+  void __set_publish(const bool val) {
+    publish = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_registerAppicationModule_args & rhs) const
+  {
+    if (!(applicationModule == rhs.applicationModule))
+      return false;
+    if (!(publish == rhs.publish))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_registerAppicationModule_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_registerAppicationModule_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class ApplicationCatalogAPI_registerAppicationModule_pargs {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_registerAppicationModule_pargs() throw() {}
+
+  const  ::ApplicationModule* applicationModule;
+  const bool* publish;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_registerAppicationModule_result__isset {
+  _ApplicationCatalogAPI_registerAppicationModule_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_registerAppicationModule_result__isset;
+
+class ApplicationCatalogAPI_registerAppicationModule_result {
+ public:
+
+  ApplicationCatalogAPI_registerAppicationModule_result() : success() {
+  }
+
+  virtual ~ApplicationCatalogAPI_registerAppicationModule_result() throw() {}
+
+  std::string success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_registerAppicationModule_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_registerAppicationModule_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_registerAppicationModule_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_registerAppicationModule_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_registerAppicationModule_presult__isset {
+  _ApplicationCatalogAPI_registerAppicationModule_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_registerAppicationModule_presult__isset;
+
+class ApplicationCatalogAPI_registerAppicationModule_presult {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_registerAppicationModule_presult() throw() {}
+
+  std::string* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_registerAppicationModule_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class ApplicationCatalogAPI_getAppicationModule_args {
+ public:
+
+  ApplicationCatalogAPI_getAppicationModule_args() : appModuleId() {
+  }
+
+  virtual ~ApplicationCatalogAPI_getAppicationModule_args() throw() {}
+
+  std::string appModuleId;
+
+  void __set_appModuleId(const std::string& val) {
+    appModuleId = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_getAppicationModule_args & rhs) const
+  {
+    if (!(appModuleId == rhs.appModuleId))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_getAppicationModule_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_getAppicationModule_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class ApplicationCatalogAPI_getAppicationModule_pargs {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_getAppicationModule_pargs() throw() {}
+
+  const std::string* appModuleId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_getAppicationModule_result__isset {
+  _ApplicationCatalogAPI_getAppicationModule_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_getAppicationModule_result__isset;
+
+class ApplicationCatalogAPI_getAppicationModule_result {
+ public:
+
+  ApplicationCatalogAPI_getAppicationModule_result() {
+  }
+
+  virtual ~ApplicationCatalogAPI_getAppicationModule_result() throw() {}
+
+   ::ApplicationModule success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_getAppicationModule_result__isset __isset;
+
+  void __set_success(const  ::ApplicationModule& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_getAppicationModule_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_getAppicationModule_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_getAppicationModule_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_getAppicationModule_presult__isset {
+  _ApplicationCatalogAPI_getAppicationModule_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_getAppicationModule_presult__isset;
+
+class ApplicationCatalogAPI_getAppicationModule_presult {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_getAppicationModule_presult() throw() {}
+
+   ::ApplicationModule* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_getAppicationModule_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class ApplicationCatalogAPI_updateAppicationModule_args {
+ public:
+
+  ApplicationCatalogAPI_updateAppicationModule_args() : appModuleId() {
+  }
+
+  virtual ~ApplicationCatalogAPI_updateAppicationModule_args() throw() {}
+
+  std::string appModuleId;
+   ::ApplicationModule applicationModule;
+
+  void __set_appModuleId(const std::string& val) {
+    appModuleId = val;
+  }
+
+  void __set_applicationModule(const  ::ApplicationModule& val) {
+    applicationModule = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_updateAppicationModule_args & rhs) const
+  {
+    if (!(appModuleId == rhs.appModuleId))
+      return false;
+    if (!(applicationModule == rhs.applicationModule))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_updateAppicationModule_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_updateAppicationModule_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class ApplicationCatalogAPI_updateAppicationModule_pargs {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_updateAppicationModule_pargs() throw() {}
+
+  const std::string* appModuleId;
+  const  ::ApplicationModule* applicationModule;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_updateAppicationModule_result__isset {
+  _ApplicationCatalogAPI_updateAppicationModule_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_updateAppicationModule_result__isset;
+
+class ApplicationCatalogAPI_updateAppicationModule_result {
+ public:
+
+  ApplicationCatalogAPI_updateAppicationModule_result() : success(0) {
+  }
+
+  virtual ~ApplicationCatalogAPI_updateAppicationModule_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_updateAppicationModule_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_updateAppicationModule_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_updateAppicationModule_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_updateAppicationModule_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_updateAppicationModule_presult__isset {
+  _ApplicationCatalogAPI_updateAppicationModule_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_updateAppicationModule_presult__isset;
+
+class ApplicationCatalogAPI_updateAppicationModule_presult {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_updateAppicationModule_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_updateAppicationModule_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class ApplicationCatalogAPI_deleteAppicationModule_args {
+ public:
+
+  ApplicationCatalogAPI_deleteAppicationModule_args() : appModuleId() {
+  }
+
+  virtual ~ApplicationCatalogAPI_deleteAppicationModule_args() throw() {}
+
+  std::string appModuleId;
+
+  void __set_appModuleId(const std::string& val) {
+    appModuleId = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_deleteAppicationModule_args & rhs) const
+  {
+    if (!(appModuleId == rhs.appModuleId))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_deleteAppicationModule_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_deleteAppicationModule_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class ApplicationCatalogAPI_deleteAppicationModule_pargs {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_deleteAppicationModule_pargs() throw() {}
+
+  const std::string* appModuleId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_deleteAppicationModule_result__isset {
+  _ApplicationCatalogAPI_deleteAppicationModule_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_deleteAppicationModule_result__isset;
+
+class ApplicationCatalogAPI_deleteAppicationModule_result {
+ public:
+
+  ApplicationCatalogAPI_deleteAppicationModule_result() : success(0) {
+  }
+
+  virtual ~ApplicationCatalogAPI_deleteAppicationModule_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_deleteAppicationModule_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const ApplicationCatalogAPI_deleteAppicationModule_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const ApplicationCatalogAPI_deleteAppicationModule_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ApplicationCatalogAPI_deleteAppicationModule_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _ApplicationCatalogAPI_deleteAppicationModule_presult__isset {
+  _ApplicationCatalogAPI_deleteAppicationModule_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _ApplicationCatalogAPI_deleteAppicationModule_presult__isset;
+
+class ApplicationCatalogAPI_deleteAppicationModule_presult {
+ public:
+
+
+  virtual ~ApplicationCatalogAPI_deleteAppicationModule_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _ApplicationCatalogAPI_deleteAppicationModule_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -2639,13 +3207,13 @@ class ApplicationCatalogAPI_addApplicationDeployment_args {
   virtual ~ApplicationCatalogAPI_addApplicationDeployment_args() throw() {}
 
   std::string applicationInterfaceId;
-   ::ApplicationDeployment applicationDeployment;
+   ::ApplicationDeploymentDescription applicationDeployment;
 
   void __set_applicationInterfaceId(const std::string& val) {
     applicationInterfaceId = val;
   }
 
-  void __set_applicationDeployment(const  ::ApplicationDeployment& val) {
+  void __set_applicationDeployment(const  ::ApplicationDeploymentDescription& val) {
     applicationDeployment = val;
   }
 
@@ -2676,7 +3244,7 @@ class ApplicationCatalogAPI_addApplicationDeployment_pargs {
   virtual ~ApplicationCatalogAPI_addApplicationDeployment_pargs() throw() {}
 
   const std::string* applicationInterfaceId;
-  const  ::ApplicationDeployment* applicationDeployment;
+  const  ::ApplicationDeploymentDescription* applicationDeployment;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2970,14 +3538,14 @@ class ApplicationCatalogAPI_getApplicationDeployment_result {
 
   virtual ~ApplicationCatalogAPI_getApplicationDeployment_result() throw() {}
 
-   ::ApplicationDeployment success;
+   ::ApplicationDeploymentDescription success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _ApplicationCatalogAPI_getApplicationDeployment_result__isset __isset;
 
-  void __set_success(const  ::ApplicationDeployment& val) {
+  void __set_success(const  ::ApplicationDeploymentDescription& val) {
     success = val;
   }
 
@@ -3030,7 +3598,7 @@ class ApplicationCatalogAPI_getApplicationDeployment_presult {
 
   virtual ~ApplicationCatalogAPI_getApplicationDeployment_presult() throw() {}
 
-   ::ApplicationDeployment* success;
+   ::ApplicationDeploymentDescription* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
@@ -3109,24 +3677,36 @@ class ApplicationCatalogAPIClient : virtual public ApplicationCatalogAPIIf {
   void getComputeResourceDescriptionFromHostName( ::ComputeResourceDescription& _return, const std::string& hostName);
   void send_getComputeResourceDescriptionFromHostName(const std::string& hostName);
   void recv_getComputeResourceDescriptionFromHostName( ::ComputeResourceDescription& _return);
-  void addApplicationInterface(std::string& _return, const  ::ApplicationInterface& applicationInterface);
-  void send_addApplicationInterface(const  ::ApplicationInterface& applicationInterface);
+  void addApplicationInterface(std::string& _return, const  ::ApplicationInterfaceDescription& applicationInterface);
+  void send_addApplicationInterface(const  ::ApplicationInterfaceDescription& applicationInterface);
   void recv_addApplicationInterface(std::string& _return);
   void listApplicationInterfaceIds(std::vector<std::string> & _return);
   void send_listApplicationInterfaceIds();
   void recv_listApplicationInterfaceIds(std::vector<std::string> & _return);
-  void getApplicationInterface( ::ApplicationInterface& _return, const std::string& applicationInterfaceId);
+  void getApplicationInterface( ::ApplicationInterfaceDescription& _return, const std::string& applicationInterfaceId);
   void send_getApplicationInterface(const std::string& applicationInterfaceId);
-  void recv_getApplicationInterface( ::ApplicationInterface& _return);
-  void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment);
-  void send_addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment);
+  void recv_getApplicationInterface( ::ApplicationInterfaceDescription& _return);
+  void registerAppicationModule(std::string& _return, const  ::ApplicationModule& applicationModule, const bool publish);
+  void send_registerAppicationModule(const  ::ApplicationModule& applicationModule, const bool publish);
+  void recv_registerAppicationModule(std::string& _return);
+  void getAppicationModule( ::ApplicationModule& _return, const std::string& appModuleId);
+  void send_getAppicationModule(const std::string& appModuleId);
+  void recv_getAppicationModule( ::ApplicationModule& _return);
+  bool updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule);
+  void send_updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule);
+  bool recv_updateAppicationModule();
+  bool deleteAppicationModule(const std::string& appModuleId);
+  void send_deleteAppicationModule(const std::string& appModuleId);
+  bool recv_deleteAppicationModule();
+  void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeploymentDescription& applicationDeployment);
+  void send_addApplicationDeployment(const std::string& applicationInterfaceId, const  ::ApplicationDeploymentDescription& applicationDeployment);
   void recv_addApplicationDeployment(std::string& _return);
   void listApplicationDeploymentIds(std::vector<std::string> & _return, const std::string& applicationInterfaceId);
   void send_listApplicationDeploymentIds(const std::string& applicationInterfaceId);
   void recv_listApplicationDeploymentIds(std::vector<std::string> & _return);
-  void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId);
+  void getApplicationDeployment( ::ApplicationDeploymentDescription& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId);
   void send_getApplicationDeployment(const std::string& applicationInterfaceId, const std::string& applicationDeploymentId);
-  void recv_getApplicationDeployment( ::ApplicationDeployment& _return);
+  void recv_getApplicationDeployment( ::ApplicationDeploymentDescription& _return);
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -3161,6 +3741,10 @@ class ApplicationCatalogAPIProcessor : public ::apache::thrift::TDispatchProcess
   void process_addApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_listApplicationInterfaceIds(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_registerAppicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAppicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateAppicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteAppicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addApplicationDeployment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_listApplicationDeploymentIds(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationDeployment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -3186,6 +3770,10 @@ class ApplicationCatalogAPIProcessor : public ::apache::thrift::TDispatchProcess
     processMap_["addApplicationInterface"] = &ApplicationCatalogAPIProcessor::process_addApplicationInterface;
     processMap_["listApplicationInterfaceIds"] = &ApplicationCatalogAPIProcessor::process_listApplicationInterfaceIds;
     processMap_["getApplicationInterface"] = &ApplicationCatalogAPIProcessor::process_getApplicationInterface;
+    processMap_["registerAppicationModule"] = &ApplicationCatalogAPIProcessor::process_registerAppicationModule;
+    processMap_["getAppicationModule"] = &ApplicationCatalogAPIProcessor::process_getAppicationModule;
+    processMap_["updateAppicationModule"] = &ApplicationCatalogAPIProcessor::process_updateAppicationModule;
+    processMap_["deleteAppicationModule"] = &ApplicationCatalogAPIProcessor::process_deleteAppicationModule;
     processMap_["addApplicationDeployment"] = &ApplicationCatalogAPIProcessor::process_addApplicationDeployment;
     processMap_["listApplicationDeploymentIds"] = &ApplicationCatalogAPIProcessor::process_listApplicationDeploymentIds;
     processMap_["getApplicationDeployment"] = &ApplicationCatalogAPIProcessor::process_getApplicationDeployment;
@@ -3376,7 +3964,7 @@ class ApplicationCatalogAPIMultiface : virtual public ApplicationCatalogAPIIf {
     return;
   }
 
-  void addApplicationInterface(std::string& _return, const  ::ApplicationInterface& applicationInterface) {
+  void addApplicationInterface(std::string& _return, const  ::ApplicationInterfaceDescription& applicationInterface) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -3396,7 +3984,7 @@ class ApplicationCatalogAPIMultiface : virtual public ApplicationCatalogAPIIf {
     return;
   }
 
-  void getApplicationInterface( ::ApplicationInterface& _return, const std::string& applicationInterfaceId) {
+  void getApplicationInterface( ::ApplicationInterfaceDescription& _return, const std::string& applicationInterfaceId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -3406,7 +3994,45 @@ class ApplicationCatalogAPIMultiface : virtual public ApplicationCatalogAPIIf {
     return;
   }
 
-  void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeployment& applicationDeployment) {
+  void registerAppicationModule(std::string& _return, const  ::ApplicationModule& applicationModule, const bool publish) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->registerAppicationModule(_return, applicationModule, publish);
+    }
+    ifaces_[i]->registerAppicationModule(_return, applicationModule, publish);
+    return;
+  }
+
+  void getAppicationModule( ::ApplicationModule& _return, const std::string& appModuleId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAppicationModule(_return, appModuleId);
+    }
+    ifaces_[i]->getAppicationModule(_return, appModuleId);
+    return;
+  }
+
+  bool updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateAppicationModule(appModuleId, applicationModule);
+    }
+    return ifaces_[i]->updateAppicationModule(appModuleId, applicationModule);
+  }
+
+  bool deleteAppicationModule(const std::string& appModuleId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteAppicationModule(appModuleId);
+    }
+    return ifaces_[i]->deleteAppicationModule(appModuleId);
+  }
+
+  void addApplicationDeployment(std::string& _return, const std::string& applicationInterfaceId, const  ::ApplicationDeploymentDescription& applicationDeployment) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -3426,7 +4052,7 @@ class ApplicationCatalogAPIMultiface : virtual public ApplicationCatalogAPIIf {
     return;
   }
 
-  void getApplicationDeployment( ::ApplicationDeployment& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId) {
+  void getApplicationDeployment( ::ApplicationDeploymentDescription& _return, const std::string& applicationInterfaceId, const std::string& applicationDeploymentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
