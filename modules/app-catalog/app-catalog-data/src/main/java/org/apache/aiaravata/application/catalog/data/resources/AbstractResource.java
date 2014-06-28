@@ -86,13 +86,13 @@ public abstract class AbstractResource implements Resource {
 
     // GSSISSH Pre Job Command Table
     public final class GSISSHPreJobCommandConstants {
-        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
         public static final String COMMAND = "command";
     }
 
     // GSSISSH Post Job Command Table
     public final class GSISSHPostJobCommandConstants {
-        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
         public static final String COMMAND = "command";
     }
 
