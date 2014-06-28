@@ -21,12 +21,6 @@
 
 package org.apache.airavata.api.server.util;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URI;
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
@@ -39,16 +33,21 @@ import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RegistryInitUtil {
-    public static final String CONFIGURATION_TABLE = "CONFIGURATION";
-    private static final Logger logger = LoggerFactory.getLogger(RegistryInitUtil.class);
-    public static final String REGISTRY_JDBC_DRIVER = "registry.jdbc.driver";
-    public static final String REGISTRY_JDBC_URL = "registry.jdbc.url";
-    public static final String REGISTRY_JDBC_USER = "registry.jdbc.user";
-    public static final String REGISTRY_JDBC_PASSWORD = "registry.jdbc.password";
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URI;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+public class AppCatalogInitUtil {
+    public static final String COMPUTE_RESOURCE = "GATEWAY_PROFILE";
+    private static final Logger logger = LoggerFactory.getLogger(AppCatalogInitUtil.class);
+    public static final String APPCATALOG_JDBC_DRIVER = "appcatalog.jdbc.driver";
+    public static final String APPCATALOG_JDBC_URL = "appcatalog.jdbc.url";
+    public static final String APPCATALOG_JDBC_USER = "appcatalog.jdbc.user";
+    public static final String APPCATALOG_JDBC_PASSWORD = "appcatalog.jdbc.password";
     public static final String START_DERBY_ENABLE = "start.derby.server.mode";
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
-    public static final String DEFAULT_PROJECT_NAME = "default";
     private static NetworkServerControl server;
     private static JdbcStorage db;
     private static String jdbcURl;
@@ -58,12 +57,12 @@ public class RegistryInitUtil {
 
 
     public static void initializeDB() {
-        System.setProperty("registry.initialize.state", "0");
+//        System.setProperty("appcatalog.initialize.state", "0");
         try{
-            jdbcDriver = ServerSettings.getSetting(REGISTRY_JDBC_DRIVER);
-            jdbcURl = ServerSettings.getSetting(REGISTRY_JDBC_URL);
-            jdbcUser = ServerSettings.getSetting(REGISTRY_JDBC_USER);
-            jdbcPassword = ServerSettings.getSetting(REGISTRY_JDBC_PASSWORD);
+            jdbcDriver = ServerSettings.getSetting(APPCATALOG_JDBC_DRIVER);
+            jdbcURl = ServerSettings.getSetting(APPCATALOG_JDBC_URL);
+            jdbcUser = ServerSettings.getSetting(APPCATALOG_JDBC_USER);
+            jdbcPassword = ServerSettings.getSetting(APPCATALOG_JDBC_PASSWORD);
             jdbcURl = jdbcURl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata server properties", e.getMessage());
@@ -77,26 +76,11 @@ public class RegistryInitUtil {
         Connection conn = null;
         try {
             conn = db.connect();
-            if (!DatabaseCreator.isDatabaseStructureCreated(CONFIGURATION_TABLE, conn)) {
-                DatabaseCreator.createRegistryDatabase("database_scripts/registry", conn);
-                logger.info("New Database created for Registry");
+            if (!DatabaseCreator.isDatabaseStructureCreated(COMPUTE_RESOURCE, conn)) {
+                DatabaseCreator.createRegistryDatabase("database_scripts/appcatalog", conn);
+                logger.info("New Database created for App Catalog");
             } else {
-                logger.info("Database already created for Registry!");
-            }
-            try{
-                GatewayResource gateway = (GatewayResource)ResourceUtils.createGateway(ServerSettings.getSystemUserGateway());
-                gateway.save();
-                UserResource user = ResourceUtils.createUser(ServerSettings.getSystemUser(), ServerSettings.getSystemUserPassword());
-                user.save();
-                WorkerResource workerResource = (WorkerResource)gateway.create(ResourceType.GATEWAY_WORKER);
-                workerResource.setUser(user.getUserName());
-                workerResource.save();
-                ProjectResource projectResource = workerResource.createProject(DEFAULT_PROJECT_NAME);
-                projectResource.setName(DEFAULT_PROJECT_NAME);
-                projectResource.setGateway(gateway);
-                projectResource.save();
-            } catch (ApplicationSettingsException e) {
-                logger.error("Unable to read airavata-server properties...", e.getMessage());
+                logger.info("Database already created for App Catalog!");
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -114,7 +98,7 @@ public class RegistryInitUtil {
                 logger.error("Error while closing database connection...", e.getMessage(), e);
             }
         }
-        System.setProperty("registry.initialize.state", "1");
+//        System.setProperty("appcatalog.initialize.state", "1");
     }
 
     public static String getDBType(String jdbcUrl){
