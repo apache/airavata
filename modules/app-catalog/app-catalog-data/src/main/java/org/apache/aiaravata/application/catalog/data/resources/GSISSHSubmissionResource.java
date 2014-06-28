@@ -3,7 +3,6 @@ package org.apache.aiaravata.application.catalog.data.resources;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.model.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.model.GSISSHSubmission;
-import org.apache.aiaravata.application.catalog.data.model.SSHSubmission;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
@@ -116,7 +115,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceList.add(gsisshSubmissionResource);
                     }
                 }
-            }else if (fieldName.equals(GSISSHSubmissionConstants.MONITOR_MODE)) {
+            } else if (fieldName.equals(GSISSHSubmissionConstants.MONITOR_MODE)) {
                 generator.setParameter(GSISSHSubmissionConstants.MONITOR_MODE, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -129,7 +128,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceList.add(gsisshSubmissionResource);
                     }
                 }
-            }else if (fieldName.equals(GSISSHSubmissionConstants.INSTALLED_PATH)) {
+            } else if (fieldName.equals(GSISSHSubmissionConstants.INSTALLED_PATH)) {
                 generator.setParameter(GSISSHSubmissionConstants.INSTALLED_PATH, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -142,7 +141,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceList.add(gsisshSubmissionResource);
                     }
                 }
-            }else if (fieldName.equals(GSISSHSubmissionConstants.SSH_PORT)) {
+            } else if (fieldName.equals(GSISSHSubmissionConstants.SSH_PORT)) {
                 generator.setParameter(GSISSHSubmissionConstants.SSH_PORT, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -168,7 +167,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceList.add(gsisshSubmissionResource);
                     }
                 }
-            }else {
+            } else {
                 em.getTransaction().commit();
                 em.close();
                 logger.error("Unsupported field name for GSISSH submission resource.", new IllegalArgumentException());
@@ -209,7 +208,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceIDs.add(gsisshSubmission.getSubmissionID());
                     }
                 }
-            }else if (fieldName.equals(GSISSHSubmissionConstants.SSH_PORT)) {
+            } else if (fieldName.equals(GSISSHSubmissionConstants.SSH_PORT)) {
                 generator.setParameter(GSISSHSubmissionConstants.SSH_PORT, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -219,7 +218,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceIDs.add(gsisshSubmission.getSubmissionID());
                     }
                 }
-            }else if (fieldName.equals(GSISSHSubmissionConstants.MONITOR_MODE)) {
+            } else if (fieldName.equals(GSISSHSubmissionConstants.MONITOR_MODE)) {
                 generator.setParameter(GSISSHSubmissionConstants.MONITOR_MODE, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -229,7 +228,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceIDs.add(gsisshSubmission.getSubmissionID());
                     }
                 }
-            }else if (fieldName.equals(GSISSHSubmissionConstants.RESOURCE_JOB_MANAGER)) {
+            } else if (fieldName.equals(GSISSHSubmissionConstants.RESOURCE_JOB_MANAGER)) {
                 generator.setParameter(GSISSHSubmissionConstants.RESOURCE_JOB_MANAGER, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -239,7 +238,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceIDs.add(gsisshSubmission.getSubmissionID());
                     }
                 }
-            }else if (fieldName.equals(GSISSHSubmissionConstants.INSTALLED_PATH)) {
+            } else if (fieldName.equals(GSISSHSubmissionConstants.INSTALLED_PATH)) {
                 generator.setParameter(GSISSHSubmissionConstants.INSTALLED_PATH, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -249,7 +248,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceIDs.add(gsisshSubmission.getSubmissionID());
                     }
                 }
-            }else if (fieldName.equals(GSISSHSubmissionConstants.RESOURCE_ID)) {
+            } else if (fieldName.equals(GSISSHSubmissionConstants.RESOURCE_ID)) {
                 generator.setParameter(GSISSHSubmissionConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -259,7 +258,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceIDs.add(gsisshSubmission.getSubmissionID());
                     }
                 }
-            }  else {
+            } else {
                 em.getTransaction().commit();
                 em.close();
                 logger.error("Unsupported field name for GSISSH Submission resource.", new IllegalArgumentException());
@@ -290,7 +289,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            if (existingGSISSHSubmission !=  null){
+            if (existingGSISSHSubmission != null) {
                 existingGSISSHSubmission.setSubmissionID(submissionID);
                 existingGSISSHSubmission.setResourceID(resourceID);
                 existingGSISSHSubmission.setSshPort(sshPort);
@@ -301,7 +300,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                 existingGSISSHSubmission.setComputeResource(computeResource);
 
                 em.merge(existingGSISSHSubmission);
-            }else {
+            } else {
                 GSISSHSubmission gsisshSubmission = new GSISSHSubmission();
                 gsisshSubmission.setResourceID(resourceID);
                 gsisshSubmission.setSubmissionID(submissionID);
@@ -320,7 +319,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
             throw new AppCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -341,7 +340,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
             throw new AppCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
