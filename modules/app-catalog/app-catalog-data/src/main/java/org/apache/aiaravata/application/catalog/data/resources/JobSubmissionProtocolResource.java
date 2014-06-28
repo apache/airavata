@@ -29,9 +29,9 @@ public class JobSubmissionProtocolResource extends AbstractResource {
 
     public void remove(Object identifier) throws AppCatalogException {
         HashMap<String, String> ids;
-        if (identifier instanceof Map){
-            ids = (HashMap)identifier;
-        }else {
+        if (identifier instanceof Map) {
+            ids = (HashMap) identifier;
+        } else {
             logger.error("Identifier should be a map with the field name and it's value");
             throw new AppCatalogException("Identifier should be a map with the field name and it's value");
         }
@@ -40,7 +40,7 @@ public class JobSubmissionProtocolResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(JOB_SUBMISSION_PROTOCOL);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(JOB_SUBMISSION_PROTOCOL);
             generator.setParameter(JobSubmissionProtocolConstants.RESOURCE_ID, ids.get(JobSubmissionProtocolConstants.RESOURCE_ID));
             generator.setParameter(JobSubmissionProtocolConstants.SUBMISSION_ID, ids.get(JobSubmissionProtocolConstants.SUBMISSION_ID));
             generator.setParameter(JobSubmissionProtocolConstants.JOB_TYPE, ids.get(JobSubmissionProtocolConstants.JOB_TYPE));
@@ -53,7 +53,7 @@ public class JobSubmissionProtocolResource extends AbstractResource {
             throw new AppCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -63,9 +63,9 @@ public class JobSubmissionProtocolResource extends AbstractResource {
 
     public Resource get(Object identifier) throws AppCatalogException {
         HashMap<String, String> ids;
-        if (identifier instanceof Map){
-            ids = (HashMap)identifier;
-        }else {
+        if (identifier instanceof Map) {
+            ids = (HashMap) identifier;
+        } else {
             logger.error("Identifier should be a map with the field name and it's value");
             throw new AppCatalogException("Identifier should be a map with the field name and it's value");
         }
@@ -119,7 +119,7 @@ public class JobSubmissionProtocolResource extends AbstractResource {
                         jobSubmissionProtocolResourceList.add(jobSubmissionProtocolResource);
                     }
                 }
-            }else if (fieldName.equals(JobSubmissionProtocolConstants.JOB_TYPE)) {
+            } else if (fieldName.equals(JobSubmissionProtocolConstants.JOB_TYPE)) {
                 generator.setParameter(JobSubmissionProtocolConstants.JOB_TYPE, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -131,7 +131,7 @@ public class JobSubmissionProtocolResource extends AbstractResource {
                         jobSubmissionProtocolResourceList.add(jobSubmissionProtocolResource);
                     }
                 }
-            }else if (fieldName.equals(HostIPAddressConstants.RESOURCE_ID)) {
+            } else if (fieldName.equals(HostIPAddressConstants.RESOURCE_ID)) {
                 generator.setParameter(HostIPAddressConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -181,7 +181,7 @@ public class JobSubmissionProtocolResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         JobSubmissionProtocol jobSubmissionProtocol = (JobSubmissionProtocol) result;
-                        jobSubmissionProtocolIDs.add(jobSubmissionProtocol.getResourceID());
+                        jobSubmissionProtocolIDs.add(jobSubmissionProtocol.getSubmissionID());
                     }
                 }
             } else if (fieldName.equals(JobSubmissionProtocolConstants.RESOURCE_ID)) {
@@ -191,17 +191,17 @@ public class JobSubmissionProtocolResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         JobSubmissionProtocol jobSubmissionProtocol = (JobSubmissionProtocol) result;
-                        jobSubmissionProtocolIDs.add(jobSubmissionProtocol.getResourceID());
+                        jobSubmissionProtocolIDs.add(jobSubmissionProtocol.getSubmissionID());
                     }
                 }
-            }else if (fieldName.equals(JobSubmissionProtocolConstants.JOB_TYPE)) {
+            } else if (fieldName.equals(JobSubmissionProtocolConstants.JOB_TYPE)) {
                 generator.setParameter(JobSubmissionProtocolConstants.JOB_TYPE, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
                         JobSubmissionProtocol jobSubmissionProtocol = (JobSubmissionProtocol) result;
-                        jobSubmissionProtocolIDs.add(jobSubmissionProtocol.getResourceID());
+                        jobSubmissionProtocolIDs.add(jobSubmissionProtocol.getSubmissionID());
                     }
                 }
             } else {
@@ -223,31 +223,32 @@ public class JobSubmissionProtocolResource extends AbstractResource {
                 em.close();
             }
         }
-        return jobSubmissionProtocolIDs;    }
+        return jobSubmissionProtocolIDs;
+    }
 
     public void save() throws AppCatalogException {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            JobSubmissionProtocol existingJobSubProtocol = em.find(JobSubmissionProtocol.class, new JobSubmissionProtocolPK(resourceID,submissionID,jobType));
+            JobSubmissionProtocol existingJobSubProtocol = em.find(JobSubmissionProtocol.class, new JobSubmissionProtocolPK(resourceID, submissionID, jobType));
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            if (existingJobSubProtocol !=  null){
+            if (existingJobSubProtocol != null) {
                 existingJobSubProtocol.setJobType(jobType);
                 existingJobSubProtocol.setSubmissionID(submissionID);
-                ComputeResource computeResource = em.find(ComputeResource.class, computeHostResource.getResoureId());
+                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingJobSubProtocol.setComputeResource(computeResource);
                 existingJobSubProtocol.setResourceID(resourceID);
 
                 em.merge(existingJobSubProtocol);
-            }else {
+            } else {
                 JobSubmissionProtocol jobSubmissionProtocol = new JobSubmissionProtocol();
                 jobSubmissionProtocol.setJobType(jobType);
                 jobSubmissionProtocol.setSubmissionID(submissionID);
                 jobSubmissionProtocol.setResourceID(resourceID);
-                ComputeResource computeResource = em.find(ComputeResource.class, computeHostResource.getResoureId());
+                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 jobSubmissionProtocol.setComputeResource(computeResource);
 
                 em.persist(jobSubmissionProtocol);
@@ -259,7 +260,7 @@ public class JobSubmissionProtocolResource extends AbstractResource {
             throw new AppCatalogException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -270,9 +271,9 @@ public class JobSubmissionProtocolResource extends AbstractResource {
 
     public boolean isExists(Object identifier) throws AppCatalogException {
         HashMap<String, String> ids;
-        if (identifier instanceof Map){
-            ids = (HashMap)identifier;
-        }else {
+        if (identifier instanceof Map) {
+            ids = (HashMap) identifier;
+        } else {
             logger.error("Identifier should be a map with the field name and it's value");
             throw new AppCatalogException("Identifier should be a map with the field name and it's value");
         }
@@ -281,7 +282,7 @@ public class JobSubmissionProtocolResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             JobSubmissionProtocol jobSubmissionProtocol = em.find(JobSubmissionProtocol.class, new JobSubmissionProtocolPK(ids.get(JobSubmissionProtocolConstants.RESOURCE_ID),
-                    ids.get(JobSubmissionProtocolConstants.SUBMISSION_ID),ids.get(JobSubmissionProtocolConstants.JOB_TYPE)));
+                    ids.get(JobSubmissionProtocolConstants.SUBMISSION_ID), ids.get(JobSubmissionProtocolConstants.JOB_TYPE)));
 
             em.close();
             return jobSubmissionProtocol != null;
