@@ -33,14 +33,14 @@ interface ApplicationCatalogAPIIf {
   public function getGridFTPDataMovementProtocol($gridFTPDataMovementResourceId);
   public function isComputeResourceDescriptionRegistered($hostName);
   public function getComputeResourceDescriptionFromHostName($hostName);
-  public function addApplicationInterface(\Airavata\Model\Application\Interface\ApplicationInterfaceDescription $applicationInterface);
+  public function addApplicationInterface(\Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription $applicationInterface);
   public function listApplicationInterfaceIds();
   public function getApplicationInterface($applicationInterfaceId);
-  public function registerAppicationModule(\Airavata\Model\Application\Deployment\ApplicationModule $applicationModule, $publish);
+  public function registerAppicationModule(\Airavata\Model\AppCatalog\AppDeployment\ApplicationModule $applicationModule, $publish);
   public function getAppicationModule($appModuleId);
-  public function updateAppicationModule($appModuleId, \Airavata\Model\Application\Deployment\ApplicationModule $applicationModule);
+  public function updateAppicationModule($appModuleId, \Airavata\Model\AppCatalog\AppDeployment\ApplicationModule $applicationModule);
   public function deleteAppicationModule($appModuleId);
-  public function addApplicationDeployment($applicationInterfaceId, \Airavata\Model\Application\Deployment\ApplicationDeploymentDescription $applicationDeployment);
+  public function addApplicationDeployment($applicationInterfaceId, \Airavata\Model\AppCatalog\AppDeployment\ApplicationDeploymentDescription $applicationDeployment);
   public function listApplicationDeploymentIds($applicationInterfaceId);
   public function getApplicationDeployment($applicationInterfaceId, $applicationDeploymentId);
 }
@@ -1010,13 +1010,13 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     throw new \Exception("getComputeResourceDescriptionFromHostName failed: unknown result");
   }
 
-  public function addApplicationInterface(\Airavata\Model\Application\Interface\ApplicationInterfaceDescription $applicationInterface)
+  public function addApplicationInterface(\Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription $applicationInterface)
   {
     $this->send_addApplicationInterface($applicationInterface);
     return $this->recv_addApplicationInterface();
   }
 
-  public function send_addApplicationInterface(\Airavata\Model\Application\Interface\ApplicationInterfaceDescription $applicationInterface)
+  public function send_addApplicationInterface(\Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription $applicationInterface)
   {
     $args = new \Airavata\API\AppCatalog\ApplicationCatalogAPI_addApplicationInterface_args();
     $args->applicationInterface = $applicationInterface;
@@ -1189,13 +1189,13 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     throw new \Exception("getApplicationInterface failed: unknown result");
   }
 
-  public function registerAppicationModule(\Airavata\Model\Application\Deployment\ApplicationModule $applicationModule, $publish)
+  public function registerAppicationModule(\Airavata\Model\AppCatalog\AppDeployment\ApplicationModule $applicationModule, $publish)
   {
     $this->send_registerAppicationModule($applicationModule, $publish);
     return $this->recv_registerAppicationModule();
   }
 
-  public function send_registerAppicationModule(\Airavata\Model\Application\Deployment\ApplicationModule $applicationModule, $publish)
+  public function send_registerAppicationModule(\Airavata\Model\AppCatalog\AppDeployment\ApplicationModule $applicationModule, $publish)
   {
     $args = new \Airavata\API\AppCatalog\ApplicationCatalogAPI_registerAppicationModule_args();
     $args->applicationModule = $applicationModule;
@@ -1310,13 +1310,13 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     throw new \Exception("getAppicationModule failed: unknown result");
   }
 
-  public function updateAppicationModule($appModuleId, \Airavata\Model\Application\Deployment\ApplicationModule $applicationModule)
+  public function updateAppicationModule($appModuleId, \Airavata\Model\AppCatalog\AppDeployment\ApplicationModule $applicationModule)
   {
     $this->send_updateAppicationModule($appModuleId, $applicationModule);
     return $this->recv_updateAppicationModule();
   }
 
-  public function send_updateAppicationModule($appModuleId, \Airavata\Model\Application\Deployment\ApplicationModule $applicationModule)
+  public function send_updateAppicationModule($appModuleId, \Airavata\Model\AppCatalog\AppDeployment\ApplicationModule $applicationModule)
   {
     $args = new \Airavata\API\AppCatalog\ApplicationCatalogAPI_updateAppicationModule_args();
     $args->appModuleId = $appModuleId;
@@ -1431,13 +1431,13 @@ class ApplicationCatalogAPIClient implements \Airavata\API\AppCatalog\Applicatio
     throw new \Exception("deleteAppicationModule failed: unknown result");
   }
 
-  public function addApplicationDeployment($applicationInterfaceId, \Airavata\Model\Application\Deployment\ApplicationDeploymentDescription $applicationDeployment)
+  public function addApplicationDeployment($applicationInterfaceId, \Airavata\Model\AppCatalog\AppDeployment\ApplicationDeploymentDescription $applicationDeployment)
   {
     $this->send_addApplicationDeployment($applicationInterfaceId, $applicationDeployment);
     return $this->recv_addApplicationDeployment();
   }
 
-  public function send_addApplicationDeployment($applicationInterfaceId, \Airavata\Model\Application\Deployment\ApplicationDeploymentDescription $applicationDeployment)
+  public function send_addApplicationDeployment($applicationInterfaceId, \Airavata\Model\AppCatalog\AppDeployment\ApplicationDeploymentDescription $applicationDeployment)
   {
     $args = new \Airavata\API\AppCatalog\ApplicationCatalogAPI_addApplicationDeployment_args();
     $args->applicationInterfaceId = $applicationInterfaceId;
@@ -5069,7 +5069,7 @@ class ApplicationCatalogAPI_addApplicationInterface_args {
         1 => array(
           'var' => 'applicationInterface',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Application\Interface\ApplicationInterfaceDescription',
+          'class' => '\Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription',
           ),
         );
     }
@@ -5101,7 +5101,7 @@ class ApplicationCatalogAPI_addApplicationInterface_args {
       {
         case 1:
           if ($ftype == TType::STRUCT) {
-            $this->applicationInterface = new \Airavata\Model\Application\Interface\ApplicationInterfaceDescription();
+            $this->applicationInterface = new \Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription();
             $xfer += $this->applicationInterface->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -5573,7 +5573,7 @@ class ApplicationCatalogAPI_getApplicationInterface_result {
         0 => array(
           'var' => 'success',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Application\Interface\ApplicationInterfaceDescription',
+          'class' => '\Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription',
           ),
         1 => array(
           'var' => 'ire',
@@ -5629,7 +5629,7 @@ class ApplicationCatalogAPI_getApplicationInterface_result {
       {
         case 0:
           if ($ftype == TType::STRUCT) {
-            $this->success = new \Airavata\Model\Application\Interface\ApplicationInterfaceDescription();
+            $this->success = new \Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription();
             $xfer += $this->success->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -5714,7 +5714,7 @@ class ApplicationCatalogAPI_registerAppicationModule_args {
         1 => array(
           'var' => 'applicationModule',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Application\Deployment\ApplicationModule',
+          'class' => '\Airavata\Model\AppCatalog\AppDeployment\ApplicationModule',
           ),
         2 => array(
           'var' => 'publish',
@@ -5753,7 +5753,7 @@ class ApplicationCatalogAPI_registerAppicationModule_args {
       {
         case 1:
           if ($ftype == TType::STRUCT) {
-            $this->applicationModule = new \Airavata\Model\Application\Deployment\ApplicationModule();
+            $this->applicationModule = new \Airavata\Model\AppCatalog\AppDeployment\ApplicationModule();
             $xfer += $this->applicationModule->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -6023,7 +6023,7 @@ class ApplicationCatalogAPI_getAppicationModule_result {
         0 => array(
           'var' => 'success',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Application\Deployment\ApplicationModule',
+          'class' => '\Airavata\Model\AppCatalog\AppDeployment\ApplicationModule',
           ),
         1 => array(
           'var' => 'ire',
@@ -6079,7 +6079,7 @@ class ApplicationCatalogAPI_getAppicationModule_result {
       {
         case 0:
           if ($ftype == TType::STRUCT) {
-            $this->success = new \Airavata\Model\Application\Deployment\ApplicationModule();
+            $this->success = new \Airavata\Model\AppCatalog\AppDeployment\ApplicationModule();
             $xfer += $this->success->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -6168,7 +6168,7 @@ class ApplicationCatalogAPI_updateAppicationModule_args {
         2 => array(
           'var' => 'applicationModule',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Application\Deployment\ApplicationModule',
+          'class' => '\Airavata\Model\AppCatalog\AppDeployment\ApplicationModule',
           ),
         );
     }
@@ -6210,7 +6210,7 @@ class ApplicationCatalogAPI_updateAppicationModule_args {
           break;
         case 2:
           if ($ftype == TType::STRUCT) {
-            $this->applicationModule = new \Airavata\Model\Application\Deployment\ApplicationModule();
+            $this->applicationModule = new \Airavata\Model\AppCatalog\AppDeployment\ApplicationModule();
             $xfer += $this->applicationModule->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -6613,7 +6613,7 @@ class ApplicationCatalogAPI_addApplicationDeployment_args {
         2 => array(
           'var' => 'applicationDeployment',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Application\Deployment\ApplicationDeploymentDescription',
+          'class' => '\Airavata\Model\AppCatalog\AppDeployment\ApplicationDeploymentDescription',
           ),
         );
     }
@@ -6655,7 +6655,7 @@ class ApplicationCatalogAPI_addApplicationDeployment_args {
           break;
         case 2:
           if ($ftype == TType::STRUCT) {
-            $this->applicationDeployment = new \Airavata\Model\Application\Deployment\ApplicationDeploymentDescription();
+            $this->applicationDeployment = new \Airavata\Model\AppCatalog\AppDeployment\ApplicationDeploymentDescription();
             $xfer += $this->applicationDeployment->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -7174,7 +7174,7 @@ class ApplicationCatalogAPI_getApplicationDeployment_result {
         0 => array(
           'var' => 'success',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Application\Deployment\ApplicationDeploymentDescription',
+          'class' => '\Airavata\Model\AppCatalog\AppDeployment\ApplicationDeploymentDescription',
           ),
         1 => array(
           'var' => 'ire',
@@ -7230,7 +7230,7 @@ class ApplicationCatalogAPI_getApplicationDeployment_result {
       {
         case 0:
           if ($ftype == TType::STRUCT) {
-            $this->success = new \Airavata\Model\Application\Deployment\ApplicationDeploymentDescription();
+            $this->success = new \Airavata\Model\AppCatalog\AppDeployment\ApplicationDeploymentDescription();
             $xfer += $this->success->read($input);
           } else {
             $xfer += $input->skip($ftype);
