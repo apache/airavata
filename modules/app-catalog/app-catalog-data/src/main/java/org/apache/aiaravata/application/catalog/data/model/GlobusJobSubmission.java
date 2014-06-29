@@ -22,10 +22,11 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "GLOBUS_SUBMISSION")
-public class GlobusJobSubmission {
+public class GlobusJobSubmission implements Serializable {
     @Column(name = "RESOURCE_ID")
     private String resourceID;
     @Id

@@ -132,11 +132,6 @@ the License. -->
         	<artifactId>zookeeper</artifactId>
         	<version>3.4.0</version>
         </dependency>
-	<dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-server-configuration</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
     <build>
         <plugins>

@@ -24,11 +24,12 @@ package org.apache.aiaravata.application.catalog.data.model;
 import org.apache.airavata.model.appcatalog.GSISSHJobSubmission;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "GSISSH_EXPORT")
 @IdClass(GSISSHExportPK.class)
-public class GSISSHExport {
+public class GSISSHExport implements Serializable {
     @Id
     @Column(name = "SUBMISSION_ID")
     private String submissionID;
@@ -38,7 +39,7 @@ public class GSISSHExport {
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "SUBMISSION_ID")
-    private GSISSHJobSubmission gsisshJobSubmission;
+    private GSISSHSubmission gsisshJobSubmission;
 
     public String getSubmissionID() {
         return submissionID;
@@ -56,11 +57,11 @@ public class GSISSHExport {
         this.export = export;
     }
 
-    public GSISSHJobSubmission getGsisshJobSubmission() {
+    public GSISSHSubmission getGsisshJobSubmission() {
         return gsisshJobSubmission;
     }
 
-    public void setGsisshJobSubmission(GSISSHJobSubmission gsisshJobSubmission) {
+    public void setGsisshJobSubmission(GSISSHSubmission gsisshJobSubmission) {
         this.gsisshJobSubmission = gsisshJobSubmission;
     }
 }

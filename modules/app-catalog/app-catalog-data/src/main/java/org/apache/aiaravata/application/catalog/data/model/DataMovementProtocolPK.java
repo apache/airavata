@@ -21,7 +21,9 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-public class DataMovementProtocolPK {
+import java.io.Serializable;
+
+public class DataMovementProtocolPK implements Serializable {
     private String resourceID;
     private String dataMoveID;
     private String jobType;

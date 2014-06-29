@@ -1,4 +1,4 @@
-ut/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements. See the NOTICE file
  * distributed with this work for additional information
@@ -123,7 +123,7 @@ struct ApplicationInterfaceDescription {
     1: required bool isEmpty = 0,
     2: required string applicationInterfaceId = DEFAULT_ID,
     3: required string applicationName,
-    4: optional list<appModuleId> applicationModules,
+    4: optional list<string> applicationModules,
     5: optional list<InputDataObjectType> applicationInputs,
-    6: optional list<outputDataObjectType> applicationOutputs,
+    6: optional list<OutputDataObjectType> applicationOutputs
 }

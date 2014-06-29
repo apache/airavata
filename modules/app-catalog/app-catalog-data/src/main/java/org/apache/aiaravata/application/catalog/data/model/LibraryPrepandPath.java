@@ -22,11 +22,12 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "LIBRARY_PREPAND_PATH")
 @IdClass(LibraryPrepandPath_PK.class)
-public class LibraryPrepandPath {
+public class LibraryPrepandPath implements Serializable {
     @Id
     @Column(name = "DEPLOYMENT_ID")
     private String deploymentID;

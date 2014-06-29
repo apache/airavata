@@ -15,7 +15,9 @@
 #include <thrift/cxxfunctional.h>
 #include "airavataErrors_types.h"
 #include "airavataDataModel_types.h"
-#include "applicationCatalogDataModel_types.h"
+#include "computeHostModel_types.h"
+#include "applicationInterfaceModel_types.h"
+#include "applicationDeploymentModel_types.h"
 
 
 namespace airavata { namespace api { namespace appcatalog {

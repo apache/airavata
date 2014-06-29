@@ -23,11 +23,12 @@ package org.apache.aiaravata.application.catalog.data.model;
 
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "APPLICATION_OUTPUT")
 @IdClass(AppOutput_PK.class)
-public class ApplicationOutput {
+public class ApplicationOutput implements Serializable {
     @Id
     @Column(name = "INTERFACE_ID")
     private String interfaceID;

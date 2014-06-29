@@ -129,8 +129,8 @@ public class LibraryApendPathResource extends AbstractResource {
             generator.setParameter(LibraryApendPathConstants.NAME, ids.get(LibraryApendPathConstants.NAME));
             Query q = generator.selectQuery(em);
             LibraryApendPath libraryApendPath = (LibraryApendPath) q.getSingleResult();
-            LibraryPrepandPathResource resource =
-                    (LibraryPrepandPathResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LIBRARY_APEND_PATH, libraryApendPath);
+            LibraryApendPathResource resource =
+                    (LibraryApendPathResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.LIBRARY_APEND_PATH, libraryApendPath);
             em.getTransaction().commit();
             em.close();
             return resource;
@@ -261,8 +261,8 @@ public class LibraryApendPathResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             LibraryApendPath apendPath = em.find(LibraryApendPath.class,
-                    new LibraryApendPath_PK(ids.get(LibraryPrepandPathConstants.DEPLOYMENT_ID),
-                            ids.get(LibraryPrepandPathConstants.NAME)));
+                    new LibraryApendPath_PK(ids.get(LibraryApendPathConstants.DEPLOYMENT_ID),
+                            ids.get(LibraryApendPathConstants.NAME)));
             em.close();
             return apendPath != null;
         } catch (ApplicationSettingsException e) {
