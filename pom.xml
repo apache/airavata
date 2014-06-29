@@ -399,6 +399,14 @@
 
     <repositories>
         <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Snapshot Repository</name>
+            <url>http://repository.apache.org/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
             <id>central</id>
             <name>Maven Central</name>
             <url>http://repo1.maven.org/maven2</url>
@@ -483,10 +491,11 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
+                <module>modules/configuration</module>
                 <module>airavata-api</module>
+                <module>modules/commons</module>
                 <module>modules/gfac</module>
                 <module>modules/workflow-model</module>
-                <module>modules/commons</module>
                 <module>modules/registry</module>
                 <module>modules/app-catalog</module>
                 <module>modules/airavata-client</module>
@@ -497,7 +506,6 @@
                 <module>modules/server</module>
                 <module>modules/test-suite</module>
                 <module>modules/distribution</module>
-                <module>modules/configuration</module>
                 <module>modules/ws-messenger</module>
                 <module>modules/integration-tests</module>
             </modules>
