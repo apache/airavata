@@ -398,11 +398,6 @@
     </dependencyManagement>
 
     <repositories>
-        <!--<repository>-->
-            <!--<name>go.nexus.repo</name>-->
-            <!--<id>go.nexus.repo</id>-->
-            <!--<url>http://code.ceres.auckland.ac.nz/nexus/content/repositories/releases/</url>-->
-        <!--</repository>-->
         <repository>
             <id>central</id>
             <name>Maven Central</name>
@@ -413,12 +408,6 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>
-
-        <repository>
-            <id>unicore.eu</id>
-            <name>UNICORE repository</name>
-            <url>http://unicore-dev.zam.kfa-juelich.de/maven</url>
         </repository>
     </repositories>
 
@@ -579,11 +568,12 @@
                 </plugins>
             </build>
             <modules>
+                <module>modules/configuration</module>
                 <module>airavata-api</module>
+                <module>modules/commons</module>
                 <module>modules/gfac</module>
                 <module>modules/ws-messenger</module>
                 <module>modules/workflow-model</module>
-                <module>modules/commons</module>
                 <module>modules/registry</module>
                 <module>modules/airavata-client</module>
                 <module>modules/security</module>
@@ -591,7 +581,6 @@
                 <module>modules/orchestrator</module>
                 <module>tools</module>
                 <module>modules/server</module>
-                <module>modules/configuration</module>
                 <module>modules/test-suite</module>
                 <module>modules/distribution</module>
                 <module>modules/integration-tests</module>
