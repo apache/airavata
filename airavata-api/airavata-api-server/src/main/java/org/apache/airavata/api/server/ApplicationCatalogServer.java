@@ -17,7 +17,8 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
+ *//*
+
 
 package org.apache.airavata.api.server;
 
@@ -160,3 +161,4 @@ public class ApplicationCatalogServer implements IServer{
 	}
 
 }
+*/

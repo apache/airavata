@@ -21,7 +21,7 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-import org.apache.airavata.model.appcatalog.GSISSHJobSubmission;
+import org.apache.airavata.model.computehost.GSISSHJobSubmission;
 
 import javax.persistence.*;
 import java.io.Serializable;
