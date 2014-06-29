@@ -17,7 +17,8 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
+ *//*
+
 
 package org.apache.airavata.api.server.handler;
 
@@ -583,3 +584,4 @@ public class ApplicationCatalogHandler implements Iface {
 	}
 	
 }
+*/
