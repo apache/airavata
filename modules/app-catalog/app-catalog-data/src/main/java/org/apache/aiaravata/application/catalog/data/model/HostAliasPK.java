@@ -21,7 +21,9 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-public class HostAliasPK {
+import java.io.Serializable;
+
+public class HostAliasPK implements Serializable {
     private String resourceID;
     private String alias;
 

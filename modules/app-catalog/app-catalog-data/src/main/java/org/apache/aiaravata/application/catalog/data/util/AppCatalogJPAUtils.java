@@ -107,6 +107,76 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Host IPAdress.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Host IPAdress.");
                 }
+            case GSISSH_SUBMISSION:
+                if (o instanceof GSISSHSubmission){
+                    return createGSSISSHSubmission((GSISSHSubmission) o);
+                }else {
+                    logger.error("Object should be a GSISSH Submission", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GSISSH Submission.");
+                }
+            case GSISSH_EXPORT:
+                if (o instanceof GSISSHExport){
+                    return createGSISSHExport((GSISSHExport) o);
+                }else {
+                    logger.error("Object should be a GSISSH Export.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GSISSH Export.");
+                }
+            case GSISSH_PREJOBCOMMAND:
+                if (o instanceof GSISSHPreJobCommand){
+                    return createGSISSHPreJObCommand((GSISSHPreJobCommand) o);
+                }else {
+                    logger.error("Object should be a GSISSHPreJobCommand.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GSISSHPreJobCommand.");
+                }
+            case GSISSH_POSTJOBCOMMAND:
+                if (o instanceof GSISSHPostJobCommand){
+                    return createGSISSHPostJObCommand((GSISSHPostJobCommand) o);
+                }else {
+                    logger.error("Object should be a GSISSHPostJobCommand.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GSISSHPostJobCommand.");
+                }
+            case GLOBUS_SUBMISSION:
+                if (o instanceof GlobusJobSubmission){
+                    return createGlobusJobSubmission((GlobusJobSubmission) o);
+                }else {
+                    logger.error("Object should be a GlobusJobSubmission.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GlobusJobSubmission.");
+                }
+            case SSH_SUBMISSION:
+                if (o instanceof SSHSubmission){
+                    return createSSHSubmission((SSHSubmission) o);
+                }else {
+                    logger.error("Object should be a SSHSubmission.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a SSHSubmission.");
+                }
+            case SCP_DATAMOVEMENT:
+                if (o instanceof SCPDataMovement){
+                    return createSCPDataMovement((SCPDataMovement) o);
+                }else {
+                    logger.error("Object should be a SCPDataMovement.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a SCPDataMovement.");
+                }
+            case GRID_FTP_DATAMOVEMENT:
+                if (o instanceof GridFTPDataMovement){
+                    return createGridFTPDataMovement((GridFTPDataMovement) o);
+                }else {
+                    logger.error("Object should be a GridFTPDataMovement.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GridFTPDataMovement.");
+                }
+            case JOB_SUBMISSION_PROTOCOL:
+                if (o instanceof JobSubmissionProtocol){
+                    return createJobSubmissionProtocol((JobSubmissionProtocol) o);
+                }else {
+                    logger.error("Object should be a JobSubmissionProtocol.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a JobSubmissionProtocol.");
+                }
+            case DATA_MOVEMENT_PROTOCOL:
+                if (o instanceof DataMovementProtocol){
+                    return createDataMovementProtocol((DataMovementProtocol) o);
+                }else {
+                    logger.error("Object should be a DataMovementProtocol.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a DataMovementProtocol.");
+                }
             case APPLICATION_MODULE:
                 if (o instanceof ApplicationModule){
                     return createApplicationModule((ApplicationModule) o);
@@ -135,6 +205,48 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a Library Apend path.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Library Apend.");
                 }
+            case APP_ENVIRONMENT:
+                if (o instanceof AppEnvironment){
+                    return createAppEnvironmentResource((AppEnvironment) o);
+                }else {
+                    logger.error("Object should be a AppEnvironment.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a AppEnvironment.");
+                }
+            case APPLICATION_INTERFACE:
+                if (o instanceof ApplicationInterface){
+                    return createAppInterfaceResource((ApplicationInterface) o);
+                }else {
+                    logger.error("Object should be a ApplicationInterface.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a ApplicationInterface.");
+                }
+            case APP_MODULE_MAPPING:
+                if (o instanceof AppModuleMapping){
+                    return createAppModMappingResource((AppModuleMapping) o);
+                }else {
+                    logger.error("Object should be a AppModuleMapping.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a AppModuleMapping.");
+                }
+            case APPLICATION_OUTPUT:
+                if (o instanceof ApplicationOutput){
+                    return createApplicationOutput((ApplicationOutput) o);
+                }else {
+                    logger.error("Object should be a ApplicationOutput.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a ApplicationOutput.");
+                }
+            case GATEWAY_PROFILE:
+                if (o instanceof GatewayProfile){
+                    return createGatewayProfile((GatewayProfile) o);
+                }else {
+                    logger.error("Object should be a GatewayProfile.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GatewayProfile.");
+                }
+            case APPLICATION_INPUT:
+                if (o instanceof ApplicationInput){
+                    return createApplicationInput((ApplicationInput) o);
+                }else {
+                    logger.error("Object should be a ApplicationInput.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a ApplicationInput.");
+                }
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
                 throw new IllegalArgumentException("Illegal data type..");
@@ -155,14 +267,111 @@ public class AppCatalogJPAUtils {
         HostAliasResource aliasResource = new HostAliasResource();
         aliasResource.setResourceID(o.getResourceID());
         aliasResource.setAlias(o.getAlias());
+        aliasResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
         return aliasResource;
     }
 
     private static Resource createHostIPAddress(HostIPAddress o) {
-        HostAliasResource aliasResource = new HostAliasResource();
-        aliasResource.setResourceID(o.getResourceID());
-        aliasResource.setAlias(o.getIpaddress());
-        return aliasResource;
+        HostIPAddressResource ipAddressResource = new HostIPAddressResource();
+        ipAddressResource.setResourceID(o.getResourceID());
+        ipAddressResource.setIpaddress(o.getIpaddress());
+        ipAddressResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        return ipAddressResource;
+    }
+
+    private static Resource createGSSISSHSubmission(GSISSHSubmission o) {
+        GSISSHSubmissionResource submissionResource = new GSISSHSubmissionResource();
+        submissionResource.setResourceID(o.getResourceID());
+        submissionResource.setSubmissionID(o.getSubmissionID());
+        submissionResource.setResourceJobManager(o.getResourceJobManager());
+        submissionResource.setSshPort(o.getSshPort());
+        submissionResource.setInstalledPath(o.getInstalledPath());
+        submissionResource.setMonitorMode(o.getMonitorMode());
+        submissionResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        return submissionResource;
+    }
+
+    private static Resource createGSISSHExport(GSISSHExport o){
+        GSISSHExportResource resource = new GSISSHExportResource();
+        resource.setSubmissionID(o.getSubmissionID());
+        resource.setExport(o.getExport());
+        resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshJobSubmission()));
+        return resource;
+    }
+
+    private static Resource createGSISSHPreJObCommand(GSISSHPreJobCommand o){
+        GSISSHPreJobCommandResource resource = new GSISSHPreJobCommandResource();
+        resource.setSubmissionID(o.getSubmissionID());
+        resource.setCommand(o.getCommand());
+        resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshSubmission()));
+        return resource;
+    }
+
+    private static Resource createGSISSHPostJObCommand(GSISSHPostJobCommand o){
+        GSISSHPostJobCommandResource resource = new GSISSHPostJobCommandResource();
+        resource.setSubmissionID(o.getSubmissionID());
+        resource.setCommand(o.getCommand());
+        resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshSubmission()));
+        return resource;
+    }
+
+    private static Resource createGlobusJobSubmission(GlobusJobSubmission o) {
+        GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
+        resource.setResourceID(o.getResourceID());
+        resource.setSubmissionID(o.getSubmissionID());
+        resource.setResourceJobManager(o.getResourceJobManager());
+        resource.setSecurityProtocol(o.getSecurityProtocol());
+        resource.setGlobusEP(o.getGlobusEP());
+        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        return resource;
+    }
+
+    private static Resource createSSHSubmission(SSHSubmission o) {
+        SSHSubmissionResource resource = new SSHSubmissionResource();
+        resource.setResourceID(o.getResourceID());
+        resource.setSubmissionID(o.getSubmissionID());
+        resource.setResourceJobManager(o.getResourceJobManager());
+        resource.setSshPort(o.getSshPort());
+        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        return resource;
+    }
+
+    private static Resource createSCPDataMovement(SCPDataMovement o) {
+        SCPDataMovementResource resource = new SCPDataMovementResource();
+        resource.setResourceID(o.getResourceID());
+        resource.setDataMoveID(o.getDataMoveID());
+        resource.setSecurityProtocol(o.getSecurityProtocol());
+        resource.setSshPort(o.getSshPort());
+        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        return resource;
+    }
+
+    private static Resource createGridFTPDataMovement(GridFTPDataMovement o) {
+        GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
+        resource.setResourceID(o.getResourceID());
+        resource.setDataMoveID(o.getDataMoveID());
+        resource.setSecurityProtocol(o.getSecurityProtocol());
+        resource.setGridFTPEP(o.getGridFTPEP());
+        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        return resource;
+    }
+
+    private static Resource createJobSubmissionProtocol(JobSubmissionProtocol o) {
+        JobSubmissionProtocolResource resource = new JobSubmissionProtocolResource();
+        resource.setResourceID(o.getResourceID());
+        resource.setSubmissionID(o.getSubmissionID());
+        resource.setJobType(o.getJobType());
+        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        return resource;
+    }
+
+    private static Resource createDataMovementProtocol(DataMovementProtocol o) {
+        DataMovementProtocolResource resource = new DataMovementProtocolResource();
+        resource.setResourceID(o.getResourceID());
+        resource.setDataMoveID(o.getDataMoveID());
+        resource.setJobType(o.getJobType());
+        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        return resource;
     }
 
     private static Resource createApplicationModule(ApplicationModule o) {
@@ -182,8 +391,8 @@ public class AppCatalogJPAUtils {
         resource.setEnvModuleLoadCMD(o.getEnvModuleLoaString());
         resource.setHostId(o.getHostID());
         resource.setExecutablePath(o.getExecutablePath());
-        resource.setModuleResource((AppModuleResource)createApplicationModule(o.getApplicationModule()));
-        resource.setHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
+        resource.setHostResource((ComputeHostResource) createComputeResource(o.getComputeResource()));
         return resource;
     }
 
@@ -192,7 +401,7 @@ public class AppCatalogJPAUtils {
         resource.setDeploymentId(o.getDeploymentID());
         resource.setName(o.getName());
         resource.setValue(o.getValue());
-        resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
         return resource;
     }
 
@@ -202,6 +411,62 @@ public class AppCatalogJPAUtils {
         resource.setName(o.getName());
         resource.setValue(o.getValue());
         resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        return resource;
+    }
+
+    private static Resource createAppEnvironmentResource(AppEnvironment o) {
+        AppEnvironmentResource resource = new AppEnvironmentResource();
+        resource.setDeploymentId(o.getDeploymentID());
+        resource.setName(o.getName());
+        resource.setValue(o.getValue());
+        resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        return resource;
+    }
+
+    private static Resource createAppInterfaceResource(ApplicationInterface o) {
+        AppInterfaceResource resource = new AppInterfaceResource();
+        resource.setInterfaceId(o.getInterfaceID());
+        resource.setAppName(o.getAppName());
+        return resource;
+    }
+
+    private static Resource createAppModMappingResource(AppModuleMapping o) {
+        AppModuleMappingResource resource = new AppModuleMappingResource();
+        resource.setInterfaceId(o.getInterfaceID());
+        resource.setModuleId(o.getModuleID());
+        return resource;
+    }
+
+    private static Resource createApplicationInput(ApplicationInput o) {
+        ApplicationInputResource resource = new ApplicationInputResource();
+        resource.setInterfaceID(o.getInterfaceID());
+        resource.setInputKey(o.getInputKey());
+        resource.setInputVal(o.getInputVal());
+        resource.setDataType(o.getDataType());
+        resource.setMetadata(o.getMetadata());
+        resource.setAppParameter(o.getAppParameter());
+        resource.setAppUIDesc(o.getAppUIDesc());
+        resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
+        return resource;
+    }
+
+    private static Resource createApplicationOutput(ApplicationOutput o) {
+        ApplicationOutputResource resource = new ApplicationOutputResource();
+        resource.setInterfaceID(o.getInterfaceID());
+        resource.setOutputKey(o.getOutputKey());
+        resource.setOutputVal(o.getOutputVal());
+        resource.setDataType(o.getDataType());
+        resource.setMetadata(o.getMetadata());
+        resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
+        return resource;
+    }
+
+    private static Resource createGatewayProfile(GatewayProfile o) {
+        GatewayProfileResource resource = new GatewayProfileResource();
+        resource.setGatewayID(o.getGatewayID());
+        resource.setGatewayName(o.getGatewayName());
+        resource.setGatewayDesc(o.getGatewayDesc());
+        resource.setPreferedResource(o.getPreferedResource());
         return resource;
     }
 }

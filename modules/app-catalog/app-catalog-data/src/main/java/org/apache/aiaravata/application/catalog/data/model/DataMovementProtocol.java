@@ -22,11 +22,12 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "DATA_MOVEMENT_PROTOCOL")
 @IdClass(DataMovementProtocolPK.class)
-public class DataMovementProtocol {
+public class DataMovementProtocol implements Serializable {
     @Id
     @Column(name = "RESOURCE_ID")
     private String resourceID;

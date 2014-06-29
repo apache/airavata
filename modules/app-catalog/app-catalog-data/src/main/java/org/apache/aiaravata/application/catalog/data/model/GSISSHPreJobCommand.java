@@ -24,11 +24,12 @@ package org.apache.aiaravata.application.catalog.data.model;
 import org.apache.airavata.model.appcatalog.GSISSHJobSubmission;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "GSISSH_PREJOBCOMMAND")
 @IdClass(GSISSHPreJobCommandPK.class)
-public class GSISSHPreJobCommand {
+public class GSISSHPreJobCommand implements Serializable {
     @Id
     @Column(name = "SUBMISSION_ID")
     private String submissionID;
@@ -38,7 +39,7 @@ public class GSISSHPreJobCommand {
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "SUBMISSION_ID")
-    private GSISSHJobSubmission gsisshJobSubmission;
+    private GSISSHSubmission gsisshSubmission;
 
     public String getSubmissionID() {
         return submissionID;
@@ -56,11 +57,11 @@ public class GSISSHPreJobCommand {
         this.command = command;
     }
 
-    public GSISSHJobSubmission getGsisshJobSubmission() {
-        return gsisshJobSubmission;
+    public GSISSHSubmission getGsisshSubmission() {
+        return gsisshSubmission;
     }
 
-    public void setGsisshJobSubmission(GSISSHJobSubmission gsisshJobSubmission) {
-        this.gsisshJobSubmission = gsisshJobSubmission;
+    public void setGsisshSubmission(GSISSHSubmission gsisshSubmission) {
+        this.gsisshSubmission = gsisshSubmission;
     }
 }

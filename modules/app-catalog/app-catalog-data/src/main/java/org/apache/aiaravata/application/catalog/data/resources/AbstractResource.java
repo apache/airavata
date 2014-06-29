@@ -21,7 +21,7 @@
 
 package org.apache.aiaravata.application.catalog.data.resources;
 
-public abstract class AbstractResource implements Resource{
+public abstract class AbstractResource implements Resource {
     // table names
     public static final String COMPUTE_RESOURCE = "ComputeResource";
     public static final String HOST_ALIAS = "HostAlias";
@@ -80,19 +80,19 @@ public abstract class AbstractResource implements Resource{
 
     // GSSISSH Export Table
     public final class GSISSHExportConstants {
-        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
         public static final String EXPORT = "export";
     }
 
     // GSSISSH Pre Job Command Table
     public final class GSISSHPreJobCommandConstants {
-        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
         public static final String COMMAND = "command";
     }
 
     // GSSISSH Post Job Command Table
     public final class GSISSHPostJobCommandConstants {
-        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
         public static final String COMMAND = "command";
     }
 
@@ -207,8 +207,6 @@ public abstract class AbstractResource implements Resource{
         public static final String GATEWAY_DESC = "gatewayDesc";
         public static final String PREFERED_RESOURCE = "preferedResource";
     }
-
-
 
 
 }

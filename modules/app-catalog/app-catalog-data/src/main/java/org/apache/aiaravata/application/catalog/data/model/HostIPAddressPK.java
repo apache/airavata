@@ -21,7 +21,9 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-public class HostIPAddressPK {
+import java.io.Serializable;
+
+public class HostIPAddressPK implements Serializable {
     private String resourceID;
     private String ipaddress;
 

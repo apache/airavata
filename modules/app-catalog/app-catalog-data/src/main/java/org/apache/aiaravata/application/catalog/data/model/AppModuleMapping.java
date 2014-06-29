@@ -22,11 +22,12 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "APP_MODULE_MAPPING")
 @IdClass(AppModuleMapping_PK.class)
-public class AppModuleMapping {
+public class AppModuleMapping implements Serializable {
     @Id
     @Column(name = "INTERFACE_ID")
     private String interfaceID;

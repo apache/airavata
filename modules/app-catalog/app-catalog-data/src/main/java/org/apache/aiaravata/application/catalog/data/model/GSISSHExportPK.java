@@ -21,7 +21,9 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-public class GSISSHExportPK {
+import java.io.Serializable;
+
+public class GSISSHExportPK implements Serializable {
     private String submissionID;
     private String export;
 

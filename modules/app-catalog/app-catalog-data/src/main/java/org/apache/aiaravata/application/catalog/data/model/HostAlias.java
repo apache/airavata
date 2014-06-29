@@ -22,11 +22,12 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "HOST_ALIAS")
 @IdClass(HostAliasPK.class)
-public class HostAlias {
+public class HostAlias implements Serializable {
     @Id
     @Column(name = "RESOURCE_ID")
     private String resourceID;

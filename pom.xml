@@ -91,6 +91,7 @@
         <jglobus.version>2.0.6</jglobus.version>
         <ebay.cors.filter>1.0.0</ebay.cors.filter>
         <thrift.version>0.9.1</thrift.version>
+        <mysql.connector.version>5.1.31</mysql.connector.version>
         <skipTests>false</skipTests>
     </properties>
 
@@ -397,11 +398,14 @@
     </dependencyManagement>
 
     <repositories>
-        <!--<repository>-->
-            <!--<name>go.nexus.repo</name>-->
-            <!--<id>go.nexus.repo</id>-->
-            <!--<url>http://code.ceres.auckland.ac.nz/nexus/content/repositories/releases/</url>-->
-        <!--</repository>-->
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Snapshot Repository</name>
+            <url>http://repository.apache.org/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
         <repository>
             <id>central</id>
             <name>Maven Central</name>
@@ -412,12 +416,6 @@
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
-        </repository>
-
-        <repository>
-            <id>unicore.eu</id>
-            <name>UNICORE repository</name>
-            <url>http://unicore-dev.zam.kfa-juelich.de/maven</url>
         </repository>
     </repositories>
 
@@ -493,10 +491,11 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
+                <module>modules/configuration</module>
                 <module>airavata-api</module>
+                <module>modules/commons</module>
                 <module>modules/gfac</module>
                 <module>modules/workflow-model</module>
-                <module>modules/commons</module>
                 <module>modules/registry</module>
                 <module>modules/app-catalog</module>
                 <module>modules/airavata-client</module>
@@ -507,7 +506,6 @@
                 <module>modules/server</module>
                 <module>modules/test-suite</module>
                 <module>modules/distribution</module>
-                <module>modules/configuration</module>
                 <module>modules/ws-messenger</module>
                 <module>modules/integration-tests</module>
             </modules>
@@ -578,11 +576,12 @@
                 </plugins>
             </build>
             <modules>
+                <module>modules/configuration</module>
                 <module>airavata-api</module>
+                <module>modules/commons</module>
                 <module>modules/gfac</module>
                 <module>modules/ws-messenger</module>
                 <module>modules/workflow-model</module>
-                <module>modules/commons</module>
                 <module>modules/registry</module>
                 <module>modules/airavata-client</module>
                 <module>modules/security</module>
@@ -590,7 +589,6 @@
                 <module>modules/orchestrator</module>
                 <module>tools</module>
                 <module>modules/server</module>
-                <module>modules/configuration</module>
                 <module>modules/test-suite</module>
                 <module>modules/distribution</module>
                 <module>modules/integration-tests</module>

@@ -21,7 +21,9 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-public class GSISSHPreJobCommandPK {
+import java.io.Serializable;
+
+public class GSISSHPreJobCommandPK implements Serializable {
     private String submissionID;
     private String command;
 
