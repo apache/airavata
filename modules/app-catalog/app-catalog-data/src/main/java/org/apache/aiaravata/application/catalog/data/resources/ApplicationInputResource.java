@@ -68,7 +68,7 @@ public class ApplicationInputResource extends AbstractResource {
     public Resource get(Object identifier) throws AppCatalogException {
         HashMap<String, String> ids;
         if (identifier instanceof Map) {
-            ids = (HashMap) identifier;
+            ids = (HashMap<String, String>) identifier;
         } else {
             logger.error("Identifier should be a map with the field name and it's value");
             throw new AppCatalogException("Identifier should be a map with the field name and it's value");
@@ -286,7 +286,7 @@ public class ApplicationInputResource extends AbstractResource {
     public boolean isExists(Object identifier) throws AppCatalogException {
         HashMap<String, String> ids;
         if (identifier instanceof Map) {
-            ids = (HashMap) identifier;
+            ids = (HashMap<String, String>) identifier;
         } else {
             logger.error("Identifier should be a map with the field name and it's value");
             throw new AppCatalogException("Identifier should be a map with the field name and it's value");
