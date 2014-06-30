@@ -282,6 +282,7 @@ public class BetterGfacImpl implements GFac {
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setGfac(this);
         jobExecutionContext.setZk(zk);
+        jobExecutionContext.setCredentialStoreToken(AiravataZKUtils.getExpTokenId(zk,experimentID,taskID));
         return jobExecutionContext;
     }
 

@@ -52,4 +52,15 @@ public interface JobSubmitter {
      * @return boolean return the submit status
      */
     boolean submit(String experimentID, String taskID) throws OrchestratorException;
+
+
+    /**
+     * This is similar to submit with expId and taskId but this has extra param called token
+     * @param experimentID
+     * @param taskID
+     * @param tokenId
+     * @return
+     * @throws OrchestratorException
+     */
+    boolean submit(String experimentID,String taskID,String tokenId) throws OrchestratorException;
 }

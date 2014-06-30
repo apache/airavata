@@ -25,10 +25,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "APPLICATION_MODULE")
-public class ApplicationModule {
+public class ApplicationModule implements Serializable {
     @Id
     @Column(name = "MODULE_ID")
     private String moduleID;

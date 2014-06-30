@@ -99,9 +99,9 @@ public class GfacServer implements IServer{
 
 	public void start() throws Exception {
 		setStatus(IServer.ServerStatus.STARTING);
-        GfacService.Processor<GfacServerHandler> mockAiravataServer =
+        GfacService.Processor<GfacServerHandler> gfacService =
                 new GfacService.Processor<GfacServerHandler>(new GfacServerHandler());
-		StartGfacServer(mockAiravataServer);
+		StartGfacServer(gfacService);
 	}
 
 	public void stop() throws Exception {

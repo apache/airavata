@@ -22,10 +22,11 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "GRID_FTP_DATAMOVEMENT")
-public class GridFTPDataMovement {
+public class GridFTPDataMovement implements Serializable {
     @Id
     @Column(name = "DATA_MOVE_ID")
     private String dataMoveID;

@@ -64,6 +64,8 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     private ZooKeeper zk;
 
+    private String credentialStoreToken;
+
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
     // Keep track of the current path of the message. Before hitting provider its in-path.
@@ -295,5 +297,14 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public void setZk(ZooKeeper zk) {
         this.zk = zk;
+
+    }
+
+    public String getCredentialStoreToken() {
+        return credentialStoreToken;
+    }
+
+    public void setCredentialStoreToken(String credentialStoreToken) {
+        this.credentialStoreToken = credentialStoreToken;
     }
 }

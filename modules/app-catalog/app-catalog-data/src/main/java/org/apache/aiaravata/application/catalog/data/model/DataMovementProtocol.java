@@ -22,11 +22,12 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "DATA_MOVEMENT_PROTOCOL")
 @IdClass(DataMovementProtocolPK.class)
-public class DataMovementProtocol {
+public class DataMovementProtocol implements Serializable {
     @Id
     @Column(name = "RESOURCE_ID")
     private String resourceID;
@@ -34,8 +35,8 @@ public class DataMovementProtocol {
     @Column(name = "DATA_MOVE_ID")
     private String dataMoveID;
     @Id
-    @Column(name = "JOB_TYPE")
-    private String jobType;
+    @Column(name = "DATA_MOVE_TYPE")
+    private String dataMoveType;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "RESOURCE_ID")
@@ -57,12 +58,12 @@ public class DataMovementProtocol {
         this.dataMoveID = dataMoveID;
     }
 
-    public String getJobType() {
-        return jobType;
+    public String getDataMoveType() {
+        return dataMoveType;
     }
 
-    public void setJobType(String jobType) {
-        this.jobType = jobType;
+    public void setDataMoveType(String dataMoveType) {
+        this.dataMoveType = dataMoveType;
     }
 
     public ComputeResource getComputeResource() {

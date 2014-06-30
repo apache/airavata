@@ -48,7 +48,7 @@ import java.util.Random;
  * it will select a gfac instance based on the incoming request and submit to that
  * gfac instance.
  */
-public class GFACServiceJobSubmitter implements JobSubmitter,Watcher{
+public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
     private final static Logger logger = LoggerFactory.getLogger(GFACServiceJobSubmitter.class);
     public static final String IP = "ip";
 
@@ -65,15 +65,20 @@ public class GFACServiceJobSubmitter implements JobSubmitter,Watcher{
         return null;
     }
 
+
     public boolean submit(String experimentID, String taskID) throws OrchestratorException {
+        return this.submit(experimentID, taskID, null);
+    }
+
+
+    public boolean submit(String experimentID, String taskID, String tokenId) throws OrchestratorException {
         ZooKeeper zk = orchestratorContext.getZk();
-        int retryCount = 0;
         try {
             if (!zk.getState().isConnected()) {
                 String zkhostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_HOST)
                         + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_PORT);
                 zk = new ZooKeeper(zkhostPort, 6000, this);
-                synchronized (mutex){
+                synchronized (mutex) {
                     mutex.wait();
                 }
             }
@@ -89,7 +94,7 @@ public class GFACServiceJobSubmitter implements JobSubmitter,Watcher{
             String[] split = gfacNodeData.split(":");
             GfacService.Client localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
             if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {      // before submitting the job we check again the state of the node
-                if(GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild)) {
+                if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild,tokenId)) {
                     return localhost.submitJob(experimentID, taskID);
                 }
             }
@@ -108,10 +113,9 @@ public class GFACServiceJobSubmitter implements JobSubmitter,Watcher{
     }
 
 
-
     synchronized public void process(WatchedEvent event) {
         synchronized (mutex) {
-            switch (event.getState()){
+            switch (event.getState()) {
                 case SyncConnected:
                     mutex.notify();
             }

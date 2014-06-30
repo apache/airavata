@@ -30,6 +30,7 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.CredentialReaderFactory;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
+import org.apache.airavata.gfac.gsissh.security.TokenizedMyProxyAuthInfo;
 import org.apache.log4j.Logger;
 import org.ietf.jgss.GSSCredential;
 import org.testng.annotations.AfterClass;
@@ -101,12 +102,11 @@ public class GSISecurityContextTestWithMyProxyAuth extends DatabaseTestCases {
 
     private GSSCredential getGSSCredentials() throws Exception {
 
-        GSISecurityContext gsiSecurityContext = getGSISecurityContext();
-
-        return gsiSecurityContext.getGssCredentials();
+        TokenizedMyProxyAuthInfo gsiTokenizedMyProxyAuthInfo = getGSISecurityContext();
+        return gsiTokenizedMyProxyAuthInfo.getCredentials();
     }
 
-    private GSISecurityContext getGSISecurityContext() throws Exception {
+    private TokenizedMyProxyAuthInfo getGSISecurityContext() throws Exception {
 
         RequestData requestData = new RequestData();
 
@@ -116,7 +116,7 @@ public class GSISecurityContextTestWithMyProxyAuth extends DatabaseTestCases {
         requestData.setMyProxyLifeTime(ServerSettings.getMyProxyLifetime());
         CredentialReader credentialReader = CredentialReaderFactory.createCredentialStoreReader(getDbUtil());
 
-        return new GSISecurityContext(credentialReader, requestData);
+        return new TokenizedMyProxyAuthInfo(credentialReader, requestData);
     }
 
     @Test
@@ -142,14 +142,14 @@ public class GSISecurityContextTestWithMyProxyAuth extends DatabaseTestCases {
 
     @Test
     public void testGetDefaultCredentials() throws Exception {
-        GSISecurityContext gsiSecurityContext = getGSISecurityContext();
+        TokenizedMyProxyAuthInfo gsiSecurityContext = getGSISecurityContext();
         Assert.assertNotNull(gsiSecurityContext.getDefaultCredentials());
 
     }
 
     @Test
     public void testGetProxyCredentials() throws Exception {
-        GSISecurityContext gsiSecurityContext = getGSISecurityContext();
+        TokenizedMyProxyAuthInfo gsiSecurityContext = getGSISecurityContext();
         Assert.assertNotNull(gsiSecurityContext.getProxyCredentials());
 
     }

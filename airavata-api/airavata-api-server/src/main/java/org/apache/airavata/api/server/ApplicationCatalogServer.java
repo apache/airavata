@@ -17,7 +17,8 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
+ *//*
+
 
 package org.apache.airavata.api.server;
 
@@ -25,6 +26,7 @@ import java.net.InetSocketAddress;
 
 import org.apache.airavata.api.appcatalog.ApplicationCatalogAPI;
 import org.apache.airavata.api.server.handler.ApplicationCatalogHandler;
+import org.apache.airavata.api.server.util.AppCatalogInitUtil;
 import org.apache.airavata.api.server.util.Constants;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.IServer;
@@ -56,6 +58,7 @@ public class ApplicationCatalogServer implements IServer{
     public void StartAiravataServer(ApplicationCatalogAPI.Processor<ApplicationCatalogAPI.Iface> appCatalogServerHandler) throws AiravataSystemException {
         try {
             AiravataUtils.setExecutionAsServer();
+            AppCatalogInitUtil.initializeDB();
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.APP_CATALOG_SERVER_PORT,"8931"));
             final String serverHost = ServerSettings.getSetting(Constants.APP_CATALOG_SERVER_HOST, null);
             
@@ -158,3 +161,4 @@ public class ApplicationCatalogServer implements IServer{
 	}
 
 }
+*/

@@ -49,7 +49,6 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
         } catch (Exception e) {
             logger.info("Error saving plugin status to ZK");
         }
-
         StringBuffer data = new StringBuffer();
         ApplicationDescription app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType appDesc = app.getType();

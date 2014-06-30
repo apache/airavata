@@ -22,10 +22,11 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "SCP_DATAMOVEMENT")
-public class SCPDataMovement {
+public class SCPDataMovement implements Serializable {
     @Column(name = "RESOURCE_ID")
     private String resourceID;
     @Id
