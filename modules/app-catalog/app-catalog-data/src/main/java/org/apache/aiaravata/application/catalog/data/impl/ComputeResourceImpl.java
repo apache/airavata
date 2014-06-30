@@ -47,6 +47,7 @@ public class ComputeResourceImpl implements ComputeResource {
             computeHostResource.setPreferredJobSubmissionProtocol(description.getPreferredJobSubmissionProtocol());
             computeHostResource.setDescription(description.getResourceDescription());
             computeHostResource.save();
+            description.setResourceId(computeHostResource.getResoureId());
 
             Set<String> hostAliases = description.getHostAliases();
             if (hostAliases != null && !hostAliases.isEmpty()) {
@@ -90,7 +91,7 @@ public class ComputeResourceImpl implements ComputeResource {
                     resource.setResourceID(computeHostResource.getResoureId());
                     resource.setComputeHostResource(computeHostResource);
                     resource.setDataMoveID(key);
-                    resource.setJobType(dataMovementProtocol.toString());
+                    resource.setDataMoveType(dataMovementProtocol.toString());
                     resource.save();
                 }
             }
@@ -114,6 +115,7 @@ public class ComputeResourceImpl implements ComputeResource {
             resource.setResourceJobManager(sshJobSubmission.getResourceJobManager().toString());
             resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
             resource.save();
+            sshJobSubmission.setJobSubmissionDataID(resource.getSubmissionID());
             return resource.getSubmissionID();
         }catch (Exception e) {
             logger.error("Error while saving SSH Job Submission...", e);
@@ -152,6 +154,7 @@ public class ComputeResourceImpl implements ComputeResource {
             resource.setInstalledPath(gsisshJobSubmission.getInstalledPath());
             resource.setMonitorMode(gsisshJobSubmission.getMonitorMode());
             resource.save();
+            gsisshJobSubmission.setJobSubmissionDataID(resource.getSubmissionID());
 
             Set<String> exports = gsisshJobSubmission.getExports();
             if (exports != null && !exports.isEmpty()){
@@ -210,32 +213,134 @@ public class ComputeResourceImpl implements ComputeResource {
 
     @Override
     public String addGlobusJobSubmission(String computeResourceId, GlobusJobSubmission globusJobSubmission) throws AppCatalogException {
-        return null;
+        try {
+            GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
+            resource.setResourceID(computeResourceId);
+            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
+            String hostName = computeResource.getHostName();
+            hostName = "GLOBUS" + hostName;
+            resource.setSubmissionID(AppCatalogUtils.getID(hostName));
+            resource.setSecurityProtocol(globusJobSubmission.getSecurityProtocol().toString());
+            resource.setResourceJobManager(globusJobSubmission.getResourceJobManager().toString());
+            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
+            resource.save();
+            globusJobSubmission.setJobSubmissionDataID(resource.getSubmissionID());
+            List<String> globusGateKeeperEndPoint = globusJobSubmission.getGlobusGateKeeperEndPoint();
+            if (globusGateKeeperEndPoint != null && !globusGateKeeperEndPoint.isEmpty()) {
+                for (String endpoint : globusGateKeeperEndPoint) {
+                    GlobusGKEndpointResource endpointResource = new GlobusGKEndpointResource();
+                    endpointResource.setSubmissionID(resource.getSubmissionID());
+                    endpointResource.setEndpoint(endpoint);
+                    endpointResource.setGlobusJobSubmissionResource(resource);
+                    endpointResource.save();
+                }
+            }
+            return resource.getSubmissionID();
+        } catch (Exception e) {
+            logger.error("Error while saving Globus Job Submission...", e);
+            throw new AppCatalogException(e);
+        }
+
     }
 
     @Override
     public void addGlobusJobSubmissionProtocol(String computeResourceId, String jobSubmissionId) throws AppCatalogException {
-
+        try {
+            JobSubmissionProtocolResource resource = new JobSubmissionProtocolResource();
+            resource.setResourceID(computeResourceId);
+            resource.setSubmissionID(jobSubmissionId);
+            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
+            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
+            resource.setJobType(JobSubmissionProtocol.GRAM.toString());
+            resource.save();
+        }catch (Exception e){
+            logger.error("Error while saving Globus Job Submission Protocol...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
     public String addScpDataMovement(String computeResourceId, SCPDataMovement scpDataMovement) throws AppCatalogException {
-        return null;
+        try {
+            SCPDataMovementResource resource = new SCPDataMovementResource();
+            resource.setResourceID(computeResourceId);
+            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
+            String hostName = computeResource.getHostName();
+            hostName = "SCP" + hostName;
+            resource.setDataMoveID(AppCatalogUtils.getID(hostName));
+            resource.setSecurityProtocol(scpDataMovement.getSecurityProtocol().toString());
+            resource.setSshPort(scpDataMovement.getSshPort());
+            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
+            resource.save();
+            scpDataMovement.setDataMovementDataID(resource.getDataMoveID());
+            return resource.getDataMoveID();
+        }catch (Exception e){
+            logger.error("Error while saving SCP Data Movement...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
     public void addScpDataMovementProtocol(String computeResourceId, String dataMoveId) throws AppCatalogException {
-
+        try {
+            DataMovementProtocolResource resource = new DataMovementProtocolResource();
+            resource.setResourceID(computeResourceId);
+            resource.setDataMoveID(dataMoveId);
+            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
+            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
+            resource.setDataMoveType(DataMovementProtocol.SCP.toString());
+            resource.save();
+        }catch (Exception e){
+            logger.error("Error while saving SCP data movement Protocol...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
     public String addGridFTPDataMovement(String computeResourceId, GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
-        return null;
+        try {
+            GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
+            resource.setResourceID(computeResourceId);
+            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
+            String hostName = computeResource.getHostName();
+            hostName = "SCP" + hostName;
+            resource.setDataMoveID(AppCatalogUtils.getID(hostName));
+            resource.setSecurityProtocol(gridFTPDataMovement.getSecurityProtocol().toString());
+            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
+            resource.save();
+            gridFTPDataMovement.setDataMovementDataID(resource.getDataMoveID());
+
+            List<String> gridFTPEndPoint = gridFTPDataMovement.getGridFTPEndPoint();
+            if (gridFTPEndPoint != null && !gridFTPEndPoint.isEmpty()) {
+                for (String endpoint : gridFTPEndPoint) {
+                    GridFTPDMEndpointResource endpointResource = new GridFTPDMEndpointResource();
+                    endpointResource.setDataMoveId(resource.getDataMoveID());
+                    endpointResource.setEndpoint(endpoint);
+                    endpointResource.setGridFTPDataMovementResource(resource);
+                    endpointResource.save();
+                }
+            }
+            return resource.getDataMoveID();
+        }catch (Exception e){
+            logger.error("Error while saving GridFTP Data Movement...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
     public void addGridFTPDataMovementProtocol(String computeResourceId, String dataMoveId) throws AppCatalogException {
-
+        try {
+            DataMovementProtocolResource resource = new DataMovementProtocolResource();
+            resource.setResourceID(computeResourceId);
+            resource.setDataMoveID(dataMoveId);
+            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
+            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
+            resource.setDataMoveType(DataMovementProtocol.GridFTP.toString());
+            resource.save();
+        }catch (Exception e){
+            logger.error("Error while saving GridFTP data movement Protocol...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override

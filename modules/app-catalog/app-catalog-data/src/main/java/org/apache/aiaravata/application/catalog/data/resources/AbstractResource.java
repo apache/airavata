@@ -35,6 +35,7 @@ public abstract class AbstractResource implements Resource {
     public static final String SSH_SUBMISSION = "SSHSubmission";
     public static final String SCP_DATAMOVEMENT = "SCPDataMovement";
     public static final String GRID_FTP_DATAMOVEMENT = "GridFTPDataMovement";
+    public static final String GRIDFTP_DM_ENDPOINT = "GridFTPDMEndpoint";
     public static final String JOB_SUBMISSION_PROTOCOL = "JobSubmissionProtocol";
     public static final String DATA_MOVEMENT_PROTOCOL = "DataMovementProtocol";
     public static final String APPLICATION_MODULE = "ApplicationModule";
@@ -131,6 +132,11 @@ public abstract class AbstractResource implements Resource {
         public static final String DATA_MOVE_ID = "dataMoveID";
         public static final String SECURITY_PROTOCOL = "securityProtocol";
         public static final String GRID_FTP_EP = "gridFTPEP";
+    }
+
+    public final class GridFTPDMEPConstants{
+        public static final String DATA_MOVE_ID = "dataMoveId";
+        public static final String ENDPOINT = "endpoint";
     }
 
     public final class JobSubmissionProtocolConstants {

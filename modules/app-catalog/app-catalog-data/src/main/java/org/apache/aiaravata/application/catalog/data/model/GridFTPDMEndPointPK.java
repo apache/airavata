@@ -21,30 +21,37 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "GLOBUS_GK_ENDPOINT")
-@IdClass(GlobusGKEndPointPK.class)
-public class GlobusGKEndpoint implements Serializable {
-    @Id
-    @Column(name = "SUBMISSION_ID")
-    private String submissionID;
-    @Id
-    @Column(name = "ENDPOINT")
+public class GridFTPDMEndPointPK implements Serializable {
+    private String dataMoveId;
     private String endpoint;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "SUBMISSION_ID")
-    private GlobusJobSubmission globusSubmission;
-
-    public String getSubmissionID() {
-        return submissionID;
+    public GridFTPDMEndPointPK(String dataMoveId, String endpoint) {
+        this.dataMoveId = dataMoveId;
+        this.endpoint = endpoint;
     }
 
-    public void setSubmissionID(String submissionID) {
-        this.submissionID = submissionID;
+    public GridFTPDMEndPointPK() {
+        ;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return 1;
+    }
+
+    public String getDataMoveId() {
+        return dataMoveId;
+    }
+
+    public void setDataMoveId(String dataMoveId) {
+        this.dataMoveId = dataMoveId;
     }
 
     public String getEndpoint() {
@@ -53,13 +60,5 @@ public class GlobusGKEndpoint implements Serializable {
 
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
-    }
-
-    public GlobusJobSubmission getGlobusSubmission() {
-        return globusSubmission;
-    }
-
-    public void setGlobusSubmission(GlobusJobSubmission globusSubmission) {
-        this.globusSubmission = globusSubmission;
     }
 }

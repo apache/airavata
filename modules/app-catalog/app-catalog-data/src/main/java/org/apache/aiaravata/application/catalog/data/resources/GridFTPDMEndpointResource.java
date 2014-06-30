@@ -1,7 +1,9 @@
 package org.apache.aiaravata.application.catalog.data.resources;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.model.*;
+import org.apache.aiaravata.application.catalog.data.model.GridFTPDMEndPointPK;
+import org.apache.aiaravata.application.catalog.data.model.GridFTPDMEndpoint;
+import org.apache.aiaravata.application.catalog.data.model.GridFTPDataMovement;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
@@ -16,13 +18,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GlobusGKEndpointResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(GlobusGKEndpointResource.class);
+public class GridFTPDMEndpointResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(GridFTPDMEndpointResource.class);
 
-    private String submissionID;
+    private String dataMoveId;
     private String endpoint;
 
-    private GlobusJobSubmissionResource globusJobSubmissionResource;
+    private GridFTPDataMovementResource gridFTPDataMovementResource;
 
 
     public void remove(Object identifier) throws AppCatalogException {
@@ -38,9 +40,9 @@ public class GlobusGKEndpointResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GLOBUS_GK_ENDPOINT);
-            generator.setParameter(GlobusEPConstants.ENDPOINT, ids.get(GlobusEPConstants.ENDPOINT));
-            generator.setParameter(GlobusEPConstants.SUBMISSION_ID, ids.get(GlobusEPConstants.SUBMISSION_ID));
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GRIDFTP_DM_ENDPOINT);
+            generator.setParameter(GridFTPDMEPConstants.ENDPOINT, ids.get(GridFTPDMEPConstants.ENDPOINT));
+            generator.setParameter(GridFTPDMEPConstants.DATA_MOVE_ID, ids.get(GridFTPDMEPConstants.DATA_MOVE_ID));
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -71,13 +73,13 @@ public class GlobusGKEndpointResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GLOBUS_GK_ENDPOINT);
-            generator.setParameter(GlobusEPConstants.SUBMISSION_ID, ids.get(GlobusEPConstants.SUBMISSION_ID));
-            generator.setParameter(GlobusEPConstants.ENDPOINT, ids.get(GlobusEPConstants.ENDPOINT));
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GRIDFTP_DM_ENDPOINT);
+            generator.setParameter(GridFTPDMEPConstants.DATA_MOVE_ID, ids.get(GridFTPDMEPConstants.DATA_MOVE_ID));
+            generator.setParameter(GridFTPDMEPConstants.ENDPOINT, ids.get(GridFTPDMEPConstants.ENDPOINT));
             Query q = generator.selectQuery(em);
-            GlobusGKEndpoint gkEndpoint = (GlobusGKEndpoint) q.getSingleResult();
-            GlobusGKEndpointResource gkEndpointResource =
-                    (GlobusGKEndpointResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GLOBUS_GK_ENDPOINT, gkEndpoint);
+            GridFTPDMEndpoint result = (GridFTPDMEndpoint) q.getSingleResult();
+            GridFTPDMEndpointResource gkEndpointResource =
+                    (GridFTPDMEndpointResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GRID_FTP_DM_ENDPOINT, result);
             em.getTransaction().commit();
             em.close();
             return gkEndpointResource;
@@ -101,37 +103,37 @@ public class GlobusGKEndpointResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GLOBUS_GK_ENDPOINT);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GRIDFTP_DM_ENDPOINT);
             List results;
-            if (fieldName.equals(GlobusEPConstants.ENDPOINT)) {
-                generator.setParameter(GlobusEPConstants.ENDPOINT, value);
+            if (fieldName.equals(GridFTPDMEPConstants.ENDPOINT)) {
+                generator.setParameter(GridFTPDMEPConstants.ENDPOINT, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GlobusGKEndpoint gkEndpoint = (GlobusGKEndpoint) result;
-                        GlobusGKEndpointResource gkEndpointResource =
-                                (GlobusGKEndpointResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GLOBUS_GK_ENDPOINT, gkEndpoint);
+                        GridFTPDMEndpoint gridFTPDMEndpoint = (GridFTPDMEndpoint) result;
+                        GridFTPDMEndpointResource gkEndpointResource =
+                                (GridFTPDMEndpointResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GRID_FTP_DM_ENDPOINT, gridFTPDMEndpoint);
                         resources.add(gkEndpointResource);
                     }
                 }
-            } else if (fieldName.equals(GlobusEPConstants.SUBMISSION_ID)) {
-                generator.setParameter(GlobusEPConstants.SUBMISSION_ID, value);
+            } else if (fieldName.equals(GridFTPDMEPConstants.DATA_MOVE_ID)) {
+                generator.setParameter(GridFTPDMEPConstants.DATA_MOVE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GlobusGKEndpoint globusGKEndpoint = (GlobusGKEndpoint) result;
-                        GlobusGKEndpointResource gkEndpointResource =
-                                (GlobusGKEndpointResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GLOBUS_GK_ENDPOINT, globusGKEndpoint);
+                        GridFTPDMEndpoint gridFTPDMEndpoint = (GridFTPDMEndpoint) result;
+                        GridFTPDMEndpointResource gkEndpointResource =
+                                (GridFTPDMEndpointResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GRID_FTP_DM_ENDPOINT, gridFTPDMEndpoint);
                         resources.add(gkEndpointResource);
                     }
                 }
             } else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for Globus Endpoint Resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for Globus Endpoint Resource.");
+                logger.error("Unsupported field name for GridFTPDMEndpoint Resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for GridFTPDMEndpoint Resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -156,33 +158,33 @@ public class GlobusGKEndpointResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GLOBUS_GK_ENDPOINT);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GRIDFTP_DM_ENDPOINT);
             List results;
-            if (fieldName.equals(GlobusEPConstants.SUBMISSION_ID)) {
-                generator.setParameter(GlobusEPConstants.SUBMISSION_ID, value);
+            if (fieldName.equals(GridFTPDMEPConstants.DATA_MOVE_ID)) {
+                generator.setParameter(GridFTPDMEPConstants.DATA_MOVE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GlobusGKEndpoint globusGKEndpoint = (GlobusGKEndpoint) result;
-                        list.add(globusGKEndpoint.getSubmissionID());
+                        GridFTPDMEndpoint gridFTPDMEndpoint = (GridFTPDMEndpoint) result;
+                        list.add(gridFTPDMEndpoint.getDataMoveId());
                     }
                 }
-            } else if (fieldName.equals(GlobusEPConstants.ENDPOINT)) {
-                generator.setParameter(GlobusEPConstants.ENDPOINT, value);
+            } else if (fieldName.equals(GridFTPDMEPConstants.ENDPOINT)) {
+                generator.setParameter(GridFTPDMEPConstants.ENDPOINT, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GlobusGKEndpoint globusGKEndpoint = (GlobusGKEndpoint) result;
-                        list.add(globusGKEndpoint.getSubmissionID());
+                        GridFTPDMEndpoint gridFTPDMEndpoint = (GridFTPDMEndpoint) result;
+                        list.add(gridFTPDMEndpoint.getDataMoveId());
                     }
                 }
             } else {
                 em.getTransaction().commit();
                 em.close();
-                logger.error("Unsupported field name for Globus EP resource.", new IllegalArgumentException());
-                throw new IllegalArgumentException("Unsupported field name for Globus EP Resource.");
+                logger.error("Unsupported field name for GridFTPDMEndpoint resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for GridFTPDMEndpoint Resource.");
             }
             em.getTransaction().commit();
             em.close();
@@ -204,23 +206,23 @@ public class GlobusGKEndpointResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            GlobusGKEndpoint existingGlobusEP = em.find(GlobusGKEndpoint.class, new GlobusGKEndPointPK(submissionID, endpoint));
+            GridFTPDMEndpoint ftpdmEndpoint = em.find(GridFTPDMEndpoint.class, new GridFTPDMEndPointPK(dataMoveId, endpoint));
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            GlobusJobSubmission globusJobSubmission = em.find(GlobusJobSubmission.class, submissionID);
-            if (existingGlobusEP != null) {
-                existingGlobusEP.setSubmissionID(submissionID);
-                existingGlobusEP.setEndpoint(endpoint);
-                existingGlobusEP.setGlobusSubmission(globusJobSubmission);
-                em.merge(existingGlobusEP);
+            GridFTPDataMovement dataMovement = em.find(GridFTPDataMovement.class, dataMoveId);
+            if (ftpdmEndpoint != null) {
+                ftpdmEndpoint.setDataMoveId(dataMoveId);
+                ftpdmEndpoint.setEndpoint(endpoint);
+                ftpdmEndpoint.setGridFTPDataMovement(dataMovement);
+                em.merge(ftpdmEndpoint);
             } else {
-                GlobusGKEndpoint globusGKEndpoint = new GlobusGKEndpoint();
-                globusGKEndpoint.setSubmissionID(submissionID);
-                globusGKEndpoint.setEndpoint(endpoint);
-                globusGKEndpoint.setGlobusSubmission(globusJobSubmission);
-                em.persist(globusGKEndpoint);
+                GridFTPDMEndpoint gridFTPDMEndpoint = new GridFTPDMEndpoint();
+                gridFTPDMEndpoint.setDataMoveId(dataMoveId);
+                gridFTPDMEndpoint.setEndpoint(endpoint);
+                gridFTPDMEndpoint.setGridFTPDataMovement(dataMovement);
+                em.persist(gridFTPDMEndpoint);
             }
             em.getTransaction().commit();
             em.close();
@@ -249,11 +251,11 @@ public class GlobusGKEndpointResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            GlobusGKEndpoint gkEndpoint = em.find(GlobusGKEndpoint.class, new GlobusGKEndPointPK(ids.get(GlobusEPConstants.SUBMISSION_ID),
-                    ids.get(GlobusEPConstants.ENDPOINT)));
+            GridFTPDMEndpoint gridFTPDMEndpoint = em.find(GridFTPDMEndpoint.class, new GridFTPDMEndPointPK(ids.get(GridFTPDMEPConstants.DATA_MOVE_ID),
+                    ids.get(GridFTPDMEPConstants.ENDPOINT)));
 
             em.close();
-            return gkEndpoint != null;
+            return gridFTPDMEndpoint != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -266,12 +268,20 @@ public class GlobusGKEndpointResource extends AbstractResource {
             }
         }    }
 
-    public String getSubmissionID() {
-        return submissionID;
+    public String getDataMoveId() {
+        return dataMoveId;
     }
 
-    public void setSubmissionID(String submissionID) {
-        this.submissionID = submissionID;
+    public void setDataMoveId(String dataMoveId) {
+        this.dataMoveId = dataMoveId;
+    }
+
+    public GridFTPDataMovementResource getGridFTPDataMovementResource() {
+        return gridFTPDataMovementResource;
+    }
+
+    public void setGridFTPDataMovementResource(GridFTPDataMovementResource gridFTPDataMovementResource) {
+        this.gridFTPDataMovementResource = gridFTPDataMovementResource;
     }
 
     public String getEndpoint() {
@@ -282,11 +292,4 @@ public class GlobusGKEndpointResource extends AbstractResource {
         this.endpoint = endpoint;
     }
 
-    public GlobusJobSubmissionResource getGlobusJobSubmissionResource() {
-        return globusJobSubmissionResource;
-    }
-
-    public void setGlobusJobSubmissionResource(GlobusJobSubmissionResource globusJobSubmissionResource) {
-        this.globusJobSubmissionResource = globusJobSubmissionResource;
-    }
 }
