@@ -224,14 +224,13 @@ public class SCPDataMovementResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
+            ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
             if (existingSCPDataMovement !=  null){
                 existingSCPDataMovement.setDataMoveID(dataMoveID);
                 existingSCPDataMovement.setResourceID(resourceID);
                 existingSCPDataMovement.setSshPort(sshPort);
                 existingSCPDataMovement.setSecurityProtocol(securityProtocol);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingSCPDataMovement.setComputeResource(computeResource);
-
                 em.merge(existingSCPDataMovement);
             }else {
                 SCPDataMovement scpDataMovement = new SCPDataMovement();
@@ -239,7 +238,6 @@ public class SCPDataMovementResource extends AbstractResource {
                 scpDataMovement.setDataMoveID(dataMoveID);
                 scpDataMovement.setSshPort(sshPort);
                 scpDataMovement.setSecurityProtocol(securityProtocol);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 scpDataMovement.setComputeResource(computeResource);
                 em.persist(scpDataMovement);
             }

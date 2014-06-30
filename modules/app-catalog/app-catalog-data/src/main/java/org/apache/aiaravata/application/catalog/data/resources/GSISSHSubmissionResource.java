@@ -276,6 +276,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
+            ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
             if (existingGSISSHSubmission != null) {
                 existingGSISSHSubmission.setSubmissionID(submissionID);
                 existingGSISSHSubmission.setResourceID(resourceID);
@@ -283,9 +284,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
                 existingGSISSHSubmission.setResourceJobManager(resourceJobManager);
                 existingGSISSHSubmission.setInstalledPath(installedPath);
                 existingGSISSHSubmission.setMonitorMode(monitorMode);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingGSISSHSubmission.setComputeResource(computeResource);
-
                 em.merge(existingGSISSHSubmission);
             } else {
                 GSISSHSubmission gsisshSubmission = new GSISSHSubmission();
@@ -295,7 +294,6 @@ public class GSISSHSubmissionResource extends AbstractResource {
                 gsisshSubmission.setResourceJobManager(resourceJobManager);
                 gsisshSubmission.setInstalledPath(installedPath);
                 gsisshSubmission.setMonitorMode(monitorMode);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 gsisshSubmission.setComputeResource(computeResource);
                 em.persist(gsisshSubmission);
             }

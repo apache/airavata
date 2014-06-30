@@ -213,20 +213,17 @@ public class HostIPAddressResource extends AbstractResource{
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
+            ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
             if (existingHostIP !=  null){
                 existingHostIP.setIpaddress(ipaddress);
                 existingHostIP.setResourceID(resourceID);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingHostIP.setComputeResource(computeResource);
-
                 em.merge(existingHostIP);
             }else {
                 HostIPAddress hostIPAddress = new HostIPAddress();
                 hostIPAddress.setIpaddress(ipaddress);
                 hostIPAddress.setResourceID(resourceID);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 hostIPAddress.setComputeResource(computeResource);
-
                 em.persist(hostIPAddress);
             }
             em.getTransaction().commit();

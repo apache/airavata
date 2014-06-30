@@ -226,12 +226,12 @@ public class LibraryApendPathResource extends AbstractResource {
                 existigApendPath.setApplicationDeployment(deployment);
                 em.merge(existigApendPath);
             }else {
-                LibraryApendPath prepandPath = new LibraryApendPath();
-                prepandPath.setDeploymentID(deploymentId);
-                prepandPath.setName(name);
-                prepandPath.setValue(value);
-                prepandPath.setApplicationDeployment(deployment);
-                em.persist(prepandPath);
+                LibraryApendPath apendPath = new LibraryApendPath();
+                apendPath.setDeploymentID(deploymentId);
+                apendPath.setName(name);
+                apendPath.setValue(value);
+                apendPath.setApplicationDeployment(deployment);
+                em.persist(apendPath);
             }
             em.getTransaction().commit();
             em.close();

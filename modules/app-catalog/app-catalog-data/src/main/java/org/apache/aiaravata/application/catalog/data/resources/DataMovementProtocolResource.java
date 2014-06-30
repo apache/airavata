@@ -241,7 +241,6 @@ public class DataMovementProtocolResource extends AbstractResource {
                 ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingDataMovementProtocol.setComputeResource(computeResource);
                 existingDataMovementProtocol.setResourceID(resourceID);
-
                 em.merge(existingDataMovementProtocol);
             } else {
                 DataMovementProtocol dataMovementProtocol = new DataMovementProtocol();
@@ -250,7 +249,6 @@ public class DataMovementProtocolResource extends AbstractResource {
                 dataMovementProtocol.setResourceID(resourceID);
                 ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 dataMovementProtocol.setComputeResource(computeResource);
-
                 em.persist(dataMovementProtocol);
             }
             em.getTransaction().commit();

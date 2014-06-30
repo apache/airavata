@@ -212,19 +212,18 @@ public class GSISSHExportResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
+            GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
             if (existingGSIExport != null) {
                 existingGSIExport.setSubmissionID(submissionID);
-                GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
                 existingGSIExport.setExport(export);
                 existingGSIExport.setGsisshJobSubmission(gsisshSubmission);
                 em.merge(existingGSIExport);
             } else {
                 GSISSHExport gsisshExport = new GSISSHExport();
                 gsisshExport.setSubmissionID(submissionID);
-                GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
                 gsisshExport.setExport(export);
                 gsisshExport.setGsisshJobSubmission(gsisshSubmission);
-                em.merge(existingGSIExport);
+                em.persist(gsisshExport);
             }
             em.getTransaction().commit();
             em.close();

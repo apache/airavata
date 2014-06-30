@@ -247,7 +247,6 @@ public class ApplicationOutputResource extends AbstractResource {
                 existingApplicationOutput.setDataType(dataType);
                 existingApplicationOutput.setOutputKey(outputKey);
                 existingApplicationOutput.setOutputVal(outputVal);
-
                 em.merge(existingApplicationOutput);
             } else {
                 ApplicationOutput applicationOutput = new ApplicationOutput();
@@ -257,7 +256,6 @@ public class ApplicationOutputResource extends AbstractResource {
                 applicationOutput.setDataType(dataType);
                 applicationOutput.setOutputKey(outputKey);
                 applicationOutput.setOutputVal(outputVal);
-
                 em.persist(applicationOutput);
             }
             em.getTransaction().commit();

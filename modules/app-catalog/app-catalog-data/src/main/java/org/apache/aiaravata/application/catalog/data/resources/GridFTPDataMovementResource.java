@@ -219,7 +219,6 @@ public class GridFTPDataMovementResource extends AbstractResource {
                 existingGridFTPDataMovement.setSecurityProtocol(securityProtocol);
                 ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingGridFTPDataMovement.setComputeResource(computeResource);
-
                 em.merge(existingGridFTPDataMovement);
             } else {
                 GridFTPDataMovement gridFTPDataMovement = new GridFTPDataMovement();
