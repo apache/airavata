@@ -111,7 +111,8 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
                         "Will continue with my proxy user name and password. Provided TokenId:" + requestData.getTokenId(), e);
             }
 
-            if(gssCredentials == null){
+            if (gssCredentials == null) {
+                System.out.println("Authenticating with provided token failed, so falling back to authenticate with defaultCredentials");
                 try {
                     gssCredentials = getDefaultCredentials();
                 } catch (Exception e) {
