@@ -126,6 +126,19 @@ public interface ComputeResource {
     List<GlobusJobSubmission> getGlobusJobSubmissionList (Map<String, String> filters) throws AppCatalogException;
 
     /**
+     * This method will retrieve GSISSHJobSubmission object
+     * @param submissionId unique submission id
+     * @return GSISSHSubmission object
+     */
+    SSHJobSubmission getSSHJobSubmission (String submissionId) throws AppCatalogException;
+
+    /**
+     * This method will return a list of GSISSHSubmission objects according to given search criteria
+     * @param filters map should be provided as the field name and it's value
+     * @return list of GSISSHSubmission objects
+     */
+    List<SSHJobSubmission> getSSHJobSubmissionList (Map<String, String> filters) throws AppCatalogException;
+    /**
      * This method will retrieve SCP Data movement object
      * @param dataMoveId unique data move id
      * @return SCPDataMovement object
