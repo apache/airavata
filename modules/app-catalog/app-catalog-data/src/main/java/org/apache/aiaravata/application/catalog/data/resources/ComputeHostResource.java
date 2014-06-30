@@ -40,7 +40,6 @@ public class ComputeHostResource extends AbstractResource {
     private String resoureId;
     private String hostName;
     private String description;
-    private String scratchLocation;
     private String preferredJobSubmissionProtocol;
 
     public String getResoureId() {
@@ -65,14 +64,6 @@ public class ComputeHostResource extends AbstractResource {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getScratchLocation() {
-        return scratchLocation;
-    }
-
-    public void setScratchLocation(String scratchLocation) {
-        this.scratchLocation = scratchLocation;
     }
 
     public String getPreferredJobSubmissionProtocol() {
@@ -258,7 +249,6 @@ public class ComputeHostResource extends AbstractResource {
                 existingComputeResource.setHostName(hostName);
                 existingComputeResource.setDescription(description);
                 existingComputeResource.setPreferredJobSubProtocol(preferredJobSubmissionProtocol);
-                existingComputeResource.setScratchLocation(scratchLocation);
                 em.merge(existingComputeResource);
             }else {
                 ComputeResource computeResource = new ComputeResource();
@@ -266,7 +256,6 @@ public class ComputeHostResource extends AbstractResource {
                 computeResource.setHostName(hostName);
                 computeResource.setDescription(description);
                 computeResource.setPreferredJobSubProtocol(preferredJobSubmissionProtocol);
-                computeResource.setScratchLocation(scratchLocation);
                 em.persist(computeResource);
             }
             em.getTransaction().commit();

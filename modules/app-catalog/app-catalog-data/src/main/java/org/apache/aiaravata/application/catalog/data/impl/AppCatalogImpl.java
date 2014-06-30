@@ -19,31 +19,26 @@
  *
  */
 
-package org.apache.aiaravata.application.catalog.data.util;
+package org.apache.aiaravata.application.catalog.data.impl;
 
-public enum AppCatalogResourceType {
-    COMPUTE_RESOURCE,
-    HOST_ALIAS,
-    HOST_IPADDRESS,
-    GSISSH_SUBMISSION,
-    GSISSH_EXPORT,
-    GSISSH_PREJOBCOMMAND,
-    GSISSH_POSTJOBCOMMAND,
-    GLOBUS_SUBMISSION,
-    GLOBUS_GK_ENDPOINT,
-    SSH_SUBMISSION,
-    SCP_DATAMOVEMENT,
-    GRID_FTP_DATAMOVEMENT,
-    JOB_SUBMISSION_PROTOCOL,
-    DATA_MOVEMENT_PROTOCOL,
-    APPLICATION_MODULE,
-    APPLICATION_DEPLOYMENT,
-    LIBRARY_PREPAND_PATH,
-    LIBRARY_APEND_PATH,
-    APP_ENVIRONMENT,
-    APPLICATION_INTERFACE,
-    APP_MODULE_MAPPING,
-    APPLICATION_INPUT,
-    APPLICATION_OUTPUT,
-    GATEWAY_PROFILE
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.ApplicationDeployment;
+import org.airavata.appcatalog.cpi.ApplicationInterface;
+import org.airavata.appcatalog.cpi.ComputeResource;
+
+public class AppCatalogImpl implements AppCatalog {
+    @Override
+    public ComputeResource getComputeResource() {
+        return new ComputeResourceImpl();
+    }
+
+    @Override
+    public ApplicationInterface getApplicationInterface() {
+        return new ApplicationInterfaceImpl();
+    }
+
+    @Override
+    public ApplicationDeployment getApplicationDeployment() {
+        return new ApplicationDeploymentImpl();
+    }
 }
