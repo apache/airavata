@@ -24,7 +24,7 @@ public class DataMovementProtocolResource extends AbstractResource {
 
     private String resourceID;
     private String dataMoveID;
-    private String jobType;
+    private String dataMoveType;
     private ComputeHostResource computeHostResource;
 
     public void remove(Object identifier) throws AppCatalogException {
@@ -230,13 +230,13 @@ public class DataMovementProtocolResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            DataMovementProtocol existingDataMovementProtocol = em.find(DataMovementProtocol.class, new DataMovementProtocolPK(resourceID, dataMoveID, jobType));
+            DataMovementProtocol existingDataMovementProtocol = em.find(DataMovementProtocol.class, new DataMovementProtocolPK(resourceID, dataMoveID, dataMoveType));
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             if (existingDataMovementProtocol != null) {
-                existingDataMovementProtocol.setJobType(jobType);
+                existingDataMovementProtocol.setDataMoveID(dataMoveType);
                 existingDataMovementProtocol.setDataMoveID(dataMoveID);
                 ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingDataMovementProtocol.setComputeResource(computeResource);
@@ -245,7 +245,7 @@ public class DataMovementProtocolResource extends AbstractResource {
                 em.merge(existingDataMovementProtocol);
             } else {
                 DataMovementProtocol dataMovementProtocol = new DataMovementProtocol();
-                dataMovementProtocol.setJobType(jobType);
+                dataMovementProtocol.setDataMoveType(dataMoveType);
                 dataMovementProtocol.setDataMoveID(dataMoveID);
                 dataMovementProtocol.setResourceID(resourceID);
                 ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
@@ -315,12 +315,12 @@ public class DataMovementProtocolResource extends AbstractResource {
         this.dataMoveID = dataMoveID;
     }
 
-    public String getJobType() {
-        return jobType;
+    public String getDataMoveType() {
+        return dataMoveType;
     }
 
-    public void setJobType(String jobType) {
-        this.jobType = jobType;
+    public void setDataMoveType(String dataMoveType) {
+        this.dataMoveType = dataMoveType;
     }
 
     public ComputeHostResource getComputeHostResource() {

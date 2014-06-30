@@ -36,6 +36,7 @@
         <class>org.apache.aiaravata.application.catalog.data.model.JobSubmissionProtocol</class>
         <class>org.apache.aiaravata.application.catalog.data.model.SCPDataMovement</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GridFTPDataMovement</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.GridFTPDMEndpoint</class>
         <class>org.apache.aiaravata.application.catalog.data.model.SSHSubmission</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ApplicationModule</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment</class>

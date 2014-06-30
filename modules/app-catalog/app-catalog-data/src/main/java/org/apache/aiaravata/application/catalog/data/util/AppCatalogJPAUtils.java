@@ -327,7 +327,6 @@ public class AppCatalogJPAUtils {
         resource.setSubmissionID(o.getSubmissionID());
         resource.setResourceJobManager(o.getResourceJobManager());
         resource.setSecurityProtocol(o.getSecurityProtocol());
-        resource.setGlobusEP(o.getGlobusEP());
         resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
         return resource;
     }
@@ -336,7 +335,7 @@ public class AppCatalogJPAUtils {
         GlobusGKEndpointResource resource = new GlobusGKEndpointResource();
         resource.setSubmissionID(o.getSubmissionID());
         resource.setEndpoint(o.getEndpoint());
-        resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshJobSubmission()));
+        resource.setGlobusJobSubmissionResource((GlobusJobSubmissionResource)createGlobusJobSubmission(o.getGlobusSubmission()));
         return resource;
     }
 
@@ -383,7 +382,7 @@ public class AppCatalogJPAUtils {
         DataMovementProtocolResource resource = new DataMovementProtocolResource();
         resource.setResourceID(o.getResourceID());
         resource.setDataMoveID(o.getDataMoveID());
-        resource.setJobType(o.getJobType());
+        resource.setDataMoveType(o.getDataMoveType());
         resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
         return resource;
     }

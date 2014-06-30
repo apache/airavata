@@ -22,7 +22,13 @@
 package org.apache.aiaravata.application.catalog.data.util;
 
 import org.apache.aiaravata.application.catalog.data.resources.ComputeHostResource;
+import org.apache.aiaravata.application.catalog.data.resources.GSISSHSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.GlobusJobSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.SSHSubmissionResource;
 import org.apache.airavata.model.computehost.ComputeResourceDescription;
+import org.apache.airavata.model.computehost.GSISSHJobSubmission;
+import org.apache.airavata.model.computehost.GlobusJobSubmission;
+import org.apache.airavata.model.computehost.SSHJobSubmission;
 
 public class AppCatalogThriftConversion {
     public static ComputeHostResource getComputeHostResource (ComputeResourceDescription description){
@@ -33,4 +39,38 @@ public class AppCatalogThriftConversion {
         resource.setPreferredJobSubmissionProtocol(description.getResourceId());
         return resource;
     }
+
+    public static GSISSHSubmissionResource getGSISSHSubmission (ComputeHostResource hostResource, GSISSHJobSubmission submission){
+        GSISSHSubmissionResource resource = new GSISSHSubmissionResource();
+        resource.setComputeHostResource(hostResource);
+        resource.setSubmissionID(submission.getJobSubmissionDataID());
+        resource.setMonitorMode(submission.getMonitorMode());
+        resource.setInstalledPath(submission.getInstalledPath());
+        resource.setResourceID(hostResource.getResoureId());
+        resource.setResourceJobManager(submission.getResourceJobManager().toString());
+        resource.setSshPort(submission.getSshPort());
+        return resource;
+    }
+
+    public static GlobusJobSubmissionResource getGlobusJobSubmission (ComputeHostResource hostResource, GlobusJobSubmission submission){
+        GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
+        resource.setComputeHostResource(hostResource);
+        resource.setResourceID(hostResource.getResoureId());
+        resource.setSubmissionID(submission.getJobSubmissionDataID());
+        resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
+        resource.setResourceJobManager(submission.getResourceJobManager().toString());
+        return resource;
+    }
+
+    public static SSHSubmissionResource getSSHJobSubmission (ComputeHostResource hostResource, SSHJobSubmission submission){
+        SSHSubmissionResource resource = new SSHSubmissionResource();
+        resource.setComputeHostResource(hostResource);
+        resource.setResourceID(hostResource.getResoureId());
+        resource.setSubmissionID(submission.getJobSubmissionDataID());
+        resource.setResourceJobManager(submission.getResourceJobManager().toString());
+        return resource;
+    }
+
+
+
 }

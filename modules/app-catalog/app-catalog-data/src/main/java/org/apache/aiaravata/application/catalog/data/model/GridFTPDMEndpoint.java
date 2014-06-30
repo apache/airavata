@@ -25,52 +25,41 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "DATA_MOVEMENT_PROTOCOL")
-@IdClass(DataMovementProtocolPK.class)
-public class DataMovementProtocol implements Serializable {
-    @Id
-    @Column(name = "RESOURCE_ID")
-    private String resourceID;
+@Table(name = "GRIDFTP_DM_ENDPOINT")
+@IdClass(GridFTPDMEndPointPK.class)
+public class GridFTPDMEndpoint implements Serializable {
     @Id
     @Column(name = "DATA_MOVE_ID")
-    private String dataMoveID;
+    private String dataMoveId;
     @Id
-    @Column(name = "DATA_MOVE_TYPE")
-    private String dataMoveType;
+    @Column(name = "ENDPOINT")
+    private String endpoint;
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "RESOURCE_ID")
-    private ComputeResource computeResource;
+    @JoinColumn(name = "SUBMISSION_ID")
+    private GridFTPDataMovement gridFTPDataMovement;
 
-    public String getResourceID() {
-        return resourceID;
+    public String getEndpoint() {
+        return endpoint;
     }
 
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 
-    public String getDataMoveID() {
-        return dataMoveID;
+    public String getDataMoveId() {
+        return dataMoveId;
     }
 
-    public void setDataMoveID(String dataMoveID) {
-        this.dataMoveID = dataMoveID;
+    public void setDataMoveId(String dataMoveId) {
+        this.dataMoveId = dataMoveId;
     }
 
-    public String getDataMoveType() {
-        return dataMoveType;
+    public GridFTPDataMovement getGridFTPDataMovement() {
+        return gridFTPDataMovement;
     }
 
-    public void setDataMoveType(String dataMoveType) {
-        this.dataMoveType = dataMoveType;
-    }
-
-    public ComputeResource getComputeResource() {
-        return computeResource;
-    }
-
-    public void setComputeResource(ComputeResource computeResource) {
-        this.computeResource = computeResource;
+    public void setGridFTPDataMovement(GridFTPDataMovement gridFTPDataMovement) {
+        this.gridFTPDataMovement = gridFTPDataMovement;
     }
 }

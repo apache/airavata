@@ -23,7 +23,6 @@ public class GlobusJobSubmissionResource extends AbstractResource {
     private String submissionID;
     private String resourceJobManager;
     private String securityProtocol;
-    private String globusEP;
 
     private ComputeHostResource computeHostResource;
 
@@ -270,7 +269,6 @@ public class GlobusJobSubmissionResource extends AbstractResource {
             if (existingGlobusSubmission != null) {
                 existingGlobusSubmission.setSubmissionID(submissionID);
                 existingGlobusSubmission.setResourceID(resourceID);
-                existingGlobusSubmission.setGlobusEP(globusEP);
                 existingGlobusSubmission.setResourceJobManager(resourceJobManager);
                 existingGlobusSubmission.setSecurityProtocol(securityProtocol);
                 ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
@@ -282,7 +280,6 @@ public class GlobusJobSubmissionResource extends AbstractResource {
                 globusJobSubmission.setResourceID(resourceID);
                 globusJobSubmission.setSubmissionID(submissionID);
                 globusJobSubmission.setSecurityProtocol(securityProtocol);
-                globusJobSubmission.setGlobusEP(globusEP);
                 globusJobSubmission.setResourceJobManager(resourceJobManager);
                 ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 globusJobSubmission.setComputeResource(computeResource);
@@ -353,14 +350,6 @@ public class GlobusJobSubmissionResource extends AbstractResource {
 
     public void setSecurityProtocol(String securityProtocol) {
         this.securityProtocol = securityProtocol;
-    }
-
-    public String getGlobusEP() {
-        return globusEP;
-    }
-
-    public void setGlobusEP(String globusEP) {
-        this.globusEP = globusEP;
     }
 
     public ComputeHostResource getComputeHostResource() {

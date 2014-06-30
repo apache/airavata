@@ -26,12 +26,12 @@ import java.io.Serializable;
 public class DataMovementProtocolPK implements Serializable {
     private String resourceID;
     private String dataMoveID;
-    private String jobType;
+    private String dataMoveType;
 
-    public DataMovementProtocolPK(String resourceID, String dataMoveID, String jobType) {
+    public DataMovementProtocolPK(String resourceID, String dataMoveID, String dataMoveType) {
         this.resourceID = resourceID;
         this.dataMoveID = dataMoveID;
-        this.jobType = jobType;
+        this.dataMoveType = dataMoveType;
     }
 
     public DataMovementProtocolPK() {
@@ -64,11 +64,11 @@ public class DataMovementProtocolPK implements Serializable {
         this.dataMoveID = dataMoveID;
     }
 
-    public String getJobType() {
-        return jobType;
+    public String getDataMoveType() {
+        return dataMoveType;
     }
 
-    public void setJobType(String jobType) {
-        this.jobType = jobType;
+    public void setDataMoveType(String dataMoveType) {
+        this.dataMoveType = dataMoveType;
     }
 }
