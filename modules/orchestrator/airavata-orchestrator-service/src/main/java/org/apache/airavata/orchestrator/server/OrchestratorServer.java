@@ -111,9 +111,9 @@ public class OrchestratorServer implements IServer{
 	@Override
 	public void start() throws Exception {
 		setStatus(ServerStatus.STARTING);
-		OrchestratorService.Processor<OrchestratorServerHandler> mockAiravataServer =
+		OrchestratorService.Processor<OrchestratorServerHandler> orchestratorService =
                 new OrchestratorService.Processor<OrchestratorServerHandler>(new OrchestratorServerHandler());
-		StartOrchestratorServer(mockAiravataServer);
+		StartOrchestratorServer(orchestratorService);
 	}
 
 	@Override
