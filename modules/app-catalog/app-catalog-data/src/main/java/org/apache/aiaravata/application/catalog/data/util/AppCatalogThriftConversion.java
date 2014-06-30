@@ -23,6 +23,11 @@ package org.apache.aiaravata.application.catalog.data.util;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.resources.*;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.computehost.*;
 
 import java.util.*;
@@ -167,6 +172,14 @@ public class AppCatalogThriftConversion {
         return globusJobSubmission;
     }
 
+    public static SSHJobSubmission getSSHJobSubmissionDescription (SSHSubmissionResource submission) throws AppCatalogException {
+        SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
+        sshJobSubmission.setJobSubmissionDataID(submission.getSubmissionID());
+        sshJobSubmission.setResourceJobManager(ResourceJobManager.valueOf(submission.getResourceJobManager()));
+        sshJobSubmission.setSshPort(submission.getSshPort());
+        return sshJobSubmission;
+    }
+
     public static SCPDataMovement getSCPDataMovementDescription (SCPDataMovementResource dataMovementResource) throws AppCatalogException {
         SCPDataMovement dataMovement = new SCPDataMovement();
         dataMovement.setDataMovementDataID(dataMovementResource.getDataMoveID());
@@ -215,6 +228,14 @@ public class AppCatalogThriftConversion {
         List<GlobusJobSubmission> list = new ArrayList<GlobusJobSubmission>();
         for (Resource resource : resources){
             list.add(getGlobusJobSubmissionDescription((GlobusJobSubmissionResource) resource));
+        }
+        return list;
+    }
+
+    public static List<SSHJobSubmission> getSSHSubmissionList (List<Resource> resources) throws AppCatalogException {
+        List<SSHJobSubmission> list = new ArrayList<SSHJobSubmission>();
+        for (Resource resource : resources){
+            list.add(getSSHJobSubmissionDescription((SSHSubmissionResource)resource));
         }
         return list;
     }
@@ -278,6 +299,97 @@ public class AppCatalogThriftConversion {
         return resource;
     }
 
+    public static ApplicationModule getApplicationModuleDesc (AppModuleResource resource){
+        ApplicationModule module = new ApplicationModule();
+        module.setAppModuleId(resource.getModuleId());
+        module.setAppModuleDescription(resource.getModuleDesc());
+        module.setAppModuleName(resource.getModuleName());
+        module.setAppModuleVersion(resource.getModuleVersion());
+        return module;
+    }
+
+    public static ApplicationInterfaceDescription getApplicationInterfaceDescription (AppInterfaceResource resource) throws AppCatalogException {
+        ApplicationInterfaceDescription description = new ApplicationInterfaceDescription();
+        description.setApplicationInterfaceId(resource.getInterfaceId());
+        description.setApplicationName(resource.getAppName());
+
+        AppModuleResource appModuleResource = new AppModuleResource();
+        List<Resource> appModules = appModuleResource.get(AbstractResource.AppModuleMappingConstants.INTERFACE_ID, resource.getInterfaceId());
+        if (appModules != null && !appModules.isEmpty()){
+            description.setApplicationModules(getAppModuleIds(appModules));
+        }
+
+        ApplicationInputResource inputResource = new ApplicationInputResource();
+        List<Resource> appInputs = inputResource.get(AbstractResource.AppInputConstants.INTERFACE_ID, resource.getInterfaceId());
+        if (appInputs != null && !appInputs.isEmpty()){
+            description.setApplicationInputs(getAppInputs(appInputs));
+        }
+
+        ApplicationOutputResource outputResource = new ApplicationOutputResource();
+        List<Resource> appOutputs = outputResource.get(AbstractResource.AppOutputConstants.INTERFACE_ID, resource.getInterfaceId());
+        if (appOutputs != null && !appOutputs.isEmpty()){
+            description.setApplicationOutputs(getAppOutputs(appOutputs));
+        }
+        return description;
+    }
+
+    public static List<String> getAppModuleIds (List<Resource> appModules){
+        List<String> modules = new ArrayList<String>();
+        for (Resource resource : appModules){
+            modules.add(((AppModuleResource)resource).getModuleId());
+        }
+        return modules;
+    }
+
+    public static List<ApplicationModule> getAppModules (List<Resource> appModules){
+        List<ApplicationModule> modules = new ArrayList<ApplicationModule>();
+        for (Resource resource : appModules){
+            modules.add(getApplicationModuleDesc((AppModuleResource) resource));
+        }
+        return modules;
+    }
+
+    public static List<ApplicationInterfaceDescription> getAppInterfaceDescList (List<Resource> appInterfaces) throws AppCatalogException {
+        List<ApplicationInterfaceDescription> interfaceDescriptions = new ArrayList<ApplicationInterfaceDescription>();
+        for (Resource resource : appInterfaces){
+            interfaceDescriptions.add(getApplicationInterfaceDescription((AppInterfaceResource) resource));
+        }
+        return interfaceDescriptions;
+    }
+
+    public static List<InputDataObjectType> getAppInputs (List<Resource> resources){
+        List<InputDataObjectType> inputs = new ArrayList<InputDataObjectType>();
+        for (Resource resource : resources){
+            inputs.add(getInputDataObjType((ApplicationInputResource) resource));
+        }
+        return inputs;
+    } 
+    public static InputDataObjectType getInputDataObjType (ApplicationInputResource input){
+        InputDataObjectType inputDataObjectType = new InputDataObjectType();
+        inputDataObjectType.setName(input.getInputKey());
+        inputDataObjectType.setValue(input.getInputVal());
+        inputDataObjectType.setApplicationArguement(input.getAppArgument());
+        inputDataObjectType.setMetaData(input.getMetadata());
+        inputDataObjectType.setType(DataType.valueOf(input.getDataType()));
+        inputDataObjectType.setStandardInput(input.isStandareInput());
+        inputDataObjectType.setUserFriendlyDescription(input.getUserFriendlyDesc());
+        return inputDataObjectType;
+    }
+
+    public static List<OutputDataObjectType> getAppOutputs (List<Resource> resources){
+        List<OutputDataObjectType> outputs = new ArrayList<OutputDataObjectType>();
+        for (Resource resource : resources){
+            outputs.add(getOutputDataObjType((ApplicationOutputResource) resource));
+        }
+        return outputs;
+    }
+    public static OutputDataObjectType getOutputDataObjType (ApplicationOutputResource output){
+        OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
+        outputDataObjectType.setName(output.getOutputKey());
+        outputDataObjectType.setValue(output.getOutputVal());
+        outputDataObjectType.setType(DataType.valueOf(output.getDataType()));
+        return outputDataObjectType;
+    }
 
 
 }

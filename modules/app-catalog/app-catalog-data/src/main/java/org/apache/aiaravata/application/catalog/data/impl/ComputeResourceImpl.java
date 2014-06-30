@@ -21,7 +21,6 @@
 
 package org.apache.aiaravata.application.catalog.data.impl;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.resources.*;
@@ -36,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ComputeResourceImpl implements ComputeResource {
-    private final static Logger logger = LoggerFactory.getLogger(ComputeResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(ComputeResourceImpl.class);
 
     @Override
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
@@ -467,6 +466,45 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
+    public SSHJobSubmission getSSHJobSubmission(String submissionId) throws AppCatalogException {
+        try {
+            SSHSubmissionResource resource = new SSHSubmissionResource();
+            SSHSubmissionResource submissionResource = (SSHSubmissionResource)resource.get(submissionId);
+            return AppCatalogThriftConversion.getSSHJobSubmissionDescription(submissionResource);
+        }catch (Exception e){
+            logger.error("Error while retrieving SSH Job Submission...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public List<SSHJobSubmission> getSSHJobSubmissionList(Map<String, String> filters) throws AppCatalogException {
+        try {
+            SSHSubmissionResource resource = new SSHSubmissionResource();
+            for (String fieldName : filters.keySet() ){
+                if (fieldName.equals(AbstractResource.SSHSubmissionConstants.RESOURCE_ID)){
+                    List<Resource> resources = resource.get(AbstractResource.SSHSubmissionConstants.RESOURCE_ID, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getSSHSubmissionList(resources);
+                    }
+                }else if (fieldName.equals(AbstractResource.SSHSubmissionConstants.RESOURCE_JOB_MANAGER)){
+                    List<Resource> resources = resource.get(AbstractResource.SSHSubmissionConstants.RESOURCE_JOB_MANAGER, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getSSHSubmissionList(resources);
+                    }
+                }else {
+                    logger.error("Unsupported field name for SSH Submission.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported field name for SSH Submission.");
+                }
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving SSH Submission list...", e);
+            throw new AppCatalogException(e);
+        }
+        return null;
+    }
+
+    @Override
     public SCPDataMovement getSCPDataMovement(String dataMoveId) throws AppCatalogException {
         try {
             SCPDataMovementResource resource = new SCPDataMovementResource();
@@ -548,8 +586,7 @@ public class ComputeResourceImpl implements ComputeResource {
     public boolean isComputeResourceExists(String resourceId) throws AppCatalogException {
         try {
             ComputeHostResource resource = new ComputeHostResource();
-            ComputeHostResource computeResource = (ComputeHostResource)resource.get(resourceId);
-            return computeResource != null;
+            return resource.isExists(resourceId);
         }catch (Exception e){
             logger.error("Error while retrieving compute resource...", e);
             throw new AppCatalogException(e);

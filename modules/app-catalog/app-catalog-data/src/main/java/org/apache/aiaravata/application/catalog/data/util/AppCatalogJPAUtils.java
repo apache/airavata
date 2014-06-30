@@ -457,8 +457,9 @@ public class AppCatalogJPAUtils {
         resource.setInputVal(o.getInputVal());
         resource.setDataType(o.getDataType());
         resource.setMetadata(o.getMetadata());
-        resource.setAppParameter(o.getAppParameter());
-        resource.setAppUIDesc(o.getAppUIDesc());
+        resource.setAppArgument(o.getAppArgument());
+        resource.setUserFriendlyDesc(o.getUserFriendlyDesc());
+        resource.setStandareInput(o.isStandardInput());
         resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
         return resource;
     }
@@ -469,7 +470,6 @@ public class AppCatalogJPAUtils {
         resource.setOutputKey(o.getOutputKey());
         resource.setOutputVal(o.getOutputVal());
         resource.setDataType(o.getDataType());
-        resource.setMetadata(o.getMetadata());
         resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
         return resource;
     }

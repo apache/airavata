@@ -201,8 +201,9 @@ public abstract class AbstractResource implements Resource {
         public static final String INPUT_VALUE = "inputVal";
         public static final String DATA_TYPE = "dataType";
         public static final String METADATA = "metadata";
-        public static final String APP_PARAMETER = "appParameter";
-        public static final String APP_UI_DESCRIPTION = "appUIDesc";
+        public static final String APP_ARGUMENT = "appArgument";
+        public static final String USER_FRIENDLY_DESC = "userFriendlyDesc";
+        public static final String STANDARD_INPUT = "standardInput";
     }
 
     public final class AppOutputConstants {
