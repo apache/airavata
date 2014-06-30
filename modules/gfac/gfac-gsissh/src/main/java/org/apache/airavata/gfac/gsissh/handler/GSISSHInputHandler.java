@@ -113,11 +113,10 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                     for (String paramValueEach : split) {
                         if (index < oldIndex) {
                             log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                            ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+                            newFiles.add(oldFiles.get(index));
                             data.append(oldFiles.get(index++)).append(",");
                         } else {
                             String stageInputFiles = stageInputFiles(jobExecutionContext, paramValueEach);
-                            GFacUtils.savePluginData(jobExecutionContext, new StringBuffer(String.valueOf(index++)), this.getClass().getName());
                             status.setTransferState(TransferState.UPLOAD);
                             detail.setTransferStatus(status);
                             detail.setTransferDescription("Input Data Staged: " + stageInputFiles);

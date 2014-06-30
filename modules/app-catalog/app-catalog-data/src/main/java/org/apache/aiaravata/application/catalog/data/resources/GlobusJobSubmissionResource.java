@@ -87,20 +87,7 @@ public class GlobusJobSubmissionResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GLOBUS_SUBMISSION);
             List results;
-            if (fieldName.equals(GlobusJobSubmissionConstants.SUBMISSION_ID)) {
-                generator.setParameter(GlobusJobSubmissionConstants.SUBMISSION_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GlobusJobSubmission globusJobSubmission = (GlobusJobSubmission) result;
-                        GlobusJobSubmissionResource globusJobSubmissionResource =
-                                (GlobusJobSubmissionResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.GLOBUS_SUBMISSION, globusJobSubmission);
-                        globusSubmissionResourceList.add(globusJobSubmissionResource);
-                    }
-                }
-            } else if (fieldName.equals(GlobusJobSubmissionConstants.RESOURCE_ID)) {
+            if (fieldName.equals(GlobusJobSubmissionConstants.RESOURCE_ID)) {
                 generator.setParameter(GlobusJobSubmissionConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -113,8 +100,8 @@ public class GlobusJobSubmissionResource extends AbstractResource {
                         globusSubmissionResourceList.add(globusJobSubmissionResource);
                     }
                 }
-            } else if (fieldName.equals(GlobusJobSubmissionConstants.globusEP)) {
-                generator.setParameter(GlobusJobSubmissionConstants.globusEP, value);
+            }  else if (fieldName.equals(GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER)) {
+                generator.setParameter(GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -126,21 +113,8 @@ public class GlobusJobSubmissionResource extends AbstractResource {
                         globusSubmissionResourceList.add(globusJobSubmissionResource);
                     }
                 }
-            } else if (fieldName.equals(GlobusJobSubmissionConstants.resourceJobManager)) {
-                generator.setParameter(GlobusJobSubmissionConstants.resourceJobManager, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GlobusJobSubmission globusJobSubmission = (GlobusJobSubmission) result;
-                        GlobusJobSubmissionResource globusJobSubmissionResource =
-                                (GlobusJobSubmissionResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.GLOBUS_SUBMISSION, globusJobSubmission);
-                        globusSubmissionResourceList.add(globusJobSubmissionResource);
-                    }
-                }
-            } else if (fieldName.equals(GlobusJobSubmissionConstants.securityProtocol)) {
-                generator.setParameter(GlobusJobSubmissionConstants.securityProtocol, value);
+            } else if (fieldName.equals(GlobusJobSubmissionConstants.SECURITY_PROTOCAL)) {
+                generator.setParameter(GlobusJobSubmissionConstants.SECURITY_PROTOCAL, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -204,8 +178,8 @@ public class GlobusJobSubmissionResource extends AbstractResource {
                     }
                 }
             }
-            else if (fieldName.equals(GlobusJobSubmissionConstants.globusEP)) {
-                generator.setParameter(GlobusJobSubmissionConstants.globusEP, value);
+            else if (fieldName.equals(GlobusJobSubmissionConstants.GLOBUS_GATEKEEPER_EP)) {
+                generator.setParameter(GlobusJobSubmissionConstants.GLOBUS_GATEKEEPER_EP, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -215,8 +189,8 @@ public class GlobusJobSubmissionResource extends AbstractResource {
                     }
                 }
             }
-            else if (fieldName.equals(GlobusJobSubmissionConstants.securityProtocol)) {
-                generator.setParameter(GlobusJobSubmissionConstants.securityProtocol, value);
+            else if (fieldName.equals(GlobusJobSubmissionConstants.SECURITY_PROTOCAL)) {
+                generator.setParameter(GlobusJobSubmissionConstants.SECURITY_PROTOCAL, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -225,8 +199,8 @@ public class GlobusJobSubmissionResource extends AbstractResource {
                         globusSubmissionResourceIDs.add(globusJobSubmission.getSubmissionID());
                     }
                 }
-            } else if (fieldName.equals(GlobusJobSubmissionConstants.resourceJobManager)) {
-                generator.setParameter(GlobusJobSubmissionConstants.resourceJobManager, value);
+            } else if (fieldName.equals(GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER)) {
+                generator.setParameter(GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {

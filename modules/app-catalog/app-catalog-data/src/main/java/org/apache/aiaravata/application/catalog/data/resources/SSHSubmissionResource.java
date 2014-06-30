@@ -85,32 +85,8 @@ public class SSHSubmissionResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_SUBMISSION);
             List results;
-            if (fieldName.equals(SSHSubmissionConstants.SUBMISSION_ID)) {
-                generator.setParameter(SSHSubmissionConstants.SUBMISSION_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        SSHSubmissionResource sshSubmissionResource =
-                                (SSHSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_SUBMISSION, sshSubmission);
-                        sshSubmissionResourceList.add(sshSubmissionResource);
-                    }
-                }
-            } else if (fieldName.equals(SSHSubmissionConstants.RESOURCE_ID)) {
+            if (fieldName.equals(SSHSubmissionConstants.RESOURCE_ID)) {
                 generator.setParameter(SSHSubmissionConstants.RESOURCE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        SSHSubmissionResource sshSubmissionResource =
-                                (SSHSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_SUBMISSION, sshSubmission);
-                        sshSubmissionResourceList.add(sshSubmissionResource);
-                    }
-                }
-            } else if (fieldName.equals(SSHSubmissionConstants.SSH_PORT)) {
-                generator.setParameter(SSHSubmissionConstants.SSH_PORT, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {

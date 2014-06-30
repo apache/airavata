@@ -27,8 +27,9 @@ public class ApplicationInputResource extends AbstractResource {
     private String dataType;
     private String inputVal;
     private String metadata;
-    private String appParameter;
-    private String appUIDesc;
+    private String appArgument;
+    private String userFriendlyDesc;
+    private boolean standareInput;
 
     private AppInterfaceResource appInterfaceResource;
 
@@ -250,9 +251,9 @@ public class ApplicationInputResource extends AbstractResource {
                 existingApplicationInput.setInputKey(inputKey);
                 existingApplicationInput.setInputVal(inputVal);
                 existingApplicationInput.setMetadata(metadata);
-                existingApplicationInput.setAppParameter(appParameter);
-                existingApplicationInput.setAppUIDesc(appUIDesc);
-
+                existingApplicationInput.setAppArgument(appArgument);
+                existingApplicationInput.setUserFriendlyDesc(userFriendlyDesc);
+                existingApplicationInput.setStandardInput(standareInput);
                 em.merge(existingApplicationInput);
             } else {
                 ApplicationInput applicationInput = new ApplicationInput();
@@ -263,9 +264,9 @@ public class ApplicationInputResource extends AbstractResource {
                 applicationInput.setInputKey(inputKey);
                 applicationInput.setInputVal(inputVal);
                 applicationInput.setMetadata(metadata);
-                applicationInput.setAppParameter(appParameter);
-                applicationInput.setAppUIDesc(appUIDesc);
-
+                applicationInput.setAppArgument(appArgument);
+                applicationInput.setUserFriendlyDesc(userFriendlyDesc);
+                applicationInput.setStandardInput(standareInput);
                 em.persist(applicationInput);
             }
             em.getTransaction().commit();
@@ -354,20 +355,20 @@ public class ApplicationInputResource extends AbstractResource {
         this.metadata = metadata;
     }
 
-    public String getAppParameter() {
-        return appParameter;
+    public String getAppArgument() {
+        return appArgument;
     }
 
-    public void setAppParameter(String appParameter) {
-        this.appParameter = appParameter;
+    public void setAppArgument(String appArgument) {
+        this.appArgument = appArgument;
     }
 
-    public String getAppUIDesc() {
-        return appUIDesc;
+    public String getUserFriendlyDesc() {
+        return userFriendlyDesc;
     }
 
-    public void setAppUIDesc(String appUIDesc) {
-        this.appUIDesc = appUIDesc;
+    public void setUserFriendlyDesc(String userFriendlyDesc) {
+        this.userFriendlyDesc = userFriendlyDesc;
     }
 
     public AppInterfaceResource getAppInterfaceResource() {
@@ -376,5 +377,13 @@ public class ApplicationInputResource extends AbstractResource {
 
     public void setAppInterfaceResource(AppInterfaceResource appInterfaceResource) {
         this.appInterfaceResource = appInterfaceResource;
+    }
+
+    public boolean isStandareInput() {
+        return standareInput;
+    }
+
+    public void setStandareInput(boolean standareInput) {
+        this.standareInput = standareInput;
     }
 }

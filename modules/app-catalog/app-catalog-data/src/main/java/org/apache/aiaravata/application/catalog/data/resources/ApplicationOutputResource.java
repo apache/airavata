@@ -25,7 +25,6 @@ public class ApplicationOutputResource extends AbstractResource {
     private String outputKey;
     private String outputVal;
     private String dataType;
-    private String metadata;
 
     private AppInterfaceResource appInterfaceResource;
 
@@ -248,7 +247,6 @@ public class ApplicationOutputResource extends AbstractResource {
                 existingApplicationOutput.setDataType(dataType);
                 existingApplicationOutput.setOutputKey(outputKey);
                 existingApplicationOutput.setOutputVal(outputVal);
-                existingApplicationOutput.setMetadata(metadata);
 
                 em.merge(existingApplicationOutput);
             } else {
@@ -259,7 +257,6 @@ public class ApplicationOutputResource extends AbstractResource {
                 applicationOutput.setDataType(dataType);
                 applicationOutput.setOutputKey(outputKey);
                 applicationOutput.setOutputVal(outputVal);
-                applicationOutput.setMetadata(metadata);
 
                 em.persist(applicationOutput);
             }
@@ -339,14 +336,6 @@ public class ApplicationOutputResource extends AbstractResource {
 
     public void setDataType(String dataType) {
         this.dataType = dataType;
-    }
-
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
     }
 
     public AppInterfaceResource getAppInterfaceResource() {

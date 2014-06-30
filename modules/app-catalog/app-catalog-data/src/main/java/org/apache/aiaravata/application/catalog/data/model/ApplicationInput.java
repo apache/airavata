@@ -41,10 +41,12 @@ public class ApplicationInput implements Serializable {
     private String dataType;
     @Column(name = "METADATA")
     private String metadata;
-    @Column(name = "APP_PARAMETER")
-    private String appParameter;
-    @Column(name = "APP_UI_DESCRIPTION")
-    private String appUIDesc;
+    @Column(name = "APP_ARGUMENT")
+    private String appArgument;
+    @Column(name = "USER_FRIENDLY_DESC")
+    private String userFriendlyDesc;
+    @Column(name = "STANDARD_INPUT")
+    private boolean standardInput;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "INTERFACE_ID")
@@ -90,20 +92,20 @@ public class ApplicationInput implements Serializable {
         this.metadata = metadata;
     }
 
-    public String getAppParameter() {
-        return appParameter;
+    public String getAppArgument() {
+        return appArgument;
     }
 
-    public void setAppParameter(String appParameter) {
-        this.appParameter = appParameter;
+    public void setAppArgument(String appArgument) {
+        this.appArgument = appArgument;
     }
 
-    public String getAppUIDesc() {
-        return appUIDesc;
+    public String getUserFriendlyDesc() {
+        return userFriendlyDesc;
     }
 
-    public void setAppUIDesc(String appUIDesc) {
-        this.appUIDesc = appUIDesc;
+    public void setUserFriendlyDesc(String userFriendlyDesc) {
+        this.userFriendlyDesc = userFriendlyDesc;
     }
 
     public ApplicationInterface getApplicationInterface() {
@@ -112,5 +114,13 @@ public class ApplicationInput implements Serializable {
 
     public void setApplicationInterface(ApplicationInterface applicationInterface) {
         this.applicationInterface = applicationInterface;
+    }
+
+    public boolean isStandardInput() {
+        return standardInput;
+    }
+
+    public void setStandardInput(boolean standardInput) {
+        this.standardInput = standardInput;
     }
 }

@@ -39,8 +39,6 @@ public class ApplicationOutput implements Serializable {
     private String outputVal;
     @Column(name = "DATA_TYPE")
     private String dataType;
-    @Column(name = "METADATA")
-    private String metadata;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "INTERFACE_ID")
@@ -60,14 +58,6 @@ public class ApplicationOutput implements Serializable {
 
     public void setDataType(String dataType) {
         this.dataType = dataType;
-    }
-
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
     }
 
     public ApplicationInterface getApplicationInterface() {

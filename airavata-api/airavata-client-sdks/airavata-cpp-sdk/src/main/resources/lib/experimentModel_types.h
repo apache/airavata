@@ -157,6 +157,16 @@ struct DataType {
 
 extern const std::map<int, const char*> _DataType_VALUES_TO_NAMES;
 
+struct ExecutionUnit {
+  enum type {
+    INPUT = 0,
+    APPLICATION = 1,
+    OUTPUT = 2
+  };
+};
+
+extern const std::map<int, const char*> _ExecutionUnit_VALUES_TO_NAMES;
+
 typedef struct _ExperimentStatus__isset {
   _ExperimentStatus__isset() : timeOfStateChange(false) {}
   bool timeOfStateChange;
@@ -1505,8 +1515,9 @@ class TaskDetails {
 void swap(TaskDetails &a, TaskDetails &b);
 
 typedef struct _WorkflowNodeDetails__isset {
-  _WorkflowNodeDetails__isset() : creationTime(false), nodeInputs(false), nodeOutputs(false), workflowNodeStatus(false), taskDetailsList(false), errors(false) {}
+  _WorkflowNodeDetails__isset() : creationTime(false), executionUnitData(false), nodeInputs(false), nodeOutputs(false), workflowNodeStatus(false), taskDetailsList(false), errors(false) {}
   bool creationTime;
+  bool executionUnitData;
   bool nodeInputs;
   bool nodeOutputs;
   bool workflowNodeStatus;
@@ -1517,10 +1528,12 @@ typedef struct _WorkflowNodeDetails__isset {
 class WorkflowNodeDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "6E949ACD99A7BCD6F92F530611379555";
-  static const uint8_t binary_fingerprint[16]; // = {0x6E,0x94,0x9A,0xCD,0x99,0xA7,0xBC,0xD6,0xF9,0x2F,0x53,0x06,0x11,0x37,0x95,0x55};
+  static const char* ascii_fingerprint; // = "B9A01F97264B4D21C1929907008C6F81";
+  static const uint8_t binary_fingerprint[16]; // = {0xB9,0xA0,0x1F,0x97,0x26,0x4B,0x4D,0x21,0xC1,0x92,0x99,0x07,0x00,0x8C,0x6F,0x81};
 
-  WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE") {
+  WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE"), executionUnit((ExecutionUnit::type)1), executionUnitData() {
+    executionUnit = (ExecutionUnit::type)1;
+
   }
 
   virtual ~WorkflowNodeDetails() throw() {}
@@ -1528,6 +1541,8 @@ class WorkflowNodeDetails {
   std::string nodeInstanceId;
   int64_t creationTime;
   std::string nodeName;
+  ExecutionUnit::type executionUnit;
+  std::string executionUnitData;
   std::vector<DataObjectType>  nodeInputs;
   std::vector<DataObjectType>  nodeOutputs;
   WorkflowNodeStatus workflowNodeStatus;
@@ -1547,6 +1562,15 @@ class WorkflowNodeDetails {
 
   void __set_nodeName(const std::string& val) {
     nodeName = val;
+  }
+
+  void __set_executionUnit(const ExecutionUnit::type val) {
+    executionUnit = val;
+  }
+
+  void __set_executionUnitData(const std::string& val) {
+    executionUnitData = val;
+    __isset.executionUnitData = true;
   }
 
   void __set_nodeInputs(const std::vector<DataObjectType> & val) {
@@ -1583,6 +1607,12 @@ class WorkflowNodeDetails {
     else if (__isset.creationTime && !(creationTime == rhs.creationTime))
       return false;
     if (!(nodeName == rhs.nodeName))
+      return false;
+    if (!(executionUnit == rhs.executionUnit))
+      return false;
+    if (__isset.executionUnitData != rhs.__isset.executionUnitData)
+      return false;
+    else if (__isset.executionUnitData && !(executionUnitData == rhs.executionUnitData))
       return false;
     if (__isset.nodeInputs != rhs.__isset.nodeInputs)
       return false;
@@ -1737,8 +1767,8 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "66FE530838E2F6F20D72C4DB3F430EF8";
-  static const uint8_t binary_fingerprint[16]; // = {0x66,0xFE,0x53,0x08,0x38,0xE2,0xF6,0xF2,0x0D,0x72,0xC4,0xDB,0x3F,0x43,0x0E,0xF8};
+  static const char* ascii_fingerprint; // = "2AA486482D7BE0429763612CDC85F0AE";
+  static const uint8_t binary_fingerprint[16]; // = {0x2A,0xA4,0x86,0x48,0x2D,0x7B,0xE0,0x42,0x97,0x63,0x61,0x2C,0xDC,0x85,0xF0,0xAE};
 
   Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), workflowExecutionInstanceId() {
   }
