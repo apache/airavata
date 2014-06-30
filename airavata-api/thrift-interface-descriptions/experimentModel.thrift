@@ -314,6 +314,13 @@ struct TaskDetails {
     15: optional list<ErrorDetails> errors
 }
 
+enum ExecutionUnit {
+	INPUT,
+	APPLICATION,
+	OUTPUT
+}
+
+
 /**
 * A structure holding the node data.
 * nodeInstanceId - unique node identifier for each run
@@ -322,11 +329,13 @@ struct WorkflowNodeDetails {
     1: required string nodeInstanceId = DEFAULT_ID,
     2: optional i64 creationTime,
     3: required string nodeName = SINGLE_APP_NODE_NAME,
-    4: optional list<DataObjectType> nodeInputs,
-    5: optional list<DataObjectType> nodeOutputs,
-    6: optional WorkflowNodeStatus workflowNodeStatus,
-    7: optional list<TaskDetails> taskDetailsList,
-    8: optional list<ErrorDetails> errors
+    4: required ExecutionUnit = ExecutionUnit.APPLICATION,
+    5: optional string executionUnitData,
+    6: optional list<DataObjectType> nodeInputs,
+    7: optional list<DataObjectType> nodeOutputs,
+    8: optional WorkflowNodeStatus workflowNodeStatus,
+    9: optional list<TaskDetails> taskDetailsList,
+    10: optional list<ErrorDetails> errors
 }
 
 /**
