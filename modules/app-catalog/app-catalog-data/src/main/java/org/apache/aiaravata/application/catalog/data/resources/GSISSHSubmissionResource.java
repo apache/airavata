@@ -89,20 +89,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GSISSH_SUBMISSION);
             List results;
-            if (fieldName.equals(GSISSHSubmissionConstants.SUBMISSION_ID)) {
-                generator.setParameter(GSISSHSubmissionConstants.SUBMISSION_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GSISSHSubmission gsisshSubmission = (GSISSHSubmission) result;
-                        GSISSHSubmissionResource gsisshSubmissionResource =
-                                (GSISSHSubmissionResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.GSISSH_SUBMISSION, gsisshSubmission);
-                        gsiSSHSubmissionResourceList.add(gsisshSubmissionResource);
-                    }
-                }
-            } else if (fieldName.equals(GSISSHSubmissionConstants.RESOURCE_ID)) {
+            if (fieldName.equals(GSISSHSubmissionConstants.RESOURCE_ID)) {
                 generator.setParameter(GSISSHSubmissionConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();

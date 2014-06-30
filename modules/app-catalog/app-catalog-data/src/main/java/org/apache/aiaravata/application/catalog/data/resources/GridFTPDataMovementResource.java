@@ -86,19 +86,7 @@ public class GridFTPDataMovementResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GRID_FTP_DATAMOVEMENT);
             List results;
-            if (fieldName.equals(GridFTPDataMovementConstants.DATA_MOVE_ID)) {
-                generator.setParameter(GridFTPDataMovementConstants.DATA_MOVE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GridFTPDataMovement gridFTPDataMovement = (GridFTPDataMovement) result;
-                        GridFTPDataMovementResource gridFTPDataMovementResource =
-                                (GridFTPDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GRID_FTP_DATAMOVEMENT, gridFTPDataMovement);
-                        gridFTPDataMoveResources.add(gridFTPDataMovementResource);
-                    }
-                }
-            } else if (fieldName.equals(GridFTPDataMovementConstants.RESOURCE_ID)) {
+            if (fieldName.equals(GridFTPDataMovementConstants.RESOURCE_ID)) {
                 generator.setParameter(GridFTPDataMovementConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -122,19 +110,7 @@ public class GridFTPDataMovementResource extends AbstractResource {
                         gridFTPDataMoveResources.add(gridFTPDataMovementResource);
                     }
                 }
-            } else if (fieldName.equals(GridFTPDataMovementConstants.GRID_FTP_EP)) {
-                generator.setParameter(GridFTPDataMovementConstants.GRID_FTP_EP, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GridFTPDataMovement gridFTPDataMovement = (GridFTPDataMovement) result;
-                        GridFTPDataMovementResource gridFTPDataMovementResource =
-                                (GridFTPDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GRID_FTP_DATAMOVEMENT, gridFTPDataMovement);
-                        gridFTPDataMoveResources.add(gridFTPDataMovementResource);
-                    }
-                }
-            } else {
+            }  else {
                 em.getTransaction().commit();
                 em.close();
                 logger.error("Unsupported field name for Grid FTP Data Movement resource.", new IllegalArgumentException());

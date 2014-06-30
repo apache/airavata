@@ -102,9 +102,9 @@ public abstract class AbstractResource implements Resource {
     public final class GlobusJobSubmissionConstants {
         public static final String RESOURCE_ID = "resourceID";
         public static final String SUBMISSION_ID = "submissionID";
-        public static final String resourceJobManager = "RESOURCE_JOB_MANAGER";
-        public static final String securityProtocol = "SECURITY_PROTOCAL";
-        public static final String globusEP = "GLOBUS_GATEKEEPER_EP";
+        public static final String RESOURCE_JOB_MANAGER = "resourceJobManager";
+        public static final String SECURITY_PROTOCAL = "securityProtocol";
+        public static final String GLOBUS_GATEKEEPER_EP = "globusEP";
     }
 
     public final class GlobusEPConstants{
