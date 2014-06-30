@@ -24,11 +24,19 @@ package org.apache.airavata.model.util;
 
 import org.apache.airavata.model.workspace.experiment.*;
 
+import java.util.Calendar;
 import java.util.List;
 
 
 public class ExperimentModelUtil {
 
+	public static WorkflowNodeStatus createWorkflowNodeStatus(WorkflowNodeState state){
+		WorkflowNodeStatus status = new WorkflowNodeStatus();
+        status.setWorkflowNodeState(state);
+        status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+        return status;
+	}
+	
     public static Experiment createSimpleExperiment(String projectID,
                                                     String userName,
                                                     String experimentName,

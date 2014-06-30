@@ -43,6 +43,8 @@ public class WorkflowNodeDetailResource extends AbstractResource {
     private String nodeInstanceId;
     private Timestamp creationTime;
     private String nodeName;
+    private String executionUnit;
+    private String executionUnitData;
 
     public ExperimentResource getExperimentResource() {
         return experimentResource;
@@ -350,11 +352,16 @@ public class WorkflowNodeDetailResource extends AbstractResource {
             workflowNodeDetail.setExpId(experimentResource.getExpID());
             workflowNodeDetail.setCreationTime(creationTime);
             workflowNodeDetail.setNodeName(nodeName);
+            workflowNodeDetail.setExecutionUnit(getExecutionUnit());
+            workflowNodeDetail.setExecutionUnitData(getExecutionUnitData());
+
             if (existingNode != null) {
                 existingNode.setExperiment(experiment);
                 existingNode.setExpId(experimentResource.getExpID());
                 existingNode.setCreationTime(creationTime);
                 existingNode.setNodeName(nodeName);
+                existingNode.setExecutionUnit(getExecutionUnit());
+                existingNode.setExecutionUnitData(getExecutionUnitData());
                 workflowNodeDetail = em.merge(existingNode);
             } else {
                 em.persist(workflowNodeDetail);
@@ -446,4 +453,20 @@ public class WorkflowNodeDetailResource extends AbstractResource {
     public TaskDetailResource getTaskDetail(String taskId) throws RegistryException{
         return (TaskDetailResource)get(ResourceType.TASK_DETAIL, taskId);
     }
+
+	public String getExecutionUnit() {
+		return executionUnit;
+	}
+
+	public void setExecutionUnit(String executionUnit) {
+		this.executionUnit = executionUnit;
+	}
+
+	public String getExecutionUnitData() {
+		return executionUnitData;
+	}
+
+	public void setExecutionUnitData(String executionUnitData) {
+		this.executionUnitData = executionUnitData;
+	}
 }
