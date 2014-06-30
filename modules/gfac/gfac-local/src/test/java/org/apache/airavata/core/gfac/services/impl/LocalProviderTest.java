@@ -21,6 +21,7 @@
 package org.apache.airavata.core.gfac.services.impl;
 
 import com.google.common.eventbus.EventBus;
+
 import org.apache.airavata.commons.gfac.type.*;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
@@ -31,6 +32,7 @@ import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.local.handler.LocalDirectorySetupHandler;
 import org.apache.airavata.gfac.local.provider.impl.LocalProvider;
+import org.apache.airavata.model.workspace.experiment.ExecutionUnit;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
@@ -148,7 +150,7 @@ public class LocalProviderTest {
         jobExecutionContext.setExperiment(new Experiment("test123","project1","admin","testExp"));
         jobExecutionContext.setTaskData(new TaskDetails(jobExecutionContext.getExperimentID()));
         jobExecutionContext.setRegistry(new LoggingRegistryImpl());
-        jobExecutionContext.setWorkflowNodeDetails(new WorkflowNodeDetails(jobExecutionContext.getExperimentID(),"none"));
+        jobExecutionContext.setWorkflowNodeDetails(new WorkflowNodeDetails(jobExecutionContext.getExperimentID(),"none", ExecutionUnit.APPLICATION));
 
 
     }
