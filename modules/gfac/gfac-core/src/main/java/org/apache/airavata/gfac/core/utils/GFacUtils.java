@@ -876,7 +876,7 @@ public class GFacUtils {
     }
 
     public static CredentialReader getCredentialReader() throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException {
-        String jdbcUrl = ServerSettings.getCredentialStoreDBDriver();
+        String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
         String jdbcUsr = ServerSettings.getCredentialStoreDBUser();
         String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
         String driver = ServerSettings.getCredentialStoreDBDriver();
