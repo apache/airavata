@@ -30,12 +30,13 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
+import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.ExecutionMode;
-import org.apache.airavata.gfac.GFacConfiguration;
-import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
+import org.apache.airavata.gfac.*;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
@@ -773,7 +774,7 @@ public class GFacUtils {
     }
 
     // This method is dangerous because  of moving the experiment data
-    public static boolean createExperimentEntry(String experimentID, String taskID, ZooKeeper zk, String experimentNode, String pickedChild) throws KeeperException, InterruptedException {
+    public static boolean createExperimentEntry(String experimentID, String taskID, ZooKeeper zk, String experimentNode, String pickedChild,String tokenId) throws KeeperException, InterruptedException {
         String experimentPath = experimentNode + File.separator + pickedChild;
         String newExpNode = experimentPath + File.separator + experimentID + "+" + taskID;
         Stat exists1 = zk.exists(newExpNode, false);
@@ -785,7 +786,7 @@ public class GFacUtils {
                     foundExperimentPath = experimentNode + File.separator + gfacServerNode +
                             File.separator + experimentID + "+" + taskID;
                     exists1 = zk.exists(foundExperimentPath, false);
-                    if(exists1 != null) {               // when the experiment is found we break the loop
+                    if (exists1 != null) {               // when the experiment is found we break the loop
                         break;
                     }
                 }
@@ -795,6 +796,10 @@ public class GFacUtils {
                 zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
                         CreateMode.PERSISTENT);
 
+                Stat expParent = zk.exists(newExpNode, false);
+                if(tokenId != null && expParent != null) {
+                    zk.setData(newExpNode, tokenId.getBytes(),expParent.getVersion());
+                }
                 zk.create(newExpNode + File.separator + "state", String.valueOf(GfacExperimentState.LAUNCHED.getValue()).getBytes(),
                         ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 
@@ -827,7 +832,7 @@ public class GFacUtils {
                 // not delete a single file
                 log.info("After a successful copying of experiment data for an old experiment we delete the old data");
                 log.info("Deleting experiment data: " + foundExperimentPath);
-                ZKUtil.deleteRecursive(zk,foundExperimentPath);
+                ZKUtil.deleteRecursive(zk, foundExperimentPath);
             }
         } else {
             log.error("ExperimentID: " + experimentID + " taskID: " + taskID + " is already running by this Gfac instance");
@@ -862,12 +867,20 @@ public class GFacUtils {
     public static String getPluginData(JobExecutionContext jobExecutionContext, String className) throws ApplicationSettingsException, KeeperException, InterruptedException {
         ZooKeeper zk = jobExecutionContext.getZk();
         if (zk != null) {
-            String expZnodeHandlerPath =  AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
+            String expZnodeHandlerPath = AiravataZKUtils.getExpZnodeHandlerPath(jobExecutionContext.getExperimentID(),
                     jobExecutionContext.getTaskData().getTaskID(), className);
             Stat exists = zk.exists(expZnodeHandlerPath, false);
             return new String(jobExecutionContext.getZk().getData(expZnodeHandlerPath, false, exists));
         }
         return null;
+    }
+
+    public static CredentialReader getCredentialReader() throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException {
+        String jdbcUrl = ServerSettings.getCredentialStoreDBDriver();
+        String jdbcUsr = ServerSettings.getCredentialStoreDBUser();
+        String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
+        String driver = ServerSettings.getCredentialStoreDBDriver();
+        return new CredentialReaderImpl(new DBUtil(jdbcUrl, jdbcUsr, jdbcPass, driver));
     }
 
 }

@@ -22,11 +22,12 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "APP_ENVIRONMENT")
 @IdClass(AppEnvironment_PK.class)
-public class AppEnvironment {
+public class AppEnvironment implements Serializable {
     @Id
     @Column(name = "DEPLOYMENT_ID")
     private String deploymentID;

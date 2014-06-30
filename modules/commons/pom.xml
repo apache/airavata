@@ -30,9 +30,9 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>workflow-tracking</module>
-                <module>gfac-schema</module>
                 <module>utils</module>
+                <module>gfac-schema</module>
+                <module>workflow-tracking</module>
                 <module>workflow-execution-context</module>
             </modules>
         </profile>

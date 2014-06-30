@@ -98,7 +98,7 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
         simpleExperiment.setExperimentID(experimentId);
         tasks = orchestrator.createTasks(experimentId);
           for(TaskDetails details:tasks) {
-              orchestrator.launchExperiment(simpleExperiment,test, details);
+              orchestrator.launchExperiment(simpleExperiment,test, details,null);
           }
     }
 

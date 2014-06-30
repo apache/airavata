@@ -22,10 +22,11 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "GLOBUS_SUBMISSION")
-public class GlobusJobSubmission {
+public class GlobusJobSubmission implements Serializable {
     @Column(name = "RESOURCE_ID")
     private String resourceID;
     @Id
@@ -35,8 +36,6 @@ public class GlobusJobSubmission {
     private String resourceJobManager;
     @Column(name = "SECURITY_PROTOCAL")
     private String securityProtocol;
-    @Column(name = "GLOBUS_GATEKEEPER_EP")
-    private String globusEP;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "RESOURCE_ID")
@@ -72,14 +71,6 @@ public class GlobusJobSubmission {
 
     public void setSecurityProtocol(String securityProtocol) {
         this.securityProtocol = securityProtocol;
-    }
-
-    public String getGlobusEP() {
-        return globusEP;
-    }
-
-    public void setGlobusEP(String globusEP) {
-        this.globusEP = globusEP;
     }
 
     public ComputeResource getComputeResource() {

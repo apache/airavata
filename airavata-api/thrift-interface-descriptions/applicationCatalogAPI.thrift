@@ -27,6 +27,7 @@
 include "airavataErrors.thrift"
 include "airavataDataModel.thrift"
 include "computeHostModel.thrift"
+include "applicationInterfaceModel.thrift"
 include "applicationDeploymentModel.thrift"
 
 namespace java org.apache.airavata.api.appcatalog
@@ -141,7 +142,7 @@ service ApplicationCatalogAPI {
   /**
    * Manage Application Interfaces
   */
-  string addApplicationInterface(1: required computeHostModel.ApplicationInterface applicationInterface)
+  string addApplicationInterface(1: required applicationInterfaceModel.ApplicationInterfaceDescription applicationInterface)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
@@ -151,7 +152,7 @@ service ApplicationCatalogAPI {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)  
 
-  computeHostModel.ApplicationInterface getApplicationInterface(1: required string applicationInterfaceId)
+  applicationInterfaceModel.ApplicationInterfaceDescription getApplicationInterface(1: required string applicationInterfaceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)  
@@ -186,7 +187,7 @@ service ApplicationCatalogAPI {
    * Manage application modules
   */
 
-  string addApplicationDeployment(1: required string applicationInterfaceId, 2: required computeHostModel.ApplicationDeployment applicationDeployment)
+  string addApplicationDeployment(1: required string applicationInterfaceId, 2: required applicationDeploymentModel.ApplicationDeploymentDescription applicationDeployment)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)   
@@ -196,7 +197,7 @@ service ApplicationCatalogAPI {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)  
 
-  computeHostModel.ApplicationDeployment getApplicationDeployment(1: required string applicationInterfaceId, 2: required string applicationDeploymentId)
+  applicationDeploymentModel.ApplicationDeploymentDescription getApplicationDeployment(1: required string applicationInterfaceId, 2: required string applicationDeploymentId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)  

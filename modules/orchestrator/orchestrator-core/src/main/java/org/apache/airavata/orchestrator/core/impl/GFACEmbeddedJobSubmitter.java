@@ -55,7 +55,18 @@ public class GFACEmbeddedJobSubmitter implements JobSubmitter {
 
     public boolean submit(String experimentID, String taskID) throws OrchestratorException {
         try {
-             return gfac.submitJob(experimentID, taskID);
+            return gfac.submitJob(experimentID, taskID);
+        } catch (Exception e) {
+            String error = "Error launching the job : " + experimentID;
+            logger.error(error);
+            throw new OrchestratorException(error);
+        }
+    }
+
+
+    public boolean submit(String experimentID, String taskID,String tokenId) throws OrchestratorException {
+        try {
+            return submit(experimentID,taskID);
         } catch (Exception e) {
             String error = "Error launching the job : " + experimentID;
             logger.error(error);

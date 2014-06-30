@@ -24,7 +24,7 @@ package org.apache.airavata.api.client;
 import java.lang.reflect.InvocationTargetException;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.appcatalog.ApplicationCatalogAPI;
+//import org.apache.airavata.api.appcatalog.ApplicationCatalogAPI;
 import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TMultiplexedProtocol;
@@ -51,7 +51,7 @@ public class AiravataClientFactory {
         }
     }
     
-    public static ApplicationCatalogAPI.Client createApplicationCatalogClient(String serverHost, int serverPort) throws AiravataClientConnectException{
+    /*public static ApplicationCatalogAPI.Client createApplicationCatalogClient(String serverHost, int serverPort) throws AiravataClientConnectException{
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
@@ -75,5 +75,5 @@ public class AiravataClientFactory {
         } catch (Exception e) {
 			throw new Exception("Invalid Airavata API Service "+type.getClass().getCanonicalName());
 		}
-    }
+    }*/
 }

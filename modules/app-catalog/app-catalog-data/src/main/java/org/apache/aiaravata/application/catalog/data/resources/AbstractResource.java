@@ -21,7 +21,7 @@
 
 package org.apache.aiaravata.application.catalog.data.resources;
 
-public abstract class AbstractResource implements Resource{
+public abstract class AbstractResource implements Resource {
     // table names
     public static final String COMPUTE_RESOURCE = "ComputeResource";
     public static final String HOST_ALIAS = "HostAlias";
@@ -31,9 +31,11 @@ public abstract class AbstractResource implements Resource{
     public static final String GSISSH_PREJOBCOMMAND = "GSISSHPreJobCommand";
     public static final String GSISSH_POSTJOBCOMMAND = "GSISSHPostJobCommand";
     public static final String GLOBUS_SUBMISSION = "GlobusJobSubmission";
+    public static final String GLOBUS_GK_ENDPOINT = "GlobusGKEndpoint";
     public static final String SSH_SUBMISSION = "SSHSubmission";
     public static final String SCP_DATAMOVEMENT = "SCPDataMovement";
     public static final String GRID_FTP_DATAMOVEMENT = "GridFTPDataMovement";
+    public static final String GRIDFTP_DM_ENDPOINT = "GridFTPDMEndpoint";
     public static final String JOB_SUBMISSION_PROTOCOL = "JobSubmissionProtocol";
     public static final String DATA_MOVEMENT_PROTOCOL = "DataMovementProtocol";
     public static final String APPLICATION_MODULE = "ApplicationModule";
@@ -80,19 +82,19 @@ public abstract class AbstractResource implements Resource{
 
     // GSSISSH Export Table
     public final class GSISSHExportConstants {
-        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
         public static final String EXPORT = "export";
     }
 
     // GSSISSH Pre Job Command Table
     public final class GSISSHPreJobCommandConstants {
-        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
         public static final String COMMAND = "command";
     }
 
     // GSSISSH Post Job Command Table
     public final class GSISSHPostJobCommandConstants {
-        public static final String RESOURCE_ID = "resourceID";
+        public static final String SUBMISSION_ID = "submissionID";
         public static final String COMMAND = "command";
     }
 
@@ -103,6 +105,11 @@ public abstract class AbstractResource implements Resource{
         public static final String resourceJobManager = "RESOURCE_JOB_MANAGER";
         public static final String securityProtocol = "SECURITY_PROTOCAL";
         public static final String globusEP = "GLOBUS_GATEKEEPER_EP";
+    }
+
+    public final class GlobusEPConstants{
+        public static final String SUBMISSION_ID = "submissionID";
+        public static final String ENDPOINT = "endpoint";
     }
 
     // GSSISSH Post Job Command Table
@@ -125,6 +132,11 @@ public abstract class AbstractResource implements Resource{
         public static final String DATA_MOVE_ID = "dataMoveID";
         public static final String SECURITY_PROTOCOL = "securityProtocol";
         public static final String GRID_FTP_EP = "gridFTPEP";
+    }
+
+    public final class GridFTPDMEPConstants{
+        public static final String DATA_MOVE_ID = "dataMoveId";
+        public static final String ENDPOINT = "endpoint";
     }
 
     public final class JobSubmissionProtocolConstants {
@@ -207,8 +219,6 @@ public abstract class AbstractResource implements Resource{
         public static final String GATEWAY_DESC = "gatewayDesc";
         public static final String PREFERED_RESOURCE = "preferedResource";
     }
-
-
 
 
 }

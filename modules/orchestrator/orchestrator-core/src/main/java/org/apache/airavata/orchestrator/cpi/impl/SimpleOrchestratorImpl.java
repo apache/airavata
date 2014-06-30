@@ -69,14 +69,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public boolean launchExperiment(Experiment experiment, WorkflowNodeDetails workflowNode, TaskDetails task) throws OrchestratorException {
+    public boolean launchExperiment(Experiment experiment, WorkflowNodeDetails workflowNode, TaskDetails task,String tokenId) throws OrchestratorException {
         // we give higher priority to userExperimentID
         String experimentId = experiment.getExperimentID();
         String taskId = task.getTaskID();
         // creating monitorID to register with monitoring queue
         // this is a special case because amqp has to be in place before submitting the job
         try {
-            return jobSubmitter.submit(experimentId, taskId);
+            return jobSubmitter.submit(experimentId, taskId,tokenId);
         } catch (Exception e) {
             throw new OrchestratorException("Error launching the job", e);
         }

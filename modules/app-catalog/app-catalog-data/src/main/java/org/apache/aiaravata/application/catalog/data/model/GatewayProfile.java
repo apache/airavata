@@ -25,10 +25,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "GATEWAY_PROFILE")
-public class GatewayProfile {
+public class GatewayProfile implements Serializable {
     @Id
     @Column(name = "GATEWAY_ID")
     private String gatewayID;

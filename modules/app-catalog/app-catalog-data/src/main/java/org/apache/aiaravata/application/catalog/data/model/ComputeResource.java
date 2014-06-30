@@ -22,10 +22,11 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "COMPUTE_RESOURCE")
-public class ComputeResource {
+public class ComputeResource implements Serializable {
     @Id
     @Column(name = "RESOURCE_ID")
     private String resourceID;
@@ -33,8 +34,6 @@ public class ComputeResource {
     private String hostName;
     @Column(name = "DESCRIPTION")
     private String description;
-    @Column(name = "SCRATCH_LOCATION")
-    private String scratchLocation;
     @Column(name = "PREFERRED_JOB_SUBMISSION_PROTOCOL")
     private String preferredJobSubProtocol;
 
@@ -60,14 +59,6 @@ public class ComputeResource {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getScratchLocation() {
-        return scratchLocation;
-    }
-
-    public void setScratchLocation(String scratchLocation) {
-        this.scratchLocation = scratchLocation;
     }
 
     public String getPreferredJobSubProtocol() {

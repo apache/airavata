@@ -55,7 +55,7 @@ public class AiravataAPIServer implements IServer{
 		setStatus(ServerStatus.STOPPED);
 	}
 	
-    public void StartAiravataServer(Airavata.Processor<Airavata.Iface> mockAiravataServer) throws AiravataSystemException {
+    public void StartAiravataServer(Airavata.Processor<Airavata.Iface> airavataAPIServer) throws AiravataSystemException {
         try {
             AiravataUtils.setExecutionAsServer();
             RegistryInitUtil.initializeDB();
@@ -73,7 +73,7 @@ public class AiravataAPIServer implements IServer{
 			
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
             options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "30"));
-			server = new TThreadPoolServer(options.processor(mockAiravataServer));
+			server = new TThreadPoolServer(options.processor(airavataAPIServer));
             new Thread() {
 				public void run() {
 					server.serve();
@@ -118,9 +118,9 @@ public class AiravataAPIServer implements IServer{
 	@Override
 	public void start() throws Exception {
 		setStatus(ServerStatus.STARTING);
-		Airavata.Processor<Airavata.Iface> mockAiravataServer =
+		Airavata.Processor<Airavata.Iface> airavataAPIServer =
                 new Airavata.Processor<Airavata.Iface>(new AiravataServerHandler());
-    	StartAiravataServer(mockAiravataServer);
+    	StartAiravataServer(airavataAPIServer);
 	}
 
 	@Override
