@@ -18,7 +18,7 @@ public interface ApplicationDeployment {
      * @param deploymentId unique deployment id
      * @return application deployment
      */
-    String getApplicationDeployement (String deploymentId) throws AppCatalogException;
+    ApplicationDeploymentDescription getApplicationDeployement (String deploymentId) throws AppCatalogException;
 
     /**
      * This method will return a list of application deployments according to given search criteria

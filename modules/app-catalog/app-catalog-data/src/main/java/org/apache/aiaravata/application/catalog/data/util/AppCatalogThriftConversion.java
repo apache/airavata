@@ -22,8 +22,12 @@
 package org.apache.aiaravata.application.catalog.data.util;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment;
+import org.apache.aiaravata.application.catalog.data.model.LibraryPrepandPath;
 import org.apache.aiaravata.application.catalog.data.resources.*;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
@@ -235,7 +239,7 @@ public class AppCatalogThriftConversion {
     public static List<SSHJobSubmission> getSSHSubmissionList (List<Resource> resources) throws AppCatalogException {
         List<SSHJobSubmission> list = new ArrayList<SSHJobSubmission>();
         for (Resource resource : resources){
-            list.add(getSSHJobSubmissionDescription((SSHSubmissionResource)resource));
+            list.add(getSSHJobSubmissionDescription((SSHSubmissionResource) resource));
         }
         return list;
     }
@@ -363,7 +367,8 @@ public class AppCatalogThriftConversion {
             inputs.add(getInputDataObjType((ApplicationInputResource) resource));
         }
         return inputs;
-    } 
+    }
+
     public static InputDataObjectType getInputDataObjType (ApplicationInputResource input){
         InputDataObjectType inputDataObjectType = new InputDataObjectType();
         inputDataObjectType.setName(input.getInputKey());
@@ -391,5 +396,84 @@ public class AppCatalogThriftConversion {
         return outputDataObjectType;
     }
 
+    public static ApplicationDeploymentDescription getApplicationDeploymentDescription (AppDeploymentResource resource) throws AppCatalogException {
+        ApplicationDeploymentDescription description = new ApplicationDeploymentDescription();
+        description.setAppDeploymentId(resource.getDeploymentId());
+        description.setAppModuleId(resource.getAppModuleId());
+        description.setComputeHostId(resource.getHostId());
+        description.setExecutablePath(resource.getExecutablePath());
+        description.setAppDeploymentDescription(resource.getAppDes());
+        description.setModuleLoadCmd(resource.getEnvModuleLoadCMD());
+
+        LibraryPrepandPathResource prepandPathResource = new LibraryPrepandPathResource();
+        List<Resource> libPrepandPaths = prepandPathResource.get(AbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, resource.getDeploymentId());
+        if (libPrepandPaths != null && !libPrepandPaths.isEmpty()){
+            description.setLibPrependPaths(getLibPrepandPaths(libPrepandPaths));
+        }
+
+        LibraryApendPathResource apendPathResource = new LibraryApendPathResource();
+        List<Resource> libApendPaths = apendPathResource.get(AbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, resource.getDeploymentId());
+        if (libApendPaths != null && !libApendPaths.isEmpty()){
+            description.setLibAppendPaths(getLibApendPaths(libApendPaths));
+        }
+
+        AppEnvironmentResource appEnvironmentResource = new AppEnvironmentResource();
+        List<Resource> appEnvList = appEnvironmentResource.get(AbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, resource.getDeploymentId());
+        if (appEnvList != null && !appEnvList.isEmpty()){
+            description.setSetEnvironment(getAppEnvPaths(appEnvList));
+        }
+        return description;
+    }
+
+    public static List<ApplicationDeploymentDescription> getAppDepDescList (List<Resource> resources) throws AppCatalogException {
+        List<ApplicationDeploymentDescription> appList = new ArrayList<ApplicationDeploymentDescription>();
+        for (Resource resource : resources){
+            appList.add(getApplicationDeploymentDescription((AppDeploymentResource)resource));
+        }
+        return appList;
+    }
+
+    public static SetEnvPaths getSetEnvPath(Resource resource){
+        SetEnvPaths envPaths = new SetEnvPaths();
+        if (resource instanceof LibraryPrepandPathResource){
+            envPaths.setName(((LibraryPrepandPathResource) resource).getName());
+            envPaths.setValue(((LibraryPrepandPathResource) resource).getValue());
+            return envPaths;
+        }else if (resource instanceof LibraryApendPathResource){
+            envPaths.setName(((LibraryApendPathResource) resource).getName());
+            envPaths.setValue(((LibraryApendPathResource) resource).getValue());
+            return envPaths;
+        }else if (resource instanceof AppEnvironmentResource){
+            envPaths.setName(((AppEnvironmentResource) resource).getName());
+            envPaths.setValue(((AppEnvironmentResource) resource).getValue());
+            return envPaths;
+        }else {
+            return null;
+        }
+    }
+
+    public static List<SetEnvPaths> getLibPrepandPaths (List<Resource> prepandPaths){
+        List<SetEnvPaths> pathList = new ArrayList<SetEnvPaths>();
+        for (Resource resource : prepandPaths){
+            pathList.add(getSetEnvPath(resource));
+        }
+        return pathList;
+    }
+
+    public static List<SetEnvPaths> getLibApendPaths (List<Resource> appendPaths){
+        List<SetEnvPaths> pathList = new ArrayList<SetEnvPaths>();
+        for (Resource resource : appendPaths){
+            pathList.add(getSetEnvPath(resource));
+        }
+        return pathList;
+    }
+
+    public static List<SetEnvPaths> getAppEnvPaths (List<Resource> appEnvPaths){
+        List<SetEnvPaths> pathList = new ArrayList<SetEnvPaths>();
+        for (Resource resource : appEnvPaths){
+            pathList.add(getSetEnvPath(resource));
+        }
+        return pathList;
+    }
 
 }
