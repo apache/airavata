@@ -36,6 +36,10 @@ public class WorkflowNodeDetail implements Serializable {
     @Id
     @Column(name = "NODE_INSTANCE_ID")
     private String nodeId;
+    @Column(name = "EXECUTION_UNIT")
+    private String executionUnit;
+    @Column(name = "EXECUTION_UNIT")
+    private String executionUnitData;
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
     @Column(name = "NODE_NAME")
@@ -84,4 +88,20 @@ public class WorkflowNodeDetail implements Serializable {
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
     }
+
+	public String getExecutionUnitData() {
+		return executionUnitData;
+	}
+
+	public void setExecutionUnitData(String executionUnitData) {
+		this.executionUnitData = executionUnitData;
+	}
+
+	public String getExecutionUnit() {
+		return executionUnit;
+	}
+
+	public void setExecutionUnit(String executionUnit) {
+		this.executionUnit = executionUnit;
+	}
 }

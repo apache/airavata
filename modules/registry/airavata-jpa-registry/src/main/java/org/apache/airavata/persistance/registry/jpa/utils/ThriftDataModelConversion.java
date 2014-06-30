@@ -21,16 +21,63 @@
 
 package org.apache.airavata.persistance.registry.jpa.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.ActionableGroup;
+import org.apache.airavata.model.workspace.experiment.AdvancedInputDataHandling;
+import org.apache.airavata.model.workspace.experiment.AdvancedOutputDataHandling;
+import org.apache.airavata.model.workspace.experiment.ApplicationStatus;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.DataType;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.ErrorDetails;
+import org.apache.airavata.model.workspace.experiment.ExecutionUnit;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
+import org.apache.airavata.model.workspace.experiment.ExperimentSummary;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.model.workspace.experiment.QualityOfServiceParams;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TaskState;
+import org.apache.airavata.model.workspace.experiment.TaskStatus;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.persistance.registry.jpa.resources.AdvanceInputDataHandlingResource;
+import org.apache.airavata.persistance.registry.jpa.resources.AdvancedOutputDataHandlingResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ApplicationInputResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ApplicationOutputResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ComputationSchedulingResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ConfigDataResource;
+import org.apache.airavata.persistance.registry.jpa.resources.DataTransferDetailResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ErrorDetailResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentInputResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentOutputResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
+import org.apache.airavata.persistance.registry.jpa.resources.JobDetailResource;
+import org.apache.airavata.persistance.registry.jpa.resources.NodeInputResource;
+import org.apache.airavata.persistance.registry.jpa.resources.NodeOutputResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ProjectUserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.QosParamResource;
+import org.apache.airavata.persistance.registry.jpa.resources.StatusResource;
+import org.apache.airavata.persistance.registry.jpa.resources.TaskDetailResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkflowNodeDetailResource;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ThriftDataModelConversion {
     private final static Logger logger = LoggerFactory.getLogger(ThriftDataModelConversion.class);
@@ -352,6 +399,8 @@ public class ThriftDataModelConversion {
             wfNode.setWorkflowNodeStatus(getWorkflowNodeStatus(nodeDetailResource.getWorkflowNodeStatus()));
             List<ErrorDetailResource> errorDetails = nodeDetailResource.getErrorDetails();
             wfNode.setErrors(getErrorDetailList(errorDetails));
+            wfNode.setExecutionUnit(ExecutionUnit.valueOf(nodeDetailResource.getExecutionUnit()));
+            wfNode.setExecutionUnitData(nodeDetailResource.getExecutionUnitData());
             return wfNode;
         }
         return null;
