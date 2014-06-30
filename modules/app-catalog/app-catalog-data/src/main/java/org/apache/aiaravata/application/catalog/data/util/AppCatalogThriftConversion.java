@@ -21,29 +21,16 @@
 
 package org.apache.aiaravata.application.catalog.data.util;
 
-public enum AppCatalogResourceType {
-    COMPUTE_RESOURCE,
-    HOST_ALIAS,
-    HOST_IPADDRESS,
-    GSISSH_SUBMISSION,
-    GSISSH_EXPORT,
-    GSISSH_PREJOBCOMMAND,
-    GSISSH_POSTJOBCOMMAND,
-    GLOBUS_SUBMISSION,
-    GLOBUS_GK_ENDPOINT,
-    SSH_SUBMISSION,
-    SCP_DATAMOVEMENT,
-    GRID_FTP_DATAMOVEMENT,
-    JOB_SUBMISSION_PROTOCOL,
-    DATA_MOVEMENT_PROTOCOL,
-    APPLICATION_MODULE,
-    APPLICATION_DEPLOYMENT,
-    LIBRARY_PREPAND_PATH,
-    LIBRARY_APEND_PATH,
-    APP_ENVIRONMENT,
-    APPLICATION_INTERFACE,
-    APP_MODULE_MAPPING,
-    APPLICATION_INPUT,
-    APPLICATION_OUTPUT,
-    GATEWAY_PROFILE
+import org.apache.aiaravata.application.catalog.data.resources.ComputeHostResource;
+import org.apache.airavata.model.computehost.ComputeResourceDescription;
+
+public class AppCatalogThriftConversion {
+    public static ComputeHostResource getComputeHostResource (ComputeResourceDescription description){
+        ComputeHostResource resource = new ComputeHostResource();
+        resource.setHostName(description.getHostName());
+        resource.setDescription(description.getResourceDescription());
+        resource.setPreferredJobSubmissionProtocol(description.getPreferredJobSubmissionProtocol());
+        resource.setPreferredJobSubmissionProtocol(description.getResourceId());
+        return resource;
+    }
 }
