@@ -679,6 +679,8 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource resource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             resource.setExperimentResource(experiment);
             resource.setNodeName(nodeDetails.getNodeName());
+            resource.setExecutionUnit(nodeDetails.getExecutionUnit().toString());
+            resource.setExecutionUnitData(nodeDetails.getExecutionUnitData());
             resource.setCreationTime(AiravataUtils.getTime(nodeDetails.getCreationTime()));
             resource.setNodeInstanceId(getNodeInstanceID(nodeDetails.getNodeName()));
             resource.save();
@@ -734,6 +736,8 @@ public class ExperimentRegistry {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
             workflowNode.setNodeName(nodeDetails.getNodeName());
+            workflowNode.setExecutionUnit(nodeDetails.getExecutionUnit().toString());
+            workflowNode.setExecutionUnitData(nodeDetails.getExecutionUnitData());
             workflowNode.setCreationTime(AiravataUtils.getTime(nodeDetails.getCreationTime()));
             workflowNode.setNodeInstanceId(nodeId);
             workflowNode.save();

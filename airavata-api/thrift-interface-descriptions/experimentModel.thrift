@@ -329,7 +329,7 @@ struct WorkflowNodeDetails {
     1: required string nodeInstanceId = DEFAULT_ID,
     2: optional i64 creationTime,
     3: required string nodeName = SINGLE_APP_NODE_NAME,
-    4: required ExecutionUnit = ExecutionUnit.APPLICATION,
+    4: required ExecutionUnit executionUnit = ExecutionUnit.APPLICATION,
     5: optional string executionUnitData,
     6: optional list<DataObjectType> nodeInputs,
     7: optional list<DataObjectType> nodeOutputs,

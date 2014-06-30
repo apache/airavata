@@ -86,19 +86,7 @@ public class SCPDataMovementResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SCP_DATAMOVEMENT);
             List results;
-            if (fieldName.equals(SCPDataMovementConstants.DATA_MOVE_ID)) {
-                generator.setParameter(SCPDataMovementConstants.DATA_MOVE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
-                        SCPDataMovementResource scpDataMovementResource =
-                                (SCPDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SCP_DATAMOVEMENT, scpDataMovement);
-                        scpDataMoveResources.add(scpDataMovementResource);
-                    }
-                }
-            } else if (fieldName.equals(SCPDataMovementConstants.RESOURCE_ID)) {
+            if (fieldName.equals(SCPDataMovementConstants.RESOURCE_ID)) {
                 generator.setParameter(SCPDataMovementConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();

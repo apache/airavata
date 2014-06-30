@@ -623,6 +623,9 @@ public class Utils {
             nodeDetailResource.setCreationTime(o.getCreationTime());
             nodeDetailResource.setNodeInstanceId(o.getNodeId());
             nodeDetailResource.setNodeName(o.getNodeName());
+            nodeDetailResource.setExecutionUnit(o.getExecutionUnit());
+            nodeDetailResource.setExecutionUnitData(o.getExecutionUnitData());
+
         }
         return nodeDetailResource;
     }

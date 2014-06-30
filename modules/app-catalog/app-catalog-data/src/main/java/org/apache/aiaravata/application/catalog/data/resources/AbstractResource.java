@@ -102,9 +102,9 @@ public abstract class AbstractResource implements Resource {
     public final class GlobusJobSubmissionConstants {
         public static final String RESOURCE_ID = "resourceID";
         public static final String SUBMISSION_ID = "submissionID";
-        public static final String resourceJobManager = "RESOURCE_JOB_MANAGER";
-        public static final String securityProtocol = "SECURITY_PROTOCAL";
-        public static final String globusEP = "GLOBUS_GATEKEEPER_EP";
+        public static final String RESOURCE_JOB_MANAGER = "resourceJobManager";
+        public static final String SECURITY_PROTOCAL = "securityProtocol";
+        public static final String GLOBUS_GATEKEEPER_EP = "globusEP";
     }
 
     public final class GlobusEPConstants{
@@ -201,8 +201,9 @@ public abstract class AbstractResource implements Resource {
         public static final String INPUT_VALUE = "inputVal";
         public static final String DATA_TYPE = "dataType";
         public static final String METADATA = "metadata";
-        public static final String APP_PARAMETER = "appParameter";
-        public static final String APP_UI_DESCRIPTION = "appUIDesc";
+        public static final String APP_ARGUMENT = "appArgument";
+        public static final String USER_FRIENDLY_DESC = "userFriendlyDesc";
+        public static final String STANDARD_INPUT = "standardInput";
     }
 
     public final class AppOutputConstants {

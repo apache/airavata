@@ -58,11 +58,13 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField NODE_INSTANCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeInstanceId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)2);
   private static final org.apache.thrift.protocol.TField NODE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeName", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField NODE_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeInputs", org.apache.thrift.protocol.TType.LIST, (short)4);
-  private static final org.apache.thrift.protocol.TField NODE_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeOutputs", org.apache.thrift.protocol.TType.LIST, (short)5);
-  private static final org.apache.thrift.protocol.TField WORKFLOW_NODE_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowNodeStatus", org.apache.thrift.protocol.TType.STRUCT, (short)6);
-  private static final org.apache.thrift.protocol.TField TASK_DETAILS_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("taskDetailsList", org.apache.thrift.protocol.TType.LIST, (short)7);
-  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField EXECUTION_UNIT_FIELD_DESC = new org.apache.thrift.protocol.TField("executionUnit", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField EXECUTION_UNIT_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("executionUnitData", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField NODE_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeInputs", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField NODE_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeOutputs", org.apache.thrift.protocol.TType.LIST, (short)7);
+  private static final org.apache.thrift.protocol.TField WORKFLOW_NODE_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowNodeStatus", org.apache.thrift.protocol.TType.STRUCT, (short)8);
+  private static final org.apache.thrift.protocol.TField TASK_DETAILS_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("taskDetailsList", org.apache.thrift.protocol.TType.LIST, (short)9);
+  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -73,6 +75,8 @@ import org.slf4j.LoggerFactory;
   private String nodeInstanceId; // required
   private long creationTime; // optional
   private String nodeName; // required
+  private ExecutionUnit executionUnit; // required
+  private String executionUnitData; // optional
   private List<DataObjectType> nodeInputs; // optional
   private List<DataObjectType> nodeOutputs; // optional
   private WorkflowNodeStatus workflowNodeStatus; // optional
@@ -84,11 +88,17 @@ import org.slf4j.LoggerFactory;
     NODE_INSTANCE_ID((short)1, "nodeInstanceId"),
     CREATION_TIME((short)2, "creationTime"),
     NODE_NAME((short)3, "nodeName"),
-    NODE_INPUTS((short)4, "nodeInputs"),
-    NODE_OUTPUTS((short)5, "nodeOutputs"),
-    WORKFLOW_NODE_STATUS((short)6, "workflowNodeStatus"),
-    TASK_DETAILS_LIST((short)7, "taskDetailsList"),
-    ERRORS((short)8, "errors");
+    /**
+     * 
+     * @see ExecutionUnit
+     */
+    EXECUTION_UNIT((short)4, "executionUnit"),
+    EXECUTION_UNIT_DATA((short)5, "executionUnitData"),
+    NODE_INPUTS((short)6, "nodeInputs"),
+    NODE_OUTPUTS((short)7, "nodeOutputs"),
+    WORKFLOW_NODE_STATUS((short)8, "workflowNodeStatus"),
+    TASK_DETAILS_LIST((short)9, "taskDetailsList"),
+    ERRORS((short)10, "errors");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -109,15 +119,19 @@ import org.slf4j.LoggerFactory;
           return CREATION_TIME;
         case 3: // NODE_NAME
           return NODE_NAME;
-        case 4: // NODE_INPUTS
+        case 4: // EXECUTION_UNIT
+          return EXECUTION_UNIT;
+        case 5: // EXECUTION_UNIT_DATA
+          return EXECUTION_UNIT_DATA;
+        case 6: // NODE_INPUTS
           return NODE_INPUTS;
-        case 5: // NODE_OUTPUTS
+        case 7: // NODE_OUTPUTS
           return NODE_OUTPUTS;
-        case 6: // WORKFLOW_NODE_STATUS
+        case 8: // WORKFLOW_NODE_STATUS
           return WORKFLOW_NODE_STATUS;
-        case 7: // TASK_DETAILS_LIST
+        case 9: // TASK_DETAILS_LIST
           return TASK_DETAILS_LIST;
-        case 8: // ERRORS
+        case 10: // ERRORS
           return ERRORS;
         default:
           return null;
@@ -161,7 +175,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.NODE_INPUTS,_Fields.NODE_OUTPUTS,_Fields.WORKFLOW_NODE_STATUS,_Fields.TASK_DETAILS_LIST,_Fields.ERRORS};
+  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.EXECUTION_UNIT_DATA,_Fields.NODE_INPUTS,_Fields.NODE_OUTPUTS,_Fields.WORKFLOW_NODE_STATUS,_Fields.TASK_DETAILS_LIST,_Fields.ERRORS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -170,6 +184,10 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.NODE_NAME, new org.apache.thrift.meta_data.FieldMetaData("nodeName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.EXECUTION_UNIT, new org.apache.thrift.meta_data.FieldMetaData("executionUnit", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ExecutionUnit.class)));
+    tmpMap.put(_Fields.EXECUTION_UNIT_DATA, new org.apache.thrift.meta_data.FieldMetaData("executionUnitData", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.NODE_INPUTS, new org.apache.thrift.meta_data.FieldMetaData("nodeInputs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
@@ -194,15 +212,19 @@ import org.slf4j.LoggerFactory;
 
     this.nodeName = "SINGLE_APP_NODE";
 
+    this.executionUnit = org.apache.airavata.model.workspace.experiment.ExecutionUnit.APPLICATION;
+
   }
 
   public WorkflowNodeDetails(
     String nodeInstanceId,
-    String nodeName)
+    String nodeName,
+    ExecutionUnit executionUnit)
   {
     this();
     this.nodeInstanceId = nodeInstanceId;
     this.nodeName = nodeName;
+    this.executionUnit = executionUnit;
   }
 
   /**
@@ -216,6 +238,12 @@ import org.slf4j.LoggerFactory;
     this.creationTime = other.creationTime;
     if (other.isSetNodeName()) {
       this.nodeName = other.nodeName;
+    }
+    if (other.isSetExecutionUnit()) {
+      this.executionUnit = other.executionUnit;
+    }
+    if (other.isSetExecutionUnitData()) {
+      this.executionUnitData = other.executionUnitData;
     }
     if (other.isSetNodeInputs()) {
       List<DataObjectType> __this__nodeInputs = new ArrayList<DataObjectType>(other.nodeInputs.size());
@@ -262,6 +290,9 @@ import org.slf4j.LoggerFactory;
     this.creationTime = 0;
     this.nodeName = "SINGLE_APP_NODE";
 
+    this.executionUnit = org.apache.airavata.model.workspace.experiment.ExecutionUnit.APPLICATION;
+
+    this.executionUnitData = null;
     this.nodeInputs = null;
     this.nodeOutputs = null;
     this.workflowNodeStatus = null;
@@ -334,6 +365,60 @@ import org.slf4j.LoggerFactory;
   public void setNodeNameIsSet(boolean value) {
     if (!value) {
       this.nodeName = null;
+    }
+  }
+
+  /**
+   * 
+   * @see ExecutionUnit
+   */
+  public ExecutionUnit getExecutionUnit() {
+    return this.executionUnit;
+  }
+
+  /**
+   * 
+   * @see ExecutionUnit
+   */
+  public void setExecutionUnit(ExecutionUnit executionUnit) {
+    this.executionUnit = executionUnit;
+  }
+
+  public void unsetExecutionUnit() {
+    this.executionUnit = null;
+  }
+
+  /** Returns true if field executionUnit is set (has been assigned a value) and false otherwise */
+  public boolean isSetExecutionUnit() {
+    return this.executionUnit != null;
+  }
+
+  public void setExecutionUnitIsSet(boolean value) {
+    if (!value) {
+      this.executionUnit = null;
+    }
+  }
+
+  public String getExecutionUnitData() {
+    return this.executionUnitData;
+  }
+
+  public void setExecutionUnitData(String executionUnitData) {
+    this.executionUnitData = executionUnitData;
+  }
+
+  public void unsetExecutionUnitData() {
+    this.executionUnitData = null;
+  }
+
+  /** Returns true if field executionUnitData is set (has been assigned a value) and false otherwise */
+  public boolean isSetExecutionUnitData() {
+    return this.executionUnitData != null;
+  }
+
+  public void setExecutionUnitDataIsSet(boolean value) {
+    if (!value) {
+      this.executionUnitData = null;
     }
   }
 
@@ -538,6 +623,22 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case EXECUTION_UNIT:
+      if (value == null) {
+        unsetExecutionUnit();
+      } else {
+        setExecutionUnit((ExecutionUnit)value);
+      }
+      break;
+
+    case EXECUTION_UNIT_DATA:
+      if (value == null) {
+        unsetExecutionUnitData();
+      } else {
+        setExecutionUnitData((String)value);
+      }
+      break;
+
     case NODE_INPUTS:
       if (value == null) {
         unsetNodeInputs();
@@ -592,6 +693,12 @@ import org.slf4j.LoggerFactory;
     case NODE_NAME:
       return getNodeName();
 
+    case EXECUTION_UNIT:
+      return getExecutionUnit();
+
+    case EXECUTION_UNIT_DATA:
+      return getExecutionUnitData();
+
     case NODE_INPUTS:
       return getNodeInputs();
 
@@ -624,6 +731,10 @@ import org.slf4j.LoggerFactory;
       return isSetCreationTime();
     case NODE_NAME:
       return isSetNodeName();
+    case EXECUTION_UNIT:
+      return isSetExecutionUnit();
+    case EXECUTION_UNIT_DATA:
+      return isSetExecutionUnitData();
     case NODE_INPUTS:
       return isSetNodeInputs();
     case NODE_OUTPUTS:
@@ -675,6 +786,24 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_nodeName && that_present_nodeName))
         return false;
       if (!this.nodeName.equals(that.nodeName))
+        return false;
+    }
+
+    boolean this_present_executionUnit = true && this.isSetExecutionUnit();
+    boolean that_present_executionUnit = true && that.isSetExecutionUnit();
+    if (this_present_executionUnit || that_present_executionUnit) {
+      if (!(this_present_executionUnit && that_present_executionUnit))
+        return false;
+      if (!this.executionUnit.equals(that.executionUnit))
+        return false;
+    }
+
+    boolean this_present_executionUnitData = true && this.isSetExecutionUnitData();
+    boolean that_present_executionUnitData = true && that.isSetExecutionUnitData();
+    if (this_present_executionUnitData || that_present_executionUnitData) {
+      if (!(this_present_executionUnitData && that_present_executionUnitData))
+        return false;
+      if (!this.executionUnitData.equals(that.executionUnitData))
         return false;
     }
 
@@ -765,6 +894,26 @@ import org.slf4j.LoggerFactory;
     }
     if (isSetNodeName()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.nodeName, other.nodeName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetExecutionUnit()).compareTo(other.isSetExecutionUnit());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetExecutionUnit()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.executionUnit, other.executionUnit);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetExecutionUnitData()).compareTo(other.isSetExecutionUnitData());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetExecutionUnitData()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.executionUnitData, other.executionUnitData);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -860,6 +1009,24 @@ import org.slf4j.LoggerFactory;
       sb.append(this.nodeName);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("executionUnit:");
+    if (this.executionUnit == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.executionUnit);
+    }
+    first = false;
+    if (isSetExecutionUnitData()) {
+      if (!first) sb.append(", ");
+      sb.append("executionUnitData:");
+      if (this.executionUnitData == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.executionUnitData);
+      }
+      first = false;
+    }
     if (isSetNodeInputs()) {
       if (!first) sb.append(", ");
       sb.append("nodeInputs:");
@@ -922,6 +1089,10 @@ import org.slf4j.LoggerFactory;
 
     if (!isSetNodeName()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'nodeName' is unset! Struct:" + toString());
+    }
+
+    if (!isSetExecutionUnit()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'executionUnit' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -990,7 +1161,23 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // NODE_INPUTS
+          case 4: // EXECUTION_UNIT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.executionUnit = ExecutionUnit.findByValue(iprot.readI32());
+              struct.setExecutionUnitIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // EXECUTION_UNIT_DATA
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.executionUnitData = iprot.readString();
+              struct.setExecutionUnitDataIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // NODE_INPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list56 = iprot.readListBegin();
@@ -1009,7 +1196,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // NODE_OUTPUTS
+          case 7: // NODE_OUTPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list59 = iprot.readListBegin();
@@ -1028,7 +1215,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // WORKFLOW_NODE_STATUS
+          case 8: // WORKFLOW_NODE_STATUS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.workflowNodeStatus = new WorkflowNodeStatus();
               struct.workflowNodeStatus.read(iprot);
@@ -1037,7 +1224,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // TASK_DETAILS_LIST
+          case 9: // TASK_DETAILS_LIST
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list62 = iprot.readListBegin();
@@ -1056,7 +1243,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // ERRORS
+          case 10: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list65 = iprot.readListBegin();
@@ -1102,6 +1289,18 @@ import org.slf4j.LoggerFactory;
         oprot.writeFieldBegin(NODE_NAME_FIELD_DESC);
         oprot.writeString(struct.nodeName);
         oprot.writeFieldEnd();
+      }
+      if (struct.executionUnit != null) {
+        oprot.writeFieldBegin(EXECUTION_UNIT_FIELD_DESC);
+        oprot.writeI32(struct.executionUnit.getValue());
+        oprot.writeFieldEnd();
+      }
+      if (struct.executionUnitData != null) {
+        if (struct.isSetExecutionUnitData()) {
+          oprot.writeFieldBegin(EXECUTION_UNIT_DATA_FIELD_DESC);
+          oprot.writeString(struct.executionUnitData);
+          oprot.writeFieldEnd();
+        }
       }
       if (struct.nodeInputs != null) {
         if (struct.isSetNodeInputs()) {
@@ -1185,28 +1384,35 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.nodeInstanceId);
       oprot.writeString(struct.nodeName);
+      oprot.writeI32(struct.executionUnit.getValue());
       BitSet optionals = new BitSet();
       if (struct.isSetCreationTime()) {
         optionals.set(0);
       }
-      if (struct.isSetNodeInputs()) {
+      if (struct.isSetExecutionUnitData()) {
         optionals.set(1);
       }
-      if (struct.isSetNodeOutputs()) {
+      if (struct.isSetNodeInputs()) {
         optionals.set(2);
       }
-      if (struct.isSetWorkflowNodeStatus()) {
+      if (struct.isSetNodeOutputs()) {
         optionals.set(3);
       }
-      if (struct.isSetTaskDetailsList()) {
+      if (struct.isSetWorkflowNodeStatus()) {
         optionals.set(4);
       }
-      if (struct.isSetErrors()) {
+      if (struct.isSetTaskDetailsList()) {
         optionals.set(5);
       }
-      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetErrors()) {
+        optionals.set(6);
+      }
+      oprot.writeBitSet(optionals, 7);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
+      }
+      if (struct.isSetExecutionUnitData()) {
+        oprot.writeString(struct.executionUnitData);
       }
       if (struct.isSetNodeInputs()) {
         {
@@ -1256,12 +1462,18 @@ import org.slf4j.LoggerFactory;
       struct.setNodeInstanceIdIsSet(true);
       struct.nodeName = iprot.readString();
       struct.setNodeNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(6);
+      struct.executionUnit = ExecutionUnit.findByValue(iprot.readI32());
+      struct.setExecutionUnitIsSet(true);
+      BitSet incoming = iprot.readBitSet(7);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
       }
       if (incoming.get(1)) {
+        struct.executionUnitData = iprot.readString();
+        struct.setExecutionUnitDataIsSet(true);
+      }
+      if (incoming.get(2)) {
         {
           org.apache.thrift.protocol.TList _list76 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.nodeInputs = new ArrayList<DataObjectType>(_list76.size);
@@ -1275,7 +1487,7 @@ import org.slf4j.LoggerFactory;
         }
         struct.setNodeInputsIsSet(true);
       }
-      if (incoming.get(2)) {
+      if (incoming.get(3)) {
         {
           org.apache.thrift.protocol.TList _list79 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.nodeOutputs = new ArrayList<DataObjectType>(_list79.size);
@@ -1289,12 +1501,12 @@ import org.slf4j.LoggerFactory;
         }
         struct.setNodeOutputsIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(4)) {
         struct.workflowNodeStatus = new WorkflowNodeStatus();
         struct.workflowNodeStatus.read(iprot);
         struct.setWorkflowNodeStatusIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         {
           org.apache.thrift.protocol.TList _list82 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.taskDetailsList = new ArrayList<TaskDetails>(_list82.size);
@@ -1308,7 +1520,7 @@ import org.slf4j.LoggerFactory;
         }
         struct.setTaskDetailsListIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(6)) {
         {
           org.apache.thrift.protocol.TList _list85 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.errors = new ArrayList<ErrorDetails>(_list85.size);

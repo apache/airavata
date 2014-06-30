@@ -214,6 +214,17 @@ final class DataType {
   );
 }
 
+final class ExecutionUnit {
+  const INPUT = 0;
+  const APPLICATION = 1;
+  const OUTPUT = 2;
+  static public $__names = array(
+    0 => 'INPUT',
+    1 => 'APPLICATION',
+    2 => 'OUTPUT',
+  );
+}
+
 class ExperimentStatus {
   static $_TSPEC;
 
@@ -2841,6 +2852,8 @@ class WorkflowNodeDetails {
   public $nodeInstanceId = "DO_NOT_SET_AT_CLIENTS";
   public $creationTime = null;
   public $nodeName = "SINGLE_APP_NODE";
+  public $executionUnit =   1;
+  public $executionUnitData = null;
   public $nodeInputs = null;
   public $nodeOutputs = null;
   public $workflowNodeStatus = null;
@@ -2863,6 +2876,14 @@ class WorkflowNodeDetails {
           'type' => TType::STRING,
           ),
         4 => array(
+          'var' => 'executionUnit',
+          'type' => TType::I32,
+          ),
+        5 => array(
+          'var' => 'executionUnitData',
+          'type' => TType::STRING,
+          ),
+        6 => array(
           'var' => 'nodeInputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -2871,7 +2892,7 @@ class WorkflowNodeDetails {
             'class' => '\Airavata\Model\Workspace\Experiment\DataObjectType',
             ),
           ),
-        5 => array(
+        7 => array(
           'var' => 'nodeOutputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -2880,12 +2901,12 @@ class WorkflowNodeDetails {
             'class' => '\Airavata\Model\Workspace\Experiment\DataObjectType',
             ),
           ),
-        6 => array(
+        8 => array(
           'var' => 'workflowNodeStatus',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\WorkflowNodeStatus',
           ),
-        7 => array(
+        9 => array(
           'var' => 'taskDetailsList',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -2894,7 +2915,7 @@ class WorkflowNodeDetails {
             'class' => '\Airavata\Model\Workspace\Experiment\TaskDetails',
             ),
           ),
-        8 => array(
+        10 => array(
           'var' => 'errors',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -2914,6 +2935,12 @@ class WorkflowNodeDetails {
       }
       if (isset($vals['nodeName'])) {
         $this->nodeName = $vals['nodeName'];
+      }
+      if (isset($vals['executionUnit'])) {
+        $this->executionUnit = $vals['executionUnit'];
+      }
+      if (isset($vals['executionUnitData'])) {
+        $this->executionUnitData = $vals['executionUnitData'];
       }
       if (isset($vals['nodeInputs'])) {
         $this->nodeInputs = $vals['nodeInputs'];
@@ -2974,6 +3001,20 @@ class WorkflowNodeDetails {
           }
           break;
         case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->executionUnit);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->executionUnitData);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
           if ($ftype == TType::LST) {
             $this->nodeInputs = array();
             $_size49 = 0;
@@ -2991,7 +3032,7 @@ class WorkflowNodeDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 7:
           if ($ftype == TType::LST) {
             $this->nodeOutputs = array();
             $_size55 = 0;
@@ -3009,7 +3050,7 @@ class WorkflowNodeDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 8:
           if ($ftype == TType::STRUCT) {
             $this->workflowNodeStatus = new \Airavata\Model\Workspace\Experiment\WorkflowNodeStatus();
             $xfer += $this->workflowNodeStatus->read($input);
@@ -3017,7 +3058,7 @@ class WorkflowNodeDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 7:
+        case 9:
           if ($ftype == TType::LST) {
             $this->taskDetailsList = array();
             $_size61 = 0;
@@ -3035,7 +3076,7 @@ class WorkflowNodeDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
+        case 10:
           if ($ftype == TType::LST) {
             $this->errors = array();
             $_size67 = 0;
@@ -3081,11 +3122,21 @@ class WorkflowNodeDetails {
       $xfer += $output->writeString($this->nodeName);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->executionUnit !== null) {
+      $xfer += $output->writeFieldBegin('executionUnit', TType::I32, 4);
+      $xfer += $output->writeI32($this->executionUnit);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->executionUnitData !== null) {
+      $xfer += $output->writeFieldBegin('executionUnitData', TType::STRING, 5);
+      $xfer += $output->writeString($this->executionUnitData);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->nodeInputs !== null) {
       if (!is_array($this->nodeInputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('nodeInputs', TType::LST, 4);
+      $xfer += $output->writeFieldBegin('nodeInputs', TType::LST, 6);
       {
         $output->writeListBegin(TType::STRUCT, count($this->nodeInputs));
         {
@@ -3102,7 +3153,7 @@ class WorkflowNodeDetails {
       if (!is_array($this->nodeOutputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('nodeOutputs', TType::LST, 5);
+      $xfer += $output->writeFieldBegin('nodeOutputs', TType::LST, 7);
       {
         $output->writeListBegin(TType::STRUCT, count($this->nodeOutputs));
         {
@@ -3119,7 +3170,7 @@ class WorkflowNodeDetails {
       if (!is_object($this->workflowNodeStatus)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('workflowNodeStatus', TType::STRUCT, 6);
+      $xfer += $output->writeFieldBegin('workflowNodeStatus', TType::STRUCT, 8);
       $xfer += $this->workflowNodeStatus->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -3127,7 +3178,7 @@ class WorkflowNodeDetails {
       if (!is_array($this->taskDetailsList)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('taskDetailsList', TType::LST, 7);
+      $xfer += $output->writeFieldBegin('taskDetailsList', TType::LST, 9);
       {
         $output->writeListBegin(TType::STRUCT, count($this->taskDetailsList));
         {
@@ -3144,7 +3195,7 @@ class WorkflowNodeDetails {
       if (!is_array($this->errors)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('errors', TType::LST, 8);
+      $xfer += $output->writeFieldBegin('errors', TType::LST, 10);
       {
         $output->writeListBegin(TType::STRUCT, count($this->errors));
         {

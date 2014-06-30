@@ -24,11 +24,14 @@ package org.apache.aiaravata.application.catalog.data.impl;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ApplicationDeployment;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 
 public class ApplicationDeploymentImpl implements ApplicationDeployment {
+    private final static Logger logger = LoggerFactory.getLogger(ApplicationDeploymentImpl.class);
 
     @Override
     public String addApplicationDeployment(ApplicationDeploymentDescription deploymentDescription) throws AppCatalogException {

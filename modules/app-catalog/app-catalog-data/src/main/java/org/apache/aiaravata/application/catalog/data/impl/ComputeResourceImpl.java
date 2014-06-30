@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ComputeResourceImpl implements ComputeResource {
-    private final static Logger logger = LoggerFactory.getLogger(ComputeResource.class);
+    private final static Logger logger = LoggerFactory.getLogger(ComputeResourceImpl.class);
 
     @Override
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
@@ -345,61 +345,262 @@ public class ComputeResourceImpl implements ComputeResource {
 
     @Override
     public ComputeResourceDescription getComputeResource(String resourceId) throws AppCatalogException {
-        return null;
+        try {
+            ComputeHostResource resource = new ComputeHostResource();
+            ComputeHostResource computeResource = (ComputeHostResource)resource.get(resourceId);
+            return AppCatalogThriftConversion.getComputeHostDescription(computeResource);
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
     public List<ComputeResourceDescription> getComputeResourceList(Map<String, String> filters) throws AppCatalogException {
+        try {
+            ComputeHostResource resource = new ComputeHostResource();
+            for (String fieldName : filters.keySet() ){
+                if (fieldName.equals(AbstractResource.ComputeResourceConstants.HOST_NAME)){
+                    List<Resource> resources = resource.get(AbstractResource.ComputeResourceConstants.HOST_NAME, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getComputeDescriptionList(resources);
+                    }
+                }else if (fieldName.equals(AbstractResource.ComputeResourceConstants.PREFERED_SUBMISSION_PROTOCOL)){
+                    List<Resource> resources = resource.get(AbstractResource.ComputeResourceConstants.PREFERED_SUBMISSION_PROTOCOL, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getComputeDescriptionList(resources);
+                    }
+                }else {
+                    logger.error("Unsupported field name for compute resource.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported field name for compute resource.");
+                }
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource list...", e);
+            throw new AppCatalogException(e);
+        }
         return null;
     }
 
     @Override
     public GSISSHJobSubmission getGSISSHJobSubmission(String submissionId) throws AppCatalogException {
-        return null;
+        try {
+            GSISSHSubmissionResource resource = new GSISSHSubmissionResource();
+            GSISSHSubmissionResource submissionResource = (GSISSHSubmissionResource)resource.get(submissionId);
+            return AppCatalogThriftConversion.getGSISSHSubmissionDescription(submissionResource);
+        }catch (Exception e){
+            logger.error("Error while retrieving GSISSH Job Submission...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
     public List<GSISSHJobSubmission> getGSISSHJobSubmissionList(Map<String, String> filters) throws AppCatalogException {
+        try {
+            GSISSHSubmissionResource resource = new GSISSHSubmissionResource();
+            for (String fieldName : filters.keySet() ){
+                if (fieldName.equals(AbstractResource.GSISSHSubmissionConstants.RESOURCE_ID)){
+                    List<Resource> resources = resource.get(AbstractResource.GSISSHSubmissionConstants.RESOURCE_ID, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getGSISSHSubmissionList(resources);
+                    }
+                }else if (fieldName.equals(AbstractResource.GSISSHSubmissionConstants.RESOURCE_JOB_MANAGER)){
+                    List<Resource> resources = resource.get(AbstractResource.GSISSHSubmissionConstants.RESOURCE_JOB_MANAGER, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getGSISSHSubmissionList(resources);
+                    }
+                }else {
+                    logger.error("Unsupported field name for GSISSH Submission.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported field name for GSISSH Submission.");
+                }
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving GSISSH Submission list...", e);
+            throw new AppCatalogException(e);
+        }
         return null;
     }
 
     @Override
     public GlobusJobSubmission getGlobusJobSubmission(String submissionId) throws AppCatalogException {
-        return null;
+        try {
+            GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
+            GlobusJobSubmissionResource submissionResource = (GlobusJobSubmissionResource)resource.get(submissionId);
+            return AppCatalogThriftConversion.getGlobusJobSubmissionDescription(submissionResource);
+        }catch (Exception e){
+            logger.error("Error while retrieving Globus Job Submission...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
     public List<GlobusJobSubmission> getGlobusJobSubmissionList(Map<String, String> filters) throws AppCatalogException {
+        try {
+            GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
+            for (String fieldName : filters.keySet() ){
+                if (fieldName.equals(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_ID)){
+                    List<Resource> resources = resource.get(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_ID, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getGlobusSubmissionList(resources);
+                    }
+                }else if (fieldName.equals(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER)){
+                    List<Resource> resources = resource.get(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getGlobusSubmissionList(resources);
+                    }
+                }else if (fieldName.equals(AbstractResource.GlobusJobSubmissionConstants.SECURITY_PROTOCAL)){
+                    List<Resource> resources = resource.get(AbstractResource.GlobusJobSubmissionConstants.SECURITY_PROTOCAL, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getGlobusSubmissionList(resources);
+                    }
+                }else {
+                    logger.error("Unsupported field name for Globus Submission.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported field name for Globus Submission.");
+                }
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving Globus Submission list...", e);
+            throw new AppCatalogException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public SSHJobSubmission getSSHJobSubmission(String submissionId) throws AppCatalogException {
+        try {
+            SSHSubmissionResource resource = new SSHSubmissionResource();
+            SSHSubmissionResource submissionResource = (SSHSubmissionResource)resource.get(submissionId);
+            return AppCatalogThriftConversion.getSSHJobSubmissionDescription(submissionResource);
+        }catch (Exception e){
+            logger.error("Error while retrieving SSH Job Submission...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public List<SSHJobSubmission> getSSHJobSubmissionList(Map<String, String> filters) throws AppCatalogException {
+        try {
+            SSHSubmissionResource resource = new SSHSubmissionResource();
+            for (String fieldName : filters.keySet() ){
+                if (fieldName.equals(AbstractResource.SSHSubmissionConstants.RESOURCE_ID)){
+                    List<Resource> resources = resource.get(AbstractResource.SSHSubmissionConstants.RESOURCE_ID, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getSSHSubmissionList(resources);
+                    }
+                }else if (fieldName.equals(AbstractResource.SSHSubmissionConstants.RESOURCE_JOB_MANAGER)){
+                    List<Resource> resources = resource.get(AbstractResource.SSHSubmissionConstants.RESOURCE_JOB_MANAGER, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getSSHSubmissionList(resources);
+                    }
+                }else {
+                    logger.error("Unsupported field name for SSH Submission.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported field name for SSH Submission.");
+                }
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving SSH Submission list...", e);
+            throw new AppCatalogException(e);
+        }
         return null;
     }
 
     @Override
     public SCPDataMovement getSCPDataMovement(String dataMoveId) throws AppCatalogException {
-        return null;
+        try {
+            SCPDataMovementResource resource = new SCPDataMovementResource();
+            SCPDataMovementResource dataMovementResource = (SCPDataMovementResource)resource.get(dataMoveId);
+            return AppCatalogThriftConversion.getSCPDataMovementDescription(dataMovementResource);
+        }catch (Exception e){
+            logger.error("Error while retrieving SCP Data Movement...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
     public List<SCPDataMovement> getSCPDataMovementList(Map<String, String> filters) throws AppCatalogException {
+        try {
+            SCPDataMovementResource resource = new SCPDataMovementResource();
+            for (String fieldName : filters.keySet() ){
+                if (fieldName.equals(AbstractResource.SCPDataMovementConstants.RESOURCE_ID)){
+                    List<Resource> resources = resource.get(AbstractResource.SCPDataMovementConstants.RESOURCE_ID, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getSCPDataMovementList(resources);
+                    }
+                }else if (fieldName.equals(AbstractResource.SCPDataMovementConstants.SECURITY_PROTOCOL)){
+                    List<Resource> resources = resource.get(AbstractResource.SCPDataMovementConstants.SECURITY_PROTOCOL, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getSCPDataMovementList(resources);
+                    }
+                }else {
+                    logger.error("Unsupported field name for SCP Data movement.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported field name for SCP Data movement.");
+                }
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving SCP Data movement list...", e);
+            throw new AppCatalogException(e);
+        }
         return null;
     }
 
     @Override
     public GridFTPDataMovement getGridFTPDataMovement(String dataMoveId) throws AppCatalogException {
-        return null;
+        try {
+            GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
+            GridFTPDataMovementResource dataMovementResource = (GridFTPDataMovementResource)resource.get(dataMoveId);
+            return AppCatalogThriftConversion.getGridFTPDataMovementDescription(dataMovementResource);
+        }catch (Exception e){
+            logger.error("Error while retrieving Grid FTP Data Movement...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
     public List<GridFTPDataMovement> getGridFTPDataMovementList(Map<String, String> filters) throws AppCatalogException {
+        try {
+            GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
+            for (String fieldName : filters.keySet() ){
+                if (fieldName.equals(AbstractResource.GridFTPDataMovementConstants.RESOURCE_ID)){
+                    List<Resource> resources = resource.get(AbstractResource.GridFTPDataMovementConstants.RESOURCE_ID, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getGridFTPDataMovementList(resources);
+                    }
+                }else if (fieldName.equals(AbstractResource.GridFTPDataMovementConstants.SECURITY_PROTOCOL)){
+                    List<Resource> resources = resource.get(AbstractResource.GridFTPDataMovementConstants.SECURITY_PROTOCOL, filters.get(fieldName));
+                    if (resources != null && !resources.isEmpty()){
+                        return AppCatalogThriftConversion.getGridFTPDataMovementList(resources);
+                    }
+                }else {
+                    logger.error("Unsupported field name for GridFTP Data movement.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported field name for GridFTP Data movement.");
+                }
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving GridFTP Data movement list...", e);
+            throw new AppCatalogException(e);
+        }
         return null;
     }
 
     @Override
     public boolean isComputeResourceExists(String resourceId) throws AppCatalogException {
-        return false;
+        try {
+            ComputeHostResource resource = new ComputeHostResource();
+            return resource.isExists(resourceId);
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
     public void removeComputeResource(String resourceId) throws AppCatalogException {
-
+        try {
+            ComputeHostResource resource = new ComputeHostResource();
+            resource.remove(resourceId);
+        }catch (Exception e){
+            logger.error("Error while removing compute resource...", e);
+            throw new AppCatalogException(e);
+        }
     }
 }
