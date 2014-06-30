@@ -34,8 +34,6 @@ public class ComputeResource implements Serializable {
     private String hostName;
     @Column(name = "DESCRIPTION")
     private String description;
-    @Column(name = "SCRATCH_LOCATION")
-    private String scratchLocation;
     @Column(name = "PREFERRED_JOB_SUBMISSION_PROTOCOL")
     private String preferredJobSubProtocol;
 
@@ -61,14 +59,6 @@ public class ComputeResource implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getScratchLocation() {
-        return scratchLocation;
-    }
-
-    public void setScratchLocation(String scratchLocation) {
-        this.scratchLocation = scratchLocation;
     }
 
     public String getPreferredJobSubProtocol() {

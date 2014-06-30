@@ -142,6 +142,13 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a GlobusJobSubmission.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GlobusJobSubmission.");
                 }
+            case GLOBUS_GK_ENDPOINT:
+                if (o instanceof GlobusGKEndpoint){
+                    return createGlobusEndpoint((GlobusGKEndpoint) o);
+                }else {
+                    logger.error("Object should be a GlobusJobSubmission.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GlobusJobSubmission.");
+                }
             case SSH_SUBMISSION:
                 if (o instanceof SSHSubmission){
                     return createSSHSubmission((SSHSubmission) o);
@@ -258,7 +265,6 @@ public class AppCatalogJPAUtils {
         hostResource.setResoureId(o.getResourceID());
         hostResource.setHostName(o.getHostName());
         hostResource.setDescription(o.getDescription());
-        hostResource.setScratchLocation(o.getScratchLocation());
         hostResource.setPreferredJobSubmissionProtocol(o.getPreferredJobSubProtocol());
         return hostResource;
     }
@@ -323,6 +329,14 @@ public class AppCatalogJPAUtils {
         resource.setSecurityProtocol(o.getSecurityProtocol());
         resource.setGlobusEP(o.getGlobusEP());
         resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        return resource;
+    }
+
+    private static Resource createGlobusEndpoint(GlobusGKEndpoint o) {
+        GlobusGKEndpointResource resource = new GlobusGKEndpointResource();
+        resource.setSubmissionID(o.getSubmissionID());
+        resource.setEndpoint(o.getEndpoint());
+        resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshJobSubmission()));
         return resource;
     }
 
