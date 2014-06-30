@@ -211,14 +211,13 @@ public class SSHSubmissionResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
+            ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
             if (existingSSHSubmission != null) {
                 existingSSHSubmission.setSubmissionID(submissionID);
                 existingSSHSubmission.setResourceID(resourceID);
                 existingSSHSubmission.setSshPort(sshPort);
                 existingSSHSubmission.setResourceJobManager(resourceJobManager);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingSSHSubmission.setComputeResource(computeResource);
-
                 em.merge(existingSSHSubmission);
             } else {
                 SSHSubmission sshSubmission = new SSHSubmission();
@@ -226,7 +225,6 @@ public class SSHSubmissionResource extends AbstractResource {
                 sshSubmission.setSubmissionID(submissionID);
                 sshSubmission.setSshPort(sshPort);
                 sshSubmission.setResourceJobManager(resourceJobManager);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 sshSubmission.setComputeResource(computeResource);
                 em.persist(sshSubmission);
             }

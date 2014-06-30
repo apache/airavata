@@ -211,7 +211,6 @@ public abstract class AbstractResource implements Resource {
         public static final String OUTPUT_KEY = "outputKey";
         public static final String OUTPUT_VALUE = "outputVal";
         public static final String DATA_TYPE = "dataType";
-        public static final String METADATA = "metadata";
     }
 
     public final class GatewayProfileConstants {

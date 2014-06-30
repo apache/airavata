@@ -247,7 +247,6 @@ public class GlobusJobSubmissionResource extends AbstractResource {
                 existingGlobusSubmission.setSecurityProtocol(securityProtocol);
                 ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingGlobusSubmission.setComputeResource(computeResource);
-
                 em.merge(existingGlobusSubmission);
             } else {
                 GlobusJobSubmission globusJobSubmission = new GlobusJobSubmission();

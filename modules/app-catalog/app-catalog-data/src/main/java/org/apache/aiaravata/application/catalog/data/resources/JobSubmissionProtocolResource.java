@@ -235,22 +235,19 @@ public class JobSubmissionProtocolResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
+            ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
             if (existingJobSubProtocol != null) {
                 existingJobSubProtocol.setJobType(jobType);
                 existingJobSubProtocol.setSubmissionID(submissionID);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingJobSubProtocol.setComputeResource(computeResource);
                 existingJobSubProtocol.setResourceID(resourceID);
-
                 em.merge(existingJobSubProtocol);
             } else {
                 JobSubmissionProtocol jobSubmissionProtocol = new JobSubmissionProtocol();
                 jobSubmissionProtocol.setJobType(jobType);
                 jobSubmissionProtocol.setSubmissionID(submissionID);
                 jobSubmissionProtocol.setResourceID(resourceID);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 jobSubmissionProtocol.setComputeResource(computeResource);
-
                 em.persist(jobSubmissionProtocol);
             }
             em.getTransaction().commit();

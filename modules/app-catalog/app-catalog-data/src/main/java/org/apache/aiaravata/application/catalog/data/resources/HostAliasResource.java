@@ -209,18 +209,16 @@ public class HostAliasResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
+            ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
             if (existingHostAlias !=  null){
                 existingHostAlias.setAlias(alias);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 existingHostAlias.setComputeResource(computeResource);
                 existingHostAlias.setResourceID(resourceID);
-
                 em.merge(existingHostAlias);
             }else {
                 HostAlias hostAlias = new HostAlias();
                 hostAlias.setAlias(alias);
                 hostAlias.setResourceID(resourceID);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
                 hostAlias.setComputeResource(computeResource);
 
                 em.persist(hostAlias);

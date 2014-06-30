@@ -218,20 +218,17 @@ public class GSISSHPostJobCommandResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
+            GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
             if (existingPostJobCommand !=  null){
                 existingPostJobCommand.setSubmissionID(submissionID);
-                GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
                 existingPostJobCommand.setCommand(command);
                 existingPostJobCommand.setGsisshSubmission(gsisshSubmission);
-
                 em.merge(existingPostJobCommand);
             }else {
                 GSISSHPostJobCommand gsisshPostJobCommand = new GSISSHPostJobCommand();
                 gsisshPostJobCommand.setSubmissionID(submissionID);
-                GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
-                existingPostJobCommand.setCommand(command);
-                existingPostJobCommand.setGsisshSubmission(gsisshSubmission);
-
+                gsisshPostJobCommand.setCommand(command);
+                gsisshPostJobCommand.setGsisshSubmission(gsisshSubmission);
                 em.persist(gsisshPostJobCommand);
             }
             em.getTransaction().commit();

@@ -217,20 +217,17 @@ public class GSISSHPreJobCommandResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
+            GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
             if (existingGSIsshPreJobCommand !=  null){
                 existingGSIsshPreJobCommand.setSubmissionID(submissionID);
-                GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
                 existingGSIsshPreJobCommand.setCommand(command);
                 existingGSIsshPreJobCommand.setGsisshSubmission(gsisshSubmission);
-
                 em.merge(existingGSIsshPreJobCommand);
             }else {
                 GSISSHPreJobCommand gsisshPreJobCommand = new GSISSHPreJobCommand();
                 gsisshPreJobCommand.setSubmissionID(submissionID);
-                GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
-                existingGSIsshPreJobCommand.setCommand(command);
-                existingGSIsshPreJobCommand.setGsisshSubmission(gsisshSubmission);
-
+                gsisshPreJobCommand.setCommand(command);
+                gsisshPreJobCommand.setGsisshSubmission(gsisshSubmission);
                 em.persist(gsisshPreJobCommand);
             }
             em.getTransaction().commit();

@@ -219,7 +219,6 @@ public class LibraryPrepandPathResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-
             ApplicationDeployment deployment = em.find(ApplicationDeployment.class, deploymentId);
             if (existigPrepPath !=  null){
                 existigPrepPath.setValue(value);
