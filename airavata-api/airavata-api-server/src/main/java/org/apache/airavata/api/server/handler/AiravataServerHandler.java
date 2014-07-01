@@ -34,7 +34,11 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
@@ -1159,7 +1163,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      * Returns a server-side generated airavata appModule globally unique identifier.
      */
     @Override
-    public String registerAppicationModule(ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String registerApplicationModule(ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
@@ -1171,7 +1175,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      * Returns a application Module Object.
      */
     @Override
-    public ApplicationModule getAppicationModule(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public ApplicationModule getApplicationModule(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return null;
     }
 
@@ -1184,7 +1188,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      * Returns a success/failure of the update.
      */
     @Override
-    public boolean updateAppicationModule(String appModuleId, ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return false;
     }
 
@@ -1196,8 +1200,140 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteAppicationModule(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public boolean deleteApplicationModule(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return false;
+    }
+
+    /**
+     * Register a Application Deployment.
+     *
+     * @param applicationDeployment@return appModuleId
+     *                                     Returns a server-side generated airavata appModule globally unique identifier.
+     */
+    @Override
+    public String registerApplicationDeployment(ApplicationDeploymentDescription applicationDeployment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Fetch a Application Deployment.
+     *
+     * @param appDeploymentId The identifier for the requested application module
+     * @return applicationDeployment
+     * Returns a application Deployment Object.
+     */
+    @Override
+    public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Update a Application Deployment.
+     *
+     * @param appDeploymentId       The identifier for the requested application deployment to be updated.
+     * @param applicationDeployment
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    public boolean updateApplicationDeployment(String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Delete a Application deployment.
+     *
+     * @param appDeploymentId The identifier for the requested application deployment to be deleted.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteApplicationDeployment(String appDeploymentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Fetch a list of Deployed Compute Hosts.
+     *
+     * @param appModuleId The identifier for the requested application module
+     * @return list<string>
+     * Returns a list of Deployed Resources.
+     */
+    @Override
+    public List<String> getAppModuleDeployedResources(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Register a Application Interface.
+     *
+     * @param applicationInterface@return appInterfaceId
+     *                                    Returns a server-side generated airavata application interface globally unique identifier.
+     */
+    @Override
+    public String registerApplicationInterface(ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Fetch a Application Interface.
+     *
+     * @param appInterfaceId The identifier for the requested application module
+     * @return applicationInterface
+     * Returns a application Interface Object.
+     */
+    @Override
+    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Update a Application Interface.
+     *
+     * @param appInterfaceId       The identifier for the requested application deployment to be updated.
+     * @param applicationInterface
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    public boolean updateApplicationInterface(String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Delete a Application Interface.
+     *
+     * @param appInterfaceId The identifier for the requested application interface to be deleted.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteApplicationInterface(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Fetch the list of Application Inputs.
+     *
+     * @param appInterfaceId The identifier for the requested application interface
+     * @return list<applicationInterfaceModel.InputDataObjectType>
+     * Returns a list of application inputs.
+     */
+    @Override
+    public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Fetch the list of Application Outputs.
+     *
+     * @param appInterfaceId The identifier for the requested application interface
+     * @return list<applicationInterfaceModel.OutputDataObjectType>
+     * Returns a list of application outputs.
+     */
+    @Override
+    public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
     }
 
 }

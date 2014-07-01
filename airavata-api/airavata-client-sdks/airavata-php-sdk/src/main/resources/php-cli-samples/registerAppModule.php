@@ -66,7 +66,7 @@ try
         $appModule->appModuleVersion = $appModuleVersion;
         $appModule->appModuleDescription = $appModuleDescription;
 
-        $appModuleId = $airavataclient->registerAppicationModule($appModule);
+        $appModuleId = $airavataclient->registerApplicationModule($appModule);
 
         if ($appModuleId)
         {

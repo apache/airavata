@@ -527,7 +527,7 @@ service Airavata {
  *  are really a suite of applications or encompass an ecosystem. For instance, Amber is referred to dozens of binaries.
  *  WRF is referred for an ecosystem of applications. In this context, we refer to module as a single binary.
  *
- * Note: A module has to be defined before a deployment can be registered. .
+ * Note: A module has to be defined before a deployment can be registered.
  *
 */
 
@@ -542,7 +542,7 @@ service Airavata {
    *
    *
   */
-  string registerAppicationModule(1: required applicationDeploymentModel.ApplicationModule applicationModule)
+  string registerApplicationModule(1: required applicationDeploymentModel.ApplicationModule applicationModule)
     	throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.AiravataClientException ace,
               3: airavataErrors.AiravataSystemException ase)
@@ -558,7 +558,7 @@ service Airavata {
    *
    *
   */
-  applicationDeploymentModel.ApplicationModule getAppicationModule(1: required string appModuleId)
+  applicationDeploymentModel.ApplicationModule getApplicationModule(1: required string appModuleId)
       	throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
@@ -577,7 +577,7 @@ service Airavata {
    *
    *
   */
-  bool updateAppicationModule(1: required string appModuleId,
+  bool updateApplicationModule(1: required string appModuleId,
             2: required applicationDeploymentModel.ApplicationModule applicationModule)
       	throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
@@ -594,9 +594,201 @@ service Airavata {
    *
    *
   */
-  bool deleteAppicationModule(1: required string appModuleId)
+  bool deleteApplicationModule(1: required string appModuleId)
          	throws (1: airavataErrors.InvalidRequestException ire,
                    2: airavataErrors.AiravataClientException ace,
                    3: airavataErrors.AiravataSystemException ase)
+
+/*
+ * Application Deployment registers a deployment of a application module on a compute resource
+ *
+*/
+
+  /**
+   * Register a Application Deployment.
+   *
+   * @param applicationModule
+   *    Application Module Object created from the datamodel.
+   *
+   * @return appDeploymentId
+   *   Returns a server-side generated airavata appDeployment globally unique identifier.
+   *
+   *
+  */
+  string registerApplicationDeployment(1: required applicationDeploymentModel.ApplicationDeploymentDescription applicationDeployment)
+    	throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch a Application Deployment.
+   *
+   * @param appDeploymentId
+   *   The identifier for the requested application module
+   *
+   * @return applicationDeployment
+   *   Returns a application Deployment Object.
+   *
+   *
+  */
+  applicationDeploymentModel.ApplicationDeploymentDescription getApplicationDeployment(1: required string appDeploymentId)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Update a Application Deployment.
+   *
+   * @param appDeploymentId
+   *   The identifier for the requested application deployment to be updated.
+   *
+   * @param appDeployment
+   *    Application Deployment Object created from the datamodel.
+   *
+   * @return status
+   *   Returns a success/failure of the update.
+   *
+   *
+  */
+  bool updateApplicationDeployment(1: required string appDeploymentId,
+            2: required applicationDeploymentModel.ApplicationDeploymentDescription applicationDeployment)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Delete a Application deployment.
+   *
+   * @param appDeploymentId
+   *   The identifier for the requested application deployment to be deleted.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+   *
+  */
+  bool deleteApplicationDeployment(1: required string appDeploymentId)
+         	throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch a list of Deployed Compute Hosts.
+   *
+   * @param appModuleId
+   *   The identifier for the requested application module
+   *
+   * @return list<string>
+   *   Returns a list of Deployed Resources.
+   *
+  */
+  list<string> getAppModuleDeployedResources(1: required string appModuleId)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+/*
+ * Application Interface
+ *
+*/
+
+  /**
+   * Register a Application Interface.
+   *
+   * @param applicationModule
+   *    Application Module Object created from the datamodel.
+   *
+   * @return appInterfaceId
+   *   Returns a server-side generated airavata application interface globally unique identifier.
+   *
+   *
+  */
+  string registerApplicationInterface(1: required applicationInterfaceModel.ApplicationInterfaceDescription
+                                            applicationInterface)
+    	throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch a Application Interface.
+   *
+   * @param appInterfaceId
+   *   The identifier for the requested application module
+   *
+   * @return applicationInterface
+   *   Returns a application Interface Object.
+   *
+   *
+  */
+  applicationInterfaceModel.ApplicationInterfaceDescription getApplicationInterface(1: required string appInterfaceId)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Update a Application Interface.
+   *
+   * @param appInterfaceId
+   *   The identifier for the requested application deployment to be updated.
+   *
+   * @param appInterface
+   *    Application Interface Object created from the datamodel.
+   *
+   * @return status
+   *   Returns a success/failure of the update.
+   *
+   *
+  */
+  bool updateApplicationInterface(1: required string appInterfaceId,
+            2: required applicationInterfaceModel.ApplicationInterfaceDescription applicationInterface)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Delete a Application Interface.
+   *
+   * @param appInterfaceId
+   *   The identifier for the requested application interface to be deleted.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+   *
+  */
+  bool deleteApplicationInterface(1: required string appInterfaceId)
+         	throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch the list of Application Inputs.
+   *
+   * @param appInterfaceId
+   *   The identifier for the requested application interface
+   *
+   * @return list<applicationInterfaceModel.InputDataObjectType>
+   *   Returns a list of application inputs.
+   *
+  */
+  list<applicationInterfaceModel.InputDataObjectType> getApplicationInputs(1: required string appInterfaceId)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch the list of Application Outputs.
+   *
+   * @param appInterfaceId
+   *   The identifier for the requested application interface
+   *
+   * @return list<applicationInterfaceModel.OutputDataObjectType>
+   *   Returns a list of application outputs.
+   *
+  */
+  list<applicationInterfaceModel.OutputDataObjectType> getApplicationOutputs(1: required string appInterfaceId)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
 
 }

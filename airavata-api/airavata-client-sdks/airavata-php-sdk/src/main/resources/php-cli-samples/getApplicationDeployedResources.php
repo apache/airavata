@@ -43,34 +43,49 @@ $transport->open();
 $airavataclient = new AiravataClient($protocol);
 
 
-if (count($argv) < 2) {
-    exit("Please provide an appModuleID. \n");
+
+if ($argc != 2)
+{
+    exit("php getApplicationDeployedResources.php <appModuleID> \n");
 }
 
 $appModuleId = $argv[1];
 
-$applicationModule = get_appModule($appModuleId);
+$deployedresources = get_application_deployed_resources($appModuleId);
 
-var_dump($applicationModule);
+if (empty($deployedresources)) {
+    echo "deployment returned an empty list \n";
+} else {
+    foreach ($deployedresources as $resource) {
+        echo "$resource->type: $resource->value      <br><br>";
+    }
+}
+
+var_dump($deployedresources);
+
 
 $transport->close();
 
 /**
- * Get the appModule with the given ID
+ * Get the list of deployed hosts with the given ID
  * @param $appModuleId
  * @return null
  */
-function get_appModule($appModuleId)
+function get_application_deployed_resources($appModuleId)
 {
     global $airavataclient;
 
     try
     {
-        return $airavataclient->getApplicationDeployment($appModuleId);
+        return $airavataclient->getAppModuleDeployedResources($appModuleId);
     }
     catch (InvalidRequestException $ire)
     {
         echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+    }
+    catch (ExperimentNotFoundException $enf)
+    {
+        echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
     }
     catch (AiravataClientException $ace)
     {

@@ -142,24 +142,79 @@ class AiravataHandler : virtual public AiravataIf {
     printf("terminateExperiment\n");
   }
 
-  void registerAppicationModule(std::string& _return, const  ::ApplicationModule& applicationModule) {
+  void registerApplicationModule(std::string& _return, const  ::ApplicationModule& applicationModule) {
     // Your implementation goes here
-    printf("registerAppicationModule\n");
+    printf("registerApplicationModule\n");
   }
 
-  void getAppicationModule( ::ApplicationModule& _return, const std::string& appModuleId) {
+  void getApplicationModule( ::ApplicationModule& _return, const std::string& appModuleId) {
     // Your implementation goes here
-    printf("getAppicationModule\n");
+    printf("getApplicationModule\n");
   }
 
-  bool updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule) {
+  bool updateApplicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule) {
     // Your implementation goes here
-    printf("updateAppicationModule\n");
+    printf("updateApplicationModule\n");
   }
 
-  bool deleteAppicationModule(const std::string& appModuleId) {
+  bool deleteApplicationModule(const std::string& appModuleId) {
     // Your implementation goes here
-    printf("deleteAppicationModule\n");
+    printf("deleteApplicationModule\n");
+  }
+
+  void registerApplicationDeployment(std::string& _return, const  ::ApplicationDeploymentDescription& applicationDeployment) {
+    // Your implementation goes here
+    printf("registerApplicationDeployment\n");
+  }
+
+  void getApplicationDeployment( ::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId) {
+    // Your implementation goes here
+    printf("getApplicationDeployment\n");
+  }
+
+  bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::ApplicationDeploymentDescription& applicationDeployment) {
+    // Your implementation goes here
+    printf("updateApplicationDeployment\n");
+  }
+
+  bool deleteApplicationDeployment(const std::string& appDeploymentId) {
+    // Your implementation goes here
+    printf("deleteApplicationDeployment\n");
+  }
+
+  void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId) {
+    // Your implementation goes here
+    printf("getAppModuleDeployedResources\n");
+  }
+
+  void registerApplicationInterface(std::string& _return, const  ::ApplicationInterfaceDescription& applicationInterface) {
+    // Your implementation goes here
+    printf("registerApplicationInterface\n");
+  }
+
+  void getApplicationInterface( ::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId) {
+    // Your implementation goes here
+    printf("getApplicationInterface\n");
+  }
+
+  bool updateApplicationInterface(const std::string& appInterfaceId, const  ::ApplicationInterfaceDescription& applicationInterface) {
+    // Your implementation goes here
+    printf("updateApplicationInterface\n");
+  }
+
+  bool deleteApplicationInterface(const std::string& appInterfaceId) {
+    // Your implementation goes here
+    printf("deleteApplicationInterface\n");
+  }
+
+  void getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId) {
+    // Your implementation goes here
+    printf("getApplicationInputs\n");
+  }
+
+  void getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return, const std::string& appInterfaceId) {
+    // Your implementation goes here
+    printf("getApplicationOutputs\n");
   }
 
 };
