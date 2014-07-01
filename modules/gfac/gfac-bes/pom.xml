@@ -48,10 +48,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk16</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.jglobus</groupId>
             <artifactId>myproxy</artifactId>
             <version>${jglobus.version}</version>
@@ -79,6 +75,12 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-credential-store</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.bouncycastle</groupId>
+            		<artifactId>bcprov-jdk16</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
@@ -141,19 +143,15 @@
             <artifactId>xmlbeans</artifactId>
             <version>${xmlbeans.version}</version>
         </dependency>
-          <!-- Unicore dependencies -->
+        <!-- Unicore dependencies -->
         <dependency>
             <groupId>eu.unicore</groupId>
-            <artifactId>ogsabes-client</artifactId>
-            <version>1.7.0-rc</version>
+            <artifactId>unicore-client-wrapper</artifactId>
+            <version>1.7.2_1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.santuario</groupId>
                     <artifactId>xmlsec</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk16</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
