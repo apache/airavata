@@ -19,12 +19,9 @@ public class GlobusJobSubmissionResource extends AbstractResource {
 
     private final static Logger logger = LoggerFactory.getLogger(GlobusJobSubmissionResource.class);
 
-    private String resourceID;
     private String submissionID;
     private String resourceJobManager;
     private String securityProtocol;
-
-    private ComputeHostResource computeHostResource;
 
     public void remove(Object identifier) throws AppCatalogException {
         EntityManager em = null;
@@ -87,20 +84,7 @@ public class GlobusJobSubmissionResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GLOBUS_SUBMISSION);
             List results;
-            if (fieldName.equals(GlobusJobSubmissionConstants.RESOURCE_ID)) {
-                generator.setParameter(GlobusJobSubmissionConstants.RESOURCE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GlobusJobSubmission globusJobSubmission = (GlobusJobSubmission) result;
-                        GlobusJobSubmissionResource globusJobSubmissionResource =
-                                (GlobusJobSubmissionResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.GLOBUS_SUBMISSION, globusJobSubmission);
-                        globusSubmissionResourceList.add(globusJobSubmissionResource);
-                    }
-                }
-            }  else if (fieldName.equals(GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER)) {
+            if (fieldName.equals(GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER)) {
                 generator.setParameter(GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -167,18 +151,7 @@ public class GlobusJobSubmissionResource extends AbstractResource {
                         globusSubmissionResourceIDs.add(globusJobSubmission.getSubmissionID());
                     }
                 }
-            } else if (fieldName.equals(GlobusJobSubmissionConstants.RESOURCE_ID)) {
-                generator.setParameter(GlobusJobSubmissionConstants.RESOURCE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GlobusJobSubmission globusJobSubmission = (GlobusJobSubmission) result;
-                        globusSubmissionResourceIDs.add(globusJobSubmission.getSubmissionID());
-                    }
-                }
-            }
-            else if (fieldName.equals(GlobusJobSubmissionConstants.GLOBUS_GATEKEEPER_EP)) {
+            } else if (fieldName.equals(GlobusJobSubmissionConstants.GLOBUS_GATEKEEPER_EP)) {
                 generator.setParameter(GlobusJobSubmissionConstants.GLOBUS_GATEKEEPER_EP, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -242,20 +215,14 @@ public class GlobusJobSubmissionResource extends AbstractResource {
             em.getTransaction().begin();
             if (existingGlobusSubmission != null) {
                 existingGlobusSubmission.setSubmissionID(submissionID);
-                existingGlobusSubmission.setResourceID(resourceID);
                 existingGlobusSubmission.setResourceJobManager(resourceJobManager);
                 existingGlobusSubmission.setSecurityProtocol(securityProtocol);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
-                existingGlobusSubmission.setComputeResource(computeResource);
                 em.merge(existingGlobusSubmission);
             } else {
                 GlobusJobSubmission globusJobSubmission = new GlobusJobSubmission();
-                globusJobSubmission.setResourceID(resourceID);
                 globusJobSubmission.setSubmissionID(submissionID);
                 globusJobSubmission.setSecurityProtocol(securityProtocol);
                 globusJobSubmission.setResourceJobManager(resourceJobManager);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
-                globusJobSubmission.setComputeResource(computeResource);
                 em.persist(globusJobSubmission);
             }
             em.getTransaction().commit();
@@ -293,14 +260,6 @@ public class GlobusJobSubmissionResource extends AbstractResource {
         }
     }
 
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
-    }
-
     public String getSubmissionID() {
         return submissionID;
     }
@@ -325,11 +284,4 @@ public class GlobusJobSubmissionResource extends AbstractResource {
         this.securityProtocol = securityProtocol;
     }
 
-    public ComputeHostResource getComputeHostResource() {
-        return computeHostResource;
-    }
-
-    public void setComputeHostResource(ComputeHostResource computeHostResource) {
-        this.computeHostResource = computeHostResource;
-    }
 }

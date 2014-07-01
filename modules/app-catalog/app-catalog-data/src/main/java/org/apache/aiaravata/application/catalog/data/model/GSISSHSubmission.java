@@ -27,8 +27,6 @@ import java.io.Serializable;
 @Entity
 @Table(name = "GSISSH_SUBMISSION")
 public class GSISSHSubmission implements Serializable {
-    @Column(name = "RESOURCE_ID")
-    private String resourceID;
     @Id
     @Column(name = "SUBMISSION_ID")
     private String submissionID;
@@ -40,18 +38,6 @@ public class GSISSHSubmission implements Serializable {
     private String installedPath;
     @Column(name = "MONITOR_MODE")
     private String monitorMode;
-
-    @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "RESOURCE_ID")
-    private ComputeResource computeResource;
-
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
-    }
 
     public String getSubmissionID() {
         return submissionID;
@@ -93,11 +79,4 @@ public class GSISSHSubmission implements Serializable {
         this.monitorMode = monitorMode;
     }
 
-    public ComputeResource getComputeResource() {
-        return computeResource;
-    }
-
-    public void setComputeResource(ComputeResource computeResource) {
-        this.computeResource = computeResource;
-    }
 }

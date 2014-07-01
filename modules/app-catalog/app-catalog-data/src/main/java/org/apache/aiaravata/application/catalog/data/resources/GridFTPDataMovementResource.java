@@ -86,19 +86,7 @@ public class GridFTPDataMovementResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GRID_FTP_DATAMOVEMENT);
             List results;
-            if (fieldName.equals(GridFTPDataMovementConstants.RESOURCE_ID)) {
-                generator.setParameter(GridFTPDataMovementConstants.RESOURCE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GridFTPDataMovement gridFTPDataMovement = (GridFTPDataMovement) result;
-                        GridFTPDataMovementResource gridFTPDataMovementResource =
-                                (GridFTPDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GRID_FTP_DATAMOVEMENT, gridFTPDataMovement);
-                        gridFTPDataMoveResources.add(gridFTPDataMovementResource);
-                    }
-                }
-            } else if (fieldName.equals(GridFTPDataMovementConstants.SECURITY_PROTOCOL)) {
+            if (fieldName.equals(GridFTPDataMovementConstants.SECURITY_PROTOCOL)) {
                 generator.setParameter(GridFTPDataMovementConstants.SECURITY_PROTOCOL, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -151,26 +139,6 @@ public class GridFTPDataMovementResource extends AbstractResource {
                         gridFTPDataMoveIDs.add(gridFTPDataMovement.getDataMoveID());
                     }
                 }
-            } else if (fieldName.equals(GridFTPDataMovementConstants.RESOURCE_ID)) {
-                generator.setParameter(GridFTPDataMovementConstants.RESOURCE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GridFTPDataMovement gridFTPDataMovement = (GridFTPDataMovement) result;
-                        gridFTPDataMoveIDs.add(gridFTPDataMovement.getDataMoveID());
-                    }
-                }
-            } else if (fieldName.equals(GridFTPDataMovementConstants.SECURITY_PROTOCOL)) {
-                generator.setParameter(GridFTPDataMovementConstants.SECURITY_PROTOCOL, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GridFTPDataMovement gridFTPDataMovement = (GridFTPDataMovement) result;
-                        gridFTPDataMoveIDs.add(gridFTPDataMovement.getDataMoveID());
-                    }
-                }
             } else if (fieldName.equals(GridFTPDataMovementConstants.GRID_FTP_EP)) {
                 generator.setParameter(GridFTPDataMovementConstants.GRID_FTP_EP, value);
                 q = generator.selectQuery(em);
@@ -214,20 +182,14 @@ public class GridFTPDataMovementResource extends AbstractResource {
             em.getTransaction().begin();
             if (existingGridFTPDataMovement != null) {
                 existingGridFTPDataMovement.setDataMoveID(dataMoveID);
-                existingGridFTPDataMovement.setResourceID(resourceID);
                 existingGridFTPDataMovement.setGridFTPEP(gridFTPEP);
                 existingGridFTPDataMovement.setSecurityProtocol(securityProtocol);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
-                existingGridFTPDataMovement.setComputeResource(computeResource);
                 em.merge(existingGridFTPDataMovement);
             } else {
                 GridFTPDataMovement gridFTPDataMovement = new GridFTPDataMovement();
-                gridFTPDataMovement.setResourceID(resourceID);
                 gridFTPDataMovement.setDataMoveID(dataMoveID);
                 gridFTPDataMovement.setGridFTPEP(gridFTPEP);
                 gridFTPDataMovement.setSecurityProtocol(securityProtocol);
-                ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
-                gridFTPDataMovement.setComputeResource(computeResource);
                 em.persist(gridFTPDataMovement);
             }
             em.getTransaction().commit();

@@ -19,14 +19,11 @@ public class GSISSHSubmissionResource extends AbstractResource {
 
     private final static Logger logger = LoggerFactory.getLogger(GSISSHSubmissionResource.class);
 
-    private String resourceID;
     private String submissionID;
     private String resourceJobManager;
     private int sshPort;
     private String installedPath;
     private String monitorMode;
-
-    private ComputeHostResource computeHostResource;
 
     public void remove(Object identifier) throws AppCatalogException {
         EntityManager em = null;
@@ -89,20 +86,7 @@ public class GSISSHSubmissionResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GSISSH_SUBMISSION);
             List results;
-            if (fieldName.equals(GSISSHSubmissionConstants.RESOURCE_ID)) {
-                generator.setParameter(GSISSHSubmissionConstants.RESOURCE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GSISSHSubmission gsisshSubmission = (GSISSHSubmission) result;
-                        GSISSHSubmissionResource gsisshSubmissionResource =
-                                (GSISSHSubmissionResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.GSISSH_SUBMISSION, gsisshSubmission);
-                        gsiSSHSubmissionResourceList.add(gsisshSubmissionResource);
-                    }
-                }
-            } else if (fieldName.equals(GSISSHSubmissionConstants.MONITOR_MODE)) {
+            if (fieldName.equals(GSISSHSubmissionConstants.MONITOR_MODE)) {
                 generator.setParameter(GSISSHSubmissionConstants.MONITOR_MODE, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -235,16 +219,6 @@ public class GSISSHSubmissionResource extends AbstractResource {
                         gsiSSHSubmissionResourceIDs.add(gsisshSubmission.getSubmissionID());
                     }
                 }
-            } else if (fieldName.equals(GSISSHSubmissionConstants.RESOURCE_ID)) {
-                generator.setParameter(GSISSHSubmissionConstants.RESOURCE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        GSISSHSubmission gsisshSubmission = (GSISSHSubmission) result;
-                        gsiSSHSubmissionResourceIDs.add(gsisshSubmission.getSubmissionID());
-                    }
-                }
             } else {
                 em.getTransaction().commit();
                 em.close();
@@ -276,25 +250,20 @@ public class GSISSHSubmissionResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
             if (existingGSISSHSubmission != null) {
                 existingGSISSHSubmission.setSubmissionID(submissionID);
-                existingGSISSHSubmission.setResourceID(resourceID);
                 existingGSISSHSubmission.setSshPort(sshPort);
                 existingGSISSHSubmission.setResourceJobManager(resourceJobManager);
                 existingGSISSHSubmission.setInstalledPath(installedPath);
                 existingGSISSHSubmission.setMonitorMode(monitorMode);
-                existingGSISSHSubmission.setComputeResource(computeResource);
                 em.merge(existingGSISSHSubmission);
             } else {
                 GSISSHSubmission gsisshSubmission = new GSISSHSubmission();
-                gsisshSubmission.setResourceID(resourceID);
                 gsisshSubmission.setSubmissionID(submissionID);
                 gsisshSubmission.setSshPort(sshPort);
                 gsisshSubmission.setResourceJobManager(resourceJobManager);
                 gsisshSubmission.setInstalledPath(installedPath);
                 gsisshSubmission.setMonitorMode(monitorMode);
-                gsisshSubmission.setComputeResource(computeResource);
                 em.persist(gsisshSubmission);
             }
             em.getTransaction().commit();
@@ -331,14 +300,6 @@ public class GSISSHSubmissionResource extends AbstractResource {
                 em.close();
             }
         }
-    }
-
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
     }
 
     public String getSubmissionID() {
@@ -381,11 +342,4 @@ public class GSISSHSubmissionResource extends AbstractResource {
         this.monitorMode = monitorMode;
     }
 
-    public ComputeHostResource getComputeHostResource() {
-        return computeHostResource;
-    }
-
-    public void setComputeHostResource(ComputeHostResource computeHostResource) {
-        this.computeHostResource = computeHostResource;
-    }
 }

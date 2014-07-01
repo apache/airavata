@@ -286,13 +286,11 @@ public class AppCatalogJPAUtils {
 
     private static Resource createGSSISSHSubmission(GSISSHSubmission o) {
         GSISSHSubmissionResource submissionResource = new GSISSHSubmissionResource();
-        submissionResource.setResourceID(o.getResourceID());
         submissionResource.setSubmissionID(o.getSubmissionID());
         submissionResource.setResourceJobManager(o.getResourceJobManager());
         submissionResource.setSshPort(o.getSshPort());
         submissionResource.setInstalledPath(o.getInstalledPath());
         submissionResource.setMonitorMode(o.getMonitorMode());
-        submissionResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
         return submissionResource;
     }
 
@@ -322,11 +320,9 @@ public class AppCatalogJPAUtils {
 
     private static Resource createGlobusJobSubmission(GlobusJobSubmission o) {
         GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
-        resource.setResourceID(o.getResourceID());
         resource.setSubmissionID(o.getSubmissionID());
         resource.setResourceJobManager(o.getResourceJobManager());
         resource.setSecurityProtocol(o.getSecurityProtocol());
-        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
         return resource;
     }
 
@@ -340,31 +336,25 @@ public class AppCatalogJPAUtils {
 
     private static Resource createSSHSubmission(SSHSubmission o) {
         SSHSubmissionResource resource = new SSHSubmissionResource();
-        resource.setResourceID(o.getResourceID());
         resource.setSubmissionID(o.getSubmissionID());
         resource.setResourceJobManager(o.getResourceJobManager());
         resource.setSshPort(o.getSshPort());
-        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
         return resource;
     }
 
     private static Resource createSCPDataMovement(SCPDataMovement o) {
         SCPDataMovementResource resource = new SCPDataMovementResource();
-        resource.setResourceID(o.getResourceID());
         resource.setDataMoveID(o.getDataMoveID());
         resource.setSecurityProtocol(o.getSecurityProtocol());
         resource.setSshPort(o.getSshPort());
-        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
         return resource;
     }
 
     private static Resource createGridFTPDataMovement(GridFTPDataMovement o) {
         GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
-        resource.setResourceID(o.getResourceID());
         resource.setDataMoveID(o.getDataMoveID());
         resource.setSecurityProtocol(o.getSecurityProtocol());
         resource.setGridFTPEP(o.getGridFTPEP());
-        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
         return resource;
     }
 

@@ -120,13 +120,11 @@ public class AppCatalogThriftConversion {
     }
 
 
-    public static GSISSHSubmissionResource getGSISSHSubmission (ComputeHostResource hostResource, GSISSHJobSubmission submission){
+    public static GSISSHSubmissionResource getGSISSHSubmission (GSISSHJobSubmission submission){
         GSISSHSubmissionResource resource = new GSISSHSubmissionResource();
-        resource.setComputeHostResource(hostResource);
         resource.setSubmissionID(submission.getJobSubmissionDataID());
         resource.setMonitorMode(submission.getMonitorMode());
         resource.setInstalledPath(submission.getInstalledPath());
-        resource.setResourceID(hostResource.getResoureId());
         resource.setResourceJobManager(submission.getResourceJobManager().toString());
         resource.setSshPort(submission.getSshPort());
         return resource;
@@ -284,20 +282,16 @@ public class AppCatalogThriftConversion {
         return list;
     }
 
-    public static GlobusJobSubmissionResource getGlobusJobSubmission (ComputeHostResource hostResource, GlobusJobSubmission submission){
+    public static GlobusJobSubmissionResource getGlobusJobSubmission (GlobusJobSubmission submission){
         GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
-        resource.setComputeHostResource(hostResource);
-        resource.setResourceID(hostResource.getResoureId());
         resource.setSubmissionID(submission.getJobSubmissionDataID());
         resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
         resource.setResourceJobManager(submission.getResourceJobManager().toString());
         return resource;
     }
 
-    public static SSHSubmissionResource getSSHJobSubmission (ComputeHostResource hostResource, SSHJobSubmission submission){
+    public static SSHSubmissionResource getSSHJobSubmission (SSHJobSubmission submission){
         SSHSubmissionResource resource = new SSHSubmissionResource();
-        resource.setComputeHostResource(hostResource);
-        resource.setResourceID(hostResource.getResoureId());
         resource.setSubmissionID(submission.getJobSubmissionDataID());
         resource.setResourceJobManager(submission.getResourceJobManager().toString());
         return resource;

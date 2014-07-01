@@ -182,17 +182,13 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public String addSSHJobSubmission(String computeResourceId, SSHJobSubmission sshJobSubmission) throws AppCatalogException {
+    public String addSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
         try {
             SSHSubmissionResource resource = new SSHSubmissionResource();
-            resource.setResourceID(computeResourceId);
-            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
-            String hostName = computeResource.getHostName();
-            hostName = "SSH_" + hostName;
+            String hostName = "SSH";
             resource.setSubmissionID(AppCatalogUtils.getID(hostName));
             resource.setSshPort(resource.getSshPort());
             resource.setResourceJobManager(sshJobSubmission.getResourceJobManager().toString());
-            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
             resource.save();
             sshJobSubmission.setJobSubmissionDataID(resource.getSubmissionID());
             return resource.getSubmissionID();
@@ -219,17 +215,13 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public String addGSISSHJobSubmission(String computeResourceId, GSISSHJobSubmission gsisshJobSubmission) throws AppCatalogException {
+    public String addGSISSHJobSubmission(GSISSHJobSubmission gsisshJobSubmission) throws AppCatalogException {
         try {
             GSISSHSubmissionResource resource = new GSISSHSubmissionResource();
-            resource.setResourceID(computeResourceId);
-            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
-            String hostName = computeResource.getHostName();
-            hostName = "GSISSH" + hostName;
+            String hostName = "GSISSH";
             resource.setSubmissionID(AppCatalogUtils.getID(hostName));
             resource.setSshPort(resource.getSshPort());
             resource.setResourceJobManager(gsisshJobSubmission.getResourceJobManager().toString());
-            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
             resource.setInstalledPath(gsisshJobSubmission.getInstalledPath());
             resource.setMonitorMode(gsisshJobSubmission.getMonitorMode());
             resource.save();
@@ -291,17 +283,13 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public String addGlobusJobSubmission(String computeResourceId, GlobusJobSubmission globusJobSubmission) throws AppCatalogException {
+    public String addGlobusJobSubmission(GlobusJobSubmission globusJobSubmission) throws AppCatalogException {
         try {
             GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
-            resource.setResourceID(computeResourceId);
-            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
-            String hostName = computeResource.getHostName();
-            hostName = "GLOBUS" + hostName;
+            String hostName = "GLOBUS";
             resource.setSubmissionID(AppCatalogUtils.getID(hostName));
             resource.setSecurityProtocol(globusJobSubmission.getSecurityProtocol().toString());
             resource.setResourceJobManager(globusJobSubmission.getResourceJobManager().toString());
-            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
             resource.save();
             globusJobSubmission.setJobSubmissionDataID(resource.getSubmissionID());
             List<String> globusGateKeeperEndPoint = globusJobSubmission.getGlobusGateKeeperEndPoint();
@@ -339,17 +327,13 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public String addScpDataMovement(String computeResourceId, SCPDataMovement scpDataMovement) throws AppCatalogException {
+    public String addScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
         try {
             SCPDataMovementResource resource = new SCPDataMovementResource();
-            resource.setResourceID(computeResourceId);
-            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
-            String hostName = computeResource.getHostName();
-            hostName = "SCP" + hostName;
+            String hostName = "SCP";
             resource.setDataMoveID(AppCatalogUtils.getID(hostName));
             resource.setSecurityProtocol(scpDataMovement.getSecurityProtocol().toString());
             resource.setSshPort(scpDataMovement.getSshPort());
-            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
             resource.save();
             scpDataMovement.setDataMovementDataID(resource.getDataMoveID());
             return resource.getDataMoveID();
@@ -376,16 +360,12 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public String addGridFTPDataMovement(String computeResourceId, GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
+    public String addGridFTPDataMovement(GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
         try {
             GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
-            resource.setResourceID(computeResourceId);
-            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
-            String hostName = computeResource.getHostName();
-            hostName = "SCP" + hostName;
+            String hostName = "GRID_FTP";
             resource.setDataMoveID(AppCatalogUtils.getID(hostName));
             resource.setSecurityProtocol(gridFTPDataMovement.getSecurityProtocol().toString());
-            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
             resource.save();
             gridFTPDataMovement.setDataMovementDataID(resource.getDataMoveID());
 
@@ -478,12 +458,7 @@ public class ComputeResourceImpl implements ComputeResource {
         try {
             GSISSHSubmissionResource resource = new GSISSHSubmissionResource();
             for (String fieldName : filters.keySet() ){
-                if (fieldName.equals(AbstractResource.GSISSHSubmissionConstants.RESOURCE_ID)){
-                    List<Resource> resources = resource.get(AbstractResource.GSISSHSubmissionConstants.RESOURCE_ID, filters.get(fieldName));
-                    if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getGSISSHSubmissionList(resources);
-                    }
-                }else if (fieldName.equals(AbstractResource.GSISSHSubmissionConstants.RESOURCE_JOB_MANAGER)){
+                if (fieldName.equals(AbstractResource.GSISSHSubmissionConstants.RESOURCE_JOB_MANAGER)){
                     List<Resource> resources = resource.get(AbstractResource.GSISSHSubmissionConstants.RESOURCE_JOB_MANAGER, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
                         return AppCatalogThriftConversion.getGSISSHSubmissionList(resources);
@@ -517,12 +492,7 @@ public class ComputeResourceImpl implements ComputeResource {
         try {
             GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
             for (String fieldName : filters.keySet() ){
-                if (fieldName.equals(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_ID)){
-                    List<Resource> resources = resource.get(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_ID, filters.get(fieldName));
-                    if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getGlobusSubmissionList(resources);
-                    }
-                }else if (fieldName.equals(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER)){
+                if (fieldName.equals(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER)){
                     List<Resource> resources = resource.get(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
                         return AppCatalogThriftConversion.getGlobusSubmissionList(resources);
@@ -561,12 +531,7 @@ public class ComputeResourceImpl implements ComputeResource {
         try {
             SSHSubmissionResource resource = new SSHSubmissionResource();
             for (String fieldName : filters.keySet() ){
-                if (fieldName.equals(AbstractResource.SSHSubmissionConstants.RESOURCE_ID)){
-                    List<Resource> resources = resource.get(AbstractResource.SSHSubmissionConstants.RESOURCE_ID, filters.get(fieldName));
-                    if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getSSHSubmissionList(resources);
-                    }
-                }else if (fieldName.equals(AbstractResource.SSHSubmissionConstants.RESOURCE_JOB_MANAGER)){
+               if (fieldName.equals(AbstractResource.SSHSubmissionConstants.RESOURCE_JOB_MANAGER)){
                     List<Resource> resources = resource.get(AbstractResource.SSHSubmissionConstants.RESOURCE_JOB_MANAGER, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
                         return AppCatalogThriftConversion.getSSHSubmissionList(resources);
@@ -600,12 +565,7 @@ public class ComputeResourceImpl implements ComputeResource {
         try {
             SCPDataMovementResource resource = new SCPDataMovementResource();
             for (String fieldName : filters.keySet() ){
-                if (fieldName.equals(AbstractResource.SCPDataMovementConstants.RESOURCE_ID)){
-                    List<Resource> resources = resource.get(AbstractResource.SCPDataMovementConstants.RESOURCE_ID, filters.get(fieldName));
-                    if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getSCPDataMovementList(resources);
-                    }
-                }else if (fieldName.equals(AbstractResource.SCPDataMovementConstants.SECURITY_PROTOCOL)){
+                if (fieldName.equals(AbstractResource.SCPDataMovementConstants.SECURITY_PROTOCOL)){
                     List<Resource> resources = resource.get(AbstractResource.SCPDataMovementConstants.SECURITY_PROTOCOL, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
                         return AppCatalogThriftConversion.getSCPDataMovementList(resources);
@@ -639,12 +599,7 @@ public class ComputeResourceImpl implements ComputeResource {
         try {
             GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
             for (String fieldName : filters.keySet() ){
-                if (fieldName.equals(AbstractResource.GridFTPDataMovementConstants.RESOURCE_ID)){
-                    List<Resource> resources = resource.get(AbstractResource.GridFTPDataMovementConstants.RESOURCE_ID, filters.get(fieldName));
-                    if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getGridFTPDataMovementList(resources);
-                    }
-                }else if (fieldName.equals(AbstractResource.GridFTPDataMovementConstants.SECURITY_PROTOCOL)){
+                if (fieldName.equals(AbstractResource.GridFTPDataMovementConstants.SECURITY_PROTOCOL)){
                     List<Resource> resources = resource.get(AbstractResource.GridFTPDataMovementConstants.SECURITY_PROTOCOL, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
                         return AppCatalogThriftConversion.getGridFTPDataMovementList(resources);

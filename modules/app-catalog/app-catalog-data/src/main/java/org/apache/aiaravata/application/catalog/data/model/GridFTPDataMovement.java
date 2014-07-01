@@ -30,16 +30,10 @@ public class GridFTPDataMovement implements Serializable {
     @Id
     @Column(name = "DATA_MOVE_ID")
     private String dataMoveID;
-    @Column(name = "RESOURCE_ID")
-    private String resourceID;
     @Column(name = "SECURITY_PROTOCOL")
     private String securityProtocol;
     @Column(name = "GRID_FTP_EP")
     private String gridFTPEP;
-
-    @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "RESOURCE_ID")
-    private ComputeResource computeResource;
 
     public String getDataMoveID() {
         return dataMoveID;
@@ -47,14 +41,6 @@ public class GridFTPDataMovement implements Serializable {
 
     public void setDataMoveID(String dataMoveID) {
         this.dataMoveID = dataMoveID;
-    }
-
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
     }
 
     public String getSecurityProtocol() {
@@ -71,13 +57,5 @@ public class GridFTPDataMovement implements Serializable {
 
     public void setGridFTPEP(String gridFTPEP) {
         this.gridFTPEP = gridFTPEP;
-    }
-
-    public ComputeResource getComputeResource() {
-        return computeResource;
-    }
-
-    public void setComputeResource(ComputeResource computeResource) {
-        this.computeResource = computeResource;
     }
 }

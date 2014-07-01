@@ -18,12 +18,9 @@ import java.util.List;
 public class SCPDataMovementResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(SCPDataMovementResource.class);
 
-    private String resourceID;
     private String dataMoveID;
     private String securityProtocol;
     private int sshPort;
-
-    private ComputeHostResource computeHostResource;
 
     public void remove(Object identifier) throws AppCatalogException {
         EntityManager em = null;
@@ -86,19 +83,7 @@ public class SCPDataMovementResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SCP_DATAMOVEMENT);
             List results;
-            if (fieldName.equals(SCPDataMovementConstants.RESOURCE_ID)) {
-                generator.setParameter(SCPDataMovementConstants.RESOURCE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
-                        SCPDataMovementResource scpDataMovementResource =
-                                (SCPDataMovementResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SCP_DATAMOVEMENT, scpDataMovement);
-                        scpDataMoveResources.add(scpDataMovementResource);
-                    }
-                }
-            } else if (fieldName.equals(SCPDataMovementConstants.SSH_PORT)) {
+            if (fieldName.equals(SCPDataMovementConstants.SSH_PORT)) {
                 generator.setParameter(SCPDataMovementConstants.SSH_PORT, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -153,28 +138,8 @@ public class SCPDataMovementResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SCP_DATAMOVEMENT);
             List results;
-            if (fieldName.equals(SCPDataMovementConstants.DATA_MOVE_ID)) {
-                generator.setParameter(SCPDataMovementConstants.DATA_MOVE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
-                        scpDataMoveIDs.add(scpDataMovement.getDataMoveID());
-                    }
-                }
-            }else if (fieldName.equals(SCPDataMovementConstants.SSH_PORT)) {
+            if (fieldName.equals(SCPDataMovementConstants.SSH_PORT)) {
                 generator.setParameter(SCPDataMovementConstants.SSH_PORT, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        SCPDataMovement scpDataMovement = (SCPDataMovement) result;
-                        scpDataMoveIDs.add(scpDataMovement.getDataMoveID());
-                    }
-                }
-            }else if (fieldName.equals(SCPDataMovementConstants.RESOURCE_ID)) {
-                generator.setParameter(SCPDataMovementConstants.RESOURCE_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -224,21 +189,16 @@ public class SCPDataMovementResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
             if (existingSCPDataMovement !=  null){
                 existingSCPDataMovement.setDataMoveID(dataMoveID);
-                existingSCPDataMovement.setResourceID(resourceID);
                 existingSCPDataMovement.setSshPort(sshPort);
                 existingSCPDataMovement.setSecurityProtocol(securityProtocol);
-                existingSCPDataMovement.setComputeResource(computeResource);
                 em.merge(existingSCPDataMovement);
             }else {
                 SCPDataMovement scpDataMovement = new SCPDataMovement();
-                scpDataMovement.setResourceID(resourceID);
                 scpDataMovement.setDataMoveID(dataMoveID);
                 scpDataMovement.setSshPort(sshPort);
                 scpDataMovement.setSecurityProtocol(securityProtocol);
-                scpDataMovement.setComputeResource(computeResource);
                 em.persist(scpDataMovement);
             }
             em.getTransaction().commit();
@@ -277,14 +237,6 @@ public class SCPDataMovementResource extends AbstractResource {
         }
     }
 
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
-    }
-
     public String getDataMoveID() {
         return dataMoveID;
     }
@@ -309,11 +261,4 @@ public class SCPDataMovementResource extends AbstractResource {
         this.sshPort = sshPort;
     }
 
-    public ComputeHostResource getComputeHostResource() {
-        return computeHostResource;
-    }
-
-    public void setComputeHostResource(ComputeHostResource computeHostResource) {
-        this.computeHostResource = computeHostResource;
-    }
 }
