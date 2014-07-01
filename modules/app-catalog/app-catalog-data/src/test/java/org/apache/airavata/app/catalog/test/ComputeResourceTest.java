@@ -99,9 +99,27 @@ public class ComputeResourceTest {
 
             String resourceId = computeResource.addComputeResource(description);
             System.out.println("**********Resource id ************* : " +  resourceId);
-            ComputeResourceDescription host = computeResource.getComputeResource(resourceId);
-            System.out.println("**********Resource name ************* : " +  host.getHostName());
-            assertTrue("Compute resource save successfully", host!=null);
+            ComputeResourceDescription host = null;
+            if (computeResource.isComputeResourceExists(resourceId)){
+                host = computeResource.getComputeResource(resourceId);
+                System.out.println("**********Resource name ************* : " +  host.getHostName());
+            }
+
+            SSHJobSubmission sshJobSubmission = computeResource.getSSHJobSubmission(sshsubmissionId);
+            System.out.println("**********SSH Submission resource job manager ************* : " +  sshJobSubmission.getResourceJobManager().toString());
+
+            GSISSHJobSubmission gsisshJobSubmission = computeResource.getGSISSHJobSubmission(gsiSSHsubmissionId);
+            System.out.println("**********GSISSH Submission resource job manager ************* : " +  gsisshJobSubmission.getResourceJobManager().toString());
+
+            GlobusJobSubmission globusJobSubmission = computeResource.getGlobusJobSubmission(globusSubmissionId);
+            System.out.println("**********Globus Submission resource job manager ************* : " + globusJobSubmission.getResourceJobManager().toString());
+
+            SCPDataMovement scpDataMovement = computeResource.getSCPDataMovement(scpDataMoveId);
+            System.out.println("**********SCP Data Move Security protocol ************* : " + scpDataMovement.getSecurityProtocol().toString());
+
+            GridFTPDataMovement gridFTPDataMovement = computeResource.getGridFTPDataMovement(gridFTPDataMoveId);
+            System.out.println("**********GRID FTP Data Move Security protocol ************* : " + gridFTPDataMovement.getSecurityProtocol().toString());
+            assertTrue("Compute resource save successfully", host != null);
         } catch (AppCatalogException e) {
             e.printStackTrace();
         }

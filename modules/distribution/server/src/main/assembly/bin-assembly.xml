@@ -202,6 +202,8 @@
                 <include>org.apache.airavata:airavata-workflow-execution-context:jar</include>
                 <include>org.apache.airavata:airavata-registry-cpi:jar</include>
                 <include>org.apache.airavata:airavata-jpa-registry:jar</include>
+                <include>org.apache.airavata:app-catalog-cpi:jar</include>
+                <include>org.apache.airavata:app-catalog-data:jar</include>
                 <include>org.apache.airavata:airavata-data-models:jar</include>
                 <include>org.apache.airavata:airavata-credential-store:jar</include>
                 <include>org.apache.airavata:airavata-gfac-core:jar</include>

@@ -169,6 +169,13 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a GridFTPDataMovement.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GridFTPDataMovement.");
                 }
+            case GRID_FTP_DM_ENDPOINT:
+                if (o instanceof GridFTPDMEndpoint){
+                    return createGridFTPDMEP((GridFTPDMEndpoint) o);
+                }else {
+                    logger.error("Object should be a GridFTPDataMovement.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GridFTPDataMovement.");
+                }
             case JOB_SUBMISSION_PROTOCOL:
                 if (o instanceof JobSubmissionProtocol){
                     return createJobSubmissionProtocol((JobSubmissionProtocol) o);
@@ -355,6 +362,14 @@ public class AppCatalogJPAUtils {
         resource.setDataMoveID(o.getDataMoveID());
         resource.setSecurityProtocol(o.getSecurityProtocol());
         resource.setGridFTPEP(o.getGridFTPEP());
+        return resource;
+    }
+
+    private static Resource createGridFTPDMEP(GridFTPDMEndpoint o) {
+        GridFTPDMEndpointResource resource = new GridFTPDMEndpointResource();
+        resource.setDataMoveId(o.getDataMoveId());
+        resource.setEndpoint(o.getEndpoint());
+        resource.setGridFTPDataMovementResource((GridFTPDataMovementResource)createGridFTPDataMovement(o.getGridFTPDataMovement()));
         return resource;
     }
 
