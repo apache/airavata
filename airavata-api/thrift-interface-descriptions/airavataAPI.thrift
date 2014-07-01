@@ -28,7 +28,10 @@ include "airavataErrors.thrift"
 include "airavataDataModel.thrift"
 include "experimentModel.thrift"
 include "workspaceModel.thrift"
-include "applicationCatalogAPI.thrift"
+include "computeHostModel.thrift"
+include "applicationDeploymentModel.thrift"
+include "applicationInterfaceModel.thrift"
+include "gatewayProfileModel.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -513,4 +516,87 @@ service Airavata {
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
             4: airavataErrors.AiravataSystemException ase)
+
+/*
+ * API definitions for App Catalog related operations
+ *
+*/
+
+/*
+ * Application Module is a specific computational application. Many applications, particularly scientific applications
+ *  are really a suite of applications or encompass an ecosystem. For instance, Amber is referred to dozens of binaries.
+ *  WRF is referred for an ecosystem of applications. In this context, we refer to module as a single binary.
+ *
+ * Note: A module has to be defined before a deployment can be registered. .
+ *
+*/
+
+  /**
+   * Register a Application Module.
+   *
+   * @param applicationModule
+   *    Application Module Object created from the datamodel.
+   *
+   * @return appModuleId
+   *   Returns a server-side generated airavata appModule globally unique identifier.
+   *
+   *
+  */
+  string registerAppicationModule(1: required applicationDeploymentModel.ApplicationModule applicationModule)
+    	throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch a Application Module.
+   *
+   * @param appModuleId
+   *   The identifier for the requested application module
+   *
+   * @return applicationModule
+   *   Returns a application Module Object.
+   *
+   *
+  */
+  applicationDeploymentModel.ApplicationModule getAppicationModule(1: required string appModuleId)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Update a Application Module.
+   *
+   * @param appModuleId
+   *   The identifier for the requested application module to be updated.
+   *
+   * @param applicationModule
+   *    Application Module Object created from the datamodel.
+   *
+   * @return status
+   *   Returns a success/failure of the update.
+   *
+   *
+  */
+  bool updateAppicationModule(1: required string appModuleId,
+            2: required applicationDeploymentModel.ApplicationModule applicationModule)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Delete a Application Module.
+   *
+   * @param appModuleId
+   *   The identifier for the requested application module to be deleted.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+   *
+  */
+  bool deleteAppicationModule(1: required string appModuleId)
+         	throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
 }
