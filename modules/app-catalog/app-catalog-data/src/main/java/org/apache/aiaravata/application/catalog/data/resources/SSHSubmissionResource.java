@@ -18,11 +18,9 @@ import java.util.List;
 public class SSHSubmissionResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(SSHSubmissionResource.class);
 
-    private String resourceID;
     private String submissionID;
     private String resourceJobManager;
     private int sshPort;
-    private ComputeHostResource computeHostResource;
 
 
     public void remove(Object identifier) throws AppCatalogException {
@@ -85,19 +83,7 @@ public class SSHSubmissionResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_SUBMISSION);
             List results;
-            if (fieldName.equals(SSHSubmissionConstants.RESOURCE_ID)) {
-                generator.setParameter(SSHSubmissionConstants.RESOURCE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        SSHSubmissionResource sshSubmissionResource =
-                                (SSHSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_SUBMISSION, sshSubmission);
-                        sshSubmissionResourceList.add(sshSubmissionResource);
-                    }
-                }
-            } else if (fieldName.equals(SSHSubmissionConstants.RESOURCE_JOB_MANAGER)) {
+            if (fieldName.equals(SSHSubmissionConstants.RESOURCE_JOB_MANAGER)) {
                 generator.setParameter(SSHSubmissionConstants.RESOURCE_JOB_MANAGER, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
@@ -140,38 +126,8 @@ public class SSHSubmissionResource extends AbstractResource {
             Query q;
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_SUBMISSION);
             List results;
-            if (fieldName.equals(SSHSubmissionConstants.SUBMISSION_ID)) {
-                generator.setParameter(SSHSubmissionConstants.SUBMISSION_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        sshSubmissionResourceIDs.add(sshSubmission.getSubmissionID());
-                    }
-                }
-            } else if (fieldName.equals(SSHSubmissionConstants.RESOURCE_ID)) {
-                generator.setParameter(SSHSubmissionConstants.RESOURCE_ID, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        sshSubmissionResourceIDs.add(sshSubmission.getSubmissionID());
-                    }
-                }
-            } else if (fieldName.equals(SSHSubmissionConstants.RESOURCE_JOB_MANAGER)) {
+            if (fieldName.equals(SSHSubmissionConstants.RESOURCE_JOB_MANAGER)) {
                 generator.setParameter(SSHSubmissionConstants.RESOURCE_JOB_MANAGER, value);
-                q = generator.selectQuery(em);
-                results = q.getResultList();
-                if (results.size() != 0) {
-                    for (Object result : results) {
-                        SSHSubmission sshSubmission = (SSHSubmission) result;
-                        sshSubmissionResourceIDs.add(sshSubmission.getSubmissionID());
-                    }
-                }
-            } else if (fieldName.equals(SSHSubmissionConstants.SSH_PORT)) {
-                generator.setParameter(SSHSubmissionConstants.SSH_PORT, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -211,21 +167,16 @@ public class SSHSubmissionResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            ComputeResource computeResource = em.find(ComputeResource.class, resourceID);
             if (existingSSHSubmission != null) {
                 existingSSHSubmission.setSubmissionID(submissionID);
-                existingSSHSubmission.setResourceID(resourceID);
                 existingSSHSubmission.setSshPort(sshPort);
                 existingSSHSubmission.setResourceJobManager(resourceJobManager);
-                existingSSHSubmission.setComputeResource(computeResource);
                 em.merge(existingSSHSubmission);
             } else {
                 SSHSubmission sshSubmission = new SSHSubmission();
-                sshSubmission.setResourceID(resourceID);
                 sshSubmission.setSubmissionID(submissionID);
                 sshSubmission.setSshPort(sshPort);
                 sshSubmission.setResourceJobManager(resourceJobManager);
-                sshSubmission.setComputeResource(computeResource);
                 em.persist(sshSubmission);
             }
             em.getTransaction().commit();
@@ -263,14 +214,6 @@ public class SSHSubmissionResource extends AbstractResource {
         }
     }
 
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
-    }
-
     public String getSubmissionID() {
         return submissionID;
     }
@@ -295,11 +238,4 @@ public class SSHSubmissionResource extends AbstractResource {
         this.sshPort = sshPort;
     }
 
-    public ComputeHostResource getComputeHostResource() {
-        return computeHostResource;
-    }
-
-    public void setComputeHostResource(ComputeHostResource computeHostResource) {
-        this.computeHostResource = computeHostResource;
-    }
 }

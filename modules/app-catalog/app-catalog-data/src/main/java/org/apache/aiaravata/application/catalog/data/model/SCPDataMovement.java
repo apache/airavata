@@ -27,8 +27,6 @@ import java.io.Serializable;
 @Entity
 @Table(name = "SCP_DATAMOVEMENT")
 public class SCPDataMovement implements Serializable {
-    @Column(name = "RESOURCE_ID")
-    private String resourceID;
     @Id
     @Column(name = "DATA_MOVE_ID")
     private String dataMoveID;
@@ -36,18 +34,6 @@ public class SCPDataMovement implements Serializable {
     private String securityProtocol;
     @Column(name = "SSH_PORT")
     private int sshPort;
-
-    @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "RESOURCE_ID")
-    private ComputeResource computeResource;
-
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
-    }
 
     public String getDataMoveID() {
         return dataMoveID;
@@ -73,11 +59,4 @@ public class SCPDataMovement implements Serializable {
         this.sshPort = sshPort;
     }
 
-    public ComputeResource getComputeResource() {
-        return computeResource;
-    }
-
-    public void setComputeResource(ComputeResource computeResource) {
-        this.computeResource = computeResource;
-    }
 }

@@ -27,8 +27,6 @@ import java.io.Serializable;
 @Entity
 @Table(name = "SSH_SUBMISSION")
 public class SSHSubmission implements Serializable {
-    @Column(name = "RESOURCE_ID")
-    private String resourceID;
     @Id
     @Column(name = "SUBMISSION_ID")
     private String submissionID;
@@ -36,18 +34,6 @@ public class SSHSubmission implements Serializable {
     private String resourceJobManager;
     @Column(name = "SSH_PORT")
     private int sshPort;
-
-    @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "RESOURCE_ID")
-    private ComputeResource computeResource;
-
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
-    }
 
     public String getSubmissionID() {
         return submissionID;
@@ -73,11 +59,4 @@ public class SSHSubmission implements Serializable {
         this.sshPort = sshPort;
     }
 
-    public ComputeResource getComputeResource() {
-        return computeResource;
-    }
-
-    public void setComputeResource(ComputeResource computeResource) {
-        this.computeResource = computeResource;
-    }
 }

@@ -72,7 +72,6 @@ public abstract class AbstractResource implements Resource {
 
     // GSSISSH Submission Table
     public final class GSISSHSubmissionConstants {
-        public static final String RESOURCE_ID = "resourceID";
         public static final String SUBMISSION_ID = "submissionID";
         public static final String RESOURCE_JOB_MANAGER = "resourceJobManager";
         public static final String SSH_PORT = "sshPort";
@@ -100,7 +99,6 @@ public abstract class AbstractResource implements Resource {
 
     // GSSISSH Post Job Command Table
     public final class GlobusJobSubmissionConstants {
-        public static final String RESOURCE_ID = "resourceID";
         public static final String SUBMISSION_ID = "submissionID";
         public static final String RESOURCE_JOB_MANAGER = "resourceJobManager";
         public static final String SECURITY_PROTOCAL = "securityProtocol";
@@ -114,21 +112,18 @@ public abstract class AbstractResource implements Resource {
 
     // GSSISSH Post Job Command Table
     public final class SSHSubmissionConstants {
-        public static final String RESOURCE_ID = "resourceID";
         public static final String SUBMISSION_ID = "submissionID";
         public static final String RESOURCE_JOB_MANAGER = "resourceJobManager";
         public static final String SSH_PORT = "sshPort";
     }
 
     public final class SCPDataMovementConstants {
-        public static final String RESOURCE_ID = "resourceID";
         public static final String DATA_MOVE_ID = "dataMoveID";
         public static final String SECURITY_PROTOCOL = "securityProtocol";
         public static final String SSH_PORT = "sshPort";
     }
 
     public final class GridFTPDataMovementConstants {
-        public static final String RESOURCE_ID = "resourceID";
         public static final String DATA_MOVE_ID = "dataMoveID";
         public static final String SECURITY_PROTOCOL = "securityProtocol";
         public static final String GRID_FTP_EP = "gridFTPEP";
