@@ -142,6 +142,26 @@ class AiravataHandler : virtual public AiravataIf {
     printf("terminateExperiment\n");
   }
 
+  void registerAppicationModule(std::string& _return, const  ::ApplicationModule& applicationModule) {
+    // Your implementation goes here
+    printf("registerAppicationModule\n");
+  }
+
+  void getAppicationModule( ::ApplicationModule& _return, const std::string& appModuleId) {
+    // Your implementation goes here
+    printf("getAppicationModule\n");
+  }
+
+  bool updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule) {
+    // Your implementation goes here
+    printf("updateAppicationModule\n");
+  }
+
+  bool deleteAppicationModule(const std::string& appModuleId) {
+    // Your implementation goes here
+    printf("deleteAppicationModule\n");
+  }
+
 };
 
 int main(int argc, char **argv) {

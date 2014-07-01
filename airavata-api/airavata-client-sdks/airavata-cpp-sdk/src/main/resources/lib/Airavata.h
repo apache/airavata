@@ -39,6 +39,10 @@ class AiravataIf {
   virtual void getJobStatuses(std::map<std::string,  ::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
   virtual void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) = 0;
   virtual void terminateExperiment(const std::string& airavataExperimentId) = 0;
+  virtual void registerAppicationModule(std::string& _return, const  ::ApplicationModule& applicationModule) = 0;
+  virtual void getAppicationModule( ::ApplicationModule& _return, const std::string& appModuleId) = 0;
+  virtual bool updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule) = 0;
+  virtual bool deleteAppicationModule(const std::string& appModuleId) = 0;
 };
 
 class AiravataIfFactory {
@@ -140,6 +144,20 @@ class AiravataNull : virtual public AiravataIf {
   }
   void terminateExperiment(const std::string& /* airavataExperimentId */) {
     return;
+  }
+  void registerAppicationModule(std::string& /* _return */, const  ::ApplicationModule& /* applicationModule */) {
+    return;
+  }
+  void getAppicationModule( ::ApplicationModule& /* _return */, const std::string& /* appModuleId */) {
+    return;
+  }
+  bool updateAppicationModule(const std::string& /* appModuleId */, const  ::ApplicationModule& /* applicationModule */) {
+    bool _return = false;
+    return _return;
+  }
+  bool deleteAppicationModule(const std::string& /* appModuleId */) {
+    bool _return = false;
+    return _return;
   }
 };
 
@@ -3314,6 +3332,542 @@ class Airavata_terminateExperiment_presult {
 
 };
 
+
+class Airavata_registerAppicationModule_args {
+ public:
+
+  Airavata_registerAppicationModule_args() {
+  }
+
+  virtual ~Airavata_registerAppicationModule_args() throw() {}
+
+   ::ApplicationModule applicationModule;
+
+  void __set_applicationModule(const  ::ApplicationModule& val) {
+    applicationModule = val;
+  }
+
+  bool operator == (const Airavata_registerAppicationModule_args & rhs) const
+  {
+    if (!(applicationModule == rhs.applicationModule))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerAppicationModule_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerAppicationModule_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_registerAppicationModule_pargs {
+ public:
+
+
+  virtual ~Airavata_registerAppicationModule_pargs() throw() {}
+
+  const  ::ApplicationModule* applicationModule;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerAppicationModule_result__isset {
+  _Airavata_registerAppicationModule_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_registerAppicationModule_result__isset;
+
+class Airavata_registerAppicationModule_result {
+ public:
+
+  Airavata_registerAppicationModule_result() : success() {
+  }
+
+  virtual ~Airavata_registerAppicationModule_result() throw() {}
+
+  std::string success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerAppicationModule_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_registerAppicationModule_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerAppicationModule_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerAppicationModule_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerAppicationModule_presult__isset {
+  _Airavata_registerAppicationModule_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_registerAppicationModule_presult__isset;
+
+class Airavata_registerAppicationModule_presult {
+ public:
+
+
+  virtual ~Airavata_registerAppicationModule_presult() throw() {}
+
+  std::string* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerAppicationModule_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getAppicationModule_args {
+ public:
+
+  Airavata_getAppicationModule_args() : appModuleId() {
+  }
+
+  virtual ~Airavata_getAppicationModule_args() throw() {}
+
+  std::string appModuleId;
+
+  void __set_appModuleId(const std::string& val) {
+    appModuleId = val;
+  }
+
+  bool operator == (const Airavata_getAppicationModule_args & rhs) const
+  {
+    if (!(appModuleId == rhs.appModuleId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAppicationModule_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAppicationModule_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAppicationModule_pargs {
+ public:
+
+
+  virtual ~Airavata_getAppicationModule_pargs() throw() {}
+
+  const std::string* appModuleId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAppicationModule_result__isset {
+  _Airavata_getAppicationModule_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAppicationModule_result__isset;
+
+class Airavata_getAppicationModule_result {
+ public:
+
+  Airavata_getAppicationModule_result() {
+  }
+
+  virtual ~Airavata_getAppicationModule_result() throw() {}
+
+   ::ApplicationModule success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAppicationModule_result__isset __isset;
+
+  void __set_success(const  ::ApplicationModule& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getAppicationModule_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAppicationModule_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAppicationModule_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAppicationModule_presult__isset {
+  _Airavata_getAppicationModule_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAppicationModule_presult__isset;
+
+class Airavata_getAppicationModule_presult {
+ public:
+
+
+  virtual ~Airavata_getAppicationModule_presult() throw() {}
+
+   ::ApplicationModule* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAppicationModule_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_updateAppicationModule_args {
+ public:
+
+  Airavata_updateAppicationModule_args() : appModuleId() {
+  }
+
+  virtual ~Airavata_updateAppicationModule_args() throw() {}
+
+  std::string appModuleId;
+   ::ApplicationModule applicationModule;
+
+  void __set_appModuleId(const std::string& val) {
+    appModuleId = val;
+  }
+
+  void __set_applicationModule(const  ::ApplicationModule& val) {
+    applicationModule = val;
+  }
+
+  bool operator == (const Airavata_updateAppicationModule_args & rhs) const
+  {
+    if (!(appModuleId == rhs.appModuleId))
+      return false;
+    if (!(applicationModule == rhs.applicationModule))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateAppicationModule_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateAppicationModule_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_updateAppicationModule_pargs {
+ public:
+
+
+  virtual ~Airavata_updateAppicationModule_pargs() throw() {}
+
+  const std::string* appModuleId;
+  const  ::ApplicationModule* applicationModule;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateAppicationModule_result__isset {
+  _Airavata_updateAppicationModule_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateAppicationModule_result__isset;
+
+class Airavata_updateAppicationModule_result {
+ public:
+
+  Airavata_updateAppicationModule_result() : success(0) {
+  }
+
+  virtual ~Airavata_updateAppicationModule_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateAppicationModule_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_updateAppicationModule_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateAppicationModule_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateAppicationModule_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateAppicationModule_presult__isset {
+  _Airavata_updateAppicationModule_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateAppicationModule_presult__isset;
+
+class Airavata_updateAppicationModule_presult {
+ public:
+
+
+  virtual ~Airavata_updateAppicationModule_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateAppicationModule_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_deleteAppicationModule_args {
+ public:
+
+  Airavata_deleteAppicationModule_args() : appModuleId() {
+  }
+
+  virtual ~Airavata_deleteAppicationModule_args() throw() {}
+
+  std::string appModuleId;
+
+  void __set_appModuleId(const std::string& val) {
+    appModuleId = val;
+  }
+
+  bool operator == (const Airavata_deleteAppicationModule_args & rhs) const
+  {
+    if (!(appModuleId == rhs.appModuleId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteAppicationModule_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteAppicationModule_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_deleteAppicationModule_pargs {
+ public:
+
+
+  virtual ~Airavata_deleteAppicationModule_pargs() throw() {}
+
+  const std::string* appModuleId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteAppicationModule_result__isset {
+  _Airavata_deleteAppicationModule_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteAppicationModule_result__isset;
+
+class Airavata_deleteAppicationModule_result {
+ public:
+
+  Airavata_deleteAppicationModule_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteAppicationModule_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteAppicationModule_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_deleteAppicationModule_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteAppicationModule_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteAppicationModule_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteAppicationModule_presult__isset {
+  _Airavata_deleteAppicationModule_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteAppicationModule_presult__isset;
+
+class Airavata_deleteAppicationModule_presult {
+ public:
+
+
+  virtual ~Airavata_deleteAppicationModule_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteAppicationModule_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AiravataClient : virtual public AiravataIf {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -3406,6 +3960,18 @@ class AiravataClient : virtual public AiravataIf {
   void terminateExperiment(const std::string& airavataExperimentId);
   void send_terminateExperiment(const std::string& airavataExperimentId);
   void recv_terminateExperiment();
+  void registerAppicationModule(std::string& _return, const  ::ApplicationModule& applicationModule);
+  void send_registerAppicationModule(const  ::ApplicationModule& applicationModule);
+  void recv_registerAppicationModule(std::string& _return);
+  void getAppicationModule( ::ApplicationModule& _return, const std::string& appModuleId);
+  void send_getAppicationModule(const std::string& appModuleId);
+  void recv_getAppicationModule( ::ApplicationModule& _return);
+  bool updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule);
+  void send_updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule);
+  bool recv_updateAppicationModule();
+  bool deleteAppicationModule(const std::string& appModuleId);
+  void send_deleteAppicationModule(const std::string& appModuleId);
+  bool recv_deleteAppicationModule();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -3445,6 +4011,10 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getJobStatuses(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_cloneExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_terminateExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_registerAppicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAppicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateAppicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteAppicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
@@ -3472,6 +4042,10 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getJobStatuses"] = &AiravataProcessor::process_getJobStatuses;
     processMap_["cloneExperiment"] = &AiravataProcessor::process_cloneExperiment;
     processMap_["terminateExperiment"] = &AiravataProcessor::process_terminateExperiment;
+    processMap_["registerAppicationModule"] = &AiravataProcessor::process_registerAppicationModule;
+    processMap_["getAppicationModule"] = &AiravataProcessor::process_getAppicationModule;
+    processMap_["updateAppicationModule"] = &AiravataProcessor::process_updateAppicationModule;
+    processMap_["deleteAppicationModule"] = &AiravataProcessor::process_deleteAppicationModule;
   }
 
   virtual ~AiravataProcessor() {}
@@ -3731,6 +4305,44 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->terminateExperiment(airavataExperimentId);
     }
     ifaces_[i]->terminateExperiment(airavataExperimentId);
+  }
+
+  void registerAppicationModule(std::string& _return, const  ::ApplicationModule& applicationModule) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->registerAppicationModule(_return, applicationModule);
+    }
+    ifaces_[i]->registerAppicationModule(_return, applicationModule);
+    return;
+  }
+
+  void getAppicationModule( ::ApplicationModule& _return, const std::string& appModuleId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAppicationModule(_return, appModuleId);
+    }
+    ifaces_[i]->getAppicationModule(_return, appModuleId);
+    return;
+  }
+
+  bool updateAppicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateAppicationModule(appModuleId, applicationModule);
+    }
+    return ifaces_[i]->updateAppicationModule(appModuleId, applicationModule);
+  }
+
+  bool deleteAppicationModule(const std::string& appModuleId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteAppicationModule(appModuleId);
+    }
+    return ifaces_[i]->deleteAppicationModule(appModuleId);
   }
 
 };
