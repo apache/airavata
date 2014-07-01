@@ -1,5 +1,7 @@
-﻿This directory contains files that can be used to test the Apache Airavata client API using PHP command-line tools.  You will need PHP installed on your test environment.  To run a command from a terminal shell prompt, use, for example, 
-        [prompt%> php createProject.php your-name
+﻿This directory contains files that can be used to test the Apache Airavata client API using PHP command-line tools.
+  You will need PHP installed on your test environment.
+  To run a command from a terminal shell prompt, use, for example:
+        [prompt%> php createProject.php project-name
 
 You can modify PHP files using any text editor.
 

@@ -25,7 +25,7 @@
 <assembly>
     <id>bin</id>
     <includeBaseDirectory>false</includeBaseDirectory>
-    <baseDirectory>${archieve.name}-${version}</baseDirectory>
+    <baseDirectory>${archive.name}-${version}</baseDirectory>
     <formats>
         <format>tar.gz</format>
         <format>zip</format>
@@ -34,7 +34,7 @@
         <!-- ********************** copy release notes files ********************** -->
         <fileSet>
             <directory>../../../</directory>
-            <outputDirectory>.</outputDirectory>
+            <outputDirectory>${archive.name}-${version}</outputDirectory>
             <includes>
                 <include>RELEASE_NOTES</include>
             </includes>
@@ -42,22 +42,22 @@
         <!-- ********************** copy licenses, readme etc. ********************** -->
         <fileSet>
             <directory>src/main/resources/</directory>
-            <outputDirectory>.</outputDirectory>
+            <outputDirectory>${archive.name}-${version}</outputDirectory>
             <includes>
-                <include>conf/*</include>
-		<include>lib/*</include>
+                <include>php-cli-samples/*</include>
+		        <include>lib/*</include>
                 <include>LICENSE</include>
                 <include>NOTICE</include>
                 <include>README</include>
                 <include>INSTALL</include>
             </includes>
         </fileSet>
-	<fileSet>
+<!--	<fileSet>
             <directory>${project.build.directory}/conf</directory>
             <outputDirectory>conf</outputDirectory>
 	    <includes>
                 <include>*.properties</include>
             </includes>
-        </fileSet>
+        </fileSet>-->
     </fileSets>
 </assembly>
