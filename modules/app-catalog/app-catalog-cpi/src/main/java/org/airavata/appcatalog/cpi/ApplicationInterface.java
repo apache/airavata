@@ -2,6 +2,8 @@ package org.airavata.appcatalog.cpi;
 
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,22 @@ public interface ApplicationInterface {
      * @param interfaceId unique interface id
      */
     void addApplicationModuleMapping (String moduleId, String interfaceId) throws AppCatalogException;
+
+    /**
+     * This method will update application module
+     * @param moduleId unique module Id
+     * @param updatedModule updated module
+     * @throws AppCatalogException
+     */
+    void updateApplicationModule (String moduleId, ApplicationModule updatedModule) throws AppCatalogException;
+
+    /**
+     * This method will update application interface
+     * @param interfaceId unique interface id
+     * @param updatedInterface updated app interface
+     * @throws AppCatalogException
+     */
+    void updateApplicationInterface (String interfaceId, ApplicationInterfaceDescription updatedInterface) throws AppCatalogException;
 
     /**
      * This method will retrieve application module by given module id
@@ -60,13 +78,13 @@ public interface ApplicationInterface {
      * Remove application interface
      * @param interfaceId unique interface id
      */
-    void removeApplicationInterface (String interfaceId) throws AppCatalogException;
+    boolean removeApplicationInterface (String interfaceId) throws AppCatalogException;
 
     /**
      * Remove application module
      * @param moduleId unique module Id
      */
-    void removeApplicationModule (String moduleId) throws AppCatalogException;
+    boolean removeApplicationModule (String moduleId) throws AppCatalogException;
 
     /**
      * Check whether application interface exists
@@ -81,5 +99,21 @@ public interface ApplicationInterface {
      * @return true or false
      */
     boolean isApplicationModuleExists(String moduleId) throws AppCatalogException;
+
+    /**
+     * This method will retrieve application inputs for given application interface
+     * @param interfaceId application interface id
+     * @return list of inputs
+     * @throws AppCatalogException
+     */
+    List<InputDataObjectType> getApplicationInputs(String interfaceId) throws AppCatalogException;
+
+    /**
+     * This method will retrieve application outputs for given application interface
+     * @param interfaceId application interface id
+     * @return list of output
+     * @throws AppCatalogException
+     */
+    List<OutputDataObjectType> getApplicationOutputs(String interfaceId) throws AppCatalogException;
 
 }

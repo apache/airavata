@@ -30,6 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -85,6 +89,7 @@ import org.slf4j.LoggerFactory;
 public class AiravataServerHandler implements Airavata.Iface, Watcher {
     private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
     private Registry registry;
+    private AppCatalog appCatalog;
 
     private ZooKeeper zk;
 
@@ -1164,7 +1169,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public String registerApplicationModule(ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().addApplicationModule(applicationModule);
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding application module...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding application module. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1176,7 +1190,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public ApplicationModule getApplicationModule(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().getApplicationModule(appModuleId);
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application module...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the adding application module. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1189,7 +1212,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getApplicationInterface().updateApplicationModule(appModuleId, applicationModule);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while updating application module...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating application module. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1201,7 +1234,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteApplicationModule(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().removeApplicationModule(appModuleId);
+        } catch (AppCatalogException e) {
+            logger.error("Error while deleting application module...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting the application module. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1212,7 +1254,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public String registerApplicationDeployment(ApplicationDeploymentDescription applicationDeployment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationDeployment().addApplicationDeployment(applicationDeployment);
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding application deployment...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1224,7 +1275,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationDeployment().getApplicationDeployement(appDeploymentId);
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application deployment...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1237,7 +1297,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean updateApplicationDeployment(String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getApplicationDeployment().updateApplicationDeployment(appDeploymentId, applicationDeployment);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while updating application deployment...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1249,7 +1319,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteApplicationDeployment(String appDeploymentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getApplicationDeployment().removeAppDeployment(appDeploymentId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while deleting application deployment...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1261,7 +1341,23 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public List<String> getAppModuleDeployedResources(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            List<String> appDeployments = new ArrayList<String>();
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, appModuleId);
+            List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(filters);
+            for (ApplicationDeploymentDescription description : applicationDeployements){
+                appDeployments.add(description.getAppDeploymentId());
+            }
+            return appDeployments;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application deployments...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1272,7 +1368,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public String registerApplicationInterface(ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().addApplicationInterface(applicationInterface);
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding application interface...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding application interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1284,7 +1389,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application interface...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1297,7 +1411,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean updateApplicationInterface(String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getApplicationInterface().updateApplicationInterface(appInterfaceId, applicationInterface);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while updating application interface...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating application interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1309,7 +1433,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteApplicationInterface(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().removeApplicationInterface(appInterfaceId);
+        } catch (AppCatalogException e) {
+            logger.error("Error while deleting application interface...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting application interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1321,7 +1454,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().getApplicationInputs(appInterfaceId);
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application inputs...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application inputs. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1333,7 +1475,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().getApplicationOutputs(appInterfaceId);
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application outputs...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application outputs. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
 }

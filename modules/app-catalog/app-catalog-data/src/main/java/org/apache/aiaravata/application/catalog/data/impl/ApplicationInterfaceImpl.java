@@ -33,6 +33,7 @@ import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -132,6 +133,89 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
+    public void updateApplicationModule(String moduleId, ApplicationModule updatedModule) throws AppCatalogException {
+        try {
+            AppModuleResource moduleResource = new AppModuleResource();
+            AppModuleResource existingModule = (AppModuleResource)moduleResource.get(moduleId);
+            existingModule.setModuleName(updatedModule.getAppModuleName());
+            existingModule.setModuleDesc(updatedModule.getAppModuleDescription());
+            existingModule.setModuleVersion(updatedModule.getAppModuleVersion());
+            existingModule.save();
+        }catch (Exception e) {
+            logger.error("Error while updating application module...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public void updateApplicationInterface(String interfaceId, ApplicationInterfaceDescription updatedInterface) throws AppCatalogException {
+        try {
+            AppInterfaceResource resource = new AppInterfaceResource();
+            AppInterfaceResource existingInterface = (AppInterfaceResource)resource.get(interfaceId);
+            existingInterface.setAppName(updatedInterface.getApplicationName());
+            existingInterface.save();
+
+            List<String> applicationModules = updatedInterface.getApplicationModules();
+            if (applicationModules != null && !applicationModules.isEmpty()){
+                for (String moduleId : applicationModules){
+                    AppModuleResource appModuleResource = new AppModuleResource();
+                    AppModuleMappingResource moduleMappingResource = new AppModuleMappingResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.AppModuleMappingConstants.MODULE_ID, moduleId);
+                    ids.put(AbstractResource.AppModuleMappingConstants.INTERFACE_ID, interfaceId);
+                    AppModuleMappingResource existingMapping = (AppModuleMappingResource)moduleMappingResource.get(ids);
+                    existingMapping.setInterfaceId(interfaceId);
+                    existingMapping.setModuleId(moduleId);
+                    existingMapping.setModuleResource((AppModuleResource)appModuleResource.get(moduleId));
+                    existingMapping.setAppInterfaceResource(existingInterface);
+                    existingMapping.save();
+                }
+            }
+
+            List<InputDataObjectType> applicationInputs = updatedInterface.getApplicationInputs();
+            if (applicationInputs != null && !applicationInputs.isEmpty()){
+                for (InputDataObjectType input : applicationInputs){
+                    ApplicationInputResource inputResource = new ApplicationInputResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.AppInputConstants.INTERFACE_ID, interfaceId);
+                    ids.put(AbstractResource.AppInputConstants.INPUT_KEY, input.getName());
+                    ApplicationInputResource existingResource = (ApplicationInputResource)inputResource.get(ids);
+                    existingResource.setAppInterfaceResource(existingInterface);
+                    existingResource.setInterfaceID(interfaceId);
+                    existingResource.setUserFriendlyDesc(input.getUserFriendlyDescription());
+                    existingResource.setInputKey(input.getName());
+                    existingResource.setInputVal(input.getValue());
+                    existingResource.setDataType(input.getType().toString());
+                    existingResource.setMetadata(input.getMetaData());
+                    existingResource.setStandareInput(input.isStandardInput());
+                    existingResource.setAppArgument(input.getApplicationArguement());
+                    existingResource.save();
+                }
+            }
+
+            List<OutputDataObjectType> applicationOutputs = updatedInterface.getApplicationOutputs();
+            if (applicationOutputs != null && !applicationOutputs.isEmpty()){
+                for (OutputDataObjectType output : applicationOutputs){
+                    ApplicationOutputResource outputResource = new ApplicationOutputResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.AppOutputConstants.INTERFACE_ID, interfaceId);
+                    ids.put(AbstractResource.AppOutputConstants.OUTPUT_KEY, output.getName());
+                    ApplicationOutputResource existingResource = (ApplicationOutputResource)outputResource.get(ids);
+                    existingResource.setInterfaceID(interfaceId);
+                    existingResource.setAppInterfaceResource(existingInterface);
+                    existingResource.setOutputKey(output.getName());
+                    existingResource.setOutputVal(output.getValue());
+                    existingResource.setDataType(output.getType().toString());
+                    existingResource.save();
+                }
+            }
+        }catch (Exception e) {
+            logger.error("Error while updating application interface...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
     public ApplicationModule getApplicationModule(String moduleId) throws AppCatalogException {
         try {
             AppModuleResource appModuleResource = new AppModuleResource();
@@ -198,10 +282,11 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
-    public void removeApplicationInterface(String interfaceId) throws AppCatalogException {
+    public boolean removeApplicationInterface(String interfaceId) throws AppCatalogException {
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
             resource.remove(interfaceId);
+            return true;
         }catch (Exception e){
             logger.error("Error while removing app interface...", e);
             throw new AppCatalogException(e);
@@ -209,10 +294,11 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
-    public void removeApplicationModule(String moduleId) throws AppCatalogException {
+    public boolean removeApplicationModule(String moduleId) throws AppCatalogException {
         try {
             AppModuleResource resource = new AppModuleResource();
             resource.remove(moduleId);
+            return true;
         }catch (Exception e){
             logger.error("Error while removing app module...", e);
             throw new AppCatalogException(e);
@@ -237,6 +323,30 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             return resource.isExists(moduleId);
         }catch (Exception e){
             logger.error("Error while retrieving app module...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public List<InputDataObjectType> getApplicationInputs(String interfaceId) throws AppCatalogException {
+        try {
+            ApplicationInputResource resource = new ApplicationInputResource();
+            List<Resource> resources = resource.get(AbstractResource.AppInputConstants.INTERFACE_ID, interfaceId);
+            return AppCatalogThriftConversion.getAppInputs(resources);
+        }catch (Exception e){
+            logger.error("Error while retrieving app inputs...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public List<OutputDataObjectType> getApplicationOutputs(String interfaceId) throws AppCatalogException {
+        try {
+            ApplicationOutputResource resource = new ApplicationOutputResource();
+            List<Resource> resources = resource.get(AbstractResource.AppOutputConstants.INTERFACE_ID, interfaceId);
+            return AppCatalogThriftConversion.getAppOutputs(resources);
+        }catch (Exception e){
+            logger.error("Error while retrieving app outputs...", e);
             throw new AppCatalogException(e);
         }
     }
