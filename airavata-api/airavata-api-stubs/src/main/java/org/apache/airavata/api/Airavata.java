@@ -436,7 +436,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param applicationModule
      */
-    public String registerAppicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public String registerApplicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Fetch a Application Module.
@@ -451,7 +451,7 @@ import org.slf4j.LoggerFactory;
      * 
      * @param appModuleId
      */
-    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule getAppicationModule(String appModuleId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule getApplicationModule(String appModuleId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Update a Application Module.
@@ -470,7 +470,7 @@ import org.slf4j.LoggerFactory;
      * @param appModuleId
      * @param applicationModule
      */
-    public boolean updateAppicationModule(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public boolean updateApplicationModule(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
      * Delete a Application Module.
@@ -485,7 +485,177 @@ import org.slf4j.LoggerFactory;
      * 
      * @param appModuleId
      */
-    public boolean deleteAppicationModule(String appModuleId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public boolean deleteApplicationModule(String appModuleId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Register a Application Deployment.
+     * 
+     * @param applicationModule
+     *    Application Module Object created from the datamodel.
+     * 
+     * @return appDeploymentId
+     *   Returns a server-side generated airavata appDeployment globally unique identifier.
+     * 
+     * 
+     * 
+     * @param applicationDeployment
+     */
+    public String registerApplicationDeployment(org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Fetch a Application Deployment.
+     * 
+     * @param appDeploymentId
+     *   The identifier for the requested application module
+     * 
+     * @return applicationDeployment
+     *   Returns a application Deployment Object.
+     * 
+     * 
+     * 
+     * @param appDeploymentId
+     */
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Update a Application Deployment.
+     * 
+     * @param appDeploymentId
+     *   The identifier for the requested application deployment to be updated.
+     * 
+     * @param appDeployment
+     *    Application Deployment Object created from the datamodel.
+     * 
+     * @return status
+     *   Returns a success/failure of the update.
+     * 
+     * 
+     * 
+     * @param appDeploymentId
+     * @param applicationDeployment
+     */
+    public boolean updateApplicationDeployment(String appDeploymentId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Delete a Application deployment.
+     * 
+     * @param appDeploymentId
+     *   The identifier for the requested application deployment to be deleted.
+     * 
+     * @return status
+     *   Returns a success/failure of the deletion.
+     * 
+     * 
+     * 
+     * @param appDeploymentId
+     */
+    public boolean deleteApplicationDeployment(String appDeploymentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Fetch a list of Deployed Compute Hosts.
+     * 
+     * @param appModuleId
+     *   The identifier for the requested application module
+     * 
+     * @return list<string>
+     *   Returns a list of Deployed Resources.
+     * 
+     * 
+     * @param appModuleId
+     */
+    public List<String> getAppModuleDeployedResources(String appModuleId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Register a Application Interface.
+     * 
+     * @param applicationModule
+     *    Application Module Object created from the datamodel.
+     * 
+     * @return appInterfaceId
+     *   Returns a server-side generated airavata application interface globally unique identifier.
+     * 
+     * 
+     * 
+     * @param applicationInterface
+     */
+    public String registerApplicationInterface(org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Fetch a Application Interface.
+     * 
+     * @param appInterfaceId
+     *   The identifier for the requested application module
+     * 
+     * @return applicationInterface
+     *   Returns a application Interface Object.
+     * 
+     * 
+     * 
+     * @param appInterfaceId
+     */
+    public org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Update a Application Interface.
+     * 
+     * @param appInterfaceId
+     *   The identifier for the requested application deployment to be updated.
+     * 
+     * @param appInterface
+     *    Application Interface Object created from the datamodel.
+     * 
+     * @return status
+     *   Returns a success/failure of the update.
+     * 
+     * 
+     * 
+     * @param appInterfaceId
+     * @param applicationInterface
+     */
+    public boolean updateApplicationInterface(String appInterfaceId, org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Delete a Application Interface.
+     * 
+     * @param appInterfaceId
+     *   The identifier for the requested application interface to be deleted.
+     * 
+     * @return status
+     *   Returns a success/failure of the deletion.
+     * 
+     * 
+     * 
+     * @param appInterfaceId
+     */
+    public boolean deleteApplicationInterface(String appInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Fetch the list of Application Inputs.
+     * 
+     * @param appInterfaceId
+     *   The identifier for the requested application interface
+     * 
+     * @return list<applicationInterfaceModel.InputDataObjectType>
+     *   Returns a list of application inputs.
+     * 
+     * 
+     * @param appInterfaceId
+     */
+    public List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> getApplicationInputs(String appInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
+     * Fetch the list of Application Outputs.
+     * 
+     * @param appInterfaceId
+     *   The identifier for the requested application interface
+     * 
+     * @return list<applicationInterfaceModel.OutputDataObjectType>
+     *   Returns a list of application outputs.
+     * 
+     * 
+     * @param appInterfaceId
+     */
+    public List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
   }
 
@@ -539,13 +709,35 @@ import org.slf4j.LoggerFactory;
 
     public void terminateExperiment(String airavataExperimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void registerAppicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void registerApplicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getAppicationModule(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getApplicationModule(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void updateAppicationModule(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void updateApplicationModule(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void deleteAppicationModule(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void deleteApplicationModule(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void registerApplicationDeployment(org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void getApplicationDeployment(String appDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void updateApplicationDeployment(String appDeploymentId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void deleteApplicationDeployment(String appDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void getAppModuleDeployedResources(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void registerApplicationInterface(org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void getApplicationInterface(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void updateApplicationInterface(String appInterfaceId, org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void deleteApplicationInterface(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void getApplicationInputs(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void getApplicationOutputs(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -1326,23 +1518,23 @@ import org.slf4j.LoggerFactory;
       return;
     }
 
-    public String registerAppicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String registerApplicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_registerAppicationModule(applicationModule);
-      return recv_registerAppicationModule();
+      send_registerApplicationModule(applicationModule);
+      return recv_registerApplicationModule();
     }
 
-    public void send_registerAppicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.thrift.TException
+    public void send_registerApplicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.thrift.TException
     {
-      registerAppicationModule_args args = new registerAppicationModule_args();
+      registerApplicationModule_args args = new registerApplicationModule_args();
       args.setApplicationModule(applicationModule);
-      sendBase("registerAppicationModule", args);
+      sendBase("registerApplicationModule", args);
     }
 
-    public String recv_registerAppicationModule() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String recv_registerApplicationModule() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      registerAppicationModule_result result = new registerAppicationModule_result();
-      receiveBase(result, "registerAppicationModule");
+      registerApplicationModule_result result = new registerApplicationModule_result();
+      receiveBase(result, "registerApplicationModule");
       if (result.isSetSuccess()) {
         return result.success;
       }
@@ -1355,26 +1547,26 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "registerAppicationModule failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "registerApplicationModule failed: unknown result");
     }
 
-    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule getAppicationModule(String appModuleId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule getApplicationModule(String appModuleId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_getAppicationModule(appModuleId);
-      return recv_getAppicationModule();
+      send_getApplicationModule(appModuleId);
+      return recv_getApplicationModule();
     }
 
-    public void send_getAppicationModule(String appModuleId) throws org.apache.thrift.TException
+    public void send_getApplicationModule(String appModuleId) throws org.apache.thrift.TException
     {
-      getAppicationModule_args args = new getAppicationModule_args();
+      getApplicationModule_args args = new getApplicationModule_args();
       args.setAppModuleId(appModuleId);
-      sendBase("getAppicationModule", args);
+      sendBase("getApplicationModule", args);
     }
 
-    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule recv_getAppicationModule() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule recv_getApplicationModule() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      getAppicationModule_result result = new getAppicationModule_result();
-      receiveBase(result, "getAppicationModule");
+      getApplicationModule_result result = new getApplicationModule_result();
+      receiveBase(result, "getApplicationModule");
       if (result.isSetSuccess()) {
         return result.success;
       }
@@ -1387,27 +1579,27 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAppicationModule failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getApplicationModule failed: unknown result");
     }
 
-    public boolean updateAppicationModule(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public boolean updateApplicationModule(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_updateAppicationModule(appModuleId, applicationModule);
-      return recv_updateAppicationModule();
+      send_updateApplicationModule(appModuleId, applicationModule);
+      return recv_updateApplicationModule();
     }
 
-    public void send_updateAppicationModule(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.thrift.TException
+    public void send_updateApplicationModule(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) throws org.apache.thrift.TException
     {
-      updateAppicationModule_args args = new updateAppicationModule_args();
+      updateApplicationModule_args args = new updateApplicationModule_args();
       args.setAppModuleId(appModuleId);
       args.setApplicationModule(applicationModule);
-      sendBase("updateAppicationModule", args);
+      sendBase("updateApplicationModule", args);
     }
 
-    public boolean recv_updateAppicationModule() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public boolean recv_updateApplicationModule() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      updateAppicationModule_result result = new updateAppicationModule_result();
-      receiveBase(result, "updateAppicationModule");
+      updateApplicationModule_result result = new updateApplicationModule_result();
+      receiveBase(result, "updateApplicationModule");
       if (result.isSetSuccess()) {
         return result.success;
       }
@@ -1420,26 +1612,26 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateAppicationModule failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateApplicationModule failed: unknown result");
     }
 
-    public boolean deleteAppicationModule(String appModuleId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public boolean deleteApplicationModule(String appModuleId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_deleteAppicationModule(appModuleId);
-      return recv_deleteAppicationModule();
+      send_deleteApplicationModule(appModuleId);
+      return recv_deleteApplicationModule();
     }
 
-    public void send_deleteAppicationModule(String appModuleId) throws org.apache.thrift.TException
+    public void send_deleteApplicationModule(String appModuleId) throws org.apache.thrift.TException
     {
-      deleteAppicationModule_args args = new deleteAppicationModule_args();
+      deleteApplicationModule_args args = new deleteApplicationModule_args();
       args.setAppModuleId(appModuleId);
-      sendBase("deleteAppicationModule", args);
+      sendBase("deleteApplicationModule", args);
     }
 
-    public boolean recv_deleteAppicationModule() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public boolean recv_deleteApplicationModule() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      deleteAppicationModule_result result = new deleteAppicationModule_result();
-      receiveBase(result, "deleteAppicationModule");
+      deleteApplicationModule_result result = new deleteApplicationModule_result();
+      receiveBase(result, "deleteApplicationModule");
       if (result.isSetSuccess()) {
         return result.success;
       }
@@ -1452,7 +1644,361 @@ import org.slf4j.LoggerFactory;
       if (result.ase != null) {
         throw result.ase;
       }
-      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "deleteAppicationModule failed: unknown result");
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "deleteApplicationModule failed: unknown result");
+    }
+
+    public String registerApplicationDeployment(org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_registerApplicationDeployment(applicationDeployment);
+      return recv_registerApplicationDeployment();
+    }
+
+    public void send_registerApplicationDeployment(org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment) throws org.apache.thrift.TException
+    {
+      registerApplicationDeployment_args args = new registerApplicationDeployment_args();
+      args.setApplicationDeployment(applicationDeployment);
+      sendBase("registerApplicationDeployment", args);
+    }
+
+    public String recv_registerApplicationDeployment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      registerApplicationDeployment_result result = new registerApplicationDeployment_result();
+      receiveBase(result, "registerApplicationDeployment");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "registerApplicationDeployment failed: unknown result");
+    }
+
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_getApplicationDeployment(appDeploymentId);
+      return recv_getApplicationDeployment();
+    }
+
+    public void send_getApplicationDeployment(String appDeploymentId) throws org.apache.thrift.TException
+    {
+      getApplicationDeployment_args args = new getApplicationDeployment_args();
+      args.setAppDeploymentId(appDeploymentId);
+      sendBase("getApplicationDeployment", args);
+    }
+
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription recv_getApplicationDeployment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      getApplicationDeployment_result result = new getApplicationDeployment_result();
+      receiveBase(result, "getApplicationDeployment");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getApplicationDeployment failed: unknown result");
+    }
+
+    public boolean updateApplicationDeployment(String appDeploymentId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_updateApplicationDeployment(appDeploymentId, applicationDeployment);
+      return recv_updateApplicationDeployment();
+    }
+
+    public void send_updateApplicationDeployment(String appDeploymentId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment) throws org.apache.thrift.TException
+    {
+      updateApplicationDeployment_args args = new updateApplicationDeployment_args();
+      args.setAppDeploymentId(appDeploymentId);
+      args.setApplicationDeployment(applicationDeployment);
+      sendBase("updateApplicationDeployment", args);
+    }
+
+    public boolean recv_updateApplicationDeployment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      updateApplicationDeployment_result result = new updateApplicationDeployment_result();
+      receiveBase(result, "updateApplicationDeployment");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateApplicationDeployment failed: unknown result");
+    }
+
+    public boolean deleteApplicationDeployment(String appDeploymentId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_deleteApplicationDeployment(appDeploymentId);
+      return recv_deleteApplicationDeployment();
+    }
+
+    public void send_deleteApplicationDeployment(String appDeploymentId) throws org.apache.thrift.TException
+    {
+      deleteApplicationDeployment_args args = new deleteApplicationDeployment_args();
+      args.setAppDeploymentId(appDeploymentId);
+      sendBase("deleteApplicationDeployment", args);
+    }
+
+    public boolean recv_deleteApplicationDeployment() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      deleteApplicationDeployment_result result = new deleteApplicationDeployment_result();
+      receiveBase(result, "deleteApplicationDeployment");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "deleteApplicationDeployment failed: unknown result");
+    }
+
+    public List<String> getAppModuleDeployedResources(String appModuleId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_getAppModuleDeployedResources(appModuleId);
+      return recv_getAppModuleDeployedResources();
+    }
+
+    public void send_getAppModuleDeployedResources(String appModuleId) throws org.apache.thrift.TException
+    {
+      getAppModuleDeployedResources_args args = new getAppModuleDeployedResources_args();
+      args.setAppModuleId(appModuleId);
+      sendBase("getAppModuleDeployedResources", args);
+    }
+
+    public List<String> recv_getAppModuleDeployedResources() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      getAppModuleDeployedResources_result result = new getAppModuleDeployedResources_result();
+      receiveBase(result, "getAppModuleDeployedResources");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getAppModuleDeployedResources failed: unknown result");
+    }
+
+    public String registerApplicationInterface(org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_registerApplicationInterface(applicationInterface);
+      return recv_registerApplicationInterface();
+    }
+
+    public void send_registerApplicationInterface(org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface) throws org.apache.thrift.TException
+    {
+      registerApplicationInterface_args args = new registerApplicationInterface_args();
+      args.setApplicationInterface(applicationInterface);
+      sendBase("registerApplicationInterface", args);
+    }
+
+    public String recv_registerApplicationInterface() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      registerApplicationInterface_result result = new registerApplicationInterface_result();
+      receiveBase(result, "registerApplicationInterface");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "registerApplicationInterface failed: unknown result");
+    }
+
+    public org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_getApplicationInterface(appInterfaceId);
+      return recv_getApplicationInterface();
+    }
+
+    public void send_getApplicationInterface(String appInterfaceId) throws org.apache.thrift.TException
+    {
+      getApplicationInterface_args args = new getApplicationInterface_args();
+      args.setAppInterfaceId(appInterfaceId);
+      sendBase("getApplicationInterface", args);
+    }
+
+    public org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription recv_getApplicationInterface() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      getApplicationInterface_result result = new getApplicationInterface_result();
+      receiveBase(result, "getApplicationInterface");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getApplicationInterface failed: unknown result");
+    }
+
+    public boolean updateApplicationInterface(String appInterfaceId, org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_updateApplicationInterface(appInterfaceId, applicationInterface);
+      return recv_updateApplicationInterface();
+    }
+
+    public void send_updateApplicationInterface(String appInterfaceId, org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface) throws org.apache.thrift.TException
+    {
+      updateApplicationInterface_args args = new updateApplicationInterface_args();
+      args.setAppInterfaceId(appInterfaceId);
+      args.setApplicationInterface(applicationInterface);
+      sendBase("updateApplicationInterface", args);
+    }
+
+    public boolean recv_updateApplicationInterface() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      updateApplicationInterface_result result = new updateApplicationInterface_result();
+      receiveBase(result, "updateApplicationInterface");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "updateApplicationInterface failed: unknown result");
+    }
+
+    public boolean deleteApplicationInterface(String appInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_deleteApplicationInterface(appInterfaceId);
+      return recv_deleteApplicationInterface();
+    }
+
+    public void send_deleteApplicationInterface(String appInterfaceId) throws org.apache.thrift.TException
+    {
+      deleteApplicationInterface_args args = new deleteApplicationInterface_args();
+      args.setAppInterfaceId(appInterfaceId);
+      sendBase("deleteApplicationInterface", args);
+    }
+
+    public boolean recv_deleteApplicationInterface() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      deleteApplicationInterface_result result = new deleteApplicationInterface_result();
+      receiveBase(result, "deleteApplicationInterface");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "deleteApplicationInterface failed: unknown result");
+    }
+
+    public List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> getApplicationInputs(String appInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_getApplicationInputs(appInterfaceId);
+      return recv_getApplicationInputs();
+    }
+
+    public void send_getApplicationInputs(String appInterfaceId) throws org.apache.thrift.TException
+    {
+      getApplicationInputs_args args = new getApplicationInputs_args();
+      args.setAppInterfaceId(appInterfaceId);
+      sendBase("getApplicationInputs", args);
+    }
+
+    public List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> recv_getApplicationInputs() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      getApplicationInputs_result result = new getApplicationInputs_result();
+      receiveBase(result, "getApplicationInputs");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getApplicationInputs failed: unknown result");
+    }
+
+    public List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_getApplicationOutputs(appInterfaceId);
+      return recv_getApplicationOutputs();
+    }
+
+    public void send_getApplicationOutputs(String appInterfaceId) throws org.apache.thrift.TException
+    {
+      getApplicationOutputs_args args = new getApplicationOutputs_args();
+      args.setAppInterfaceId(appInterfaceId);
+      sendBase("getApplicationOutputs", args);
+    }
+
+    public List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> recv_getApplicationOutputs() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      getApplicationOutputs_result result = new getApplicationOutputs_result();
+      receiveBase(result, "getApplicationOutputs");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getApplicationOutputs failed: unknown result");
     }
 
   }
@@ -2271,23 +2817,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void registerAppicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void registerApplicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      registerAppicationModule_call method_call = new registerAppicationModule_call(applicationModule, resultHandler, this, ___protocolFactory, ___transport);
+      registerApplicationModule_call method_call = new registerApplicationModule_call(applicationModule, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class registerAppicationModule_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class registerApplicationModule_call extends org.apache.thrift.async.TAsyncMethodCall {
       private org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule;
-      public registerAppicationModule_call(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public registerApplicationModule_call(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.applicationModule = applicationModule;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("registerAppicationModule", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        registerAppicationModule_args args = new registerAppicationModule_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("registerApplicationModule", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        registerApplicationModule_args args = new registerApplicationModule_args();
         args.setApplicationModule(applicationModule);
         args.write(prot);
         prot.writeMessageEnd();
@@ -2299,27 +2845,27 @@ import org.slf4j.LoggerFactory;
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_registerAppicationModule();
+        return (new Client(prot)).recv_registerApplicationModule();
       }
     }
 
-    public void getAppicationModule(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getApplicationModule(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getAppicationModule_call method_call = new getAppicationModule_call(appModuleId, resultHandler, this, ___protocolFactory, ___transport);
+      getApplicationModule_call method_call = new getApplicationModule_call(appModuleId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class getAppicationModule_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class getApplicationModule_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String appModuleId;
-      public getAppicationModule_call(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public getApplicationModule_call(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.appModuleId = appModuleId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getAppicationModule", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        getAppicationModule_args args = new getAppicationModule_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getApplicationModule", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getApplicationModule_args args = new getApplicationModule_args();
         args.setAppModuleId(appModuleId);
         args.write(prot);
         prot.writeMessageEnd();
@@ -2331,29 +2877,29 @@ import org.slf4j.LoggerFactory;
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_getAppicationModule();
+        return (new Client(prot)).recv_getApplicationModule();
       }
     }
 
-    public void updateAppicationModule(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void updateApplicationModule(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      updateAppicationModule_call method_call = new updateAppicationModule_call(appModuleId, applicationModule, resultHandler, this, ___protocolFactory, ___transport);
+      updateApplicationModule_call method_call = new updateApplicationModule_call(appModuleId, applicationModule, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class updateAppicationModule_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class updateApplicationModule_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String appModuleId;
       private org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule;
-      public updateAppicationModule_call(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public updateApplicationModule_call(String appModuleId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.appModuleId = appModuleId;
         this.applicationModule = applicationModule;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateAppicationModule", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        updateAppicationModule_args args = new updateAppicationModule_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateApplicationModule", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        updateApplicationModule_args args = new updateApplicationModule_args();
         args.setAppModuleId(appModuleId);
         args.setApplicationModule(applicationModule);
         args.write(prot);
@@ -2366,27 +2912,27 @@ import org.slf4j.LoggerFactory;
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_updateAppicationModule();
+        return (new Client(prot)).recv_updateApplicationModule();
       }
     }
 
-    public void deleteAppicationModule(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void deleteApplicationModule(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      deleteAppicationModule_call method_call = new deleteAppicationModule_call(appModuleId, resultHandler, this, ___protocolFactory, ___transport);
+      deleteApplicationModule_call method_call = new deleteApplicationModule_call(appModuleId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
-    public static class deleteAppicationModule_call extends org.apache.thrift.async.TAsyncMethodCall {
+    public static class deleteApplicationModule_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String appModuleId;
-      public deleteAppicationModule_call(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public deleteApplicationModule_call(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.appModuleId = appModuleId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
-        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("deleteAppicationModule", org.apache.thrift.protocol.TMessageType.CALL, 0));
-        deleteAppicationModule_args args = new deleteAppicationModule_args();
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("deleteApplicationModule", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        deleteApplicationModule_args args = new deleteApplicationModule_args();
         args.setAppModuleId(appModuleId);
         args.write(prot);
         prot.writeMessageEnd();
@@ -2398,7 +2944,365 @@ import org.slf4j.LoggerFactory;
         }
         org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
         org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
-        return (new Client(prot)).recv_deleteAppicationModule();
+        return (new Client(prot)).recv_deleteApplicationModule();
+      }
+    }
+
+    public void registerApplicationDeployment(org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      registerApplicationDeployment_call method_call = new registerApplicationDeployment_call(applicationDeployment, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class registerApplicationDeployment_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment;
+      public registerApplicationDeployment_call(org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.applicationDeployment = applicationDeployment;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("registerApplicationDeployment", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        registerApplicationDeployment_args args = new registerApplicationDeployment_args();
+        args.setApplicationDeployment(applicationDeployment);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_registerApplicationDeployment();
+      }
+    }
+
+    public void getApplicationDeployment(String appDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getApplicationDeployment_call method_call = new getApplicationDeployment_call(appDeploymentId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getApplicationDeployment_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String appDeploymentId;
+      public getApplicationDeployment_call(String appDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.appDeploymentId = appDeploymentId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getApplicationDeployment", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getApplicationDeployment_args args = new getApplicationDeployment_args();
+        args.setAppDeploymentId(appDeploymentId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getApplicationDeployment();
+      }
+    }
+
+    public void updateApplicationDeployment(String appDeploymentId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      updateApplicationDeployment_call method_call = new updateApplicationDeployment_call(appDeploymentId, applicationDeployment, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class updateApplicationDeployment_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String appDeploymentId;
+      private org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment;
+      public updateApplicationDeployment_call(String appDeploymentId, org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.appDeploymentId = appDeploymentId;
+        this.applicationDeployment = applicationDeployment;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateApplicationDeployment", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        updateApplicationDeployment_args args = new updateApplicationDeployment_args();
+        args.setAppDeploymentId(appDeploymentId);
+        args.setApplicationDeployment(applicationDeployment);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public boolean getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_updateApplicationDeployment();
+      }
+    }
+
+    public void deleteApplicationDeployment(String appDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      deleteApplicationDeployment_call method_call = new deleteApplicationDeployment_call(appDeploymentId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class deleteApplicationDeployment_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String appDeploymentId;
+      public deleteApplicationDeployment_call(String appDeploymentId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.appDeploymentId = appDeploymentId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("deleteApplicationDeployment", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        deleteApplicationDeployment_args args = new deleteApplicationDeployment_args();
+        args.setAppDeploymentId(appDeploymentId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public boolean getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_deleteApplicationDeployment();
+      }
+    }
+
+    public void getAppModuleDeployedResources(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getAppModuleDeployedResources_call method_call = new getAppModuleDeployedResources_call(appModuleId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getAppModuleDeployedResources_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String appModuleId;
+      public getAppModuleDeployedResources_call(String appModuleId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.appModuleId = appModuleId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getAppModuleDeployedResources", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getAppModuleDeployedResources_args args = new getAppModuleDeployedResources_args();
+        args.setAppModuleId(appModuleId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public List<String> getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getAppModuleDeployedResources();
+      }
+    }
+
+    public void registerApplicationInterface(org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      registerApplicationInterface_call method_call = new registerApplicationInterface_call(applicationInterface, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class registerApplicationInterface_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface;
+      public registerApplicationInterface_call(org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.applicationInterface = applicationInterface;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("registerApplicationInterface", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        registerApplicationInterface_args args = new registerApplicationInterface_args();
+        args.setApplicationInterface(applicationInterface);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public String getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_registerApplicationInterface();
+      }
+    }
+
+    public void getApplicationInterface(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getApplicationInterface_call method_call = new getApplicationInterface_call(appInterfaceId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getApplicationInterface_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String appInterfaceId;
+      public getApplicationInterface_call(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.appInterfaceId = appInterfaceId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getApplicationInterface", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getApplicationInterface_args args = new getApplicationInterface_args();
+        args.setAppInterfaceId(appInterfaceId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getApplicationInterface();
+      }
+    }
+
+    public void updateApplicationInterface(String appInterfaceId, org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      updateApplicationInterface_call method_call = new updateApplicationInterface_call(appInterfaceId, applicationInterface, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class updateApplicationInterface_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String appInterfaceId;
+      private org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface;
+      public updateApplicationInterface_call(String appInterfaceId, org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.appInterfaceId = appInterfaceId;
+        this.applicationInterface = applicationInterface;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("updateApplicationInterface", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        updateApplicationInterface_args args = new updateApplicationInterface_args();
+        args.setAppInterfaceId(appInterfaceId);
+        args.setApplicationInterface(applicationInterface);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public boolean getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_updateApplicationInterface();
+      }
+    }
+
+    public void deleteApplicationInterface(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      deleteApplicationInterface_call method_call = new deleteApplicationInterface_call(appInterfaceId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class deleteApplicationInterface_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String appInterfaceId;
+      public deleteApplicationInterface_call(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.appInterfaceId = appInterfaceId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("deleteApplicationInterface", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        deleteApplicationInterface_args args = new deleteApplicationInterface_args();
+        args.setAppInterfaceId(appInterfaceId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public boolean getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_deleteApplicationInterface();
+      }
+    }
+
+    public void getApplicationInputs(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getApplicationInputs_call method_call = new getApplicationInputs_call(appInterfaceId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getApplicationInputs_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String appInterfaceId;
+      public getApplicationInputs_call(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.appInterfaceId = appInterfaceId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getApplicationInputs", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getApplicationInputs_args args = new getApplicationInputs_args();
+        args.setAppInterfaceId(appInterfaceId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getApplicationInputs();
+      }
+    }
+
+    public void getApplicationOutputs(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      getApplicationOutputs_call method_call = new getApplicationOutputs_call(appInterfaceId, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class getApplicationOutputs_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String appInterfaceId;
+      public getApplicationOutputs_call(String appInterfaceId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.appInterfaceId = appInterfaceId;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getApplicationOutputs", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        getApplicationOutputs_args args = new getApplicationOutputs_args();
+        args.setAppInterfaceId(appInterfaceId);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_getApplicationOutputs();
       }
     }
 
@@ -2439,10 +3343,21 @@ import org.slf4j.LoggerFactory;
       processMap.put("getJobStatuses", new getJobStatuses());
       processMap.put("cloneExperiment", new cloneExperiment());
       processMap.put("terminateExperiment", new terminateExperiment());
-      processMap.put("registerAppicationModule", new registerAppicationModule());
-      processMap.put("getAppicationModule", new getAppicationModule());
-      processMap.put("updateAppicationModule", new updateAppicationModule());
-      processMap.put("deleteAppicationModule", new deleteAppicationModule());
+      processMap.put("registerApplicationModule", new registerApplicationModule());
+      processMap.put("getApplicationModule", new getApplicationModule());
+      processMap.put("updateApplicationModule", new updateApplicationModule());
+      processMap.put("deleteApplicationModule", new deleteApplicationModule());
+      processMap.put("registerApplicationDeployment", new registerApplicationDeployment());
+      processMap.put("getApplicationDeployment", new getApplicationDeployment());
+      processMap.put("updateApplicationDeployment", new updateApplicationDeployment());
+      processMap.put("deleteApplicationDeployment", new deleteApplicationDeployment());
+      processMap.put("getAppModuleDeployedResources", new getAppModuleDeployedResources());
+      processMap.put("registerApplicationInterface", new registerApplicationInterface());
+      processMap.put("getApplicationInterface", new getApplicationInterface());
+      processMap.put("updateApplicationInterface", new updateApplicationInterface());
+      processMap.put("deleteApplicationInterface", new deleteApplicationInterface());
+      processMap.put("getApplicationInputs", new getApplicationInputs());
+      processMap.put("getApplicationOutputs", new getApplicationOutputs());
       return processMap;
     }
 
@@ -3109,23 +4024,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class registerAppicationModule<I extends Iface> extends org.apache.thrift.ProcessFunction<I, registerAppicationModule_args> {
-      public registerAppicationModule() {
-        super("registerAppicationModule");
+    public static class registerApplicationModule<I extends Iface> extends org.apache.thrift.ProcessFunction<I, registerApplicationModule_args> {
+      public registerApplicationModule() {
+        super("registerApplicationModule");
       }
 
-      public registerAppicationModule_args getEmptyArgsInstance() {
-        return new registerAppicationModule_args();
+      public registerApplicationModule_args getEmptyArgsInstance() {
+        return new registerApplicationModule_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public registerAppicationModule_result getResult(I iface, registerAppicationModule_args args) throws org.apache.thrift.TException {
-        registerAppicationModule_result result = new registerAppicationModule_result();
+      public registerApplicationModule_result getResult(I iface, registerApplicationModule_args args) throws org.apache.thrift.TException {
+        registerApplicationModule_result result = new registerApplicationModule_result();
         try {
-          result.success = iface.registerAppicationModule(args.applicationModule);
+          result.success = iface.registerApplicationModule(args.applicationModule);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -3137,23 +4052,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class getAppicationModule<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getAppicationModule_args> {
-      public getAppicationModule() {
-        super("getAppicationModule");
+    public static class getApplicationModule<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getApplicationModule_args> {
+      public getApplicationModule() {
+        super("getApplicationModule");
       }
 
-      public getAppicationModule_args getEmptyArgsInstance() {
-        return new getAppicationModule_args();
+      public getApplicationModule_args getEmptyArgsInstance() {
+        return new getApplicationModule_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public getAppicationModule_result getResult(I iface, getAppicationModule_args args) throws org.apache.thrift.TException {
-        getAppicationModule_result result = new getAppicationModule_result();
+      public getApplicationModule_result getResult(I iface, getApplicationModule_args args) throws org.apache.thrift.TException {
+        getApplicationModule_result result = new getApplicationModule_result();
         try {
-          result.success = iface.getAppicationModule(args.appModuleId);
+          result.success = iface.getApplicationModule(args.appModuleId);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -3165,23 +4080,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class updateAppicationModule<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateAppicationModule_args> {
-      public updateAppicationModule() {
-        super("updateAppicationModule");
+    public static class updateApplicationModule<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateApplicationModule_args> {
+      public updateApplicationModule() {
+        super("updateApplicationModule");
       }
 
-      public updateAppicationModule_args getEmptyArgsInstance() {
-        return new updateAppicationModule_args();
+      public updateApplicationModule_args getEmptyArgsInstance() {
+        return new updateApplicationModule_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public updateAppicationModule_result getResult(I iface, updateAppicationModule_args args) throws org.apache.thrift.TException {
-        updateAppicationModule_result result = new updateAppicationModule_result();
+      public updateApplicationModule_result getResult(I iface, updateApplicationModule_args args) throws org.apache.thrift.TException {
+        updateApplicationModule_result result = new updateApplicationModule_result();
         try {
-          result.success = iface.updateAppicationModule(args.appModuleId, args.applicationModule);
+          result.success = iface.updateApplicationModule(args.appModuleId, args.applicationModule);
           result.setSuccessIsSet(true);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
@@ -3194,24 +4109,336 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class deleteAppicationModule<I extends Iface> extends org.apache.thrift.ProcessFunction<I, deleteAppicationModule_args> {
-      public deleteAppicationModule() {
-        super("deleteAppicationModule");
+    public static class deleteApplicationModule<I extends Iface> extends org.apache.thrift.ProcessFunction<I, deleteApplicationModule_args> {
+      public deleteApplicationModule() {
+        super("deleteApplicationModule");
       }
 
-      public deleteAppicationModule_args getEmptyArgsInstance() {
-        return new deleteAppicationModule_args();
+      public deleteApplicationModule_args getEmptyArgsInstance() {
+        return new deleteApplicationModule_args();
       }
 
       protected boolean isOneway() {
         return false;
       }
 
-      public deleteAppicationModule_result getResult(I iface, deleteAppicationModule_args args) throws org.apache.thrift.TException {
-        deleteAppicationModule_result result = new deleteAppicationModule_result();
+      public deleteApplicationModule_result getResult(I iface, deleteApplicationModule_args args) throws org.apache.thrift.TException {
+        deleteApplicationModule_result result = new deleteApplicationModule_result();
         try {
-          result.success = iface.deleteAppicationModule(args.appModuleId);
+          result.success = iface.deleteApplicationModule(args.appModuleId);
           result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class registerApplicationDeployment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, registerApplicationDeployment_args> {
+      public registerApplicationDeployment() {
+        super("registerApplicationDeployment");
+      }
+
+      public registerApplicationDeployment_args getEmptyArgsInstance() {
+        return new registerApplicationDeployment_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public registerApplicationDeployment_result getResult(I iface, registerApplicationDeployment_args args) throws org.apache.thrift.TException {
+        registerApplicationDeployment_result result = new registerApplicationDeployment_result();
+        try {
+          result.success = iface.registerApplicationDeployment(args.applicationDeployment);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class getApplicationDeployment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getApplicationDeployment_args> {
+      public getApplicationDeployment() {
+        super("getApplicationDeployment");
+      }
+
+      public getApplicationDeployment_args getEmptyArgsInstance() {
+        return new getApplicationDeployment_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getApplicationDeployment_result getResult(I iface, getApplicationDeployment_args args) throws org.apache.thrift.TException {
+        getApplicationDeployment_result result = new getApplicationDeployment_result();
+        try {
+          result.success = iface.getApplicationDeployment(args.appDeploymentId);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class updateApplicationDeployment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateApplicationDeployment_args> {
+      public updateApplicationDeployment() {
+        super("updateApplicationDeployment");
+      }
+
+      public updateApplicationDeployment_args getEmptyArgsInstance() {
+        return new updateApplicationDeployment_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public updateApplicationDeployment_result getResult(I iface, updateApplicationDeployment_args args) throws org.apache.thrift.TException {
+        updateApplicationDeployment_result result = new updateApplicationDeployment_result();
+        try {
+          result.success = iface.updateApplicationDeployment(args.appDeploymentId, args.applicationDeployment);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class deleteApplicationDeployment<I extends Iface> extends org.apache.thrift.ProcessFunction<I, deleteApplicationDeployment_args> {
+      public deleteApplicationDeployment() {
+        super("deleteApplicationDeployment");
+      }
+
+      public deleteApplicationDeployment_args getEmptyArgsInstance() {
+        return new deleteApplicationDeployment_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public deleteApplicationDeployment_result getResult(I iface, deleteApplicationDeployment_args args) throws org.apache.thrift.TException {
+        deleteApplicationDeployment_result result = new deleteApplicationDeployment_result();
+        try {
+          result.success = iface.deleteApplicationDeployment(args.appDeploymentId);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class getAppModuleDeployedResources<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getAppModuleDeployedResources_args> {
+      public getAppModuleDeployedResources() {
+        super("getAppModuleDeployedResources");
+      }
+
+      public getAppModuleDeployedResources_args getEmptyArgsInstance() {
+        return new getAppModuleDeployedResources_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getAppModuleDeployedResources_result getResult(I iface, getAppModuleDeployedResources_args args) throws org.apache.thrift.TException {
+        getAppModuleDeployedResources_result result = new getAppModuleDeployedResources_result();
+        try {
+          result.success = iface.getAppModuleDeployedResources(args.appModuleId);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class registerApplicationInterface<I extends Iface> extends org.apache.thrift.ProcessFunction<I, registerApplicationInterface_args> {
+      public registerApplicationInterface() {
+        super("registerApplicationInterface");
+      }
+
+      public registerApplicationInterface_args getEmptyArgsInstance() {
+        return new registerApplicationInterface_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public registerApplicationInterface_result getResult(I iface, registerApplicationInterface_args args) throws org.apache.thrift.TException {
+        registerApplicationInterface_result result = new registerApplicationInterface_result();
+        try {
+          result.success = iface.registerApplicationInterface(args.applicationInterface);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class getApplicationInterface<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getApplicationInterface_args> {
+      public getApplicationInterface() {
+        super("getApplicationInterface");
+      }
+
+      public getApplicationInterface_args getEmptyArgsInstance() {
+        return new getApplicationInterface_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getApplicationInterface_result getResult(I iface, getApplicationInterface_args args) throws org.apache.thrift.TException {
+        getApplicationInterface_result result = new getApplicationInterface_result();
+        try {
+          result.success = iface.getApplicationInterface(args.appInterfaceId);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class updateApplicationInterface<I extends Iface> extends org.apache.thrift.ProcessFunction<I, updateApplicationInterface_args> {
+      public updateApplicationInterface() {
+        super("updateApplicationInterface");
+      }
+
+      public updateApplicationInterface_args getEmptyArgsInstance() {
+        return new updateApplicationInterface_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public updateApplicationInterface_result getResult(I iface, updateApplicationInterface_args args) throws org.apache.thrift.TException {
+        updateApplicationInterface_result result = new updateApplicationInterface_result();
+        try {
+          result.success = iface.updateApplicationInterface(args.appInterfaceId, args.applicationInterface);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class deleteApplicationInterface<I extends Iface> extends org.apache.thrift.ProcessFunction<I, deleteApplicationInterface_args> {
+      public deleteApplicationInterface() {
+        super("deleteApplicationInterface");
+      }
+
+      public deleteApplicationInterface_args getEmptyArgsInstance() {
+        return new deleteApplicationInterface_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public deleteApplicationInterface_result getResult(I iface, deleteApplicationInterface_args args) throws org.apache.thrift.TException {
+        deleteApplicationInterface_result result = new deleteApplicationInterface_result();
+        try {
+          result.success = iface.deleteApplicationInterface(args.appInterfaceId);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class getApplicationInputs<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getApplicationInputs_args> {
+      public getApplicationInputs() {
+        super("getApplicationInputs");
+      }
+
+      public getApplicationInputs_args getEmptyArgsInstance() {
+        return new getApplicationInputs_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getApplicationInputs_result getResult(I iface, getApplicationInputs_args args) throws org.apache.thrift.TException {
+        getApplicationInputs_result result = new getApplicationInputs_result();
+        try {
+          result.success = iface.getApplicationInputs(args.appInterfaceId);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class getApplicationOutputs<I extends Iface> extends org.apache.thrift.ProcessFunction<I, getApplicationOutputs_args> {
+      public getApplicationOutputs() {
+        super("getApplicationOutputs");
+      }
+
+      public getApplicationOutputs_args getEmptyArgsInstance() {
+        return new getApplicationOutputs_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public getApplicationOutputs_result getResult(I iface, getApplicationOutputs_args args) throws org.apache.thrift.TException {
+        getApplicationOutputs_result result = new getApplicationOutputs_result();
+        try {
+          result.success = iface.getApplicationOutputs(args.appInterfaceId);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -3260,10 +4487,21 @@ import org.slf4j.LoggerFactory;
       processMap.put("getJobStatuses", new getJobStatuses());
       processMap.put("cloneExperiment", new cloneExperiment());
       processMap.put("terminateExperiment", new terminateExperiment());
-      processMap.put("registerAppicationModule", new registerAppicationModule());
-      processMap.put("getAppicationModule", new getAppicationModule());
-      processMap.put("updateAppicationModule", new updateAppicationModule());
-      processMap.put("deleteAppicationModule", new deleteAppicationModule());
+      processMap.put("registerApplicationModule", new registerApplicationModule());
+      processMap.put("getApplicationModule", new getApplicationModule());
+      processMap.put("updateApplicationModule", new updateApplicationModule());
+      processMap.put("deleteApplicationModule", new deleteApplicationModule());
+      processMap.put("registerApplicationDeployment", new registerApplicationDeployment());
+      processMap.put("getApplicationDeployment", new getApplicationDeployment());
+      processMap.put("updateApplicationDeployment", new updateApplicationDeployment());
+      processMap.put("deleteApplicationDeployment", new deleteApplicationDeployment());
+      processMap.put("getAppModuleDeployedResources", new getAppModuleDeployedResources());
+      processMap.put("registerApplicationInterface", new registerApplicationInterface());
+      processMap.put("getApplicationInterface", new getApplicationInterface());
+      processMap.put("updateApplicationInterface", new updateApplicationInterface());
+      processMap.put("deleteApplicationInterface", new deleteApplicationInterface());
+      processMap.put("getApplicationInputs", new getApplicationInputs());
+      processMap.put("getApplicationOutputs", new getApplicationOutputs());
       return processMap;
     }
 
@@ -4861,20 +6099,20 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public static class registerAppicationModule<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, registerAppicationModule_args, String> {
-      public registerAppicationModule() {
-        super("registerAppicationModule");
+    public static class registerApplicationModule<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, registerApplicationModule_args, String> {
+      public registerApplicationModule() {
+        super("registerApplicationModule");
       }
 
-      public registerAppicationModule_args getEmptyArgsInstance() {
-        return new registerAppicationModule_args();
+      public registerApplicationModule_args getEmptyArgsInstance() {
+        return new registerApplicationModule_args();
       }
 
       public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<String>() { 
           public void onComplete(String o) {
-            registerAppicationModule_result result = new registerAppicationModule_result();
+            registerApplicationModule_result result = new registerApplicationModule_result();
             result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -4887,7 +6125,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            registerAppicationModule_result result = new registerAppicationModule_result();
+            registerApplicationModule_result result = new registerApplicationModule_result();
             if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
                         result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
@@ -4923,25 +6161,25 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, registerAppicationModule_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.registerAppicationModule(args.applicationModule,resultHandler);
+      public void start(I iface, registerApplicationModule_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.registerApplicationModule(args.applicationModule,resultHandler);
       }
     }
 
-    public static class getAppicationModule<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAppicationModule_args, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule> {
-      public getAppicationModule() {
-        super("getAppicationModule");
+    public static class getApplicationModule<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getApplicationModule_args, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule> {
+      public getApplicationModule() {
+        super("getApplicationModule");
       }
 
-      public getAppicationModule_args getEmptyArgsInstance() {
-        return new getAppicationModule_args();
+      public getApplicationModule_args getEmptyArgsInstance() {
+        return new getApplicationModule_args();
       }
 
       public AsyncMethodCallback<org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule>() { 
           public void onComplete(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule o) {
-            getAppicationModule_result result = new getAppicationModule_result();
+            getApplicationModule_result result = new getApplicationModule_result();
             result.success = o;
             try {
               fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
@@ -4954,7 +6192,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            getAppicationModule_result result = new getAppicationModule_result();
+            getApplicationModule_result result = new getApplicationModule_result();
             if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
                         result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
@@ -4990,25 +6228,25 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, getAppicationModule_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule> resultHandler) throws TException {
-        iface.getAppicationModule(args.appModuleId,resultHandler);
+      public void start(I iface, getApplicationModule_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule> resultHandler) throws TException {
+        iface.getApplicationModule(args.appModuleId,resultHandler);
       }
     }
 
-    public static class updateAppicationModule<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, updateAppicationModule_args, Boolean> {
-      public updateAppicationModule() {
-        super("updateAppicationModule");
+    public static class updateApplicationModule<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, updateApplicationModule_args, Boolean> {
+      public updateApplicationModule() {
+        super("updateApplicationModule");
       }
 
-      public updateAppicationModule_args getEmptyArgsInstance() {
-        return new updateAppicationModule_args();
+      public updateApplicationModule_args getEmptyArgsInstance() {
+        return new updateApplicationModule_args();
       }
 
       public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<Boolean>() { 
           public void onComplete(Boolean o) {
-            updateAppicationModule_result result = new updateAppicationModule_result();
+            updateApplicationModule_result result = new updateApplicationModule_result();
             result.success = o;
             result.setSuccessIsSet(true);
             try {
@@ -5022,7 +6260,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            updateAppicationModule_result result = new updateAppicationModule_result();
+            updateApplicationModule_result result = new updateApplicationModule_result();
             if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
                         result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
@@ -5058,25 +6296,25 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, updateAppicationModule_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.updateAppicationModule(args.appModuleId, args.applicationModule,resultHandler);
+      public void start(I iface, updateApplicationModule_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.updateApplicationModule(args.appModuleId, args.applicationModule,resultHandler);
       }
     }
 
-    public static class deleteAppicationModule<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, deleteAppicationModule_args, Boolean> {
-      public deleteAppicationModule() {
-        super("deleteAppicationModule");
+    public static class deleteApplicationModule<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, deleteApplicationModule_args, Boolean> {
+      public deleteApplicationModule() {
+        super("deleteApplicationModule");
       }
 
-      public deleteAppicationModule_args getEmptyArgsInstance() {
-        return new deleteAppicationModule_args();
+      public deleteApplicationModule_args getEmptyArgsInstance() {
+        return new deleteApplicationModule_args();
       }
 
       public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
         final org.apache.thrift.AsyncProcessFunction fcall = this;
         return new AsyncMethodCallback<Boolean>() { 
           public void onComplete(Boolean o) {
-            deleteAppicationModule_result result = new deleteAppicationModule_result();
+            deleteApplicationModule_result result = new deleteApplicationModule_result();
             result.success = o;
             result.setSuccessIsSet(true);
             try {
@@ -5090,7 +6328,7 @@ import org.slf4j.LoggerFactory;
           public void onError(Exception e) {
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
-            deleteAppicationModule_result result = new deleteAppicationModule_result();
+            deleteApplicationModule_result result = new deleteApplicationModule_result();
             if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
                         result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
                         result.setIreIsSet(true);
@@ -5126,8 +6364,749 @@ import org.slf4j.LoggerFactory;
         return false;
       }
 
-      public void start(I iface, deleteAppicationModule_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.deleteAppicationModule(args.appModuleId,resultHandler);
+      public void start(I iface, deleteApplicationModule_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.deleteApplicationModule(args.appModuleId,resultHandler);
+      }
+    }
+
+    public static class registerApplicationDeployment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, registerApplicationDeployment_args, String> {
+      public registerApplicationDeployment() {
+        super("registerApplicationDeployment");
+      }
+
+      public registerApplicationDeployment_args getEmptyArgsInstance() {
+        return new registerApplicationDeployment_args();
+      }
+
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
+            registerApplicationDeployment_result result = new registerApplicationDeployment_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            registerApplicationDeployment_result result = new registerApplicationDeployment_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, registerApplicationDeployment_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.registerApplicationDeployment(args.applicationDeployment,resultHandler);
+      }
+    }
+
+    public static class getApplicationDeployment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getApplicationDeployment_args, org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription> {
+      public getApplicationDeployment() {
+        super("getApplicationDeployment");
+      }
+
+      public getApplicationDeployment_args getEmptyArgsInstance() {
+        return new getApplicationDeployment_args();
+      }
+
+      public AsyncMethodCallback<org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription>() { 
+          public void onComplete(org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription o) {
+            getApplicationDeployment_result result = new getApplicationDeployment_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            getApplicationDeployment_result result = new getApplicationDeployment_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getApplicationDeployment_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription> resultHandler) throws TException {
+        iface.getApplicationDeployment(args.appDeploymentId,resultHandler);
+      }
+    }
+
+    public static class updateApplicationDeployment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, updateApplicationDeployment_args, Boolean> {
+      public updateApplicationDeployment() {
+        super("updateApplicationDeployment");
+      }
+
+      public updateApplicationDeployment_args getEmptyArgsInstance() {
+        return new updateApplicationDeployment_args();
+      }
+
+      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Boolean>() { 
+          public void onComplete(Boolean o) {
+            updateApplicationDeployment_result result = new updateApplicationDeployment_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            updateApplicationDeployment_result result = new updateApplicationDeployment_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, updateApplicationDeployment_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.updateApplicationDeployment(args.appDeploymentId, args.applicationDeployment,resultHandler);
+      }
+    }
+
+    public static class deleteApplicationDeployment<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, deleteApplicationDeployment_args, Boolean> {
+      public deleteApplicationDeployment() {
+        super("deleteApplicationDeployment");
+      }
+
+      public deleteApplicationDeployment_args getEmptyArgsInstance() {
+        return new deleteApplicationDeployment_args();
+      }
+
+      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Boolean>() { 
+          public void onComplete(Boolean o) {
+            deleteApplicationDeployment_result result = new deleteApplicationDeployment_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            deleteApplicationDeployment_result result = new deleteApplicationDeployment_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, deleteApplicationDeployment_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.deleteApplicationDeployment(args.appDeploymentId,resultHandler);
+      }
+    }
+
+    public static class getAppModuleDeployedResources<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getAppModuleDeployedResources_args, List<String>> {
+      public getAppModuleDeployedResources() {
+        super("getAppModuleDeployedResources");
+      }
+
+      public getAppModuleDeployedResources_args getEmptyArgsInstance() {
+        return new getAppModuleDeployedResources_args();
+      }
+
+      public AsyncMethodCallback<List<String>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<List<String>>() { 
+          public void onComplete(List<String> o) {
+            getAppModuleDeployedResources_result result = new getAppModuleDeployedResources_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            getAppModuleDeployedResources_result result = new getAppModuleDeployedResources_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getAppModuleDeployedResources_args args, org.apache.thrift.async.AsyncMethodCallback<List<String>> resultHandler) throws TException {
+        iface.getAppModuleDeployedResources(args.appModuleId,resultHandler);
+      }
+    }
+
+    public static class registerApplicationInterface<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, registerApplicationInterface_args, String> {
+      public registerApplicationInterface() {
+        super("registerApplicationInterface");
+      }
+
+      public registerApplicationInterface_args getEmptyArgsInstance() {
+        return new registerApplicationInterface_args();
+      }
+
+      public AsyncMethodCallback<String> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<String>() { 
+          public void onComplete(String o) {
+            registerApplicationInterface_result result = new registerApplicationInterface_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            registerApplicationInterface_result result = new registerApplicationInterface_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, registerApplicationInterface_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
+        iface.registerApplicationInterface(args.applicationInterface,resultHandler);
+      }
+    }
+
+    public static class getApplicationInterface<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getApplicationInterface_args, org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription> {
+      public getApplicationInterface() {
+        super("getApplicationInterface");
+      }
+
+      public getApplicationInterface_args getEmptyArgsInstance() {
+        return new getApplicationInterface_args();
+      }
+
+      public AsyncMethodCallback<org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription>() { 
+          public void onComplete(org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription o) {
+            getApplicationInterface_result result = new getApplicationInterface_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            getApplicationInterface_result result = new getApplicationInterface_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getApplicationInterface_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription> resultHandler) throws TException {
+        iface.getApplicationInterface(args.appInterfaceId,resultHandler);
+      }
+    }
+
+    public static class updateApplicationInterface<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, updateApplicationInterface_args, Boolean> {
+      public updateApplicationInterface() {
+        super("updateApplicationInterface");
+      }
+
+      public updateApplicationInterface_args getEmptyArgsInstance() {
+        return new updateApplicationInterface_args();
+      }
+
+      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Boolean>() { 
+          public void onComplete(Boolean o) {
+            updateApplicationInterface_result result = new updateApplicationInterface_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            updateApplicationInterface_result result = new updateApplicationInterface_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, updateApplicationInterface_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.updateApplicationInterface(args.appInterfaceId, args.applicationInterface,resultHandler);
+      }
+    }
+
+    public static class deleteApplicationInterface<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, deleteApplicationInterface_args, Boolean> {
+      public deleteApplicationInterface() {
+        super("deleteApplicationInterface");
+      }
+
+      public deleteApplicationInterface_args getEmptyArgsInstance() {
+        return new deleteApplicationInterface_args();
+      }
+
+      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Boolean>() { 
+          public void onComplete(Boolean o) {
+            deleteApplicationInterface_result result = new deleteApplicationInterface_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            deleteApplicationInterface_result result = new deleteApplicationInterface_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, deleteApplicationInterface_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.deleteApplicationInterface(args.appInterfaceId,resultHandler);
+      }
+    }
+
+    public static class getApplicationInputs<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getApplicationInputs_args, List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>> {
+      public getApplicationInputs() {
+        super("getApplicationInputs");
+      }
+
+      public getApplicationInputs_args getEmptyArgsInstance() {
+        return new getApplicationInputs_args();
+      }
+
+      public AsyncMethodCallback<List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>>() { 
+          public void onComplete(List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> o) {
+            getApplicationInputs_result result = new getApplicationInputs_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            getApplicationInputs_result result = new getApplicationInputs_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getApplicationInputs_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>> resultHandler) throws TException {
+        iface.getApplicationInputs(args.appInterfaceId,resultHandler);
+      }
+    }
+
+    public static class getApplicationOutputs<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, getApplicationOutputs_args, List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>> {
+      public getApplicationOutputs() {
+        super("getApplicationOutputs");
+      }
+
+      public getApplicationOutputs_args getEmptyArgsInstance() {
+        return new getApplicationOutputs_args();
+      }
+
+      public AsyncMethodCallback<List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>>() { 
+          public void onComplete(List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> o) {
+            getApplicationOutputs_result result = new getApplicationOutputs_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            getApplicationOutputs_result result = new getApplicationOutputs_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, getApplicationOutputs_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>> resultHandler) throws TException {
+        iface.getApplicationOutputs(args.appInterfaceId,resultHandler);
       }
     }
 
@@ -30152,15 +32131,15 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class registerAppicationModule_args implements org.apache.thrift.TBase<registerAppicationModule_args, registerAppicationModule_args._Fields>, java.io.Serializable, Cloneable, Comparable<registerAppicationModule_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerAppicationModule_args");
+  public static class registerApplicationModule_args implements org.apache.thrift.TBase<registerApplicationModule_args, registerApplicationModule_args._Fields>, java.io.Serializable, Cloneable, Comparable<registerApplicationModule_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerApplicationModule_args");
 
     private static final org.apache.thrift.protocol.TField APPLICATION_MODULE_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationModule", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new registerAppicationModule_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new registerAppicationModule_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new registerApplicationModule_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new registerApplicationModule_argsTupleSchemeFactory());
     }
 
     public org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule; // required
@@ -30230,13 +32209,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.APPLICATION_MODULE, new org.apache.thrift.meta_data.FieldMetaData("applicationModule", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerAppicationModule_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerApplicationModule_args.class, metaDataMap);
     }
 
-    public registerAppicationModule_args() {
+    public registerApplicationModule_args() {
     }
 
-    public registerAppicationModule_args(
+    public registerApplicationModule_args(
       org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule)
     {
       this();
@@ -30246,14 +32225,14 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public registerAppicationModule_args(registerAppicationModule_args other) {
+    public registerApplicationModule_args(registerApplicationModule_args other) {
       if (other.isSetApplicationModule()) {
         this.applicationModule = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule(other.applicationModule);
       }
     }
 
-    public registerAppicationModule_args deepCopy() {
-      return new registerAppicationModule_args(this);
+    public registerApplicationModule_args deepCopy() {
+      return new registerApplicationModule_args(this);
     }
 
     @Override
@@ -30265,7 +32244,7 @@ import org.slf4j.LoggerFactory;
       return this.applicationModule;
     }
 
-    public registerAppicationModule_args setApplicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) {
+    public registerApplicationModule_args setApplicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) {
       this.applicationModule = applicationModule;
       return this;
     }
@@ -30324,12 +32303,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof registerAppicationModule_args)
-        return this.equals((registerAppicationModule_args)that);
+      if (that instanceof registerApplicationModule_args)
+        return this.equals((registerApplicationModule_args)that);
       return false;
     }
 
-    public boolean equals(registerAppicationModule_args that) {
+    public boolean equals(registerApplicationModule_args that) {
       if (that == null)
         return false;
 
@@ -30351,7 +32330,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(registerAppicationModule_args other) {
+    public int compareTo(registerApplicationModule_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -30385,7 +32364,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("registerAppicationModule_args(");
+      StringBuilder sb = new StringBuilder("registerApplicationModule_args(");
       boolean first = true;
 
       sb.append("applicationModule:");
@@ -30426,15 +32405,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class registerAppicationModule_argsStandardSchemeFactory implements SchemeFactory {
-      public registerAppicationModule_argsStandardScheme getScheme() {
-        return new registerAppicationModule_argsStandardScheme();
+    private static class registerApplicationModule_argsStandardSchemeFactory implements SchemeFactory {
+      public registerApplicationModule_argsStandardScheme getScheme() {
+        return new registerApplicationModule_argsStandardScheme();
       }
     }
 
-    private static class registerAppicationModule_argsStandardScheme extends StandardScheme<registerAppicationModule_args> {
+    private static class registerApplicationModule_argsStandardScheme extends StandardScheme<registerApplicationModule_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, registerAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, registerApplicationModule_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -30464,7 +32443,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, registerAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, registerApplicationModule_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -30479,22 +32458,22 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class registerAppicationModule_argsTupleSchemeFactory implements SchemeFactory {
-      public registerAppicationModule_argsTupleScheme getScheme() {
-        return new registerAppicationModule_argsTupleScheme();
+    private static class registerApplicationModule_argsTupleSchemeFactory implements SchemeFactory {
+      public registerApplicationModule_argsTupleScheme getScheme() {
+        return new registerApplicationModule_argsTupleScheme();
       }
     }
 
-    private static class registerAppicationModule_argsTupleScheme extends TupleScheme<registerAppicationModule_args> {
+    private static class registerApplicationModule_argsTupleScheme extends TupleScheme<registerApplicationModule_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, registerAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, registerApplicationModule_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         struct.applicationModule.write(oprot);
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, registerAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, registerApplicationModule_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.applicationModule = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule();
         struct.applicationModule.read(iprot);
@@ -30504,8 +32483,8 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class registerAppicationModule_result implements org.apache.thrift.TBase<registerAppicationModule_result, registerAppicationModule_result._Fields>, java.io.Serializable, Cloneable, Comparable<registerAppicationModule_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerAppicationModule_result");
+  public static class registerApplicationModule_result implements org.apache.thrift.TBase<registerApplicationModule_result, registerApplicationModule_result._Fields>, java.io.Serializable, Cloneable, Comparable<registerApplicationModule_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerApplicationModule_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
@@ -30514,8 +32493,8 @@ import org.slf4j.LoggerFactory;
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new registerAppicationModule_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new registerAppicationModule_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new registerApplicationModule_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new registerApplicationModule_resultTupleSchemeFactory());
     }
 
     public String success; // required
@@ -30603,13 +32582,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerAppicationModule_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerApplicationModule_result.class, metaDataMap);
     }
 
-    public registerAppicationModule_result() {
+    public registerApplicationModule_result() {
     }
 
-    public registerAppicationModule_result(
+    public registerApplicationModule_result(
       String success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
@@ -30625,7 +32604,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public registerAppicationModule_result(registerAppicationModule_result other) {
+    public registerApplicationModule_result(registerApplicationModule_result other) {
       if (other.isSetSuccess()) {
         this.success = other.success;
       }
@@ -30640,8 +32619,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public registerAppicationModule_result deepCopy() {
-      return new registerAppicationModule_result(this);
+    public registerApplicationModule_result deepCopy() {
+      return new registerApplicationModule_result(this);
     }
 
     @Override
@@ -30656,7 +32635,7 @@ import org.slf4j.LoggerFactory;
       return this.success;
     }
 
-    public registerAppicationModule_result setSuccess(String success) {
+    public registerApplicationModule_result setSuccess(String success) {
       this.success = success;
       return this;
     }
@@ -30680,7 +32659,7 @@ import org.slf4j.LoggerFactory;
       return this.ire;
     }
 
-    public registerAppicationModule_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+    public registerApplicationModule_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -30704,7 +32683,7 @@ import org.slf4j.LoggerFactory;
       return this.ace;
     }
 
-    public registerAppicationModule_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+    public registerApplicationModule_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -30728,7 +32707,7 @@ import org.slf4j.LoggerFactory;
       return this.ase;
     }
 
-    public registerAppicationModule_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+    public registerApplicationModule_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -30826,12 +32805,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof registerAppicationModule_result)
-        return this.equals((registerAppicationModule_result)that);
+      if (that instanceof registerApplicationModule_result)
+        return this.equals((registerApplicationModule_result)that);
       return false;
     }
 
-    public boolean equals(registerAppicationModule_result that) {
+    public boolean equals(registerApplicationModule_result that) {
       if (that == null)
         return false;
 
@@ -30880,7 +32859,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(registerAppicationModule_result other) {
+    public int compareTo(registerApplicationModule_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -30944,7 +32923,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("registerAppicationModule_result(");
+      StringBuilder sb = new StringBuilder("registerApplicationModule_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -31003,15 +32982,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class registerAppicationModule_resultStandardSchemeFactory implements SchemeFactory {
-      public registerAppicationModule_resultStandardScheme getScheme() {
-        return new registerAppicationModule_resultStandardScheme();
+    private static class registerApplicationModule_resultStandardSchemeFactory implements SchemeFactory {
+      public registerApplicationModule_resultStandardScheme getScheme() {
+        return new registerApplicationModule_resultStandardScheme();
       }
     }
 
-    private static class registerAppicationModule_resultStandardScheme extends StandardScheme<registerAppicationModule_result> {
+    private static class registerApplicationModule_resultStandardScheme extends StandardScheme<registerApplicationModule_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, registerAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, registerApplicationModule_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -31067,7 +33046,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, registerAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, registerApplicationModule_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -31097,16 +33076,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class registerAppicationModule_resultTupleSchemeFactory implements SchemeFactory {
-      public registerAppicationModule_resultTupleScheme getScheme() {
-        return new registerAppicationModule_resultTupleScheme();
+    private static class registerApplicationModule_resultTupleSchemeFactory implements SchemeFactory {
+      public registerApplicationModule_resultTupleScheme getScheme() {
+        return new registerApplicationModule_resultTupleScheme();
       }
     }
 
-    private static class registerAppicationModule_resultTupleScheme extends TupleScheme<registerAppicationModule_result> {
+    private static class registerApplicationModule_resultTupleScheme extends TupleScheme<registerApplicationModule_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, registerAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, registerApplicationModule_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -31137,7 +33116,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, registerAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, registerApplicationModule_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
@@ -31164,15 +33143,15 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class getAppicationModule_args implements org.apache.thrift.TBase<getAppicationModule_args, getAppicationModule_args._Fields>, java.io.Serializable, Cloneable, Comparable<getAppicationModule_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAppicationModule_args");
+  public static class getApplicationModule_args implements org.apache.thrift.TBase<getApplicationModule_args, getApplicationModule_args._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationModule_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationModule_args");
 
     private static final org.apache.thrift.protocol.TField APP_MODULE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleId", org.apache.thrift.protocol.TType.STRING, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new getAppicationModule_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new getAppicationModule_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new getApplicationModule_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getApplicationModule_argsTupleSchemeFactory());
     }
 
     public String appModuleId; // required
@@ -31242,13 +33221,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.APP_MODULE_ID, new org.apache.thrift.meta_data.FieldMetaData("appModuleId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAppicationModule_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getApplicationModule_args.class, metaDataMap);
     }
 
-    public getAppicationModule_args() {
+    public getApplicationModule_args() {
     }
 
-    public getAppicationModule_args(
+    public getApplicationModule_args(
       String appModuleId)
     {
       this();
@@ -31258,14 +33237,14 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getAppicationModule_args(getAppicationModule_args other) {
+    public getApplicationModule_args(getApplicationModule_args other) {
       if (other.isSetAppModuleId()) {
         this.appModuleId = other.appModuleId;
       }
     }
 
-    public getAppicationModule_args deepCopy() {
-      return new getAppicationModule_args(this);
+    public getApplicationModule_args deepCopy() {
+      return new getApplicationModule_args(this);
     }
 
     @Override
@@ -31277,7 +33256,7 @@ import org.slf4j.LoggerFactory;
       return this.appModuleId;
     }
 
-    public getAppicationModule_args setAppModuleId(String appModuleId) {
+    public getApplicationModule_args setAppModuleId(String appModuleId) {
       this.appModuleId = appModuleId;
       return this;
     }
@@ -31336,12 +33315,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof getAppicationModule_args)
-        return this.equals((getAppicationModule_args)that);
+      if (that instanceof getApplicationModule_args)
+        return this.equals((getApplicationModule_args)that);
       return false;
     }
 
-    public boolean equals(getAppicationModule_args that) {
+    public boolean equals(getApplicationModule_args that) {
       if (that == null)
         return false;
 
@@ -31363,7 +33342,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(getAppicationModule_args other) {
+    public int compareTo(getApplicationModule_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -31397,7 +33376,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("getAppicationModule_args(");
+      StringBuilder sb = new StringBuilder("getApplicationModule_args(");
       boolean first = true;
 
       sb.append("appModuleId:");
@@ -31435,15 +33414,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class getAppicationModule_argsStandardSchemeFactory implements SchemeFactory {
-      public getAppicationModule_argsStandardScheme getScheme() {
-        return new getAppicationModule_argsStandardScheme();
+    private static class getApplicationModule_argsStandardSchemeFactory implements SchemeFactory {
+      public getApplicationModule_argsStandardScheme getScheme() {
+        return new getApplicationModule_argsStandardScheme();
       }
     }
 
-    private static class getAppicationModule_argsStandardScheme extends StandardScheme<getAppicationModule_args> {
+    private static class getApplicationModule_argsStandardScheme extends StandardScheme<getApplicationModule_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getApplicationModule_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -31472,7 +33451,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getApplicationModule_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -31487,22 +33466,22 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class getAppicationModule_argsTupleSchemeFactory implements SchemeFactory {
-      public getAppicationModule_argsTupleScheme getScheme() {
-        return new getAppicationModule_argsTupleScheme();
+    private static class getApplicationModule_argsTupleSchemeFactory implements SchemeFactory {
+      public getApplicationModule_argsTupleScheme getScheme() {
+        return new getApplicationModule_argsTupleScheme();
       }
     }
 
-    private static class getAppicationModule_argsTupleScheme extends TupleScheme<getAppicationModule_args> {
+    private static class getApplicationModule_argsTupleScheme extends TupleScheme<getApplicationModule_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationModule_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.appModuleId);
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationModule_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.appModuleId = iprot.readString();
         struct.setAppModuleIdIsSet(true);
@@ -31511,8 +33490,8 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class getAppicationModule_result implements org.apache.thrift.TBase<getAppicationModule_result, getAppicationModule_result._Fields>, java.io.Serializable, Cloneable, Comparable<getAppicationModule_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAppicationModule_result");
+  public static class getApplicationModule_result implements org.apache.thrift.TBase<getApplicationModule_result, getApplicationModule_result._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationModule_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationModule_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
@@ -31521,8 +33500,8 @@ import org.slf4j.LoggerFactory;
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new getAppicationModule_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new getAppicationModule_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new getApplicationModule_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getApplicationModule_resultTupleSchemeFactory());
     }
 
     public org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule success; // required
@@ -31610,13 +33589,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAppicationModule_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getApplicationModule_result.class, metaDataMap);
     }
 
-    public getAppicationModule_result() {
+    public getApplicationModule_result() {
     }
 
-    public getAppicationModule_result(
+    public getApplicationModule_result(
       org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
@@ -31632,7 +33611,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public getAppicationModule_result(getAppicationModule_result other) {
+    public getApplicationModule_result(getApplicationModule_result other) {
       if (other.isSetSuccess()) {
         this.success = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule(other.success);
       }
@@ -31647,8 +33626,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public getAppicationModule_result deepCopy() {
-      return new getAppicationModule_result(this);
+    public getApplicationModule_result deepCopy() {
+      return new getApplicationModule_result(this);
     }
 
     @Override
@@ -31663,7 +33642,7 @@ import org.slf4j.LoggerFactory;
       return this.success;
     }
 
-    public getAppicationModule_result setSuccess(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule success) {
+    public getApplicationModule_result setSuccess(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule success) {
       this.success = success;
       return this;
     }
@@ -31687,7 +33666,7 @@ import org.slf4j.LoggerFactory;
       return this.ire;
     }
 
-    public getAppicationModule_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+    public getApplicationModule_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -31711,7 +33690,7 @@ import org.slf4j.LoggerFactory;
       return this.ace;
     }
 
-    public getAppicationModule_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+    public getApplicationModule_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -31735,7 +33714,7 @@ import org.slf4j.LoggerFactory;
       return this.ase;
     }
 
-    public getAppicationModule_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+    public getApplicationModule_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -31833,12 +33812,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof getAppicationModule_result)
-        return this.equals((getAppicationModule_result)that);
+      if (that instanceof getApplicationModule_result)
+        return this.equals((getApplicationModule_result)that);
       return false;
     }
 
-    public boolean equals(getAppicationModule_result that) {
+    public boolean equals(getApplicationModule_result that) {
       if (that == null)
         return false;
 
@@ -31887,7 +33866,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(getAppicationModule_result other) {
+    public int compareTo(getApplicationModule_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -31951,7 +33930,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("getAppicationModule_result(");
+      StringBuilder sb = new StringBuilder("getApplicationModule_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -32013,15 +33992,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class getAppicationModule_resultStandardSchemeFactory implements SchemeFactory {
-      public getAppicationModule_resultStandardScheme getScheme() {
-        return new getAppicationModule_resultStandardScheme();
+    private static class getApplicationModule_resultStandardSchemeFactory implements SchemeFactory {
+      public getApplicationModule_resultStandardScheme getScheme() {
+        return new getApplicationModule_resultStandardScheme();
       }
     }
 
-    private static class getAppicationModule_resultStandardScheme extends StandardScheme<getAppicationModule_result> {
+    private static class getApplicationModule_resultStandardScheme extends StandardScheme<getApplicationModule_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, getAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getApplicationModule_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -32078,7 +34057,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, getAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getApplicationModule_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -32108,16 +34087,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class getAppicationModule_resultTupleSchemeFactory implements SchemeFactory {
-      public getAppicationModule_resultTupleScheme getScheme() {
-        return new getAppicationModule_resultTupleScheme();
+    private static class getApplicationModule_resultTupleSchemeFactory implements SchemeFactory {
+      public getApplicationModule_resultTupleScheme getScheme() {
+        return new getApplicationModule_resultTupleScheme();
       }
     }
 
-    private static class getAppicationModule_resultTupleScheme extends TupleScheme<getAppicationModule_result> {
+    private static class getApplicationModule_resultTupleScheme extends TupleScheme<getApplicationModule_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, getAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationModule_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -32148,7 +34127,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, getAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationModule_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
@@ -32176,16 +34155,16 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class updateAppicationModule_args implements org.apache.thrift.TBase<updateAppicationModule_args, updateAppicationModule_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateAppicationModule_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateAppicationModule_args");
+  public static class updateApplicationModule_args implements org.apache.thrift.TBase<updateApplicationModule_args, updateApplicationModule_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateApplicationModule_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateApplicationModule_args");
 
     private static final org.apache.thrift.protocol.TField APP_MODULE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField APPLICATION_MODULE_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationModule", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new updateAppicationModule_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new updateAppicationModule_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new updateApplicationModule_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateApplicationModule_argsTupleSchemeFactory());
     }
 
     public String appModuleId; // required
@@ -32261,13 +34240,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.APPLICATION_MODULE, new org.apache.thrift.meta_data.FieldMetaData("applicationModule", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateAppicationModule_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateApplicationModule_args.class, metaDataMap);
     }
 
-    public updateAppicationModule_args() {
+    public updateApplicationModule_args() {
     }
 
-    public updateAppicationModule_args(
+    public updateApplicationModule_args(
       String appModuleId,
       org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule)
     {
@@ -32279,7 +34258,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public updateAppicationModule_args(updateAppicationModule_args other) {
+    public updateApplicationModule_args(updateApplicationModule_args other) {
       if (other.isSetAppModuleId()) {
         this.appModuleId = other.appModuleId;
       }
@@ -32288,8 +34267,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public updateAppicationModule_args deepCopy() {
-      return new updateAppicationModule_args(this);
+    public updateApplicationModule_args deepCopy() {
+      return new updateApplicationModule_args(this);
     }
 
     @Override
@@ -32302,7 +34281,7 @@ import org.slf4j.LoggerFactory;
       return this.appModuleId;
     }
 
-    public updateAppicationModule_args setAppModuleId(String appModuleId) {
+    public updateApplicationModule_args setAppModuleId(String appModuleId) {
       this.appModuleId = appModuleId;
       return this;
     }
@@ -32326,7 +34305,7 @@ import org.slf4j.LoggerFactory;
       return this.applicationModule;
     }
 
-    public updateAppicationModule_args setApplicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) {
+    public updateApplicationModule_args setApplicationModule(org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule applicationModule) {
       this.applicationModule = applicationModule;
       return this;
     }
@@ -32398,12 +34377,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof updateAppicationModule_args)
-        return this.equals((updateAppicationModule_args)that);
+      if (that instanceof updateApplicationModule_args)
+        return this.equals((updateApplicationModule_args)that);
       return false;
     }
 
-    public boolean equals(updateAppicationModule_args that) {
+    public boolean equals(updateApplicationModule_args that) {
       if (that == null)
         return false;
 
@@ -32434,7 +34413,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(updateAppicationModule_args other) {
+    public int compareTo(updateApplicationModule_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -32478,7 +34457,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("updateAppicationModule_args(");
+      StringBuilder sb = new StringBuilder("updateApplicationModule_args(");
       boolean first = true;
 
       sb.append("appModuleId:");
@@ -32530,15 +34509,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class updateAppicationModule_argsStandardSchemeFactory implements SchemeFactory {
-      public updateAppicationModule_argsStandardScheme getScheme() {
-        return new updateAppicationModule_argsStandardScheme();
+    private static class updateApplicationModule_argsStandardSchemeFactory implements SchemeFactory {
+      public updateApplicationModule_argsStandardScheme getScheme() {
+        return new updateApplicationModule_argsStandardScheme();
       }
     }
 
-    private static class updateAppicationModule_argsStandardScheme extends StandardScheme<updateAppicationModule_args> {
+    private static class updateApplicationModule_argsStandardScheme extends StandardScheme<updateApplicationModule_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, updateAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateApplicationModule_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -32576,7 +34555,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, updateAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateApplicationModule_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -32596,23 +34575,23 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class updateAppicationModule_argsTupleSchemeFactory implements SchemeFactory {
-      public updateAppicationModule_argsTupleScheme getScheme() {
-        return new updateAppicationModule_argsTupleScheme();
+    private static class updateApplicationModule_argsTupleSchemeFactory implements SchemeFactory {
+      public updateApplicationModule_argsTupleScheme getScheme() {
+        return new updateApplicationModule_argsTupleScheme();
       }
     }
 
-    private static class updateAppicationModule_argsTupleScheme extends TupleScheme<updateAppicationModule_args> {
+    private static class updateApplicationModule_argsTupleScheme extends TupleScheme<updateApplicationModule_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, updateAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateApplicationModule_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.appModuleId);
         struct.applicationModule.write(oprot);
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, updateAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateApplicationModule_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.appModuleId = iprot.readString();
         struct.setAppModuleIdIsSet(true);
@@ -32624,8 +34603,8 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class updateAppicationModule_result implements org.apache.thrift.TBase<updateAppicationModule_result, updateAppicationModule_result._Fields>, java.io.Serializable, Cloneable, Comparable<updateAppicationModule_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateAppicationModule_result");
+  public static class updateApplicationModule_result implements org.apache.thrift.TBase<updateApplicationModule_result, updateApplicationModule_result._Fields>, java.io.Serializable, Cloneable, Comparable<updateApplicationModule_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateApplicationModule_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
@@ -32634,8 +34613,8 @@ import org.slf4j.LoggerFactory;
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new updateAppicationModule_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new updateAppicationModule_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new updateApplicationModule_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateApplicationModule_resultTupleSchemeFactory());
     }
 
     public boolean success; // required
@@ -32725,13 +34704,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateAppicationModule_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateApplicationModule_result.class, metaDataMap);
     }
 
-    public updateAppicationModule_result() {
+    public updateApplicationModule_result() {
     }
 
-    public updateAppicationModule_result(
+    public updateApplicationModule_result(
       boolean success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
@@ -32748,7 +34727,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public updateAppicationModule_result(updateAppicationModule_result other) {
+    public updateApplicationModule_result(updateApplicationModule_result other) {
       __isset_bitfield = other.__isset_bitfield;
       this.success = other.success;
       if (other.isSetIre()) {
@@ -32762,8 +34741,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public updateAppicationModule_result deepCopy() {
-      return new updateAppicationModule_result(this);
+    public updateApplicationModule_result deepCopy() {
+      return new updateApplicationModule_result(this);
     }
 
     @Override
@@ -32779,7 +34758,7 @@ import org.slf4j.LoggerFactory;
       return this.success;
     }
 
-    public updateAppicationModule_result setSuccess(boolean success) {
+    public updateApplicationModule_result setSuccess(boolean success) {
       this.success = success;
       setSuccessIsSet(true);
       return this;
@@ -32802,7 +34781,7 @@ import org.slf4j.LoggerFactory;
       return this.ire;
     }
 
-    public updateAppicationModule_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+    public updateApplicationModule_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -32826,7 +34805,7 @@ import org.slf4j.LoggerFactory;
       return this.ace;
     }
 
-    public updateAppicationModule_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+    public updateApplicationModule_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -32850,7 +34829,7 @@ import org.slf4j.LoggerFactory;
       return this.ase;
     }
 
-    public updateAppicationModule_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+    public updateApplicationModule_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -32948,12 +34927,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof updateAppicationModule_result)
-        return this.equals((updateAppicationModule_result)that);
+      if (that instanceof updateApplicationModule_result)
+        return this.equals((updateApplicationModule_result)that);
       return false;
     }
 
-    public boolean equals(updateAppicationModule_result that) {
+    public boolean equals(updateApplicationModule_result that) {
       if (that == null)
         return false;
 
@@ -33002,7 +34981,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(updateAppicationModule_result other) {
+    public int compareTo(updateApplicationModule_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -33066,7 +35045,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("updateAppicationModule_result(");
+      StringBuilder sb = new StringBuilder("updateApplicationModule_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -33123,15 +35102,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class updateAppicationModule_resultStandardSchemeFactory implements SchemeFactory {
-      public updateAppicationModule_resultStandardScheme getScheme() {
-        return new updateAppicationModule_resultStandardScheme();
+    private static class updateApplicationModule_resultStandardSchemeFactory implements SchemeFactory {
+      public updateApplicationModule_resultStandardScheme getScheme() {
+        return new updateApplicationModule_resultStandardScheme();
       }
     }
 
-    private static class updateAppicationModule_resultStandardScheme extends StandardScheme<updateAppicationModule_result> {
+    private static class updateApplicationModule_resultStandardScheme extends StandardScheme<updateApplicationModule_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, updateAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateApplicationModule_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -33187,7 +35166,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, updateAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateApplicationModule_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -33217,16 +35196,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class updateAppicationModule_resultTupleSchemeFactory implements SchemeFactory {
-      public updateAppicationModule_resultTupleScheme getScheme() {
-        return new updateAppicationModule_resultTupleScheme();
+    private static class updateApplicationModule_resultTupleSchemeFactory implements SchemeFactory {
+      public updateApplicationModule_resultTupleScheme getScheme() {
+        return new updateApplicationModule_resultTupleScheme();
       }
     }
 
-    private static class updateAppicationModule_resultTupleScheme extends TupleScheme<updateAppicationModule_result> {
+    private static class updateApplicationModule_resultTupleScheme extends TupleScheme<updateApplicationModule_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, updateAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateApplicationModule_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -33257,7 +35236,7 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, updateAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateApplicationModule_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
@@ -33284,15 +35263,15 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class deleteAppicationModule_args implements org.apache.thrift.TBase<deleteAppicationModule_args, deleteAppicationModule_args._Fields>, java.io.Serializable, Cloneable, Comparable<deleteAppicationModule_args>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteAppicationModule_args");
+  public static class deleteApplicationModule_args implements org.apache.thrift.TBase<deleteApplicationModule_args, deleteApplicationModule_args._Fields>, java.io.Serializable, Cloneable, Comparable<deleteApplicationModule_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteApplicationModule_args");
 
     private static final org.apache.thrift.protocol.TField APP_MODULE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleId", org.apache.thrift.protocol.TType.STRING, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new deleteAppicationModule_argsStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new deleteAppicationModule_argsTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new deleteApplicationModule_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new deleteApplicationModule_argsTupleSchemeFactory());
     }
 
     public String appModuleId; // required
@@ -33362,13 +35341,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.APP_MODULE_ID, new org.apache.thrift.meta_data.FieldMetaData("appModuleId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteAppicationModule_args.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteApplicationModule_args.class, metaDataMap);
     }
 
-    public deleteAppicationModule_args() {
+    public deleteApplicationModule_args() {
     }
 
-    public deleteAppicationModule_args(
+    public deleteApplicationModule_args(
       String appModuleId)
     {
       this();
@@ -33378,14 +35357,14 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public deleteAppicationModule_args(deleteAppicationModule_args other) {
+    public deleteApplicationModule_args(deleteApplicationModule_args other) {
       if (other.isSetAppModuleId()) {
         this.appModuleId = other.appModuleId;
       }
     }
 
-    public deleteAppicationModule_args deepCopy() {
-      return new deleteAppicationModule_args(this);
+    public deleteApplicationModule_args deepCopy() {
+      return new deleteApplicationModule_args(this);
     }
 
     @Override
@@ -33397,7 +35376,7 @@ import org.slf4j.LoggerFactory;
       return this.appModuleId;
     }
 
-    public deleteAppicationModule_args setAppModuleId(String appModuleId) {
+    public deleteApplicationModule_args setAppModuleId(String appModuleId) {
       this.appModuleId = appModuleId;
       return this;
     }
@@ -33456,12 +35435,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof deleteAppicationModule_args)
-        return this.equals((deleteAppicationModule_args)that);
+      if (that instanceof deleteApplicationModule_args)
+        return this.equals((deleteApplicationModule_args)that);
       return false;
     }
 
-    public boolean equals(deleteAppicationModule_args that) {
+    public boolean equals(deleteApplicationModule_args that) {
       if (that == null)
         return false;
 
@@ -33483,7 +35462,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(deleteAppicationModule_args other) {
+    public int compareTo(deleteApplicationModule_args other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -33517,7 +35496,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("deleteAppicationModule_args(");
+      StringBuilder sb = new StringBuilder("deleteApplicationModule_args(");
       boolean first = true;
 
       sb.append("appModuleId:");
@@ -33555,15 +35534,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class deleteAppicationModule_argsStandardSchemeFactory implements SchemeFactory {
-      public deleteAppicationModule_argsStandardScheme getScheme() {
-        return new deleteAppicationModule_argsStandardScheme();
+    private static class deleteApplicationModule_argsStandardSchemeFactory implements SchemeFactory {
+      public deleteApplicationModule_argsStandardScheme getScheme() {
+        return new deleteApplicationModule_argsStandardScheme();
       }
     }
 
-    private static class deleteAppicationModule_argsStandardScheme extends StandardScheme<deleteAppicationModule_args> {
+    private static class deleteApplicationModule_argsStandardScheme extends StandardScheme<deleteApplicationModule_args> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, deleteAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, deleteApplicationModule_args struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -33592,7 +35571,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, deleteAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, deleteApplicationModule_args struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -33607,22 +35586,22 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class deleteAppicationModule_argsTupleSchemeFactory implements SchemeFactory {
-      public deleteAppicationModule_argsTupleScheme getScheme() {
-        return new deleteAppicationModule_argsTupleScheme();
+    private static class deleteApplicationModule_argsTupleSchemeFactory implements SchemeFactory {
+      public deleteApplicationModule_argsTupleScheme getScheme() {
+        return new deleteApplicationModule_argsTupleScheme();
       }
     }
 
-    private static class deleteAppicationModule_argsTupleScheme extends TupleScheme<deleteAppicationModule_args> {
+    private static class deleteApplicationModule_argsTupleScheme extends TupleScheme<deleteApplicationModule_args> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, deleteAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, deleteApplicationModule_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.appModuleId);
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, deleteAppicationModule_args struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, deleteApplicationModule_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.appModuleId = iprot.readString();
         struct.setAppModuleIdIsSet(true);
@@ -33631,8 +35610,8 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  public static class deleteAppicationModule_result implements org.apache.thrift.TBase<deleteAppicationModule_result, deleteAppicationModule_result._Fields>, java.io.Serializable, Cloneable, Comparable<deleteAppicationModule_result>   {
-    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteAppicationModule_result");
+  public static class deleteApplicationModule_result implements org.apache.thrift.TBase<deleteApplicationModule_result, deleteApplicationModule_result._Fields>, java.io.Serializable, Cloneable, Comparable<deleteApplicationModule_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteApplicationModule_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
     private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
@@ -33641,8 +35620,8 @@ import org.slf4j.LoggerFactory;
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
-      schemes.put(StandardScheme.class, new deleteAppicationModule_resultStandardSchemeFactory());
-      schemes.put(TupleScheme.class, new deleteAppicationModule_resultTupleSchemeFactory());
+      schemes.put(StandardScheme.class, new deleteApplicationModule_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new deleteApplicationModule_resultTupleSchemeFactory());
     }
 
     public boolean success; // required
@@ -33732,13 +35711,13 @@ import org.slf4j.LoggerFactory;
       tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
-      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteAppicationModule_result.class, metaDataMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteApplicationModule_result.class, metaDataMap);
     }
 
-    public deleteAppicationModule_result() {
+    public deleteApplicationModule_result() {
     }
 
-    public deleteAppicationModule_result(
+    public deleteApplicationModule_result(
       boolean success,
       org.apache.airavata.model.error.InvalidRequestException ire,
       org.apache.airavata.model.error.AiravataClientException ace,
@@ -33755,7 +35734,7 @@ import org.slf4j.LoggerFactory;
     /**
      * Performs a deep copy on <i>other</i>.
      */
-    public deleteAppicationModule_result(deleteAppicationModule_result other) {
+    public deleteApplicationModule_result(deleteApplicationModule_result other) {
       __isset_bitfield = other.__isset_bitfield;
       this.success = other.success;
       if (other.isSetIre()) {
@@ -33769,8 +35748,8 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public deleteAppicationModule_result deepCopy() {
-      return new deleteAppicationModule_result(this);
+    public deleteApplicationModule_result deepCopy() {
+      return new deleteApplicationModule_result(this);
     }
 
     @Override
@@ -33786,7 +35765,7 @@ import org.slf4j.LoggerFactory;
       return this.success;
     }
 
-    public deleteAppicationModule_result setSuccess(boolean success) {
+    public deleteApplicationModule_result setSuccess(boolean success) {
       this.success = success;
       setSuccessIsSet(true);
       return this;
@@ -33809,7 +35788,7 @@ import org.slf4j.LoggerFactory;
       return this.ire;
     }
 
-    public deleteAppicationModule_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+    public deleteApplicationModule_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
       this.ire = ire;
       return this;
     }
@@ -33833,7 +35812,7 @@ import org.slf4j.LoggerFactory;
       return this.ace;
     }
 
-    public deleteAppicationModule_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+    public deleteApplicationModule_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
       this.ace = ace;
       return this;
     }
@@ -33857,7 +35836,7 @@ import org.slf4j.LoggerFactory;
       return this.ase;
     }
 
-    public deleteAppicationModule_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+    public deleteApplicationModule_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
       this.ase = ase;
       return this;
     }
@@ -33955,12 +35934,12 @@ import org.slf4j.LoggerFactory;
     public boolean equals(Object that) {
       if (that == null)
         return false;
-      if (that instanceof deleteAppicationModule_result)
-        return this.equals((deleteAppicationModule_result)that);
+      if (that instanceof deleteApplicationModule_result)
+        return this.equals((deleteApplicationModule_result)that);
       return false;
     }
 
-    public boolean equals(deleteAppicationModule_result that) {
+    public boolean equals(deleteApplicationModule_result that) {
       if (that == null)
         return false;
 
@@ -34009,7 +35988,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public int compareTo(deleteAppicationModule_result other) {
+    public int compareTo(deleteApplicationModule_result other) {
       if (!getClass().equals(other.getClass())) {
         return getClass().getName().compareTo(other.getClass().getName());
       }
@@ -34073,7 +36052,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public String toString() {
-      StringBuilder sb = new StringBuilder("deleteAppicationModule_result(");
+      StringBuilder sb = new StringBuilder("deleteApplicationModule_result(");
       boolean first = true;
 
       sb.append("success:");
@@ -34130,15 +36109,15 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    private static class deleteAppicationModule_resultStandardSchemeFactory implements SchemeFactory {
-      public deleteAppicationModule_resultStandardScheme getScheme() {
-        return new deleteAppicationModule_resultStandardScheme();
+    private static class deleteApplicationModule_resultStandardSchemeFactory implements SchemeFactory {
+      public deleteApplicationModule_resultStandardScheme getScheme() {
+        return new deleteApplicationModule_resultStandardScheme();
       }
     }
 
-    private static class deleteAppicationModule_resultStandardScheme extends StandardScheme<deleteAppicationModule_result> {
+    private static class deleteApplicationModule_resultStandardScheme extends StandardScheme<deleteApplicationModule_result> {
 
-      public void read(org.apache.thrift.protocol.TProtocol iprot, deleteAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol iprot, deleteApplicationModule_result struct) throws org.apache.thrift.TException {
         org.apache.thrift.protocol.TField schemeField;
         iprot.readStructBegin();
         while (true)
@@ -34194,7 +36173,7 @@ import org.slf4j.LoggerFactory;
         struct.validate();
       }
 
-      public void write(org.apache.thrift.protocol.TProtocol oprot, deleteAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol oprot, deleteApplicationModule_result struct) throws org.apache.thrift.TException {
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
@@ -34224,16 +36203,16 @@ import org.slf4j.LoggerFactory;
 
     }
 
-    private static class deleteAppicationModule_resultTupleSchemeFactory implements SchemeFactory {
-      public deleteAppicationModule_resultTupleScheme getScheme() {
-        return new deleteAppicationModule_resultTupleScheme();
+    private static class deleteApplicationModule_resultTupleSchemeFactory implements SchemeFactory {
+      public deleteApplicationModule_resultTupleScheme getScheme() {
+        return new deleteApplicationModule_resultTupleScheme();
       }
     }
 
-    private static class deleteAppicationModule_resultTupleScheme extends TupleScheme<deleteAppicationModule_result> {
+    private static class deleteApplicationModule_resultTupleScheme extends TupleScheme<deleteApplicationModule_result> {
 
       @Override
-      public void write(org.apache.thrift.protocol.TProtocol prot, deleteAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void write(org.apache.thrift.protocol.TProtocol prot, deleteApplicationModule_result struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         BitSet optionals = new BitSet();
         if (struct.isSetSuccess()) {
@@ -34264,11 +36243,11467 @@ import org.slf4j.LoggerFactory;
       }
 
       @Override
-      public void read(org.apache.thrift.protocol.TProtocol prot, deleteAppicationModule_result struct) throws org.apache.thrift.TException {
+      public void read(org.apache.thrift.protocol.TProtocol prot, deleteApplicationModule_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class registerApplicationDeployment_args implements org.apache.thrift.TBase<registerApplicationDeployment_args, registerApplicationDeployment_args._Fields>, java.io.Serializable, Cloneable, Comparable<registerApplicationDeployment_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerApplicationDeployment_args");
+
+    private static final org.apache.thrift.protocol.TField APPLICATION_DEPLOYMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationDeployment", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new registerApplicationDeployment_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new registerApplicationDeployment_argsTupleSchemeFactory());
+    }
+
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APPLICATION_DEPLOYMENT((short)1, "applicationDeployment");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APPLICATION_DEPLOYMENT
+            return APPLICATION_DEPLOYMENT;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APPLICATION_DEPLOYMENT, new org.apache.thrift.meta_data.FieldMetaData("applicationDeployment", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerApplicationDeployment_args.class, metaDataMap);
+    }
+
+    public registerApplicationDeployment_args() {
+    }
+
+    public registerApplicationDeployment_args(
+      org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment)
+    {
+      this();
+      this.applicationDeployment = applicationDeployment;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public registerApplicationDeployment_args(registerApplicationDeployment_args other) {
+      if (other.isSetApplicationDeployment()) {
+        this.applicationDeployment = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription(other.applicationDeployment);
+      }
+    }
+
+    public registerApplicationDeployment_args deepCopy() {
+      return new registerApplicationDeployment_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.applicationDeployment = null;
+    }
+
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription getApplicationDeployment() {
+      return this.applicationDeployment;
+    }
+
+    public registerApplicationDeployment_args setApplicationDeployment(org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment) {
+      this.applicationDeployment = applicationDeployment;
+      return this;
+    }
+
+    public void unsetApplicationDeployment() {
+      this.applicationDeployment = null;
+    }
+
+    /** Returns true if field applicationDeployment is set (has been assigned a value) and false otherwise */
+    public boolean isSetApplicationDeployment() {
+      return this.applicationDeployment != null;
+    }
+
+    public void setApplicationDeploymentIsSet(boolean value) {
+      if (!value) {
+        this.applicationDeployment = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APPLICATION_DEPLOYMENT:
+        if (value == null) {
+          unsetApplicationDeployment();
+        } else {
+          setApplicationDeployment((org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APPLICATION_DEPLOYMENT:
+        return getApplicationDeployment();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APPLICATION_DEPLOYMENT:
+        return isSetApplicationDeployment();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof registerApplicationDeployment_args)
+        return this.equals((registerApplicationDeployment_args)that);
+      return false;
+    }
+
+    public boolean equals(registerApplicationDeployment_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_applicationDeployment = true && this.isSetApplicationDeployment();
+      boolean that_present_applicationDeployment = true && that.isSetApplicationDeployment();
+      if (this_present_applicationDeployment || that_present_applicationDeployment) {
+        if (!(this_present_applicationDeployment && that_present_applicationDeployment))
+          return false;
+        if (!this.applicationDeployment.equals(that.applicationDeployment))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(registerApplicationDeployment_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetApplicationDeployment()).compareTo(other.isSetApplicationDeployment());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetApplicationDeployment()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationDeployment, other.applicationDeployment);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("registerApplicationDeployment_args(");
+      boolean first = true;
+
+      sb.append("applicationDeployment:");
+      if (this.applicationDeployment == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationDeployment);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (applicationDeployment == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'applicationDeployment' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (applicationDeployment != null) {
+        applicationDeployment.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class registerApplicationDeployment_argsStandardSchemeFactory implements SchemeFactory {
+      public registerApplicationDeployment_argsStandardScheme getScheme() {
+        return new registerApplicationDeployment_argsStandardScheme();
+      }
+    }
+
+    private static class registerApplicationDeployment_argsStandardScheme extends StandardScheme<registerApplicationDeployment_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, registerApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APPLICATION_DEPLOYMENT
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.applicationDeployment = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription();
+                struct.applicationDeployment.read(iprot);
+                struct.setApplicationDeploymentIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, registerApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.applicationDeployment != null) {
+          oprot.writeFieldBegin(APPLICATION_DEPLOYMENT_FIELD_DESC);
+          struct.applicationDeployment.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class registerApplicationDeployment_argsTupleSchemeFactory implements SchemeFactory {
+      public registerApplicationDeployment_argsTupleScheme getScheme() {
+        return new registerApplicationDeployment_argsTupleScheme();
+      }
+    }
+
+    private static class registerApplicationDeployment_argsTupleScheme extends TupleScheme<registerApplicationDeployment_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, registerApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.applicationDeployment.write(oprot);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, registerApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.applicationDeployment = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription();
+        struct.applicationDeployment.read(iprot);
+        struct.setApplicationDeploymentIsSet(true);
+      }
+    }
+
+  }
+
+  public static class registerApplicationDeployment_result implements org.apache.thrift.TBase<registerApplicationDeployment_result, registerApplicationDeployment_result._Fields>, java.io.Serializable, Cloneable, Comparable<registerApplicationDeployment_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerApplicationDeployment_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new registerApplicationDeployment_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new registerApplicationDeployment_resultTupleSchemeFactory());
+    }
+
+    public String success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerApplicationDeployment_result.class, metaDataMap);
+    }
+
+    public registerApplicationDeployment_result() {
+    }
+
+    public registerApplicationDeployment_result(
+      String success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public registerApplicationDeployment_result(registerApplicationDeployment_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public registerApplicationDeployment_result deepCopy() {
+      return new registerApplicationDeployment_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public registerApplicationDeployment_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public registerApplicationDeployment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public registerApplicationDeployment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public registerApplicationDeployment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof registerApplicationDeployment_result)
+        return this.equals((registerApplicationDeployment_result)that);
+      return false;
+    }
+
+    public boolean equals(registerApplicationDeployment_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(registerApplicationDeployment_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("registerApplicationDeployment_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class registerApplicationDeployment_resultStandardSchemeFactory implements SchemeFactory {
+      public registerApplicationDeployment_resultStandardScheme getScheme() {
+        return new registerApplicationDeployment_resultStandardScheme();
+      }
+    }
+
+    private static class registerApplicationDeployment_resultStandardScheme extends StandardScheme<registerApplicationDeployment_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, registerApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, registerApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class registerApplicationDeployment_resultTupleSchemeFactory implements SchemeFactory {
+      public registerApplicationDeployment_resultTupleScheme getScheme() {
+        return new registerApplicationDeployment_resultTupleScheme();
+      }
+    }
+
+    private static class registerApplicationDeployment_resultTupleScheme extends TupleScheme<registerApplicationDeployment_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, registerApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, registerApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getApplicationDeployment_args implements org.apache.thrift.TBase<getApplicationDeployment_args, getApplicationDeployment_args._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationDeployment_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationDeployment_args");
+
+    private static final org.apache.thrift.protocol.TField APP_DEPLOYMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appDeploymentId", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getApplicationDeployment_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getApplicationDeployment_argsTupleSchemeFactory());
+    }
+
+    public String appDeploymentId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APP_DEPLOYMENT_ID((short)1, "appDeploymentId");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APP_DEPLOYMENT_ID
+            return APP_DEPLOYMENT_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APP_DEPLOYMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("appDeploymentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getApplicationDeployment_args.class, metaDataMap);
+    }
+
+    public getApplicationDeployment_args() {
+    }
+
+    public getApplicationDeployment_args(
+      String appDeploymentId)
+    {
+      this();
+      this.appDeploymentId = appDeploymentId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getApplicationDeployment_args(getApplicationDeployment_args other) {
+      if (other.isSetAppDeploymentId()) {
+        this.appDeploymentId = other.appDeploymentId;
+      }
+    }
+
+    public getApplicationDeployment_args deepCopy() {
+      return new getApplicationDeployment_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.appDeploymentId = null;
+    }
+
+    public String getAppDeploymentId() {
+      return this.appDeploymentId;
+    }
+
+    public getApplicationDeployment_args setAppDeploymentId(String appDeploymentId) {
+      this.appDeploymentId = appDeploymentId;
+      return this;
+    }
+
+    public void unsetAppDeploymentId() {
+      this.appDeploymentId = null;
+    }
+
+    /** Returns true if field appDeploymentId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAppDeploymentId() {
+      return this.appDeploymentId != null;
+    }
+
+    public void setAppDeploymentIdIsSet(boolean value) {
+      if (!value) {
+        this.appDeploymentId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APP_DEPLOYMENT_ID:
+        if (value == null) {
+          unsetAppDeploymentId();
+        } else {
+          setAppDeploymentId((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APP_DEPLOYMENT_ID:
+        return getAppDeploymentId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APP_DEPLOYMENT_ID:
+        return isSetAppDeploymentId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getApplicationDeployment_args)
+        return this.equals((getApplicationDeployment_args)that);
+      return false;
+    }
+
+    public boolean equals(getApplicationDeployment_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_appDeploymentId = true && this.isSetAppDeploymentId();
+      boolean that_present_appDeploymentId = true && that.isSetAppDeploymentId();
+      if (this_present_appDeploymentId || that_present_appDeploymentId) {
+        if (!(this_present_appDeploymentId && that_present_appDeploymentId))
+          return false;
+        if (!this.appDeploymentId.equals(that.appDeploymentId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getApplicationDeployment_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAppDeploymentId()).compareTo(other.isSetAppDeploymentId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAppDeploymentId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.appDeploymentId, other.appDeploymentId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getApplicationDeployment_args(");
+      boolean first = true;
+
+      sb.append("appDeploymentId:");
+      if (this.appDeploymentId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.appDeploymentId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (appDeploymentId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'appDeploymentId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getApplicationDeployment_argsStandardSchemeFactory implements SchemeFactory {
+      public getApplicationDeployment_argsStandardScheme getScheme() {
+        return new getApplicationDeployment_argsStandardScheme();
+      }
+    }
+
+    private static class getApplicationDeployment_argsStandardScheme extends StandardScheme<getApplicationDeployment_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APP_DEPLOYMENT_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.appDeploymentId = iprot.readString();
+                struct.setAppDeploymentIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.appDeploymentId != null) {
+          oprot.writeFieldBegin(APP_DEPLOYMENT_ID_FIELD_DESC);
+          oprot.writeString(struct.appDeploymentId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getApplicationDeployment_argsTupleSchemeFactory implements SchemeFactory {
+      public getApplicationDeployment_argsTupleScheme getScheme() {
+        return new getApplicationDeployment_argsTupleScheme();
+      }
+    }
+
+    private static class getApplicationDeployment_argsTupleScheme extends TupleScheme<getApplicationDeployment_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.appDeploymentId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.appDeploymentId = iprot.readString();
+        struct.setAppDeploymentIdIsSet(true);
+      }
+    }
+
+  }
+
+  public static class getApplicationDeployment_result implements org.apache.thrift.TBase<getApplicationDeployment_result, getApplicationDeployment_result._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationDeployment_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationDeployment_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getApplicationDeployment_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getApplicationDeployment_resultTupleSchemeFactory());
+    }
+
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription.class)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getApplicationDeployment_result.class, metaDataMap);
+    }
+
+    public getApplicationDeployment_result() {
+    }
+
+    public getApplicationDeployment_result(
+      org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getApplicationDeployment_result(getApplicationDeployment_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription(other.success);
+      }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public getApplicationDeployment_result deepCopy() {
+      return new getApplicationDeployment_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription getSuccess() {
+      return this.success;
+    }
+
+    public getApplicationDeployment_result setSuccess(org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public getApplicationDeployment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public getApplicationDeployment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public getApplicationDeployment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getApplicationDeployment_result)
+        return this.equals((getApplicationDeployment_result)that);
+      return false;
+    }
+
+    public boolean equals(getApplicationDeployment_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getApplicationDeployment_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getApplicationDeployment_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getApplicationDeployment_resultStandardSchemeFactory implements SchemeFactory {
+      public getApplicationDeployment_resultStandardScheme getScheme() {
+        return new getApplicationDeployment_resultStandardScheme();
+      }
+    }
+
+    private static class getApplicationDeployment_resultStandardScheme extends StandardScheme<getApplicationDeployment_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getApplicationDeployment_resultTupleSchemeFactory implements SchemeFactory {
+      public getApplicationDeployment_resultTupleScheme getScheme() {
+        return new getApplicationDeployment_resultTupleScheme();
+      }
+    }
+
+    private static class getApplicationDeployment_resultTupleScheme extends TupleScheme<getApplicationDeployment_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class updateApplicationDeployment_args implements org.apache.thrift.TBase<updateApplicationDeployment_args, updateApplicationDeployment_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateApplicationDeployment_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateApplicationDeployment_args");
+
+    private static final org.apache.thrift.protocol.TField APP_DEPLOYMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appDeploymentId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField APPLICATION_DEPLOYMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationDeployment", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new updateApplicationDeployment_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateApplicationDeployment_argsTupleSchemeFactory());
+    }
+
+    public String appDeploymentId; // required
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APP_DEPLOYMENT_ID((short)1, "appDeploymentId"),
+      APPLICATION_DEPLOYMENT((short)2, "applicationDeployment");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APP_DEPLOYMENT_ID
+            return APP_DEPLOYMENT_ID;
+          case 2: // APPLICATION_DEPLOYMENT
+            return APPLICATION_DEPLOYMENT;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APP_DEPLOYMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("appDeploymentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.APPLICATION_DEPLOYMENT, new org.apache.thrift.meta_data.FieldMetaData("applicationDeployment", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateApplicationDeployment_args.class, metaDataMap);
+    }
+
+    public updateApplicationDeployment_args() {
+    }
+
+    public updateApplicationDeployment_args(
+      String appDeploymentId,
+      org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment)
+    {
+      this();
+      this.appDeploymentId = appDeploymentId;
+      this.applicationDeployment = applicationDeployment;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public updateApplicationDeployment_args(updateApplicationDeployment_args other) {
+      if (other.isSetAppDeploymentId()) {
+        this.appDeploymentId = other.appDeploymentId;
+      }
+      if (other.isSetApplicationDeployment()) {
+        this.applicationDeployment = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription(other.applicationDeployment);
+      }
+    }
+
+    public updateApplicationDeployment_args deepCopy() {
+      return new updateApplicationDeployment_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.appDeploymentId = null;
+      this.applicationDeployment = null;
+    }
+
+    public String getAppDeploymentId() {
+      return this.appDeploymentId;
+    }
+
+    public updateApplicationDeployment_args setAppDeploymentId(String appDeploymentId) {
+      this.appDeploymentId = appDeploymentId;
+      return this;
+    }
+
+    public void unsetAppDeploymentId() {
+      this.appDeploymentId = null;
+    }
+
+    /** Returns true if field appDeploymentId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAppDeploymentId() {
+      return this.appDeploymentId != null;
+    }
+
+    public void setAppDeploymentIdIsSet(boolean value) {
+      if (!value) {
+        this.appDeploymentId = null;
+      }
+    }
+
+    public org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription getApplicationDeployment() {
+      return this.applicationDeployment;
+    }
+
+    public updateApplicationDeployment_args setApplicationDeployment(org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription applicationDeployment) {
+      this.applicationDeployment = applicationDeployment;
+      return this;
+    }
+
+    public void unsetApplicationDeployment() {
+      this.applicationDeployment = null;
+    }
+
+    /** Returns true if field applicationDeployment is set (has been assigned a value) and false otherwise */
+    public boolean isSetApplicationDeployment() {
+      return this.applicationDeployment != null;
+    }
+
+    public void setApplicationDeploymentIsSet(boolean value) {
+      if (!value) {
+        this.applicationDeployment = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APP_DEPLOYMENT_ID:
+        if (value == null) {
+          unsetAppDeploymentId();
+        } else {
+          setAppDeploymentId((String)value);
+        }
+        break;
+
+      case APPLICATION_DEPLOYMENT:
+        if (value == null) {
+          unsetApplicationDeployment();
+        } else {
+          setApplicationDeployment((org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APP_DEPLOYMENT_ID:
+        return getAppDeploymentId();
+
+      case APPLICATION_DEPLOYMENT:
+        return getApplicationDeployment();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APP_DEPLOYMENT_ID:
+        return isSetAppDeploymentId();
+      case APPLICATION_DEPLOYMENT:
+        return isSetApplicationDeployment();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof updateApplicationDeployment_args)
+        return this.equals((updateApplicationDeployment_args)that);
+      return false;
+    }
+
+    public boolean equals(updateApplicationDeployment_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_appDeploymentId = true && this.isSetAppDeploymentId();
+      boolean that_present_appDeploymentId = true && that.isSetAppDeploymentId();
+      if (this_present_appDeploymentId || that_present_appDeploymentId) {
+        if (!(this_present_appDeploymentId && that_present_appDeploymentId))
+          return false;
+        if (!this.appDeploymentId.equals(that.appDeploymentId))
+          return false;
+      }
+
+      boolean this_present_applicationDeployment = true && this.isSetApplicationDeployment();
+      boolean that_present_applicationDeployment = true && that.isSetApplicationDeployment();
+      if (this_present_applicationDeployment || that_present_applicationDeployment) {
+        if (!(this_present_applicationDeployment && that_present_applicationDeployment))
+          return false;
+        if (!this.applicationDeployment.equals(that.applicationDeployment))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(updateApplicationDeployment_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAppDeploymentId()).compareTo(other.isSetAppDeploymentId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAppDeploymentId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.appDeploymentId, other.appDeploymentId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetApplicationDeployment()).compareTo(other.isSetApplicationDeployment());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetApplicationDeployment()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationDeployment, other.applicationDeployment);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("updateApplicationDeployment_args(");
+      boolean first = true;
+
+      sb.append("appDeploymentId:");
+      if (this.appDeploymentId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.appDeploymentId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("applicationDeployment:");
+      if (this.applicationDeployment == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationDeployment);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (appDeploymentId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'appDeploymentId' was not present! Struct: " + toString());
+      }
+      if (applicationDeployment == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'applicationDeployment' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (applicationDeployment != null) {
+        applicationDeployment.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class updateApplicationDeployment_argsStandardSchemeFactory implements SchemeFactory {
+      public updateApplicationDeployment_argsStandardScheme getScheme() {
+        return new updateApplicationDeployment_argsStandardScheme();
+      }
+    }
+
+    private static class updateApplicationDeployment_argsStandardScheme extends StandardScheme<updateApplicationDeployment_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APP_DEPLOYMENT_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.appDeploymentId = iprot.readString();
+                struct.setAppDeploymentIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // APPLICATION_DEPLOYMENT
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.applicationDeployment = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription();
+                struct.applicationDeployment.read(iprot);
+                struct.setApplicationDeploymentIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.appDeploymentId != null) {
+          oprot.writeFieldBegin(APP_DEPLOYMENT_ID_FIELD_DESC);
+          oprot.writeString(struct.appDeploymentId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.applicationDeployment != null) {
+          oprot.writeFieldBegin(APPLICATION_DEPLOYMENT_FIELD_DESC);
+          struct.applicationDeployment.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class updateApplicationDeployment_argsTupleSchemeFactory implements SchemeFactory {
+      public updateApplicationDeployment_argsTupleScheme getScheme() {
+        return new updateApplicationDeployment_argsTupleScheme();
+      }
+    }
+
+    private static class updateApplicationDeployment_argsTupleScheme extends TupleScheme<updateApplicationDeployment_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.appDeploymentId);
+        struct.applicationDeployment.write(oprot);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.appDeploymentId = iprot.readString();
+        struct.setAppDeploymentIdIsSet(true);
+        struct.applicationDeployment = new org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription();
+        struct.applicationDeployment.read(iprot);
+        struct.setApplicationDeploymentIsSet(true);
+      }
+    }
+
+  }
+
+  public static class updateApplicationDeployment_result implements org.apache.thrift.TBase<updateApplicationDeployment_result, updateApplicationDeployment_result._Fields>, java.io.Serializable, Cloneable, Comparable<updateApplicationDeployment_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateApplicationDeployment_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new updateApplicationDeployment_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateApplicationDeployment_resultTupleSchemeFactory());
+    }
+
+    public boolean success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateApplicationDeployment_result.class, metaDataMap);
+    }
+
+    public updateApplicationDeployment_result() {
+    }
+
+    public updateApplicationDeployment_result(
+      boolean success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public updateApplicationDeployment_result(updateApplicationDeployment_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public updateApplicationDeployment_result deepCopy() {
+      return new updateApplicationDeployment_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public updateApplicationDeployment_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public updateApplicationDeployment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public updateApplicationDeployment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public updateApplicationDeployment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Boolean)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return Boolean.valueOf(isSuccess());
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof updateApplicationDeployment_result)
+        return this.equals((updateApplicationDeployment_result)that);
+      return false;
+    }
+
+    public boolean equals(updateApplicationDeployment_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(updateApplicationDeployment_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("updateApplicationDeployment_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class updateApplicationDeployment_resultStandardSchemeFactory implements SchemeFactory {
+      public updateApplicationDeployment_resultStandardScheme getScheme() {
+        return new updateApplicationDeployment_resultStandardScheme();
+      }
+    }
+
+    private static class updateApplicationDeployment_resultStandardScheme extends StandardScheme<updateApplicationDeployment_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class updateApplicationDeployment_resultTupleSchemeFactory implements SchemeFactory {
+      public updateApplicationDeployment_resultTupleScheme getScheme() {
+        return new updateApplicationDeployment_resultTupleScheme();
+      }
+    }
+
+    private static class updateApplicationDeployment_resultTupleScheme extends TupleScheme<updateApplicationDeployment_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class deleteApplicationDeployment_args implements org.apache.thrift.TBase<deleteApplicationDeployment_args, deleteApplicationDeployment_args._Fields>, java.io.Serializable, Cloneable, Comparable<deleteApplicationDeployment_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteApplicationDeployment_args");
+
+    private static final org.apache.thrift.protocol.TField APP_DEPLOYMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appDeploymentId", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new deleteApplicationDeployment_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new deleteApplicationDeployment_argsTupleSchemeFactory());
+    }
+
+    public String appDeploymentId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APP_DEPLOYMENT_ID((short)1, "appDeploymentId");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APP_DEPLOYMENT_ID
+            return APP_DEPLOYMENT_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APP_DEPLOYMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("appDeploymentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteApplicationDeployment_args.class, metaDataMap);
+    }
+
+    public deleteApplicationDeployment_args() {
+    }
+
+    public deleteApplicationDeployment_args(
+      String appDeploymentId)
+    {
+      this();
+      this.appDeploymentId = appDeploymentId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public deleteApplicationDeployment_args(deleteApplicationDeployment_args other) {
+      if (other.isSetAppDeploymentId()) {
+        this.appDeploymentId = other.appDeploymentId;
+      }
+    }
+
+    public deleteApplicationDeployment_args deepCopy() {
+      return new deleteApplicationDeployment_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.appDeploymentId = null;
+    }
+
+    public String getAppDeploymentId() {
+      return this.appDeploymentId;
+    }
+
+    public deleteApplicationDeployment_args setAppDeploymentId(String appDeploymentId) {
+      this.appDeploymentId = appDeploymentId;
+      return this;
+    }
+
+    public void unsetAppDeploymentId() {
+      this.appDeploymentId = null;
+    }
+
+    /** Returns true if field appDeploymentId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAppDeploymentId() {
+      return this.appDeploymentId != null;
+    }
+
+    public void setAppDeploymentIdIsSet(boolean value) {
+      if (!value) {
+        this.appDeploymentId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APP_DEPLOYMENT_ID:
+        if (value == null) {
+          unsetAppDeploymentId();
+        } else {
+          setAppDeploymentId((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APP_DEPLOYMENT_ID:
+        return getAppDeploymentId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APP_DEPLOYMENT_ID:
+        return isSetAppDeploymentId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof deleteApplicationDeployment_args)
+        return this.equals((deleteApplicationDeployment_args)that);
+      return false;
+    }
+
+    public boolean equals(deleteApplicationDeployment_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_appDeploymentId = true && this.isSetAppDeploymentId();
+      boolean that_present_appDeploymentId = true && that.isSetAppDeploymentId();
+      if (this_present_appDeploymentId || that_present_appDeploymentId) {
+        if (!(this_present_appDeploymentId && that_present_appDeploymentId))
+          return false;
+        if (!this.appDeploymentId.equals(that.appDeploymentId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(deleteApplicationDeployment_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAppDeploymentId()).compareTo(other.isSetAppDeploymentId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAppDeploymentId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.appDeploymentId, other.appDeploymentId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("deleteApplicationDeployment_args(");
+      boolean first = true;
+
+      sb.append("appDeploymentId:");
+      if (this.appDeploymentId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.appDeploymentId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (appDeploymentId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'appDeploymentId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class deleteApplicationDeployment_argsStandardSchemeFactory implements SchemeFactory {
+      public deleteApplicationDeployment_argsStandardScheme getScheme() {
+        return new deleteApplicationDeployment_argsStandardScheme();
+      }
+    }
+
+    private static class deleteApplicationDeployment_argsStandardScheme extends StandardScheme<deleteApplicationDeployment_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, deleteApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APP_DEPLOYMENT_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.appDeploymentId = iprot.readString();
+                struct.setAppDeploymentIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, deleteApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.appDeploymentId != null) {
+          oprot.writeFieldBegin(APP_DEPLOYMENT_ID_FIELD_DESC);
+          oprot.writeString(struct.appDeploymentId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class deleteApplicationDeployment_argsTupleSchemeFactory implements SchemeFactory {
+      public deleteApplicationDeployment_argsTupleScheme getScheme() {
+        return new deleteApplicationDeployment_argsTupleScheme();
+      }
+    }
+
+    private static class deleteApplicationDeployment_argsTupleScheme extends TupleScheme<deleteApplicationDeployment_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, deleteApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.appDeploymentId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, deleteApplicationDeployment_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.appDeploymentId = iprot.readString();
+        struct.setAppDeploymentIdIsSet(true);
+      }
+    }
+
+  }
+
+  public static class deleteApplicationDeployment_result implements org.apache.thrift.TBase<deleteApplicationDeployment_result, deleteApplicationDeployment_result._Fields>, java.io.Serializable, Cloneable, Comparable<deleteApplicationDeployment_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteApplicationDeployment_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new deleteApplicationDeployment_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new deleteApplicationDeployment_resultTupleSchemeFactory());
+    }
+
+    public boolean success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteApplicationDeployment_result.class, metaDataMap);
+    }
+
+    public deleteApplicationDeployment_result() {
+    }
+
+    public deleteApplicationDeployment_result(
+      boolean success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public deleteApplicationDeployment_result(deleteApplicationDeployment_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public deleteApplicationDeployment_result deepCopy() {
+      return new deleteApplicationDeployment_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public deleteApplicationDeployment_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public deleteApplicationDeployment_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public deleteApplicationDeployment_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public deleteApplicationDeployment_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Boolean)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return Boolean.valueOf(isSuccess());
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof deleteApplicationDeployment_result)
+        return this.equals((deleteApplicationDeployment_result)that);
+      return false;
+    }
+
+    public boolean equals(deleteApplicationDeployment_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(deleteApplicationDeployment_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("deleteApplicationDeployment_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class deleteApplicationDeployment_resultStandardSchemeFactory implements SchemeFactory {
+      public deleteApplicationDeployment_resultStandardScheme getScheme() {
+        return new deleteApplicationDeployment_resultStandardScheme();
+      }
+    }
+
+    private static class deleteApplicationDeployment_resultStandardScheme extends StandardScheme<deleteApplicationDeployment_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, deleteApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, deleteApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class deleteApplicationDeployment_resultTupleSchemeFactory implements SchemeFactory {
+      public deleteApplicationDeployment_resultTupleScheme getScheme() {
+        return new deleteApplicationDeployment_resultTupleScheme();
+      }
+    }
+
+    private static class deleteApplicationDeployment_resultTupleScheme extends TupleScheme<deleteApplicationDeployment_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, deleteApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, deleteApplicationDeployment_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getAppModuleDeployedResources_args implements org.apache.thrift.TBase<getAppModuleDeployedResources_args, getAppModuleDeployedResources_args._Fields>, java.io.Serializable, Cloneable, Comparable<getAppModuleDeployedResources_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAppModuleDeployedResources_args");
+
+    private static final org.apache.thrift.protocol.TField APP_MODULE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleId", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getAppModuleDeployedResources_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getAppModuleDeployedResources_argsTupleSchemeFactory());
+    }
+
+    public String appModuleId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APP_MODULE_ID((short)1, "appModuleId");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APP_MODULE_ID
+            return APP_MODULE_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APP_MODULE_ID, new org.apache.thrift.meta_data.FieldMetaData("appModuleId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAppModuleDeployedResources_args.class, metaDataMap);
+    }
+
+    public getAppModuleDeployedResources_args() {
+    }
+
+    public getAppModuleDeployedResources_args(
+      String appModuleId)
+    {
+      this();
+      this.appModuleId = appModuleId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getAppModuleDeployedResources_args(getAppModuleDeployedResources_args other) {
+      if (other.isSetAppModuleId()) {
+        this.appModuleId = other.appModuleId;
+      }
+    }
+
+    public getAppModuleDeployedResources_args deepCopy() {
+      return new getAppModuleDeployedResources_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.appModuleId = null;
+    }
+
+    public String getAppModuleId() {
+      return this.appModuleId;
+    }
+
+    public getAppModuleDeployedResources_args setAppModuleId(String appModuleId) {
+      this.appModuleId = appModuleId;
+      return this;
+    }
+
+    public void unsetAppModuleId() {
+      this.appModuleId = null;
+    }
+
+    /** Returns true if field appModuleId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAppModuleId() {
+      return this.appModuleId != null;
+    }
+
+    public void setAppModuleIdIsSet(boolean value) {
+      if (!value) {
+        this.appModuleId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APP_MODULE_ID:
+        if (value == null) {
+          unsetAppModuleId();
+        } else {
+          setAppModuleId((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APP_MODULE_ID:
+        return getAppModuleId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APP_MODULE_ID:
+        return isSetAppModuleId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getAppModuleDeployedResources_args)
+        return this.equals((getAppModuleDeployedResources_args)that);
+      return false;
+    }
+
+    public boolean equals(getAppModuleDeployedResources_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_appModuleId = true && this.isSetAppModuleId();
+      boolean that_present_appModuleId = true && that.isSetAppModuleId();
+      if (this_present_appModuleId || that_present_appModuleId) {
+        if (!(this_present_appModuleId && that_present_appModuleId))
+          return false;
+        if (!this.appModuleId.equals(that.appModuleId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getAppModuleDeployedResources_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAppModuleId()).compareTo(other.isSetAppModuleId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAppModuleId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.appModuleId, other.appModuleId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getAppModuleDeployedResources_args(");
+      boolean first = true;
+
+      sb.append("appModuleId:");
+      if (this.appModuleId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.appModuleId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (appModuleId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'appModuleId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getAppModuleDeployedResources_argsStandardSchemeFactory implements SchemeFactory {
+      public getAppModuleDeployedResources_argsStandardScheme getScheme() {
+        return new getAppModuleDeployedResources_argsStandardScheme();
+      }
+    }
+
+    private static class getAppModuleDeployedResources_argsStandardScheme extends StandardScheme<getAppModuleDeployedResources_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getAppModuleDeployedResources_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APP_MODULE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.appModuleId = iprot.readString();
+                struct.setAppModuleIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getAppModuleDeployedResources_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.appModuleId != null) {
+          oprot.writeFieldBegin(APP_MODULE_ID_FIELD_DESC);
+          oprot.writeString(struct.appModuleId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getAppModuleDeployedResources_argsTupleSchemeFactory implements SchemeFactory {
+      public getAppModuleDeployedResources_argsTupleScheme getScheme() {
+        return new getAppModuleDeployedResources_argsTupleScheme();
+      }
+    }
+
+    private static class getAppModuleDeployedResources_argsTupleScheme extends TupleScheme<getAppModuleDeployedResources_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getAppModuleDeployedResources_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.appModuleId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getAppModuleDeployedResources_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.appModuleId = iprot.readString();
+        struct.setAppModuleIdIsSet(true);
+      }
+    }
+
+  }
+
+  public static class getAppModuleDeployedResources_result implements org.apache.thrift.TBase<getAppModuleDeployedResources_result, getAppModuleDeployedResources_result._Fields>, java.io.Serializable, Cloneable, Comparable<getAppModuleDeployedResources_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAppModuleDeployedResources_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getAppModuleDeployedResources_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getAppModuleDeployedResources_resultTupleSchemeFactory());
+    }
+
+    public List<String> success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getAppModuleDeployedResources_result.class, metaDataMap);
+    }
+
+    public getAppModuleDeployedResources_result() {
+    }
+
+    public getAppModuleDeployedResources_result(
+      List<String> success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getAppModuleDeployedResources_result(getAppModuleDeployedResources_result other) {
+      if (other.isSetSuccess()) {
+        List<String> __this__success = new ArrayList<String>(other.success);
+        this.success = __this__success;
+      }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public getAppModuleDeployedResources_result deepCopy() {
+      return new getAppModuleDeployedResources_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public java.util.Iterator<String> getSuccessIterator() {
+      return (this.success == null) ? null : this.success.iterator();
+    }
+
+    public void addToSuccess(String elem) {
+      if (this.success == null) {
+        this.success = new ArrayList<String>();
+      }
+      this.success.add(elem);
+    }
+
+    public List<String> getSuccess() {
+      return this.success;
+    }
+
+    public getAppModuleDeployedResources_result setSuccess(List<String> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public getAppModuleDeployedResources_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public getAppModuleDeployedResources_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public getAppModuleDeployedResources_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((List<String>)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getAppModuleDeployedResources_result)
+        return this.equals((getAppModuleDeployedResources_result)that);
+      return false;
+    }
+
+    public boolean equals(getAppModuleDeployedResources_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getAppModuleDeployedResources_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getAppModuleDeployedResources_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getAppModuleDeployedResources_resultStandardSchemeFactory implements SchemeFactory {
+      public getAppModuleDeployedResources_resultStandardScheme getScheme() {
+        return new getAppModuleDeployedResources_resultStandardScheme();
+      }
+    }
+
+    private static class getAppModuleDeployedResources_resultStandardScheme extends StandardScheme<getAppModuleDeployedResources_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getAppModuleDeployedResources_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list82 = iprot.readListBegin();
+                  struct.success = new ArrayList<String>(_list82.size);
+                  for (int _i83 = 0; _i83 < _list82.size; ++_i83)
+                  {
+                    String _elem84;
+                    _elem84 = iprot.readString();
+                    struct.success.add(_elem84);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getAppModuleDeployedResources_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.success.size()));
+            for (String _iter85 : struct.success)
+            {
+              oprot.writeString(_iter85);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getAppModuleDeployedResources_resultTupleSchemeFactory implements SchemeFactory {
+      public getAppModuleDeployedResources_resultTupleScheme getScheme() {
+        return new getAppModuleDeployedResources_resultTupleScheme();
+      }
+    }
+
+    private static class getAppModuleDeployedResources_resultTupleScheme extends TupleScheme<getAppModuleDeployedResources_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getAppModuleDeployedResources_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (String _iter86 : struct.success)
+            {
+              oprot.writeString(_iter86);
+            }
+          }
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getAppModuleDeployedResources_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list87 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.success = new ArrayList<String>(_list87.size);
+            for (int _i88 = 0; _i88 < _list87.size; ++_i88)
+            {
+              String _elem89;
+              _elem89 = iprot.readString();
+              struct.success.add(_elem89);
+            }
+          }
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class registerApplicationInterface_args implements org.apache.thrift.TBase<registerApplicationInterface_args, registerApplicationInterface_args._Fields>, java.io.Serializable, Cloneable, Comparable<registerApplicationInterface_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerApplicationInterface_args");
+
+    private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterface", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new registerApplicationInterface_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new registerApplicationInterface_argsTupleSchemeFactory());
+    }
+
+    public org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APPLICATION_INTERFACE((short)1, "applicationInterface");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APPLICATION_INTERFACE
+            return APPLICATION_INTERFACE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APPLICATION_INTERFACE, new org.apache.thrift.meta_data.FieldMetaData("applicationInterface", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerApplicationInterface_args.class, metaDataMap);
+    }
+
+    public registerApplicationInterface_args() {
+    }
+
+    public registerApplicationInterface_args(
+      org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface)
+    {
+      this();
+      this.applicationInterface = applicationInterface;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public registerApplicationInterface_args(registerApplicationInterface_args other) {
+      if (other.isSetApplicationInterface()) {
+        this.applicationInterface = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription(other.applicationInterface);
+      }
+    }
+
+    public registerApplicationInterface_args deepCopy() {
+      return new registerApplicationInterface_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.applicationInterface = null;
+    }
+
+    public org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription getApplicationInterface() {
+      return this.applicationInterface;
+    }
+
+    public registerApplicationInterface_args setApplicationInterface(org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface) {
+      this.applicationInterface = applicationInterface;
+      return this;
+    }
+
+    public void unsetApplicationInterface() {
+      this.applicationInterface = null;
+    }
+
+    /** Returns true if field applicationInterface is set (has been assigned a value) and false otherwise */
+    public boolean isSetApplicationInterface() {
+      return this.applicationInterface != null;
+    }
+
+    public void setApplicationInterfaceIsSet(boolean value) {
+      if (!value) {
+        this.applicationInterface = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APPLICATION_INTERFACE:
+        if (value == null) {
+          unsetApplicationInterface();
+        } else {
+          setApplicationInterface((org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APPLICATION_INTERFACE:
+        return getApplicationInterface();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APPLICATION_INTERFACE:
+        return isSetApplicationInterface();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof registerApplicationInterface_args)
+        return this.equals((registerApplicationInterface_args)that);
+      return false;
+    }
+
+    public boolean equals(registerApplicationInterface_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_applicationInterface = true && this.isSetApplicationInterface();
+      boolean that_present_applicationInterface = true && that.isSetApplicationInterface();
+      if (this_present_applicationInterface || that_present_applicationInterface) {
+        if (!(this_present_applicationInterface && that_present_applicationInterface))
+          return false;
+        if (!this.applicationInterface.equals(that.applicationInterface))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(registerApplicationInterface_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetApplicationInterface()).compareTo(other.isSetApplicationInterface());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetApplicationInterface()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationInterface, other.applicationInterface);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("registerApplicationInterface_args(");
+      boolean first = true;
+
+      sb.append("applicationInterface:");
+      if (this.applicationInterface == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationInterface);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (applicationInterface == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'applicationInterface' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (applicationInterface != null) {
+        applicationInterface.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class registerApplicationInterface_argsStandardSchemeFactory implements SchemeFactory {
+      public registerApplicationInterface_argsStandardScheme getScheme() {
+        return new registerApplicationInterface_argsStandardScheme();
+      }
+    }
+
+    private static class registerApplicationInterface_argsStandardScheme extends StandardScheme<registerApplicationInterface_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, registerApplicationInterface_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APPLICATION_INTERFACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.applicationInterface = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription();
+                struct.applicationInterface.read(iprot);
+                struct.setApplicationInterfaceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, registerApplicationInterface_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.applicationInterface != null) {
+          oprot.writeFieldBegin(APPLICATION_INTERFACE_FIELD_DESC);
+          struct.applicationInterface.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class registerApplicationInterface_argsTupleSchemeFactory implements SchemeFactory {
+      public registerApplicationInterface_argsTupleScheme getScheme() {
+        return new registerApplicationInterface_argsTupleScheme();
+      }
+    }
+
+    private static class registerApplicationInterface_argsTupleScheme extends TupleScheme<registerApplicationInterface_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, registerApplicationInterface_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        struct.applicationInterface.write(oprot);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, registerApplicationInterface_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.applicationInterface = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription();
+        struct.applicationInterface.read(iprot);
+        struct.setApplicationInterfaceIsSet(true);
+      }
+    }
+
+  }
+
+  public static class registerApplicationInterface_result implements org.apache.thrift.TBase<registerApplicationInterface_result, registerApplicationInterface_result._Fields>, java.io.Serializable, Cloneable, Comparable<registerApplicationInterface_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerApplicationInterface_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new registerApplicationInterface_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new registerApplicationInterface_resultTupleSchemeFactory());
+    }
+
+    public String success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(registerApplicationInterface_result.class, metaDataMap);
+    }
+
+    public registerApplicationInterface_result() {
+    }
+
+    public registerApplicationInterface_result(
+      String success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public registerApplicationInterface_result(registerApplicationInterface_result other) {
+      if (other.isSetSuccess()) {
+        this.success = other.success;
+      }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public registerApplicationInterface_result deepCopy() {
+      return new registerApplicationInterface_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public String getSuccess() {
+      return this.success;
+    }
+
+    public registerApplicationInterface_result setSuccess(String success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public registerApplicationInterface_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public registerApplicationInterface_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public registerApplicationInterface_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((String)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof registerApplicationInterface_result)
+        return this.equals((registerApplicationInterface_result)that);
+      return false;
+    }
+
+    public boolean equals(registerApplicationInterface_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(registerApplicationInterface_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("registerApplicationInterface_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class registerApplicationInterface_resultStandardSchemeFactory implements SchemeFactory {
+      public registerApplicationInterface_resultStandardScheme getScheme() {
+        return new registerApplicationInterface_resultStandardScheme();
+      }
+    }
+
+    private static class registerApplicationInterface_resultStandardScheme extends StandardScheme<registerApplicationInterface_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, registerApplicationInterface_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.success = iprot.readString();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, registerApplicationInterface_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class registerApplicationInterface_resultTupleSchemeFactory implements SchemeFactory {
+      public registerApplicationInterface_resultTupleScheme getScheme() {
+        return new registerApplicationInterface_resultTupleScheme();
+      }
+    }
+
+    private static class registerApplicationInterface_resultTupleScheme extends TupleScheme<registerApplicationInterface_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, registerApplicationInterface_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeString(struct.success);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, registerApplicationInterface_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = iprot.readString();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getApplicationInterface_args implements org.apache.thrift.TBase<getApplicationInterface_args, getApplicationInterface_args._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationInterface_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationInterface_args");
+
+    private static final org.apache.thrift.protocol.TField APP_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getApplicationInterface_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getApplicationInterface_argsTupleSchemeFactory());
+    }
+
+    public String appInterfaceId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APP_INTERFACE_ID((short)1, "appInterfaceId");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APP_INTERFACE_ID
+            return APP_INTERFACE_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APP_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("appInterfaceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getApplicationInterface_args.class, metaDataMap);
+    }
+
+    public getApplicationInterface_args() {
+    }
+
+    public getApplicationInterface_args(
+      String appInterfaceId)
+    {
+      this();
+      this.appInterfaceId = appInterfaceId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getApplicationInterface_args(getApplicationInterface_args other) {
+      if (other.isSetAppInterfaceId()) {
+        this.appInterfaceId = other.appInterfaceId;
+      }
+    }
+
+    public getApplicationInterface_args deepCopy() {
+      return new getApplicationInterface_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.appInterfaceId = null;
+    }
+
+    public String getAppInterfaceId() {
+      return this.appInterfaceId;
+    }
+
+    public getApplicationInterface_args setAppInterfaceId(String appInterfaceId) {
+      this.appInterfaceId = appInterfaceId;
+      return this;
+    }
+
+    public void unsetAppInterfaceId() {
+      this.appInterfaceId = null;
+    }
+
+    /** Returns true if field appInterfaceId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAppInterfaceId() {
+      return this.appInterfaceId != null;
+    }
+
+    public void setAppInterfaceIdIsSet(boolean value) {
+      if (!value) {
+        this.appInterfaceId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APP_INTERFACE_ID:
+        if (value == null) {
+          unsetAppInterfaceId();
+        } else {
+          setAppInterfaceId((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APP_INTERFACE_ID:
+        return getAppInterfaceId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APP_INTERFACE_ID:
+        return isSetAppInterfaceId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getApplicationInterface_args)
+        return this.equals((getApplicationInterface_args)that);
+      return false;
+    }
+
+    public boolean equals(getApplicationInterface_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_appInterfaceId = true && this.isSetAppInterfaceId();
+      boolean that_present_appInterfaceId = true && that.isSetAppInterfaceId();
+      if (this_present_appInterfaceId || that_present_appInterfaceId) {
+        if (!(this_present_appInterfaceId && that_present_appInterfaceId))
+          return false;
+        if (!this.appInterfaceId.equals(that.appInterfaceId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getApplicationInterface_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAppInterfaceId()).compareTo(other.isSetAppInterfaceId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAppInterfaceId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.appInterfaceId, other.appInterfaceId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getApplicationInterface_args(");
+      boolean first = true;
+
+      sb.append("appInterfaceId:");
+      if (this.appInterfaceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.appInterfaceId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (appInterfaceId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'appInterfaceId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getApplicationInterface_argsStandardSchemeFactory implements SchemeFactory {
+      public getApplicationInterface_argsStandardScheme getScheme() {
+        return new getApplicationInterface_argsStandardScheme();
+      }
+    }
+
+    private static class getApplicationInterface_argsStandardScheme extends StandardScheme<getApplicationInterface_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getApplicationInterface_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APP_INTERFACE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.appInterfaceId = iprot.readString();
+                struct.setAppInterfaceIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getApplicationInterface_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.appInterfaceId != null) {
+          oprot.writeFieldBegin(APP_INTERFACE_ID_FIELD_DESC);
+          oprot.writeString(struct.appInterfaceId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getApplicationInterface_argsTupleSchemeFactory implements SchemeFactory {
+      public getApplicationInterface_argsTupleScheme getScheme() {
+        return new getApplicationInterface_argsTupleScheme();
+      }
+    }
+
+    private static class getApplicationInterface_argsTupleScheme extends TupleScheme<getApplicationInterface_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationInterface_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.appInterfaceId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationInterface_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.appInterfaceId = iprot.readString();
+        struct.setAppInterfaceIdIsSet(true);
+      }
+    }
+
+  }
+
+  public static class getApplicationInterface_result implements org.apache.thrift.TBase<getApplicationInterface_result, getApplicationInterface_result._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationInterface_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationInterface_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getApplicationInterface_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getApplicationInterface_resultTupleSchemeFactory());
+    }
+
+    public org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription.class)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getApplicationInterface_result.class, metaDataMap);
+    }
+
+    public getApplicationInterface_result() {
+    }
+
+    public getApplicationInterface_result(
+      org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getApplicationInterface_result(getApplicationInterface_result other) {
+      if (other.isSetSuccess()) {
+        this.success = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription(other.success);
+      }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public getApplicationInterface_result deepCopy() {
+      return new getApplicationInterface_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription getSuccess() {
+      return this.success;
+    }
+
+    public getApplicationInterface_result setSuccess(org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public getApplicationInterface_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public getApplicationInterface_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public getApplicationInterface_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getApplicationInterface_result)
+        return this.equals((getApplicationInterface_result)that);
+      return false;
+    }
+
+    public boolean equals(getApplicationInterface_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getApplicationInterface_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getApplicationInterface_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+      if (success != null) {
+        success.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getApplicationInterface_resultStandardSchemeFactory implements SchemeFactory {
+      public getApplicationInterface_resultStandardScheme getScheme() {
+        return new getApplicationInterface_resultStandardScheme();
+      }
+    }
+
+    private static class getApplicationInterface_resultStandardScheme extends StandardScheme<getApplicationInterface_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getApplicationInterface_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.success = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription();
+                struct.success.read(iprot);
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getApplicationInterface_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getApplicationInterface_resultTupleSchemeFactory implements SchemeFactory {
+      public getApplicationInterface_resultTupleScheme getScheme() {
+        return new getApplicationInterface_resultTupleScheme();
+      }
+    }
+
+    private static class getApplicationInterface_resultTupleScheme extends TupleScheme<getApplicationInterface_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationInterface_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          struct.success.write(oprot);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationInterface_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription();
+          struct.success.read(iprot);
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class updateApplicationInterface_args implements org.apache.thrift.TBase<updateApplicationInterface_args, updateApplicationInterface_args._Fields>, java.io.Serializable, Cloneable, Comparable<updateApplicationInterface_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateApplicationInterface_args");
+
+    private static final org.apache.thrift.protocol.TField APP_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterface", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new updateApplicationInterface_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateApplicationInterface_argsTupleSchemeFactory());
+    }
+
+    public String appInterfaceId; // required
+    public org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APP_INTERFACE_ID((short)1, "appInterfaceId"),
+      APPLICATION_INTERFACE((short)2, "applicationInterface");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APP_INTERFACE_ID
+            return APP_INTERFACE_ID;
+          case 2: // APPLICATION_INTERFACE
+            return APPLICATION_INTERFACE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APP_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("appInterfaceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.APPLICATION_INTERFACE, new org.apache.thrift.meta_data.FieldMetaData("applicationInterface", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateApplicationInterface_args.class, metaDataMap);
+    }
+
+    public updateApplicationInterface_args() {
+    }
+
+    public updateApplicationInterface_args(
+      String appInterfaceId,
+      org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface)
+    {
+      this();
+      this.appInterfaceId = appInterfaceId;
+      this.applicationInterface = applicationInterface;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public updateApplicationInterface_args(updateApplicationInterface_args other) {
+      if (other.isSetAppInterfaceId()) {
+        this.appInterfaceId = other.appInterfaceId;
+      }
+      if (other.isSetApplicationInterface()) {
+        this.applicationInterface = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription(other.applicationInterface);
+      }
+    }
+
+    public updateApplicationInterface_args deepCopy() {
+      return new updateApplicationInterface_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.appInterfaceId = null;
+      this.applicationInterface = null;
+    }
+
+    public String getAppInterfaceId() {
+      return this.appInterfaceId;
+    }
+
+    public updateApplicationInterface_args setAppInterfaceId(String appInterfaceId) {
+      this.appInterfaceId = appInterfaceId;
+      return this;
+    }
+
+    public void unsetAppInterfaceId() {
+      this.appInterfaceId = null;
+    }
+
+    /** Returns true if field appInterfaceId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAppInterfaceId() {
+      return this.appInterfaceId != null;
+    }
+
+    public void setAppInterfaceIdIsSet(boolean value) {
+      if (!value) {
+        this.appInterfaceId = null;
+      }
+    }
+
+    public org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription getApplicationInterface() {
+      return this.applicationInterface;
+    }
+
+    public updateApplicationInterface_args setApplicationInterface(org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription applicationInterface) {
+      this.applicationInterface = applicationInterface;
+      return this;
+    }
+
+    public void unsetApplicationInterface() {
+      this.applicationInterface = null;
+    }
+
+    /** Returns true if field applicationInterface is set (has been assigned a value) and false otherwise */
+    public boolean isSetApplicationInterface() {
+      return this.applicationInterface != null;
+    }
+
+    public void setApplicationInterfaceIsSet(boolean value) {
+      if (!value) {
+        this.applicationInterface = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APP_INTERFACE_ID:
+        if (value == null) {
+          unsetAppInterfaceId();
+        } else {
+          setAppInterfaceId((String)value);
+        }
+        break;
+
+      case APPLICATION_INTERFACE:
+        if (value == null) {
+          unsetApplicationInterface();
+        } else {
+          setApplicationInterface((org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APP_INTERFACE_ID:
+        return getAppInterfaceId();
+
+      case APPLICATION_INTERFACE:
+        return getApplicationInterface();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APP_INTERFACE_ID:
+        return isSetAppInterfaceId();
+      case APPLICATION_INTERFACE:
+        return isSetApplicationInterface();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof updateApplicationInterface_args)
+        return this.equals((updateApplicationInterface_args)that);
+      return false;
+    }
+
+    public boolean equals(updateApplicationInterface_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_appInterfaceId = true && this.isSetAppInterfaceId();
+      boolean that_present_appInterfaceId = true && that.isSetAppInterfaceId();
+      if (this_present_appInterfaceId || that_present_appInterfaceId) {
+        if (!(this_present_appInterfaceId && that_present_appInterfaceId))
+          return false;
+        if (!this.appInterfaceId.equals(that.appInterfaceId))
+          return false;
+      }
+
+      boolean this_present_applicationInterface = true && this.isSetApplicationInterface();
+      boolean that_present_applicationInterface = true && that.isSetApplicationInterface();
+      if (this_present_applicationInterface || that_present_applicationInterface) {
+        if (!(this_present_applicationInterface && that_present_applicationInterface))
+          return false;
+        if (!this.applicationInterface.equals(that.applicationInterface))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(updateApplicationInterface_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAppInterfaceId()).compareTo(other.isSetAppInterfaceId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAppInterfaceId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.appInterfaceId, other.appInterfaceId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetApplicationInterface()).compareTo(other.isSetApplicationInterface());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetApplicationInterface()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationInterface, other.applicationInterface);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("updateApplicationInterface_args(");
+      boolean first = true;
+
+      sb.append("appInterfaceId:");
+      if (this.appInterfaceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.appInterfaceId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("applicationInterface:");
+      if (this.applicationInterface == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationInterface);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (appInterfaceId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'appInterfaceId' was not present! Struct: " + toString());
+      }
+      if (applicationInterface == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'applicationInterface' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (applicationInterface != null) {
+        applicationInterface.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class updateApplicationInterface_argsStandardSchemeFactory implements SchemeFactory {
+      public updateApplicationInterface_argsStandardScheme getScheme() {
+        return new updateApplicationInterface_argsStandardScheme();
+      }
+    }
+
+    private static class updateApplicationInterface_argsStandardScheme extends StandardScheme<updateApplicationInterface_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateApplicationInterface_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APP_INTERFACE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.appInterfaceId = iprot.readString();
+                struct.setAppInterfaceIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // APPLICATION_INTERFACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.applicationInterface = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription();
+                struct.applicationInterface.read(iprot);
+                struct.setApplicationInterfaceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateApplicationInterface_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.appInterfaceId != null) {
+          oprot.writeFieldBegin(APP_INTERFACE_ID_FIELD_DESC);
+          oprot.writeString(struct.appInterfaceId);
+          oprot.writeFieldEnd();
+        }
+        if (struct.applicationInterface != null) {
+          oprot.writeFieldBegin(APPLICATION_INTERFACE_FIELD_DESC);
+          struct.applicationInterface.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class updateApplicationInterface_argsTupleSchemeFactory implements SchemeFactory {
+      public updateApplicationInterface_argsTupleScheme getScheme() {
+        return new updateApplicationInterface_argsTupleScheme();
+      }
+    }
+
+    private static class updateApplicationInterface_argsTupleScheme extends TupleScheme<updateApplicationInterface_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateApplicationInterface_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.appInterfaceId);
+        struct.applicationInterface.write(oprot);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateApplicationInterface_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.appInterfaceId = iprot.readString();
+        struct.setAppInterfaceIdIsSet(true);
+        struct.applicationInterface = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription();
+        struct.applicationInterface.read(iprot);
+        struct.setApplicationInterfaceIsSet(true);
+      }
+    }
+
+  }
+
+  public static class updateApplicationInterface_result implements org.apache.thrift.TBase<updateApplicationInterface_result, updateApplicationInterface_result._Fields>, java.io.Serializable, Cloneable, Comparable<updateApplicationInterface_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("updateApplicationInterface_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new updateApplicationInterface_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new updateApplicationInterface_resultTupleSchemeFactory());
+    }
+
+    public boolean success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(updateApplicationInterface_result.class, metaDataMap);
+    }
+
+    public updateApplicationInterface_result() {
+    }
+
+    public updateApplicationInterface_result(
+      boolean success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public updateApplicationInterface_result(updateApplicationInterface_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public updateApplicationInterface_result deepCopy() {
+      return new updateApplicationInterface_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public updateApplicationInterface_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public updateApplicationInterface_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public updateApplicationInterface_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public updateApplicationInterface_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Boolean)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return Boolean.valueOf(isSuccess());
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof updateApplicationInterface_result)
+        return this.equals((updateApplicationInterface_result)that);
+      return false;
+    }
+
+    public boolean equals(updateApplicationInterface_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(updateApplicationInterface_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("updateApplicationInterface_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class updateApplicationInterface_resultStandardSchemeFactory implements SchemeFactory {
+      public updateApplicationInterface_resultStandardScheme getScheme() {
+        return new updateApplicationInterface_resultStandardScheme();
+      }
+    }
+
+    private static class updateApplicationInterface_resultStandardScheme extends StandardScheme<updateApplicationInterface_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, updateApplicationInterface_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, updateApplicationInterface_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class updateApplicationInterface_resultTupleSchemeFactory implements SchemeFactory {
+      public updateApplicationInterface_resultTupleScheme getScheme() {
+        return new updateApplicationInterface_resultTupleScheme();
+      }
+    }
+
+    private static class updateApplicationInterface_resultTupleScheme extends TupleScheme<updateApplicationInterface_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, updateApplicationInterface_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, updateApplicationInterface_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class deleteApplicationInterface_args implements org.apache.thrift.TBase<deleteApplicationInterface_args, deleteApplicationInterface_args._Fields>, java.io.Serializable, Cloneable, Comparable<deleteApplicationInterface_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteApplicationInterface_args");
+
+    private static final org.apache.thrift.protocol.TField APP_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new deleteApplicationInterface_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new deleteApplicationInterface_argsTupleSchemeFactory());
+    }
+
+    public String appInterfaceId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APP_INTERFACE_ID((short)1, "appInterfaceId");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APP_INTERFACE_ID
+            return APP_INTERFACE_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APP_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("appInterfaceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteApplicationInterface_args.class, metaDataMap);
+    }
+
+    public deleteApplicationInterface_args() {
+    }
+
+    public deleteApplicationInterface_args(
+      String appInterfaceId)
+    {
+      this();
+      this.appInterfaceId = appInterfaceId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public deleteApplicationInterface_args(deleteApplicationInterface_args other) {
+      if (other.isSetAppInterfaceId()) {
+        this.appInterfaceId = other.appInterfaceId;
+      }
+    }
+
+    public deleteApplicationInterface_args deepCopy() {
+      return new deleteApplicationInterface_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.appInterfaceId = null;
+    }
+
+    public String getAppInterfaceId() {
+      return this.appInterfaceId;
+    }
+
+    public deleteApplicationInterface_args setAppInterfaceId(String appInterfaceId) {
+      this.appInterfaceId = appInterfaceId;
+      return this;
+    }
+
+    public void unsetAppInterfaceId() {
+      this.appInterfaceId = null;
+    }
+
+    /** Returns true if field appInterfaceId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAppInterfaceId() {
+      return this.appInterfaceId != null;
+    }
+
+    public void setAppInterfaceIdIsSet(boolean value) {
+      if (!value) {
+        this.appInterfaceId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APP_INTERFACE_ID:
+        if (value == null) {
+          unsetAppInterfaceId();
+        } else {
+          setAppInterfaceId((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APP_INTERFACE_ID:
+        return getAppInterfaceId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APP_INTERFACE_ID:
+        return isSetAppInterfaceId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof deleteApplicationInterface_args)
+        return this.equals((deleteApplicationInterface_args)that);
+      return false;
+    }
+
+    public boolean equals(deleteApplicationInterface_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_appInterfaceId = true && this.isSetAppInterfaceId();
+      boolean that_present_appInterfaceId = true && that.isSetAppInterfaceId();
+      if (this_present_appInterfaceId || that_present_appInterfaceId) {
+        if (!(this_present_appInterfaceId && that_present_appInterfaceId))
+          return false;
+        if (!this.appInterfaceId.equals(that.appInterfaceId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(deleteApplicationInterface_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAppInterfaceId()).compareTo(other.isSetAppInterfaceId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAppInterfaceId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.appInterfaceId, other.appInterfaceId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("deleteApplicationInterface_args(");
+      boolean first = true;
+
+      sb.append("appInterfaceId:");
+      if (this.appInterfaceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.appInterfaceId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (appInterfaceId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'appInterfaceId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class deleteApplicationInterface_argsStandardSchemeFactory implements SchemeFactory {
+      public deleteApplicationInterface_argsStandardScheme getScheme() {
+        return new deleteApplicationInterface_argsStandardScheme();
+      }
+    }
+
+    private static class deleteApplicationInterface_argsStandardScheme extends StandardScheme<deleteApplicationInterface_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, deleteApplicationInterface_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APP_INTERFACE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.appInterfaceId = iprot.readString();
+                struct.setAppInterfaceIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, deleteApplicationInterface_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.appInterfaceId != null) {
+          oprot.writeFieldBegin(APP_INTERFACE_ID_FIELD_DESC);
+          oprot.writeString(struct.appInterfaceId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class deleteApplicationInterface_argsTupleSchemeFactory implements SchemeFactory {
+      public deleteApplicationInterface_argsTupleScheme getScheme() {
+        return new deleteApplicationInterface_argsTupleScheme();
+      }
+    }
+
+    private static class deleteApplicationInterface_argsTupleScheme extends TupleScheme<deleteApplicationInterface_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, deleteApplicationInterface_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.appInterfaceId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, deleteApplicationInterface_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.appInterfaceId = iprot.readString();
+        struct.setAppInterfaceIdIsSet(true);
+      }
+    }
+
+  }
+
+  public static class deleteApplicationInterface_result implements org.apache.thrift.TBase<deleteApplicationInterface_result, deleteApplicationInterface_result._Fields>, java.io.Serializable, Cloneable, Comparable<deleteApplicationInterface_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("deleteApplicationInterface_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new deleteApplicationInterface_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new deleteApplicationInterface_resultTupleSchemeFactory());
+    }
+
+    public boolean success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(deleteApplicationInterface_result.class, metaDataMap);
+    }
+
+    public deleteApplicationInterface_result() {
+    }
+
+    public deleteApplicationInterface_result(
+      boolean success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public deleteApplicationInterface_result(deleteApplicationInterface_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public deleteApplicationInterface_result deepCopy() {
+      return new deleteApplicationInterface_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public deleteApplicationInterface_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public deleteApplicationInterface_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public deleteApplicationInterface_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public deleteApplicationInterface_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Boolean)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return Boolean.valueOf(isSuccess());
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof deleteApplicationInterface_result)
+        return this.equals((deleteApplicationInterface_result)that);
+      return false;
+    }
+
+    public boolean equals(deleteApplicationInterface_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(deleteApplicationInterface_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("deleteApplicationInterface_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class deleteApplicationInterface_resultStandardSchemeFactory implements SchemeFactory {
+      public deleteApplicationInterface_resultStandardScheme getScheme() {
+        return new deleteApplicationInterface_resultStandardScheme();
+      }
+    }
+
+    private static class deleteApplicationInterface_resultStandardScheme extends StandardScheme<deleteApplicationInterface_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, deleteApplicationInterface_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, deleteApplicationInterface_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class deleteApplicationInterface_resultTupleSchemeFactory implements SchemeFactory {
+      public deleteApplicationInterface_resultTupleScheme getScheme() {
+        return new deleteApplicationInterface_resultTupleScheme();
+      }
+    }
+
+    private static class deleteApplicationInterface_resultTupleScheme extends TupleScheme<deleteApplicationInterface_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, deleteApplicationInterface_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, deleteApplicationInterface_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getApplicationInputs_args implements org.apache.thrift.TBase<getApplicationInputs_args, getApplicationInputs_args._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationInputs_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationInputs_args");
+
+    private static final org.apache.thrift.protocol.TField APP_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getApplicationInputs_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getApplicationInputs_argsTupleSchemeFactory());
+    }
+
+    public String appInterfaceId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APP_INTERFACE_ID((short)1, "appInterfaceId");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APP_INTERFACE_ID
+            return APP_INTERFACE_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APP_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("appInterfaceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getApplicationInputs_args.class, metaDataMap);
+    }
+
+    public getApplicationInputs_args() {
+    }
+
+    public getApplicationInputs_args(
+      String appInterfaceId)
+    {
+      this();
+      this.appInterfaceId = appInterfaceId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getApplicationInputs_args(getApplicationInputs_args other) {
+      if (other.isSetAppInterfaceId()) {
+        this.appInterfaceId = other.appInterfaceId;
+      }
+    }
+
+    public getApplicationInputs_args deepCopy() {
+      return new getApplicationInputs_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.appInterfaceId = null;
+    }
+
+    public String getAppInterfaceId() {
+      return this.appInterfaceId;
+    }
+
+    public getApplicationInputs_args setAppInterfaceId(String appInterfaceId) {
+      this.appInterfaceId = appInterfaceId;
+      return this;
+    }
+
+    public void unsetAppInterfaceId() {
+      this.appInterfaceId = null;
+    }
+
+    /** Returns true if field appInterfaceId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAppInterfaceId() {
+      return this.appInterfaceId != null;
+    }
+
+    public void setAppInterfaceIdIsSet(boolean value) {
+      if (!value) {
+        this.appInterfaceId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APP_INTERFACE_ID:
+        if (value == null) {
+          unsetAppInterfaceId();
+        } else {
+          setAppInterfaceId((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APP_INTERFACE_ID:
+        return getAppInterfaceId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APP_INTERFACE_ID:
+        return isSetAppInterfaceId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getApplicationInputs_args)
+        return this.equals((getApplicationInputs_args)that);
+      return false;
+    }
+
+    public boolean equals(getApplicationInputs_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_appInterfaceId = true && this.isSetAppInterfaceId();
+      boolean that_present_appInterfaceId = true && that.isSetAppInterfaceId();
+      if (this_present_appInterfaceId || that_present_appInterfaceId) {
+        if (!(this_present_appInterfaceId && that_present_appInterfaceId))
+          return false;
+        if (!this.appInterfaceId.equals(that.appInterfaceId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getApplicationInputs_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAppInterfaceId()).compareTo(other.isSetAppInterfaceId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAppInterfaceId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.appInterfaceId, other.appInterfaceId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getApplicationInputs_args(");
+      boolean first = true;
+
+      sb.append("appInterfaceId:");
+      if (this.appInterfaceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.appInterfaceId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (appInterfaceId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'appInterfaceId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getApplicationInputs_argsStandardSchemeFactory implements SchemeFactory {
+      public getApplicationInputs_argsStandardScheme getScheme() {
+        return new getApplicationInputs_argsStandardScheme();
+      }
+    }
+
+    private static class getApplicationInputs_argsStandardScheme extends StandardScheme<getApplicationInputs_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getApplicationInputs_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APP_INTERFACE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.appInterfaceId = iprot.readString();
+                struct.setAppInterfaceIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getApplicationInputs_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.appInterfaceId != null) {
+          oprot.writeFieldBegin(APP_INTERFACE_ID_FIELD_DESC);
+          oprot.writeString(struct.appInterfaceId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getApplicationInputs_argsTupleSchemeFactory implements SchemeFactory {
+      public getApplicationInputs_argsTupleScheme getScheme() {
+        return new getApplicationInputs_argsTupleScheme();
+      }
+    }
+
+    private static class getApplicationInputs_argsTupleScheme extends TupleScheme<getApplicationInputs_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationInputs_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.appInterfaceId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationInputs_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.appInterfaceId = iprot.readString();
+        struct.setAppInterfaceIdIsSet(true);
+      }
+    }
+
+  }
+
+  public static class getApplicationInputs_result implements org.apache.thrift.TBase<getApplicationInputs_result, getApplicationInputs_result._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationInputs_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationInputs_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getApplicationInputs_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getApplicationInputs_resultTupleSchemeFactory());
+    }
+
+    public List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType.class))));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getApplicationInputs_result.class, metaDataMap);
+    }
+
+    public getApplicationInputs_result() {
+    }
+
+    public getApplicationInputs_result(
+      List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getApplicationInputs_result(getApplicationInputs_result other) {
+      if (other.isSetSuccess()) {
+        List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> __this__success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(other.success.size());
+        for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType other_element : other.success) {
+          __this__success.add(new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType(other_element));
+        }
+        this.success = __this__success;
+      }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public getApplicationInputs_result deepCopy() {
+      return new getApplicationInputs_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public java.util.Iterator<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> getSuccessIterator() {
+      return (this.success == null) ? null : this.success.iterator();
+    }
+
+    public void addToSuccess(org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType elem) {
+      if (this.success == null) {
+        this.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>();
+      }
+      this.success.add(elem);
+    }
+
+    public List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> getSuccess() {
+      return this.success;
+    }
+
+    public getApplicationInputs_result setSuccess(List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public getApplicationInputs_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public getApplicationInputs_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public getApplicationInputs_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getApplicationInputs_result)
+        return this.equals((getApplicationInputs_result)that);
+      return false;
+    }
+
+    public boolean equals(getApplicationInputs_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getApplicationInputs_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getApplicationInputs_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getApplicationInputs_resultStandardSchemeFactory implements SchemeFactory {
+      public getApplicationInputs_resultStandardScheme getScheme() {
+        return new getApplicationInputs_resultStandardScheme();
+      }
+    }
+
+    private static class getApplicationInputs_resultStandardScheme extends StandardScheme<getApplicationInputs_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getApplicationInputs_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list90 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list90.size);
+                  for (int _i91 = 0; _i91 < _list90.size; ++_i91)
+                  {
+                    org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem92;
+                    _elem92 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
+                    _elem92.read(iprot);
+                    struct.success.add(_elem92);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getApplicationInputs_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter93 : struct.success)
+            {
+              _iter93.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getApplicationInputs_resultTupleSchemeFactory implements SchemeFactory {
+      public getApplicationInputs_resultTupleScheme getScheme() {
+        return new getApplicationInputs_resultTupleScheme();
+      }
+    }
+
+    private static class getApplicationInputs_resultTupleScheme extends TupleScheme<getApplicationInputs_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationInputs_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter94 : struct.success)
+            {
+              _iter94.write(oprot);
+            }
+          }
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationInputs_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list95 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list95.size);
+            for (int _i96 = 0; _i96 < _list95.size; ++_i96)
+            {
+              org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem97;
+              _elem97 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
+              _elem97.read(iprot);
+              struct.success.add(_elem97);
+            }
+          }
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class getApplicationOutputs_args implements org.apache.thrift.TBase<getApplicationOutputs_args, getApplicationOutputs_args._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationOutputs_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationOutputs_args");
+
+    private static final org.apache.thrift.protocol.TField APP_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getApplicationOutputs_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getApplicationOutputs_argsTupleSchemeFactory());
+    }
+
+    public String appInterfaceId; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      APP_INTERFACE_ID((short)1, "appInterfaceId");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // APP_INTERFACE_ID
+            return APP_INTERFACE_ID;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.APP_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("appInterfaceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getApplicationOutputs_args.class, metaDataMap);
+    }
+
+    public getApplicationOutputs_args() {
+    }
+
+    public getApplicationOutputs_args(
+      String appInterfaceId)
+    {
+      this();
+      this.appInterfaceId = appInterfaceId;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getApplicationOutputs_args(getApplicationOutputs_args other) {
+      if (other.isSetAppInterfaceId()) {
+        this.appInterfaceId = other.appInterfaceId;
+      }
+    }
+
+    public getApplicationOutputs_args deepCopy() {
+      return new getApplicationOutputs_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.appInterfaceId = null;
+    }
+
+    public String getAppInterfaceId() {
+      return this.appInterfaceId;
+    }
+
+    public getApplicationOutputs_args setAppInterfaceId(String appInterfaceId) {
+      this.appInterfaceId = appInterfaceId;
+      return this;
+    }
+
+    public void unsetAppInterfaceId() {
+      this.appInterfaceId = null;
+    }
+
+    /** Returns true if field appInterfaceId is set (has been assigned a value) and false otherwise */
+    public boolean isSetAppInterfaceId() {
+      return this.appInterfaceId != null;
+    }
+
+    public void setAppInterfaceIdIsSet(boolean value) {
+      if (!value) {
+        this.appInterfaceId = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case APP_INTERFACE_ID:
+        if (value == null) {
+          unsetAppInterfaceId();
+        } else {
+          setAppInterfaceId((String)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case APP_INTERFACE_ID:
+        return getAppInterfaceId();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case APP_INTERFACE_ID:
+        return isSetAppInterfaceId();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getApplicationOutputs_args)
+        return this.equals((getApplicationOutputs_args)that);
+      return false;
+    }
+
+    public boolean equals(getApplicationOutputs_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_appInterfaceId = true && this.isSetAppInterfaceId();
+      boolean that_present_appInterfaceId = true && that.isSetAppInterfaceId();
+      if (this_present_appInterfaceId || that_present_appInterfaceId) {
+        if (!(this_present_appInterfaceId && that_present_appInterfaceId))
+          return false;
+        if (!this.appInterfaceId.equals(that.appInterfaceId))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getApplicationOutputs_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetAppInterfaceId()).compareTo(other.isSetAppInterfaceId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAppInterfaceId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.appInterfaceId, other.appInterfaceId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getApplicationOutputs_args(");
+      boolean first = true;
+
+      sb.append("appInterfaceId:");
+      if (this.appInterfaceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.appInterfaceId);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (appInterfaceId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'appInterfaceId' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getApplicationOutputs_argsStandardSchemeFactory implements SchemeFactory {
+      public getApplicationOutputs_argsStandardScheme getScheme() {
+        return new getApplicationOutputs_argsStandardScheme();
+      }
+    }
+
+    private static class getApplicationOutputs_argsStandardScheme extends StandardScheme<getApplicationOutputs_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getApplicationOutputs_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // APP_INTERFACE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.appInterfaceId = iprot.readString();
+                struct.setAppInterfaceIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getApplicationOutputs_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.appInterfaceId != null) {
+          oprot.writeFieldBegin(APP_INTERFACE_ID_FIELD_DESC);
+          oprot.writeString(struct.appInterfaceId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getApplicationOutputs_argsTupleSchemeFactory implements SchemeFactory {
+      public getApplicationOutputs_argsTupleScheme getScheme() {
+        return new getApplicationOutputs_argsTupleScheme();
+      }
+    }
+
+    private static class getApplicationOutputs_argsTupleScheme extends TupleScheme<getApplicationOutputs_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationOutputs_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.appInterfaceId);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationOutputs_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.appInterfaceId = iprot.readString();
+        struct.setAppInterfaceIdIsSet(true);
+      }
+    }
+
+  }
+
+  public static class getApplicationOutputs_result implements org.apache.thrift.TBase<getApplicationOutputs_result, getApplicationOutputs_result._Fields>, java.io.Serializable, Cloneable, Comparable<getApplicationOutputs_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getApplicationOutputs_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new getApplicationOutputs_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new getApplicationOutputs_resultTupleSchemeFactory());
+    }
+
+    public List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType.class))));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getApplicationOutputs_result.class, metaDataMap);
+    }
+
+    public getApplicationOutputs_result() {
+    }
+
+    public getApplicationOutputs_result(
+      List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public getApplicationOutputs_result(getApplicationOutputs_result other) {
+      if (other.isSetSuccess()) {
+        List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> __this__success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(other.success.size());
+        for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType other_element : other.success) {
+          __this__success.add(new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType(other_element));
+        }
+        this.success = __this__success;
+      }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public getApplicationOutputs_result deepCopy() {
+      return new getApplicationOutputs_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public java.util.Iterator<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getSuccessIterator() {
+      return (this.success == null) ? null : this.success.iterator();
+    }
+
+    public void addToSuccess(org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType elem) {
+      if (this.success == null) {
+        this.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>();
+      }
+      this.success.add(elem);
+    }
+
+    public List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getSuccess() {
+      return this.success;
+    }
+
+    public getApplicationOutputs_result setSuccess(List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public getApplicationOutputs_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public getApplicationOutputs_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public getApplicationOutputs_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof getApplicationOutputs_result)
+        return this.equals((getApplicationOutputs_result)that);
+      return false;
+    }
+
+    public boolean equals(getApplicationOutputs_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(getApplicationOutputs_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("getApplicationOutputs_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class getApplicationOutputs_resultStandardSchemeFactory implements SchemeFactory {
+      public getApplicationOutputs_resultStandardScheme getScheme() {
+        return new getApplicationOutputs_resultStandardScheme();
+      }
+    }
+
+    private static class getApplicationOutputs_resultStandardScheme extends StandardScheme<getApplicationOutputs_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, getApplicationOutputs_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list98 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list98.size);
+                  for (int _i99 = 0; _i99 < _list98.size; ++_i99)
+                  {
+                    org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem100;
+                    _elem100 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
+                    _elem100.read(iprot);
+                    struct.success.add(_elem100);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, getApplicationOutputs_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter101 : struct.success)
+            {
+              _iter101.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class getApplicationOutputs_resultTupleSchemeFactory implements SchemeFactory {
+      public getApplicationOutputs_resultTupleScheme getScheme() {
+        return new getApplicationOutputs_resultTupleScheme();
+      }
+    }
+
+    private static class getApplicationOutputs_resultTupleScheme extends TupleScheme<getApplicationOutputs_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, getApplicationOutputs_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter102 : struct.success)
+            {
+              _iter102.write(oprot);
+            }
+          }
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, getApplicationOutputs_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list103 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list103.size);
+            for (int _i104 = 0; _i104 < _list103.size; ++_i104)
+            {
+              org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem105;
+              _elem105 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
+              _elem105.read(iprot);
+              struct.success.add(_elem105);
+            }
+          }
           struct.setSuccessIsSet(true);
         }
         if (incoming.get(1)) {
