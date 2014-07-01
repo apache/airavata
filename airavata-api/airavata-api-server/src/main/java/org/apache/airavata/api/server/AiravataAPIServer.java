@@ -25,6 +25,7 @@ import java.net.InetSocketAddress;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
+import org.apache.airavata.api.server.util.AppCatalogInitUtil;
 import org.apache.airavata.api.server.util.Constants;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -58,7 +59,8 @@ public class AiravataAPIServer implements IServer{
     public void StartAiravataServer(Airavata.Processor<Airavata.Iface> airavataAPIServer) throws AiravataSystemException {
         try {
             AiravataUtils.setExecutionAsServer();
-            //RegistryInitUtil.initializeDB();
+            RegistryInitUtil.initializeDB();
+            AppCatalogInitUtil.initializeDB();
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT,"8930"));
             final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
             

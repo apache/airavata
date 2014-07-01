@@ -105,6 +105,11 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     }
 
     @Override
+    public void updateApplicationDeployment(String deploymentId, ApplicationDeploymentDescription updatedDeployment) {
+
+    }
+
+    @Override
     public ApplicationDeploymentDescription getApplicationDeployement(String deploymentId) throws AppCatalogException {
         try {
             AppDeploymentResource deploymentResource = new AppDeploymentResource();

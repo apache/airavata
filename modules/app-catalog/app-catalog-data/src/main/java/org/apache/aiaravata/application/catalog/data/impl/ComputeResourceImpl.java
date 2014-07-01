@@ -30,6 +30,7 @@ import org.apache.airavata.model.computehost.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -100,6 +101,84 @@ public class ComputeResourceImpl implements ComputeResource {
             logger.error("Error while saving compute resource...", e);
             throw new AppCatalogException(e);
         }
+    }
+
+    @Override
+    public void updateComputeResource(String computeResourceId, ComputeResourceDescription updatedComputeResource) throws AppCatalogException{
+        try {
+            ComputeHostResource computeHostResource = new ComputeHostResource();
+            ComputeHostResource existingComputeResouce = (ComputeHostResource)computeHostResource.get(computeResourceId);
+            existingComputeResouce.setHostName(updatedComputeResource.getHostName());
+            existingComputeResouce.setPreferredJobSubmissionProtocol(updatedComputeResource.getPreferredJobSubmissionProtocol());
+            existingComputeResouce.setDescription(updatedComputeResource.getResourceDescription());
+            existingComputeResouce.save();
+
+            Set<String> hostAliases = updatedComputeResource.getHostAliases();
+            if (hostAliases != null && !hostAliases.isEmpty()) {
+                for (String alias : hostAliases) {
+                    HostAliasResource aliasResource = new HostAliasResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.HostAliasConstants.RESOURCE_ID, computeResourceId);
+                    ids.put(AbstractResource.HostAliasConstants.ALIAS, alias);
+                    HostAliasResource existingAlias = (HostAliasResource)aliasResource.get(ids);
+                    existingAlias.setComputeHostResource(existingComputeResouce);
+                    existingAlias.setAlias(alias);
+                    existingAlias.save();
+                }
+            }
+
+            Set<String> ipAddresses = updatedComputeResource.getIpAddresses();
+            if (ipAddresses != null && !ipAddresses.isEmpty()) {
+                for (String ipAddress : ipAddresses) {
+                    HostIPAddressResource ipAddressResource = new HostIPAddressResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.HostIPAddressConstants.RESOURCE_ID, computeResourceId);
+                    ids.put(AbstractResource.HostIPAddressConstants.IP_ADDRESS, ipAddress);
+                    HostIPAddressResource existingIpAddress = (HostIPAddressResource)ipAddressResource.get(ids);
+                    existingIpAddress.setComputeHostResource(existingComputeResouce);
+                    existingIpAddress.setResourceID(computeResourceId);
+                    existingIpAddress.setIpaddress(ipAddress);
+                    existingIpAddress.save();
+                }
+            }
+            Map<String, JobSubmissionProtocol> jobSubmissionProtocols = updatedComputeResource.getJobSubmissionProtocols();
+            if (jobSubmissionProtocols != null && !jobSubmissionProtocols.isEmpty()) {
+                for (String submissionId : jobSubmissionProtocols.keySet()) {
+                    JobSubmissionProtocol jobSubmissionProtocol = jobSubmissionProtocols.get(submissionId);
+                    JobSubmissionProtocolResource resource = new JobSubmissionProtocolResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.JobSubmissionProtocolConstants.RESOURCE_ID, computeResourceId);
+                    ids.put(AbstractResource.JobSubmissionProtocolConstants.SUBMISSION_ID, submissionId);
+                    ids.put(AbstractResource.JobSubmissionProtocolConstants.JOB_TYPE, jobSubmissionProtocol.toString());
+                    JobSubmissionProtocolResource existingJobProtocol = (JobSubmissionProtocolResource)resource.get(ids);
+                    existingJobProtocol.setResourceID(computeResourceId);
+                    existingJobProtocol.setComputeHostResource(existingComputeResouce);
+                    existingJobProtocol.setSubmissionID(submissionId);
+                    existingJobProtocol.setJobType(jobSubmissionProtocol.toString());
+                    existingJobProtocol.save();
+                }
+            }
+            Map<String, DataMovementProtocol> movementProtocols = updatedComputeResource.getDataMovementProtocols();
+            if (movementProtocols != null && !movementProtocols.isEmpty()) {
+                for (String dataMoveId : movementProtocols.keySet()) {
+                    DataMovementProtocol dataMovementProtocol = movementProtocols.get(dataMoveId);
+                    DataMovementProtocolResource resource = new DataMovementProtocolResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.DataMoveProtocolConstants.RESOURCE_ID, computeResourceId);
+                    ids.put(AbstractResource.DataMoveProtocolConstants.DATA_MOVE_ID, dataMoveId);
+                    ids.put(AbstractResource.DataMoveProtocolConstants.JOB_TYPE, dataMovementProtocol.toString());
+                    DataMovementProtocolResource existingDMP = (DataMovementProtocolResource)resource.get(ids);
+                    existingDMP.setResourceID(computeResourceId);
+                    existingDMP.setComputeHostResource(existingComputeResouce);
+                    existingDMP.setDataMoveID(dataMoveId);
+                    existingDMP.setDataMoveType(dataMovementProtocol.toString());
+                    existingDMP.save();
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while updating compute resource...", e);
+            throw new AppCatalogException(e);
+        } 
     }
 
     @Override
