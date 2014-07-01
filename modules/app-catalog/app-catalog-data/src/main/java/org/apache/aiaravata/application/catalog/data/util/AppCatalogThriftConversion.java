@@ -311,8 +311,8 @@ public class AppCatalogThriftConversion {
         description.setApplicationInterfaceId(resource.getInterfaceId());
         description.setApplicationName(resource.getAppName());
 
-        AppModuleResource appModuleResource = new AppModuleResource();
-        List<Resource> appModules = appModuleResource.get(AbstractResource.AppModuleMappingConstants.INTERFACE_ID, resource.getInterfaceId());
+        AppModuleMappingResource appModuleMappingResource = new AppModuleMappingResource();
+        List<Resource> appModules = appModuleMappingResource.get(AbstractResource.AppModuleMappingConstants.INTERFACE_ID, resource.getInterfaceId());
         if (appModules != null && !appModules.isEmpty()){
             description.setApplicationModules(getAppModuleIds(appModules));
         }
@@ -331,10 +331,10 @@ public class AppCatalogThriftConversion {
         return description;
     }
 
-    public static List<String> getAppModuleIds (List<Resource> appModules){
+    public static List<String> getAppModuleIds (List<Resource> appModuleMappings){
         List<String> modules = new ArrayList<String>();
-        for (Resource resource : appModules){
-            modules.add(((AppModuleResource)resource).getModuleId());
+        for (Resource resource : appModuleMappings){
+            modules.add(((AppModuleMappingResource)resource).getModuleId());
         }
         return modules;
     }
