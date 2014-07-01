@@ -34,6 +34,7 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
@@ -1148,6 +1149,55 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     public void terminateExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
     	Client client = getOrchestratorClient();
     	client.terminateExperiment(airavataExperimentId);
+    }
+
+    /**
+     * Register a Application Module.
+     *
+     * @param applicationModule Application Module Object created from the datamodel.
+     * @return appModuleId
+     * Returns a server-side generated airavata appModule globally unique identifier.
+     */
+    @Override
+    public String registerAppicationModule(ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Fetch a Application Module.
+     *
+     * @param appModuleId The identifier for the requested application module
+     * @return applicationModule
+     * Returns a application Module Object.
+     */
+    @Override
+    public ApplicationModule getAppicationModule(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Update a Application Module.
+     *
+     * @param appModuleId       The identifier for the requested application module to be updated.
+     * @param applicationModule Application Module Object created from the datamodel.
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    public boolean updateAppicationModule(String appModuleId, ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Delete a Application Module.
+     *
+     * @param appModuleId The identifier for the requested application module to be deleted.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteAppicationModule(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
     }
 
 }

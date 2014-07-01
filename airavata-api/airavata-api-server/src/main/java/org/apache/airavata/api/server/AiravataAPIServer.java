@@ -58,7 +58,7 @@ public class AiravataAPIServer implements IServer{
     public void StartAiravataServer(Airavata.Processor<Airavata.Iface> airavataAPIServer) throws AiravataSystemException {
         try {
             AiravataUtils.setExecutionAsServer();
-            //RegistryInitUtil.initializeDB();
+            RegistryInitUtil.initializeDB();
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_PORT,"8930"));
             final String serverHost = ServerSettings.getSetting(Constants.API_SERVER_HOST, null);
             
