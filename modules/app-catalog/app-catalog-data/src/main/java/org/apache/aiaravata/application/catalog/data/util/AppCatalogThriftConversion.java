@@ -367,7 +367,7 @@ public class AppCatalogThriftConversion {
         InputDataObjectType inputDataObjectType = new InputDataObjectType();
         inputDataObjectType.setName(input.getInputKey());
         inputDataObjectType.setValue(input.getInputVal());
-        inputDataObjectType.setApplicationArguement(input.getAppArgument());
+        inputDataObjectType.setApplicationArgument(input.getAppArgument());
         inputDataObjectType.setMetaData(input.getMetadata());
         inputDataObjectType.setType(DataType.valueOf(input.getDataType()));
         inputDataObjectType.setStandardInput(input.isStandareInput());

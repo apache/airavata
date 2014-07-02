@@ -151,7 +151,7 @@ public class AppInterfaceTest {
         input.setName(inputName);
         input.setValue(value);
         input.setType(type);
-        input.setApplicationArguement("test arg");
+        input.setApplicationArgument("test arg");
         return input;
     }
 

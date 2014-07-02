@@ -53,7 +53,7 @@ public class AppInterfaceUtil {
         appInput.setValue(value);
         appInput.setType(type);
         appInput.setMetaData(metadata);
-        appInput.setApplicationArguement(applicationArgument);
+        appInput.setApplicationArgument(applicationArgument);
         appInput.setUserFriendlyDescription(userFriendlyDesc);
         appInput.setStandardInput(standardInput);
         return appInput;

@@ -29,10 +29,10 @@ struct DataType {
 extern const std::map<int, const char*> _DataType_VALUES_TO_NAMES;
 
 typedef struct _InputDataObjectType__isset {
-  _InputDataObjectType__isset() : value(false), type(false), applicationArguement(false), standardInput(true), userFriendlyDescription(false), metaData(false) {}
+  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(true), userFriendlyDescription(false), metaData(false) {}
   bool value;
   bool type;
-  bool applicationArguement;
+  bool applicationArgument;
   bool standardInput;
   bool userFriendlyDescription;
   bool metaData;
@@ -44,7 +44,7 @@ class InputDataObjectType {
   static const char* ascii_fingerprint; // = "0C147F4C4DFD0B9FF70275BF29D07281";
   static const uint8_t binary_fingerprint[16]; // = {0x0C,0x14,0x7F,0x4C,0x4D,0xFD,0x0B,0x9F,0xF7,0x02,0x75,0xBF,0x29,0xD0,0x72,0x81};
 
-  InputDataObjectType() : isEmpty(false), name(), value(), type((DataType::type)0), applicationArguement(), standardInput(false), userFriendlyDescription(), metaData() {
+  InputDataObjectType() : isEmpty(false), name(), value(), type((DataType::type)0), applicationArgument(), standardInput(false), userFriendlyDescription(), metaData() {
   }
 
   virtual ~InputDataObjectType() throw() {}
@@ -53,7 +53,7 @@ class InputDataObjectType {
   std::string name;
   std::string value;
   DataType::type type;
-  std::string applicationArguement;
+  std::string applicationArgument;
   bool standardInput;
   std::string userFriendlyDescription;
   std::string metaData;
@@ -78,9 +78,9 @@ class InputDataObjectType {
     __isset.type = true;
   }
 
-  void __set_applicationArguement(const std::string& val) {
-    applicationArguement = val;
-    __isset.applicationArguement = true;
+  void __set_applicationArgument(const std::string& val) {
+    applicationArgument = val;
+    __isset.applicationArgument = true;
   }
 
   void __set_standardInput(const bool val) {
@@ -112,9 +112,9 @@ class InputDataObjectType {
       return false;
     else if (__isset.type && !(type == rhs.type))
       return false;
-    if (__isset.applicationArguement != rhs.__isset.applicationArguement)
+    if (__isset.applicationArgument != rhs.__isset.applicationArgument)
       return false;
-    else if (__isset.applicationArguement && !(applicationArguement == rhs.applicationArguement))
+    else if (__isset.applicationArgument && !(applicationArgument == rhs.applicationArgument))
       return false;
     if (__isset.standardInput != rhs.__isset.standardInput)
       return false;

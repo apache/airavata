@@ -71,7 +71,7 @@ struct InputDataObjectType {
     2: required string name,
     3: optional string value,
     4: optional DataType type,
-    5: optional string applicationArguement,
+    5: optional string applicationArgument,
     6: optional bool standardInput = 0,
     7: optional string userFriendlyDescription,
     8: optional string metaData
