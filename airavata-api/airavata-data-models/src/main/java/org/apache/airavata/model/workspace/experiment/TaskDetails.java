@@ -61,17 +61,16 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)2);
   private static final org.apache.thrift.protocol.TField APPLICATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationId", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField APPLICATION_VERSION_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationVersion", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField HOST_DESCRIPTOR_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("hostDescriptorId", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField APPLICATION_DESCRIPTOR_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationDescriptorId", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField APPLICATION_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInputs", org.apache.thrift.protocol.TType.LIST, (short)7);
-  private static final org.apache.thrift.protocol.TField APPLICATION_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationOutputs", org.apache.thrift.protocol.TType.LIST, (short)8);
-  private static final org.apache.thrift.protocol.TField TASK_SCHEDULING_FIELD_DESC = new org.apache.thrift.protocol.TField("taskScheduling", org.apache.thrift.protocol.TType.STRUCT, (short)9);
-  private static final org.apache.thrift.protocol.TField ADVANCED_INPUT_DATA_HANDLING_FIELD_DESC = new org.apache.thrift.protocol.TField("advancedInputDataHandling", org.apache.thrift.protocol.TType.STRUCT, (short)10);
-  private static final org.apache.thrift.protocol.TField ADVANCED_OUTPUT_DATA_HANDLING_FIELD_DESC = new org.apache.thrift.protocol.TField("advancedOutputDataHandling", org.apache.thrift.protocol.TType.STRUCT, (short)11);
-  private static final org.apache.thrift.protocol.TField TASK_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("taskStatus", org.apache.thrift.protocol.TType.STRUCT, (short)12);
-  private static final org.apache.thrift.protocol.TField JOB_DETAILS_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("jobDetailsList", org.apache.thrift.protocol.TType.LIST, (short)13);
-  private static final org.apache.thrift.protocol.TField DATA_TRANSFER_DETAILS_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("dataTransferDetailsList", org.apache.thrift.protocol.TType.LIST, (short)14);
-  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)15);
+  private static final org.apache.thrift.protocol.TField APPLICATION_DEPLOYMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationDeploymentId", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField APPLICATION_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInputs", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField APPLICATION_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationOutputs", org.apache.thrift.protocol.TType.LIST, (short)7);
+  private static final org.apache.thrift.protocol.TField TASK_SCHEDULING_FIELD_DESC = new org.apache.thrift.protocol.TField("taskScheduling", org.apache.thrift.protocol.TType.STRUCT, (short)8);
+  private static final org.apache.thrift.protocol.TField ADVANCED_INPUT_DATA_HANDLING_FIELD_DESC = new org.apache.thrift.protocol.TField("advancedInputDataHandling", org.apache.thrift.protocol.TType.STRUCT, (short)9);
+  private static final org.apache.thrift.protocol.TField ADVANCED_OUTPUT_DATA_HANDLING_FIELD_DESC = new org.apache.thrift.protocol.TField("advancedOutputDataHandling", org.apache.thrift.protocol.TType.STRUCT, (short)10);
+  private static final org.apache.thrift.protocol.TField TASK_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("taskStatus", org.apache.thrift.protocol.TType.STRUCT, (short)11);
+  private static final org.apache.thrift.protocol.TField JOB_DETAILS_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("jobDetailsList", org.apache.thrift.protocol.TType.LIST, (short)12);
+  private static final org.apache.thrift.protocol.TField DATA_TRANSFER_DETAILS_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("dataTransferDetailsList", org.apache.thrift.protocol.TType.LIST, (short)13);
+  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)14);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -83,8 +82,7 @@ import org.slf4j.LoggerFactory;
   private long creationTime; // optional
   private String applicationId; // optional
   private String applicationVersion; // optional
-  private String hostDescriptorId; // optional
-  private String applicationDescriptorId; // optional
+  private String applicationDeploymentId; // optional
   private List<DataObjectType> applicationInputs; // optional
   private List<DataObjectType> applicationOutputs; // optional
   private ComputationalResourceScheduling taskScheduling; // optional
@@ -101,17 +99,16 @@ import org.slf4j.LoggerFactory;
     CREATION_TIME((short)2, "creationTime"),
     APPLICATION_ID((short)3, "applicationId"),
     APPLICATION_VERSION((short)4, "applicationVersion"),
-    HOST_DESCRIPTOR_ID((short)5, "hostDescriptorId"),
-    APPLICATION_DESCRIPTOR_ID((short)6, "applicationDescriptorId"),
-    APPLICATION_INPUTS((short)7, "applicationInputs"),
-    APPLICATION_OUTPUTS((short)8, "applicationOutputs"),
-    TASK_SCHEDULING((short)9, "taskScheduling"),
-    ADVANCED_INPUT_DATA_HANDLING((short)10, "advancedInputDataHandling"),
-    ADVANCED_OUTPUT_DATA_HANDLING((short)11, "advancedOutputDataHandling"),
-    TASK_STATUS((short)12, "taskStatus"),
-    JOB_DETAILS_LIST((short)13, "jobDetailsList"),
-    DATA_TRANSFER_DETAILS_LIST((short)14, "dataTransferDetailsList"),
-    ERRORS((short)15, "errors");
+    APPLICATION_DEPLOYMENT_ID((short)5, "applicationDeploymentId"),
+    APPLICATION_INPUTS((short)6, "applicationInputs"),
+    APPLICATION_OUTPUTS((short)7, "applicationOutputs"),
+    TASK_SCHEDULING((short)8, "taskScheduling"),
+    ADVANCED_INPUT_DATA_HANDLING((short)9, "advancedInputDataHandling"),
+    ADVANCED_OUTPUT_DATA_HANDLING((short)10, "advancedOutputDataHandling"),
+    TASK_STATUS((short)11, "taskStatus"),
+    JOB_DETAILS_LIST((short)12, "jobDetailsList"),
+    DATA_TRANSFER_DETAILS_LIST((short)13, "dataTransferDetailsList"),
+    ERRORS((short)14, "errors");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -134,27 +131,25 @@ import org.slf4j.LoggerFactory;
           return APPLICATION_ID;
         case 4: // APPLICATION_VERSION
           return APPLICATION_VERSION;
-        case 5: // HOST_DESCRIPTOR_ID
-          return HOST_DESCRIPTOR_ID;
-        case 6: // APPLICATION_DESCRIPTOR_ID
-          return APPLICATION_DESCRIPTOR_ID;
-        case 7: // APPLICATION_INPUTS
+        case 5: // APPLICATION_DEPLOYMENT_ID
+          return APPLICATION_DEPLOYMENT_ID;
+        case 6: // APPLICATION_INPUTS
           return APPLICATION_INPUTS;
-        case 8: // APPLICATION_OUTPUTS
+        case 7: // APPLICATION_OUTPUTS
           return APPLICATION_OUTPUTS;
-        case 9: // TASK_SCHEDULING
+        case 8: // TASK_SCHEDULING
           return TASK_SCHEDULING;
-        case 10: // ADVANCED_INPUT_DATA_HANDLING
+        case 9: // ADVANCED_INPUT_DATA_HANDLING
           return ADVANCED_INPUT_DATA_HANDLING;
-        case 11: // ADVANCED_OUTPUT_DATA_HANDLING
+        case 10: // ADVANCED_OUTPUT_DATA_HANDLING
           return ADVANCED_OUTPUT_DATA_HANDLING;
-        case 12: // TASK_STATUS
+        case 11: // TASK_STATUS
           return TASK_STATUS;
-        case 13: // JOB_DETAILS_LIST
+        case 12: // JOB_DETAILS_LIST
           return JOB_DETAILS_LIST;
-        case 14: // DATA_TRANSFER_DETAILS_LIST
+        case 13: // DATA_TRANSFER_DETAILS_LIST
           return DATA_TRANSFER_DETAILS_LIST;
-        case 15: // ERRORS
+        case 14: // ERRORS
           return ERRORS;
         default:
           return null;
@@ -198,7 +193,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.APPLICATION_ID,_Fields.APPLICATION_VERSION,_Fields.HOST_DESCRIPTOR_ID,_Fields.APPLICATION_DESCRIPTOR_ID,_Fields.APPLICATION_INPUTS,_Fields.APPLICATION_OUTPUTS,_Fields.TASK_SCHEDULING,_Fields.ADVANCED_INPUT_DATA_HANDLING,_Fields.ADVANCED_OUTPUT_DATA_HANDLING,_Fields.TASK_STATUS,_Fields.JOB_DETAILS_LIST,_Fields.DATA_TRANSFER_DETAILS_LIST,_Fields.ERRORS};
+  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.APPLICATION_ID,_Fields.APPLICATION_VERSION,_Fields.APPLICATION_DEPLOYMENT_ID,_Fields.APPLICATION_INPUTS,_Fields.APPLICATION_OUTPUTS,_Fields.TASK_SCHEDULING,_Fields.ADVANCED_INPUT_DATA_HANDLING,_Fields.ADVANCED_OUTPUT_DATA_HANDLING,_Fields.TASK_STATUS,_Fields.JOB_DETAILS_LIST,_Fields.DATA_TRANSFER_DETAILS_LIST,_Fields.ERRORS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -210,9 +205,7 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APPLICATION_VERSION, new org.apache.thrift.meta_data.FieldMetaData("applicationVersion", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.HOST_DESCRIPTOR_ID, new org.apache.thrift.meta_data.FieldMetaData("hostDescriptorId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.APPLICATION_DESCRIPTOR_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationDescriptorId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.APPLICATION_DEPLOYMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationDeploymentId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APPLICATION_INPUTS, new org.apache.thrift.meta_data.FieldMetaData("applicationInputs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
@@ -268,11 +261,8 @@ import org.slf4j.LoggerFactory;
     if (other.isSetApplicationVersion()) {
       this.applicationVersion = other.applicationVersion;
     }
-    if (other.isSetHostDescriptorId()) {
-      this.hostDescriptorId = other.hostDescriptorId;
-    }
-    if (other.isSetApplicationDescriptorId()) {
-      this.applicationDescriptorId = other.applicationDescriptorId;
+    if (other.isSetApplicationDeploymentId()) {
+      this.applicationDeploymentId = other.applicationDeploymentId;
     }
     if (other.isSetApplicationInputs()) {
       List<DataObjectType> __this__applicationInputs = new ArrayList<DataObjectType>(other.applicationInputs.size());
@@ -335,8 +325,7 @@ import org.slf4j.LoggerFactory;
     this.creationTime = 0;
     this.applicationId = null;
     this.applicationVersion = null;
-    this.hostDescriptorId = null;
-    this.applicationDescriptorId = null;
+    this.applicationDeploymentId = null;
     this.applicationInputs = null;
     this.applicationOutputs = null;
     this.taskScheduling = null;
@@ -439,49 +428,26 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getHostDescriptorId() {
-    return this.hostDescriptorId;
+  public String getApplicationDeploymentId() {
+    return this.applicationDeploymentId;
   }
 
-  public void setHostDescriptorId(String hostDescriptorId) {
-    this.hostDescriptorId = hostDescriptorId;
+  public void setApplicationDeploymentId(String applicationDeploymentId) {
+    this.applicationDeploymentId = applicationDeploymentId;
   }
 
-  public void unsetHostDescriptorId() {
-    this.hostDescriptorId = null;
+  public void unsetApplicationDeploymentId() {
+    this.applicationDeploymentId = null;
   }
 
-  /** Returns true if field hostDescriptorId is set (has been assigned a value) and false otherwise */
-  public boolean isSetHostDescriptorId() {
-    return this.hostDescriptorId != null;
+  /** Returns true if field applicationDeploymentId is set (has been assigned a value) and false otherwise */
+  public boolean isSetApplicationDeploymentId() {
+    return this.applicationDeploymentId != null;
   }
 
-  public void setHostDescriptorIdIsSet(boolean value) {
+  public void setApplicationDeploymentIdIsSet(boolean value) {
     if (!value) {
-      this.hostDescriptorId = null;
-    }
-  }
-
-  public String getApplicationDescriptorId() {
-    return this.applicationDescriptorId;
-  }
-
-  public void setApplicationDescriptorId(String applicationDescriptorId) {
-    this.applicationDescriptorId = applicationDescriptorId;
-  }
-
-  public void unsetApplicationDescriptorId() {
-    this.applicationDescriptorId = null;
-  }
-
-  /** Returns true if field applicationDescriptorId is set (has been assigned a value) and false otherwise */
-  public boolean isSetApplicationDescriptorId() {
-    return this.applicationDescriptorId != null;
-  }
-
-  public void setApplicationDescriptorIdIsSet(boolean value) {
-    if (!value) {
-      this.applicationDescriptorId = null;
+      this.applicationDeploymentId = null;
     }
   }
 
@@ -801,19 +767,11 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case HOST_DESCRIPTOR_ID:
+    case APPLICATION_DEPLOYMENT_ID:
       if (value == null) {
-        unsetHostDescriptorId();
+        unsetApplicationDeploymentId();
       } else {
-        setHostDescriptorId((String)value);
-      }
-      break;
-
-    case APPLICATION_DESCRIPTOR_ID:
-      if (value == null) {
-        unsetApplicationDescriptorId();
-      } else {
-        setApplicationDescriptorId((String)value);
+        setApplicationDeploymentId((String)value);
       }
       break;
 
@@ -906,11 +864,8 @@ import org.slf4j.LoggerFactory;
     case APPLICATION_VERSION:
       return getApplicationVersion();
 
-    case HOST_DESCRIPTOR_ID:
-      return getHostDescriptorId();
-
-    case APPLICATION_DESCRIPTOR_ID:
-      return getApplicationDescriptorId();
+    case APPLICATION_DEPLOYMENT_ID:
+      return getApplicationDeploymentId();
 
     case APPLICATION_INPUTS:
       return getApplicationInputs();
@@ -958,10 +913,8 @@ import org.slf4j.LoggerFactory;
       return isSetApplicationId();
     case APPLICATION_VERSION:
       return isSetApplicationVersion();
-    case HOST_DESCRIPTOR_ID:
-      return isSetHostDescriptorId();
-    case APPLICATION_DESCRIPTOR_ID:
-      return isSetApplicationDescriptorId();
+    case APPLICATION_DEPLOYMENT_ID:
+      return isSetApplicationDeploymentId();
     case APPLICATION_INPUTS:
       return isSetApplicationInputs();
     case APPLICATION_OUTPUTS:
@@ -1033,21 +986,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_hostDescriptorId = true && this.isSetHostDescriptorId();
-    boolean that_present_hostDescriptorId = true && that.isSetHostDescriptorId();
-    if (this_present_hostDescriptorId || that_present_hostDescriptorId) {
-      if (!(this_present_hostDescriptorId && that_present_hostDescriptorId))
+    boolean this_present_applicationDeploymentId = true && this.isSetApplicationDeploymentId();
+    boolean that_present_applicationDeploymentId = true && that.isSetApplicationDeploymentId();
+    if (this_present_applicationDeploymentId || that_present_applicationDeploymentId) {
+      if (!(this_present_applicationDeploymentId && that_present_applicationDeploymentId))
         return false;
-      if (!this.hostDescriptorId.equals(that.hostDescriptorId))
-        return false;
-    }
-
-    boolean this_present_applicationDescriptorId = true && this.isSetApplicationDescriptorId();
-    boolean that_present_applicationDescriptorId = true && that.isSetApplicationDescriptorId();
-    if (this_present_applicationDescriptorId || that_present_applicationDescriptorId) {
-      if (!(this_present_applicationDescriptorId && that_present_applicationDescriptorId))
-        return false;
-      if (!this.applicationDescriptorId.equals(that.applicationDescriptorId))
+      if (!this.applicationDeploymentId.equals(that.applicationDeploymentId))
         return false;
     }
 
@@ -1188,22 +1132,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetHostDescriptorId()).compareTo(other.isSetHostDescriptorId());
+    lastComparison = Boolean.valueOf(isSetApplicationDeploymentId()).compareTo(other.isSetApplicationDeploymentId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetHostDescriptorId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.hostDescriptorId, other.hostDescriptorId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetApplicationDescriptorId()).compareTo(other.isSetApplicationDescriptorId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetApplicationDescriptorId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationDescriptorId, other.applicationDescriptorId);
+    if (isSetApplicationDeploymentId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationDeploymentId, other.applicationDeploymentId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1351,23 +1285,13 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
-    if (isSetHostDescriptorId()) {
+    if (isSetApplicationDeploymentId()) {
       if (!first) sb.append(", ");
-      sb.append("hostDescriptorId:");
-      if (this.hostDescriptorId == null) {
+      sb.append("applicationDeploymentId:");
+      if (this.applicationDeploymentId == null) {
         sb.append("null");
       } else {
-        sb.append(this.hostDescriptorId);
-      }
-      first = false;
-    }
-    if (isSetApplicationDescriptorId()) {
-      if (!first) sb.append(", ");
-      sb.append("applicationDescriptorId:");
-      if (this.applicationDescriptorId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.applicationDescriptorId);
+        sb.append(this.applicationDeploymentId);
       }
       first = false;
     }
@@ -1554,23 +1478,15 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // HOST_DESCRIPTOR_ID
+          case 5: // APPLICATION_DEPLOYMENT_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.hostDescriptorId = iprot.readString();
-              struct.setHostDescriptorIdIsSet(true);
+              struct.applicationDeploymentId = iprot.readString();
+              struct.setApplicationDeploymentIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // APPLICATION_DESCRIPTOR_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.applicationDescriptorId = iprot.readString();
-              struct.setApplicationDescriptorIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 7: // APPLICATION_INPUTS
+          case 6: // APPLICATION_INPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list16 = iprot.readListBegin();
@@ -1589,7 +1505,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // APPLICATION_OUTPUTS
+          case 7: // APPLICATION_OUTPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list19 = iprot.readListBegin();
@@ -1608,7 +1524,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // TASK_SCHEDULING
+          case 8: // TASK_SCHEDULING
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.taskScheduling = new ComputationalResourceScheduling();
               struct.taskScheduling.read(iprot);
@@ -1617,7 +1533,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // ADVANCED_INPUT_DATA_HANDLING
+          case 9: // ADVANCED_INPUT_DATA_HANDLING
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.advancedInputDataHandling = new AdvancedInputDataHandling();
               struct.advancedInputDataHandling.read(iprot);
@@ -1626,7 +1542,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // ADVANCED_OUTPUT_DATA_HANDLING
+          case 10: // ADVANCED_OUTPUT_DATA_HANDLING
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.advancedOutputDataHandling = new AdvancedOutputDataHandling();
               struct.advancedOutputDataHandling.read(iprot);
@@ -1635,7 +1551,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // TASK_STATUS
+          case 11: // TASK_STATUS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.taskStatus = new TaskStatus();
               struct.taskStatus.read(iprot);
@@ -1644,7 +1560,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 13: // JOB_DETAILS_LIST
+          case 12: // JOB_DETAILS_LIST
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list22 = iprot.readListBegin();
@@ -1663,7 +1579,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 14: // DATA_TRANSFER_DETAILS_LIST
+          case 13: // DATA_TRANSFER_DETAILS_LIST
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list25 = iprot.readListBegin();
@@ -1682,7 +1598,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 15: // ERRORS
+          case 14: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list28 = iprot.readListBegin();
@@ -1738,17 +1654,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.hostDescriptorId != null) {
-        if (struct.isSetHostDescriptorId()) {
-          oprot.writeFieldBegin(HOST_DESCRIPTOR_ID_FIELD_DESC);
-          oprot.writeString(struct.hostDescriptorId);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.applicationDescriptorId != null) {
-        if (struct.isSetApplicationDescriptorId()) {
-          oprot.writeFieldBegin(APPLICATION_DESCRIPTOR_ID_FIELD_DESC);
-          oprot.writeString(struct.applicationDescriptorId);
+      if (struct.applicationDeploymentId != null) {
+        if (struct.isSetApplicationDeploymentId()) {
+          oprot.writeFieldBegin(APPLICATION_DEPLOYMENT_ID_FIELD_DESC);
+          oprot.writeString(struct.applicationDeploymentId);
           oprot.writeFieldEnd();
         }
       }
@@ -1878,40 +1787,37 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetApplicationVersion()) {
         optionals.set(2);
       }
-      if (struct.isSetHostDescriptorId()) {
+      if (struct.isSetApplicationDeploymentId()) {
         optionals.set(3);
       }
-      if (struct.isSetApplicationDescriptorId()) {
+      if (struct.isSetApplicationInputs()) {
         optionals.set(4);
       }
-      if (struct.isSetApplicationInputs()) {
+      if (struct.isSetApplicationOutputs()) {
         optionals.set(5);
       }
-      if (struct.isSetApplicationOutputs()) {
+      if (struct.isSetTaskScheduling()) {
         optionals.set(6);
       }
-      if (struct.isSetTaskScheduling()) {
+      if (struct.isSetAdvancedInputDataHandling()) {
         optionals.set(7);
       }
-      if (struct.isSetAdvancedInputDataHandling()) {
+      if (struct.isSetAdvancedOutputDataHandling()) {
         optionals.set(8);
       }
-      if (struct.isSetAdvancedOutputDataHandling()) {
+      if (struct.isSetTaskStatus()) {
         optionals.set(9);
       }
-      if (struct.isSetTaskStatus()) {
+      if (struct.isSetJobDetailsList()) {
         optionals.set(10);
       }
-      if (struct.isSetJobDetailsList()) {
+      if (struct.isSetDataTransferDetailsList()) {
         optionals.set(11);
       }
-      if (struct.isSetDataTransferDetailsList()) {
+      if (struct.isSetErrors()) {
         optionals.set(12);
       }
-      if (struct.isSetErrors()) {
-        optionals.set(13);
-      }
-      oprot.writeBitSet(optionals, 14);
+      oprot.writeBitSet(optionals, 13);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -1921,11 +1827,8 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetApplicationVersion()) {
         oprot.writeString(struct.applicationVersion);
       }
-      if (struct.isSetHostDescriptorId()) {
-        oprot.writeString(struct.hostDescriptorId);
-      }
-      if (struct.isSetApplicationDescriptorId()) {
-        oprot.writeString(struct.applicationDescriptorId);
+      if (struct.isSetApplicationDeploymentId()) {
+        oprot.writeString(struct.applicationDeploymentId);
       }
       if (struct.isSetApplicationInputs()) {
         {
@@ -1991,7 +1894,7 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.taskID = iprot.readString();
       struct.setTaskIDIsSet(true);
-      BitSet incoming = iprot.readBitSet(14);
+      BitSet incoming = iprot.readBitSet(13);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -2005,14 +1908,10 @@ import org.slf4j.LoggerFactory;
         struct.setApplicationVersionIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.hostDescriptorId = iprot.readString();
-        struct.setHostDescriptorIdIsSet(true);
+        struct.applicationDeploymentId = iprot.readString();
+        struct.setApplicationDeploymentIdIsSet(true);
       }
       if (incoming.get(4)) {
-        struct.applicationDescriptorId = iprot.readString();
-        struct.setApplicationDescriptorIdIsSet(true);
-      }
-      if (incoming.get(5)) {
         {
           org.apache.thrift.protocol.TList _list41 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.applicationInputs = new ArrayList<DataObjectType>(_list41.size);
@@ -2026,7 +1925,7 @@ import org.slf4j.LoggerFactory;
         }
         struct.setApplicationInputsIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(5)) {
         {
           org.apache.thrift.protocol.TList _list44 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.applicationOutputs = new ArrayList<DataObjectType>(_list44.size);
@@ -2040,27 +1939,27 @@ import org.slf4j.LoggerFactory;
         }
         struct.setApplicationOutputsIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(6)) {
         struct.taskScheduling = new ComputationalResourceScheduling();
         struct.taskScheduling.read(iprot);
         struct.setTaskSchedulingIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(7)) {
         struct.advancedInputDataHandling = new AdvancedInputDataHandling();
         struct.advancedInputDataHandling.read(iprot);
         struct.setAdvancedInputDataHandlingIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(8)) {
         struct.advancedOutputDataHandling = new AdvancedOutputDataHandling();
         struct.advancedOutputDataHandling.read(iprot);
         struct.setAdvancedOutputDataHandlingIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(9)) {
         struct.taskStatus = new TaskStatus();
         struct.taskStatus.read(iprot);
         struct.setTaskStatusIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(10)) {
         {
           org.apache.thrift.protocol.TList _list47 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.jobDetailsList = new ArrayList<JobDetails>(_list47.size);
@@ -2074,7 +1973,7 @@ import org.slf4j.LoggerFactory;
         }
         struct.setJobDetailsListIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(11)) {
         {
           org.apache.thrift.protocol.TList _list50 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.dataTransferDetailsList = new ArrayList<DataTransferDetails>(_list50.size);
@@ -2088,7 +1987,7 @@ import org.slf4j.LoggerFactory;
         }
         struct.setDataTransferDetailsListIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(12)) {
         {
           org.apache.thrift.protocol.TList _list53 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.errors = new ArrayList<ErrorDetails>(_list53.size);

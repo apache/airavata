@@ -25,9 +25,10 @@ final class ExperimentState {
   const EXECUTING = 4;
   const CANCELING = 5;
   const CANCELED = 6;
-  const COMPLETED = 7;
-  const FAILED = 8;
-  const UNKNOWN = 9;
+  const SUSPENDED = 7;
+  const COMPLETED = 8;
+  const FAILED = 9;
+  const UNKNOWN = 10;
   static public $__names = array(
     0 => 'CREATED',
     1 => 'VALIDATED',
@@ -36,9 +37,10 @@ final class ExperimentState {
     4 => 'EXECUTING',
     5 => 'CANCELING',
     6 => 'CANCELED',
-    7 => 'COMPLETED',
-    8 => 'FAILED',
-    9 => 'UNKNOWN',
+    7 => 'SUSPENDED',
+    8 => 'COMPLETED',
+    9 => 'FAILED',
+    10 => 'UNKNOWN',
   );
 }
 
@@ -47,17 +49,19 @@ final class WorkflowNodeState {
   const EXECUTING = 1;
   const CANCELING = 2;
   const CANCELED = 3;
-  const COMPLETED = 4;
-  const FAILED = 5;
-  const UNKNOWN = 6;
+  const SUSPENDED = 4;
+  const COMPLETED = 5;
+  const FAILED = 6;
+  const UNKNOWN = 7;
   static public $__names = array(
     0 => 'INVOKED',
     1 => 'EXECUTING',
     2 => 'CANCELING',
     3 => 'CANCELED',
-    4 => 'COMPLETED',
-    5 => 'FAILED',
-    6 => 'UNKNOWN',
+    4 => 'SUSPENDED',
+    5 => 'COMPLETED',
+    6 => 'FAILED',
+    7 => 'UNKNOWN',
   );
 }
 
@@ -2341,8 +2345,7 @@ class TaskDetails {
   public $creationTime = null;
   public $applicationId = null;
   public $applicationVersion = null;
-  public $hostDescriptorId = null;
-  public $applicationDescriptorId = null;
+  public $applicationDeploymentId = null;
   public $applicationInputs = null;
   public $applicationOutputs = null;
   public $taskScheduling = null;
@@ -2373,14 +2376,10 @@ class TaskDetails {
           'type' => TType::STRING,
           ),
         5 => array(
-          'var' => 'hostDescriptorId',
+          'var' => 'applicationDeploymentId',
           'type' => TType::STRING,
           ),
         6 => array(
-          'var' => 'applicationDescriptorId',
-          'type' => TType::STRING,
-          ),
-        7 => array(
           'var' => 'applicationInputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -2389,7 +2388,7 @@ class TaskDetails {
             'class' => '\Airavata\Model\Workspace\Experiment\DataObjectType',
             ),
           ),
-        8 => array(
+        7 => array(
           'var' => 'applicationOutputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -2398,27 +2397,27 @@ class TaskDetails {
             'class' => '\Airavata\Model\Workspace\Experiment\DataObjectType',
             ),
           ),
-        9 => array(
+        8 => array(
           'var' => 'taskScheduling',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\ComputationalResourceScheduling',
           ),
-        10 => array(
+        9 => array(
           'var' => 'advancedInputDataHandling',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\AdvancedInputDataHandling',
           ),
-        11 => array(
+        10 => array(
           'var' => 'advancedOutputDataHandling',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\AdvancedOutputDataHandling',
           ),
-        12 => array(
+        11 => array(
           'var' => 'taskStatus',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\TaskStatus',
           ),
-        13 => array(
+        12 => array(
           'var' => 'jobDetailsList',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -2427,7 +2426,7 @@ class TaskDetails {
             'class' => '\Airavata\Model\Workspace\Experiment\JobDetails',
             ),
           ),
-        14 => array(
+        13 => array(
           'var' => 'dataTransferDetailsList',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -2436,7 +2435,7 @@ class TaskDetails {
             'class' => '\Airavata\Model\Workspace\Experiment\DataTransferDetails',
             ),
           ),
-        15 => array(
+        14 => array(
           'var' => 'errors',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -2460,11 +2459,8 @@ class TaskDetails {
       if (isset($vals['applicationVersion'])) {
         $this->applicationVersion = $vals['applicationVersion'];
       }
-      if (isset($vals['hostDescriptorId'])) {
-        $this->hostDescriptorId = $vals['hostDescriptorId'];
-      }
-      if (isset($vals['applicationDescriptorId'])) {
-        $this->applicationDescriptorId = $vals['applicationDescriptorId'];
+      if (isset($vals['applicationDeploymentId'])) {
+        $this->applicationDeploymentId = $vals['applicationDeploymentId'];
       }
       if (isset($vals['applicationInputs'])) {
         $this->applicationInputs = $vals['applicationInputs'];
@@ -2545,19 +2541,12 @@ class TaskDetails {
           break;
         case 5:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->hostDescriptorId);
+            $xfer += $input->readString($this->applicationDeploymentId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 6:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->applicationDescriptorId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 7:
           if ($ftype == TType::LST) {
             $this->applicationInputs = array();
             $_size14 = 0;
@@ -2575,7 +2564,7 @@ class TaskDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
+        case 7:
           if ($ftype == TType::LST) {
             $this->applicationOutputs = array();
             $_size20 = 0;
@@ -2593,7 +2582,7 @@ class TaskDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 9:
+        case 8:
           if ($ftype == TType::STRUCT) {
             $this->taskScheduling = new \Airavata\Model\Workspace\Experiment\ComputationalResourceScheduling();
             $xfer += $this->taskScheduling->read($input);
@@ -2601,7 +2590,7 @@ class TaskDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 10:
+        case 9:
           if ($ftype == TType::STRUCT) {
             $this->advancedInputDataHandling = new \Airavata\Model\Workspace\Experiment\AdvancedInputDataHandling();
             $xfer += $this->advancedInputDataHandling->read($input);
@@ -2609,7 +2598,7 @@ class TaskDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 11:
+        case 10:
           if ($ftype == TType::STRUCT) {
             $this->advancedOutputDataHandling = new \Airavata\Model\Workspace\Experiment\AdvancedOutputDataHandling();
             $xfer += $this->advancedOutputDataHandling->read($input);
@@ -2617,7 +2606,7 @@ class TaskDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 12:
+        case 11:
           if ($ftype == TType::STRUCT) {
             $this->taskStatus = new \Airavata\Model\Workspace\Experiment\TaskStatus();
             $xfer += $this->taskStatus->read($input);
@@ -2625,7 +2614,7 @@ class TaskDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 13:
+        case 12:
           if ($ftype == TType::LST) {
             $this->jobDetailsList = array();
             $_size26 = 0;
@@ -2643,7 +2632,7 @@ class TaskDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 14:
+        case 13:
           if ($ftype == TType::LST) {
             $this->dataTransferDetailsList = array();
             $_size32 = 0;
@@ -2661,7 +2650,7 @@ class TaskDetails {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 15:
+        case 14:
           if ($ftype == TType::LST) {
             $this->errors = array();
             $_size38 = 0;
@@ -2712,21 +2701,16 @@ class TaskDetails {
       $xfer += $output->writeString($this->applicationVersion);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->hostDescriptorId !== null) {
-      $xfer += $output->writeFieldBegin('hostDescriptorId', TType::STRING, 5);
-      $xfer += $output->writeString($this->hostDescriptorId);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->applicationDescriptorId !== null) {
-      $xfer += $output->writeFieldBegin('applicationDescriptorId', TType::STRING, 6);
-      $xfer += $output->writeString($this->applicationDescriptorId);
+    if ($this->applicationDeploymentId !== null) {
+      $xfer += $output->writeFieldBegin('applicationDeploymentId', TType::STRING, 5);
+      $xfer += $output->writeString($this->applicationDeploymentId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->applicationInputs !== null) {
       if (!is_array($this->applicationInputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('applicationInputs', TType::LST, 7);
+      $xfer += $output->writeFieldBegin('applicationInputs', TType::LST, 6);
       {
         $output->writeListBegin(TType::STRUCT, count($this->applicationInputs));
         {
@@ -2743,7 +2727,7 @@ class TaskDetails {
       if (!is_array($this->applicationOutputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('applicationOutputs', TType::LST, 8);
+      $xfer += $output->writeFieldBegin('applicationOutputs', TType::LST, 7);
       {
         $output->writeListBegin(TType::STRUCT, count($this->applicationOutputs));
         {
@@ -2760,7 +2744,7 @@ class TaskDetails {
       if (!is_object($this->taskScheduling)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('taskScheduling', TType::STRUCT, 9);
+      $xfer += $output->writeFieldBegin('taskScheduling', TType::STRUCT, 8);
       $xfer += $this->taskScheduling->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -2768,7 +2752,7 @@ class TaskDetails {
       if (!is_object($this->advancedInputDataHandling)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('advancedInputDataHandling', TType::STRUCT, 10);
+      $xfer += $output->writeFieldBegin('advancedInputDataHandling', TType::STRUCT, 9);
       $xfer += $this->advancedInputDataHandling->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -2776,7 +2760,7 @@ class TaskDetails {
       if (!is_object($this->advancedOutputDataHandling)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('advancedOutputDataHandling', TType::STRUCT, 11);
+      $xfer += $output->writeFieldBegin('advancedOutputDataHandling', TType::STRUCT, 10);
       $xfer += $this->advancedOutputDataHandling->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -2784,7 +2768,7 @@ class TaskDetails {
       if (!is_object($this->taskStatus)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('taskStatus', TType::STRUCT, 12);
+      $xfer += $output->writeFieldBegin('taskStatus', TType::STRUCT, 11);
       $xfer += $this->taskStatus->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -2792,7 +2776,7 @@ class TaskDetails {
       if (!is_array($this->jobDetailsList)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('jobDetailsList', TType::LST, 13);
+      $xfer += $output->writeFieldBegin('jobDetailsList', TType::LST, 12);
       {
         $output->writeListBegin(TType::STRUCT, count($this->jobDetailsList));
         {
@@ -2809,7 +2793,7 @@ class TaskDetails {
       if (!is_array($this->dataTransferDetailsList)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('dataTransferDetailsList', TType::LST, 14);
+      $xfer += $output->writeFieldBegin('dataTransferDetailsList', TType::LST, 13);
       {
         $output->writeListBegin(TType::STRUCT, count($this->dataTransferDetailsList));
         {
@@ -2826,7 +2810,7 @@ class TaskDetails {
       if (!is_array($this->errors)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('errors', TType::LST, 15);
+      $xfer += $output->writeFieldBegin('errors', TType::LST, 14);
       {
         $output->writeListBegin(TType::STRUCT, count($this->errors));
         {
