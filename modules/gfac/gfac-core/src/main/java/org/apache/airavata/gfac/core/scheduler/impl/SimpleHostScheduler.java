@@ -20,13 +20,13 @@
 */
 package org.apache.airavata.gfac.core.scheduler.impl;
 
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.core.scheduler.HostScheduler;
-
 import java.util.List;
 
+import org.apache.airavata.gfac.core.scheduler.HostScheduler;
+import org.apache.airavata.model.computehost.ComputeResourceDescription;
+
 public class SimpleHostScheduler implements HostScheduler {
-    public HostDescription schedule(List<HostDescription> registeredHosts) {
+    public ComputeResourceDescription schedule(List<ComputeResourceDescription> registeredHosts) {
          //todo implement an algorithm to pick a host among different hosts, ideally this could be configurable in an xml
         return registeredHosts.get(0);
     }

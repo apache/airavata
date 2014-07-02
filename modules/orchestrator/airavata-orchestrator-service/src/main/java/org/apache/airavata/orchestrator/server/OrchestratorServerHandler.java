@@ -23,12 +23,18 @@ package org.apache.airavata.orchestrator.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.airavata.appcatalog.cpi.ComputeResource;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
@@ -36,11 +42,10 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.computehost.ComputeResourceDescription;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
@@ -417,67 +422,22 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 		try {
 			TaskDetails taskData = (TaskDetails) registry.get(
 					RegistryModelType.TASK_DETAIL, taskId);
-			String serviceName = taskData.getApplicationId();
-			if (serviceName == null) {
-				throw new GFacException(
+			String applicationId = taskData.getApplicationId();
+			if (applicationId == null) {
+				throw new OrchestratorException(
 						"Error executing the job because there is not Application Name in this Experiment:  "
-								+ serviceName);
+								+ applicationId);
 			}
-			AiravataAPI airavataAPI = getAiravataAPI();
-
-			ServiceDescription serviceDescription = airavataAPI
-					.getApplicationManager().getServiceDescription(serviceName);
-			if (serviceDescription == null) {
-				throw new GFacException(
-						"Error executing the job because there is not Application Name in this Experiment:  "
-								+ serviceName);
-			}
-			String hostName;
-			HostDescription hostDescription = null;
-			if (taskData.getTaskScheduling().getResourceHostId() != null) {
-				hostName = taskData.getTaskScheduling().getResourceHostId();
-				hostDescription = airavataAPI.getApplicationManager()
-						.getHostDescription(hostName);
-			} else {
-				List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
-				Map<String, ApplicationDescription> applicationDescriptors = airavataAPI
-						.getApplicationManager().getApplicationDescriptors(
-								serviceName);
-				for (String hostDescName : applicationDescriptors.keySet()) {
-					registeredHosts.add(airavataAPI.getApplicationManager()
-							.getHostDescription(hostDescName));
-				}
-				Class<? extends HostScheduler> aClass = Class.forName(
-						ServerSettings.getHostScheduler()).asSubclass(
-						HostScheduler.class);
-				HostScheduler hostScheduler = aClass.newInstance();
-				hostDescription = hostScheduler.schedule(registeredHosts);
-				hostName = hostDescription.getType().getHostName();
-			}
-			if (hostDescription == null) {
-				throw new GFacException(
-						"Error executing the job as the host is not registered "
-								+ hostName);
-			}
-			ApplicationDescription applicationDescription = airavataAPI
-					.getApplicationManager().getApplicationDescription(
-							serviceName, hostName);
-			taskData.setHostDescriptorId(hostName);
-			taskData.setApplicationDescriptorId(applicationDescription
-					.getType().getApplicationName().getStringValue());
-			registry.update(RegistryModelType.TASK_DETAIL, taskData,
-					taskData.getTaskID());
-			List<Object> workflowNodeDetailList = registry
-					.get(RegistryModelType.WORKFLOW_NODE_DETAIL,
-							org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants.TASK_LIST,
-							taskData);
+			ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(taskData, applicationId);
+			taskData.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
+			registry.update(RegistryModelType.TASK_DETAIL, taskData,taskData.getTaskID());
+			List<Object> workflowNodeDetailList = registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL,
+							org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants.TASK_LIST, taskData);
 			if (workflowNodeDetailList != null
 					&& workflowNodeDetailList.size() > 0) {
-				List<Object> experimentList = registry
-						.get(RegistryModelType.EXPERIMENT,
+				List<Object> experimentList = registry.get(RegistryModelType.EXPERIMENT,
 								org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.ExperimentConstants.WORKFLOW_NODE_LIST,
-								(WorkflowNodeDetails) workflowNodeDetailList
-										.get(0));
+								(WorkflowNodeDetails) workflowNodeDetailList.get(0));
 				if (experimentList != null && experimentList.size() > 0) {
 					return orchestrator
 							.launchExperiment(
@@ -496,13 +456,64 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			e.printStackTrace();
 		} catch (RegistryException e) {
 			e.printStackTrace();
-		} catch (GFacException e) {
-			e.printStackTrace();
-		} catch (AiravataAPIInvocationException e) {
-			e.printStackTrace();
 		} catch (OrchestratorException e) {
+			e.printStackTrace();
+		} catch (AppCatalogException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	private ApplicationDeploymentDescription getAppDeployment(
+			TaskDetails taskData, String applicationId)
+			throws AppCatalogException, OrchestratorException,
+			ClassNotFoundException, ApplicationSettingsException,
+			InstantiationException, IllegalAccessException {
+		AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+		String selectedModuleId = getModuleId(appCatalog, applicationId);
+		ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(
+				appCatalog, taskData, selectedModuleId);
+		return applicationDeploymentDescription;
+	}
+
+	private ApplicationDeploymentDescription getAppDeployment(
+			AppCatalog appCatalog, TaskDetails taskData, String selectedModuleId)
+			throws AppCatalogException, ClassNotFoundException,
+			ApplicationSettingsException, InstantiationException,
+			IllegalAccessException {
+		Map<String, String> moduleIdFilter = new HashMap<String, String>();
+		moduleIdFilter.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, selectedModuleId);
+		if (taskData.getTaskScheduling().getResourceHostId() != null) {
+		    moduleIdFilter.put(AbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, taskData.getTaskScheduling().getResourceHostId());
+		}
+		List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(moduleIdFilter);
+		Map<ComputeResourceDescription, ApplicationDeploymentDescription> deploymentMap = new HashMap<ComputeResourceDescription, ApplicationDeploymentDescription>();
+		ComputeResource computeResource = appCatalog.getComputeResource();
+		for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
+			deploymentMap.put(computeResource.getComputeResource(deploymentDescription.getComputeHostId()),deploymentDescription);
+		}
+		List<ComputeResourceDescription> computeHostList = Arrays.asList(deploymentMap.keySet().toArray(new ComputeResourceDescription[]{}));	
+		Class<? extends HostScheduler> aClass = Class.forName(
+				ServerSettings.getHostScheduler()).asSubclass(
+				HostScheduler.class);
+		HostScheduler hostScheduler = aClass.newInstance();
+		ComputeResourceDescription ComputeResourceDescription = hostScheduler.schedule(computeHostList);
+		ApplicationDeploymentDescription applicationDeploymentDescription = deploymentMap.get(ComputeResourceDescription);
+		return applicationDeploymentDescription;
+	}
+
+	private String getModuleId(AppCatalog appCatalog, String applicationId)
+			throws AppCatalogException, OrchestratorException {
+		ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface().getApplicationInterface(applicationId);
+		List<String> applicationModules = applicationInterface.getApplicationModules();
+		if (applicationModules.size()==0){
+			throw new OrchestratorException(
+					"No modules defined for application "
+							+ applicationId);
+		}
+//			AiravataAPI airavataAPI = getAiravataAPI();
+		String selectedModuleId=applicationModules.get(0);
+		return selectedModuleId;
 	}
 }

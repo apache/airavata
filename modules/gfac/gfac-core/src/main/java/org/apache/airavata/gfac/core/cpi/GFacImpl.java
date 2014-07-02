@@ -235,7 +235,8 @@ public class GFacImpl implements GFac {
               }
               Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
              HostScheduler hostScheduler = aClass.newInstance();
-            hostDescription = hostScheduler.schedule(registeredHosts);
+             //TODO cleanup
+            hostDescription = registeredHosts.get(0);//hostScheduler.schedule(registeredHosts);
         	hostName = hostDescription.getType().getHostName();
         }
         if(hostDescription == null){
