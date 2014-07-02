@@ -61,7 +61,6 @@ public class AppDeploymentTest {
     public void tearDown() throws Exception {
         System.out.println("********** TEAR DOWN ************");
         initialize.stopDerbyServer();
-
     }
 
     @Test

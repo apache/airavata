@@ -41,7 +41,7 @@ public class DataMovementProtocolResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(DATA_MOVEMENT_PROTOCOL);
-            generator.setParameter(DataMoveProtocolConstants.JOB_TYPE, ids.get(DataMoveProtocolConstants.JOB_TYPE));
+            generator.setParameter(DataMoveProtocolConstants.DATA_MOVE_TYPE, ids.get(DataMoveProtocolConstants.DATA_MOVE_TYPE));
             generator.setParameter(DataMoveProtocolConstants.RESOURCE_ID, ids.get(DataMoveProtocolConstants.RESOURCE_ID));
             generator.setParameter(DataMoveProtocolConstants.DATA_MOVE_ID, ids.get(DataMoveProtocolConstants.DATA_MOVE_ID));
             Query q = generator.deleteQuery(em);
@@ -75,7 +75,7 @@ public class DataMovementProtocolResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(DATA_MOVEMENT_PROTOCOL);
-            generator.setParameter(DataMoveProtocolConstants.JOB_TYPE, ids.get(DataMoveProtocolConstants.JOB_TYPE));
+            generator.setParameter(DataMoveProtocolConstants.DATA_MOVE_TYPE, ids.get(DataMoveProtocolConstants.DATA_MOVE_TYPE));
             generator.setParameter(DataMoveProtocolConstants.RESOURCE_ID, ids.get(DataMoveProtocolConstants.RESOURCE_ID));
             generator.setParameter(DataMoveProtocolConstants.DATA_MOVE_ID, ids.get(DataMoveProtocolConstants.DATA_MOVE_ID));
             Query q = generator.selectQuery(em);
@@ -119,8 +119,8 @@ public class DataMovementProtocolResource extends AbstractResource {
                         dataMoveProtocolResourcesList.add(dataMovementProtocolResource);
                     }
                 }
-            } else if (fieldName.equals(DataMoveProtocolConstants.JOB_TYPE)) {
-                generator.setParameter(DataMoveProtocolConstants.JOB_TYPE, value);
+            } else if (fieldName.equals(DataMoveProtocolConstants.DATA_MOVE_TYPE)) {
+                generator.setParameter(DataMoveProtocolConstants.DATA_MOVE_TYPE, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -194,8 +194,8 @@ public class DataMovementProtocolResource extends AbstractResource {
                         dataMovementProtocolIDs.add(dataMovementProtocol.getDataMoveID());
                     }
                 }
-            } else if (fieldName.equals(DataMoveProtocolConstants.JOB_TYPE)) {
-                generator.setParameter(DataMoveProtocolConstants.JOB_TYPE, value);
+            } else if (fieldName.equals(DataMoveProtocolConstants.DATA_MOVE_TYPE)) {
+                generator.setParameter(DataMoveProtocolConstants.DATA_MOVE_TYPE, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -280,7 +280,7 @@ public class DataMovementProtocolResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             DataMovementProtocol dataMovementProtocol = em.find(DataMovementProtocol.class, new DataMovementProtocolPK(
                     ids.get(DataMoveProtocolConstants.RESOURCE_ID),
-                    ids.get(DataMoveProtocolConstants.DATA_MOVE_ID), ids.get(DataMoveProtocolConstants.JOB_TYPE)));
+                    ids.get(DataMoveProtocolConstants.DATA_MOVE_ID), ids.get(DataMoveProtocolConstants.DATA_MOVE_TYPE)));
 
             em.close();
             return dataMovementProtocol != null;
