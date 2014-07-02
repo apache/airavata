@@ -25,9 +25,13 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
@@ -42,8 +46,16 @@ import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.handler.*;
-import org.apache.airavata.gfac.core.monitor.*;
+import org.apache.airavata.gfac.core.handler.GFacHandler;
+import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.handler.GFacRecoverableHandler;
+import org.apache.airavata.gfac.core.handler.ThreadedHandler;
+import org.apache.airavata.gfac.core.monitor.AbstractActivityListener;
+import org.apache.airavata.gfac.core.monitor.ExperimentIdentity;
+import org.apache.airavata.gfac.core.monitor.JobIdentity;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.core.monitor.TaskIdentity;
 import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
@@ -55,23 +67,46 @@ import org.apache.airavata.gfac.core.notification.listeners.WorkflowTrackingList
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.provider.GFacRecoverableProvider;
-import org.apache.airavata.gfac.core.scheduler.HostScheduler;
+import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.gfac.core.states.GfacExperimentState;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.computehost.ComputeResourceDescription;
+import org.apache.airavata.model.computehost.DataMovementProtocol;
+import org.apache.airavata.model.computehost.GSISSHJobSubmission;
+import org.apache.airavata.model.computehost.GlobusJobSubmission;
+import org.apache.airavata.model.computehost.GridFTPDataMovement;
+import org.apache.airavata.model.computehost.JobSubmissionProtocol;
+import org.apache.airavata.model.computehost.SSHJobSubmission;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.schemas.gfac.DataType;
+import org.apache.airavata.schemas.gfac.GlobusHostType;
+import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.schemas.gfac.ProjectAccountType;
+import org.apache.airavata.schemas.gfac.QueueType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZKUtil;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 
 /**
  * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
@@ -215,45 +250,194 @@ public class BetterGfacImpl implements GFac {
 
         // 1. Get the Task from the task ID and construct the Job object and save it in to registry
         // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
-        String serviceName = taskData.getApplicationId();
-        if (serviceName == null) {
-            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName);
+        String applicationId = taskData.getApplicationId();
+        if (applicationId == null) {
+            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + applicationId);
         }
 
-        ServiceDescription serviceDescription = airavataRegistry2.getServiceDescriptor(serviceName);
-        if (serviceDescription == null) {
-            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + serviceName);
-        }
-//        String hostName;
-//        HostDescription hostDescription = null;
-//        if (taskData.getTaskScheduling().getResourceHostId() != null) {
-//            hostName = taskData.getTaskScheduling().getResourceHostId();
-//            hostDescription = airavataRegistry2.getHostDescriptor(hostName);
-//        } else {
-//            List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
-//            Map<String, ApplicationDescription> applicationDescriptors = airavataRegistry2.getApplicationDescriptors(serviceName);
-//            for (String hostDescName : applicationDescriptors.keySet()) {
-//                registeredHosts.add(airavataRegistry2.getHostDescriptor(hostDescName));
-//            }
-//            Class<? extends HostScheduler> aClass = Class.forName(ServerSettings.getHostScheduler()).asSubclass(HostScheduler.class);
-//            HostScheduler hostScheduler = aClass.newInstance();
-//            hostDescription = hostScheduler.schedule(registeredHosts);
-//            hostName = hostDescription.getType().getHostName();
-//        }
-//        if (hostDescription == null) {
-//            throw new GFacException("Error executing the job as the host is not registered " + hostName);
-//        }
-//        ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptors(serviceName, hostName);
-        HostDescription hostDescription = airavataRegistry2.getHostDescriptor(taskData.getHostDescriptorId());
-        ApplicationDescription applicationDescription = airavataRegistry2.getApplicationDescriptor(serviceName, taskData.getHostDescriptorId(), taskData.getApplicationDescriptorId());
-        
+        AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+		ApplicationDeploymentDescription applicationDeployement = appCatalog.getApplicationDeployment().getApplicationDeployement(taskData.getApplicationDeploymentId());
+		ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(applicationDeployement.getComputeHostId());
+
+		HostDescription hostDescription= new HostDescription();
+        ApplicationDescription applicationDescription = new ApplicationDescription();
+
+		hostDescription.getType().setHostName(computeResource.getHostName());
+		hostDescription.getType().setHostAddress(computeResource.getIpAddresses().iterator().next());
+		
+		String preferredJobSubmissionProtocol = computeResource.getPreferredJobSubmissionProtocol(); 
+		String preferredDataMovementProtocol = computeResource.getDataMovementProtocols().keySet().iterator().next(); 
+
+		if (preferredJobSubmissionProtocol==null){
+			preferredJobSubmissionProtocol=computeResource.getJobSubmissionProtocols().keySet().iterator().next();
+		}
+		JobSubmissionProtocol jobSubmissionProtocol = computeResource.getJobSubmissionProtocols().get(preferredJobSubmissionProtocol);
+		DataMovementProtocol dataMovementProtocol = computeResource.getDataMovementProtocols().get(preferredDataMovementProtocol);
+
+		if (jobSubmissionProtocol==JobSubmissionProtocol.GRAM){
+			hostDescription.getType().changeType(GlobusHostType.type);
+			
+			applicationDescription.getType().changeType(HpcApplicationDeploymentType.type);
+			HpcApplicationDeploymentType app=(HpcApplicationDeploymentType)applicationDescription.getType();
+			
+			GlobusJobSubmission globusJobSubmission = appCatalog.getComputeResource().getGlobusJobSubmission(preferredJobSubmissionProtocol);
+			((GlobusHostType)hostDescription.getType()).setGlobusGateKeeperEndPointArray(globusJobSubmission.getGlobusGateKeeperEndPoint().toArray(new String[]{}));
+			if (dataMovementProtocol==DataMovementProtocol.GridFTP) {
+				GridFTPDataMovement gridFTPDataMovement = appCatalog.getComputeResource().getGridFTPDataMovement(preferredDataMovementProtocol);
+				((GlobusHostType) hostDescription.getType())
+						.setGridFTPEndPointArray(gridFTPDataMovement
+								.getGridFTPEndPoint().toArray(
+										new String[] {}));
+			}
+			////////////////
+			if (computeResource.getHostName().equalsIgnoreCase("trestles.sdsc.edu")){
+		        ProjectAccountType projectAccountType = app.addNewProjectAccount();
+		        projectAccountType.setProjectAccountNumber("sds128");
+	
+		        QueueType queueType = app.addNewQueue();
+		        queueType.setQueueName("normal");
+	
+		        app.setCpuCount(1);
+		        app.setJobType(JobTypeType.SERIAL);
+		        app.setNodeCount(1);
+		        app.setProcessorsPerNode(1);
+	
+		        String tempDir = "/home/ogce/scratch";
+		        app.setScratchWorkingDirectory(tempDir);
+		        app.setMaxMemory(10);
+			}
+			////////////////
+		} else if (jobSubmissionProtocol==JobSubmissionProtocol.GSISSH){
+			hostDescription.getType().changeType(GsisshHostType.type);
+			applicationDescription.getType().changeType(HpcApplicationDeploymentType.type);
+			HpcApplicationDeploymentType app=(HpcApplicationDeploymentType)applicationDescription.getType();
+			
+			GSISSHJobSubmission gsisshJobSubmission = appCatalog.getComputeResource().getGSISSHJobSubmission(preferredJobSubmissionProtocol);
+	        ((GsisshHostType) hostDescription.getType()).setPort(gsisshJobSubmission.getSshPort());
+	        ((GsisshHostType) hostDescription.getType()).setInstalledPath(gsisshJobSubmission.getInstalledPath());
+	        if (computeResource.getHostName().equalsIgnoreCase("lonestar.tacc.utexas.edu")){
+	        	((GsisshHostType) hostDescription.getType()).setJobManager("sge");
+	            ((GsisshHostType) hostDescription.getType()).setInstalledPath("/opt/sge6.2/bin/lx24-amd64/");
+	            ((GsisshHostType) hostDescription.getType()).setPort(22);
+	            ProjectAccountType projectAccountType = app.addNewProjectAccount();
+	            projectAccountType.setProjectAccountNumber("TG-STA110014S");
+	            QueueType queueType = app.addNewQueue();
+	            queueType.setQueueName("normal");
+	            app.setCpuCount(1);
+	            app.setJobType(JobTypeType.SERIAL);
+	            app.setNodeCount(1);
+	            app.setProcessorsPerNode(1);
+	            app.setMaxWallTime(10);
+	            String tempDir = "/home1/01437/ogce";
+	            app.setScratchWorkingDirectory(tempDir);
+	            app.setInstalledParentPath("/opt/sge6.2/bin/lx24-amd64/");
+	        } else if (computeResource.getHostName().equalsIgnoreCase("stampede.tacc.xsede.org")){
+		        ((GsisshHostType) hostDescription.getType()).setJobManager("slurm");
+		        ((GsisshHostType) hostDescription.getType()).setInstalledPath("/usr/bin/");
+		        ((GsisshHostType) hostDescription.getType()).setPort(2222);
+		        ((GsisshHostType) hostDescription.getType()).setMonitorMode("push");
+		        
+		        ProjectAccountType projectAccountType = app.addNewProjectAccount();
+		        projectAccountType.setProjectAccountNumber("TG-STA110014S");
+
+		        QueueType queueType = app.addNewQueue();
+		        queueType.setQueueName("normal");
+
+		        app.setCpuCount(1);
+		        app.setJobType(JobTypeType.SERIAL);
+		        app.setNodeCount(1);
+		        app.setProcessorsPerNode(1);
+		        app.setMaxWallTime(10);
+		        String tempDir = "/home1/01437/ogce";
+		        app.setScratchWorkingDirectory(tempDir);
+		        app.setInstalledParentPath("/usr/bin/");
+
+			} else if (computeResource.getHostName().equalsIgnoreCase("trestles.sdsc.edu")){
+	        	ProjectAccountType projectAccountType = app.addNewProjectAccount();
+	            projectAccountType.setProjectAccountNumber("sds128");
+
+	            QueueType queueType = app.addNewQueue();
+	            queueType.setQueueName("normal");
+
+	            app.setCpuCount(1);
+	            app.setJobType(JobTypeType.SERIAL);
+	            app.setNodeCount(1);
+	            app.setProcessorsPerNode(1);
+	            app.setMaxWallTime(10);
+	            String tempDir = "/oasis/scratch/trestles/ogce/temp_project/";
+	            app.setScratchWorkingDirectory(tempDir);
+	            app.setInstalledParentPath("/opt/torque/bin/");
+	        }
+		} else if (jobSubmissionProtocol==JobSubmissionProtocol.SSH){
+			hostDescription.getType().changeType(SSHHostType.type);
+			SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionProtocol);
+			applicationDescription.getType().setExecutableLocation(applicationDeployement.getExecutablePath());
+			//TODO update scratch location
+			if (computeResource.getHostName().equalsIgnoreCase("gw111.iu.xsede.org")){
+				applicationDescription.getType().setScratchWorkingDirectory("/tmp");
+			}
+		}
+		
+		ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface().getApplicationInterface(applicationId);
+		
+		ServiceDescription serviceDescription = new ServiceDescription();
+		List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
+		List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
+		serviceDescription.getType().setName(applicationInterface.getApplicationName());
+		serviceDescription.getType().setDescription(applicationInterface.getApplicationName());
+
+		List<InputDataObjectType> applicationInputs = applicationInterface.getApplicationInputs();
+		for (InputDataObjectType dataObjectType : applicationInputs) {
+			InputParameterType parameter = InputParameterType.Factory.newInstance();
+			parameter.setParameterName(dataObjectType.getApplicationArguement());
+			parameter.setParameterDescription(dataObjectType.getUserFriendlyDescription());
+			ParameterType parameterType = parameter.addNewParameterType();
+			switch (dataObjectType.getType()){
+				case FLOAT:
+					parameterType.setType(DataType.FLOAT); break;
+				case INTEGER:
+					parameterType.setType(DataType.INTEGER); break;
+				case STRING:
+					parameterType.setType(DataType.STRING); break;
+				case URI:
+					parameterType.setType(DataType.URI); break;
+			}
+			parameterType.setName(parameterType.getType().toString());
+			parameter.addParameterValue(dataObjectType.getValue());
+			inputParameters.add(parameter);
+		}
+		List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
+		for (OutputDataObjectType dataObjectType : applicationOutputs) {
+			OutputParameterType parameter = OutputParameterType.Factory.newInstance();
+			parameter.setParameterName(dataObjectType.getName());
+			parameter.setParameterDescription(dataObjectType.getName());
+			ParameterType parameterType = parameter.addNewParameterType();
+			switch (dataObjectType.getType()){
+				case FLOAT:
+					parameterType.setType(DataType.FLOAT); break;
+				case INTEGER:
+					parameterType.setType(DataType.INTEGER); break;
+				case STRING:
+					parameterType.setType(DataType.STRING); break;
+				case URI:
+					parameterType.setType(DataType.URI); break;
+			}
+			parameterType.setName(parameterType.getType().toString());
+			outputParameters.add(parameter);
+		}
+		
+		serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
+		serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
+		
+		
+		
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         Properties configurationProperties = ServerSettings.getProperties();
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
 
 
         // start constructing jobexecutioncontext
-        jobExecutionContext = new JobExecutionContext(gFacConfiguration, serviceName);
+        jobExecutionContext = new JobExecutionContext(gFacConfiguration, applicationId);
 
         // setting experiment/task/workflownode related information
         Experiment experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentID);

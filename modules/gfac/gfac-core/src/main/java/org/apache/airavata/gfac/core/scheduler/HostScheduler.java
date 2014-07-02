@@ -20,9 +20,9 @@
 */
 package org.apache.airavata.gfac.core.scheduler;
 
-import org.apache.airavata.commons.gfac.type.HostDescription;
-
 import java.util.List;
+
+import org.apache.airavata.model.computehost.ComputeResourceDescription;
 
 public  interface HostScheduler {
     /**
@@ -31,5 +31,5 @@ public  interface HostScheduler {
      * @param registeredHosts
      * @return
      */
-     public HostDescription schedule(List<HostDescription> registeredHosts);
+     public ComputeResourceDescription schedule(List<ComputeResourceDescription> registeredHosts);
 }
