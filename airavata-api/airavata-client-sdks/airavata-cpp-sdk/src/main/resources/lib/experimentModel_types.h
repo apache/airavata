@@ -27,9 +27,10 @@ struct ExperimentState {
     EXECUTING = 4,
     CANCELING = 5,
     CANCELED = 6,
-    COMPLETED = 7,
-    FAILED = 8,
-    UNKNOWN = 9
+    SUSPENDED = 7,
+    COMPLETED = 8,
+    FAILED = 9,
+    UNKNOWN = 10
   };
 };
 
@@ -41,9 +42,10 @@ struct WorkflowNodeState {
     EXECUTING = 1,
     CANCELING = 2,
     CANCELED = 3,
-    COMPLETED = 4,
-    FAILED = 5,
-    UNKNOWN = 6
+    SUSPENDED = 4,
+    COMPLETED = 5,
+    FAILED = 6,
+    UNKNOWN = 7
   };
 };
 
@@ -1319,12 +1321,11 @@ class DataTransferDetails {
 void swap(DataTransferDetails &a, DataTransferDetails &b);
 
 typedef struct _TaskDetails__isset {
-  _TaskDetails__isset() : creationTime(false), applicationId(false), applicationVersion(false), hostDescriptorId(false), applicationDescriptorId(false), applicationInputs(false), applicationOutputs(false), taskScheduling(false), advancedInputDataHandling(false), advancedOutputDataHandling(false), taskStatus(false), jobDetailsList(false), dataTransferDetailsList(false), errors(false) {}
+  _TaskDetails__isset() : creationTime(false), applicationId(false), applicationVersion(false), applicationDeploymentId(false), applicationInputs(false), applicationOutputs(false), taskScheduling(false), advancedInputDataHandling(false), advancedOutputDataHandling(false), taskStatus(false), jobDetailsList(false), dataTransferDetailsList(false), errors(false) {}
   bool creationTime;
   bool applicationId;
   bool applicationVersion;
-  bool hostDescriptorId;
-  bool applicationDescriptorId;
+  bool applicationDeploymentId;
   bool applicationInputs;
   bool applicationOutputs;
   bool taskScheduling;
@@ -1339,10 +1340,10 @@ typedef struct _TaskDetails__isset {
 class TaskDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "B61C8F58DF00FE6B55A62F6A457038DD";
-  static const uint8_t binary_fingerprint[16]; // = {0xB6,0x1C,0x8F,0x58,0xDF,0x00,0xFE,0x6B,0x55,0xA6,0x2F,0x6A,0x45,0x70,0x38,0xDD};
+  static const char* ascii_fingerprint; // = "482C560A67EC84E3BEB13AFC5FEDA02C";
+  static const uint8_t binary_fingerprint[16]; // = {0x48,0x2C,0x56,0x0A,0x67,0xEC,0x84,0xE3,0xBE,0xB1,0x3A,0xFC,0x5F,0xED,0xA0,0x2C};
 
-  TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), hostDescriptorId(), applicationDescriptorId() {
+  TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), applicationDeploymentId() {
   }
 
   virtual ~TaskDetails() throw() {}
@@ -1351,8 +1352,7 @@ class TaskDetails {
   int64_t creationTime;
   std::string applicationId;
   std::string applicationVersion;
-  std::string hostDescriptorId;
-  std::string applicationDescriptorId;
+  std::string applicationDeploymentId;
   std::vector<DataObjectType>  applicationInputs;
   std::vector<DataObjectType>  applicationOutputs;
   ComputationalResourceScheduling taskScheduling;
@@ -1384,14 +1384,9 @@ class TaskDetails {
     __isset.applicationVersion = true;
   }
 
-  void __set_hostDescriptorId(const std::string& val) {
-    hostDescriptorId = val;
-    __isset.hostDescriptorId = true;
-  }
-
-  void __set_applicationDescriptorId(const std::string& val) {
-    applicationDescriptorId = val;
-    __isset.applicationDescriptorId = true;
+  void __set_applicationDeploymentId(const std::string& val) {
+    applicationDeploymentId = val;
+    __isset.applicationDeploymentId = true;
   }
 
   void __set_applicationInputs(const std::vector<DataObjectType> & val) {
@@ -1455,13 +1450,9 @@ class TaskDetails {
       return false;
     else if (__isset.applicationVersion && !(applicationVersion == rhs.applicationVersion))
       return false;
-    if (__isset.hostDescriptorId != rhs.__isset.hostDescriptorId)
+    if (__isset.applicationDeploymentId != rhs.__isset.applicationDeploymentId)
       return false;
-    else if (__isset.hostDescriptorId && !(hostDescriptorId == rhs.hostDescriptorId))
-      return false;
-    if (__isset.applicationDescriptorId != rhs.__isset.applicationDescriptorId)
-      return false;
-    else if (__isset.applicationDescriptorId && !(applicationDescriptorId == rhs.applicationDescriptorId))
+    else if (__isset.applicationDeploymentId && !(applicationDeploymentId == rhs.applicationDeploymentId))
       return false;
     if (__isset.applicationInputs != rhs.__isset.applicationInputs)
       return false;
@@ -1528,8 +1519,8 @@ typedef struct _WorkflowNodeDetails__isset {
 class WorkflowNodeDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "B9A01F97264B4D21C1929907008C6F81";
-  static const uint8_t binary_fingerprint[16]; // = {0xB9,0xA0,0x1F,0x97,0x26,0x4B,0x4D,0x21,0xC1,0x92,0x99,0x07,0x00,0x8C,0x6F,0x81};
+  static const char* ascii_fingerprint; // = "95130A9D83D5C73D70BAEBDF11F2FFE7";
+  static const uint8_t binary_fingerprint[16]; // = {0x95,0x13,0x0A,0x9D,0x83,0xD5,0xC7,0x3D,0x70,0xBA,0xEB,0xDF,0x11,0xF2,0xFF,0xE7};
 
   WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE"), executionUnit((ExecutionUnit::type)1), executionUnitData() {
     executionUnit = (ExecutionUnit::type)1;
@@ -1767,8 +1758,8 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "2AA486482D7BE0429763612CDC85F0AE";
-  static const uint8_t binary_fingerprint[16]; // = {0x2A,0xA4,0x86,0x48,0x2D,0x7B,0xE0,0x42,0x97,0x63,0x61,0x2C,0xDC,0x85,0xF0,0xAE};
+  static const char* ascii_fingerprint; // = "6B1FF2298EF5AE2B9EA8F76C2DFA9E8C";
+  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x1F,0xF2,0x29,0x8E,0xF5,0xAE,0x2B,0x9E,0xA8,0xF7,0x6C,0x2D,0xFA,0x9E,0x8C};
 
   Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), workflowExecutionInstanceId() {
   }

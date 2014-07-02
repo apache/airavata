@@ -18,6 +18,7 @@ int _kExperimentStateValues[] = {
   ExperimentState::EXECUTING,
   ExperimentState::CANCELING,
   ExperimentState::CANCELED,
+  ExperimentState::SUSPENDED,
   ExperimentState::COMPLETED,
   ExperimentState::FAILED,
   ExperimentState::UNKNOWN
@@ -30,17 +31,19 @@ const char* _kExperimentStateNames[] = {
   "EXECUTING",
   "CANCELING",
   "CANCELED",
+  "SUSPENDED",
   "COMPLETED",
   "FAILED",
   "UNKNOWN"
 };
-const std::map<int, const char*> _ExperimentState_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(10, _kExperimentStateValues, _kExperimentStateNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ExperimentState_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(11, _kExperimentStateValues, _kExperimentStateNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kWorkflowNodeStateValues[] = {
   WorkflowNodeState::INVOKED,
   WorkflowNodeState::EXECUTING,
   WorkflowNodeState::CANCELING,
   WorkflowNodeState::CANCELED,
+  WorkflowNodeState::SUSPENDED,
   WorkflowNodeState::COMPLETED,
   WorkflowNodeState::FAILED,
   WorkflowNodeState::UNKNOWN
@@ -50,11 +53,12 @@ const char* _kWorkflowNodeStateNames[] = {
   "EXECUTING",
   "CANCELING",
   "CANCELED",
+  "SUSPENDED",
   "COMPLETED",
   "FAILED",
   "UNKNOWN"
 };
-const std::map<int, const char*> _WorkflowNodeState_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(7, _kWorkflowNodeStateValues, _kWorkflowNodeStateNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _WorkflowNodeState_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(8, _kWorkflowNodeStateValues, _kWorkflowNodeStateNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kTaskStateValues[] = {
   TaskState::WAITING,
@@ -1917,8 +1921,8 @@ void swap(DataTransferDetails &a, DataTransferDetails &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* TaskDetails::ascii_fingerprint = "B61C8F58DF00FE6B55A62F6A457038DD";
-const uint8_t TaskDetails::binary_fingerprint[16] = {0xB6,0x1C,0x8F,0x58,0xDF,0x00,0xFE,0x6B,0x55,0xA6,0x2F,0x6A,0x45,0x70,0x38,0xDD};
+const char* TaskDetails::ascii_fingerprint = "482C560A67EC84E3BEB13AFC5FEDA02C";
+const uint8_t TaskDetails::binary_fingerprint[16] = {0x48,0x2C,0x56,0x0A,0x67,0xEC,0x84,0xE3,0xBE,0xB1,0x3A,0xFC,0x5F,0xED,0xA0,0x2C};
 
 uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -1975,21 +1979,13 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 5:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->hostDescriptorId);
-          this->__isset.hostDescriptorId = true;
+          xfer += iprot->readString(this->applicationDeploymentId);
+          this->__isset.applicationDeploymentId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 6:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->applicationDescriptorId);
-          this->__isset.applicationDescriptorId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 7:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationInputs.clear();
@@ -2009,7 +2005,7 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationOutputs.clear();
@@ -2029,7 +2025,7 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->taskScheduling.read(iprot);
           this->__isset.taskScheduling = true;
@@ -2037,7 +2033,7 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->advancedInputDataHandling.read(iprot);
           this->__isset.advancedInputDataHandling = true;
@@ -2045,7 +2041,7 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 11:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->advancedOutputDataHandling.read(iprot);
           this->__isset.advancedOutputDataHandling = true;
@@ -2053,7 +2049,7 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 12:
+      case 11:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->taskStatus.read(iprot);
           this->__isset.taskStatus = true;
@@ -2061,7 +2057,7 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 13:
+      case 12:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->jobDetailsList.clear();
@@ -2081,7 +2077,7 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 14:
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->dataTransferDetailsList.clear();
@@ -2101,7 +2097,7 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 15:
+      case 14:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->errors.clear();
@@ -2158,18 +2154,13 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeString(this->applicationVersion);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.hostDescriptorId) {
-    xfer += oprot->writeFieldBegin("hostDescriptorId", ::apache::thrift::protocol::T_STRING, 5);
-    xfer += oprot->writeString(this->hostDescriptorId);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.applicationDescriptorId) {
-    xfer += oprot->writeFieldBegin("applicationDescriptorId", ::apache::thrift::protocol::T_STRING, 6);
-    xfer += oprot->writeString(this->applicationDescriptorId);
+  if (this->__isset.applicationDeploymentId) {
+    xfer += oprot->writeFieldBegin("applicationDeploymentId", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeString(this->applicationDeploymentId);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.applicationInputs) {
-    xfer += oprot->writeFieldBegin("applicationInputs", ::apache::thrift::protocol::T_LIST, 7);
+    xfer += oprot->writeFieldBegin("applicationInputs", ::apache::thrift::protocol::T_LIST, 6);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->applicationInputs.size()));
       std::vector<DataObjectType> ::const_iterator _iter46;
@@ -2182,7 +2173,7 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.applicationOutputs) {
-    xfer += oprot->writeFieldBegin("applicationOutputs", ::apache::thrift::protocol::T_LIST, 8);
+    xfer += oprot->writeFieldBegin("applicationOutputs", ::apache::thrift::protocol::T_LIST, 7);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->applicationOutputs.size()));
       std::vector<DataObjectType> ::const_iterator _iter47;
@@ -2195,27 +2186,27 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.taskScheduling) {
-    xfer += oprot->writeFieldBegin("taskScheduling", ::apache::thrift::protocol::T_STRUCT, 9);
+    xfer += oprot->writeFieldBegin("taskScheduling", ::apache::thrift::protocol::T_STRUCT, 8);
     xfer += this->taskScheduling.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.advancedInputDataHandling) {
-    xfer += oprot->writeFieldBegin("advancedInputDataHandling", ::apache::thrift::protocol::T_STRUCT, 10);
+    xfer += oprot->writeFieldBegin("advancedInputDataHandling", ::apache::thrift::protocol::T_STRUCT, 9);
     xfer += this->advancedInputDataHandling.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.advancedOutputDataHandling) {
-    xfer += oprot->writeFieldBegin("advancedOutputDataHandling", ::apache::thrift::protocol::T_STRUCT, 11);
+    xfer += oprot->writeFieldBegin("advancedOutputDataHandling", ::apache::thrift::protocol::T_STRUCT, 10);
     xfer += this->advancedOutputDataHandling.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.taskStatus) {
-    xfer += oprot->writeFieldBegin("taskStatus", ::apache::thrift::protocol::T_STRUCT, 12);
+    xfer += oprot->writeFieldBegin("taskStatus", ::apache::thrift::protocol::T_STRUCT, 11);
     xfer += this->taskStatus.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.jobDetailsList) {
-    xfer += oprot->writeFieldBegin("jobDetailsList", ::apache::thrift::protocol::T_LIST, 13);
+    xfer += oprot->writeFieldBegin("jobDetailsList", ::apache::thrift::protocol::T_LIST, 12);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->jobDetailsList.size()));
       std::vector<JobDetails> ::const_iterator _iter48;
@@ -2228,7 +2219,7 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.dataTransferDetailsList) {
-    xfer += oprot->writeFieldBegin("dataTransferDetailsList", ::apache::thrift::protocol::T_LIST, 14);
+    xfer += oprot->writeFieldBegin("dataTransferDetailsList", ::apache::thrift::protocol::T_LIST, 13);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataTransferDetailsList.size()));
       std::vector<DataTransferDetails> ::const_iterator _iter49;
@@ -2241,7 +2232,7 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.errors) {
-    xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 15);
+    xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 14);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
       std::vector<ErrorDetails> ::const_iterator _iter50;
@@ -2264,8 +2255,7 @@ void swap(TaskDetails &a, TaskDetails &b) {
   swap(a.creationTime, b.creationTime);
   swap(a.applicationId, b.applicationId);
   swap(a.applicationVersion, b.applicationVersion);
-  swap(a.hostDescriptorId, b.hostDescriptorId);
-  swap(a.applicationDescriptorId, b.applicationDescriptorId);
+  swap(a.applicationDeploymentId, b.applicationDeploymentId);
   swap(a.applicationInputs, b.applicationInputs);
   swap(a.applicationOutputs, b.applicationOutputs);
   swap(a.taskScheduling, b.taskScheduling);
@@ -2278,8 +2268,8 @@ void swap(TaskDetails &a, TaskDetails &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* WorkflowNodeDetails::ascii_fingerprint = "B9A01F97264B4D21C1929907008C6F81";
-const uint8_t WorkflowNodeDetails::binary_fingerprint[16] = {0xB9,0xA0,0x1F,0x97,0x26,0x4B,0x4D,0x21,0xC1,0x92,0x99,0x07,0x00,0x8C,0x6F,0x81};
+const char* WorkflowNodeDetails::ascii_fingerprint = "95130A9D83D5C73D70BAEBDF11F2FFE7";
+const uint8_t WorkflowNodeDetails::binary_fingerprint[16] = {0x95,0x13,0x0A,0x9D,0x83,0xD5,0xC7,0x3D,0x70,0xBA,0xEB,0xDF,0x11,0xF2,0xFF,0xE7};
 
 uint32_t WorkflowNodeDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -2734,8 +2724,8 @@ void swap(ValidationResults &a, ValidationResults &b) {
   swap(a.validationResultList, b.validationResultList);
 }
 
-const char* Experiment::ascii_fingerprint = "2AA486482D7BE0429763612CDC85F0AE";
-const uint8_t Experiment::binary_fingerprint[16] = {0x2A,0xA4,0x86,0x48,0x2D,0x7B,0xE0,0x42,0x97,0x63,0x61,0x2C,0xDC,0x85,0xF0,0xAE};
+const char* Experiment::ascii_fingerprint = "6B1FF2298EF5AE2B9EA8F76C2DFA9E8C";
+const uint8_t Experiment::binary_fingerprint[16] = {0x6B,0x1F,0xF2,0x29,0x8E,0xF5,0xAE,0x2B,0x9E,0xA8,0xF7,0x6C,0x2D,0xFA,0x9E,0x8C};
 
 uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
 
