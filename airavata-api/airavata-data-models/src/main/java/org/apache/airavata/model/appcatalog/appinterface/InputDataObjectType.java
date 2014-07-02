@@ -81,7 +81,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField APPLICATION_ARGUEMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationArguement", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField APPLICATION_ARGUMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationArgument", org.apache.thrift.protocol.TType.STRING, (short)5);
   private static final org.apache.thrift.protocol.TField STANDARD_INPUT_FIELD_DESC = new org.apache.thrift.protocol.TField("standardInput", org.apache.thrift.protocol.TType.BOOL, (short)6);
   private static final org.apache.thrift.protocol.TField USER_FRIENDLY_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userFriendlyDescription", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField META_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("metaData", org.apache.thrift.protocol.TType.STRING, (short)8);
@@ -96,7 +96,7 @@ import org.slf4j.LoggerFactory;
   private String name; // required
   private String value; // optional
   private DataType type; // optional
-  private String applicationArguement; // optional
+  private String applicationArgument; // optional
   private boolean standardInput; // optional
   private String userFriendlyDescription; // optional
   private String metaData; // optional
@@ -111,7 +111,7 @@ import org.slf4j.LoggerFactory;
      * @see DataType
      */
     TYPE((short)4, "type"),
-    APPLICATION_ARGUEMENT((short)5, "applicationArguement"),
+    APPLICATION_ARGUMENT((short)5, "applicationArgument"),
     STANDARD_INPUT((short)6, "standardInput"),
     USER_FRIENDLY_DESCRIPTION((short)7, "userFriendlyDescription"),
     META_DATA((short)8, "metaData");
@@ -137,8 +137,8 @@ import org.slf4j.LoggerFactory;
           return VALUE;
         case 4: // TYPE
           return TYPE;
-        case 5: // APPLICATION_ARGUEMENT
-          return APPLICATION_ARGUEMENT;
+        case 5: // APPLICATION_ARGUMENT
+          return APPLICATION_ARGUMENT;
         case 6: // STANDARD_INPUT
           return STANDARD_INPUT;
         case 7: // USER_FRIENDLY_DESCRIPTION
@@ -188,7 +188,7 @@ import org.slf4j.LoggerFactory;
   private static final int __ISEMPTY_ISSET_ID = 0;
   private static final int __STANDARDINPUT_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUEMENT,_Fields.STANDARD_INPUT,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.META_DATA};
+  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.STANDARD_INPUT,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.META_DATA};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -200,7 +200,7 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TYPE, new org.apache.thrift.meta_data.FieldMetaData("type", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, DataType.class)));
-    tmpMap.put(_Fields.APPLICATION_ARGUEMENT, new org.apache.thrift.meta_data.FieldMetaData("applicationArguement", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.APPLICATION_ARGUMENT, new org.apache.thrift.meta_data.FieldMetaData("applicationArgument", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.STANDARD_INPUT, new org.apache.thrift.meta_data.FieldMetaData("standardInput", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
@@ -244,8 +244,8 @@ import org.slf4j.LoggerFactory;
     if (other.isSetType()) {
       this.type = other.type;
     }
-    if (other.isSetApplicationArguement()) {
-      this.applicationArguement = other.applicationArguement;
+    if (other.isSetApplicationArgument()) {
+      this.applicationArgument = other.applicationArgument;
     }
     this.standardInput = other.standardInput;
     if (other.isSetUserFriendlyDescription()) {
@@ -267,7 +267,7 @@ import org.slf4j.LoggerFactory;
     this.name = null;
     this.value = null;
     this.type = null;
-    this.applicationArguement = null;
+    this.applicationArgument = null;
     this.standardInput = false;
 
     this.userFriendlyDescription = null;
@@ -373,26 +373,26 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getApplicationArguement() {
-    return this.applicationArguement;
+  public String getApplicationArgument() {
+    return this.applicationArgument;
   }
 
-  public void setApplicationArguement(String applicationArguement) {
-    this.applicationArguement = applicationArguement;
+  public void setApplicationArgument(String applicationArgument) {
+    this.applicationArgument = applicationArgument;
   }
 
-  public void unsetApplicationArguement() {
-    this.applicationArguement = null;
+  public void unsetApplicationArgument() {
+    this.applicationArgument = null;
   }
 
-  /** Returns true if field applicationArguement is set (has been assigned a value) and false otherwise */
-  public boolean isSetApplicationArguement() {
-    return this.applicationArguement != null;
+  /** Returns true if field applicationArgument is set (has been assigned a value) and false otherwise */
+  public boolean isSetApplicationArgument() {
+    return this.applicationArgument != null;
   }
 
-  public void setApplicationArguementIsSet(boolean value) {
+  public void setApplicationArgumentIsSet(boolean value) {
     if (!value) {
-      this.applicationArguement = null;
+      this.applicationArgument = null;
     }
   }
 
@@ -498,11 +498,11 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case APPLICATION_ARGUEMENT:
+    case APPLICATION_ARGUMENT:
       if (value == null) {
-        unsetApplicationArguement();
+        unsetApplicationArgument();
       } else {
-        setApplicationArguement((String)value);
+        setApplicationArgument((String)value);
       }
       break;
 
@@ -547,8 +547,8 @@ import org.slf4j.LoggerFactory;
     case TYPE:
       return getType();
 
-    case APPLICATION_ARGUEMENT:
-      return getApplicationArguement();
+    case APPLICATION_ARGUMENT:
+      return getApplicationArgument();
 
     case STANDARD_INPUT:
       return Boolean.valueOf(isStandardInput());
@@ -578,8 +578,8 @@ import org.slf4j.LoggerFactory;
       return isSetValue();
     case TYPE:
       return isSetType();
-    case APPLICATION_ARGUEMENT:
-      return isSetApplicationArguement();
+    case APPLICATION_ARGUMENT:
+      return isSetApplicationArgument();
     case STANDARD_INPUT:
       return isSetStandardInput();
     case USER_FRIENDLY_DESCRIPTION:
@@ -639,12 +639,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_applicationArguement = true && this.isSetApplicationArguement();
-    boolean that_present_applicationArguement = true && that.isSetApplicationArguement();
-    if (this_present_applicationArguement || that_present_applicationArguement) {
-      if (!(this_present_applicationArguement && that_present_applicationArguement))
+    boolean this_present_applicationArgument = true && this.isSetApplicationArgument();
+    boolean that_present_applicationArgument = true && that.isSetApplicationArgument();
+    if (this_present_applicationArgument || that_present_applicationArgument) {
+      if (!(this_present_applicationArgument && that_present_applicationArgument))
         return false;
-      if (!this.applicationArguement.equals(that.applicationArguement))
+      if (!this.applicationArgument.equals(that.applicationArgument))
         return false;
     }
 
@@ -731,12 +731,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetApplicationArguement()).compareTo(other.isSetApplicationArguement());
+    lastComparison = Boolean.valueOf(isSetApplicationArgument()).compareTo(other.isSetApplicationArgument());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetApplicationArguement()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationArguement, other.applicationArguement);
+    if (isSetApplicationArgument()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationArgument, other.applicationArgument);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -822,13 +822,13 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
-    if (isSetApplicationArguement()) {
+    if (isSetApplicationArgument()) {
       if (!first) sb.append(", ");
-      sb.append("applicationArguement:");
-      if (this.applicationArguement == null) {
+      sb.append("applicationArgument:");
+      if (this.applicationArgument == null) {
         sb.append("null");
       } else {
-        sb.append(this.applicationArguement);
+        sb.append(this.applicationArgument);
       }
       first = false;
     }
@@ -943,10 +943,10 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // APPLICATION_ARGUEMENT
+          case 5: // APPLICATION_ARGUMENT
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.applicationArguement = iprot.readString();
-              struct.setApplicationArguementIsSet(true);
+              struct.applicationArgument = iprot.readString();
+              struct.setApplicationArgumentIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1010,10 +1010,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.applicationArguement != null) {
-        if (struct.isSetApplicationArguement()) {
-          oprot.writeFieldBegin(APPLICATION_ARGUEMENT_FIELD_DESC);
-          oprot.writeString(struct.applicationArguement);
+      if (struct.applicationArgument != null) {
+        if (struct.isSetApplicationArgument()) {
+          oprot.writeFieldBegin(APPLICATION_ARGUMENT_FIELD_DESC);
+          oprot.writeString(struct.applicationArgument);
           oprot.writeFieldEnd();
         }
       }
@@ -1062,7 +1062,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetType()) {
         optionals.set(1);
       }
-      if (struct.isSetApplicationArguement()) {
+      if (struct.isSetApplicationArgument()) {
         optionals.set(2);
       }
       if (struct.isSetStandardInput()) {
@@ -1081,8 +1081,8 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetType()) {
         oprot.writeI32(struct.type.getValue());
       }
-      if (struct.isSetApplicationArguement()) {
-        oprot.writeString(struct.applicationArguement);
+      if (struct.isSetApplicationArgument()) {
+        oprot.writeString(struct.applicationArgument);
       }
       if (struct.isSetStandardInput()) {
         oprot.writeBool(struct.standardInput);
@@ -1112,8 +1112,8 @@ import org.slf4j.LoggerFactory;
         struct.setTypeIsSet(true);
       }
       if (incoming.get(2)) {
-        struct.applicationArguement = iprot.readString();
-        struct.setApplicationArguementIsSet(true);
+        struct.applicationArgument = iprot.readString();
+        struct.setApplicationArgumentIsSet(true);
       }
       if (incoming.get(3)) {
         struct.standardInput = iprot.readBool();

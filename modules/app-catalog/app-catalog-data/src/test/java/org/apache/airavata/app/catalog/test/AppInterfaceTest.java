@@ -25,6 +25,7 @@ import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ApplicationInterface;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.app.catalog.test.util.Initialize;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -37,7 +38,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertTrue;
 
@@ -68,7 +71,6 @@ public class AppInterfaceTest {
     public void testAppInterface(){
         try {
             ApplicationInterface appInterface = appcatalog.getApplicationInterface();
-
             ApplicationInterfaceDescription description = new ApplicationInterfaceDescription();
             String wrfModuleId = addAppModule("WRF");
             String amberModuleId = addAppModule("AMBER");
@@ -107,8 +109,24 @@ public class AppInterfaceTest {
             List<OutputDataObjectType> applicationOutputs = appInterface.getApplicationOutputs(appID);
             System.out.println("********** App output size ************* : " + applicationOutputs.size());
 
-            assertTrue("App interface saved successfully", ainterface != null);
+            description.setApplicationName("testApplication2");
+            appInterface.updateApplicationInterface(appID, description);
+            if (appInterface.isApplicationInterfaceExists(appID)){
+                ainterface = appInterface.getApplicationInterface(appID);
+                System.out.println("********** updated application name ************* : " + ainterface.getApplicationName());
+            }
 
+            wrfModule.setAppModuleVersion("1.0.1");
+            appInterface.updateApplicationModule(wrfModuleId, wrfModule);
+            wrfModule = appInterface.getApplicationModule(wrfModuleId);
+            System.out.println("********** Updated WRF module version ************* : " + wrfModule.getAppModuleVersion());
+
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(AbstractResource.ApplicationInterfaceConstants.APPLICATION_NAME, "testApplication2");
+            List<ApplicationInterfaceDescription> apps = appInterface.getApplicationInterfaces(filters);
+            System.out.println("********** Size og app interfaces ************* : " + apps.size());
+
+            assertTrue("App interface saved successfully", ainterface != null);
         }catch (AppCatalogException e) {
             e.printStackTrace();
         }
@@ -133,7 +151,7 @@ public class AppInterfaceTest {
         input.setName(inputName);
         input.setValue(value);
         input.setType(type);
-        input.setApplicationArguement("test arg");
+        input.setApplicationArgument("test arg");
         return input;
     }
 

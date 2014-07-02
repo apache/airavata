@@ -91,7 +91,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setDataType(input.getType().toString());
                     inputResource.setMetadata(input.getMetaData());
                     inputResource.setStandareInput(input.isStandardInput());
-                    inputResource.setAppArgument(input.getApplicationArguement());
+                    inputResource.setAppArgument(input.getApplicationArgument());
                     inputResource.save();
                 }
             }
@@ -188,7 +188,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     existingResource.setDataType(input.getType().toString());
                     existingResource.setMetadata(input.getMetaData());
                     existingResource.setStandareInput(input.isStandardInput());
-                    existingResource.setAppArgument(input.getApplicationArguement());
+                    existingResource.setAppArgument(input.getApplicationArgument());
                     existingResource.save();
                 }
             }

@@ -26,6 +26,7 @@ import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.app.catalog.test.util.Initialize;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.computehost.*;
@@ -120,6 +121,44 @@ public class ComputeResourceTest {
 
             GridFTPDataMovement gridFTPDataMovement = computeResource.getGridFTPDataMovement(gridFTPDataMoveId);
             System.out.println("**********GRID FTP Data Move Security protocol ************* : " + gridFTPDataMovement.getSecurityProtocol().toString());
+
+            description.setHostName("localhost2");
+            computeResource.updateComputeResource(resourceId, description);
+            if (computeResource.isComputeResourceExists(resourceId)){
+                host = computeResource.getComputeResource(resourceId);
+                System.out.println("**********Updated Resource name ************* : " +  host.getHostName());
+            }
+
+            Map<String, String> cfilters = new HashMap<String, String>();
+            cfilters.put(AbstractResource.ComputeResourceConstants.HOST_NAME, "localhost2");
+            List<ComputeResourceDescription> computeResourceList = computeResource.getComputeResourceList(cfilters);
+            System.out.println("**********Size of compute resources ************* : " +  computeResourceList.size());
+
+            Map<String, String> globusfilters = new HashMap<String, String>();
+            globusfilters.put(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER, ResourceJobManager.PBS.toString());
+            List<GlobusJobSubmission> gList = computeResource.getGlobusJobSubmissionList(globusfilters);
+            System.out.println("**********Size of globus jobs ************* : " +  gList.size());
+
+            Map<String, String> sshfilters = new HashMap<String, String>();
+            sshfilters.put(AbstractResource.SSHSubmissionConstants.RESOURCE_JOB_MANAGER, ResourceJobManager.PBS.toString());
+            List<SSHJobSubmission> sshList = computeResource.getSSHJobSubmissionList(sshfilters);
+            System.out.println("**********Size of SSH jobs ************* : " + sshList.size());
+
+            Map<String, String> gsishfilters = new HashMap<String, String>();
+            gsishfilters.put(AbstractResource.GSISSHSubmissionConstants.RESOURCE_JOB_MANAGER, ResourceJobManager.PBS.toString());
+            List<GSISSHJobSubmission> gsisshList = computeResource.getGSISSHJobSubmissionList(gsishfilters);
+            System.out.println("**********Size of GSISSH jobs ************* : " + gsisshList.size());
+
+            Map<String, String> scpfilters = new HashMap<String, String>();
+            scpfilters.put(AbstractResource.SCPDataMovementConstants.SECURITY_PROTOCOL, SecurityProtocol.SSH_KEYS.toString());
+            List<SCPDataMovement> scpDataMovementList = computeResource.getSCPDataMovementList(scpfilters);
+            System.out.println("**********Size of SCP DM list ************* : " + scpDataMovementList.size());
+
+            Map<String, String> ftpfilters = new HashMap<String, String>();
+            ftpfilters.put(AbstractResource.GridFTPDataMovementConstants.SECURITY_PROTOCOL, SecurityProtocol.SSH_KEYS.toString());
+            List<GridFTPDataMovement> ftpDataMovementList = computeResource.getGridFTPDataMovementList(ftpfilters);
+            System.out.println("**********Size of FTP DM list ************* : " + ftpDataMovementList.size());
+
             assertTrue("Compute resource save successfully", host != null);
         } catch (AppCatalogException e) {
             e.printStackTrace();

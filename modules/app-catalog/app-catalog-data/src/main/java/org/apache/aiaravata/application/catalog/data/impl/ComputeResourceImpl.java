@@ -166,7 +166,7 @@ public class ComputeResourceImpl implements ComputeResource {
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AbstractResource.DataMoveProtocolConstants.RESOURCE_ID, computeResourceId);
                     ids.put(AbstractResource.DataMoveProtocolConstants.DATA_MOVE_ID, dataMoveId);
-                    ids.put(AbstractResource.DataMoveProtocolConstants.JOB_TYPE, dataMovementProtocol.toString());
+                    ids.put(AbstractResource.DataMoveProtocolConstants.DATA_MOVE_TYPE, dataMovementProtocol.toString());
                     DataMovementProtocolResource existingDMP = (DataMovementProtocolResource)resource.get(ids);
                     existingDMP.setResourceID(computeResourceId);
                     existingDMP.setComputeHostResource(existingComputeResouce);
