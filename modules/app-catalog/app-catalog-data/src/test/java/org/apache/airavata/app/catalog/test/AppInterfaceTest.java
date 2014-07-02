@@ -32,7 +32,7 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -57,9 +57,11 @@ public class AppInterfaceTest {
         }
     }
 
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    @After
+    public void tearDown() throws Exception {
+        System.out.println("********** TEAR DOWN ************");
         initialize.stopDerbyServer();
+
     }
 
     @Test
@@ -94,6 +96,17 @@ public class AppInterfaceTest {
                 ainterface = appInterface.getApplicationInterface(appID);
                 System.out.println("********** application name ************* : " + ainterface.getApplicationName());
             }
+            ApplicationModule wrfModule = appInterface.getApplicationModule(wrfModuleId);
+            System.out.println("********** WRF module name ************* : " + wrfModule.getAppModuleName());
+            ApplicationModule amberModule = appInterface.getApplicationModule(amberModuleId);
+            System.out.println("********** Amber module name ************* : " + amberModule.getAppModuleName());
+
+            List<InputDataObjectType> applicationInputs = appInterface.getApplicationInputs(appID);
+            System.out.println("********** App Input size ************* : " + applicationInputs.size());
+
+            List<OutputDataObjectType> applicationOutputs = appInterface.getApplicationOutputs(appID);
+            System.out.println("********** App output size ************* : " + applicationOutputs.size());
+
             assertTrue("App interface saved successfully", ainterface != null);
 
         }catch (AppCatalogException e) {

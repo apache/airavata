@@ -18,7 +18,7 @@ public interface ApplicationDeployment {
      * @param deploymentId unique deployment id
      * @param updatedDeployment updated deployment
      */
-    void updateApplicationDeployment (String deploymentId, ApplicationDeploymentDescription updatedDeployment);
+    void updateApplicationDeployment (String deploymentId, ApplicationDeploymentDescription updatedDeployment) throws AppCatalogException;;
 
     /**
      * This method will retrive application deployement

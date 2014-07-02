@@ -31,6 +31,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -105,8 +106,81 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     }
 
     @Override
-    public void updateApplicationDeployment(String deploymentId, ApplicationDeploymentDescription updatedDeployment) {
+    public void updateApplicationDeployment(String deploymentId, ApplicationDeploymentDescription updatedDeployment) throws AppCatalogException {
+        try {
+            AppDeploymentResource deploymentResource = new AppDeploymentResource();
+            AppDeploymentResource existingDep = (AppDeploymentResource)deploymentResource.get(deploymentId);
+            ComputeHostResource computeHostResource = new ComputeHostResource();
+            AppModuleResource moduleResource = new AppModuleResource();
+            if (!computeHostResource.isExists(updatedDeployment.getComputeHostId())){
+                logger.error("Compute host does not exist in the system. Please create a Compute host first...");
+                throw new AppCatalogException("Compute host does not exist in the system. Please create a Compute host first...");
+            }
+            if (!moduleResource.isExists(updatedDeployment.getAppModuleId())){
+                logger.error("Application module does not exist in the system. Please create an application module first...");
+                throw new AppCatalogException("Application module does not exist in the system. Please create an application module first...");
+            }
+            AppModuleResource module = (AppModuleResource)moduleResource.get(updatedDeployment.getAppModuleId());
+            existingDep.setAppModuleId(updatedDeployment.getAppModuleId());
+            existingDep.setModuleResource(module);
+            existingDep.setHostId(updatedDeployment.getComputeHostId());
+            existingDep.setHostResource((ComputeHostResource)computeHostResource.get(updatedDeployment.getComputeHostId()));
+            existingDep.setAppDes(updatedDeployment.getAppDeploymentDescription());
+            existingDep.setExecutablePath(updatedDeployment.getExecutablePath());
+            existingDep.setEnvModuleLoadCMD(updatedDeployment.getModuleLoadCmd());
+            existingDep.save();
 
+            List<SetEnvPaths> libPrependPaths = updatedDeployment.getLibPrependPaths();
+            if (libPrependPaths != null && !libPrependPaths.isEmpty()){
+                for (SetEnvPaths path : libPrependPaths){
+                    LibraryPrepandPathResource prepandPathResource = new LibraryPrepandPathResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, deploymentId);
+                    ids.put(AbstractResource.LibraryPrepandPathConstants.NAME, path.getName());
+                    LibraryPrepandPathResource existingPrepandPath = (LibraryPrepandPathResource)prepandPathResource.get(ids);
+                    existingPrepandPath.setAppDeploymentResource(existingDep);
+                    existingPrepandPath.setName(path.getName());
+                    existingPrepandPath.setValue(path.getValue());
+                    existingPrepandPath.setDeploymentId(deploymentId);
+                    existingPrepandPath.save();
+                }
+            }
+
+            List<SetEnvPaths> libApendPaths = updatedDeployment.getLibAppendPaths();
+            if (libApendPaths != null && !libApendPaths.isEmpty()){
+                for (SetEnvPaths path : libApendPaths){
+                    LibraryApendPathResource apendPathResource = new LibraryApendPathResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.LibraryApendPathConstants.DEPLOYMENT_ID, deploymentId);
+                    ids.put(AbstractResource.LibraryApendPathConstants.NAME, path.getName());
+                    LibraryApendPathResource existingApendPath = (LibraryApendPathResource)apendPathResource.get(ids);
+                    existingApendPath.setAppDeploymentResource(existingDep);
+                    existingApendPath.setName(path.getName());
+                    existingApendPath.setValue(path.getValue());
+                    existingApendPath.setDeploymentId(deploymentId);
+                    existingApendPath.save();
+                }
+            }
+
+            List<SetEnvPaths> setEnvironment = updatedDeployment.getSetEnvironment();
+            if (setEnvironment != null && !setEnvironment.isEmpty()){
+                for (SetEnvPaths path : setEnvironment){
+                    AppEnvironmentResource environmentResource = new AppEnvironmentResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.AppEnvironmentConstants.DEPLOYMENT_ID, deploymentId);
+                    ids.put(AbstractResource.AppEnvironmentConstants.NAME, path.getName());
+                    AppEnvironmentResource existingAppEnv = (AppEnvironmentResource)environmentResource.get(ids);
+                    existingAppEnv.setAppDeploymentResource(existingDep);
+                    existingAppEnv.setName(path.getName());
+                    existingAppEnv.setValue(path.getValue());
+                    existingAppEnv.setDeploymentId(deploymentId);
+                    existingAppEnv.save();
+                }
+            }
+        }catch (Exception e) {
+            logger.error("Error while updating application deployment...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override

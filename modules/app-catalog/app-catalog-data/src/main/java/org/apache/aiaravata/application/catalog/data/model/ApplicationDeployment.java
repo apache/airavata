@@ -29,7 +29,7 @@ import java.io.Serializable;
 public class ApplicationDeployment implements Serializable {
     @Id
     @Column(name = "DEPLOYMENT_ID")
-    private String deployementID;
+    private String deploymentID;
     @Column(name = "APP_MODULE_ID")
     private String appModuleID;
     @Column(name = "COMPUTE_HOST_ID")
@@ -50,12 +50,12 @@ public class ApplicationDeployment implements Serializable {
     private ComputeResource computeResource;
 
 
-    public String getDeployementID() {
-        return deployementID;
+    public String getDeploymentID() {
+        return deploymentID;
     }
 
-    public void setDeployementID(String deployementID) {
-        this.deployementID = deployementID;
+    public void setDeploymentID(String deploymentID) {
+        this.deploymentID = deploymentID;
     }
 
     public String getAppModuleID() {

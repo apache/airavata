@@ -369,7 +369,7 @@ public class AppCatalogJPAUtils {
         GridFTPDMEndpointResource resource = new GridFTPDMEndpointResource();
         resource.setDataMoveId(o.getDataMoveId());
         resource.setEndpoint(o.getEndpoint());
-        resource.setGridFTPDataMovementResource((GridFTPDataMovementResource)createGridFTPDataMovement(o.getGridFTPDataMovement()));
+        resource.setGridFTPDataMovementResource((GridFTPDataMovementResource) createGridFTPDataMovement(o.getGridFTPDataMovement()));
         return resource;
     }
 
@@ -402,7 +402,7 @@ public class AppCatalogJPAUtils {
 
     private static Resource createApplicationDeployment(ApplicationDeployment o) {
         AppDeploymentResource resource = new AppDeploymentResource();
-        resource.setDeploymentId(o.getDeployementID());
+        resource.setDeploymentId(o.getDeploymentID());
         resource.setAppDes(o.getApplicationDesc());
         resource.setAppModuleId(o.getAppModuleID());
         resource.setEnvModuleLoadCMD(o.getEnvModuleLoaString());

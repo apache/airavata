@@ -238,7 +238,7 @@ public class AppDeploymentResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         ApplicationDeployment deployment = (ApplicationDeployment) result;
-                        appDeployments.add(deployment.getDeployementID());
+                        appDeployments.add(deployment.getDeploymentID());
                     }
                 }
             } else if (fieldName.equals(ApplicationDeploymentConstants.COMPUTE_HOST_ID)) {
@@ -248,7 +248,7 @@ public class AppDeploymentResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         ApplicationDeployment deployment = (ApplicationDeployment) result;
-                        appDeployments.add(deployment.getDeployementID());
+                        appDeployments.add(deployment.getDeploymentID());
                     }
                 }
             }else {
@@ -286,17 +286,21 @@ public class AppDeploymentResource extends AbstractResource {
             ApplicationModule applicationModule = em.find(ApplicationModule.class, appModuleId);
             ComputeResource computeHost = em.find(ComputeResource.class, hostId);
             if (existingDeployment !=  null){
+                existingDeployment.setDeploymentID(deploymentId);
                 existingDeployment.setApplicationDesc(appDes);
                 existingDeployment.setAppModuleID(appModuleId);
                 existingDeployment.setApplicationModule(applicationModule);
                 existingDeployment.setComputeResource(computeHost);
+                existingDeployment.setHostID(hostId);
                 existingDeployment.setExecutablePath(executablePath);
                 existingDeployment.setEnvModuleLoaString(envModuleLoadCMD);
                 em.merge(existingDeployment);
             }else {
                 ApplicationDeployment deployment  = new ApplicationDeployment();
                 deployment.setApplicationDesc(appDes);
+                deployment.setDeploymentID(deploymentId);
                 deployment.setAppModuleID(appModuleId);
+                deployment.setHostID(hostId);
                 deployment.setApplicationModule(applicationModule);
                 deployment.setComputeResource(computeHost);
                 deployment.setExecutablePath(executablePath);

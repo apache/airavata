@@ -26,11 +26,10 @@ import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogImpl;
 import org.apache.airavata.app.catalog.test.util.Initialize;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.computehost.*;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -54,9 +53,11 @@ public class ComputeResourceTest {
         }
     }
 
-    @AfterClass
-    public static void tearDownAfterClass() throws Exception {
+    @After
+    public void tearDown() throws Exception {
+        System.out.println("********** TEAR DOWN ************");
         initialize.stopDerbyServer();
+
     }
 
     @Test
