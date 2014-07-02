@@ -131,8 +131,8 @@ public class AppModuleMappingResource extends AbstractResource {
             generator.setParameter(AppModuleMappingConstants.MODULE_ID, ids.get(AppModuleMappingConstants.MODULE_ID));
             Query q = generator.selectQuery(em);
             AppModuleMapping result = (AppModuleMapping) q.getSingleResult();
-            AppModuleResource resource =
-                    (AppModuleResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_MODULE_MAPPING, result);
+            AppModuleMappingResource resource =
+                    (AppModuleMappingResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APP_MODULE_MAPPING, result);
             em.getTransaction().commit();
             em.close();
             return resource;

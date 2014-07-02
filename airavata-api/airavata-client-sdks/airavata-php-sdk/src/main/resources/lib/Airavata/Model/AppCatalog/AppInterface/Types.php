@@ -37,7 +37,7 @@ class InputDataObjectType {
   public $name = null;
   public $value = null;
   public $type = null;
-  public $applicationArguement = null;
+  public $applicationArgument = null;
   public $standardInput = false;
   public $userFriendlyDescription = null;
   public $metaData = null;
@@ -62,7 +62,7 @@ class InputDataObjectType {
           'type' => TType::I32,
           ),
         5 => array(
-          'var' => 'applicationArguement',
+          'var' => 'applicationArgument',
           'type' => TType::STRING,
           ),
         6 => array(
@@ -92,8 +92,8 @@ class InputDataObjectType {
       if (isset($vals['type'])) {
         $this->type = $vals['type'];
       }
-      if (isset($vals['applicationArguement'])) {
-        $this->applicationArguement = $vals['applicationArguement'];
+      if (isset($vals['applicationArgument'])) {
+        $this->applicationArgument = $vals['applicationArgument'];
       }
       if (isset($vals['standardInput'])) {
         $this->standardInput = $vals['standardInput'];
@@ -156,7 +156,7 @@ class InputDataObjectType {
           break;
         case 5:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->applicationArguement);
+            $xfer += $input->readString($this->applicationArgument);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -215,9 +215,9 @@ class InputDataObjectType {
       $xfer += $output->writeI32($this->type);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->applicationArguement !== null) {
-      $xfer += $output->writeFieldBegin('applicationArguement', TType::STRING, 5);
-      $xfer += $output->writeString($this->applicationArguement);
+    if ($this->applicationArgument !== null) {
+      $xfer += $output->writeFieldBegin('applicationArgument', TType::STRING, 5);
+      $xfer += $output->writeString($this->applicationArgument);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->standardInput !== null) {

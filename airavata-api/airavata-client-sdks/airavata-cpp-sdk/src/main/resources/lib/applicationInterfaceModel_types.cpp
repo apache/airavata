@@ -85,8 +85,8 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
         break;
       case 5:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->applicationArguement);
-          this->__isset.applicationArguement = true;
+          xfer += iprot->readString(this->applicationArgument);
+          this->__isset.applicationArgument = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -153,9 +153,9 @@ uint32_t InputDataObjectType::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeI32((int32_t)this->type);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.applicationArguement) {
-    xfer += oprot->writeFieldBegin("applicationArguement", ::apache::thrift::protocol::T_STRING, 5);
-    xfer += oprot->writeString(this->applicationArguement);
+  if (this->__isset.applicationArgument) {
+    xfer += oprot->writeFieldBegin("applicationArgument", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeString(this->applicationArgument);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.standardInput) {
@@ -184,7 +184,7 @@ void swap(InputDataObjectType &a, InputDataObjectType &b) {
   swap(a.name, b.name);
   swap(a.value, b.value);
   swap(a.type, b.type);
-  swap(a.applicationArguement, b.applicationArguement);
+  swap(a.applicationArgument, b.applicationArgument);
   swap(a.standardInput, b.standardInput);
   swap(a.userFriendlyDescription, b.userFriendlyDescription);
   swap(a.metaData, b.metaData);
