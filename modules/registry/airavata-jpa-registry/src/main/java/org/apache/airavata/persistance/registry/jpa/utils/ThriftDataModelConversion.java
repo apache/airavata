@@ -427,8 +427,7 @@ public class ThriftDataModelConversion {
             taskDetails.setApplicationInputs(getApplicationInputs(applicationInputs));
             List<ApplicationOutputResource> applicationOutputs = taskDetailResource.getApplicationOutputs();
             taskDetails.setApplicationOutputs(getApplicationOutputs(applicationOutputs));
-            taskDetails.setHostDescriptorId(taskDetailResource.getHostDescriptorId());
-            taskDetails.setApplicationDescriptorId(taskDetailResource.getApplicationDescriptorId());
+            taskDetails.setApplicationDeploymentId(taskDetailResource.getApplicationDeploymentId());
             if (taskDetailResource.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, taskId)){
                 ComputationSchedulingResource computationScheduling = taskDetailResource.getComputationScheduling(taskId);
                 taskDetails.setTaskScheduling(getComputationalResourceScheduling(computationScheduling));

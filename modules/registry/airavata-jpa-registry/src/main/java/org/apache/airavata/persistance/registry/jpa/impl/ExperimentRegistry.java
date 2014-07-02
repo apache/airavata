@@ -905,8 +905,8 @@ public class ExperimentRegistry {
             taskDetail.setApplicationId(taskDetails.getApplicationId());
             taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
             taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));
-            taskDetail.setHostDescriptorId(taskDetails.getHostDescriptorId());
-            taskDetail.setApplicationDescriptorId(taskDetails.getApplicationDescriptorId());
+            taskDetail.setApplicationDeploymentId(taskDetails.getApplicationDeploymentId());
+
             taskDetail.save();
             List<DataObjectType> applicationInputs = taskDetails.getApplicationInputs();
             if (applicationInputs != null) {

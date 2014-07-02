@@ -63,6 +63,7 @@ enum ExperimentState {
     EXECUTING,
     CANCELING,
     CANCELED,
+    SUSPENDED,
     COMPLETED,
     FAILED,
     UNKNOWN
@@ -78,6 +79,7 @@ enum WorkflowNodeState {
     EXECUTING,
     CANCELING,
     CANCELED,
+    SUSPENDED,
     COMPLETED,
     FAILED,
     UNKNOWN
@@ -301,17 +303,16 @@ struct TaskDetails {
     2: optional i64 creationTime,
     3: optional string applicationId,
     4: optional string applicationVersion,
-    5: optional string hostDescriptorId,
-    6: optional string applicationDescriptorId,
-    7: optional list<DataObjectType> applicationInputs,
-    8: optional list<DataObjectType> applicationOutputs,
-    9: optional ComputationalResourceScheduling taskScheduling,
-    10: optional AdvancedInputDataHandling advancedInputDataHandling,
-    11: optional AdvancedOutputDataHandling advancedOutputDataHandling,
-    12: optional TaskStatus taskStatus,
-    13: optional list<JobDetails> jobDetailsList,
-    14: optional list<DataTransferDetails> dataTransferDetailsList,
-    15: optional list<ErrorDetails> errors
+    5: optional string applicationDeploymentId,
+    6: optional list<DataObjectType> applicationInputs,
+    7: optional list<DataObjectType> applicationOutputs,
+    8: optional ComputationalResourceScheduling taskScheduling,
+    9: optional AdvancedInputDataHandling advancedInputDataHandling,
+    10: optional AdvancedOutputDataHandling advancedOutputDataHandling,
+    11: optional TaskStatus taskStatus,
+    12: optional list<JobDetails> jobDetailsList,
+    13: optional list<DataTransferDetails> dataTransferDetailsList,
+    14: optional list<ErrorDetails> errors
 }
 
 enum ExecutionUnit {
