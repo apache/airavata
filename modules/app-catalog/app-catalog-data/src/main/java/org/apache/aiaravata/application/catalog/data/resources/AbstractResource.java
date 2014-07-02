@@ -155,7 +155,7 @@ public abstract class AbstractResource implements Resource {
 
     public final class ApplicationDeploymentConstants {
         public static final String APP_MODULE_ID = "appModuleID";
-        public static final String DEPLOYMENT_ID = "deployementID";
+        public static final String DEPLOYMENT_ID = "deploymentID";
         public static final String COMPUTE_HOST_ID = "hostID";
         public static final String EXECUTABLE_PATH = "executablePath";
         public static final String APPLICATION_DESC = "applicationDesc";
@@ -163,19 +163,19 @@ public abstract class AbstractResource implements Resource {
     }
 
     public final class LibraryPrepandPathConstants {
-        public static final String DEPLOYMENT_ID = "deployementID";
+        public static final String DEPLOYMENT_ID = "deploymentID";
         public static final String NAME = "name";
         public static final String VALUE = "value";
     }
 
     public final class LibraryApendPathConstants {
-        public static final String DEPLOYMENT_ID = "deployementID";
+        public static final String DEPLOYMENT_ID = "deploymentID";
         public static final String NAME = "name";
         public static final String VALUE = "value";
     }
 
     public final class AppEnvironmentConstants {
-        public static final String DEPLOYMENT_ID = "deployementID";
+        public static final String DEPLOYMENT_ID = "deploymentID";
         public static final String NAME = "name";
         public static final String VALUE = "value";
     }
