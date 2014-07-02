@@ -45,9 +45,8 @@ public class TaskDetailResource extends AbstractResource {
     private Timestamp creationTime;
     private String applicationId;
     private String applicationVersion;
-    private String hostDescriptorId;
-    private String applicationDescriptorId;
-
+    private String applicationDeploymentId;
+    
     public String getTaskId() {
         return taskId;
     }
@@ -502,8 +501,7 @@ public class TaskDetailResource extends AbstractResource {
 		taskDetail.setCreationTime(creationTime);
 		taskDetail.setAppId(applicationId);
 		taskDetail.setAppVersion(applicationVersion);
-		taskDetail.setHostDescriptorId(getHostDescriptorId());
-		taskDetail.setApplicationDescriptorId(getApplicationDescriptorId());
+		taskDetail.setApplicationDeploymentId(getApplicationDeploymentId());
 	}
 
     public List<ApplicationInputResource> getApplicationInputs() throws RegistryException{
@@ -600,19 +598,11 @@ public class TaskDetailResource extends AbstractResource {
         return isExists(ResourceType.STATUS, taskId);
     }
 
-	public String getApplicationDescriptorId() {
-		return applicationDescriptorId;
+	public String getApplicationDeploymentId() {
+		return applicationDeploymentId;
 	}
 
-	public void setApplicationDescriptorId(String applicationDescriptorId) {
-		this.applicationDescriptorId = applicationDescriptorId;
-	}
-
-	public String getHostDescriptorId() {
-		return hostDescriptorId;
-	}
-
-	public void setHostDescriptorId(String hostDescriptorId) {
-		this.hostDescriptorId = hostDescriptorId;
+	public void setApplicationDeploymentId(String applicationDeploymentId) {
+		this.applicationDeploymentId = applicationDeploymentId;
 	}
 }

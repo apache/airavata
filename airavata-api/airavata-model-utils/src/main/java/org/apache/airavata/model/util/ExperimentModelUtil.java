@@ -142,6 +142,39 @@ public class ExperimentModelUtil {
         return taskDetails;
     }
 
+    public static TaskDetails cloneTaskFromWorkflowNodeDetails(Experiment experiment, WorkflowNodeDetails nodeDetails){
+        TaskDetails taskDetails = new TaskDetails();
+        taskDetails.setCreationTime(nodeDetails.getCreationTime());
+        String[] split = nodeDetails.getExecutionUnitData().split("/");
+        taskDetails.setApplicationId(split[0]);
+        taskDetails.setApplicationVersion(split[1]);
+        List<DataObjectType> experimentInputs = nodeDetails.getNodeInputs();
+        if (experimentInputs != null){
+            taskDetails.setApplicationInputs(experimentInputs);
+        }
+
+        List<DataObjectType> experimentOutputs = nodeDetails.getNodeOutputs();
+        if (experimentOutputs != null){
+            taskDetails.setApplicationOutputs(experimentOutputs);
+        }
+
+        UserConfigurationData configData = experiment.getUserConfigurationData();
+        if (configData != null){
+            ComputationalResourceScheduling scheduling = configData.getComputationalResourceScheduling();
+            if (scheduling != null){
+                taskDetails.setTaskScheduling(scheduling);
+            }
+            AdvancedInputDataHandling advanceInputDataHandling = configData.getAdvanceInputDataHandling();
+            if (advanceInputDataHandling != null){
+                taskDetails.setAdvancedInputDataHandling(advanceInputDataHandling);
+            }
+            AdvancedOutputDataHandling outputHandling = configData.getAdvanceOutputDataHandling();
+            if (outputHandling != null){
+                taskDetails.setAdvancedOutputDataHandling(outputHandling);
+            }
+        }
+        return taskDetails;
+    }
     public static WorkflowNodeDetails createWorkflowNode (String nodeName,
                                                           List<DataObjectType> nodeInputs){
         WorkflowNodeDetails wfnod = new WorkflowNodeDetails();

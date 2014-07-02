@@ -24,6 +24,7 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.*;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -43,11 +44,9 @@ public class TaskDetail implements Serializable {
     @Column(name = "APPLICATION_VERSION")
     private String appVersion;
 
-    @Column(name = "HOST_ID")
-    private String hostDescriptorId;
-    @Column(name = "APPLICATION_DESC_ID")
-    private String applicationDescriptorId;
-    
+    @Column(name = "APPLICATION_DEPLOYMENT_ID")
+    private String applicationDeploymentId;
+
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "NODE_INSTANCE_ID")
     private WorkflowNodeDetail nodeDetail;
@@ -100,19 +99,11 @@ public class TaskDetail implements Serializable {
         this.nodeDetail = nodeDetail;
     }
 
-	public String getHostDescriptorId() {
-		return hostDescriptorId;
+	public String getApplicationDeploymentId() {
+		return applicationDeploymentId;
 	}
 
-	public void setHostDescriptorId(String hostDescriptorId) {
-		this.hostDescriptorId = hostDescriptorId;
-	}
-
-	public String getApplicationDescriptorId() {
-		return applicationDescriptorId;
-	}
-
-	public void setApplicationDescriptorId(String applicationDescriptorId) {
-		this.applicationDescriptorId = applicationDescriptorId;
+	public void setApplicationDeploymentId(String applicationDeploymentId) {
+		this.applicationDeploymentId = applicationDeploymentId;
 	}
 }
