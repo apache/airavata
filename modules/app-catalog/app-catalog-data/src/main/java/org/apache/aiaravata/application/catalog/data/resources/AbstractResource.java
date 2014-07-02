@@ -142,8 +142,8 @@ public abstract class AbstractResource implements Resource {
 
     public final class DataMoveProtocolConstants {
         public static final String RESOURCE_ID = "resourceID";
-        public static final String DATA_MOVE_ID = "submissionID";
-        public static final String JOB_TYPE = "jobType";
+        public static final String DATA_MOVE_ID = "dataMoveID";
+        public static final String DATA_MOVE_TYPE = "dataMoveType";
     }
 
     public final class ApplicationModuleConstants {
