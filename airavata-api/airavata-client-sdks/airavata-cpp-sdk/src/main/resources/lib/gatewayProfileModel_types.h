@@ -17,19 +17,123 @@
 
 
 
+typedef struct _ComputeResourcePreference__isset {
+  _ComputeResourcePreference__isset() : preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false) {}
+  bool preferredJobSubmissionProtocol;
+  bool preferredDataMovementProtocol;
+  bool preferredBatchQueue;
+  bool scratchLocation;
+  bool allocationProjectNumber;
+} _ComputeResourcePreference__isset;
+
+class ComputeResourcePreference {
+ public:
+
+  static const char* ascii_fingerprint; // = "9C98338B7E052CD4DEECB22F243D6DAE";
+  static const uint8_t binary_fingerprint[16]; // = {0x9C,0x98,0x33,0x8B,0x7E,0x05,0x2C,0xD4,0xDE,0xEC,0xB2,0x2F,0x24,0x3D,0x6D,0xAE};
+
+  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), preferredJobSubmissionProtocol(), preferredDataMovementProtocol(), preferredBatchQueue(), scratchLocation(), allocationProjectNumber() {
+  }
+
+  virtual ~ComputeResourcePreference() throw() {}
+
+  std::string computeResourceId;
+  bool overridebyAiravata;
+  std::string preferredJobSubmissionProtocol;
+  std::string preferredDataMovementProtocol;
+  std::string preferredBatchQueue;
+  std::string scratchLocation;
+  std::string allocationProjectNumber;
+
+  _ComputeResourcePreference__isset __isset;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_overridebyAiravata(const bool val) {
+    overridebyAiravata = val;
+  }
+
+  void __set_preferredJobSubmissionProtocol(const std::string& val) {
+    preferredJobSubmissionProtocol = val;
+    __isset.preferredJobSubmissionProtocol = true;
+  }
+
+  void __set_preferredDataMovementProtocol(const std::string& val) {
+    preferredDataMovementProtocol = val;
+    __isset.preferredDataMovementProtocol = true;
+  }
+
+  void __set_preferredBatchQueue(const std::string& val) {
+    preferredBatchQueue = val;
+    __isset.preferredBatchQueue = true;
+  }
+
+  void __set_scratchLocation(const std::string& val) {
+    scratchLocation = val;
+    __isset.scratchLocation = true;
+  }
+
+  void __set_allocationProjectNumber(const std::string& val) {
+    allocationProjectNumber = val;
+    __isset.allocationProjectNumber = true;
+  }
+
+  bool operator == (const ComputeResourcePreference & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(overridebyAiravata == rhs.overridebyAiravata))
+      return false;
+    if (__isset.preferredJobSubmissionProtocol != rhs.__isset.preferredJobSubmissionProtocol)
+      return false;
+    else if (__isset.preferredJobSubmissionProtocol && !(preferredJobSubmissionProtocol == rhs.preferredJobSubmissionProtocol))
+      return false;
+    if (__isset.preferredDataMovementProtocol != rhs.__isset.preferredDataMovementProtocol)
+      return false;
+    else if (__isset.preferredDataMovementProtocol && !(preferredDataMovementProtocol == rhs.preferredDataMovementProtocol))
+      return false;
+    if (__isset.preferredBatchQueue != rhs.__isset.preferredBatchQueue)
+      return false;
+    else if (__isset.preferredBatchQueue && !(preferredBatchQueue == rhs.preferredBatchQueue))
+      return false;
+    if (__isset.scratchLocation != rhs.__isset.scratchLocation)
+      return false;
+    else if (__isset.scratchLocation && !(scratchLocation == rhs.scratchLocation))
+      return false;
+    if (__isset.allocationProjectNumber != rhs.__isset.allocationProjectNumber)
+      return false;
+    else if (__isset.allocationProjectNumber && !(allocationProjectNumber == rhs.allocationProjectNumber))
+      return false;
+    return true;
+  }
+  bool operator != (const ComputeResourcePreference &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ComputeResourcePreference & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(ComputeResourcePreference &a, ComputeResourcePreference &b);
+
 typedef struct _GatewayProfile__isset {
-  _GatewayProfile__isset() : gatewayDescription(false), preferedResource(false) {}
+  _GatewayProfile__isset() : gatewayDescription(false), computeResourcePreferences(false) {}
   bool gatewayDescription;
-  bool preferedResource;
+  bool computeResourcePreferences;
 } _GatewayProfile__isset;
 
 class GatewayProfile {
  public:
 
-  static const char* ascii_fingerprint; // = "FED0FBEAA0C90D1589E8B650561B7675";
-  static const uint8_t binary_fingerprint[16]; // = {0xFE,0xD0,0xFB,0xEA,0xA0,0xC9,0x0D,0x15,0x89,0xE8,0xB6,0x50,0x56,0x1B,0x76,0x75};
+  static const char* ascii_fingerprint; // = "D6477904C48AAB4DC8F09369D670B400";
+  static const uint8_t binary_fingerprint[16]; // = {0xD6,0x47,0x79,0x04,0xC4,0x8A,0xAB,0x4D,0xC8,0xF0,0x93,0x69,0xD6,0x70,0xB4,0x00};
 
-  GatewayProfile() : gatewayID("DO_NOT_SET_AT_CLIENTS"), gatewayName(), gatewayDescription(), preferedResource() {
+  GatewayProfile() : gatewayID("DO_NOT_SET_AT_CLIENTS"), gatewayName(), gatewayDescription() {
   }
 
   virtual ~GatewayProfile() throw() {}
@@ -37,7 +141,7 @@ class GatewayProfile {
   std::string gatewayID;
   std::string gatewayName;
   std::string gatewayDescription;
-  std::string preferedResource;
+  std::vector<ComputeResourcePreference>  computeResourcePreferences;
 
   _GatewayProfile__isset __isset;
 
@@ -54,9 +158,9 @@ class GatewayProfile {
     __isset.gatewayDescription = true;
   }
 
-  void __set_preferedResource(const std::string& val) {
-    preferedResource = val;
-    __isset.preferedResource = true;
+  void __set_computeResourcePreferences(const std::vector<ComputeResourcePreference> & val) {
+    computeResourcePreferences = val;
+    __isset.computeResourcePreferences = true;
   }
 
   bool operator == (const GatewayProfile & rhs) const
@@ -69,9 +173,9 @@ class GatewayProfile {
       return false;
     else if (__isset.gatewayDescription && !(gatewayDescription == rhs.gatewayDescription))
       return false;
-    if (__isset.preferedResource != rhs.__isset.preferedResource)
+    if (__isset.computeResourcePreferences != rhs.__isset.computeResourcePreferences)
       return false;
-    else if (__isset.preferedResource && !(preferedResource == rhs.preferedResource))
+    else if (__isset.computeResourcePreferences && !(computeResourcePreferences == rhs.computeResourcePreferences))
       return false;
     return true;
   }

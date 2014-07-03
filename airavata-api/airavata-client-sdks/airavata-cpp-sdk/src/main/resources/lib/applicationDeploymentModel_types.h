@@ -140,9 +140,9 @@ class ApplicationModule {
 void swap(ApplicationModule &a, ApplicationModule &b);
 
 typedef struct _ApplicationDeploymentDescription__isset {
-  _ApplicationDeploymentDescription__isset() : appDeploymentDescription(false), moduleLoadCmd(false), libPrependPaths(false), libAppendPaths(false), setEnvironment(false) {}
+  _ApplicationDeploymentDescription__isset() : appDeploymentDescription(false), moduleLoadCmds(false), libPrependPaths(false), libAppendPaths(false), setEnvironment(false) {}
   bool appDeploymentDescription;
-  bool moduleLoadCmd;
+  bool moduleLoadCmds;
   bool libPrependPaths;
   bool libAppendPaths;
   bool setEnvironment;
@@ -151,10 +151,10 @@ typedef struct _ApplicationDeploymentDescription__isset {
 class ApplicationDeploymentDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "50C12617CDB84220D07D0920711332CF";
-  static const uint8_t binary_fingerprint[16]; // = {0x50,0xC1,0x26,0x17,0xCD,0xB8,0x42,0x20,0xD0,0x7D,0x09,0x20,0x71,0x13,0x32,0xCF};
+  static const char* ascii_fingerprint; // = "3A2FD6631F126C4A6D132FA8EEFDAD7E";
+  static const uint8_t binary_fingerprint[16]; // = {0x3A,0x2F,0xD6,0x63,0x1F,0x12,0x6C,0x4A,0x6D,0x13,0x2F,0xA8,0xEE,0xFD,0xAD,0x7E};
 
-  ApplicationDeploymentDescription() : isEmpty(false), appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), appDeploymentDescription(), moduleLoadCmd() {
+  ApplicationDeploymentDescription() : isEmpty(false), appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), appDeploymentDescription() {
   }
 
   virtual ~ApplicationDeploymentDescription() throw() {}
@@ -165,7 +165,7 @@ class ApplicationDeploymentDescription {
   std::string computeHostId;
   std::string executablePath;
   std::string appDeploymentDescription;
-  std::string moduleLoadCmd;
+  std::vector<std::string>  moduleLoadCmds;
   std::vector<SetEnvPaths>  libPrependPaths;
   std::vector<SetEnvPaths>  libAppendPaths;
   std::vector<SetEnvPaths>  setEnvironment;
@@ -197,9 +197,9 @@ class ApplicationDeploymentDescription {
     __isset.appDeploymentDescription = true;
   }
 
-  void __set_moduleLoadCmd(const std::string& val) {
-    moduleLoadCmd = val;
-    __isset.moduleLoadCmd = true;
+  void __set_moduleLoadCmds(const std::vector<std::string> & val) {
+    moduleLoadCmds = val;
+    __isset.moduleLoadCmds = true;
   }
 
   void __set_libPrependPaths(const std::vector<SetEnvPaths> & val) {
@@ -233,9 +233,9 @@ class ApplicationDeploymentDescription {
       return false;
     else if (__isset.appDeploymentDescription && !(appDeploymentDescription == rhs.appDeploymentDescription))
       return false;
-    if (__isset.moduleLoadCmd != rhs.__isset.moduleLoadCmd)
+    if (__isset.moduleLoadCmds != rhs.__isset.moduleLoadCmds)
       return false;
-    else if (__isset.moduleLoadCmd && !(moduleLoadCmd == rhs.moduleLoadCmd))
+    else if (__isset.moduleLoadCmds && !(moduleLoadCmds == rhs.moduleLoadCmds))
       return false;
     if (__isset.libPrependPaths != rhs.__isset.libPrependPaths)
       return false;

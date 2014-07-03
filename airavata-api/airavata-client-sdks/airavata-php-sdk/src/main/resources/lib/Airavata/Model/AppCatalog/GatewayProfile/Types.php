@@ -17,13 +17,205 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
+class ComputeResourcePreference {
+  static $_TSPEC;
+
+  public $computeResourceId = null;
+  public $overridebyAiravata = true;
+  public $preferredJobSubmissionProtocol = null;
+  public $preferredDataMovementProtocol = null;
+  public $preferredBatchQueue = null;
+  public $scratchLocation = null;
+  public $allocationProjectNumber = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'overridebyAiravata',
+          'type' => TType::BOOL,
+          ),
+        3 => array(
+          'var' => 'preferredJobSubmissionProtocol',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'preferredDataMovementProtocol',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'preferredBatchQueue',
+          'type' => TType::STRING,
+          ),
+        6 => array(
+          'var' => 'scratchLocation',
+          'type' => TType::STRING,
+          ),
+        7 => array(
+          'var' => 'allocationProjectNumber',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
+      if (isset($vals['overridebyAiravata'])) {
+        $this->overridebyAiravata = $vals['overridebyAiravata'];
+      }
+      if (isset($vals['preferredJobSubmissionProtocol'])) {
+        $this->preferredJobSubmissionProtocol = $vals['preferredJobSubmissionProtocol'];
+      }
+      if (isset($vals['preferredDataMovementProtocol'])) {
+        $this->preferredDataMovementProtocol = $vals['preferredDataMovementProtocol'];
+      }
+      if (isset($vals['preferredBatchQueue'])) {
+        $this->preferredBatchQueue = $vals['preferredBatchQueue'];
+      }
+      if (isset($vals['scratchLocation'])) {
+        $this->scratchLocation = $vals['scratchLocation'];
+      }
+      if (isset($vals['allocationProjectNumber'])) {
+        $this->allocationProjectNumber = $vals['allocationProjectNumber'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ComputeResourcePreference';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->overridebyAiravata);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->preferredJobSubmissionProtocol);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->preferredDataMovementProtocol);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->preferredBatchQueue);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->scratchLocation);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 7:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->allocationProjectNumber);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ComputeResourcePreference');
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->overridebyAiravata !== null) {
+      $xfer += $output->writeFieldBegin('overridebyAiravata', TType::BOOL, 2);
+      $xfer += $output->writeBool($this->overridebyAiravata);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->preferredJobSubmissionProtocol !== null) {
+      $xfer += $output->writeFieldBegin('preferredJobSubmissionProtocol', TType::STRING, 3);
+      $xfer += $output->writeString($this->preferredJobSubmissionProtocol);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->preferredDataMovementProtocol !== null) {
+      $xfer += $output->writeFieldBegin('preferredDataMovementProtocol', TType::STRING, 4);
+      $xfer += $output->writeString($this->preferredDataMovementProtocol);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->preferredBatchQueue !== null) {
+      $xfer += $output->writeFieldBegin('preferredBatchQueue', TType::STRING, 5);
+      $xfer += $output->writeString($this->preferredBatchQueue);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->scratchLocation !== null) {
+      $xfer += $output->writeFieldBegin('scratchLocation', TType::STRING, 6);
+      $xfer += $output->writeString($this->scratchLocation);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->allocationProjectNumber !== null) {
+      $xfer += $output->writeFieldBegin('allocationProjectNumber', TType::STRING, 7);
+      $xfer += $output->writeString($this->allocationProjectNumber);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class GatewayProfile {
   static $_TSPEC;
 
   public $gatewayID = "DO_NOT_SET_AT_CLIENTS";
   public $gatewayName = null;
   public $gatewayDescription = null;
-  public $preferedResource = null;
+  public $computeResourcePreferences = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -41,8 +233,13 @@ class GatewayProfile {
           'type' => TType::STRING,
           ),
         4 => array(
-          'var' => 'preferedResource',
-          'type' => TType::STRING,
+          'var' => 'computeResourcePreferences',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference',
+            ),
           ),
         );
     }
@@ -56,8 +253,8 @@ class GatewayProfile {
       if (isset($vals['gatewayDescription'])) {
         $this->gatewayDescription = $vals['gatewayDescription'];
       }
-      if (isset($vals['preferedResource'])) {
-        $this->preferedResource = $vals['preferedResource'];
+      if (isset($vals['computeResourcePreferences'])) {
+        $this->computeResourcePreferences = $vals['computeResourcePreferences'];
       }
     }
   }
@@ -103,8 +300,19 @@ class GatewayProfile {
           }
           break;
         case 4:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->preferedResource);
+          if ($ftype == TType::LST) {
+            $this->computeResourcePreferences = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $elem5 = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
+              $xfer += $elem5->read($input);
+              $this->computeResourcePreferences []= $elem5;
+            }
+            $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -137,9 +345,21 @@ class GatewayProfile {
       $xfer += $output->writeString($this->gatewayDescription);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->preferedResource !== null) {
-      $xfer += $output->writeFieldBegin('preferedResource', TType::STRING, 4);
-      $xfer += $output->writeString($this->preferedResource);
+    if ($this->computeResourcePreferences !== null) {
+      if (!is_array($this->computeResourcePreferences)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('computeResourcePreferences', TType::LST, 4);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->computeResourcePreferences));
+        {
+          foreach ($this->computeResourcePreferences as $iter6)
+          {
+            $xfer += $iter6->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

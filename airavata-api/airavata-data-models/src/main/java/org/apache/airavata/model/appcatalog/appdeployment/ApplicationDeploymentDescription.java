@@ -83,7 +83,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField COMPUTE_HOST_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeHostId", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField EXECUTABLE_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("executablePath", org.apache.thrift.protocol.TType.STRING, (short)5);
   private static final org.apache.thrift.protocol.TField APP_DEPLOYMENT_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("appDeploymentDescription", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField MODULE_LOAD_CMD_FIELD_DESC = new org.apache.thrift.protocol.TField("moduleLoadCmd", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField MODULE_LOAD_CMDS_FIELD_DESC = new org.apache.thrift.protocol.TField("moduleLoadCmds", org.apache.thrift.protocol.TType.LIST, (short)7);
   private static final org.apache.thrift.protocol.TField LIB_PREPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libPrependPaths", org.apache.thrift.protocol.TType.LIST, (short)8);
   private static final org.apache.thrift.protocol.TField LIB_APPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libAppendPaths", org.apache.thrift.protocol.TType.LIST, (short)9);
   private static final org.apache.thrift.protocol.TField SET_ENVIRONMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("setEnvironment", org.apache.thrift.protocol.TType.LIST, (short)10);
@@ -100,7 +100,7 @@ import org.slf4j.LoggerFactory;
   private String computeHostId; // required
   private String executablePath; // required
   private String appDeploymentDescription; // optional
-  private String moduleLoadCmd; // optional
+  private List<String> moduleLoadCmds; // optional
   private List<SetEnvPaths> libPrependPaths; // optional
   private List<SetEnvPaths> libAppendPaths; // optional
   private List<SetEnvPaths> setEnvironment; // optional
@@ -113,7 +113,7 @@ import org.slf4j.LoggerFactory;
     COMPUTE_HOST_ID((short)4, "computeHostId"),
     EXECUTABLE_PATH((short)5, "executablePath"),
     APP_DEPLOYMENT_DESCRIPTION((short)6, "appDeploymentDescription"),
-    MODULE_LOAD_CMD((short)7, "moduleLoadCmd"),
+    MODULE_LOAD_CMDS((short)7, "moduleLoadCmds"),
     LIB_PREPEND_PATHS((short)8, "libPrependPaths"),
     LIB_APPEND_PATHS((short)9, "libAppendPaths"),
     SET_ENVIRONMENT((short)10, "setEnvironment");
@@ -143,8 +143,8 @@ import org.slf4j.LoggerFactory;
           return EXECUTABLE_PATH;
         case 6: // APP_DEPLOYMENT_DESCRIPTION
           return APP_DEPLOYMENT_DESCRIPTION;
-        case 7: // MODULE_LOAD_CMD
-          return MODULE_LOAD_CMD;
+        case 7: // MODULE_LOAD_CMDS
+          return MODULE_LOAD_CMDS;
         case 8: // LIB_PREPEND_PATHS
           return LIB_PREPEND_PATHS;
         case 9: // LIB_APPEND_PATHS
@@ -193,7 +193,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __ISEMPTY_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.APP_DEPLOYMENT_DESCRIPTION,_Fields.MODULE_LOAD_CMD,_Fields.LIB_PREPEND_PATHS,_Fields.LIB_APPEND_PATHS,_Fields.SET_ENVIRONMENT};
+  private _Fields optionals[] = {_Fields.APP_DEPLOYMENT_DESCRIPTION,_Fields.MODULE_LOAD_CMDS,_Fields.LIB_PREPEND_PATHS,_Fields.LIB_APPEND_PATHS,_Fields.SET_ENVIRONMENT};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -209,8 +209,9 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APP_DEPLOYMENT_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("appDeploymentDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.MODULE_LOAD_CMD, new org.apache.thrift.meta_data.FieldMetaData("moduleLoadCmd", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.MODULE_LOAD_CMDS, new org.apache.thrift.meta_data.FieldMetaData("moduleLoadCmds", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.LIB_PREPEND_PATHS, new org.apache.thrift.meta_data.FieldMetaData("libPrependPaths", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, SetEnvPaths.class))));
@@ -268,8 +269,9 @@ import org.slf4j.LoggerFactory;
     if (other.isSetAppDeploymentDescription()) {
       this.appDeploymentDescription = other.appDeploymentDescription;
     }
-    if (other.isSetModuleLoadCmd()) {
-      this.moduleLoadCmd = other.moduleLoadCmd;
+    if (other.isSetModuleLoadCmds()) {
+      List<String> __this__moduleLoadCmds = new ArrayList<String>(other.moduleLoadCmds);
+      this.moduleLoadCmds = __this__moduleLoadCmds;
     }
     if (other.isSetLibPrependPaths()) {
       List<SetEnvPaths> __this__libPrependPaths = new ArrayList<SetEnvPaths>(other.libPrependPaths.size());
@@ -308,7 +310,7 @@ import org.slf4j.LoggerFactory;
     this.computeHostId = null;
     this.executablePath = null;
     this.appDeploymentDescription = null;
-    this.moduleLoadCmd = null;
+    this.moduleLoadCmds = null;
     this.libPrependPaths = null;
     this.libAppendPaths = null;
     this.setEnvironment = null;
@@ -451,26 +453,41 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getModuleLoadCmd() {
-    return this.moduleLoadCmd;
+  public int getModuleLoadCmdsSize() {
+    return (this.moduleLoadCmds == null) ? 0 : this.moduleLoadCmds.size();
   }
 
-  public void setModuleLoadCmd(String moduleLoadCmd) {
-    this.moduleLoadCmd = moduleLoadCmd;
+  public java.util.Iterator<String> getModuleLoadCmdsIterator() {
+    return (this.moduleLoadCmds == null) ? null : this.moduleLoadCmds.iterator();
   }
 
-  public void unsetModuleLoadCmd() {
-    this.moduleLoadCmd = null;
+  public void addToModuleLoadCmds(String elem) {
+    if (this.moduleLoadCmds == null) {
+      this.moduleLoadCmds = new ArrayList<String>();
+    }
+    this.moduleLoadCmds.add(elem);
   }
 
-  /** Returns true if field moduleLoadCmd is set (has been assigned a value) and false otherwise */
-  public boolean isSetModuleLoadCmd() {
-    return this.moduleLoadCmd != null;
+  public List<String> getModuleLoadCmds() {
+    return this.moduleLoadCmds;
   }
 
-  public void setModuleLoadCmdIsSet(boolean value) {
+  public void setModuleLoadCmds(List<String> moduleLoadCmds) {
+    this.moduleLoadCmds = moduleLoadCmds;
+  }
+
+  public void unsetModuleLoadCmds() {
+    this.moduleLoadCmds = null;
+  }
+
+  /** Returns true if field moduleLoadCmds is set (has been assigned a value) and false otherwise */
+  public boolean isSetModuleLoadCmds() {
+    return this.moduleLoadCmds != null;
+  }
+
+  public void setModuleLoadCmdsIsSet(boolean value) {
     if (!value) {
-      this.moduleLoadCmd = null;
+      this.moduleLoadCmds = null;
     }
   }
 
@@ -638,11 +655,11 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case MODULE_LOAD_CMD:
+    case MODULE_LOAD_CMDS:
       if (value == null) {
-        unsetModuleLoadCmd();
+        unsetModuleLoadCmds();
       } else {
-        setModuleLoadCmd((String)value);
+        setModuleLoadCmds((List<String>)value);
       }
       break;
 
@@ -693,8 +710,8 @@ import org.slf4j.LoggerFactory;
     case APP_DEPLOYMENT_DESCRIPTION:
       return getAppDeploymentDescription();
 
-    case MODULE_LOAD_CMD:
-      return getModuleLoadCmd();
+    case MODULE_LOAD_CMDS:
+      return getModuleLoadCmds();
 
     case LIB_PREPEND_PATHS:
       return getLibPrependPaths();
@@ -728,8 +745,8 @@ import org.slf4j.LoggerFactory;
       return isSetExecutablePath();
     case APP_DEPLOYMENT_DESCRIPTION:
       return isSetAppDeploymentDescription();
-    case MODULE_LOAD_CMD:
-      return isSetModuleLoadCmd();
+    case MODULE_LOAD_CMDS:
+      return isSetModuleLoadCmds();
     case LIB_PREPEND_PATHS:
       return isSetLibPrependPaths();
     case LIB_APPEND_PATHS:
@@ -807,12 +824,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_moduleLoadCmd = true && this.isSetModuleLoadCmd();
-    boolean that_present_moduleLoadCmd = true && that.isSetModuleLoadCmd();
-    if (this_present_moduleLoadCmd || that_present_moduleLoadCmd) {
-      if (!(this_present_moduleLoadCmd && that_present_moduleLoadCmd))
+    boolean this_present_moduleLoadCmds = true && this.isSetModuleLoadCmds();
+    boolean that_present_moduleLoadCmds = true && that.isSetModuleLoadCmds();
+    if (this_present_moduleLoadCmds || that_present_moduleLoadCmds) {
+      if (!(this_present_moduleLoadCmds && that_present_moduleLoadCmds))
         return false;
-      if (!this.moduleLoadCmd.equals(that.moduleLoadCmd))
+      if (!this.moduleLoadCmds.equals(that.moduleLoadCmds))
         return false;
     }
 
@@ -919,12 +936,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetModuleLoadCmd()).compareTo(other.isSetModuleLoadCmd());
+    lastComparison = Boolean.valueOf(isSetModuleLoadCmds()).compareTo(other.isSetModuleLoadCmds());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetModuleLoadCmd()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.moduleLoadCmd, other.moduleLoadCmd);
+    if (isSetModuleLoadCmds()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.moduleLoadCmds, other.moduleLoadCmds);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1024,13 +1041,13 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
-    if (isSetModuleLoadCmd()) {
+    if (isSetModuleLoadCmds()) {
       if (!first) sb.append(", ");
-      sb.append("moduleLoadCmd:");
-      if (this.moduleLoadCmd == null) {
+      sb.append("moduleLoadCmds:");
+      if (this.moduleLoadCmds == null) {
         sb.append("null");
       } else {
-        sb.append(this.moduleLoadCmd);
+        sb.append(this.moduleLoadCmds);
       }
       first = false;
     }
@@ -1177,10 +1194,20 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // MODULE_LOAD_CMD
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.moduleLoadCmd = iprot.readString();
-              struct.setModuleLoadCmdIsSet(true);
+          case 7: // MODULE_LOAD_CMDS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.moduleLoadCmds = new ArrayList<String>(_list0.size);
+                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                {
+                  String _elem2;
+                  _elem2 = iprot.readString();
+                  struct.moduleLoadCmds.add(_elem2);
+                }
+                iprot.readListEnd();
+              }
+              struct.setModuleLoadCmdsIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1188,14 +1215,14 @@ import org.slf4j.LoggerFactory;
           case 8: // LIB_PREPEND_PATHS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.libPrependPaths = new ArrayList<SetEnvPaths>(_list0.size);
-                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
+                struct.libPrependPaths = new ArrayList<SetEnvPaths>(_list3.size);
+                for (int _i4 = 0; _i4 < _list3.size; ++_i4)
                 {
-                  SetEnvPaths _elem2;
-                  _elem2 = new SetEnvPaths();
-                  _elem2.read(iprot);
-                  struct.libPrependPaths.add(_elem2);
+                  SetEnvPaths _elem5;
+                  _elem5 = new SetEnvPaths();
+                  _elem5.read(iprot);
+                  struct.libPrependPaths.add(_elem5);
                 }
                 iprot.readListEnd();
               }
@@ -1207,14 +1234,14 @@ import org.slf4j.LoggerFactory;
           case 9: // LIB_APPEND_PATHS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
-                struct.libAppendPaths = new ArrayList<SetEnvPaths>(_list3.size);
-                for (int _i4 = 0; _i4 < _list3.size; ++_i4)
+                org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
+                struct.libAppendPaths = new ArrayList<SetEnvPaths>(_list6.size);
+                for (int _i7 = 0; _i7 < _list6.size; ++_i7)
                 {
-                  SetEnvPaths _elem5;
-                  _elem5 = new SetEnvPaths();
-                  _elem5.read(iprot);
-                  struct.libAppendPaths.add(_elem5);
+                  SetEnvPaths _elem8;
+                  _elem8 = new SetEnvPaths();
+                  _elem8.read(iprot);
+                  struct.libAppendPaths.add(_elem8);
                 }
                 iprot.readListEnd();
               }
@@ -1226,14 +1253,14 @@ import org.slf4j.LoggerFactory;
           case 10: // SET_ENVIRONMENT
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
-                struct.setEnvironment = new ArrayList<SetEnvPaths>(_list6.size);
-                for (int _i7 = 0; _i7 < _list6.size; ++_i7)
+                org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
+                struct.setEnvironment = new ArrayList<SetEnvPaths>(_list9.size);
+                for (int _i10 = 0; _i10 < _list9.size; ++_i10)
                 {
-                  SetEnvPaths _elem8;
-                  _elem8 = new SetEnvPaths();
-                  _elem8.read(iprot);
-                  struct.setEnvironment.add(_elem8);
+                  SetEnvPaths _elem11;
+                  _elem11 = new SetEnvPaths();
+                  _elem11.read(iprot);
+                  struct.setEnvironment.add(_elem11);
                 }
                 iprot.readListEnd();
               }
@@ -1285,10 +1312,17 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.moduleLoadCmd != null) {
-        if (struct.isSetModuleLoadCmd()) {
-          oprot.writeFieldBegin(MODULE_LOAD_CMD_FIELD_DESC);
-          oprot.writeString(struct.moduleLoadCmd);
+      if (struct.moduleLoadCmds != null) {
+        if (struct.isSetModuleLoadCmds()) {
+          oprot.writeFieldBegin(MODULE_LOAD_CMDS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.moduleLoadCmds.size()));
+            for (String _iter12 : struct.moduleLoadCmds)
+            {
+              oprot.writeString(_iter12);
+            }
+            oprot.writeListEnd();
+          }
           oprot.writeFieldEnd();
         }
       }
@@ -1297,9 +1331,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(LIB_PREPEND_PATHS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.libPrependPaths.size()));
-            for (SetEnvPaths _iter9 : struct.libPrependPaths)
+            for (SetEnvPaths _iter13 : struct.libPrependPaths)
             {
-              _iter9.write(oprot);
+              _iter13.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1311,9 +1345,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(LIB_APPEND_PATHS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.libAppendPaths.size()));
-            for (SetEnvPaths _iter10 : struct.libAppendPaths)
+            for (SetEnvPaths _iter14 : struct.libAppendPaths)
             {
-              _iter10.write(oprot);
+              _iter14.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1325,9 +1359,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SET_ENVIRONMENT_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.setEnvironment.size()));
-            for (SetEnvPaths _iter11 : struct.setEnvironment)
+            for (SetEnvPaths _iter15 : struct.setEnvironment)
             {
-              _iter11.write(oprot);
+              _iter15.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1360,7 +1394,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetAppDeploymentDescription()) {
         optionals.set(0);
       }
-      if (struct.isSetModuleLoadCmd()) {
+      if (struct.isSetModuleLoadCmds()) {
         optionals.set(1);
       }
       if (struct.isSetLibPrependPaths()) {
@@ -1376,33 +1410,39 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetAppDeploymentDescription()) {
         oprot.writeString(struct.appDeploymentDescription);
       }
-      if (struct.isSetModuleLoadCmd()) {
-        oprot.writeString(struct.moduleLoadCmd);
+      if (struct.isSetModuleLoadCmds()) {
+        {
+          oprot.writeI32(struct.moduleLoadCmds.size());
+          for (String _iter16 : struct.moduleLoadCmds)
+          {
+            oprot.writeString(_iter16);
+          }
+        }
       }
       if (struct.isSetLibPrependPaths()) {
         {
           oprot.writeI32(struct.libPrependPaths.size());
-          for (SetEnvPaths _iter12 : struct.libPrependPaths)
+          for (SetEnvPaths _iter17 : struct.libPrependPaths)
           {
-            _iter12.write(oprot);
+            _iter17.write(oprot);
           }
         }
       }
       if (struct.isSetLibAppendPaths()) {
         {
           oprot.writeI32(struct.libAppendPaths.size());
-          for (SetEnvPaths _iter13 : struct.libAppendPaths)
+          for (SetEnvPaths _iter18 : struct.libAppendPaths)
           {
-            _iter13.write(oprot);
+            _iter18.write(oprot);
           }
         }
       }
       if (struct.isSetSetEnvironment()) {
         {
           oprot.writeI32(struct.setEnvironment.size());
-          for (SetEnvPaths _iter14 : struct.setEnvironment)
+          for (SetEnvPaths _iter19 : struct.setEnvironment)
           {
-            _iter14.write(oprot);
+            _iter19.write(oprot);
           }
         }
       }
@@ -1427,47 +1467,56 @@ import org.slf4j.LoggerFactory;
         struct.setAppDeploymentDescriptionIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.moduleLoadCmd = iprot.readString();
-        struct.setModuleLoadCmdIsSet(true);
+        {
+          org.apache.thrift.protocol.TList _list20 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.moduleLoadCmds = new ArrayList<String>(_list20.size);
+          for (int _i21 = 0; _i21 < _list20.size; ++_i21)
+          {
+            String _elem22;
+            _elem22 = iprot.readString();
+            struct.moduleLoadCmds.add(_elem22);
+          }
+        }
+        struct.setModuleLoadCmdsIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list15 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.libPrependPaths = new ArrayList<SetEnvPaths>(_list15.size);
-          for (int _i16 = 0; _i16 < _list15.size; ++_i16)
+          org.apache.thrift.protocol.TList _list23 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.libPrependPaths = new ArrayList<SetEnvPaths>(_list23.size);
+          for (int _i24 = 0; _i24 < _list23.size; ++_i24)
           {
-            SetEnvPaths _elem17;
-            _elem17 = new SetEnvPaths();
-            _elem17.read(iprot);
-            struct.libPrependPaths.add(_elem17);
+            SetEnvPaths _elem25;
+            _elem25 = new SetEnvPaths();
+            _elem25.read(iprot);
+            struct.libPrependPaths.add(_elem25);
           }
         }
         struct.setLibPrependPathsIsSet(true);
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list18 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.libAppendPaths = new ArrayList<SetEnvPaths>(_list18.size);
-          for (int _i19 = 0; _i19 < _list18.size; ++_i19)
+          org.apache.thrift.protocol.TList _list26 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.libAppendPaths = new ArrayList<SetEnvPaths>(_list26.size);
+          for (int _i27 = 0; _i27 < _list26.size; ++_i27)
           {
-            SetEnvPaths _elem20;
-            _elem20 = new SetEnvPaths();
-            _elem20.read(iprot);
-            struct.libAppendPaths.add(_elem20);
+            SetEnvPaths _elem28;
+            _elem28 = new SetEnvPaths();
+            _elem28.read(iprot);
+            struct.libAppendPaths.add(_elem28);
           }
         }
         struct.setLibAppendPathsIsSet(true);
       }
       if (incoming.get(4)) {
         {
-          org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.setEnvironment = new ArrayList<SetEnvPaths>(_list21.size);
-          for (int _i22 = 0; _i22 < _list21.size; ++_i22)
+          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.setEnvironment = new ArrayList<SetEnvPaths>(_list29.size);
+          for (int _i30 = 0; _i30 < _list29.size; ++_i30)
           {
-            SetEnvPaths _elem23;
-            _elem23 = new SetEnvPaths();
-            _elem23.read(iprot);
-            struct.setEnvironment.add(_elem23);
+            SetEnvPaths _elem31;
+            _elem31 = new SetEnvPaths();
+            _elem31.read(iprot);
+            struct.setEnvironment.add(_elem31);
           }
         }
         struct.setSetEnvironmentIsSet(true);

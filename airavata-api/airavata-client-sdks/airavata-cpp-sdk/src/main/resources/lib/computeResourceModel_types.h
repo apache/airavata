@@ -28,27 +28,17 @@ struct ResourceJobManager {
 
 extern const std::map<int, const char*> _ResourceJobManager_VALUES_TO_NAMES;
 
-struct JobSubmissionProtocol {
+struct FileSystems {
   enum type {
-    SSH = 0,
-    GSISSH = 1,
-    GRAM = 2,
-    UNICORE = 3
+    HOME = 0,
+    WORK = 1,
+    LOCALTMP = 2,
+    SCRATCH = 3,
+    ARCHIVE = 4
   };
 };
 
-extern const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES;
-
-struct DataMovementProtocol {
-  enum type {
-    SCP = 0,
-    SFTP = 1,
-    GridFTP = 2,
-    UNICORE_STORAGE_SERVICE = 3
-  };
-};
-
-extern const std::map<int, const char*> _DataMovementProtocol_VALUES_TO_NAMES;
+extern const std::map<int, const char*> _FileSystems_VALUES_TO_NAMES;
 
 struct SecurityProtocol {
   enum type {
@@ -62,34 +52,162 @@ struct SecurityProtocol {
 
 extern const std::map<int, const char*> _SecurityProtocol_VALUES_TO_NAMES;
 
+struct JobSubmissionProtocol {
+  enum type {
+    LOCAL = 0,
+    SSH = 1,
+    GSISSH = 2,
+    GRAM = 3,
+    UNICORE = 4
+  };
+};
+
+extern const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES;
+
+struct DataMovementProtocol {
+  enum type {
+    LOCAL = 0,
+    SCP = 1,
+    SFTP = 2,
+    GridFTP = 3,
+    UNICORE_STORAGE_SERVICE = 4
+  };
+};
+
+extern const std::map<int, const char*> _DataMovementProtocol_VALUES_TO_NAMES;
+
+typedef struct _BatchQueue__isset {
+  _BatchQueue__isset() : queueDescription(false), maxRunTime(false), maxNodes(false), maxProcessors(false), maxJobsInQueue(false) {}
+  bool queueDescription;
+  bool maxRunTime;
+  bool maxNodes;
+  bool maxProcessors;
+  bool maxJobsInQueue;
+} _BatchQueue__isset;
+
+class BatchQueue {
+ public:
+
+  static const char* ascii_fingerprint; // = "DA59FF8EE453E1822971C1CE1471EEA1";
+  static const uint8_t binary_fingerprint[16]; // = {0xDA,0x59,0xFF,0x8E,0xE4,0x53,0xE1,0x82,0x29,0x71,0xC1,0xCE,0x14,0x71,0xEE,0xA1};
+
+  BatchQueue() : queueName(), queueDescription(), maxRunTime(0), maxNodes(0), maxProcessors(0), maxJobsInQueue(0) {
+  }
+
+  virtual ~BatchQueue() throw() {}
+
+  std::string queueName;
+  std::string queueDescription;
+  int32_t maxRunTime;
+  int32_t maxNodes;
+  int32_t maxProcessors;
+  int32_t maxJobsInQueue;
+
+  _BatchQueue__isset __isset;
+
+  void __set_queueName(const std::string& val) {
+    queueName = val;
+  }
+
+  void __set_queueDescription(const std::string& val) {
+    queueDescription = val;
+    __isset.queueDescription = true;
+  }
+
+  void __set_maxRunTime(const int32_t val) {
+    maxRunTime = val;
+    __isset.maxRunTime = true;
+  }
+
+  void __set_maxNodes(const int32_t val) {
+    maxNodes = val;
+    __isset.maxNodes = true;
+  }
+
+  void __set_maxProcessors(const int32_t val) {
+    maxProcessors = val;
+    __isset.maxProcessors = true;
+  }
+
+  void __set_maxJobsInQueue(const int32_t val) {
+    maxJobsInQueue = val;
+    __isset.maxJobsInQueue = true;
+  }
+
+  bool operator == (const BatchQueue & rhs) const
+  {
+    if (!(queueName == rhs.queueName))
+      return false;
+    if (__isset.queueDescription != rhs.__isset.queueDescription)
+      return false;
+    else if (__isset.queueDescription && !(queueDescription == rhs.queueDescription))
+      return false;
+    if (__isset.maxRunTime != rhs.__isset.maxRunTime)
+      return false;
+    else if (__isset.maxRunTime && !(maxRunTime == rhs.maxRunTime))
+      return false;
+    if (__isset.maxNodes != rhs.__isset.maxNodes)
+      return false;
+    else if (__isset.maxNodes && !(maxNodes == rhs.maxNodes))
+      return false;
+    if (__isset.maxProcessors != rhs.__isset.maxProcessors)
+      return false;
+    else if (__isset.maxProcessors && !(maxProcessors == rhs.maxProcessors))
+      return false;
+    if (__isset.maxJobsInQueue != rhs.__isset.maxJobsInQueue)
+      return false;
+    else if (__isset.maxJobsInQueue && !(maxJobsInQueue == rhs.maxJobsInQueue))
+      return false;
+    return true;
+  }
+  bool operator != (const BatchQueue &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const BatchQueue & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(BatchQueue &a, BatchQueue &b);
+
 typedef struct _SCPDataMovement__isset {
-  _SCPDataMovement__isset() : sshPort(true) {}
+  _SCPDataMovement__isset() : alternativeSCPHostName(false), sshPort(true) {}
+  bool alternativeSCPHostName;
   bool sshPort;
 } _SCPDataMovement__isset;
 
 class SCPDataMovement {
  public:
 
-  static const char* ascii_fingerprint; // = "FEB6B2CD28861B4EED855CACA1FEF2CB";
-  static const uint8_t binary_fingerprint[16]; // = {0xFE,0xB6,0xB2,0xCD,0x28,0x86,0x1B,0x4E,0xED,0x85,0x5C,0xAC,0xA1,0xFE,0xF2,0xCB};
+  static const char* ascii_fingerprint; // = "63CAE6EE336A7DBD91CCCD6E22628F4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x63,0xCA,0xE6,0xEE,0x33,0x6A,0x7D,0xBD,0x91,0xCC,0xCD,0x6E,0x22,0x62,0x8F,0x4A};
 
-  SCPDataMovement() : dataMovementDataID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), sshPort(22) {
+  SCPDataMovement() : dataMovementInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSCPHostName(), sshPort(22) {
   }
 
   virtual ~SCPDataMovement() throw() {}
 
-  std::string dataMovementDataID;
+  std::string dataMovementInterfaceId;
   SecurityProtocol::type securityProtocol;
+  std::string alternativeSCPHostName;
   int32_t sshPort;
 
   _SCPDataMovement__isset __isset;
 
-  void __set_dataMovementDataID(const std::string& val) {
-    dataMovementDataID = val;
+  void __set_dataMovementInterfaceId(const std::string& val) {
+    dataMovementInterfaceId = val;
   }
 
   void __set_securityProtocol(const SecurityProtocol::type val) {
     securityProtocol = val;
+  }
+
+  void __set_alternativeSCPHostName(const std::string& val) {
+    alternativeSCPHostName = val;
+    __isset.alternativeSCPHostName = true;
   }
 
   void __set_sshPort(const int32_t val) {
@@ -99,9 +217,13 @@ class SCPDataMovement {
 
   bool operator == (const SCPDataMovement & rhs) const
   {
-    if (!(dataMovementDataID == rhs.dataMovementDataID))
+    if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
       return false;
     if (!(securityProtocol == rhs.securityProtocol))
+      return false;
+    if (__isset.alternativeSCPHostName != rhs.__isset.alternativeSCPHostName)
+      return false;
+    else if (__isset.alternativeSCPHostName && !(alternativeSCPHostName == rhs.alternativeSCPHostName))
       return false;
     if (__isset.sshPort != rhs.__isset.sshPort)
       return false;
@@ -129,34 +251,34 @@ class GridFTPDataMovement {
   static const char* ascii_fingerprint; // = "790EE8B1D56A3B9B76C41DD063726E75";
   static const uint8_t binary_fingerprint[16]; // = {0x79,0x0E,0xE8,0xB1,0xD5,0x6A,0x3B,0x9B,0x76,0xC4,0x1D,0xD0,0x63,0x72,0x6E,0x75};
 
-  GridFTPDataMovement() : dataMovementDataID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0) {
+  GridFTPDataMovement() : dataMovementInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0) {
   }
 
   virtual ~GridFTPDataMovement() throw() {}
 
-  std::string dataMovementDataID;
+  std::string dataMovementInterfaceId;
   SecurityProtocol::type securityProtocol;
-  std::vector<std::string>  gridFTPEndPoint;
+  std::vector<std::string>  gridFTPEndPoints;
 
-  void __set_dataMovementDataID(const std::string& val) {
-    dataMovementDataID = val;
+  void __set_dataMovementInterfaceId(const std::string& val) {
+    dataMovementInterfaceId = val;
   }
 
   void __set_securityProtocol(const SecurityProtocol::type val) {
     securityProtocol = val;
   }
 
-  void __set_gridFTPEndPoint(const std::vector<std::string> & val) {
-    gridFTPEndPoint = val;
+  void __set_gridFTPEndPoints(const std::vector<std::string> & val) {
+    gridFTPEndPoints = val;
   }
 
   bool operator == (const GridFTPDataMovement & rhs) const
   {
-    if (!(dataMovementDataID == rhs.dataMovementDataID))
+    if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
       return false;
     if (!(securityProtocol == rhs.securityProtocol))
       return false;
-    if (!(gridFTPEndPoint == rhs.gridFTPEndPoint))
+    if (!(gridFTPEndPoints == rhs.gridFTPEndPoints))
       return false;
     return true;
   }
@@ -173,34 +295,145 @@ class GridFTPDataMovement {
 
 void swap(GridFTPDataMovement &a, GridFTPDataMovement &b);
 
+typedef struct _LOCALSubmission__isset {
+  _LOCALSubmission__isset() : monitoringMechanism(false) {}
+  bool monitoringMechanism;
+} _LOCALSubmission__isset;
+
+class LOCALSubmission {
+ public:
+
+  static const char* ascii_fingerprint; // = "C9C13E23D75AC7D7DB268099D53EE995";
+  static const uint8_t binary_fingerprint[16]; // = {0xC9,0xC1,0x3E,0x23,0xD7,0x5A,0xC7,0xD7,0xDB,0x26,0x80,0x99,0xD5,0x3E,0xE9,0x95};
+
+  LOCALSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), resourceJobManager((ResourceJobManager::type)0), monitoringMechanism() {
+  }
+
+  virtual ~LOCALSubmission() throw() {}
+
+  std::string jobSubmissionInterfaceId;
+  ResourceJobManager::type resourceJobManager;
+  std::string monitoringMechanism;
+
+  _LOCALSubmission__isset __isset;
+
+  void __set_jobSubmissionInterfaceId(const std::string& val) {
+    jobSubmissionInterfaceId = val;
+  }
+
+  void __set_resourceJobManager(const ResourceJobManager::type val) {
+    resourceJobManager = val;
+  }
+
+  void __set_monitoringMechanism(const std::string& val) {
+    monitoringMechanism = val;
+    __isset.monitoringMechanism = true;
+  }
+
+  bool operator == (const LOCALSubmission & rhs) const
+  {
+    if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
+      return false;
+    if (!(resourceJobManager == rhs.resourceJobManager))
+      return false;
+    if (__isset.monitoringMechanism != rhs.__isset.monitoringMechanism)
+      return false;
+    else if (__isset.monitoringMechanism && !(monitoringMechanism == rhs.monitoringMechanism))
+      return false;
+    return true;
+  }
+  bool operator != (const LOCALSubmission &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const LOCALSubmission & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(LOCALSubmission &a, LOCALSubmission &b);
+
+
+class LOCALDataMovement {
+ public:
+
+  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
+  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
+
+  LOCALDataMovement() : dataMovementInterfaceId("DO_NOT_SET_AT_CLIENTS") {
+  }
+
+  virtual ~LOCALDataMovement() throw() {}
+
+  std::string dataMovementInterfaceId;
+
+  void __set_dataMovementInterfaceId(const std::string& val) {
+    dataMovementInterfaceId = val;
+  }
+
+  bool operator == (const LOCALDataMovement & rhs) const
+  {
+    if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
+      return false;
+    return true;
+  }
+  bool operator != (const LOCALDataMovement &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const LOCALDataMovement & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(LOCALDataMovement &a, LOCALDataMovement &b);
+
 typedef struct _SSHJobSubmission__isset {
-  _SSHJobSubmission__isset() : sshPort(true) {}
+  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitoringMechanism(false) {}
+  bool alternativeSSHHostName;
   bool sshPort;
+  bool monitoringMechanism;
 } _SSHJobSubmission__isset;
 
 class SSHJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "FEB6B2CD28861B4EED855CACA1FEF2CB";
-  static const uint8_t binary_fingerprint[16]; // = {0xFE,0xB6,0xB2,0xCD,0x28,0x86,0x1B,0x4E,0xED,0x85,0x5C,0xAC,0xA1,0xFE,0xF2,0xCB};
+  static const char* ascii_fingerprint; // = "7AD7C2665ACC6606EC984DACFC74881E";
+  static const uint8_t binary_fingerprint[16]; // = {0x7A,0xD7,0xC2,0x66,0x5A,0xCC,0x66,0x06,0xEC,0x98,0x4D,0xAC,0xFC,0x74,0x88,0x1E};
 
-  SSHJobSubmission() : jobSubmissionDataID("DO_NOT_SET_AT_CLIENTS"), resourceJobManager((ResourceJobManager::type)0), sshPort(22) {
+  SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), resourceJobManager((ResourceJobManager::type)0), alternativeSSHHostName(), sshPort(22), monitoringMechanism() {
   }
 
   virtual ~SSHJobSubmission() throw() {}
 
-  std::string jobSubmissionDataID;
+  std::string jobSubmissionInterfaceId;
+  SecurityProtocol::type securityProtocol;
   ResourceJobManager::type resourceJobManager;
+  std::string alternativeSSHHostName;
   int32_t sshPort;
+  std::string monitoringMechanism;
 
   _SSHJobSubmission__isset __isset;
 
-  void __set_jobSubmissionDataID(const std::string& val) {
-    jobSubmissionDataID = val;
+  void __set_jobSubmissionInterfaceId(const std::string& val) {
+    jobSubmissionInterfaceId = val;
+  }
+
+  void __set_securityProtocol(const SecurityProtocol::type val) {
+    securityProtocol = val;
   }
 
   void __set_resourceJobManager(const ResourceJobManager::type val) {
     resourceJobManager = val;
+  }
+
+  void __set_alternativeSSHHostName(const std::string& val) {
+    alternativeSSHHostName = val;
+    __isset.alternativeSSHHostName = true;
   }
 
   void __set_sshPort(const int32_t val) {
@@ -208,15 +441,30 @@ class SSHJobSubmission {
     __isset.sshPort = true;
   }
 
+  void __set_monitoringMechanism(const std::string& val) {
+    monitoringMechanism = val;
+    __isset.monitoringMechanism = true;
+  }
+
   bool operator == (const SSHJobSubmission & rhs) const
   {
-    if (!(jobSubmissionDataID == rhs.jobSubmissionDataID))
+    if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
+      return false;
+    if (!(securityProtocol == rhs.securityProtocol))
       return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
+      return false;
+    if (__isset.alternativeSSHHostName != rhs.__isset.alternativeSSHHostName)
+      return false;
+    else if (__isset.alternativeSSHHostName && !(alternativeSSHHostName == rhs.alternativeSSHHostName))
       return false;
     if (__isset.sshPort != rhs.__isset.sshPort)
       return false;
     else if (__isset.sshPort && !(sshPort == rhs.sshPort))
+      return false;
+    if (__isset.monitoringMechanism != rhs.__isset.monitoringMechanism)
+      return false;
+    else if (__isset.monitoringMechanism && !(monitoringMechanism == rhs.monitoringMechanism))
       return false;
     return true;
   }
@@ -244,20 +492,20 @@ class GlobusJobSubmission {
   static const char* ascii_fingerprint; // = "DF4253F78D7B543C16FA461660D38A03";
   static const uint8_t binary_fingerprint[16]; // = {0xDF,0x42,0x53,0xF7,0x8D,0x7B,0x54,0x3C,0x16,0xFA,0x46,0x16,0x60,0xD3,0x8A,0x03};
 
-  GlobusJobSubmission() : jobSubmissionDataID("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), resourceJobManager((ResourceJobManager::type)0) {
+  GlobusJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), resourceJobManager((ResourceJobManager::type)0) {
   }
 
   virtual ~GlobusJobSubmission() throw() {}
 
-  std::string jobSubmissionDataID;
+  std::string jobSubmissionInterfaceId;
   SecurityProtocol::type securityProtocol;
   ResourceJobManager::type resourceJobManager;
   std::vector<std::string>  globusGateKeeperEndPoint;
 
   _GlobusJobSubmission__isset __isset;
 
-  void __set_jobSubmissionDataID(const std::string& val) {
-    jobSubmissionDataID = val;
+  void __set_jobSubmissionInterfaceId(const std::string& val) {
+    jobSubmissionInterfaceId = val;
   }
 
   void __set_securityProtocol(const SecurityProtocol::type val) {
@@ -275,7 +523,7 @@ class GlobusJobSubmission {
 
   bool operator == (const GlobusJobSubmission & rhs) const
   {
-    if (!(jobSubmissionDataID == rhs.jobSubmissionDataID))
+    if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
       return false;
     if (!(securityProtocol == rhs.securityProtocol))
       return false;
@@ -300,149 +548,142 @@ class GlobusJobSubmission {
 
 void swap(GlobusJobSubmission &a, GlobusJobSubmission &b);
 
-typedef struct _GSISSHJobSubmission__isset {
-  _GSISSHJobSubmission__isset() : sshPort(true), exports(false), preJobCommands(false), postJobCommands(false), installedPath(false), monitorMode(false) {}
-  bool sshPort;
-  bool exports;
-  bool preJobCommands;
-  bool postJobCommands;
-  bool installedPath;
-  bool monitorMode;
-} _GSISSHJobSubmission__isset;
 
-class GSISSHJobSubmission {
+class JobSubmissionInterface {
  public:
 
-  static const char* ascii_fingerprint; // = "6969A7F145C4403B2F9081A498E933FD";
-  static const uint8_t binary_fingerprint[16]; // = {0x69,0x69,0xA7,0xF1,0x45,0xC4,0x40,0x3B,0x2F,0x90,0x81,0xA4,0x98,0xE9,0x33,0xFD};
+  static const char* ascii_fingerprint; // = "A0A4DD7B8243FB842E64EAC6E5DA6C7B";
+  static const uint8_t binary_fingerprint[16]; // = {0xA0,0xA4,0xDD,0x7B,0x82,0x43,0xFB,0x84,0x2E,0x64,0xEA,0xC6,0xE5,0xDA,0x6C,0x7B};
 
-  GSISSHJobSubmission() : jobSubmissionDataID("DO_NOT_SET_AT_CLIENTS"), resourceJobManager((ResourceJobManager::type)0), sshPort(22), installedPath(), monitorMode() {
+  JobSubmissionInterface() : jobSubmissionInterfaceId(), jobSubmissionProtocol((JobSubmissionProtocol::type)0), priorityOrder(0) {
   }
 
-  virtual ~GSISSHJobSubmission() throw() {}
+  virtual ~JobSubmissionInterface() throw() {}
 
-  std::string jobSubmissionDataID;
-  ResourceJobManager::type resourceJobManager;
-  int32_t sshPort;
-  std::set<std::string>  exports;
-  std::vector<std::string>  preJobCommands;
-  std::vector<std::string>  postJobCommands;
-  std::string installedPath;
-  std::string monitorMode;
+  std::string jobSubmissionInterfaceId;
+  JobSubmissionProtocol::type jobSubmissionProtocol;
+  int32_t priorityOrder;
 
-  _GSISSHJobSubmission__isset __isset;
-
-  void __set_jobSubmissionDataID(const std::string& val) {
-    jobSubmissionDataID = val;
+  void __set_jobSubmissionInterfaceId(const std::string& val) {
+    jobSubmissionInterfaceId = val;
   }
 
-  void __set_resourceJobManager(const ResourceJobManager::type val) {
-    resourceJobManager = val;
+  void __set_jobSubmissionProtocol(const JobSubmissionProtocol::type val) {
+    jobSubmissionProtocol = val;
   }
 
-  void __set_sshPort(const int32_t val) {
-    sshPort = val;
-    __isset.sshPort = true;
+  void __set_priorityOrder(const int32_t val) {
+    priorityOrder = val;
   }
 
-  void __set_exports(const std::set<std::string> & val) {
-    exports = val;
-    __isset.exports = true;
-  }
-
-  void __set_preJobCommands(const std::vector<std::string> & val) {
-    preJobCommands = val;
-    __isset.preJobCommands = true;
-  }
-
-  void __set_postJobCommands(const std::vector<std::string> & val) {
-    postJobCommands = val;
-    __isset.postJobCommands = true;
-  }
-
-  void __set_installedPath(const std::string& val) {
-    installedPath = val;
-    __isset.installedPath = true;
-  }
-
-  void __set_monitorMode(const std::string& val) {
-    monitorMode = val;
-    __isset.monitorMode = true;
-  }
-
-  bool operator == (const GSISSHJobSubmission & rhs) const
+  bool operator == (const JobSubmissionInterface & rhs) const
   {
-    if (!(jobSubmissionDataID == rhs.jobSubmissionDataID))
+    if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
       return false;
-    if (!(resourceJobManager == rhs.resourceJobManager))
+    if (!(jobSubmissionProtocol == rhs.jobSubmissionProtocol))
       return false;
-    if (__isset.sshPort != rhs.__isset.sshPort)
-      return false;
-    else if (__isset.sshPort && !(sshPort == rhs.sshPort))
-      return false;
-    if (__isset.exports != rhs.__isset.exports)
-      return false;
-    else if (__isset.exports && !(exports == rhs.exports))
-      return false;
-    if (__isset.preJobCommands != rhs.__isset.preJobCommands)
-      return false;
-    else if (__isset.preJobCommands && !(preJobCommands == rhs.preJobCommands))
-      return false;
-    if (__isset.postJobCommands != rhs.__isset.postJobCommands)
-      return false;
-    else if (__isset.postJobCommands && !(postJobCommands == rhs.postJobCommands))
-      return false;
-    if (__isset.installedPath != rhs.__isset.installedPath)
-      return false;
-    else if (__isset.installedPath && !(installedPath == rhs.installedPath))
-      return false;
-    if (__isset.monitorMode != rhs.__isset.monitorMode)
-      return false;
-    else if (__isset.monitorMode && !(monitorMode == rhs.monitorMode))
+    if (!(priorityOrder == rhs.priorityOrder))
       return false;
     return true;
   }
-  bool operator != (const GSISSHJobSubmission &rhs) const {
+  bool operator != (const JobSubmissionInterface &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const GSISSHJobSubmission & ) const;
+  bool operator < (const JobSubmissionInterface & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-void swap(GSISSHJobSubmission &a, GSISSHJobSubmission &b);
+void swap(JobSubmissionInterface &a, JobSubmissionInterface &b);
+
+
+class DataMovementInterface {
+ public:
+
+  static const char* ascii_fingerprint; // = "A0A4DD7B8243FB842E64EAC6E5DA6C7B";
+  static const uint8_t binary_fingerprint[16]; // = {0xA0,0xA4,0xDD,0x7B,0x82,0x43,0xFB,0x84,0x2E,0x64,0xEA,0xC6,0xE5,0xDA,0x6C,0x7B};
+
+  DataMovementInterface() : dataMovementInterfaceId(), dataMovementProtocol((DataMovementProtocol::type)0), priorityOrder(0) {
+  }
+
+  virtual ~DataMovementInterface() throw() {}
+
+  std::string dataMovementInterfaceId;
+  DataMovementProtocol::type dataMovementProtocol;
+  int32_t priorityOrder;
+
+  void __set_dataMovementInterfaceId(const std::string& val) {
+    dataMovementInterfaceId = val;
+  }
+
+  void __set_dataMovementProtocol(const DataMovementProtocol::type val) {
+    dataMovementProtocol = val;
+  }
+
+  void __set_priorityOrder(const int32_t val) {
+    priorityOrder = val;
+  }
+
+  bool operator == (const DataMovementInterface & rhs) const
+  {
+    if (!(dataMovementInterfaceId == rhs.dataMovementInterfaceId))
+      return false;
+    if (!(dataMovementProtocol == rhs.dataMovementProtocol))
+      return false;
+    if (!(priorityOrder == rhs.priorityOrder))
+      return false;
+    return true;
+  }
+  bool operator != (const DataMovementInterface &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const DataMovementInterface & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(DataMovementInterface &a, DataMovementInterface &b);
 
 typedef struct _ComputeResourceDescription__isset {
-  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), preferredJobSubmissionProtocol(false) {}
+  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), computeResourceDescription(false), resourceJobManager(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovemenetInterfaces(false) {}
   bool hostAliases;
   bool ipAddresses;
-  bool resourceDescription;
-  bool preferredJobSubmissionProtocol;
+  bool computeResourceDescription;
+  bool resourceJobManager;
+  bool batchQueues;
+  bool fileSystems;
+  bool jobSubmissionInterfaces;
+  bool dataMovemenetInterfaces;
 } _ComputeResourceDescription__isset;
 
 class ComputeResourceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "A31E9EF4FF0C9ADE9027FD5C59A96555";
-  static const uint8_t binary_fingerprint[16]; // = {0xA3,0x1E,0x9E,0xF4,0xFF,0x0C,0x9A,0xDE,0x90,0x27,0xFD,0x5C,0x59,0xA9,0x65,0x55};
+  static const char* ascii_fingerprint; // = "ADC1452A60F79D933D0EE4B9893AD048";
+  static const uint8_t binary_fingerprint[16]; // = {0xAD,0xC1,0x45,0x2A,0x60,0xF7,0x9D,0x93,0x3D,0x0E,0xE4,0xB9,0x89,0x3A,0xD0,0x48};
 
-  ComputeResourceDescription() : isEmpty(false), resourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), preferredJobSubmissionProtocol() {
+  ComputeResourceDescription() : isEmpty(false), computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), computeResourceDescription(), resourceJobManager((ResourceJobManager::type)0) {
   }
 
   virtual ~ComputeResourceDescription() throw() {}
 
   bool isEmpty;
-  std::string resourceId;
+  std::string computeResourceId;
   std::string hostName;
   std::set<std::string>  hostAliases;
   std::set<std::string>  ipAddresses;
-  std::string resourceDescription;
-  std::string preferredJobSubmissionProtocol;
-  std::map<std::string, JobSubmissionProtocol::type>  jobSubmissionProtocols;
-  std::map<std::string, DataMovementProtocol::type>  dataMovementProtocols;
+  std::string computeResourceDescription;
+  ResourceJobManager::type resourceJobManager;
+  std::vector<BatchQueue>  batchQueues;
+  std::map<FileSystems::type, std::string>  fileSystems;
+  std::vector<JobSubmissionInterface>  jobSubmissionInterfaces;
+  std::vector<DataMovementInterface>  dataMovemenetInterfaces;
 
   _ComputeResourceDescription__isset __isset;
 
@@ -450,8 +691,8 @@ class ComputeResourceDescription {
     isEmpty = val;
   }
 
-  void __set_resourceId(const std::string& val) {
-    resourceId = val;
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
   }
 
   void __set_hostName(const std::string& val) {
@@ -468,29 +709,41 @@ class ComputeResourceDescription {
     __isset.ipAddresses = true;
   }
 
-  void __set_resourceDescription(const std::string& val) {
-    resourceDescription = val;
-    __isset.resourceDescription = true;
+  void __set_computeResourceDescription(const std::string& val) {
+    computeResourceDescription = val;
+    __isset.computeResourceDescription = true;
   }
 
-  void __set_preferredJobSubmissionProtocol(const std::string& val) {
-    preferredJobSubmissionProtocol = val;
-    __isset.preferredJobSubmissionProtocol = true;
+  void __set_resourceJobManager(const ResourceJobManager::type val) {
+    resourceJobManager = val;
+    __isset.resourceJobManager = true;
   }
 
-  void __set_jobSubmissionProtocols(const std::map<std::string, JobSubmissionProtocol::type> & val) {
-    jobSubmissionProtocols = val;
+  void __set_batchQueues(const std::vector<BatchQueue> & val) {
+    batchQueues = val;
+    __isset.batchQueues = true;
   }
 
-  void __set_dataMovementProtocols(const std::map<std::string, DataMovementProtocol::type> & val) {
-    dataMovementProtocols = val;
+  void __set_fileSystems(const std::map<FileSystems::type, std::string> & val) {
+    fileSystems = val;
+    __isset.fileSystems = true;
+  }
+
+  void __set_jobSubmissionInterfaces(const std::vector<JobSubmissionInterface> & val) {
+    jobSubmissionInterfaces = val;
+    __isset.jobSubmissionInterfaces = true;
+  }
+
+  void __set_dataMovemenetInterfaces(const std::vector<DataMovementInterface> & val) {
+    dataMovemenetInterfaces = val;
+    __isset.dataMovemenetInterfaces = true;
   }
 
   bool operator == (const ComputeResourceDescription & rhs) const
   {
     if (!(isEmpty == rhs.isEmpty))
       return false;
-    if (!(resourceId == rhs.resourceId))
+    if (!(computeResourceId == rhs.computeResourceId))
       return false;
     if (!(hostName == rhs.hostName))
       return false;
@@ -502,17 +755,29 @@ class ComputeResourceDescription {
       return false;
     else if (__isset.ipAddresses && !(ipAddresses == rhs.ipAddresses))
       return false;
-    if (__isset.resourceDescription != rhs.__isset.resourceDescription)
+    if (__isset.computeResourceDescription != rhs.__isset.computeResourceDescription)
       return false;
-    else if (__isset.resourceDescription && !(resourceDescription == rhs.resourceDescription))
+    else if (__isset.computeResourceDescription && !(computeResourceDescription == rhs.computeResourceDescription))
       return false;
-    if (__isset.preferredJobSubmissionProtocol != rhs.__isset.preferredJobSubmissionProtocol)
+    if (__isset.resourceJobManager != rhs.__isset.resourceJobManager)
       return false;
-    else if (__isset.preferredJobSubmissionProtocol && !(preferredJobSubmissionProtocol == rhs.preferredJobSubmissionProtocol))
+    else if (__isset.resourceJobManager && !(resourceJobManager == rhs.resourceJobManager))
       return false;
-    if (!(jobSubmissionProtocols == rhs.jobSubmissionProtocols))
+    if (__isset.batchQueues != rhs.__isset.batchQueues)
       return false;
-    if (!(dataMovementProtocols == rhs.dataMovementProtocols))
+    else if (__isset.batchQueues && !(batchQueues == rhs.batchQueues))
+      return false;
+    if (__isset.fileSystems != rhs.__isset.fileSystems)
+      return false;
+    else if (__isset.fileSystems && !(fileSystems == rhs.fileSystems))
+      return false;
+    if (__isset.jobSubmissionInterfaces != rhs.__isset.jobSubmissionInterfaces)
+      return false;
+    else if (__isset.jobSubmissionInterfaces && !(jobSubmissionInterfaces == rhs.jobSubmissionInterfaces))
+      return false;
+    if (__isset.dataMovemenetInterfaces != rhs.__isset.dataMovemenetInterfaces)
+      return false;
+    else if (__isset.dataMovemenetInterfaces && !(dataMovemenetInterfaces == rhs.dataMovemenetInterfaces))
       return false;
     return true;
   }
