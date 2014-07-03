@@ -41,12 +41,9 @@ use Airavata\Model\Workspace\Experiment\UserConfigurationData;
 use Airavata\Model\Workspace\Experiment\ComputationalResourceScheduling;
 use Airavata\Model\Workspace\Experiment\DataType;
 
-$transport = new TSocket($airavataconfig['AIRAVATA_SERVER'], $airavataconfig['AIRAVATA_PORT']);
-$transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
-
-$protocol = new TBinaryProtocol($transport);
-$transport->open();
-$airavataclient = new AiravataClient($protocol);
+include 'getAiravataClient.php';
+global $airavataclient;
+global $transport;
 
 try
 {
