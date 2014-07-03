@@ -119,7 +119,7 @@ enum SecurityProtocol {
  *
 */
 enum JobSubmissionProtocol {
-    LOCALHOST,
+    LOCAL,
     SSH,
     GSISSH,
     GRAM,
@@ -143,7 +143,7 @@ enum JobSubmissionProtocol {
  *
 */
 enum DataMovementProtocol {
-    LOCALHOST,
+    LOCAL,
     SCP,
     SFTP,
     GridFTP,
@@ -182,6 +182,34 @@ struct GridFTPDataMovement {
 }
 
 /**
+ * Locally Fork Jobs as OS processes
+ *
+ * alternativeSSHHostName:
+ *  If the login to ssh is different than the hostname itself, specify it here
+ *
+ * sshPort:
+ *  If a non-defualt port needs to used, specify it.
+*/
+struct LOCALSubmission {
+    1: required string jobSubmissionInterfaceId = DEFAULT_ID,
+    3: required ResourceJobManager resourceJobManager,
+    6: optional string monitoringMechanism
+}
+
+/**
+ * LOCAL
+ *
+ * alternativeSCPHostName:
+ *  If the login to scp is different than the hostname itself, specify it here
+ *
+ * sshPort:
+ *  If a non-defualt port needs to used, specify it.
+*/
+struct LOCALDataMovement {
+    1: required string dataMovementInterfaceId = DEFAULT_ID,
+}
+
+/**
  * Authenticate using Secured Shell
  *
  * alternativeSSHHostName:
@@ -192,10 +220,11 @@ struct GridFTPDataMovement {
 */
 struct SSHJobSubmission {
     1: required string jobSubmissionInterfaceId = DEFAULT_ID,
-    2: required ResourceJobManager resourceJobManager,
-    3: optional string alternativeSSHHostName,
-    4: optional i32 sshPort = 22,
-    5: optional string monitoringMechanism
+    2: required SecurityProtocol securityProtocol,
+    3: required ResourceJobManager resourceJobManager,
+    4: optional string alternativeSSHHostName,
+    5: optional i32 sshPort = 22,
+    6: optional string monitoringMechanism
 }
 
 struct GlobusJobSubmission {
