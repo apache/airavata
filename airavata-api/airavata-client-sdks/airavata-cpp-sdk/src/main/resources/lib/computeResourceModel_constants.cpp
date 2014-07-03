@@ -4,13 +4,13 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#include "computeHostModel_constants.h"
+#include "computeResourceModel_constants.h"
 
 
 
-const computeHostModelConstants g_computeHostModel_constants;
+const computeResourceModelConstants g_computeResourceModel_constants;
 
-computeHostModelConstants::computeHostModelConstants() {
+computeResourceModelConstants::computeResourceModelConstants() {
   DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS";
 
 }
