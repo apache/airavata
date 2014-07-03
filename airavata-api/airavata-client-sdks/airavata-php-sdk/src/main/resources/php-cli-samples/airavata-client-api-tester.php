@@ -50,6 +50,7 @@ $transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
 */
 $transport = new TSocket('gw127.iu.xsede.org', 8930);
 $transport->setRecvTimeout(20000);
+$transport->setSendTimeout(20000);
 $protocol = new TBinaryProtocol($transport);
 $transport->open();
 $airavataclient = new AiravataClient($protocol);

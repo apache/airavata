@@ -41,6 +41,7 @@ $airavataconfig = parse_ini_file("airavata-client-properties.ini");
 $transport = new TSocket($airavataconfig['APP_CATALOG_SERVER'], $airavataconfig['APP_CATALOG_PORT']);
 echo $airavataconfig['AIRAVATA_TIMEOUT']."\n";
 $transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
+$transport->setSendTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
 
 $protocol = new TBinaryProtocol($transport);
 
