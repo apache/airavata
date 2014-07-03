@@ -51,6 +51,7 @@ struct ComputeResourcePreference {
     2: required bool overridebyAiravata = 1,
     3: optional string preferredJobSubmissionProtocol,
     4: optional string preferredDataMovementProtocol,
+    5: optional string preferredBatchQueue,
     5: optional string scratchLocation,
     6: optional string allocationProjectNumber
 }
