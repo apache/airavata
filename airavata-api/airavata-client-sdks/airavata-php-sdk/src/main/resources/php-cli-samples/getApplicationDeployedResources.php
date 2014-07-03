@@ -35,12 +35,9 @@ use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
-$transport = new TSocket($airavataconfig['AIRAVATA_SERVER'], $airavataconfig['AIRAVATA_PORT']);
-$transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
-
-$protocol = new TBinaryProtocol($transport);
-$transport->open();
-$airavataclient = new AiravataClient($protocol);
+include 'getAiravataClient.php';
+global $airavataclient;
+global $transport;
 
 
 

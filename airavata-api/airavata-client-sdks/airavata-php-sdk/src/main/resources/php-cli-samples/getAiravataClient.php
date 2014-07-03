@@ -20,7 +20,6 @@ require_once $GLOBALS['THRIFT_ROOT'] . 'StringFunc/Core.php';
 
 $GLOBALS['AIRAVATA_ROOT'] = $airavataconfig['AIRAVATA_PHP_STUBS_DIR'];
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Airavata.php';
-require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Experiment/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Error/Types.php';
 
@@ -33,43 +32,13 @@ use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
-include 'getAiravataClient.php';
-global $airavataclient;
-global $transport;
+$transport = new TSocket($airavataconfig['AIRAVATA_SERVER'], $airavataconfig['AIRAVATA_PORT']);
+$transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
+$transport->setSendTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
 
-try
-{
+$protocol = new TBinaryProtocol($transport);
+$transport->open();
+$airavataclient = new AiravataClient($protocol);
 
-   if ($argc != 2) {
-		echo 'php getAllExperimentsInProject.php <project_ID>';
-	}
-
-	else {
-	    $projectExperiments = $airavataclient->getAllExperimentsInProject($argv[1]);
-   	  echo '# of project experiments = ' . sizeof($projectExperiments) . '         <br><br>';
-    	  var_dump($projectExperiments);
-   }
-
-
-}
-catch (InvalidRequestException $ire)
-{
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
-}
-catch (AiravataClientException $ace)
-{
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
-}
-catch (AiravataSystemException $ase)
-{
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
-}
-
-
-
-
-
-$transport->close();
 
 ?>
-
