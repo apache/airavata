@@ -21,44 +21,44 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "GATEWAY_PROFILE")
-public class GatewayProfile implements Serializable {
-    @Id
-    @Column(name = "GATEWAY_ID")
-    private String gatewayID;
-    @Column(name = "GATEWAY_NAME")
-    private String gatewayName;
-    @Column(name = "GATEWAY_DESC")
-    private String gatewayDesc;
+public class ComputeResourcePreferencePK implements Serializable {
+    private String gatewayId;
+    private String resourceId;
 
-    public String getGatewayID() {
-        return gatewayID;
+    public ComputeResourcePreferencePK(String gatewayId, String resourceId) {
+        this.gatewayId = gatewayId;
+        this.resourceId = resourceId;
     }
 
-    public void setGatewayID(String gatewayID) {
-        this.gatewayID = gatewayID;
+    public ComputeResourcePreferencePK() {
+        ;
     }
 
-    public String getGatewayName() {
-        return gatewayName;
+    @Override
+    public boolean equals(Object o) {
+        return false;
     }
 
-    public void setGatewayName(String gatewayName) {
-        this.gatewayName = gatewayName;
+    @Override
+    public int hashCode() {
+        return 1;
     }
 
-    public String getGatewayDesc() {
-        return gatewayDesc;
+    public String getGatewayId() {
+        return gatewayId;
     }
 
-    public void setGatewayDesc(String gatewayDesc) {
-        this.gatewayDesc = gatewayDesc;
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 }

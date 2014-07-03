@@ -1,0 +1,376 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+package org.apache.aiaravata.application.catalog.data.resources;
+
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.model.ComputeResource;
+import org.apache.aiaravata.application.catalog.data.model.ComputeResourcePreference;
+import org.apache.aiaravata.application.catalog.data.model.ComputeResourcePreferencePK;
+import org.apache.aiaravata.application.catalog.data.model.GatewayProfile;
+import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
+import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
+import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class ComputeHostPreferenceResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(ComputeHostPreferenceResource.class);
+    private String gatewayId;
+    private String resourceId;
+    private boolean overrideByAiravata;
+    private String preferredJobProtocol;
+    private String preferedDMProtocol;
+    private String batchQueue;
+    private String scratchLocation;
+    private String projectNumber;
+
+    private GatewayProfileResource gatewayProfile;
+    private ComputeHostResource computeHostResource;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public boolean getOverrideByAiravata() {
+        return overrideByAiravata;
+    }
+
+    public void setOverrideByAiravata(boolean overrideByAiravata) {
+        this.overrideByAiravata = overrideByAiravata;
+    }
+
+    public String getPreferredJobProtocol() {
+        return preferredJobProtocol;
+    }
+
+    public void setPreferredJobProtocol(String preferredJobProtocol) {
+        this.preferredJobProtocol = preferredJobProtocol;
+    }
+
+    public String getPreferedDMProtocol() {
+        return preferedDMProtocol;
+    }
+
+    public void setPreferedDMProtocol(String preferedDMProtocol) {
+        this.preferedDMProtocol = preferedDMProtocol;
+    }
+
+    public String getBatchQueue() {
+        return batchQueue;
+    }
+
+    public void setBatchQueue(String batchQueue) {
+        this.batchQueue = batchQueue;
+    }
+
+    public String getScratchLocation() {
+        return scratchLocation;
+    }
+
+    public void setScratchLocation(String scratchLocation) {
+        this.scratchLocation = scratchLocation;
+    }
+
+    public String getProjectNumber() {
+        return projectNumber;
+    }
+
+    public void setProjectNumber(String projectNumber) {
+        this.projectNumber = projectNumber;
+    }
+
+    public GatewayProfileResource getGatewayProfile() {
+        return gatewayProfile;
+    }
+
+    public void setGatewayProfile(GatewayProfileResource gatewayProfile) {
+        this.gatewayProfile = gatewayProfile;
+    }
+
+    public ComputeHostResource getComputeHostResource() {
+        return computeHostResource;
+    }
+
+    public void setComputeHostResource(ComputeHostResource computeHostResource) {
+        this.computeHostResource = computeHostResource;
+    }
+
+    @Override
+    public void remove(Object identifier) throws AppCatalogException {
+        HashMap<String, String> ids;
+        if (identifier instanceof Map) {
+            ids = (HashMap) identifier;
+        } else {
+            logger.error("Identifier should be a map with the field name and it's value");
+            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+        }
+
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(COMPUTE_RESOURCE_PREFERENCE);
+            generator.setParameter(ComputeResourcePreferenceConstants.RESOURCE_ID, ids.get(ComputeResourcePreferenceConstants.RESOURCE_ID));
+            generator.setParameter(ComputeResourcePreferenceConstants.GATEWAY_ID, ids.get(ComputeResourcePreferenceConstants.GATEWAY_ID));
+
+            Query q = generator.deleteQuery(em);
+            q.executeUpdate();
+            em.getTransaction().commit();
+            em.close();
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public Resource get(Object identifier) throws AppCatalogException {
+        HashMap<String, String> ids;
+        if (identifier instanceof Map) {
+            ids = (HashMap) identifier;
+        } else {
+            logger.error("Identifier should be a map with the field name and it's value");
+            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+        }
+
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(COMPUTE_RESOURCE_PREFERENCE);
+            generator.setParameter(ComputeResourcePreferenceConstants.GATEWAY_ID, ids.get(ComputeResourcePreferenceConstants.GATEWAY_ID));
+            generator.setParameter(ComputeResourcePreferenceConstants.RESOURCE_ID, ids.get(ComputeResourcePreferenceConstants.RESOURCE_ID));
+            Query q = generator.selectQuery(em);
+            ComputeResourcePreference preference = (ComputeResourcePreference) q.getSingleResult();
+            ComputeHostPreferenceResource preferenceResource =
+                    (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
+            em.getTransaction().commit();
+            em.close();
+            return preferenceResource;
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public List<Resource> get(String fieldName, Object value) throws AppCatalogException {
+        List<Resource> preferenceResourceList = new ArrayList<Resource>();
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(COMPUTE_RESOURCE_PREFERENCE);
+            List results;
+            if (fieldName.equals(ComputeResourcePreferenceConstants.RESOURCE_ID)) {
+                generator.setParameter(ComputeResourcePreferenceConstants.RESOURCE_ID, value);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        ComputeResourcePreference preference = (ComputeResourcePreference) result;
+                        ComputeHostPreferenceResource preferenceResource =
+                                (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
+                        preferenceResourceList.add(preferenceResource);
+                    }
+                }
+            } else if (fieldName.equals(ComputeResourcePreferenceConstants.GATEWAY_ID)) {
+                generator.setParameter(ComputeResourcePreferenceConstants.GATEWAY_ID, value);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        ComputeResourcePreference preference = (ComputeResourcePreference) result;
+                        ComputeHostPreferenceResource preferenceResource =
+                                (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
+                        preferenceResourceList.add(preferenceResource);
+                    }
+                }
+            } else if (fieldName.equals(ComputeResourcePreferenceConstants.PREFERED_JOB_SUB_PROTOCOL)) {
+                generator.setParameter(ComputeResourcePreferenceConstants.PREFERED_JOB_SUB_PROTOCOL, value);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        ComputeResourcePreference preference = (ComputeResourcePreference) result;
+                        ComputeHostPreferenceResource preferenceResource =
+                                (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
+                        preferenceResourceList.add(preferenceResource);
+                    }
+                }
+            } else if (fieldName.equals(ComputeResourcePreferenceConstants.PREFERED_DATA_MOVE_PROTOCOL)) {
+                generator.setParameter(ComputeResourcePreferenceConstants.PREFERED_DATA_MOVE_PROTOCOL, value);
+                q = generator.selectQuery(em);
+                results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        ComputeResourcePreference preference = (ComputeResourcePreference) result;
+                        ComputeHostPreferenceResource preferenceResource =
+                                (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
+                        preferenceResourceList.add(preferenceResource);
+                    }
+                }
+            } else {
+                em.getTransaction().commit();
+                em.close();
+                logger.error("Unsupported field name for Compute host preference Resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported field name for Compute host preference Resource.");
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return preferenceResourceList;
+    }
+
+    @Override
+    public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
+        logger.error("Unsupported for objects with a composite identifier");
+        throw new AppCatalogException("Unsupported for objects with a composite identifier");
+    }
+
+    @Override
+    public void save() throws AppCatalogException {
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            ComputeResourcePreference existingPreference = em.find(ComputeResourcePreference.class, new ComputeResourcePreferencePK(gatewayId, resourceId));
+            em.close();
+
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            ComputeResource computeResource = em.find(ComputeResource.class, resourceId);
+            GatewayProfile gatewayProf = em.find(GatewayProfile.class, gatewayId);
+            if (existingPreference != null) {
+                existingPreference.setResourceId(resourceId);
+                existingPreference.setGatewayId(gatewayId);
+                existingPreference.setComputeHostResource(computeResource);
+                existingPreference.setGatewayProfile(gatewayProf);
+                existingPreference.setOverrideByAiravata(overrideByAiravata);
+                existingPreference.setPreferedJobSubmissionProtocol(preferredJobProtocol);
+                existingPreference.setPreferedDataMoveProtocol(preferedDMProtocol);
+                existingPreference.setScratchLocation(scratchLocation);
+                existingPreference.setProjectNumber(projectNumber);
+                em.merge(existingPreference);
+            } else {
+                ComputeResourcePreference resourcePreference = new ComputeResourcePreference();
+                resourcePreference.setResourceId(resourceId);
+                resourcePreference.setGatewayId(gatewayId);
+                resourcePreference.setComputeHostResource(computeResource);
+                resourcePreference.setGatewayProfile(gatewayProf);
+                resourcePreference.setOverrideByAiravata(overrideByAiravata);
+                resourcePreference.setPreferedJobSubmissionProtocol(preferredJobProtocol);
+                resourcePreference.setPreferedDataMoveProtocol(preferedDMProtocol);
+                resourcePreference.setScratchLocation(scratchLocation);
+                resourcePreference.setProjectNumber(projectNumber);
+                em.persist(resourcePreference);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    @Override
+    public boolean isExists(Object identifier) throws AppCatalogException {
+        HashMap<String, String> ids;
+        if (identifier instanceof Map) {
+            ids = (HashMap) identifier;
+        } else {
+            logger.error("Identifier should be a map with the field name and it's value");
+            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
+        }
+
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            ComputeResourcePreference existingPreference = em.find(ComputeResourcePreference.class,
+                    new ComputeResourcePreferencePK(ids.get(ComputeResourcePreferenceConstants.GATEWAY_ID),
+                            ids.get(ComputeResourcePreferenceConstants.RESOURCE_ID)));
+            em.close();
+            return existingPreference != null;
+        }catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+}

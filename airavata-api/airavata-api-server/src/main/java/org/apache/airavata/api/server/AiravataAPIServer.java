@@ -67,10 +67,10 @@ public class AiravataAPIServer implements IServer{
 			TServerTransport serverTransport;
 			
 			if(serverHost == null){
-				serverTransport = new TServerSocket(serverPort);
+				serverTransport = new TServerSocket(serverPort, 10000);
 			}else{
 				InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-				serverTransport = new TServerSocket(inetSocketAddress);
+				serverTransport = new TServerSocket(inetSocketAddress, 10000);
 			}
 			
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
