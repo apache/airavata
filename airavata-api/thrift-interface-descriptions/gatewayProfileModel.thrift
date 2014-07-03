@@ -26,8 +26,8 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 /**
  * Resource Preferences for each of the gateway
  *
- * gatewayID:
- *   Unique identifier for the gateway assigned by Airavata
+ * computeResourceId:
+ *   Corelate the preference for compute resource to
  *
  * gatewayName:
  *   Name of the Gateway.
@@ -48,12 +48,12 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 */
 struct ComputeResourcePreference {
     1: required string computeResourceId,
-    2: required string preferredJobSubmissionProtocol,
-    3: required string preferredDataMovementProtocol,
-    4: required string parentScratchLocation,
-    5: optional string allocationProjectNumber
+    2: required bool overridebyAiravata = 1,
+    3: optional string preferredJobSubmissionProtocol,
+    4: optional string preferredDataMovementProtocol,
+    5: optional string scratchLocation,
+    6: optional string allocationProjectNumber
 }
-
 
 /**
  * Gateway Profile
