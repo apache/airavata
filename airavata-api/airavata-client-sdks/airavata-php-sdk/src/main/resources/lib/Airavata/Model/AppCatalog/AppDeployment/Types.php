@@ -270,7 +270,7 @@ class ApplicationDeploymentDescription {
   public $computeHostId = null;
   public $executablePath = null;
   public $appDeploymentDescription = null;
-  public $moduleLoadCmd = null;
+  public $moduleLoadCmds = null;
   public $libPrependPaths = null;
   public $libAppendPaths = null;
   public $setEnvironment = null;
@@ -303,8 +303,12 @@ class ApplicationDeploymentDescription {
           'type' => TType::STRING,
           ),
         7 => array(
-          'var' => 'moduleLoadCmd',
-          'type' => TType::STRING,
+          'var' => 'moduleLoadCmds',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
           ),
         8 => array(
           'var' => 'libPrependPaths',
@@ -354,8 +358,8 @@ class ApplicationDeploymentDescription {
       if (isset($vals['appDeploymentDescription'])) {
         $this->appDeploymentDescription = $vals['appDeploymentDescription'];
       }
-      if (isset($vals['moduleLoadCmd'])) {
-        $this->moduleLoadCmd = $vals['moduleLoadCmd'];
+      if (isset($vals['moduleLoadCmds'])) {
+        $this->moduleLoadCmds = $vals['moduleLoadCmds'];
       }
       if (isset($vals['libPrependPaths'])) {
         $this->libPrependPaths = $vals['libPrependPaths'];
@@ -431,8 +435,18 @@ class ApplicationDeploymentDescription {
           }
           break;
         case 7:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->moduleLoadCmd);
+          if ($ftype == TType::LST) {
+            $this->moduleLoadCmds = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $xfer += $input->readString($elem5);
+              $this->moduleLoadCmds []= $elem5;
+            }
+            $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -440,15 +454,15 @@ class ApplicationDeploymentDescription {
         case 8:
           if ($ftype == TType::LST) {
             $this->libPrependPaths = array();
-            $_size0 = 0;
-            $_etype3 = 0;
-            $xfer += $input->readListBegin($_etype3, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            $_size6 = 0;
+            $_etype9 = 0;
+            $xfer += $input->readListBegin($_etype9, $_size6);
+            for ($_i10 = 0; $_i10 < $_size6; ++$_i10)
             {
-              $elem5 = null;
-              $elem5 = new \Airavata\Model\AppCatalog\AppDeployment\SetEnvPaths();
-              $xfer += $elem5->read($input);
-              $this->libPrependPaths []= $elem5;
+              $elem11 = null;
+              $elem11 = new \Airavata\Model\AppCatalog\AppDeployment\SetEnvPaths();
+              $xfer += $elem11->read($input);
+              $this->libPrependPaths []= $elem11;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -458,15 +472,15 @@ class ApplicationDeploymentDescription {
         case 9:
           if ($ftype == TType::LST) {
             $this->libAppendPaths = array();
-            $_size6 = 0;
-            $_etype9 = 0;
-            $xfer += $input->readListBegin($_etype9, $_size6);
-            for ($_i10 = 0; $_i10 < $_size6; ++$_i10)
+            $_size12 = 0;
+            $_etype15 = 0;
+            $xfer += $input->readListBegin($_etype15, $_size12);
+            for ($_i16 = 0; $_i16 < $_size12; ++$_i16)
             {
-              $elem11 = null;
-              $elem11 = new \Airavata\Model\AppCatalog\AppDeployment\SetEnvPaths();
-              $xfer += $elem11->read($input);
-              $this->libAppendPaths []= $elem11;
+              $elem17 = null;
+              $elem17 = new \Airavata\Model\AppCatalog\AppDeployment\SetEnvPaths();
+              $xfer += $elem17->read($input);
+              $this->libAppendPaths []= $elem17;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -476,15 +490,15 @@ class ApplicationDeploymentDescription {
         case 10:
           if ($ftype == TType::LST) {
             $this->setEnvironment = array();
-            $_size12 = 0;
-            $_etype15 = 0;
-            $xfer += $input->readListBegin($_etype15, $_size12);
-            for ($_i16 = 0; $_i16 < $_size12; ++$_i16)
+            $_size18 = 0;
+            $_etype21 = 0;
+            $xfer += $input->readListBegin($_etype21, $_size18);
+            for ($_i22 = 0; $_i22 < $_size18; ++$_i22)
             {
-              $elem17 = null;
-              $elem17 = new \Airavata\Model\AppCatalog\AppDeployment\SetEnvPaths();
-              $xfer += $elem17->read($input);
-              $this->setEnvironment []= $elem17;
+              $elem23 = null;
+              $elem23 = new \Airavata\Model\AppCatalog\AppDeployment\SetEnvPaths();
+              $xfer += $elem23->read($input);
+              $this->setEnvironment []= $elem23;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -534,9 +548,21 @@ class ApplicationDeploymentDescription {
       $xfer += $output->writeString($this->appDeploymentDescription);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->moduleLoadCmd !== null) {
-      $xfer += $output->writeFieldBegin('moduleLoadCmd', TType::STRING, 7);
-      $xfer += $output->writeString($this->moduleLoadCmd);
+    if ($this->moduleLoadCmds !== null) {
+      if (!is_array($this->moduleLoadCmds)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('moduleLoadCmds', TType::LST, 7);
+      {
+        $output->writeListBegin(TType::STRING, count($this->moduleLoadCmds));
+        {
+          foreach ($this->moduleLoadCmds as $iter24)
+          {
+            $xfer += $output->writeString($iter24);
+          }
+        }
+        $output->writeListEnd();
+      }
       $xfer += $output->writeFieldEnd();
     }
     if ($this->libPrependPaths !== null) {
@@ -547,9 +573,9 @@ class ApplicationDeploymentDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->libPrependPaths));
         {
-          foreach ($this->libPrependPaths as $iter18)
+          foreach ($this->libPrependPaths as $iter25)
           {
-            $xfer += $iter18->write($output);
+            $xfer += $iter25->write($output);
           }
         }
         $output->writeListEnd();
@@ -564,9 +590,9 @@ class ApplicationDeploymentDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->libAppendPaths));
         {
-          foreach ($this->libAppendPaths as $iter19)
+          foreach ($this->libAppendPaths as $iter26)
           {
-            $xfer += $iter19->write($output);
+            $xfer += $iter26->write($output);
           }
         }
         $output->writeListEnd();
@@ -581,9 +607,9 @@ class ApplicationDeploymentDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->setEnvironment));
         {
-          foreach ($this->setEnvironment as $iter20)
+          foreach ($this->setEnvironment as $iter27)
           {
-            $xfer += $iter20->write($output);
+            $xfer += $iter27->write($output);
           }
         }
         $output->writeListEnd();

@@ -52,8 +52,8 @@ struct ComputeResourcePreference {
     3: optional string preferredJobSubmissionProtocol,
     4: optional string preferredDataMovementProtocol,
     5: optional string preferredBatchQueue,
-    5: optional string scratchLocation,
-    6: optional string allocationProjectNumber
+    6: optional string scratchLocation,
+    7: optional string allocationProjectNumber
 }
 
 /**

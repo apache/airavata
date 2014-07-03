@@ -57,7 +57,6 @@ try
         $appModuleVersion = $argv[2];
         $appModuleDescription = $argv[3];
 
-
         $appModule = new ApplicationModule();
         $appModule->appModuleName = $appModuleName;
         $appModule->appModuleVersion = $appModuleVersion;

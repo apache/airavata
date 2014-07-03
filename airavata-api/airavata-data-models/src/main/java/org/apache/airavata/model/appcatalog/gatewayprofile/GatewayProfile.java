@@ -51,10 +51,11 @@ import org.slf4j.LoggerFactory;
 /**
  * Gateway Profile
  * 
- * resourceId:
+ * gatewayID:
+ *   Unique identifier for the gateway assigned by Airavata
  * 
- * hostName:
- *   Fully Qualified Host Name.
+ * gatewayName:
+ *   Name of the Gateway.
  * 
  * ipAddress:
  *   IP Addresse of the Hostname.
@@ -76,7 +77,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayID", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField GATEWAY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayName", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField GATEWAY_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayDescription", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField PREFERED_RESOURCE_FIELD_DESC = new org.apache.thrift.protocol.TField("preferedResource", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_PREFERENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourcePreferences", org.apache.thrift.protocol.TType.LIST, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -87,14 +88,14 @@ import org.slf4j.LoggerFactory;
   private String gatewayID; // required
   private String gatewayName; // required
   private String gatewayDescription; // optional
-  private String preferedResource; // optional
+  private List<ComputeResourcePreference> computeResourcePreferences; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     GATEWAY_ID((short)1, "gatewayID"),
     GATEWAY_NAME((short)2, "gatewayName"),
     GATEWAY_DESCRIPTION((short)3, "gatewayDescription"),
-    PREFERED_RESOURCE((short)4, "preferedResource");
+    COMPUTE_RESOURCE_PREFERENCES((short)4, "computeResourcePreferences");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -115,8 +116,8 @@ import org.slf4j.LoggerFactory;
           return GATEWAY_NAME;
         case 3: // GATEWAY_DESCRIPTION
           return GATEWAY_DESCRIPTION;
-        case 4: // PREFERED_RESOURCE
-          return PREFERED_RESOURCE;
+        case 4: // COMPUTE_RESOURCE_PREFERENCES
+          return COMPUTE_RESOURCE_PREFERENCES;
         default:
           return null;
       }
@@ -157,7 +158,7 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.GATEWAY_DESCRIPTION,_Fields.PREFERED_RESOURCE};
+  private _Fields optionals[] = {_Fields.GATEWAY_DESCRIPTION,_Fields.COMPUTE_RESOURCE_PREFERENCES};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -167,8 +168,9 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GATEWAY_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("gatewayDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.PREFERED_RESOURCE, new org.apache.thrift.meta_data.FieldMetaData("preferedResource", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.COMPUTE_RESOURCE_PREFERENCES, new org.apache.thrift.meta_data.FieldMetaData("computeResourcePreferences", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ComputeResourcePreference.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GatewayProfile.class, metaDataMap);
   }
@@ -200,8 +202,12 @@ import org.slf4j.LoggerFactory;
     if (other.isSetGatewayDescription()) {
       this.gatewayDescription = other.gatewayDescription;
     }
-    if (other.isSetPreferedResource()) {
-      this.preferedResource = other.preferedResource;
+    if (other.isSetComputeResourcePreferences()) {
+      List<ComputeResourcePreference> __this__computeResourcePreferences = new ArrayList<ComputeResourcePreference>(other.computeResourcePreferences.size());
+      for (ComputeResourcePreference other_element : other.computeResourcePreferences) {
+        __this__computeResourcePreferences.add(new ComputeResourcePreference(other_element));
+      }
+      this.computeResourcePreferences = __this__computeResourcePreferences;
     }
   }
 
@@ -215,7 +221,7 @@ import org.slf4j.LoggerFactory;
 
     this.gatewayName = null;
     this.gatewayDescription = null;
-    this.preferedResource = null;
+    this.computeResourcePreferences = null;
   }
 
   public String getGatewayID() {
@@ -287,26 +293,41 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getPreferedResource() {
-    return this.preferedResource;
+  public int getComputeResourcePreferencesSize() {
+    return (this.computeResourcePreferences == null) ? 0 : this.computeResourcePreferences.size();
   }
 
-  public void setPreferedResource(String preferedResource) {
-    this.preferedResource = preferedResource;
+  public java.util.Iterator<ComputeResourcePreference> getComputeResourcePreferencesIterator() {
+    return (this.computeResourcePreferences == null) ? null : this.computeResourcePreferences.iterator();
   }
 
-  public void unsetPreferedResource() {
-    this.preferedResource = null;
+  public void addToComputeResourcePreferences(ComputeResourcePreference elem) {
+    if (this.computeResourcePreferences == null) {
+      this.computeResourcePreferences = new ArrayList<ComputeResourcePreference>();
+    }
+    this.computeResourcePreferences.add(elem);
   }
 
-  /** Returns true if field preferedResource is set (has been assigned a value) and false otherwise */
-  public boolean isSetPreferedResource() {
-    return this.preferedResource != null;
+  public List<ComputeResourcePreference> getComputeResourcePreferences() {
+    return this.computeResourcePreferences;
   }
 
-  public void setPreferedResourceIsSet(boolean value) {
+  public void setComputeResourcePreferences(List<ComputeResourcePreference> computeResourcePreferences) {
+    this.computeResourcePreferences = computeResourcePreferences;
+  }
+
+  public void unsetComputeResourcePreferences() {
+    this.computeResourcePreferences = null;
+  }
+
+  /** Returns true if field computeResourcePreferences is set (has been assigned a value) and false otherwise */
+  public boolean isSetComputeResourcePreferences() {
+    return this.computeResourcePreferences != null;
+  }
+
+  public void setComputeResourcePreferencesIsSet(boolean value) {
     if (!value) {
-      this.preferedResource = null;
+      this.computeResourcePreferences = null;
     }
   }
 
@@ -336,11 +357,11 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case PREFERED_RESOURCE:
+    case COMPUTE_RESOURCE_PREFERENCES:
       if (value == null) {
-        unsetPreferedResource();
+        unsetComputeResourcePreferences();
       } else {
-        setPreferedResource((String)value);
+        setComputeResourcePreferences((List<ComputeResourcePreference>)value);
       }
       break;
 
@@ -358,8 +379,8 @@ import org.slf4j.LoggerFactory;
     case GATEWAY_DESCRIPTION:
       return getGatewayDescription();
 
-    case PREFERED_RESOURCE:
-      return getPreferedResource();
+    case COMPUTE_RESOURCE_PREFERENCES:
+      return getComputeResourcePreferences();
 
     }
     throw new IllegalStateException();
@@ -378,8 +399,8 @@ import org.slf4j.LoggerFactory;
       return isSetGatewayName();
     case GATEWAY_DESCRIPTION:
       return isSetGatewayDescription();
-    case PREFERED_RESOURCE:
-      return isSetPreferedResource();
+    case COMPUTE_RESOURCE_PREFERENCES:
+      return isSetComputeResourcePreferences();
     }
     throw new IllegalStateException();
   }
@@ -424,12 +445,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_preferedResource = true && this.isSetPreferedResource();
-    boolean that_present_preferedResource = true && that.isSetPreferedResource();
-    if (this_present_preferedResource || that_present_preferedResource) {
-      if (!(this_present_preferedResource && that_present_preferedResource))
+    boolean this_present_computeResourcePreferences = true && this.isSetComputeResourcePreferences();
+    boolean that_present_computeResourcePreferences = true && that.isSetComputeResourcePreferences();
+    if (this_present_computeResourcePreferences || that_present_computeResourcePreferences) {
+      if (!(this_present_computeResourcePreferences && that_present_computeResourcePreferences))
         return false;
-      if (!this.preferedResource.equals(that.preferedResource))
+      if (!this.computeResourcePreferences.equals(that.computeResourcePreferences))
         return false;
     }
 
@@ -479,12 +500,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetPreferedResource()).compareTo(other.isSetPreferedResource());
+    lastComparison = Boolean.valueOf(isSetComputeResourcePreferences()).compareTo(other.isSetComputeResourcePreferences());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetPreferedResource()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.preferedResource, other.preferedResource);
+    if (isSetComputeResourcePreferences()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.computeResourcePreferences, other.computeResourcePreferences);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -534,13 +555,13 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
-    if (isSetPreferedResource()) {
+    if (isSetComputeResourcePreferences()) {
       if (!first) sb.append(", ");
-      sb.append("preferedResource:");
-      if (this.preferedResource == null) {
+      sb.append("computeResourcePreferences:");
+      if (this.computeResourcePreferences == null) {
         sb.append("null");
       } else {
-        sb.append(this.preferedResource);
+        sb.append(this.computeResourcePreferences);
       }
       first = false;
     }
@@ -619,10 +640,21 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // PREFERED_RESOURCE
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.preferedResource = iprot.readString();
-              struct.setPreferedResourceIsSet(true);
+          case 4: // COMPUTE_RESOURCE_PREFERENCES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.computeResourcePreferences = new ArrayList<ComputeResourcePreference>(_list0.size);
+                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                {
+                  ComputeResourcePreference _elem2;
+                  _elem2 = new ComputeResourcePreference();
+                  _elem2.read(iprot);
+                  struct.computeResourcePreferences.add(_elem2);
+                }
+                iprot.readListEnd();
+              }
+              struct.setComputeResourcePreferencesIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -657,10 +689,17 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.preferedResource != null) {
-        if (struct.isSetPreferedResource()) {
-          oprot.writeFieldBegin(PREFERED_RESOURCE_FIELD_DESC);
-          oprot.writeString(struct.preferedResource);
+      if (struct.computeResourcePreferences != null) {
+        if (struct.isSetComputeResourcePreferences()) {
+          oprot.writeFieldBegin(COMPUTE_RESOURCE_PREFERENCES_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.computeResourcePreferences.size()));
+            for (ComputeResourcePreference _iter3 : struct.computeResourcePreferences)
+            {
+              _iter3.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
           oprot.writeFieldEnd();
         }
       }
@@ -687,15 +726,21 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetGatewayDescription()) {
         optionals.set(0);
       }
-      if (struct.isSetPreferedResource()) {
+      if (struct.isSetComputeResourcePreferences()) {
         optionals.set(1);
       }
       oprot.writeBitSet(optionals, 2);
       if (struct.isSetGatewayDescription()) {
         oprot.writeString(struct.gatewayDescription);
       }
-      if (struct.isSetPreferedResource()) {
-        oprot.writeString(struct.preferedResource);
+      if (struct.isSetComputeResourcePreferences()) {
+        {
+          oprot.writeI32(struct.computeResourcePreferences.size());
+          for (ComputeResourcePreference _iter4 : struct.computeResourcePreferences)
+          {
+            _iter4.write(oprot);
+          }
+        }
       }
     }
 
@@ -712,8 +757,18 @@ import org.slf4j.LoggerFactory;
         struct.setGatewayDescriptionIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.preferedResource = iprot.readString();
-        struct.setPreferedResourceIsSet(true);
+        {
+          org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.computeResourcePreferences = new ArrayList<ComputeResourcePreference>(_list5.size);
+          for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+          {
+            ComputeResourcePreference _elem7;
+            _elem7 = new ComputeResourcePreference();
+            _elem7.read(iprot);
+            struct.computeResourcePreferences.add(_elem7);
+          }
+        }
+        struct.setComputeResourcePreferencesIsSet(true);
       }
     }
   }

@@ -215,8 +215,8 @@ void swap(ApplicationModule &a, ApplicationModule &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* ApplicationDeploymentDescription::ascii_fingerprint = "50C12617CDB84220D07D0920711332CF";
-const uint8_t ApplicationDeploymentDescription::binary_fingerprint[16] = {0x50,0xC1,0x26,0x17,0xCD,0xB8,0x42,0x20,0xD0,0x7D,0x09,0x20,0x71,0x13,0x32,0xCF};
+const char* ApplicationDeploymentDescription::ascii_fingerprint = "3A2FD6631F126C4A6D132FA8EEFDAD7E";
+const uint8_t ApplicationDeploymentDescription::binary_fingerprint[16] = {0x3A,0x2F,0xD6,0x63,0x1F,0x12,0x6C,0x4A,0x6D,0x13,0x2F,0xA8,0xEE,0xFD,0xAD,0x7E};
 
 uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -292,9 +292,21 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
         }
         break;
       case 7:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->moduleLoadCmd);
-          this->__isset.moduleLoadCmd = true;
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->moduleLoadCmds.clear();
+            uint32_t _size0;
+            ::apache::thrift::protocol::TType _etype3;
+            xfer += iprot->readListBegin(_etype3, _size0);
+            this->moduleLoadCmds.resize(_size0);
+            uint32_t _i4;
+            for (_i4 = 0; _i4 < _size0; ++_i4)
+            {
+              xfer += iprot->readString(this->moduleLoadCmds[_i4]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.moduleLoadCmds = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -303,14 +315,14 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->libPrependPaths.clear();
-            uint32_t _size0;
-            ::apache::thrift::protocol::TType _etype3;
-            xfer += iprot->readListBegin(_etype3, _size0);
-            this->libPrependPaths.resize(_size0);
-            uint32_t _i4;
-            for (_i4 = 0; _i4 < _size0; ++_i4)
+            uint32_t _size5;
+            ::apache::thrift::protocol::TType _etype8;
+            xfer += iprot->readListBegin(_etype8, _size5);
+            this->libPrependPaths.resize(_size5);
+            uint32_t _i9;
+            for (_i9 = 0; _i9 < _size5; ++_i9)
             {
-              xfer += this->libPrependPaths[_i4].read(iprot);
+              xfer += this->libPrependPaths[_i9].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -323,14 +335,14 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->libAppendPaths.clear();
-            uint32_t _size5;
-            ::apache::thrift::protocol::TType _etype8;
-            xfer += iprot->readListBegin(_etype8, _size5);
-            this->libAppendPaths.resize(_size5);
-            uint32_t _i9;
-            for (_i9 = 0; _i9 < _size5; ++_i9)
+            uint32_t _size10;
+            ::apache::thrift::protocol::TType _etype13;
+            xfer += iprot->readListBegin(_etype13, _size10);
+            this->libAppendPaths.resize(_size10);
+            uint32_t _i14;
+            for (_i14 = 0; _i14 < _size10; ++_i14)
             {
-              xfer += this->libAppendPaths[_i9].read(iprot);
+              xfer += this->libAppendPaths[_i14].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -343,14 +355,14 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->setEnvironment.clear();
-            uint32_t _size10;
-            ::apache::thrift::protocol::TType _etype13;
-            xfer += iprot->readListBegin(_etype13, _size10);
-            this->setEnvironment.resize(_size10);
-            uint32_t _i14;
-            for (_i14 = 0; _i14 < _size10; ++_i14)
+            uint32_t _size15;
+            ::apache::thrift::protocol::TType _etype18;
+            xfer += iprot->readListBegin(_etype18, _size15);
+            this->setEnvironment.resize(_size15);
+            uint32_t _i19;
+            for (_i19 = 0; _i19 < _size15; ++_i19)
             {
-              xfer += this->setEnvironment[_i14].read(iprot);
+              xfer += this->setEnvironment[_i19].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -410,19 +422,27 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeString(this->appDeploymentDescription);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.moduleLoadCmd) {
-    xfer += oprot->writeFieldBegin("moduleLoadCmd", ::apache::thrift::protocol::T_STRING, 7);
-    xfer += oprot->writeString(this->moduleLoadCmd);
+  if (this->__isset.moduleLoadCmds) {
+    xfer += oprot->writeFieldBegin("moduleLoadCmds", ::apache::thrift::protocol::T_LIST, 7);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->moduleLoadCmds.size()));
+      std::vector<std::string> ::const_iterator _iter20;
+      for (_iter20 = this->moduleLoadCmds.begin(); _iter20 != this->moduleLoadCmds.end(); ++_iter20)
+      {
+        xfer += oprot->writeString((*_iter20));
+      }
+      xfer += oprot->writeListEnd();
+    }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.libPrependPaths) {
     xfer += oprot->writeFieldBegin("libPrependPaths", ::apache::thrift::protocol::T_LIST, 8);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->libPrependPaths.size()));
-      std::vector<SetEnvPaths> ::const_iterator _iter15;
-      for (_iter15 = this->libPrependPaths.begin(); _iter15 != this->libPrependPaths.end(); ++_iter15)
+      std::vector<SetEnvPaths> ::const_iterator _iter21;
+      for (_iter21 = this->libPrependPaths.begin(); _iter21 != this->libPrependPaths.end(); ++_iter21)
       {
-        xfer += (*_iter15).write(oprot);
+        xfer += (*_iter21).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -432,10 +452,10 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldBegin("libAppendPaths", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->libAppendPaths.size()));
-      std::vector<SetEnvPaths> ::const_iterator _iter16;
-      for (_iter16 = this->libAppendPaths.begin(); _iter16 != this->libAppendPaths.end(); ++_iter16)
+      std::vector<SetEnvPaths> ::const_iterator _iter22;
+      for (_iter22 = this->libAppendPaths.begin(); _iter22 != this->libAppendPaths.end(); ++_iter22)
       {
-        xfer += (*_iter16).write(oprot);
+        xfer += (*_iter22).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -445,10 +465,10 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldBegin("setEnvironment", ::apache::thrift::protocol::T_LIST, 10);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->setEnvironment.size()));
-      std::vector<SetEnvPaths> ::const_iterator _iter17;
-      for (_iter17 = this->setEnvironment.begin(); _iter17 != this->setEnvironment.end(); ++_iter17)
+      std::vector<SetEnvPaths> ::const_iterator _iter23;
+      for (_iter23 = this->setEnvironment.begin(); _iter23 != this->setEnvironment.end(); ++_iter23)
       {
-        xfer += (*_iter17).write(oprot);
+        xfer += (*_iter23).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -467,7 +487,7 @@ void swap(ApplicationDeploymentDescription &a, ApplicationDeploymentDescription 
   swap(a.computeHostId, b.computeHostId);
   swap(a.executablePath, b.executablePath);
   swap(a.appDeploymentDescription, b.appDeploymentDescription);
-  swap(a.moduleLoadCmd, b.moduleLoadCmd);
+  swap(a.moduleLoadCmds, b.moduleLoadCmds);
   swap(a.libPrependPaths, b.libPrependPaths);
   swap(a.libAppendPaths, b.libAppendPaths);
   swap(a.setEnvironment, b.setEnvironment);
