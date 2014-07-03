@@ -99,7 +99,7 @@ struct ApplicationDeploymentDescription {
     4: required string computeHostId,
     5: required string executablePath,
 	6: optional string appDeploymentDescription,
-	7: optional string moduleLoadCmd,
+	7: optional list<string> moduleLoadCmds,
 	8: optional list<SetEnvPaths> libPrependPaths,
 	9: optional list<SetEnvPaths> libAppendPaths,
 	10: optional list<SetEnvPaths> setEnvironment,
