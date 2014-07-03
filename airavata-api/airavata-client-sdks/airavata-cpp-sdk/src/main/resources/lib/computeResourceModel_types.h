@@ -4,8 +4,8 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#ifndef computeHostModel_TYPES_H
-#define computeHostModel_TYPES_H
+#ifndef computeResourceModel_TYPES_H
+#define computeResourceModel_TYPES_H
 
 #include <thrift/Thrift.h>
 #include <thrift/TApplicationException.h>
