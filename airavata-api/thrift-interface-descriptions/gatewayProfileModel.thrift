@@ -24,12 +24,13 @@ namespace php Airavata.Model.AppCatalog.GatewayProfile
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
 /**
- * Gateway Profile
+ * Resource Preferences for each of the gateway
  *
- * resourceId:
+ * gatewayID:
+ *   Unique identifier for the gateway assigned by Airavata
  *
- * hostName:
- *   Fully Qualified Host Name.
+ * gatewayName:
+ *   Name of the Gateway.
  *
  * ipAddress:
  *   IP Addresse of the Hostname.
@@ -45,11 +46,41 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
  *  Option to specify a prefered data movement mechanism of the available options.
  *
 */
+struct ComputeResourcePreference {
+    1: required string computeResourceId,
+    2: required string preferredJobSubmissionProtocol,
+    3: required string preferredDataMovementProtocol,
+    4: required string parentScratchLocation,
+    5: optional string allocationProjectNumber
+}
 
 
+/**
+ * Gateway Profile
+ *
+ * gatewayID:
+ *   Unique identifier for the gateway assigned by Airavata
+ *
+ * gatewayName:
+ *   Name of the Gateway.
+ *
+ * ipAddress:
+ *   IP Addresse of the Hostname.
+ *
+ * resourceDescription:
+ *  A user friendly description of the hostname.
+ *
+ * JobSubmissionProtocols:
+ *  A computational resources may have one or more ways of submitting Jobs. This structure
+ *  will hold all available mechanisms to interact with the resource.
+ *
+ * DataMovementProtocol:
+ *  Option to specify a prefered data movement mechanism of the available options.
+ *
+*/
 struct GatewayProfile {
     1: required string gatewayID = DEFAULT_ID,
     2: required string gatewayName,
     3: optional string gatewayDescription,
-    4: optional string preferedResource
+    4: optional list<ComputeResourcePreference> computeResourcePreferences
 }
