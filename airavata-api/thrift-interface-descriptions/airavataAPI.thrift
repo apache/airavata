@@ -31,7 +31,7 @@ include "workspaceModel.thrift"
 include "computeResourceModel.thrift"
 include "applicationDeploymentModel.thrift"
 include "applicationInterfaceModel.thrift"
-include "gatewayProfileModel.thrift"
+include "gatewayResourceProfileModel.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API

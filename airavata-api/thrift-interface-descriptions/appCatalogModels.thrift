@@ -21,4 +21,4 @@
 include "computeResourceModel.thrift"
 include "applicationDeploymentModel.thrift"
 include "applicationInterfaceModel.thrift"
-include "gatewayProfileModel.thrift"
+include "gatewayResourceProfileModel.thrift"
