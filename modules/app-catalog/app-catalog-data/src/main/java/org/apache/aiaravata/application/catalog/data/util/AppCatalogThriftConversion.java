@@ -22,8 +22,6 @@
 package org.apache.aiaravata.application.catalog.data.util;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment;
-import org.apache.aiaravata.application.catalog.data.model.LibraryPrepandPath;
 import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -33,6 +31,8 @@ import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayProfile;
 
 import java.util.*;
 
@@ -40,7 +40,7 @@ public class AppCatalogThriftConversion {
     public static ComputeHostResource getComputeHostResource (ComputeResourceDescription description){
         ComputeHostResource resource = new ComputeHostResource();
         resource.setHostName(description.getHostName());
-        resource.setDescription(description.getResourceDescription());
+        resource.setDescription(description.getComputeResourceDescription());
         resource.setPreferredJobSubmissionProtocol(description.getPreferredJobSubmissionProtocol());
         resource.setPreferredJobSubmissionProtocol(description.getResourceId());
         return resource;
@@ -470,4 +470,34 @@ public class AppCatalogThriftConversion {
         return pathList;
     }
 
+    public static ComputeResourcePreference getComputeResourcePreference (ComputeHostPreferenceResource resource){
+        ComputeResourcePreference preference = new ComputeResourcePreference();
+        preference.setComputeResourceId(resource.getResourceId());
+        preference.setOverridebyAiravata(resource.getOverrideByAiravata());
+        preference.setPreferredJobSubmissionProtocol(resource.getPreferredJobProtocol());
+        preference.setPreferredDataMovementProtocol(resource.getPreferedDMProtocol());
+        preference.setPreferredBatchQueue(resource.getBatchQueue());
+        preference.setScratchLocation(resource.getScratchLocation());
+        preference.setAllocationProjectNumber(resource.getProjectNumber());
+        return preference;
+    }
+
+    public static List<ComputeResourcePreference> getComputeResourcePreferences (List<Resource> resources){
+        List<ComputeResourcePreference> preferences = new ArrayList<ComputeResourcePreference>();
+        if (resources != null && !resources.isEmpty()){
+            for (Resource resource : resources){
+                 preferences.add(getComputeResourcePreference((ComputeHostPreferenceResource)resource));
+            }
+        }
+        return preferences;
+    }
+
+    public static GatewayProfile getGatewayProfile (GatewayProfileResource gw, List<ComputeResourcePreference> preferences){
+        GatewayProfile gatewayProfile = new GatewayProfile();
+        gatewayProfile.setGatewayID(gw.getGatewayID());
+        gatewayProfile.setGatewayDescription(gw.getGatewayDesc());
+        gatewayProfile.setGatewayName(gw.getGatewayName());
+        gatewayProfile.setComputeResourcePreferences(preferences);
+        return gatewayProfile;
+    }
 }

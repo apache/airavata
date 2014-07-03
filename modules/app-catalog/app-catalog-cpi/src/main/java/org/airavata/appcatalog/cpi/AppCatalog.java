@@ -18,4 +18,11 @@ public interface AppCatalog {
      * @return application deployment interface
      */
     ApplicationDeployment getApplicationDeployment() throws AppCatalogException;
+
+    /**
+     * Get Gateway profile interface
+     * @return Gateway profile interface
+     * @throws AppCatalogException
+     */
+    GProfile getGatewayProfile() throws AppCatalogException;
 }
