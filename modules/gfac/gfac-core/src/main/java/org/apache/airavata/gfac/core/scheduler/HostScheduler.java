@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.core.scheduler;
 
 import java.util.List;
 
-import org.apache.airavata.model.computehost.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 
 public  interface HostScheduler {
     /**

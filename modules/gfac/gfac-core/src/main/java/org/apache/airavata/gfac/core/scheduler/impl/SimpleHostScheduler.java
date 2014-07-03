@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.core.scheduler.impl;
 import java.util.List;
 
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
-import org.apache.airavata.model.computehost.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 
 public class SimpleHostScheduler implements HostScheduler {
     public ComputeResourceDescription schedule(List<ComputeResourceDescription> registeredHosts) {

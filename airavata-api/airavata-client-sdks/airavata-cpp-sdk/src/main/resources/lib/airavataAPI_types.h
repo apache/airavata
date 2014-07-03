@@ -17,7 +17,7 @@
 #include "airavataDataModel_types.h"
 #include "experimentModel_types.h"
 #include "workspaceModel_types.h"
-#include "computeHostModel_types.h"
+#include "computeResourceModel_types.h"
 #include "applicationDeploymentModel_types.h"
 #include "applicationInterfaceModel_types.h"
 #include "gatewayProfileModel_types.h"

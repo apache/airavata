@@ -1,6 +1,6 @@
 package org.airavata.appcatalog.cpi;
 
-import org.apache.airavata.model.computehost.*;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 
 import java.util.List;
 import java.util.Map;

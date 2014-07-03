@@ -18,7 +18,7 @@
  *
  */
 
-include "computeHostModel.thrift"
+include "computeResourceModel.thrift"
 include "applicationDeploymentModel.thrift"
 include "applicationInterfaceModel.thrift"
 include "gatewayProfileModel.thrift"
