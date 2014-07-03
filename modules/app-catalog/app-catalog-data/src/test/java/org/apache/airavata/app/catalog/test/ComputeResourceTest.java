@@ -29,7 +29,7 @@ import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.app.catalog.test.util.Initialize;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.computehost.*;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

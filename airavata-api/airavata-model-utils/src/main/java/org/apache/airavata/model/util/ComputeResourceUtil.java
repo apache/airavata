@@ -21,7 +21,7 @@
 
 package org.apache.airavata.model.util;
 
-import org.apache.airavata.model.computehost.*;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 
 import java.util.List;
 

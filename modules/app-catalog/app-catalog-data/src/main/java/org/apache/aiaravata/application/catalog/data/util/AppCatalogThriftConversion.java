@@ -32,7 +32,7 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.computehost.*;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 
 import java.util.*;
 

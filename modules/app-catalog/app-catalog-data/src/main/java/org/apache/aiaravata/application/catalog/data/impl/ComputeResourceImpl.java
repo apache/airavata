@@ -26,7 +26,7 @@ import org.airavata.appcatalog.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogUtils;
-import org.apache.airavata.model.computehost.*;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

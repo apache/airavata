@@ -29,7 +29,7 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
-import org.apache.airavata.model.computehost.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

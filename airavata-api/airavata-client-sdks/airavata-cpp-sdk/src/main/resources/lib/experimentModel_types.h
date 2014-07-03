@@ -13,7 +13,7 @@
 #include <thrift/transport/TTransport.h>
 
 #include <thrift/cxxfunctional.h>
-#include "computeHostModel_types.h"
+#include "computeResourceModel_types.h"
 
 
 

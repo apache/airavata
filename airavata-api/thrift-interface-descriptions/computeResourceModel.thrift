@@ -18,8 +18,8 @@
  *
  */
 
-namespace java org.apache.airavata.model.computehost
-namespace php Airavata.Model.ComputeHost
+namespace java org.apache.airavata.model.appcatalog.computeresource
+namespace php Airavata.Model.AppCatalog.ComputeResource
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 

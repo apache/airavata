@@ -45,7 +45,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.computehost.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;

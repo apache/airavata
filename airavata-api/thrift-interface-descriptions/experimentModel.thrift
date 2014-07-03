@@ -18,7 +18,7 @@
  *
  */
 
-include "computeHostModel.thrift"
+include "computeResourceModel.thrift"
 
 namespace java org.apache.airavata.model.workspace.experiment
 namespace php Airavata.Model.Workspace.Experiment
