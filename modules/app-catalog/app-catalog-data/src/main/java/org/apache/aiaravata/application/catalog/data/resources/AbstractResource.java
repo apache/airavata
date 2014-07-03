@@ -48,6 +48,7 @@ public abstract class AbstractResource implements Resource {
     public static final String APPLICATION_INPUT = "ApplicationInput";
     public static final String APPLICATION_OUTPUT = "ApplicationOutput";
     public static final String GATEWAY_PROFILE = "GatewayProfile";
+    public static final String COMPUTE_RESOURCE_PREFERENCE = "ComputeResourcePreference";
 
     // Compute Resource Table
     public final class ComputeResourceConstants {
@@ -212,7 +213,17 @@ public abstract class AbstractResource implements Resource {
         public static final String GATEWAY_ID = "gatewayID";
         public static final String GATEWAY_NAME = "gatewayName";
         public static final String GATEWAY_DESC = "gatewayDesc";
-        public static final String PREFERED_RESOURCE = "preferedResource";
+    }
+
+    public final class ComputeResourcePreferenceConstants {
+        public static final String GATEWAY_ID = "gatewayID";
+        public static final String RESOURCE_ID = "resourceId";
+        public static final String OVERRIDE_BY_AIRAVATA = "overrideByAiravata";
+        public static final String PREFERED_JOB_SUB_PROTOCOL = "preferedJobSubmissionProtocol";
+        public static final String PREFERED_DATA_MOVE_PROTOCOL = "preferedDataMoveProtocol";
+        public static final String PREFERED_BATCH_QUEUE = "batchQueue";
+        public static final String SCRATCH_LOCATION = "scratchLocation";
+        public static final String ALLOCATION_PROJECT_NUMBER = "projectNumber";
     }
 
 

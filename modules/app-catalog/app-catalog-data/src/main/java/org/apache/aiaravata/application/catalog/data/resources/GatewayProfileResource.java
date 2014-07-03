@@ -20,7 +20,6 @@ public class GatewayProfileResource extends AbstractResource {
     private String gatewayID;
     private String gatewayName;
     private String gatewayDesc;
-    private String preferedResource;
 
     public void remove(Object identifier) throws AppCatalogException {
         EntityManager em = null;
@@ -192,14 +191,12 @@ public class GatewayProfileResource extends AbstractResource {
             if (existingGatewayProfile != null) {
                 existingGatewayProfile.setGatewayDesc(gatewayDesc);
                 existingGatewayProfile.setGatewayName(gatewayName);
-                existingGatewayProfile.setPreferedResource(preferedResource);
                 em.merge(existingGatewayProfile);
             } else {
                 GatewayProfile gatewayProfile = new GatewayProfile();
                 gatewayProfile.setGatewayID(gatewayID);
                 gatewayProfile.setGatewayName(gatewayName);
                 gatewayProfile.setGatewayDesc(gatewayDesc);
-                gatewayProfile.setPreferedResource(preferedResource);
                 em.persist(gatewayProfile);
             }
             em.getTransaction().commit();
@@ -259,13 +256,5 @@ public class GatewayProfileResource extends AbstractResource {
 
     public void setGatewayDesc(String gatewayDesc) {
         this.gatewayDesc = gatewayDesc;
-    }
-
-    public String getPreferedResource() {
-        return preferedResource;
-    }
-
-    public void setPreferedResource(String preferedResource) {
-        this.preferedResource = preferedResource;
     }
 }

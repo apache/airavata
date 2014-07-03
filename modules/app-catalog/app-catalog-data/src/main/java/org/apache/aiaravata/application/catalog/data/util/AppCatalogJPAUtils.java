@@ -253,6 +253,13 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a GatewayProfile.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GatewayProfile.");
                 }
+            case COMPUTE_RESOURCE_PREFERENCE:
+                if (o instanceof ComputeResourcePreference){
+                    return createComputeResourcePref((ComputeResourcePreference) o);
+                }else {
+                    logger.error("Object should be a Compute Resource Preference.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Compute Resource Preference.");
+                }
             case APPLICATION_INPUT:
                 if (o instanceof ApplicationInput){
                     return createApplicationInput((ApplicationInput) o);
@@ -483,7 +490,21 @@ public class AppCatalogJPAUtils {
         resource.setGatewayID(o.getGatewayID());
         resource.setGatewayName(o.getGatewayName());
         resource.setGatewayDesc(o.getGatewayDesc());
-        resource.setPreferedResource(o.getPreferedResource());
+        return resource;
+    }
+
+    private static Resource createComputeResourcePref(ComputeResourcePreference o) {
+        ComputeHostPreferenceResource resource = new ComputeHostPreferenceResource();
+        resource.setGatewayId(o.getGatewayId());
+        resource.setResourceId(o.getResourceId());
+        resource.setOverrideByAiravata(o.isOverrideByAiravata());
+        resource.setPreferredJobProtocol(o.getPreferedJobSubmissionProtocol());
+        resource.setPreferedDMProtocol(o.getPreferedDataMoveProtocol());
+        resource.setBatchQueue(o.getBatchQueue());
+        resource.setScratchLocation(o.getScratchLocation());
+        resource.setProjectNumber(o.getProjectNumber());
+        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeHostResource()));
+        resource.setGatewayProfile((GatewayProfileResource)createGatewayProfile(o.getGatewayProfile()));
         return resource;
     }
 }
