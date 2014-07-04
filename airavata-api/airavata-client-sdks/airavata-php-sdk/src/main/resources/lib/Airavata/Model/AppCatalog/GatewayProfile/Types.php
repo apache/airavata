@@ -369,6 +369,6 @@ class GatewayProfile {
 
 }
 
-$GLOBALS['gatewayProfileModel_CONSTANTS']['DEFAULT_ID'] = "DO_NOT_SET_AT_CLIENTS";
+$GLOBALS['gatewayResourceProfileModel_CONSTANTS']['DEFAULT_ID'] = "DO_NOT_SET_AT_CLIENTS";
 
 

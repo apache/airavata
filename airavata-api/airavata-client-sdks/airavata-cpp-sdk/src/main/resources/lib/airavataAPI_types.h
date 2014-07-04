@@ -20,7 +20,7 @@
 #include "computeResourceModel_types.h"
 #include "applicationDeploymentModel_types.h"
 #include "applicationInterfaceModel_types.h"
-#include "gatewayProfileModel_types.h"
+#include "gatewayResourceProfileModel_types.h"
 
 
 namespace airavata { namespace api {
