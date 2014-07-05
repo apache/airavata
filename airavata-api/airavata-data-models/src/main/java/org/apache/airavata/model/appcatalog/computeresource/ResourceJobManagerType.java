@@ -28,27 +28,30 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * Enumeration of Airavata supported Job Submission Mechanisms for High Perforamance Computing Clusters.
+ * Enumeration of local resource job manager types supported by Airavata
  * 
- * SSH:
- *  Execute remote job submission commands using via secure shell protocol.
+ * FORK:
+ *  Forking of commands without any job manager
  * 
- * GRAM:
- *  Execute remote jobs via Globus GRAM service.
+ * PBS:
+ *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
  * 
- * UNICORE:
- *  Execute remote jobs via Unicore services
+ * UGE:
+ *  Univa Grid Engine, a variation of PBS implementation.
+ * 
+ * SLURM:
+ *  The Simple Linux Utility for Resource Management is a open source workload manager.
  * 
  */
-@SuppressWarnings("all") public enum JobSubmissionProtocol implements org.apache.thrift.TEnum {
-  LOCAL(0),
-  SSH(1),
-  GLOBUS(2),
-  UNICORE(3);
+@SuppressWarnings("all") public enum ResourceJobManagerType implements org.apache.thrift.TEnum {
+  FORK(0),
+  PBS(1),
+  UGE(2),
+  SLURM(3);
 
   private final int value;
 
-  private JobSubmissionProtocol(int value) {
+  private ResourceJobManagerType(int value) {
     this.value = value;
   }
 
@@ -63,16 +66,16 @@ import org.apache.thrift.TEnum;
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static JobSubmissionProtocol findByValue(int value) { 
+  public static ResourceJobManagerType findByValue(int value) { 
     switch (value) {
       case 0:
-        return LOCAL;
+        return FORK;
       case 1:
-        return SSH;
+        return PBS;
       case 2:
-        return GLOBUS;
+        return UGE;
       case 3:
-        return UNICORE;
+        return SLURM;
       default:
         return null;
     }
