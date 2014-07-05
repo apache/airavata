@@ -32,42 +32,58 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.openjpa.persistence.DataCache;
+
+@DataCache
 @Entity
-@Table(name = "GSISSH_PREJOBCOMMAND")
-@IdClass(GSISSHPreJobCommandPK.class)
-public class GSISSHPreJobCommand implements Serializable {
-    @Id
-    @Column(name = "SUBMISSION_ID")
-    private String submissionID;
-    @Id
-    @Column(name = "COMMAND")
-    private String command;
-
-    @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "SUBMISSION_ID")
-    private GSISSHSubmission gsisshSubmission;
-
-    public String getSubmissionID() {
-        return submissionID;
-    }
-
-    public void setSubmissionID(String submissionID) {
-        this.submissionID = submissionID;
-    }
-
-    public String getCommand() {
-        return command;
-    }
-
-    public void setCommand(String command) {
-        this.command = command;
-    }
-
-    public GSISSHSubmission getGsisshSubmission() {
-        return gsisshSubmission;
-    }
-
-    public void setGsisshSubmission(GSISSHSubmission gsisshSubmission) {
-        this.gsisshSubmission = gsisshSubmission;
-    }
+@Table(name = "COMPUTE_RESOURCE_FILE_SYSTEM")
+@IdClass(ComputeResourceFileSystem_PK.class)
+public class ComputeResourceFileSystem implements Serializable {
+	
+	@Id
+	@Column(name = "COMPUTE_RESOURCE_ID")
+	private String computeResourceId;
+	
+	@ManyToOne(cascade= CascadeType.MERGE)
+	@JoinColumn(name = "COMPUTE_RESOURCE_ID")
+	private ComputeResource computeResource;
+	
+	@Column(name = "PATH")
+	private String path;
+	
+	@Id
+	@Column(name = "FILE_SYSTEM")
+	private String fileSystem;
+	
+	public String getComputeResourceId() {
+		return computeResourceId;
+	}
+	
+	public ComputeResource getComputeResource() {
+		return computeResource;
+	}
+	
+	public String getPath() {
+		return path;
+	}
+	
+	public String getFileSystem() {
+		return fileSystem;
+	}
+	
+	public void setComputeResourceId(String computeResourceId) {
+		this.computeResourceId=computeResourceId;
+	}
+	
+	public void setComputeResource(ComputeResource computeResource) {
+		this.computeResource=computeResource;
+	}
+	
+	public void setPath(String path) {
+		this.path=path;
+	}
+	
+	public void setFileSystem(String fileSystem) {
+		this.fileSystem=fileSystem;
+	}
 }

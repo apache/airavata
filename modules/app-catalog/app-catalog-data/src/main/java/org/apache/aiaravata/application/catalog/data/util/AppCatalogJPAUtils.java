@@ -39,6 +39,7 @@ import org.apache.aiaravata.application.catalog.data.model.BatchQueue;
 import org.apache.aiaravata.application.catalog.data.model.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.model.ComputeResourceFileSystem;
 import org.apache.aiaravata.application.catalog.data.model.ComputeResourcePreference;
+import org.apache.aiaravata.application.catalog.data.model.DataMovementInterface;
 import org.apache.aiaravata.application.catalog.data.model.DataMovementProtocol;
 import org.apache.aiaravata.application.catalog.data.model.GSISSHExport;
 import org.apache.aiaravata.application.catalog.data.model.GSISSHPostJobCommand;
@@ -68,6 +69,7 @@ import org.apache.aiaravata.application.catalog.data.resources.BatchQueueResourc
 import org.apache.aiaravata.application.catalog.data.resources.ComputeHostPreferenceResource;
 import org.apache.aiaravata.application.catalog.data.resources.ComputeHostResource;
 import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceFileSystemResource;
+import org.apache.aiaravata.application.catalog.data.resources.DataMovementInterfaceResource;
 import org.apache.aiaravata.application.catalog.data.resources.DataMovementProtocolResource;
 import org.apache.aiaravata.application.catalog.data.resources.GSISSHExportResource;
 import org.apache.aiaravata.application.catalog.data.resources.GSISSHPostJobCommandResource;
@@ -346,11 +348,28 @@ public class AppCatalogJPAUtils {
 					logger.error("Object should be a Job Submission Interface.", new IllegalArgumentException());
 					throw new IllegalArgumentException("Object should be a Job Submission Interface.");
 				}
+            case DATA_MOVEMENT_INTERFACE:
+				if (o instanceof DataMovementInterface){
+					return createDataMovementInterface((DataMovementInterface) o);
+				}else{
+					logger.error("Object should be a Data Movement Interface.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Data Movement Interface.");
+				}
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
                 throw new IllegalArgumentException("Illegal data type..");
         }
     }
+    
+    private static Resource createDataMovementInterface(DataMovementInterface o) {
+		DataMovementInterfaceResource dataMovementInterfaceResource = new DataMovementInterfaceResource();
+		dataMovementInterfaceResource.setComputeResourceId(o.getComputeResourceId());
+		dataMovementInterfaceResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+		dataMovementInterfaceResource.setDataMovementProtocol(o.getDataMovementProtocol());
+		dataMovementInterfaceResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+		dataMovementInterfaceResource.setPriorityOrder(o.getPriorityOrder());
+		return dataMovementInterfaceResource;
+	}
     
     private static Resource createJobSubmissionInterface(JobSubmissionInterface o) {
 		JobSubmissionInterfaceResource jobSubmissionInterfaceResource = new JobSubmissionInterfaceResource();
