@@ -19,7 +19,7 @@
  *
  */
 
-package appcatalog;
+package appcatalog.computeresource;
 
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;
@@ -31,16 +31,16 @@ import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
 
-public class GridFTPDataMovementGenerator {
+public class ComputeResourceDescriptionGenerator {
 	private static SQLData createSQLData() {
 		SQLData data = new SQLData();
-		data.setTableName("GRIDFTP_DATA_MOVEMENT");
-		data.getFieldData().put("DATA_MOVEMENT_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("SECURITY_PROTOCOL", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getPrimaryKeys().add("DATA_MOVEMENT_INTERFACE_ID");
+		data.setTableName("COMPUTE_RESOURCE");
+		data.getFieldData().put("RESOURCE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("HOST_NAME", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("RESOURCE_DESCRIPTION", Arrays.asList(new String[]{"VARCHAR", "(255)"}));
+		data.getPrimaryKeys().add("RESOURCE_ID");
 		return data;
 	}
-	
 	public static void testSqlGen() {
 		SQLData data = createSQLData();
 		SQLGenerator sqlGenerator = new SQLGenerator();

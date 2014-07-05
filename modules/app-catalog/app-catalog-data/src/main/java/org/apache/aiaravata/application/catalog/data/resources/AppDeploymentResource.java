@@ -45,7 +45,7 @@ public class AppDeploymentResource extends AbstractResource {
     private String executablePath;
     private String appDes;
     private String envModuleLoadCMD;
-    private ComputeHostResource hostResource;
+    private ComputeResourceResource hostResource;
     private AppModuleResource moduleResource;
 
     public String getDeploymentId() {
@@ -96,11 +96,11 @@ public class AppDeploymentResource extends AbstractResource {
         this.envModuleLoadCMD = envModuleLoadCMD;
     }
 
-    public ComputeHostResource getHostResource() {
+    public ComputeResourceResource getHostResource() {
         return hostResource;
     }
 
-    public void setHostResource(ComputeHostResource hostResource) {
+    public void setHostResource(ComputeResourceResource hostResource) {
         this.hostResource = hostResource;
     }
 

@@ -19,7 +19,7 @@
  *
  */
 
-package appcatalog;
+package appcatalog.computeresource;
 
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;
@@ -31,16 +31,15 @@ import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
 
-public class JobSubmissionInterfaceGenerator {
+public class FileSystemsGenerator {
 	private static SQLData createSQLData() {
 		SQLData data = new SQLData();
-		data.setTableName("JOB_SUBMISSION_INTERFACE");
+		data.setTableName("COMPUTE_RESOURCE_FILE_SYSTEM");
 		data.getFieldData().put("COMPUTE_RESOURCE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("JOB_SUBMISSION_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("JOB_SUBMISSION_PROTOCOL", Arrays.asList(new String[]{"VARCHAR", "(255)","NOT", "NULL"}));
-		data.getFieldData().put("PRIORITY_ORDER", Arrays.asList(new String[]{"INTEGER"}));
+		data.getFieldData().put("FILE_SYSTEM", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("PATH", Arrays.asList(new String[]{"VARCHAR", "(255)",}));
 		data.getPrimaryKeys().add("COMPUTE_RESOURCE_ID");
-		data.getPrimaryKeys().add("JOB_SUBMISSION_INTERFACE_ID");
+		data.getPrimaryKeys().add("FILE_SYSTEM");
 		data.getForiegnKeys().put("COMPUTE_RESOURCE_ID", new SQLData.ForiegnKeyData("COMPUTE_RESOURCE(RESOURCE_ID)","ComputeResource","ComputeHostResource"));
 		return data;
 	}

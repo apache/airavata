@@ -42,7 +42,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     public String addApplicationDeployment(ApplicationDeploymentDescription deploymentDescription) throws AppCatalogException {
         try {
             AppDeploymentResource deploymentResource = new AppDeploymentResource();
-            ComputeHostResource computeHostResource = new ComputeHostResource();
+            ComputeResourceResource computeHostResource = new ComputeResourceResource();
             AppModuleResource moduleResource = new AppModuleResource();
             if (!computeHostResource.isExists(deploymentDescription.getComputeHostId())){
                 logger.error("Compute host does not exist in the system. Please create a Compute host first...");
@@ -57,7 +57,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             deploymentResource.setAppModuleId(deploymentDescription.getAppModuleId());
             deploymentResource.setModuleResource(module);
             deploymentResource.setHostId(deploymentDescription.getComputeHostId());
-            deploymentResource.setHostResource((ComputeHostResource)computeHostResource.get(deploymentDescription.getComputeHostId()));
+            deploymentResource.setHostResource((ComputeResourceResource)computeHostResource.get(deploymentDescription.getComputeHostId()));
             deploymentResource.setAppDes(deploymentDescription.getAppDeploymentDescription());
             deploymentResource.setExecutablePath(deploymentDescription.getExecutablePath());
             deploymentResource.setEnvModuleLoadCMD(deploymentDescription.getModuleLoadCmd());
@@ -110,7 +110,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
         try {
             AppDeploymentResource deploymentResource = new AppDeploymentResource();
             AppDeploymentResource existingDep = (AppDeploymentResource)deploymentResource.get(deploymentId);
-            ComputeHostResource computeHostResource = new ComputeHostResource();
+            ComputeResourceResource computeHostResource = new ComputeResourceResource();
             AppModuleResource moduleResource = new AppModuleResource();
             if (!computeHostResource.isExists(updatedDeployment.getComputeHostId())){
                 logger.error("Compute host does not exist in the system. Please create a Compute host first...");
@@ -124,7 +124,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             existingDep.setAppModuleId(updatedDeployment.getAppModuleId());
             existingDep.setModuleResource(module);
             existingDep.setHostId(updatedDeployment.getComputeHostId());
-            existingDep.setHostResource((ComputeHostResource)computeHostResource.get(updatedDeployment.getComputeHostId()));
+            existingDep.setHostResource((ComputeResourceResource)computeHostResource.get(updatedDeployment.getComputeHostId()));
             existingDep.setAppDes(updatedDeployment.getAppDeploymentDescription());
             existingDep.setExecutablePath(updatedDeployment.getExecutablePath());
             existingDep.setEnvModuleLoadCMD(updatedDeployment.getModuleLoadCmd());

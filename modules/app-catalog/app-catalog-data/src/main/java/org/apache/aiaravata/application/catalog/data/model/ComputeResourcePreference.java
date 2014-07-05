@@ -22,7 +22,7 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 
-import org.apache.aiaravata.application.catalog.data.resources.ComputeHostResource;
+import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceResource;
 
 import javax.persistence.*;
 

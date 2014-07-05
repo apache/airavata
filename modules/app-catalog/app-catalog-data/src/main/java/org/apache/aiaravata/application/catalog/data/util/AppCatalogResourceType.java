@@ -22,7 +22,7 @@
 package org.apache.aiaravata.application.catalog.data.util;
 
 public enum AppCatalogResourceType {
-    COMPUTE_RESOURCE,
+	COMPUTE_RESOURCE,
     HOST_ALIAS,
     HOST_IPADDRESS,
     GSISSH_SUBMISSION,

@@ -24,7 +24,7 @@ public class HostIPAddressResource extends AbstractResource{
 
     private String resourceID;
     private String ipaddress;
-    private ComputeHostResource computeHostResource;
+    private ComputeResourceResource computeHostResource;
 
     public void remove(Object identifier) throws AppCatalogException {
         HashMap<String, String> ids;
@@ -288,11 +288,11 @@ public class HostIPAddressResource extends AbstractResource{
         this.ipaddress = ipaddress;
     }
 
-    public ComputeHostResource getComputeHostResource() {
+    public ComputeResourceResource getComputeHostResource() {
         return computeHostResource;
     }
 
-    public void setComputeHostResource(ComputeHostResource computeHostResource) {
+    public void setComputeHostResource(ComputeResourceResource computeHostResource) {
         this.computeHostResource = computeHostResource;
     }
 }

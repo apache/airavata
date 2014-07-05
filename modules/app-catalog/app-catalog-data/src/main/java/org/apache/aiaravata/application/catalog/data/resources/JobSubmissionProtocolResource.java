@@ -25,7 +25,7 @@ public class JobSubmissionProtocolResource extends AbstractResource {
     private String resourceID;
     private String submissionID;
     private String jobType;
-    private ComputeHostResource computeHostResource;
+    private ComputeResourceResource computeHostResource;
 
     public void remove(Object identifier) throws AppCatalogException {
         HashMap<String, String> ids;
@@ -320,11 +320,11 @@ public class JobSubmissionProtocolResource extends AbstractResource {
         this.jobType = jobType;
     }
 
-    public ComputeHostResource getComputeHostResource() {
+    public ComputeResourceResource getComputeHostResource() {
         return computeHostResource;
     }
 
-    public void setComputeHostResource(ComputeHostResource computeHostResource) {
+    public void setComputeHostResource(ComputeResourceResource computeHostResource) {
         this.computeHostResource = computeHostResource;
     }
 }

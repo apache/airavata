@@ -19,7 +19,7 @@
  *
  */
 
-package appcatalog;
+package appcatalog.computeresource;
 
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;
@@ -31,15 +31,15 @@ import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
 
-public class GridFTPEndpointsGenerator {
+public class ResourceJobManagerGenerator {
 	private static SQLData createSQLData() {
 		SQLData data = new SQLData();
-		data.setTableName("GRIDFTP_ENDPOINT");
-		data.getFieldData().put("DATA_MOVEMENT_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("ENDPOINT", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getPrimaryKeys().add("DATA_MOVEMENT_INTERFACE_ID");
-		data.getPrimaryKeys().add("ENDPOINT");
-		data.getForiegnKeys().put("DATA_MOVEMENT_INTERFACE_ID", new SQLData.ForiegnKeyData("GRIDFTP_DATA_MOVEMENT(DATA_MOVEMENT_INTERFACE_ID)","GridftpDataMovement","GridftpDataMovementResource"));
+		data.setTableName("RESOURCE_JOB_MANAGER");
+		data.getFieldData().put("RESOURCE_JOB_MANAGER_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("RESOURCE_JOB_MANAGER_TYPE", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("PUSH_MONITORING_ENDPOINT", Arrays.asList(new String[]{"VARCHAR", "(255)",}));
+		data.getFieldData().put("JOB_MANAGER_BIN_PATH", Arrays.asList(new String[]{"VARCHAR", "(255)",}));
+		data.getPrimaryKeys().add("RESOURCE_JOB_MANAGER_ID");
 		return data;
 	}
 	public static void testSqlGen() {

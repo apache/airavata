@@ -55,8 +55,8 @@ public class GatewayProfileImpl implements GProfile {
                     ComputeHostPreferenceResource resource = new ComputeHostPreferenceResource();
                     resource.setGatewayProfile(profileResource);
                     resource.setResourceId(preference.getComputeResourceId());
-                    ComputeHostResource computeHostResource = new ComputeHostResource();
-                    resource.setComputeHostResource((ComputeHostResource)computeHostResource.get(preference.getComputeResourceId()));
+                    ComputeResourceResource computeHostResource = new ComputeResourceResource();
+                    resource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
                     resource.setGatewayId(profileResource.getGatewayID());
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
                     resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol());
@@ -94,8 +94,8 @@ public class GatewayProfileImpl implements GProfile {
 
                     existingPreferenceResource.setGatewayProfile(existingGP);
                     existingPreferenceResource.setResourceId(preference.getComputeResourceId());
-                    ComputeHostResource computeHostResource = new ComputeHostResource();
-                    existingPreferenceResource.setComputeHostResource((ComputeHostResource)computeHostResource.get(preference.getComputeResourceId()));
+                    ComputeResourceResource computeHostResource = new ComputeResourceResource();
+                    existingPreferenceResource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
                     existingPreferenceResource.setGatewayId(gatewayId);
                     existingPreferenceResource.setOverrideByAiravata(preference.isOverridebyAiravata());
                     existingPreferenceResource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol());

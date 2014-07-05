@@ -19,7 +19,7 @@
  *
  */
 
-package appcatalog;
+package appcatalog.computeresource;
 
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;
@@ -31,15 +31,15 @@ import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
 
-public class ResourceJobManagerGenerator {
+public class SCPDataMovementGenerator {
 	private static SQLData createSQLData() {
 		SQLData data = new SQLData();
-		data.setTableName("RESOURCE_JOB_MANAGER");
-		data.getFieldData().put("RESOURCE_JOB_MANAGER_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("RESOURCE_JOB_MANAGER_TYPE", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("PUSH_MONITORING_ENDPOINT", Arrays.asList(new String[]{"VARCHAR", "(255)",}));
-		data.getFieldData().put("JOB_MANAGER_BIN_PATH", Arrays.asList(new String[]{"VARCHAR", "(255)",}));
-		data.getPrimaryKeys().add("RESOURCE_JOB_MANAGER_ID");
+		data.setTableName("SCP_DATA_MOVEMENT");
+		data.getFieldData().put("DATA_MOVEMENT_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("SECURITY_PROTOCOL", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("ALTERNATIVE_SCP_HOSTNAME", Arrays.asList(new String[]{"VARCHAR", "(255)"}));
+		data.getFieldData().put("SSH_PORT", Arrays.asList(new String[]{"INTEGER"}));
+		data.getPrimaryKeys().add("DATA_MOVEMENT_INTERFACE_ID");
 		return data;
 	}
 	public static void testSqlGen() {

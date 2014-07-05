@@ -19,7 +19,7 @@
  *
  */
 
-package appcatalog;
+package appcatalog.computeresource;
 
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;

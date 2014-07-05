@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public class ComputeResourceFileSystemResource extends AbstractResource {
 	private final static Logger logger = LoggerFactory.getLogger(ComputeResourceFileSystemResource.class);
 	private String computeResourceId;
-	private ComputeHostResource computeHostResource;
+	private ComputeResourceResource computeHostResource;
 	private String path;
 	private String fileSystem;
 	
@@ -267,7 +267,7 @@ public class ComputeResourceFileSystemResource extends AbstractResource {
 		return computeResourceId;
 	}
 	
-	public ComputeHostResource getComputeHostResource() {
+	public ComputeResourceResource getComputeHostResource() {
 		return computeHostResource;
 	}
 	
@@ -283,7 +283,7 @@ public class ComputeResourceFileSystemResource extends AbstractResource {
 		this.computeResourceId=computeResourceId;
 	}
 	
-	public void setComputeHostResource(ComputeHostResource computeHostResource) {
+	public void setComputeHostResource(ComputeResourceResource computeHostResource) {
 		this.computeHostResource=computeHostResource;
 	}
 	
