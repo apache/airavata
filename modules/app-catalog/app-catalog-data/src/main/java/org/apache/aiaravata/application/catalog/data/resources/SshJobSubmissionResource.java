@@ -1,7 +1,13 @@
 package org.apache.aiaravata.application.catalog.data.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.model.ComputeResource;
+import org.apache.aiaravata.application.catalog.data.model.ResourceJobManager;
 import org.apache.aiaravata.application.catalog.data.model.SshJobSubmission;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
@@ -9,11 +15,6 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SshJobSubmissionResource extends AbstractResource {
 	private final static Logger logger = LoggerFactory.getLogger(SshJobSubmissionResource.class);
