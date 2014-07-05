@@ -19,7 +19,7 @@
  *
  */
 
-package appcatalog;
+package appcatalog.computeresource;
 
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;
@@ -31,17 +31,14 @@ import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
 
-public class DataMovementInterfaceGenerator {
+public class LocalSubmissionGenerator {
 	private static SQLData createSQLData() {
 		SQLData data = new SQLData();
-		data.setTableName("DATA_MOVEMENT_INTERFACE");
-		data.getFieldData().put("COMPUTE_RESOURCE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("DATA_MOVEMENT_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("DATA_MOVEMENT_PROTOCOL", Arrays.asList(new String[]{"VARCHAR", "(255)","NOT", "NULL"}));
-		data.getFieldData().put("PRIORITY_ORDER", Arrays.asList(new String[]{"INTEGER"}));
-		data.getPrimaryKeys().add("COMPUTE_RESOURCE_ID");
-		data.getPrimaryKeys().add("DATA_MOVEMENT_INTERFACE_ID");
-		data.getForiegnKeys().put("COMPUTE_RESOURCE_ID", new SQLData.ForiegnKeyData("COMPUTE_RESOURCE(RESOURCE_ID)","ComputeResource","ComputeHostResource"));
+		data.setTableName("LOCAL_SUBMISSION");
+		data.getFieldData().put("JOB_SUBMISSION_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("RESOURCE_JOB_MANAGER_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getPrimaryKeys().add("JOB_SUBMISSION_INTERFACE_ID");
+		data.getForiegnKeys().put("RESOURCE_JOB_MANAGER_ID", new SQLData.ForiegnKeyData("RESOURCE_JOB_MANAGER(RESOURCE_JOB_MANAGER_ID)","ResourceJobManager","ResourceJobManagerResource"));
 		return data;
 	}
 	public static void testSqlGen() {

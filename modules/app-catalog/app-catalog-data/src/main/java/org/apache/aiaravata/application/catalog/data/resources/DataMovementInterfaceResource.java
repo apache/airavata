@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public class DataMovementInterfaceResource extends AbstractResource {
 	private final static Logger logger = LoggerFactory.getLogger(DataMovementInterfaceResource.class);
 	private String computeResourceId;
-	private ComputeHostResource computeHostResource;
+	private ComputeResourceResource computeHostResource;
 	private String dataMovementProtocol;
 	private String dataMovementInterfaceId;
 	private int priorityOrder;
@@ -269,7 +269,7 @@ public class DataMovementInterfaceResource extends AbstractResource {
 		return computeResourceId;
 	}
 	
-	public ComputeHostResource getComputeHostResource() {
+	public ComputeResourceResource getComputeHostResource() {
 		return computeHostResource;
 	}
 	
@@ -289,7 +289,7 @@ public class DataMovementInterfaceResource extends AbstractResource {
 		this.computeResourceId=computeResourceId;
 	}
 	
-	public void setComputeHostResource(ComputeHostResource computeHostResource) {
+	public void setComputeHostResource(ComputeResourceResource computeHostResource) {
 		this.computeHostResource=computeHostResource;
 	}
 	

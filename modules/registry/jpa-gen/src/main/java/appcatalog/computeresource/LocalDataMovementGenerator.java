@@ -19,7 +19,7 @@
  *
  */
 
-package appcatalog;
+package appcatalog.computeresource;
 
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;
@@ -31,14 +31,12 @@ import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
 
-public class LocalSubmissionGenerator {
+public class LocalDataMovementGenerator {
 	private static SQLData createSQLData() {
 		SQLData data = new SQLData();
-		data.setTableName("LOCAL_SUBMISSION");
-		data.getFieldData().put("JOB_SUBMISSION_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("RESOURCE_JOB_MANAGER_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getPrimaryKeys().add("JOB_SUBMISSION_INTERFACE_ID");
-		data.getForiegnKeys().put("RESOURCE_JOB_MANAGER_ID", new SQLData.ForiegnKeyData("RESOURCE_JOB_MANAGER(RESOURCE_JOB_MANAGER_ID)","ResourceJobManager","ResourceJobManagerResource"));
+		data.setTableName("LOCAL_DATA_MOVEMENT");
+		data.getFieldData().put("DATA_MOVEMENT_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getPrimaryKeys().add("DATA_MOVEMENT_INTERFACE_ID");
 		return data;
 	}
 	public static void testSqlGen() {

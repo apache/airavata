@@ -21,51 +21,51 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.apache.openjpa.persistence.DataCache;
+
+@DataCache
 @Entity
 @Table(name = "COMPUTE_RESOURCE")
 public class ComputeResource implements Serializable {
-    @Id
-    @Column(name = "RESOURCE_ID")
-    private String resourceID;
-    @Column(name = "HOST_NAME")
-    private String hostName;
-    @Column(name = "DESCRIPTION")
-    private String description;
-    @Column(name = "PREFERRED_JOB_SUBMISSION_PROTOCOL")
-    private String preferredJobSubProtocol;
-
-    public String getResourceID() {
-        return resourceID;
-    }
-
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
-    }
-
-    public String getHostName() {
-        return hostName;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getPreferredJobSubProtocol() {
-        return preferredJobSubProtocol;
-    }
-
-    public void setPreferredJobSubProtocol(String preferredJobSubProtocol) {
-        this.preferredJobSubProtocol = preferredJobSubProtocol;
-    }
+	
+	@Column(name = "RESOURCE_DESCRIPTION")
+	private String resourceDescription;
+	
+	@Id
+	@Column(name = "RESOURCE_ID")
+	private String resourceId;
+	
+	@Column(name = "HOST_NAME")
+	private String hostName;
+	
+	public String getResourceDescription() {
+		return resourceDescription;
+	}
+	
+	public String getResourceId() {
+		return resourceId;
+	}
+	
+	public String getHostName() {
+		return hostName;
+	}
+	
+	public void setResourceDescription(String resourceDescription) {
+		this.resourceDescription=resourceDescription;
+	}
+	
+	public void setResourceId(String resourceId) {
+		this.resourceId=resourceId;
+	}
+	
+	public void setHostName(String hostName) {
+		this.hostName=hostName;
+	}
 }

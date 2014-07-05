@@ -23,7 +23,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
     <persistence-unit name="appcatalog_data">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-        <class>org.apache.aiaravata.application.catalog.data.model.ComputeResource</class>
+	<class>org.apache.aiaravata.application.catalog.data.model.ComputeResource</class>
         <class>org.apache.aiaravata.application.catalog.data.model.DataMovementProtocol</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GlobusJobSubmission</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GlobusGKEndpoint</class>

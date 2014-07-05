@@ -71,7 +71,7 @@ import org.apache.aiaravata.application.catalog.data.resources.ApplicationInputR
 import org.apache.aiaravata.application.catalog.data.resources.ApplicationOutputResource;
 import org.apache.aiaravata.application.catalog.data.resources.BatchQueueResource;
 import org.apache.aiaravata.application.catalog.data.resources.ComputeHostPreferenceResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeHostResource;
+import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceResource;
 import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceFileSystemResource;
 import org.apache.aiaravata.application.catalog.data.resources.DataMovementInterfaceResource;
 import org.apache.aiaravata.application.catalog.data.resources.DataMovementProtocolResource;
@@ -153,13 +153,13 @@ public class AppCatalogJPAUtils {
      */
     public static Resource getResource(AppCatalogResourceType type, Object o) {
         switch (type){
-            case COMPUTE_RESOURCE:
-                if (o instanceof ComputeResource){
-                    return createComputeResource((ComputeResource) o);
-                }else {
-                    logger.error("Object should be a Compute Resource.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Compute Resource.");
-                }
+	        case COMPUTE_RESOURCE:
+				if (o instanceof ComputeResource){
+					return createComputeResource((ComputeResource) o);
+				}else{
+					logger.error("Object should be a Compute Resource.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Compute Resource.");
+				}
             case HOST_ALIAS:
                 if (o instanceof HostAlias){
                     return createHostAlias((HostAlias) o);
@@ -432,7 +432,7 @@ public class AppCatalogJPAUtils {
     private static Resource createDataMovementInterface(DataMovementInterface o) {
 		DataMovementInterfaceResource dataMovementInterfaceResource = new DataMovementInterfaceResource();
 		dataMovementInterfaceResource.setComputeResourceId(o.getComputeResourceId());
-		dataMovementInterfaceResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+		dataMovementInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
 		dataMovementInterfaceResource.setDataMovementProtocol(o.getDataMovementProtocol());
 		dataMovementInterfaceResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
 		dataMovementInterfaceResource.setPriorityOrder(o.getPriorityOrder());
@@ -443,7 +443,7 @@ public class AppCatalogJPAUtils {
 		JobSubmissionInterfaceResource jobSubmissionInterfaceResource = new JobSubmissionInterfaceResource();
 		jobSubmissionInterfaceResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
 		jobSubmissionInterfaceResource.setComputeResourceId(o.getComputeResourceId());
-		jobSubmissionInterfaceResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+		jobSubmissionInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
 		jobSubmissionInterfaceResource.setJobSubmissionProtocol(o.getJobSubmissionProtocol());
 		jobSubmissionInterfaceResource.setPriorityOrder(o.getPriorityOrder());
 		return jobSubmissionInterfaceResource;
@@ -452,7 +452,7 @@ public class AppCatalogJPAUtils {
     private static Resource createComputeResourceFileSystem(ComputeResourceFileSystem o) {
 		ComputeResourceFileSystemResource computeResourceFileSystemResource = new ComputeResourceFileSystemResource();
 		computeResourceFileSystemResource.setComputeResourceId(o.getComputeResourceId());
-		computeResourceFileSystemResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+		computeResourceFileSystemResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
 		computeResourceFileSystemResource.setPath(o.getPath());
 		computeResourceFileSystemResource.setFileSystem(o.getFileSystem());
 		return computeResourceFileSystemResource;
@@ -461,7 +461,7 @@ public class AppCatalogJPAUtils {
     private static Resource createBatchQueue(BatchQueue o) {
 		BatchQueueResource batchQueueResource = new BatchQueueResource();
 		batchQueueResource.setComputeResourceId(o.getComputeResourceId());
-		batchQueueResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+		batchQueueResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
 		batchQueueResource.setMaxRuntime(o.getMaxRuntime());
 		batchQueueResource.setMaxJobInQueue(o.getMaxJobInQueue());
 		batchQueueResource.setQueueDescription(o.getQueueDescription());
@@ -471,19 +471,18 @@ public class AppCatalogJPAUtils {
 		return batchQueueResource;
 	}
     private static Resource createComputeResource(ComputeResource o) {
-        ComputeHostResource hostResource = new ComputeHostResource();
-        hostResource.setResoureId(o.getResourceID());
-        hostResource.setHostName(o.getHostName());
-        hostResource.setDescription(o.getDescription());
-        hostResource.setPreferredJobSubmissionProtocol(o.getPreferredJobSubProtocol());
-        return hostResource;
-    }
+		ComputeResourceResource computeResourceResource = new ComputeResourceResource();
+		computeResourceResource.setResourceDescription(o.getResourceDescription());
+		computeResourceResource.setResourceId(o.getResourceId());
+		computeResourceResource.setHostName(o.getHostName());
+		return computeResourceResource;
+	}
 
     private static Resource createHostAlias(HostAlias o) {
         HostAliasResource aliasResource = new HostAliasResource();
         aliasResource.setResourceID(o.getResourceID());
         aliasResource.setAlias(o.getAlias());
-        aliasResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        aliasResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
         return aliasResource;
     }
 
@@ -491,7 +490,7 @@ public class AppCatalogJPAUtils {
         HostIPAddressResource ipAddressResource = new HostIPAddressResource();
         ipAddressResource.setResourceID(o.getResourceID());
         ipAddressResource.setIpaddress(o.getIpaddress());
-        ipAddressResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        ipAddressResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
         return ipAddressResource;
     }
 
@@ -586,7 +585,7 @@ public class AppCatalogJPAUtils {
         resource.setResourceID(o.getResourceID());
         resource.setSubmissionID(o.getSubmissionID());
         resource.setJobType(o.getJobType());
-        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
         return resource;
     }
 
@@ -595,7 +594,7 @@ public class AppCatalogJPAUtils {
         resource.setResourceID(o.getResourceID());
         resource.setDataMoveID(o.getDataMoveID());
         resource.setDataMoveType(o.getDataMoveType());
-        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+        resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
         return resource;
     }
 
@@ -617,7 +616,7 @@ public class AppCatalogJPAUtils {
         resource.setHostId(o.getHostID());
         resource.setExecutablePath(o.getExecutablePath());
         resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
-        resource.setHostResource((ComputeHostResource) createComputeResource(o.getComputeResource()));
+        resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
         return resource;
     }
 
@@ -704,7 +703,7 @@ public class AppCatalogJPAUtils {
         resource.setBatchQueue(o.getBatchQueue());
         resource.setScratchLocation(o.getScratchLocation());
         resource.setProjectNumber(o.getProjectNumber());
-        resource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeHostResource()));
+        resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeHostResource()));
         resource.setGatewayProfile((GatewayProfileResource)createGatewayProfile(o.getGatewayProfile()));
         return resource;
     }

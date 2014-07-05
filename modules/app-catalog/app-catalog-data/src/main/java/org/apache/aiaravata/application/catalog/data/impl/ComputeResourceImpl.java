@@ -41,7 +41,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
         try {
-            ComputeHostResource computeHostResource = new ComputeHostResource();
+            ComputeResourceResource computeHostResource = new ComputeResourceResource();
             computeHostResource.setHostName(description.getHostName());
             computeHostResource.setResoureId(AppCatalogUtils.getID(description.getHostName()));
             description.setResourceId(computeHostResource.getResoureId());
@@ -106,8 +106,8 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public void updateComputeResource(String computeResourceId, ComputeResourceDescription updatedComputeResource) throws AppCatalogException{
         try {
-            ComputeHostResource computeHostResource = new ComputeHostResource();
-            ComputeHostResource existingComputeResouce = (ComputeHostResource)computeHostResource.get(computeResourceId);
+            ComputeResourceResource computeHostResource = new ComputeResourceResource();
+            ComputeResourceResource existingComputeResouce = (ComputeResourceResource)computeHostResource.get(computeResourceId);
             existingComputeResouce.setHostName(updatedComputeResource.getHostName());
             existingComputeResouce.setPreferredJobSubmissionProtocol(updatedComputeResource.getPreferredJobSubmissionProtocol());
             existingComputeResouce.setDescription(updatedComputeResource.getResourceDescription());
@@ -405,8 +405,8 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public ComputeResourceDescription getComputeResource(String resourceId) throws AppCatalogException {
         try {
-            ComputeHostResource resource = new ComputeHostResource();
-            ComputeHostResource computeResource = (ComputeHostResource)resource.get(resourceId);
+            ComputeResourceResource resource = new ComputeResourceResource();
+            ComputeResourceResource computeResource = (ComputeResourceResource)resource.get(resourceId);
             return AppCatalogThriftConversion.getComputeHostDescription(computeResource);
         }catch (Exception e){
             logger.error("Error while retrieving compute resource...", e);
@@ -417,7 +417,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public List<ComputeResourceDescription> getComputeResourceList(Map<String, String> filters) throws AppCatalogException {
         try {
-            ComputeHostResource resource = new ComputeHostResource();
+            ComputeResourceResource resource = new ComputeResourceResource();
             for (String fieldName : filters.keySet() ){
                 if (fieldName.equals(AbstractResource.ComputeResourceConstants.HOST_NAME)){
                     List<Resource> resources = resource.get(AbstractResource.ComputeResourceConstants.HOST_NAME, filters.get(fieldName));
@@ -619,7 +619,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public boolean isComputeResourceExists(String resourceId) throws AppCatalogException {
         try {
-            ComputeHostResource resource = new ComputeHostResource();
+            ComputeResourceResource resource = new ComputeResourceResource();
             return resource.isExists(resourceId);
         }catch (Exception e){
             logger.error("Error while retrieving compute resource...", e);
@@ -630,7 +630,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public void removeComputeResource(String resourceId) throws AppCatalogException {
         try {
-            ComputeHostResource resource = new ComputeHostResource();
+            ComputeResourceResource resource = new ComputeResourceResource();
             resource.remove(resourceId);
         }catch (Exception e){
             logger.error("Error while removing compute resource...", e);

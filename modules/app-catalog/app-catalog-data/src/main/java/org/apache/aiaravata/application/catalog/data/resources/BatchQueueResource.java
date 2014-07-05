@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public class BatchQueueResource extends AbstractResource {
 	private final static Logger logger = LoggerFactory.getLogger(BatchQueueResource.class);
 	private String computeResourceId;
-	private ComputeHostResource computeHostResource;
+	private ComputeResourceResource computeHostResource;
 	private int maxRuntime;
 	private int maxJobInQueue;
 	private String queueDescription;
@@ -275,7 +275,7 @@ public class BatchQueueResource extends AbstractResource {
 		return computeResourceId;
 	}
 	
-	public ComputeHostResource getComputeHostResource() {
+	public ComputeResourceResource getComputeHostResource() {
 		return computeHostResource;
 	}
 	
@@ -307,7 +307,7 @@ public class BatchQueueResource extends AbstractResource {
 		this.computeResourceId=computeResourceId;
 	}
 	
-	public void setComputeHostResource(ComputeHostResource computeHostResource) {
+	public void setComputeHostResource(ComputeResourceResource computeHostResource) {
 		this.computeHostResource=computeHostResource;
 	}
 	

@@ -52,7 +52,7 @@ public class ComputeHostPreferenceResource extends AbstractResource {
     private String projectNumber;
 
     private GatewayProfileResource gatewayProfile;
-    private ComputeHostResource computeHostResource;
+    private ComputeResourceResource computeHostResource;
 
     public String getGatewayId() {
         return gatewayId;
@@ -126,11 +126,11 @@ public class ComputeHostPreferenceResource extends AbstractResource {
         this.gatewayProfile = gatewayProfile;
     }
 
-    public ComputeHostResource getComputeHostResource() {
+    public ComputeResourceResource getComputeHostResource() {
         return computeHostResource;
     }
 
-    public void setComputeHostResource(ComputeHostResource computeHostResource) {
+    public void setComputeHostResource(ComputeResourceResource computeHostResource) {
         this.computeHostResource = computeHostResource;
     }
 

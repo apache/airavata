@@ -19,7 +19,7 @@
  *
  */
 
-package appcatalog;
+package appcatalog.computeresource;
 
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;
@@ -31,18 +31,16 @@ import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
 
-public class JobManagerCommandGenerator {
+public class GridFTPDataMovementGenerator {
 	private static SQLData createSQLData() {
 		SQLData data = new SQLData();
-		data.setTableName("JOB_MANAGER_COMMAND");
-		data.getFieldData().put("RESOURCE_JOB_MANAGER_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("COMMAND_TYPE", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("COMMAND", Arrays.asList(new String[]{"VARCHAR", "(255)",}));
-		data.getPrimaryKeys().add("RESOURCE_JOB_MANAGER_ID");
-		data.getPrimaryKeys().add("COMMAND_TYPE");
-		data.getForiegnKeys().put("RESOURCE_JOB_MANAGER_ID", new SQLData.ForiegnKeyData("RESOURCE_JOB_MANAGER(RESOURCE_JOB_MANAGER_ID)","ResourceJobManager","ResourceJobManagerResource"));
+		data.setTableName("GRIDFTP_DATA_MOVEMENT");
+		data.getFieldData().put("DATA_MOVEMENT_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("SECURITY_PROTOCOL", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getPrimaryKeys().add("DATA_MOVEMENT_INTERFACE_ID");
 		return data;
 	}
+	
 	public static void testSqlGen() {
 		SQLData data = createSQLData();
 		SQLGenerator sqlGenerator = new SQLGenerator();

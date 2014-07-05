@@ -23,8 +23,8 @@ package org.apache.aiaravata.application.catalog.data.resources;
 
 public abstract class AbstractResource implements Resource {
     // table names
-    public static final String COMPUTE_RESOURCE = "ComputeResource";
-    public static final String HOST_ALIAS = "HostAlias";
+	public static final String COMPUTE_RESOURCE = "ComputeResource";
+	public static final String HOST_ALIAS = "HostAlias";
     public static final String HOST_IPADDRESS = "HostIPAddress";
     public static final String GSISSH_SUBMISSION = "GSISSHSubmission";
     public static final String GSISSH_EXPORT = "GSISSHExport";
@@ -59,14 +59,12 @@ public abstract class AbstractResource implements Resource {
 	public static final String LOCAL_DATA_MOVEMENT = "LocalDataMovement";
 	public static final String SSH_JOB_SUBMISSION = "SshJobSubmission";
 	
-    // Compute Resource Table
-    public final class ComputeResourceConstants {
-        public static final String RESOURCE_ID = "resourceID";
-        public static final String HOST_NAME = "hostName";
-        public static final String DESCRIPTION = "description";
-        public static final String SCRATCH_LOC = "scratchLocation";
-        public static final String PREFERED_SUBMISSION_PROTOCOL = "preferredJobSubProtocol";
-    }
+	// Compute Resource Table
+	public final class ComputeResourceConstants {
+		public static final String RESOURCE_DESCRIPTION = "resourceDescription";
+		public static final String RESOURCE_ID = "resourceId";
+		public static final String HOST_NAME = "hostName";
+	}
 
     // Host Alias Table
     public final class HostAliasConstants {

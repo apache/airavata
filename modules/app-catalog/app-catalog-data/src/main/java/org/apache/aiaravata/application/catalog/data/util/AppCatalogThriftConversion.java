@@ -37,8 +37,8 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayProfile;
 import java.util.*;
 
 public class AppCatalogThriftConversion {
-    public static ComputeHostResource getComputeHostResource (ComputeResourceDescription description){
-        ComputeHostResource resource = new ComputeHostResource();
+    public static ComputeResourceResource getComputeHostResource (ComputeResourceDescription description){
+        ComputeResourceResource resource = new ComputeResourceResource();
         resource.setHostName(description.getHostName());
         resource.setDescription(description.getComputeResourceDescription());
         resource.setPreferredJobSubmissionProtocol(description.getPreferredJobSubmissionProtocol());
@@ -46,7 +46,7 @@ public class AppCatalogThriftConversion {
         return resource;
     }
 
-    public static ComputeResourceDescription getComputeHostDescription (ComputeHostResource resource) throws AppCatalogException{
+    public static ComputeResourceDescription getComputeHostDescription (ComputeResourceResource resource) throws AppCatalogException{
         ComputeResourceDescription description = new ComputeResourceDescription();
         description.setResourceId(resource.getResoureId());
         description.setHostName(resource.getHostName());
@@ -80,7 +80,7 @@ public class AppCatalogThriftConversion {
     public static  List<ComputeResourceDescription> getComputeDescriptionList (List<Resource> resources) throws AppCatalogException {
         List<ComputeResourceDescription> list = new ArrayList<ComputeResourceDescription>();
         for (Resource resource : resources){
-            list.add(getComputeHostDescription((ComputeHostResource)resource));
+            list.add(getComputeHostDescription((ComputeResourceResource)resource));
         }
         return list;
     }

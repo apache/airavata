@@ -19,7 +19,7 @@
  *
  */
 
-package appcatalog;
+package appcatalog.computeresource;
 
 import generators.JPAClassGenerator;
 import generators.JPAResourceClassGenerator;
@@ -31,15 +31,17 @@ import model.JPAClassModel;
 import model.JPAResourceClassModel;
 import model.SQLData;
 
-public class SCPDataMovementGenerator {
+public class JobSubmissionInterfaceGenerator {
 	private static SQLData createSQLData() {
 		SQLData data = new SQLData();
-		data.setTableName("SCP_DATA_MOVEMENT");
-		data.getFieldData().put("DATA_MOVEMENT_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("SECURITY_PROTOCOL", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
-		data.getFieldData().put("ALTERNATIVE_SCP_HOSTNAME", Arrays.asList(new String[]{"VARCHAR", "(255)"}));
-		data.getFieldData().put("SSH_PORT", Arrays.asList(new String[]{"INTEGER"}));
-		data.getPrimaryKeys().add("DATA_MOVEMENT_INTERFACE_ID");
+		data.setTableName("JOB_SUBMISSION_INTERFACE");
+		data.getFieldData().put("COMPUTE_RESOURCE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("JOB_SUBMISSION_INTERFACE_ID", Arrays.asList(new String[]{"VARCHAR", "(255)", "NOT", "NULL"}));
+		data.getFieldData().put("JOB_SUBMISSION_PROTOCOL", Arrays.asList(new String[]{"VARCHAR", "(255)","NOT", "NULL"}));
+		data.getFieldData().put("PRIORITY_ORDER", Arrays.asList(new String[]{"INTEGER"}));
+		data.getPrimaryKeys().add("COMPUTE_RESOURCE_ID");
+		data.getPrimaryKeys().add("JOB_SUBMISSION_INTERFACE_ID");
+		data.getForiegnKeys().put("COMPUTE_RESOURCE_ID", new SQLData.ForiegnKeyData("COMPUTE_RESOURCE(RESOURCE_ID)","ComputeResource","ComputeHostResource"));
 		return data;
 	}
 	public static void testSqlGen() {

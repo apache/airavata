@@ -25,7 +25,7 @@ public class DataMovementProtocolResource extends AbstractResource {
     private String resourceID;
     private String dataMoveID;
     private String dataMoveType;
-    private ComputeHostResource computeHostResource;
+    private ComputeResourceResource computeHostResource;
 
     public void remove(Object identifier) throws AppCatalogException {
         HashMap<String, String> ids;
@@ -321,11 +321,11 @@ public class DataMovementProtocolResource extends AbstractResource {
         this.dataMoveType = dataMoveType;
     }
 
-    public ComputeHostResource getComputeHostResource() {
+    public ComputeResourceResource getComputeHostResource() {
         return computeHostResource;
     }
 
-    public void setComputeHostResource(ComputeHostResource computeHostResource) {
+    public void setComputeHostResource(ComputeResourceResource computeHostResource) {
         this.computeHostResource = computeHostResource;
     }
 }
