@@ -52,10 +52,12 @@ import org.apache.aiaravata.application.catalog.data.model.GridFTPDMEndpoint;
 import org.apache.aiaravata.application.catalog.data.model.GridFTPDataMovement;
 import org.apache.aiaravata.application.catalog.data.model.HostAlias;
 import org.apache.aiaravata.application.catalog.data.model.HostIPAddress;
+import org.apache.aiaravata.application.catalog.data.model.JobManagerCommand;
 import org.apache.aiaravata.application.catalog.data.model.JobSubmissionInterface;
 import org.apache.aiaravata.application.catalog.data.model.JobSubmissionProtocol;
 import org.apache.aiaravata.application.catalog.data.model.LibraryApendPath;
 import org.apache.aiaravata.application.catalog.data.model.LibraryPrepandPath;
+import org.apache.aiaravata.application.catalog.data.model.ResourceJobManager;
 import org.apache.aiaravata.application.catalog.data.model.SCPDataMovement;
 import org.apache.aiaravata.application.catalog.data.model.SSHSubmission;
 import org.apache.aiaravata.application.catalog.data.resources.AppDeploymentResource;
@@ -82,11 +84,13 @@ import org.apache.aiaravata.application.catalog.data.resources.GridFTPDMEndpoint
 import org.apache.aiaravata.application.catalog.data.resources.GridFTPDataMovementResource;
 import org.apache.aiaravata.application.catalog.data.resources.HostAliasResource;
 import org.apache.aiaravata.application.catalog.data.resources.HostIPAddressResource;
+import org.apache.aiaravata.application.catalog.data.resources.JobManagerCommandResource;
 import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionInterfaceResource;
 import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionProtocolResource;
 import org.apache.aiaravata.application.catalog.data.resources.LibraryApendPathResource;
 import org.apache.aiaravata.application.catalog.data.resources.LibraryPrepandPathResource;
 import org.apache.aiaravata.application.catalog.data.resources.Resource;
+import org.apache.aiaravata.application.catalog.data.resources.ResourceJobManagerResource;
 import org.apache.aiaravata.application.catalog.data.resources.SCPDataMovementResource;
 import org.apache.aiaravata.application.catalog.data.resources.SSHSubmissionResource;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -355,11 +359,43 @@ public class AppCatalogJPAUtils {
 					logger.error("Object should be a Data Movement Interface.", new IllegalArgumentException());
 					throw new IllegalArgumentException("Object should be a Data Movement Interface.");
 				}
+            case RESOURCE_JOB_MANAGER:
+				if (o instanceof ResourceJobManager){
+					return createResourceJobManager((ResourceJobManager) o);
+				}else{
+					logger.error("Object should be a Resource Job Manager.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Resource Job Manager.");
+				}
+            case JOB_MANAGER_COMMAND:
+				if (o instanceof JobManagerCommand){
+					return createJobManagerCommand((JobManagerCommand) o);
+				}else{
+					logger.error("Object should be a Job Manager Command.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Job Manager Command.");
+				}
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
                 throw new IllegalArgumentException("Illegal data type..");
         }
     }
+    
+    private static Resource createJobManagerCommand(JobManagerCommand o) {
+		JobManagerCommandResource jobManagerCommandResource = new JobManagerCommandResource();
+		jobManagerCommandResource.setResourceJobManagerId(o.getResourceJobManagerId());
+		jobManagerCommandResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
+		jobManagerCommandResource.setCommandType(o.getCommandType());
+		jobManagerCommandResource.setCommand(o.getCommand());
+		return jobManagerCommandResource;
+	}
+    
+    private static Resource createResourceJobManager(ResourceJobManager o) {
+		ResourceJobManagerResource resourceJobManagerResource = new ResourceJobManagerResource();
+		resourceJobManagerResource.setResourceJobManagerId(o.getResourceJobManagerId());
+		resourceJobManagerResource.setPushMonitoringEndpoint(o.getPushMonitoringEndpoint());
+		resourceJobManagerResource.setJobManagerBinPath(o.getJobManagerBinPath());
+		resourceJobManagerResource.setResourceJobManagerType(o.getResourceJobManagerType());
+		return resourceJobManagerResource;
+	}
     
     private static Resource createDataMovementInterface(DataMovementInterface o) {
 		DataMovementInterfaceResource dataMovementInterfaceResource = new DataMovementInterfaceResource();
