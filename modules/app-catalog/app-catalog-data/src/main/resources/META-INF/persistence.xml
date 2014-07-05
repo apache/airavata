@@ -53,6 +53,8 @@
         <class>org.apache.aiaravata.application.catalog.data.model.ComputeResourceFileSystem</class>
         <class>org.apache.aiaravata.application.catalog.data.model.JobSubmissionInterface</class>
 	<class>org.apache.aiaravata.application.catalog.data.model.DataMovementInterface</class>
+	<class>org.apache.aiaravata.application.catalog.data.model.ResourceJobManager</class>
+	<class>org.apache.aiaravata.application.catalog.data.model.JobManagerCommand</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

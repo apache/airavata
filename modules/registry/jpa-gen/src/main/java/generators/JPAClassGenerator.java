@@ -141,6 +141,9 @@ public class JPAClassGenerator extends AbstractGenerator{
 	}
 
 	public String generateJPAPKClass(JPAPKClassModel model){
+		if (model.pkFields.size()==0){
+			return "";
+		}
 		String classStr=null;
 		classStr=addLines(classStr,"public class "+model.className+" implements Serializable {");
 		

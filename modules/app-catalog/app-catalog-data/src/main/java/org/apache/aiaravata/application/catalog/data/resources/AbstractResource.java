@@ -53,6 +53,8 @@ public abstract class AbstractResource implements Resource {
 	public static final String COMPUTE_RESOURCE_FILE_SYSTEM = "ComputeResourceFileSystem";
 	public static final String JOB_SUBMISSION_INTERFACE = "JobSubmissionInterface";
 	public static final String DATA_MOVEMENT_INTERFACE = "DataMovementInterface";
+	public static final String RESOURCE_JOB_MANAGER = "ResourceJobManager";
+	public static final String JOB_MANAGER_COMMAND = "JobManagerCommand";
 	
     // Compute Resource Table
     public final class ComputeResourceConstants {
@@ -262,5 +264,20 @@ public abstract class AbstractResource implements Resource {
 		public static final String DATA_MOVEMENT_PROTOCOL = "dataMovementProtocol";
 		public static final String DATA_MOVEMENT_INTERFACE_ID = "dataMovementInterfaceId";
 		public static final String PRIORITY_ORDER = "priorityOrder";
+	}
+	
+	// Resource Job Manager Table
+	public final class ResourceJobManagerConstants {
+		public static final String RESOURCE_JOB_MANAGER_ID = "resourceJobManagerId";
+		public static final String PUSH_MONITORING_ENDPOINT = "pushMonitoringEndpoint";
+		public static final String JOB_MANAGER_BIN_PATH = "jobManagerBinPath";
+		public static final String RESOURCE_JOB_MANAGER_TYPE = "resourceJobManagerType";
+	}
+	
+	// Job Manager Command Table
+	public final class JobManagerCommandConstants {
+		public static final String RESOURCE_JOB_MANAGER_ID = "resourceJobManagerId";
+		public static final String COMMAND_TYPE = "commandType";
+		public static final String COMMAND = "command";
 	}
 }

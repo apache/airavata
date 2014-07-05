@@ -459,7 +459,7 @@ public class JPAResourceClassGenerator extends AbstractGenerator {
 		for(JPAClassField field:model.jpaClassModel.fields){
 			classStr=addLines(classStr,tabs(2)+resourceVariableName+".set"+field.fieldTitle+"(o.get"+field.fieldTitle+"());");
 			if (field.foriegnKey){
-				classStr=addLines(classStr,tabs(2)+resourceVariableName+".set"+field.foriegnKeyJPAResourceClass+"(("+field.foriegnKeyJPAResourceClass+")create"+field.foriegnKeyJPAResourceClass+"(o.get"+field.foriegnKeyJPAClass+"()));");
+				classStr=addLines(classStr,tabs(2)+resourceVariableName+".set"+field.foriegnKeyJPAResourceClass+"(("+field.foriegnKeyJPAResourceClass+")create"+field.foriegnKeyJPAClass+"(o.get"+field.foriegnKeyJPAClass+"()));");
 			}
 		}
 		classStr=addLines(classStr,tabs(2)+"return "+resourceVariableName+";");
