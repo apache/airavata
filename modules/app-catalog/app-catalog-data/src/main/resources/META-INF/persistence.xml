@@ -49,6 +49,10 @@
         <class>org.apache.aiaravata.application.catalog.data.model.ApplicationOutput</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GatewayProfile</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ComputeResourcePreference</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.BatchQueue</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.ComputeResourceFileSystem</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.JobSubmissionInterface</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.BatchQueue</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

@@ -49,7 +49,10 @@ public abstract class AbstractResource implements Resource {
     public static final String APPLICATION_OUTPUT = "ApplicationOutput";
     public static final String GATEWAY_PROFILE = "GatewayProfile";
     public static final String COMPUTE_RESOURCE_PREFERENCE = "ComputeResourcePreference";
-
+	public static final String BATCH_QUEUE = "BatchQueue";
+	public static final String COMPUTE_RESOURCE_FILE_SYSTEM = "ComputeResourceFileSystem";
+	public static final String JOB_SUBMISSION_INTERFACE = "JobSubmissionInterface";
+	
     // Compute Resource Table
     public final class ComputeResourceConstants {
         public static final String RESOURCE_ID = "resourceID";
@@ -226,5 +229,29 @@ public abstract class AbstractResource implements Resource {
         public static final String ALLOCATION_PROJECT_NUMBER = "projectNumber";
     }
 
-
+    // Batch Queue Table
+ 	public final class BatchQueueConstants {
+ 		public static final String COMPUTE_RESOURCE_ID = "computeResourceId";
+ 		public static final String MAX_RUNTIME = "maxRuntime";
+ 		public static final String MAX_JOB_IN_QUEUE = "maxJobInQueue";
+ 		public static final String QUEUE_DESCRIPTION = "queueDescription";
+ 		public static final String QUEUE_NAME = "queueName";
+ 		public static final String MAX_PROCESSORS = "maxProcessors";
+ 		public static final String MAX_NODES = "maxNodes";
+ 	}
+ 	
+	// Compute Resource File System Table
+	public final class ComputeResourceFileSystemConstants {
+		public static final String COMPUTE_RESOURCE_ID = "computeResourceId";
+		public static final String PATH = "path";
+		public static final String FILE_SYSTEM = "fileSystem";
+	}
+	
+	// Job Submission Interface Table
+	public final class JobSubmissionInterfaceConstants {
+		public static final String JOB_SUBMISSION_INTERFACE_ID = "jobSubmissionInterfaceId";
+		public static final String COMPUTE_RESOURCE_ID = "computeResourceId";
+		public static final String JOB_SUBMISSION_PROTOCOL = "jobSubmissionProtocol";
+		public static final String PRIORITY_ORDER = "priorityOrder";
+	}
 }
