@@ -184,7 +184,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
         try {
-            SSHSubmissionResource resource = new SSHSubmissionResource();
+            SshJobSubmissionResource resource = new SshJobSubmissionResource();
             String hostName = "SSH";
             resource.setSubmissionID(AppCatalogUtils.getID(hostName));
             resource.setSshPort(resource.getSshPort());
@@ -329,7 +329,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
         try {
-            SCPDataMovementResource resource = new SCPDataMovementResource();
+            ScpDataMovementResource resource = new ScpDataMovementResource();
             String hostName = "SCP";
             resource.setDataMoveID(AppCatalogUtils.getID(hostName));
             resource.setSecurityProtocol(scpDataMovement.getSecurityProtocol().toString());
@@ -362,7 +362,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addGridFTPDataMovement(GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
         try {
-            GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
+            GridftpDataMovementResource resource = new GridftpDataMovementResource();
             String hostName = "GRID_FTP";
             resource.setDataMoveID(AppCatalogUtils.getID(hostName));
             resource.setSecurityProtocol(gridFTPDataMovement.getSecurityProtocol().toString());
@@ -372,7 +372,7 @@ public class ComputeResourceImpl implements ComputeResource {
             List<String> gridFTPEndPoint = gridFTPDataMovement.getGridFTPEndPoint();
             if (gridFTPEndPoint != null && !gridFTPEndPoint.isEmpty()) {
                 for (String endpoint : gridFTPEndPoint) {
-                    GridFTPDMEndpointResource endpointResource = new GridFTPDMEndpointResource();
+                    GridftpEndpointResource endpointResource = new GridftpEndpointResource();
                     endpointResource.setDataMoveId(resource.getDataMoveID());
                     endpointResource.setEndpoint(endpoint);
                     endpointResource.setGridFTPDataMovementResource(resource);
@@ -517,8 +517,8 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public SSHJobSubmission getSSHJobSubmission(String submissionId) throws AppCatalogException {
         try {
-            SSHSubmissionResource resource = new SSHSubmissionResource();
-            SSHSubmissionResource submissionResource = (SSHSubmissionResource)resource.get(submissionId);
+            SshJobSubmissionResource resource = new SshJobSubmissionResource();
+            SshJobSubmissionResource submissionResource = (SshJobSubmissionResource)resource.get(submissionId);
             return AppCatalogThriftConversion.getSSHJobSubmissionDescription(submissionResource);
         }catch (Exception e){
             logger.error("Error while retrieving SSH Job Submission...", e);
@@ -529,7 +529,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public List<SSHJobSubmission> getSSHJobSubmissionList(Map<String, String> filters) throws AppCatalogException {
         try {
-            SSHSubmissionResource resource = new SSHSubmissionResource();
+            SshJobSubmissionResource resource = new SshJobSubmissionResource();
             for (String fieldName : filters.keySet() ){
                if (fieldName.equals(AbstractResource.SSHSubmissionConstants.RESOURCE_JOB_MANAGER)){
                     List<Resource> resources = resource.get(AbstractResource.SSHSubmissionConstants.RESOURCE_JOB_MANAGER, filters.get(fieldName));
@@ -551,8 +551,8 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public SCPDataMovement getSCPDataMovement(String dataMoveId) throws AppCatalogException {
         try {
-            SCPDataMovementResource resource = new SCPDataMovementResource();
-            SCPDataMovementResource dataMovementResource = (SCPDataMovementResource)resource.get(dataMoveId);
+            ScpDataMovementResource resource = new ScpDataMovementResource();
+            ScpDataMovementResource dataMovementResource = (ScpDataMovementResource)resource.get(dataMoveId);
             return AppCatalogThriftConversion.getSCPDataMovementDescription(dataMovementResource);
         }catch (Exception e){
             logger.error("Error while retrieving SCP Data Movement...", e);
@@ -563,7 +563,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public List<SCPDataMovement> getSCPDataMovementList(Map<String, String> filters) throws AppCatalogException {
         try {
-            SCPDataMovementResource resource = new SCPDataMovementResource();
+            ScpDataMovementResource resource = new ScpDataMovementResource();
             for (String fieldName : filters.keySet() ){
                 if (fieldName.equals(AbstractResource.SCPDataMovementConstants.SECURITY_PROTOCOL)){
                     List<Resource> resources = resource.get(AbstractResource.SCPDataMovementConstants.SECURITY_PROTOCOL, filters.get(fieldName));
@@ -585,8 +585,8 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public GridFTPDataMovement getGridFTPDataMovement(String dataMoveId) throws AppCatalogException {
         try {
-            GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
-            GridFTPDataMovementResource dataMovementResource = (GridFTPDataMovementResource)resource.get(dataMoveId);
+            GridftpDataMovementResource resource = new GridftpDataMovementResource();
+            GridftpDataMovementResource dataMovementResource = (GridftpDataMovementResource)resource.get(dataMoveId);
             return AppCatalogThriftConversion.getGridFTPDataMovementDescription(dataMovementResource);
         }catch (Exception e){
             logger.error("Error while retrieving Grid FTP Data Movement...", e);
@@ -597,7 +597,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public List<GridFTPDataMovement> getGridFTPDataMovementList(Map<String, String> filters) throws AppCatalogException {
         try {
-            GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
+            GridftpDataMovementResource resource = new GridftpDataMovementResource();
             for (String fieldName : filters.keySet() ){
                 if (fieldName.equals(AbstractResource.GridFTPDataMovementConstants.SECURITY_PROTOCOL)){
                     List<Resource> resources = resource.get(AbstractResource.GridFTPDataMovementConstants.SECURITY_PROTOCOL, filters.get(fieldName));

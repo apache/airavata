@@ -33,10 +33,10 @@ public abstract class AbstractResource implements Resource {
     public static final String GLOBUS_SUBMISSION = "GlobusJobSubmission";
     public static final String GLOBUS_GK_ENDPOINT = "GlobusGKEndpoint";
     public static final String SSH_SUBMISSION = "SSHSubmission";
-    public static final String SCP_DATAMOVEMENT = "SCPDataMovement";
-    public static final String GRID_FTP_DATAMOVEMENT = "GridFTPDataMovement";
-    public static final String GRIDFTP_DM_ENDPOINT = "GridFTPDMEndpoint";
-    public static final String JOB_SUBMISSION_PROTOCOL = "JobSubmissionProtocol";
+	public static final String SCP_DATA_MOVEMENT = "ScpDataMovement";
+	public static final String GRIDFTP_DATA_MOVEMENT = "GridftpDataMovement";
+	public static final String GRIDFTP_ENDPOINT = "GridftpEndpoint";
+	public static final String JOB_SUBMISSION_PROTOCOL = "JobSubmissionProtocol";
     public static final String DATA_MOVEMENT_PROTOCOL = "DataMovementProtocol";
     public static final String APPLICATION_MODULE = "ApplicationModule";
     public static final String APPLICATION_DEPLOYMENT = "ApplicationDeployment";
@@ -55,6 +55,9 @@ public abstract class AbstractResource implements Resource {
 	public static final String DATA_MOVEMENT_INTERFACE = "DataMovementInterface";
 	public static final String RESOURCE_JOB_MANAGER = "ResourceJobManager";
 	public static final String JOB_MANAGER_COMMAND = "JobManagerCommand";
+	public static final String LOCAL_SUBMISSION = "LocalSubmission";
+	public static final String LOCAL_DATA_MOVEMENT = "LocalDataMovement";
+	public static final String SSH_JOB_SUBMISSION = "SshJobSubmission";
 	
     // Compute Resource Table
     public final class ComputeResourceConstants {
@@ -124,11 +127,14 @@ public abstract class AbstractResource implements Resource {
         public static final String SSH_PORT = "sshPort";
     }
 
-    public final class SCPDataMovementConstants {
-        public static final String DATA_MOVE_ID = "dataMoveID";
-        public static final String SECURITY_PROTOCOL = "securityProtocol";
-        public static final String SSH_PORT = "sshPort";
-    }
+	// Scp Data Movement Table
+	public final class ScpDataMovementConstants {
+		public static final String QUEUE_DESCRIPTION = "queueDescription";
+		public static final String DATA_MOVEMENT_INTERFACE_ID = "dataMovementInterfaceId";
+		public static final String SECURITY_PROTOCOL = "securityProtocol";
+		public static final String ALTERNATIVE_SCP_HOSTNAME = "alternativeScpHostname";
+		public static final String SSH_PORT = "sshPort";
+	}
 
     public final class GridFTPDataMovementConstants {
         public static final String DATA_MOVE_ID = "dataMoveID";
@@ -279,5 +285,37 @@ public abstract class AbstractResource implements Resource {
 		public static final String RESOURCE_JOB_MANAGER_ID = "resourceJobManagerId";
 		public static final String COMMAND_TYPE = "commandType";
 		public static final String COMMAND = "command";
+	}
+	
+	// Gridftp Data Movement Table
+	public final class GridftpDataMovementConstants {
+		public static final String DATA_MOVEMENT_INTERFACE_ID = "dataMovementInterfaceId";
+		public static final String SECURITY_PROTOCOL = "securityProtocol";
+	}
+	
+	// Gridftp Endpoint Table
+	public final class GridftpEndpointConstants {
+		public static final String ENDPOINT = "endpoint";
+		public static final String DATA_MOVEMENT_INTERFACE_ID = "dataMovementInterfaceId";
+	}
+	
+	// Local Submission Table
+	public final class LocalSubmissionConstants {
+		public static final String RESOURCE_JOB_MANAGER_ID = "resourceJobManagerId";
+		public static final String JOB_SUBMISSION_INTERFACE_ID = "jobSubmissionInterfaceId";
+	}
+	
+	// Local Data Movement Table
+	public final class LocalDataMovementConstants {
+		public static final String DATA_MOVEMENT_INTERFACE_ID = "dataMovementInterfaceId";
+	}
+	
+	// Ssh Job Submission Table
+	public final class SshJobSubmissionConstants {
+		public static final String RESOURCE_JOB_MANAGER_ID = "resourceJobManagerId";
+		public static final String JOB_SUBMISSION_INTERFACE_ID = "jobSubmissionInterfaceId";
+		public static final String ALTERNATIVE_SSH_HOSTNAME = "alternativeSshHostname";
+		public static final String SECURITY_PROTOCOL = "securityProtocol";
+		public static final String SSH_PORT = "sshPort";
 	}
 }

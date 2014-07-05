@@ -21,41 +21,39 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "GRID_FTP_DATAMOVEMENT")
-public class GridFTPDataMovement implements Serializable {
-    @Id
-    @Column(name = "DATA_MOVE_ID")
-    private String dataMoveID;
-    @Column(name = "SECURITY_PROTOCOL")
-    private String securityProtocol;
-    @Column(name = "GRID_FTP_EP")
-    private String gridFTPEP;
-
-    public String getDataMoveID() {
-        return dataMoveID;
-    }
-
-    public void setDataMoveID(String dataMoveID) {
-        this.dataMoveID = dataMoveID;
-    }
-
-    public String getSecurityProtocol() {
-        return securityProtocol;
-    }
-
-    public void setSecurityProtocol(String securityProtocol) {
-        this.securityProtocol = securityProtocol;
-    }
-
-    public String getGridFTPEP() {
-        return gridFTPEP;
-    }
-
-    public void setGridFTPEP(String gridFTPEP) {
-        this.gridFTPEP = gridFTPEP;
-    }
+public class GridftpEndpoint_PK implements Serializable {
+	private String endpoint;
+	private String dataMovementInterfaceId;
+	public GridftpEndpoint_PK(String endpoint, String dataMovementInterfaceId){
+		this.endpoint = endpoint;
+		this.dataMovementInterfaceId = dataMovementInterfaceId;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return 1;
+	}
+	
+	public String getEndpoint() {
+		return endpoint;
+	}
+	
+	public String getDataMovementInterfaceId() {
+		return dataMovementInterfaceId;
+	}
+	
+	public void setEndpoint(String endpoint) {
+		this.endpoint=endpoint;
+	}
+	
+	public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+		this.dataMovementInterfaceId=dataMovementInterfaceId;
+	}
 }
