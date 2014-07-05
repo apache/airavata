@@ -82,12 +82,11 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField HOST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("hostName", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField HOST_ALIASES_FIELD_DESC = new org.apache.thrift.protocol.TField("hostAliases", org.apache.thrift.protocol.TType.SET, (short)4);
   private static final org.apache.thrift.protocol.TField IP_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("ipAddresses", org.apache.thrift.protocol.TType.SET, (short)5);
-  private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceDescription", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManager", org.apache.thrift.protocol.TType.I32, (short)7);
-  private static final org.apache.thrift.protocol.TField BATCH_QUEUES_FIELD_DESC = new org.apache.thrift.protocol.TField("batchQueues", org.apache.thrift.protocol.TType.LIST, (short)8);
-  private static final org.apache.thrift.protocol.TField FILE_SYSTEMS_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSystems", org.apache.thrift.protocol.TType.MAP, (short)9);
-  private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaces", org.apache.thrift.protocol.TType.LIST, (short)10);
-  private static final org.apache.thrift.protocol.TField DATA_MOVEMENET_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovemenetInterfaces", org.apache.thrift.protocol.TType.LIST, (short)11);
+  private static final org.apache.thrift.protocol.TField RESOURCE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceDescription", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField BATCH_QUEUES_FIELD_DESC = new org.apache.thrift.protocol.TField("batchQueues", org.apache.thrift.protocol.TType.LIST, (short)7);
+  private static final org.apache.thrift.protocol.TField FILE_SYSTEMS_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSystems", org.apache.thrift.protocol.TType.MAP, (short)8);
+  private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaces", org.apache.thrift.protocol.TType.LIST, (short)9);
+  private static final org.apache.thrift.protocol.TField DATA_MOVEMENET_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovemenetInterfaces", org.apache.thrift.protocol.TType.LIST, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -100,8 +99,7 @@ import org.slf4j.LoggerFactory;
   private String hostName; // required
   private Set<String> hostAliases; // optional
   private Set<String> ipAddresses; // optional
-  private String computeResourceDescription; // optional
-  private ResourceJobManager resourceJobManager; // optional
+  private String resourceDescription; // optional
   private List<BatchQueue> batchQueues; // optional
   private Map<FileSystems,String> fileSystems; // optional
   private List<JobSubmissionInterface> jobSubmissionInterfaces; // optional
@@ -114,16 +112,11 @@ import org.slf4j.LoggerFactory;
     HOST_NAME((short)3, "hostName"),
     HOST_ALIASES((short)4, "hostAliases"),
     IP_ADDRESSES((short)5, "ipAddresses"),
-    COMPUTE_RESOURCE_DESCRIPTION((short)6, "computeResourceDescription"),
-    /**
-     * 
-     * @see ResourceJobManager
-     */
-    RESOURCE_JOB_MANAGER((short)7, "resourceJobManager"),
-    BATCH_QUEUES((short)8, "batchQueues"),
-    FILE_SYSTEMS((short)9, "fileSystems"),
-    JOB_SUBMISSION_INTERFACES((short)10, "jobSubmissionInterfaces"),
-    DATA_MOVEMENET_INTERFACES((short)11, "dataMovemenetInterfaces");
+    RESOURCE_DESCRIPTION((short)6, "resourceDescription"),
+    BATCH_QUEUES((short)7, "batchQueues"),
+    FILE_SYSTEMS((short)8, "fileSystems"),
+    JOB_SUBMISSION_INTERFACES((short)9, "jobSubmissionInterfaces"),
+    DATA_MOVEMENET_INTERFACES((short)10, "dataMovemenetInterfaces");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -148,17 +141,15 @@ import org.slf4j.LoggerFactory;
           return HOST_ALIASES;
         case 5: // IP_ADDRESSES
           return IP_ADDRESSES;
-        case 6: // COMPUTE_RESOURCE_DESCRIPTION
-          return COMPUTE_RESOURCE_DESCRIPTION;
-        case 7: // RESOURCE_JOB_MANAGER
-          return RESOURCE_JOB_MANAGER;
-        case 8: // BATCH_QUEUES
+        case 6: // RESOURCE_DESCRIPTION
+          return RESOURCE_DESCRIPTION;
+        case 7: // BATCH_QUEUES
           return BATCH_QUEUES;
-        case 9: // FILE_SYSTEMS
+        case 8: // FILE_SYSTEMS
           return FILE_SYSTEMS;
-        case 10: // JOB_SUBMISSION_INTERFACES
+        case 9: // JOB_SUBMISSION_INTERFACES
           return JOB_SUBMISSION_INTERFACES;
-        case 11: // DATA_MOVEMENET_INTERFACES
+        case 10: // DATA_MOVEMENET_INTERFACES
           return DATA_MOVEMENET_INTERFACES;
         default:
           return null;
@@ -202,7 +193,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __ISEMPTY_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.COMPUTE_RESOURCE_DESCRIPTION,_Fields.RESOURCE_JOB_MANAGER,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENET_INTERFACES};
+  private _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENET_INTERFACES};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -218,10 +209,8 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.IP_ADDRESSES, new org.apache.thrift.meta_data.FieldMetaData("ipAddresses", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-    tmpMap.put(_Fields.COMPUTE_RESOURCE_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("computeResourceDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.RESOURCE_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("resourceDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.RESOURCE_JOB_MANAGER, new org.apache.thrift.meta_data.FieldMetaData("resourceJobManager", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResourceJobManager.class)));
     tmpMap.put(_Fields.BATCH_QUEUES, new org.apache.thrift.meta_data.FieldMetaData("batchQueues", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, BatchQueue.class))));
@@ -278,11 +267,8 @@ import org.slf4j.LoggerFactory;
       Set<String> __this__ipAddresses = new HashSet<String>(other.ipAddresses);
       this.ipAddresses = __this__ipAddresses;
     }
-    if (other.isSetComputeResourceDescription()) {
-      this.computeResourceDescription = other.computeResourceDescription;
-    }
-    if (other.isSetResourceJobManager()) {
-      this.resourceJobManager = other.resourceJobManager;
+    if (other.isSetResourceDescription()) {
+      this.resourceDescription = other.resourceDescription;
     }
     if (other.isSetBatchQueues()) {
       List<BatchQueue> __this__batchQueues = new ArrayList<BatchQueue>(other.batchQueues.size());
@@ -335,8 +321,7 @@ import org.slf4j.LoggerFactory;
     this.hostName = null;
     this.hostAliases = null;
     this.ipAddresses = null;
-    this.computeResourceDescription = null;
-    this.resourceJobManager = null;
+    this.resourceDescription = null;
     this.batchQueues = null;
     this.fileSystems = null;
     this.jobSubmissionInterfaces = null;
@@ -487,57 +472,26 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getComputeResourceDescription() {
-    return this.computeResourceDescription;
+  public String getResourceDescription() {
+    return this.resourceDescription;
   }
 
-  public void setComputeResourceDescription(String computeResourceDescription) {
-    this.computeResourceDescription = computeResourceDescription;
+  public void setResourceDescription(String resourceDescription) {
+    this.resourceDescription = resourceDescription;
   }
 
-  public void unsetComputeResourceDescription() {
-    this.computeResourceDescription = null;
+  public void unsetResourceDescription() {
+    this.resourceDescription = null;
   }
 
-  /** Returns true if field computeResourceDescription is set (has been assigned a value) and false otherwise */
-  public boolean isSetComputeResourceDescription() {
-    return this.computeResourceDescription != null;
+  /** Returns true if field resourceDescription is set (has been assigned a value) and false otherwise */
+  public boolean isSetResourceDescription() {
+    return this.resourceDescription != null;
   }
 
-  public void setComputeResourceDescriptionIsSet(boolean value) {
+  public void setResourceDescriptionIsSet(boolean value) {
     if (!value) {
-      this.computeResourceDescription = null;
-    }
-  }
-
-  /**
-   * 
-   * @see ResourceJobManager
-   */
-  public ResourceJobManager getResourceJobManager() {
-    return this.resourceJobManager;
-  }
-
-  /**
-   * 
-   * @see ResourceJobManager
-   */
-  public void setResourceJobManager(ResourceJobManager resourceJobManager) {
-    this.resourceJobManager = resourceJobManager;
-  }
-
-  public void unsetResourceJobManager() {
-    this.resourceJobManager = null;
-  }
-
-  /** Returns true if field resourceJobManager is set (has been assigned a value) and false otherwise */
-  public boolean isSetResourceJobManager() {
-    return this.resourceJobManager != null;
-  }
-
-  public void setResourceJobManagerIsSet(boolean value) {
-    if (!value) {
-      this.resourceJobManager = null;
+      this.resourceDescription = null;
     }
   }
 
@@ -731,19 +685,11 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case COMPUTE_RESOURCE_DESCRIPTION:
+    case RESOURCE_DESCRIPTION:
       if (value == null) {
-        unsetComputeResourceDescription();
+        unsetResourceDescription();
       } else {
-        setComputeResourceDescription((String)value);
-      }
-      break;
-
-    case RESOURCE_JOB_MANAGER:
-      if (value == null) {
-        unsetResourceJobManager();
-      } else {
-        setResourceJobManager((ResourceJobManager)value);
+        setResourceDescription((String)value);
       }
       break;
 
@@ -799,11 +745,8 @@ import org.slf4j.LoggerFactory;
     case IP_ADDRESSES:
       return getIpAddresses();
 
-    case COMPUTE_RESOURCE_DESCRIPTION:
-      return getComputeResourceDescription();
-
-    case RESOURCE_JOB_MANAGER:
-      return getResourceJobManager();
+    case RESOURCE_DESCRIPTION:
+      return getResourceDescription();
 
     case BATCH_QUEUES:
       return getBatchQueues();
@@ -838,10 +781,8 @@ import org.slf4j.LoggerFactory;
       return isSetHostAliases();
     case IP_ADDRESSES:
       return isSetIpAddresses();
-    case COMPUTE_RESOURCE_DESCRIPTION:
-      return isSetComputeResourceDescription();
-    case RESOURCE_JOB_MANAGER:
-      return isSetResourceJobManager();
+    case RESOURCE_DESCRIPTION:
+      return isSetResourceDescription();
     case BATCH_QUEUES:
       return isSetBatchQueues();
     case FILE_SYSTEMS:
@@ -912,21 +853,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_computeResourceDescription = true && this.isSetComputeResourceDescription();
-    boolean that_present_computeResourceDescription = true && that.isSetComputeResourceDescription();
-    if (this_present_computeResourceDescription || that_present_computeResourceDescription) {
-      if (!(this_present_computeResourceDescription && that_present_computeResourceDescription))
+    boolean this_present_resourceDescription = true && this.isSetResourceDescription();
+    boolean that_present_resourceDescription = true && that.isSetResourceDescription();
+    if (this_present_resourceDescription || that_present_resourceDescription) {
+      if (!(this_present_resourceDescription && that_present_resourceDescription))
         return false;
-      if (!this.computeResourceDescription.equals(that.computeResourceDescription))
-        return false;
-    }
-
-    boolean this_present_resourceJobManager = true && this.isSetResourceJobManager();
-    boolean that_present_resourceJobManager = true && that.isSetResourceJobManager();
-    if (this_present_resourceJobManager || that_present_resourceJobManager) {
-      if (!(this_present_resourceJobManager && that_present_resourceJobManager))
-        return false;
-      if (!this.resourceJobManager.equals(that.resourceJobManager))
+      if (!this.resourceDescription.equals(that.resourceDescription))
         return false;
     }
 
@@ -1032,22 +964,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetComputeResourceDescription()).compareTo(other.isSetComputeResourceDescription());
+    lastComparison = Boolean.valueOf(isSetResourceDescription()).compareTo(other.isSetResourceDescription());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetComputeResourceDescription()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.computeResourceDescription, other.computeResourceDescription);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetResourceJobManager()).compareTo(other.isSetResourceJobManager());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetResourceJobManager()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.resourceJobManager, other.resourceJobManager);
+    if (isSetResourceDescription()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.resourceDescription, other.resourceDescription);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1151,23 +1073,13 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
-    if (isSetComputeResourceDescription()) {
+    if (isSetResourceDescription()) {
       if (!first) sb.append(", ");
-      sb.append("computeResourceDescription:");
-      if (this.computeResourceDescription == null) {
+      sb.append("resourceDescription:");
+      if (this.resourceDescription == null) {
         sb.append("null");
       } else {
-        sb.append(this.computeResourceDescription);
-      }
-      first = false;
-    }
-    if (isSetResourceJobManager()) {
-      if (!first) sb.append(", ");
-      sb.append("resourceJobManager:");
-      if (this.resourceJobManager == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.resourceJobManager);
+        sb.append(this.resourceDescription);
       }
       first = false;
     }
@@ -1295,13 +1207,13 @@ import org.slf4j.LoggerFactory;
           case 4: // HOST_ALIASES
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
-                org.apache.thrift.protocol.TSet _set16 = iprot.readSetBegin();
-                struct.hostAliases = new HashSet<String>(2*_set16.size);
-                for (int _i17 = 0; _i17 < _set16.size; ++_i17)
+                org.apache.thrift.protocol.TSet _set26 = iprot.readSetBegin();
+                struct.hostAliases = new HashSet<String>(2*_set26.size);
+                for (int _i27 = 0; _i27 < _set26.size; ++_i27)
                 {
-                  String _elem18;
-                  _elem18 = iprot.readString();
-                  struct.hostAliases.add(_elem18);
+                  String _elem28;
+                  _elem28 = iprot.readString();
+                  struct.hostAliases.add(_elem28);
                 }
                 iprot.readSetEnd();
               }
@@ -1313,13 +1225,13 @@ import org.slf4j.LoggerFactory;
           case 5: // IP_ADDRESSES
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
-                org.apache.thrift.protocol.TSet _set19 = iprot.readSetBegin();
-                struct.ipAddresses = new HashSet<String>(2*_set19.size);
-                for (int _i20 = 0; _i20 < _set19.size; ++_i20)
+                org.apache.thrift.protocol.TSet _set29 = iprot.readSetBegin();
+                struct.ipAddresses = new HashSet<String>(2*_set29.size);
+                for (int _i30 = 0; _i30 < _set29.size; ++_i30)
                 {
-                  String _elem21;
-                  _elem21 = iprot.readString();
-                  struct.ipAddresses.add(_elem21);
+                  String _elem31;
+                  _elem31 = iprot.readString();
+                  struct.ipAddresses.add(_elem31);
                 }
                 iprot.readSetEnd();
               }
@@ -1328,33 +1240,25 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // COMPUTE_RESOURCE_DESCRIPTION
+          case 6: // RESOURCE_DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.computeResourceDescription = iprot.readString();
-              struct.setComputeResourceDescriptionIsSet(true);
+              struct.resourceDescription = iprot.readString();
+              struct.setResourceDescriptionIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // RESOURCE_JOB_MANAGER
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
-              struct.setResourceJobManagerIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 8: // BATCH_QUEUES
+          case 7: // BATCH_QUEUES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list22 = iprot.readListBegin();
-                struct.batchQueues = new ArrayList<BatchQueue>(_list22.size);
-                for (int _i23 = 0; _i23 < _list22.size; ++_i23)
+                org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
+                struct.batchQueues = new ArrayList<BatchQueue>(_list32.size);
+                for (int _i33 = 0; _i33 < _list32.size; ++_i33)
                 {
-                  BatchQueue _elem24;
-                  _elem24 = new BatchQueue();
-                  _elem24.read(iprot);
-                  struct.batchQueues.add(_elem24);
+                  BatchQueue _elem34;
+                  _elem34 = new BatchQueue();
+                  _elem34.read(iprot);
+                  struct.batchQueues.add(_elem34);
                 }
                 iprot.readListEnd();
               }
@@ -1363,18 +1267,18 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // FILE_SYSTEMS
+          case 8: // FILE_SYSTEMS
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map25 = iprot.readMapBegin();
-                struct.fileSystems = new HashMap<FileSystems,String>(2*_map25.size);
-                for (int _i26 = 0; _i26 < _map25.size; ++_i26)
+                org.apache.thrift.protocol.TMap _map35 = iprot.readMapBegin();
+                struct.fileSystems = new HashMap<FileSystems,String>(2*_map35.size);
+                for (int _i36 = 0; _i36 < _map35.size; ++_i36)
                 {
-                  FileSystems _key27;
-                  String _val28;
-                  _key27 = FileSystems.findByValue(iprot.readI32());
-                  _val28 = iprot.readString();
-                  struct.fileSystems.put(_key27, _val28);
+                  FileSystems _key37;
+                  String _val38;
+                  _key37 = FileSystems.findByValue(iprot.readI32());
+                  _val38 = iprot.readString();
+                  struct.fileSystems.put(_key37, _val38);
                 }
                 iprot.readMapEnd();
               }
@@ -1383,17 +1287,17 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // JOB_SUBMISSION_INTERFACES
+          case 9: // JOB_SUBMISSION_INTERFACES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list29 = iprot.readListBegin();
-                struct.jobSubmissionInterfaces = new ArrayList<JobSubmissionInterface>(_list29.size);
-                for (int _i30 = 0; _i30 < _list29.size; ++_i30)
+                org.apache.thrift.protocol.TList _list39 = iprot.readListBegin();
+                struct.jobSubmissionInterfaces = new ArrayList<JobSubmissionInterface>(_list39.size);
+                for (int _i40 = 0; _i40 < _list39.size; ++_i40)
                 {
-                  JobSubmissionInterface _elem31;
-                  _elem31 = new JobSubmissionInterface();
-                  _elem31.read(iprot);
-                  struct.jobSubmissionInterfaces.add(_elem31);
+                  JobSubmissionInterface _elem41;
+                  _elem41 = new JobSubmissionInterface();
+                  _elem41.read(iprot);
+                  struct.jobSubmissionInterfaces.add(_elem41);
                 }
                 iprot.readListEnd();
               }
@@ -1402,17 +1306,17 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // DATA_MOVEMENET_INTERFACES
+          case 10: // DATA_MOVEMENET_INTERFACES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
-                struct.dataMovemenetInterfaces = new ArrayList<DataMovementInterface>(_list32.size);
-                for (int _i33 = 0; _i33 < _list32.size; ++_i33)
+                org.apache.thrift.protocol.TList _list42 = iprot.readListBegin();
+                struct.dataMovemenetInterfaces = new ArrayList<DataMovementInterface>(_list42.size);
+                for (int _i43 = 0; _i43 < _list42.size; ++_i43)
                 {
-                  DataMovementInterface _elem34;
-                  _elem34 = new DataMovementInterface();
-                  _elem34.read(iprot);
-                  struct.dataMovemenetInterfaces.add(_elem34);
+                  DataMovementInterface _elem44;
+                  _elem44 = new DataMovementInterface();
+                  _elem44.read(iprot);
+                  struct.dataMovemenetInterfaces.add(_elem44);
                 }
                 iprot.readListEnd();
               }
@@ -1452,9 +1356,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(HOST_ALIASES_FIELD_DESC);
           {
             oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.hostAliases.size()));
-            for (String _iter35 : struct.hostAliases)
+            for (String _iter45 : struct.hostAliases)
             {
-              oprot.writeString(_iter35);
+              oprot.writeString(_iter45);
             }
             oprot.writeSetEnd();
           }
@@ -1466,26 +1370,19 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(IP_ADDRESSES_FIELD_DESC);
           {
             oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.ipAddresses.size()));
-            for (String _iter36 : struct.ipAddresses)
+            for (String _iter46 : struct.ipAddresses)
             {
-              oprot.writeString(_iter36);
+              oprot.writeString(_iter46);
             }
             oprot.writeSetEnd();
           }
           oprot.writeFieldEnd();
         }
       }
-      if (struct.computeResourceDescription != null) {
-        if (struct.isSetComputeResourceDescription()) {
-          oprot.writeFieldBegin(COMPUTE_RESOURCE_DESCRIPTION_FIELD_DESC);
-          oprot.writeString(struct.computeResourceDescription);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.resourceJobManager != null) {
-        if (struct.isSetResourceJobManager()) {
-          oprot.writeFieldBegin(RESOURCE_JOB_MANAGER_FIELD_DESC);
-          oprot.writeI32(struct.resourceJobManager.getValue());
+      if (struct.resourceDescription != null) {
+        if (struct.isSetResourceDescription()) {
+          oprot.writeFieldBegin(RESOURCE_DESCRIPTION_FIELD_DESC);
+          oprot.writeString(struct.resourceDescription);
           oprot.writeFieldEnd();
         }
       }
@@ -1494,9 +1391,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(BATCH_QUEUES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.batchQueues.size()));
-            for (BatchQueue _iter37 : struct.batchQueues)
+            for (BatchQueue _iter47 : struct.batchQueues)
             {
-              _iter37.write(oprot);
+              _iter47.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1508,10 +1405,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(FILE_SYSTEMS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRING, struct.fileSystems.size()));
-            for (Map.Entry<FileSystems, String> _iter38 : struct.fileSystems.entrySet())
+            for (Map.Entry<FileSystems, String> _iter48 : struct.fileSystems.entrySet())
             {
-              oprot.writeI32(_iter38.getKey().getValue());
-              oprot.writeString(_iter38.getValue());
+              oprot.writeI32(_iter48.getKey().getValue());
+              oprot.writeString(_iter48.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -1523,9 +1420,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(JOB_SUBMISSION_INTERFACES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.jobSubmissionInterfaces.size()));
-            for (JobSubmissionInterface _iter39 : struct.jobSubmissionInterfaces)
+            for (JobSubmissionInterface _iter49 : struct.jobSubmissionInterfaces)
             {
-              _iter39.write(oprot);
+              _iter49.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1537,9 +1434,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(DATA_MOVEMENET_INTERFACES_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.dataMovemenetInterfaces.size()));
-            for (DataMovementInterface _iter40 : struct.dataMovemenetInterfaces)
+            for (DataMovementInterface _iter50 : struct.dataMovemenetInterfaces)
             {
-              _iter40.write(oprot);
+              _iter50.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1573,83 +1470,77 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetIpAddresses()) {
         optionals.set(1);
       }
-      if (struct.isSetComputeResourceDescription()) {
+      if (struct.isSetResourceDescription()) {
         optionals.set(2);
       }
-      if (struct.isSetResourceJobManager()) {
+      if (struct.isSetBatchQueues()) {
         optionals.set(3);
       }
-      if (struct.isSetBatchQueues()) {
+      if (struct.isSetFileSystems()) {
         optionals.set(4);
       }
-      if (struct.isSetFileSystems()) {
+      if (struct.isSetJobSubmissionInterfaces()) {
         optionals.set(5);
       }
-      if (struct.isSetJobSubmissionInterfaces()) {
+      if (struct.isSetDataMovemenetInterfaces()) {
         optionals.set(6);
       }
-      if (struct.isSetDataMovemenetInterfaces()) {
-        optionals.set(7);
-      }
-      oprot.writeBitSet(optionals, 8);
+      oprot.writeBitSet(optionals, 7);
       if (struct.isSetHostAliases()) {
         {
           oprot.writeI32(struct.hostAliases.size());
-          for (String _iter41 : struct.hostAliases)
+          for (String _iter51 : struct.hostAliases)
           {
-            oprot.writeString(_iter41);
+            oprot.writeString(_iter51);
           }
         }
       }
       if (struct.isSetIpAddresses()) {
         {
           oprot.writeI32(struct.ipAddresses.size());
-          for (String _iter42 : struct.ipAddresses)
+          for (String _iter52 : struct.ipAddresses)
           {
-            oprot.writeString(_iter42);
+            oprot.writeString(_iter52);
           }
         }
       }
-      if (struct.isSetComputeResourceDescription()) {
-        oprot.writeString(struct.computeResourceDescription);
-      }
-      if (struct.isSetResourceJobManager()) {
-        oprot.writeI32(struct.resourceJobManager.getValue());
+      if (struct.isSetResourceDescription()) {
+        oprot.writeString(struct.resourceDescription);
       }
       if (struct.isSetBatchQueues()) {
         {
           oprot.writeI32(struct.batchQueues.size());
-          for (BatchQueue _iter43 : struct.batchQueues)
+          for (BatchQueue _iter53 : struct.batchQueues)
           {
-            _iter43.write(oprot);
+            _iter53.write(oprot);
           }
         }
       }
       if (struct.isSetFileSystems()) {
         {
           oprot.writeI32(struct.fileSystems.size());
-          for (Map.Entry<FileSystems, String> _iter44 : struct.fileSystems.entrySet())
+          for (Map.Entry<FileSystems, String> _iter54 : struct.fileSystems.entrySet())
           {
-            oprot.writeI32(_iter44.getKey().getValue());
-            oprot.writeString(_iter44.getValue());
+            oprot.writeI32(_iter54.getKey().getValue());
+            oprot.writeString(_iter54.getValue());
           }
         }
       }
       if (struct.isSetJobSubmissionInterfaces()) {
         {
           oprot.writeI32(struct.jobSubmissionInterfaces.size());
-          for (JobSubmissionInterface _iter45 : struct.jobSubmissionInterfaces)
+          for (JobSubmissionInterface _iter55 : struct.jobSubmissionInterfaces)
           {
-            _iter45.write(oprot);
+            _iter55.write(oprot);
           }
         }
       }
       if (struct.isSetDataMovemenetInterfaces()) {
         {
           oprot.writeI32(struct.dataMovemenetInterfaces.size());
-          for (DataMovementInterface _iter46 : struct.dataMovemenetInterfaces)
+          for (DataMovementInterface _iter56 : struct.dataMovemenetInterfaces)
           {
-            _iter46.write(oprot);
+            _iter56.write(oprot);
           }
         }
       }
@@ -1664,94 +1555,90 @@ import org.slf4j.LoggerFactory;
       struct.setComputeResourceIdIsSet(true);
       struct.hostName = iprot.readString();
       struct.setHostNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(8);
+      BitSet incoming = iprot.readBitSet(7);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TSet _set47 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.hostAliases = new HashSet<String>(2*_set47.size);
-          for (int _i48 = 0; _i48 < _set47.size; ++_i48)
+          org.apache.thrift.protocol.TSet _set57 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.hostAliases = new HashSet<String>(2*_set57.size);
+          for (int _i58 = 0; _i58 < _set57.size; ++_i58)
           {
-            String _elem49;
-            _elem49 = iprot.readString();
-            struct.hostAliases.add(_elem49);
+            String _elem59;
+            _elem59 = iprot.readString();
+            struct.hostAliases.add(_elem59);
           }
         }
         struct.setHostAliasesIsSet(true);
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TSet _set50 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.ipAddresses = new HashSet<String>(2*_set50.size);
-          for (int _i51 = 0; _i51 < _set50.size; ++_i51)
+          org.apache.thrift.protocol.TSet _set60 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.ipAddresses = new HashSet<String>(2*_set60.size);
+          for (int _i61 = 0; _i61 < _set60.size; ++_i61)
           {
-            String _elem52;
-            _elem52 = iprot.readString();
-            struct.ipAddresses.add(_elem52);
+            String _elem62;
+            _elem62 = iprot.readString();
+            struct.ipAddresses.add(_elem62);
           }
         }
         struct.setIpAddressesIsSet(true);
       }
       if (incoming.get(2)) {
-        struct.computeResourceDescription = iprot.readString();
-        struct.setComputeResourceDescriptionIsSet(true);
+        struct.resourceDescription = iprot.readString();
+        struct.setResourceDescriptionIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
-        struct.setResourceJobManagerIsSet(true);
-      }
-      if (incoming.get(4)) {
         {
-          org.apache.thrift.protocol.TList _list53 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.batchQueues = new ArrayList<BatchQueue>(_list53.size);
-          for (int _i54 = 0; _i54 < _list53.size; ++_i54)
+          org.apache.thrift.protocol.TList _list63 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.batchQueues = new ArrayList<BatchQueue>(_list63.size);
+          for (int _i64 = 0; _i64 < _list63.size; ++_i64)
           {
-            BatchQueue _elem55;
-            _elem55 = new BatchQueue();
-            _elem55.read(iprot);
-            struct.batchQueues.add(_elem55);
+            BatchQueue _elem65;
+            _elem65 = new BatchQueue();
+            _elem65.read(iprot);
+            struct.batchQueues.add(_elem65);
           }
         }
         struct.setBatchQueuesIsSet(true);
       }
-      if (incoming.get(5)) {
+      if (incoming.get(4)) {
         {
-          org.apache.thrift.protocol.TMap _map56 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.fileSystems = new HashMap<FileSystems,String>(2*_map56.size);
-          for (int _i57 = 0; _i57 < _map56.size; ++_i57)
+          org.apache.thrift.protocol.TMap _map66 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I32, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.fileSystems = new HashMap<FileSystems,String>(2*_map66.size);
+          for (int _i67 = 0; _i67 < _map66.size; ++_i67)
           {
-            FileSystems _key58;
-            String _val59;
-            _key58 = FileSystems.findByValue(iprot.readI32());
-            _val59 = iprot.readString();
-            struct.fileSystems.put(_key58, _val59);
+            FileSystems _key68;
+            String _val69;
+            _key68 = FileSystems.findByValue(iprot.readI32());
+            _val69 = iprot.readString();
+            struct.fileSystems.put(_key68, _val69);
           }
         }
         struct.setFileSystemsIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(5)) {
         {
-          org.apache.thrift.protocol.TList _list60 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.jobSubmissionInterfaces = new ArrayList<JobSubmissionInterface>(_list60.size);
-          for (int _i61 = 0; _i61 < _list60.size; ++_i61)
+          org.apache.thrift.protocol.TList _list70 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.jobSubmissionInterfaces = new ArrayList<JobSubmissionInterface>(_list70.size);
+          for (int _i71 = 0; _i71 < _list70.size; ++_i71)
           {
-            JobSubmissionInterface _elem62;
-            _elem62 = new JobSubmissionInterface();
-            _elem62.read(iprot);
-            struct.jobSubmissionInterfaces.add(_elem62);
+            JobSubmissionInterface _elem72;
+            _elem72 = new JobSubmissionInterface();
+            _elem72.read(iprot);
+            struct.jobSubmissionInterfaces.add(_elem72);
           }
         }
         struct.setJobSubmissionInterfacesIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(6)) {
         {
-          org.apache.thrift.protocol.TList _list63 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.dataMovemenetInterfaces = new ArrayList<DataMovementInterface>(_list63.size);
-          for (int _i64 = 0; _i64 < _list63.size; ++_i64)
+          org.apache.thrift.protocol.TList _list73 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.dataMovemenetInterfaces = new ArrayList<DataMovementInterface>(_list73.size);
+          for (int _i74 = 0; _i74 < _list73.size; ++_i74)
           {
-            DataMovementInterface _elem65;
-            _elem65 = new DataMovementInterface();
-            _elem65.read(iprot);
-            struct.dataMovemenetInterfaces.add(_elem65);
+            DataMovementInterface _elem75;
+            _elem75 = new DataMovementInterface();
+            _elem75.read(iprot);
+            struct.dataMovemenetInterfaces.add(_elem75);
           }
         }
         struct.setDataMovemenetInterfacesIsSet(true);

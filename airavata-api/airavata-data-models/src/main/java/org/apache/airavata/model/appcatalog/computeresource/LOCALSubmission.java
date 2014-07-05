@@ -61,8 +61,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("LOCALSubmission");
 
   private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManager", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField MONITORING_MECHANISM_FIELD_DESC = new org.apache.thrift.protocol.TField("monitoringMechanism", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManager", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -72,17 +71,11 @@ import org.slf4j.LoggerFactory;
 
   private String jobSubmissionInterfaceId; // required
   private ResourceJobManager resourceJobManager; // required
-  private String monitoringMechanism; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     JOB_SUBMISSION_INTERFACE_ID((short)1, "jobSubmissionInterfaceId"),
-    /**
-     * 
-     * @see ResourceJobManager
-     */
-    RESOURCE_JOB_MANAGER((short)3, "resourceJobManager"),
-    MONITORING_MECHANISM((short)6, "monitoringMechanism");
+    RESOURCE_JOB_MANAGER((short)2, "resourceJobManager");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -99,10 +92,8 @@ import org.slf4j.LoggerFactory;
       switch(fieldId) {
         case 1: // JOB_SUBMISSION_INTERFACE_ID
           return JOB_SUBMISSION_INTERFACE_ID;
-        case 3: // RESOURCE_JOB_MANAGER
+        case 2: // RESOURCE_JOB_MANAGER
           return RESOURCE_JOB_MANAGER;
-        case 6: // MONITORING_MECHANISM
-          return MONITORING_MECHANISM;
         default:
           return null;
       }
@@ -143,16 +134,13 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.MONITORING_MECHANISM};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.JOB_SUBMISSION_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("jobSubmissionInterfaceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_JOB_MANAGER, new org.apache.thrift.meta_data.FieldMetaData("resourceJobManager", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResourceJobManager.class)));
-    tmpMap.put(_Fields.MONITORING_MECHANISM, new org.apache.thrift.meta_data.FieldMetaData("monitoringMechanism", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ResourceJobManager.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(LOCALSubmission.class, metaDataMap);
   }
@@ -179,10 +167,7 @@ import org.slf4j.LoggerFactory;
       this.jobSubmissionInterfaceId = other.jobSubmissionInterfaceId;
     }
     if (other.isSetResourceJobManager()) {
-      this.resourceJobManager = other.resourceJobManager;
-    }
-    if (other.isSetMonitoringMechanism()) {
-      this.monitoringMechanism = other.monitoringMechanism;
+      this.resourceJobManager = new ResourceJobManager(other.resourceJobManager);
     }
   }
 
@@ -195,7 +180,6 @@ import org.slf4j.LoggerFactory;
     this.jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
 
     this.resourceJobManager = null;
-    this.monitoringMechanism = null;
   }
 
   public String getJobSubmissionInterfaceId() {
@@ -221,18 +205,10 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  /**
-   * 
-   * @see ResourceJobManager
-   */
   public ResourceJobManager getResourceJobManager() {
     return this.resourceJobManager;
   }
 
-  /**
-   * 
-   * @see ResourceJobManager
-   */
   public void setResourceJobManager(ResourceJobManager resourceJobManager) {
     this.resourceJobManager = resourceJobManager;
   }
@@ -249,29 +225,6 @@ import org.slf4j.LoggerFactory;
   public void setResourceJobManagerIsSet(boolean value) {
     if (!value) {
       this.resourceJobManager = null;
-    }
-  }
-
-  public String getMonitoringMechanism() {
-    return this.monitoringMechanism;
-  }
-
-  public void setMonitoringMechanism(String monitoringMechanism) {
-    this.monitoringMechanism = monitoringMechanism;
-  }
-
-  public void unsetMonitoringMechanism() {
-    this.monitoringMechanism = null;
-  }
-
-  /** Returns true if field monitoringMechanism is set (has been assigned a value) and false otherwise */
-  public boolean isSetMonitoringMechanism() {
-    return this.monitoringMechanism != null;
-  }
-
-  public void setMonitoringMechanismIsSet(boolean value) {
-    if (!value) {
-      this.monitoringMechanism = null;
     }
   }
 
@@ -293,14 +246,6 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case MONITORING_MECHANISM:
-      if (value == null) {
-        unsetMonitoringMechanism();
-      } else {
-        setMonitoringMechanism((String)value);
-      }
-      break;
-
     }
   }
 
@@ -311,9 +256,6 @@ import org.slf4j.LoggerFactory;
 
     case RESOURCE_JOB_MANAGER:
       return getResourceJobManager();
-
-    case MONITORING_MECHANISM:
-      return getMonitoringMechanism();
 
     }
     throw new IllegalStateException();
@@ -330,8 +272,6 @@ import org.slf4j.LoggerFactory;
       return isSetJobSubmissionInterfaceId();
     case RESOURCE_JOB_MANAGER:
       return isSetResourceJobManager();
-    case MONITORING_MECHANISM:
-      return isSetMonitoringMechanism();
     }
     throw new IllegalStateException();
   }
@@ -364,15 +304,6 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_resourceJobManager && that_present_resourceJobManager))
         return false;
       if (!this.resourceJobManager.equals(that.resourceJobManager))
-        return false;
-    }
-
-    boolean this_present_monitoringMechanism = true && this.isSetMonitoringMechanism();
-    boolean that_present_monitoringMechanism = true && that.isSetMonitoringMechanism();
-    if (this_present_monitoringMechanism || that_present_monitoringMechanism) {
-      if (!(this_present_monitoringMechanism && that_present_monitoringMechanism))
-        return false;
-      if (!this.monitoringMechanism.equals(that.monitoringMechanism))
         return false;
     }
 
@@ -412,16 +343,6 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetMonitoringMechanism()).compareTo(other.isSetMonitoringMechanism());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetMonitoringMechanism()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.monitoringMechanism, other.monitoringMechanism);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     return 0;
   }
 
@@ -457,16 +378,6 @@ import org.slf4j.LoggerFactory;
       sb.append(this.resourceJobManager);
     }
     first = false;
-    if (isSetMonitoringMechanism()) {
-      if (!first) sb.append(", ");
-      sb.append("monitoringMechanism:");
-      if (this.monitoringMechanism == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.monitoringMechanism);
-      }
-      first = false;
-    }
     sb.append(")");
     return sb.toString();
   }
@@ -482,6 +393,9 @@ import org.slf4j.LoggerFactory;
     }
 
     // check for sub-struct validity
+    if (resourceJobManager != null) {
+      resourceJobManager.validate();
+    }
   }
 
   private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
@@ -526,18 +440,11 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // RESOURCE_JOB_MANAGER
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
+          case 2: // RESOURCE_JOB_MANAGER
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+              struct.resourceJobManager = new ResourceJobManager();
+              struct.resourceJobManager.read(iprot);
               struct.setResourceJobManagerIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 6: // MONITORING_MECHANISM
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.monitoringMechanism = iprot.readString();
-              struct.setMonitoringMechanismIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -562,15 +469,8 @@ import org.slf4j.LoggerFactory;
       }
       if (struct.resourceJobManager != null) {
         oprot.writeFieldBegin(RESOURCE_JOB_MANAGER_FIELD_DESC);
-        oprot.writeI32(struct.resourceJobManager.getValue());
+        struct.resourceJobManager.write(oprot);
         oprot.writeFieldEnd();
-      }
-      if (struct.monitoringMechanism != null) {
-        if (struct.isSetMonitoringMechanism()) {
-          oprot.writeFieldBegin(MONITORING_MECHANISM_FIELD_DESC);
-          oprot.writeString(struct.monitoringMechanism);
-          oprot.writeFieldEnd();
-        }
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -590,15 +490,7 @@ import org.slf4j.LoggerFactory;
     public void write(org.apache.thrift.protocol.TProtocol prot, LOCALSubmission struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.jobSubmissionInterfaceId);
-      oprot.writeI32(struct.resourceJobManager.getValue());
-      BitSet optionals = new BitSet();
-      if (struct.isSetMonitoringMechanism()) {
-        optionals.set(0);
-      }
-      oprot.writeBitSet(optionals, 1);
-      if (struct.isSetMonitoringMechanism()) {
-        oprot.writeString(struct.monitoringMechanism);
-      }
+      struct.resourceJobManager.write(oprot);
     }
 
     @Override
@@ -606,13 +498,9 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.jobSubmissionInterfaceId = iprot.readString();
       struct.setJobSubmissionInterfaceIdIsSet(true);
-      struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
+      struct.resourceJobManager = new ResourceJobManager();
+      struct.resourceJobManager.read(iprot);
       struct.setResourceJobManagerIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
-      if (incoming.get(0)) {
-        struct.monitoringMechanism = iprot.readString();
-        struct.setMonitoringMechanismIsSet(true);
-      }
     }
   }
 

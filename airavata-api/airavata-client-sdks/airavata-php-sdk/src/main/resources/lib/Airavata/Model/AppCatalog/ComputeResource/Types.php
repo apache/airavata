@@ -17,7 +17,7 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
-final class ResourceJobManager {
+final class ResourceJobManagerType {
   const FORK = 0;
   const PBS = 1;
   const UGE = 2;
@@ -27,6 +27,25 @@ final class ResourceJobManager {
     1 => 'PBS',
     2 => 'UGE',
     3 => 'SLURM',
+  );
+}
+
+final class JobManagerCommand {
+  const SUBMISSION = 0;
+  const JOB_MONITORING = 1;
+  const DELETION = 2;
+  const CHECK_JOB = 3;
+  const SHOW_QUEUE = 4;
+  const SHOW_RESERVATION = 5;
+  const SHOW_START = 6;
+  static public $__names = array(
+    0 => 'SUBMISSION',
+    1 => 'JOB_MONITORING',
+    2 => 'DELETION',
+    3 => 'CHECK_JOB',
+    4 => 'SHOW_QUEUE',
+    5 => 'SHOW_RESERVATION',
+    6 => 'SHOW_START',
   );
 }
 
@@ -63,15 +82,13 @@ final class SecurityProtocol {
 final class JobSubmissionProtocol {
   const LOCAL = 0;
   const SSH = 1;
-  const GSISSH = 2;
-  const GRAM = 3;
-  const UNICORE = 4;
+  const GLOBUS = 2;
+  const UNICORE = 3;
   static public $__names = array(
     0 => 'LOCAL',
     1 => 'SSH',
-    2 => 'GSISSH',
-    3 => 'GRAM',
-    4 => 'UNICORE',
+    2 => 'GLOBUS',
+    3 => 'UNICORE',
   );
 }
 
@@ -88,6 +105,172 @@ final class DataMovementProtocol {
     3 => 'GridFTP',
     4 => 'UNICORE_STORAGE_SERVICE',
   );
+}
+
+class ResourceJobManager {
+  static $_TSPEC;
+
+  public $resourceJobManagerType = null;
+  public $pushMonitoringEndpoint = null;
+  public $jobManagerBinPath = null;
+  public $jobManagerCommands = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'resourceJobManagerType',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'pushMonitoringEndpoint',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'jobManagerBinPath',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'jobManagerCommands',
+          'type' => TType::MAP,
+          'ktype' => TType::I32,
+          'vtype' => TType::STRING,
+          'key' => array(
+            'type' => TType::I32,
+          ),
+          'val' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['resourceJobManagerType'])) {
+        $this->resourceJobManagerType = $vals['resourceJobManagerType'];
+      }
+      if (isset($vals['pushMonitoringEndpoint'])) {
+        $this->pushMonitoringEndpoint = $vals['pushMonitoringEndpoint'];
+      }
+      if (isset($vals['jobManagerBinPath'])) {
+        $this->jobManagerBinPath = $vals['jobManagerBinPath'];
+      }
+      if (isset($vals['jobManagerCommands'])) {
+        $this->jobManagerCommands = $vals['jobManagerCommands'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ResourceJobManager';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->resourceJobManagerType);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->pushMonitoringEndpoint);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->jobManagerBinPath);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::MAP) {
+            $this->jobManagerCommands = array();
+            $_size0 = 0;
+            $_ktype1 = 0;
+            $_vtype2 = 0;
+            $xfer += $input->readMapBegin($_ktype1, $_vtype2, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $key5 = 0;
+              $val6 = '';
+              $xfer += $input->readI32($key5);
+              $xfer += $input->readString($val6);
+              $this->jobManagerCommands[$key5] = $val6;
+            }
+            $xfer += $input->readMapEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ResourceJobManager');
+    if ($this->resourceJobManagerType !== null) {
+      $xfer += $output->writeFieldBegin('resourceJobManagerType', TType::I32, 1);
+      $xfer += $output->writeI32($this->resourceJobManagerType);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->pushMonitoringEndpoint !== null) {
+      $xfer += $output->writeFieldBegin('pushMonitoringEndpoint', TType::STRING, 2);
+      $xfer += $output->writeString($this->pushMonitoringEndpoint);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->jobManagerBinPath !== null) {
+      $xfer += $output->writeFieldBegin('jobManagerBinPath', TType::STRING, 3);
+      $xfer += $output->writeString($this->jobManagerBinPath);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->jobManagerCommands !== null) {
+      if (!is_array($this->jobManagerCommands)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('jobManagerCommands', TType::MAP, 4);
+      {
+        $output->writeMapBegin(TType::I32, TType::STRING, count($this->jobManagerCommands));
+        {
+          foreach ($this->jobManagerCommands as $kiter7 => $viter8)
+          {
+            $xfer += $output->writeI32($kiter7);
+            $xfer += $output->writeString($viter8);
+          }
+        }
+        $output->writeMapEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
 }
 
 class BatchQueue {
@@ -471,14 +654,14 @@ class GridFTPDataMovement {
         case 3:
           if ($ftype == TType::LST) {
             $this->gridFTPEndPoints = array();
-            $_size0 = 0;
-            $_etype3 = 0;
-            $xfer += $input->readListBegin($_etype3, $_size0);
-            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            $_size9 = 0;
+            $_etype12 = 0;
+            $xfer += $input->readListBegin($_etype12, $_size9);
+            for ($_i13 = 0; $_i13 < $_size9; ++$_i13)
             {
-              $elem5 = null;
-              $xfer += $input->readString($elem5);
-              $this->gridFTPEndPoints []= $elem5;
+              $elem14 = null;
+              $xfer += $input->readString($elem14);
+              $this->gridFTPEndPoints []= $elem14;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -516,9 +699,9 @@ class GridFTPDataMovement {
       {
         $output->writeListBegin(TType::STRING, count($this->gridFTPEndPoints));
         {
-          foreach ($this->gridFTPEndPoints as $iter6)
+          foreach ($this->gridFTPEndPoints as $iter15)
           {
-            $xfer += $output->writeString($iter6);
+            $xfer += $output->writeString($iter15);
           }
         }
         $output->writeListEnd();
@@ -537,7 +720,6 @@ class LOCALSubmission {
 
   public $jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
   public $resourceJobManager = null;
-  public $monitoringMechanism = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -546,13 +728,10 @@ class LOCALSubmission {
           'var' => 'jobSubmissionInterfaceId',
           'type' => TType::STRING,
           ),
-        3 => array(
+        2 => array(
           'var' => 'resourceJobManager',
-          'type' => TType::I32,
-          ),
-        6 => array(
-          'var' => 'monitoringMechanism',
-          'type' => TType::STRING,
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager',
           ),
         );
     }
@@ -562,9 +741,6 @@ class LOCALSubmission {
       }
       if (isset($vals['resourceJobManager'])) {
         $this->resourceJobManager = $vals['resourceJobManager'];
-      }
-      if (isset($vals['monitoringMechanism'])) {
-        $this->monitoringMechanism = $vals['monitoringMechanism'];
       }
     }
   }
@@ -595,16 +771,10 @@ class LOCALSubmission {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 3:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->resourceJobManager);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 6:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->monitoringMechanism);
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->resourceJobManager = new \Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager();
+            $xfer += $this->resourceJobManager->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -628,13 +798,11 @@ class LOCALSubmission {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->resourceJobManager !== null) {
-      $xfer += $output->writeFieldBegin('resourceJobManager', TType::I32, 3);
-      $xfer += $output->writeI32($this->resourceJobManager);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->monitoringMechanism !== null) {
-      $xfer += $output->writeFieldBegin('monitoringMechanism', TType::STRING, 6);
-      $xfer += $output->writeString($this->monitoringMechanism);
+      if (!is_object($this->resourceJobManager)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('resourceJobManager', TType::STRUCT, 2);
+      $xfer += $this->resourceJobManager->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -724,7 +892,6 @@ class SSHJobSubmission {
   public $resourceJobManager = null;
   public $alternativeSSHHostName = null;
   public $sshPort = 22;
-  public $monitoringMechanism = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -739,7 +906,8 @@ class SSHJobSubmission {
           ),
         3 => array(
           'var' => 'resourceJobManager',
-          'type' => TType::I32,
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager',
           ),
         4 => array(
           'var' => 'alternativeSSHHostName',
@@ -748,10 +916,6 @@ class SSHJobSubmission {
         5 => array(
           'var' => 'sshPort',
           'type' => TType::I32,
-          ),
-        6 => array(
-          'var' => 'monitoringMechanism',
-          'type' => TType::STRING,
           ),
         );
     }
@@ -770,9 +934,6 @@ class SSHJobSubmission {
       }
       if (isset($vals['sshPort'])) {
         $this->sshPort = $vals['sshPort'];
-      }
-      if (isset($vals['monitoringMechanism'])) {
-        $this->monitoringMechanism = $vals['monitoringMechanism'];
       }
     }
   }
@@ -811,8 +972,9 @@ class SSHJobSubmission {
           }
           break;
         case 3:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->resourceJobManager);
+          if ($ftype == TType::STRUCT) {
+            $this->resourceJobManager = new \Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager();
+            $xfer += $this->resourceJobManager->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -827,13 +989,6 @@ class SSHJobSubmission {
         case 5:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->sshPort);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 6:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->monitoringMechanism);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -862,8 +1017,11 @@ class SSHJobSubmission {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->resourceJobManager !== null) {
-      $xfer += $output->writeFieldBegin('resourceJobManager', TType::I32, 3);
-      $xfer += $output->writeI32($this->resourceJobManager);
+      if (!is_object($this->resourceJobManager)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('resourceJobManager', TType::STRUCT, 3);
+      $xfer += $this->resourceJobManager->write($output);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->alternativeSSHHostName !== null) {
@@ -874,11 +1032,6 @@ class SSHJobSubmission {
     if ($this->sshPort !== null) {
       $xfer += $output->writeFieldBegin('sshPort', TType::I32, 5);
       $xfer += $output->writeI32($this->sshPort);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->monitoringMechanism !== null) {
-      $xfer += $output->writeFieldBegin('monitoringMechanism', TType::STRING, 6);
-      $xfer += $output->writeString($this->monitoringMechanism);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -893,7 +1046,6 @@ class GlobusJobSubmission {
 
   public $jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
   public $securityProtocol = null;
-  public $resourceJobManager = null;
   public $globusGateKeeperEndPoint = null;
 
   public function __construct($vals=null) {
@@ -908,10 +1060,6 @@ class GlobusJobSubmission {
           'type' => TType::I32,
           ),
         3 => array(
-          'var' => 'resourceJobManager',
-          'type' => TType::I32,
-          ),
-        4 => array(
           'var' => 'globusGateKeeperEndPoint',
           'type' => TType::LST,
           'etype' => TType::STRING,
@@ -927,9 +1075,6 @@ class GlobusJobSubmission {
       }
       if (isset($vals['securityProtocol'])) {
         $this->securityProtocol = $vals['securityProtocol'];
-      }
-      if (isset($vals['resourceJobManager'])) {
-        $this->resourceJobManager = $vals['resourceJobManager'];
       }
       if (isset($vals['globusGateKeeperEndPoint'])) {
         $this->globusGateKeeperEndPoint = $vals['globusGateKeeperEndPoint'];
@@ -971,23 +1116,16 @@ class GlobusJobSubmission {
           }
           break;
         case 3:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->resourceJobManager);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
           if ($ftype == TType::LST) {
             $this->globusGateKeeperEndPoint = array();
-            $_size7 = 0;
-            $_etype10 = 0;
-            $xfer += $input->readListBegin($_etype10, $_size7);
-            for ($_i11 = 0; $_i11 < $_size7; ++$_i11)
+            $_size16 = 0;
+            $_etype19 = 0;
+            $xfer += $input->readListBegin($_etype19, $_size16);
+            for ($_i20 = 0; $_i20 < $_size16; ++$_i20)
             {
-              $elem12 = null;
-              $xfer += $input->readString($elem12);
-              $this->globusGateKeeperEndPoint []= $elem12;
+              $elem21 = null;
+              $xfer += $input->readString($elem21);
+              $this->globusGateKeeperEndPoint []= $elem21;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1017,22 +1155,17 @@ class GlobusJobSubmission {
       $xfer += $output->writeI32($this->securityProtocol);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->resourceJobManager !== null) {
-      $xfer += $output->writeFieldBegin('resourceJobManager', TType::I32, 3);
-      $xfer += $output->writeI32($this->resourceJobManager);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->globusGateKeeperEndPoint !== null) {
       if (!is_array($this->globusGateKeeperEndPoint)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('globusGateKeeperEndPoint', TType::LST, 4);
+      $xfer += $output->writeFieldBegin('globusGateKeeperEndPoint', TType::LST, 3);
       {
         $output->writeListBegin(TType::STRING, count($this->globusGateKeeperEndPoint));
         {
-          foreach ($this->globusGateKeeperEndPoint as $iter13)
+          foreach ($this->globusGateKeeperEndPoint as $iter22)
           {
-            $xfer += $output->writeString($iter13);
+            $xfer += $output->writeString($iter22);
           }
         }
         $output->writeListEnd();
@@ -1278,8 +1411,7 @@ class ComputeResourceDescription {
   public $hostName = null;
   public $hostAliases = null;
   public $ipAddresses = null;
-  public $computeResourceDescription = null;
-  public $resourceJobManager = null;
+  public $resourceDescription = null;
   public $batchQueues = null;
   public $fileSystems = null;
   public $jobSubmissionInterfaces = null;
@@ -1317,14 +1449,10 @@ class ComputeResourceDescription {
             ),
           ),
         6 => array(
-          'var' => 'computeResourceDescription',
+          'var' => 'resourceDescription',
           'type' => TType::STRING,
           ),
         7 => array(
-          'var' => 'resourceJobManager',
-          'type' => TType::I32,
-          ),
-        8 => array(
           'var' => 'batchQueues',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -1333,7 +1461,7 @@ class ComputeResourceDescription {
             'class' => '\Airavata\Model\AppCatalog\ComputeResource\BatchQueue',
             ),
           ),
-        9 => array(
+        8 => array(
           'var' => 'fileSystems',
           'type' => TType::MAP,
           'ktype' => TType::I32,
@@ -1345,7 +1473,7 @@ class ComputeResourceDescription {
             'type' => TType::STRING,
             ),
           ),
-        10 => array(
+        9 => array(
           'var' => 'jobSubmissionInterfaces',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -1354,7 +1482,7 @@ class ComputeResourceDescription {
             'class' => '\Airavata\Model\AppCatalog\ComputeResource\JobSubmissionInterface',
             ),
           ),
-        11 => array(
+        10 => array(
           'var' => 'dataMovemenetInterfaces',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -1381,11 +1509,8 @@ class ComputeResourceDescription {
       if (isset($vals['ipAddresses'])) {
         $this->ipAddresses = $vals['ipAddresses'];
       }
-      if (isset($vals['computeResourceDescription'])) {
-        $this->computeResourceDescription = $vals['computeResourceDescription'];
-      }
-      if (isset($vals['resourceJobManager'])) {
-        $this->resourceJobManager = $vals['resourceJobManager'];
+      if (isset($vals['resourceDescription'])) {
+        $this->resourceDescription = $vals['resourceDescription'];
       }
       if (isset($vals['batchQueues'])) {
         $this->batchQueues = $vals['batchQueues'];
@@ -1445,17 +1570,17 @@ class ComputeResourceDescription {
         case 4:
           if ($ftype == TType::SET) {
             $this->hostAliases = array();
-            $_size14 = 0;
-            $_etype17 = 0;
-            $xfer += $input->readSetBegin($_etype17, $_size14);
-            for ($_i18 = 0; $_i18 < $_size14; ++$_i18)
+            $_size23 = 0;
+            $_etype26 = 0;
+            $xfer += $input->readSetBegin($_etype26, $_size23);
+            for ($_i27 = 0; $_i27 < $_size23; ++$_i27)
             {
-              $elem19 = null;
-              $xfer += $input->readString($elem19);
-              if (is_scalar($elem19)) {
-                $this->hostAliases[$elem19] = true;
+              $elem28 = null;
+              $xfer += $input->readString($elem28);
+              if (is_scalar($elem28)) {
+                $this->hostAliases[$elem28] = true;
               } else {
-                $this->hostAliases []= $elem19;
+                $this->hostAliases []= $elem28;
               }
             }
             $xfer += $input->readSetEnd();
@@ -1466,17 +1591,17 @@ class ComputeResourceDescription {
         case 5:
           if ($ftype == TType::SET) {
             $this->ipAddresses = array();
-            $_size20 = 0;
-            $_etype23 = 0;
-            $xfer += $input->readSetBegin($_etype23, $_size20);
-            for ($_i24 = 0; $_i24 < $_size20; ++$_i24)
+            $_size29 = 0;
+            $_etype32 = 0;
+            $xfer += $input->readSetBegin($_etype32, $_size29);
+            for ($_i33 = 0; $_i33 < $_size29; ++$_i33)
             {
-              $elem25 = null;
-              $xfer += $input->readString($elem25);
-              if (is_scalar($elem25)) {
-                $this->ipAddresses[$elem25] = true;
+              $elem34 = null;
+              $xfer += $input->readString($elem34);
+              if (is_scalar($elem34)) {
+                $this->ipAddresses[$elem34] = true;
               } else {
-                $this->ipAddresses []= $elem25;
+                $this->ipAddresses []= $elem34;
               }
             }
             $xfer += $input->readSetEnd();
@@ -1486,86 +1611,79 @@ class ComputeResourceDescription {
           break;
         case 6:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->computeResourceDescription);
+            $xfer += $input->readString($this->resourceDescription);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 7:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->resourceJobManager);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 8:
           if ($ftype == TType::LST) {
             $this->batchQueues = array();
-            $_size26 = 0;
-            $_etype29 = 0;
-            $xfer += $input->readListBegin($_etype29, $_size26);
-            for ($_i30 = 0; $_i30 < $_size26; ++$_i30)
+            $_size35 = 0;
+            $_etype38 = 0;
+            $xfer += $input->readListBegin($_etype38, $_size35);
+            for ($_i39 = 0; $_i39 < $_size35; ++$_i39)
             {
-              $elem31 = null;
-              $elem31 = new \Airavata\Model\AppCatalog\ComputeResource\BatchQueue();
-              $xfer += $elem31->read($input);
-              $this->batchQueues []= $elem31;
+              $elem40 = null;
+              $elem40 = new \Airavata\Model\AppCatalog\ComputeResource\BatchQueue();
+              $xfer += $elem40->read($input);
+              $this->batchQueues []= $elem40;
             }
             $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 9:
+        case 8:
           if ($ftype == TType::MAP) {
             $this->fileSystems = array();
-            $_size32 = 0;
-            $_ktype33 = 0;
-            $_vtype34 = 0;
-            $xfer += $input->readMapBegin($_ktype33, $_vtype34, $_size32);
-            for ($_i36 = 0; $_i36 < $_size32; ++$_i36)
+            $_size41 = 0;
+            $_ktype42 = 0;
+            $_vtype43 = 0;
+            $xfer += $input->readMapBegin($_ktype42, $_vtype43, $_size41);
+            for ($_i45 = 0; $_i45 < $_size41; ++$_i45)
             {
-              $key37 = 0;
-              $val38 = '';
-              $xfer += $input->readI32($key37);
-              $xfer += $input->readString($val38);
-              $this->fileSystems[$key37] = $val38;
+              $key46 = 0;
+              $val47 = '';
+              $xfer += $input->readI32($key46);
+              $xfer += $input->readString($val47);
+              $this->fileSystems[$key46] = $val47;
             }
             $xfer += $input->readMapEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 10:
+        case 9:
           if ($ftype == TType::LST) {
             $this->jobSubmissionInterfaces = array();
-            $_size39 = 0;
-            $_etype42 = 0;
-            $xfer += $input->readListBegin($_etype42, $_size39);
-            for ($_i43 = 0; $_i43 < $_size39; ++$_i43)
+            $_size48 = 0;
+            $_etype51 = 0;
+            $xfer += $input->readListBegin($_etype51, $_size48);
+            for ($_i52 = 0; $_i52 < $_size48; ++$_i52)
             {
-              $elem44 = null;
-              $elem44 = new \Airavata\Model\AppCatalog\ComputeResource\JobSubmissionInterface();
-              $xfer += $elem44->read($input);
-              $this->jobSubmissionInterfaces []= $elem44;
+              $elem53 = null;
+              $elem53 = new \Airavata\Model\AppCatalog\ComputeResource\JobSubmissionInterface();
+              $xfer += $elem53->read($input);
+              $this->jobSubmissionInterfaces []= $elem53;
             }
             $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 11:
+        case 10:
           if ($ftype == TType::LST) {
             $this->dataMovemenetInterfaces = array();
-            $_size45 = 0;
-            $_etype48 = 0;
-            $xfer += $input->readListBegin($_etype48, $_size45);
-            for ($_i49 = 0; $_i49 < $_size45; ++$_i49)
+            $_size54 = 0;
+            $_etype57 = 0;
+            $xfer += $input->readListBegin($_etype57, $_size54);
+            for ($_i58 = 0; $_i58 < $_size54; ++$_i58)
             {
-              $elem50 = null;
-              $elem50 = new \Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface();
-              $xfer += $elem50->read($input);
-              $this->dataMovemenetInterfaces []= $elem50;
+              $elem59 = null;
+              $elem59 = new \Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface();
+              $xfer += $elem59->read($input);
+              $this->dataMovemenetInterfaces []= $elem59;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1608,12 +1726,12 @@ class ComputeResourceDescription {
       {
         $output->writeSetBegin(TType::STRING, count($this->hostAliases));
         {
-          foreach ($this->hostAliases as $iter51 => $iter52)
+          foreach ($this->hostAliases as $iter60 => $iter61)
           {
-            if (is_scalar($iter52)) {
-            $xfer += $output->writeString($iter51);
+            if (is_scalar($iter61)) {
+            $xfer += $output->writeString($iter60);
             } else {
-            $xfer += $output->writeString($iter52);
+            $xfer += $output->writeString($iter61);
             }
           }
         }
@@ -1629,12 +1747,12 @@ class ComputeResourceDescription {
       {
         $output->writeSetBegin(TType::STRING, count($this->ipAddresses));
         {
-          foreach ($this->ipAddresses as $iter53 => $iter54)
+          foreach ($this->ipAddresses as $iter62 => $iter63)
           {
-            if (is_scalar($iter54)) {
-            $xfer += $output->writeString($iter53);
+            if (is_scalar($iter63)) {
+            $xfer += $output->writeString($iter62);
             } else {
-            $xfer += $output->writeString($iter54);
+            $xfer += $output->writeString($iter63);
             }
           }
         }
@@ -1642,27 +1760,22 @@ class ComputeResourceDescription {
       }
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->computeResourceDescription !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceDescription', TType::STRING, 6);
-      $xfer += $output->writeString($this->computeResourceDescription);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->resourceJobManager !== null) {
-      $xfer += $output->writeFieldBegin('resourceJobManager', TType::I32, 7);
-      $xfer += $output->writeI32($this->resourceJobManager);
+    if ($this->resourceDescription !== null) {
+      $xfer += $output->writeFieldBegin('resourceDescription', TType::STRING, 6);
+      $xfer += $output->writeString($this->resourceDescription);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->batchQueues !== null) {
       if (!is_array($this->batchQueues)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('batchQueues', TType::LST, 8);
+      $xfer += $output->writeFieldBegin('batchQueues', TType::LST, 7);
       {
         $output->writeListBegin(TType::STRUCT, count($this->batchQueues));
         {
-          foreach ($this->batchQueues as $iter55)
+          foreach ($this->batchQueues as $iter64)
           {
-            $xfer += $iter55->write($output);
+            $xfer += $iter64->write($output);
           }
         }
         $output->writeListEnd();
@@ -1673,14 +1786,14 @@ class ComputeResourceDescription {
       if (!is_array($this->fileSystems)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('fileSystems', TType::MAP, 9);
+      $xfer += $output->writeFieldBegin('fileSystems', TType::MAP, 8);
       {
         $output->writeMapBegin(TType::I32, TType::STRING, count($this->fileSystems));
         {
-          foreach ($this->fileSystems as $kiter56 => $viter57)
+          foreach ($this->fileSystems as $kiter65 => $viter66)
           {
-            $xfer += $output->writeI32($kiter56);
-            $xfer += $output->writeString($viter57);
+            $xfer += $output->writeI32($kiter65);
+            $xfer += $output->writeString($viter66);
           }
         }
         $output->writeMapEnd();
@@ -1691,13 +1804,13 @@ class ComputeResourceDescription {
       if (!is_array($this->jobSubmissionInterfaces)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('jobSubmissionInterfaces', TType::LST, 10);
+      $xfer += $output->writeFieldBegin('jobSubmissionInterfaces', TType::LST, 9);
       {
         $output->writeListBegin(TType::STRUCT, count($this->jobSubmissionInterfaces));
         {
-          foreach ($this->jobSubmissionInterfaces as $iter58)
+          foreach ($this->jobSubmissionInterfaces as $iter67)
           {
-            $xfer += $iter58->write($output);
+            $xfer += $iter67->write($output);
           }
         }
         $output->writeListEnd();
@@ -1708,13 +1821,13 @@ class ComputeResourceDescription {
       if (!is_array($this->dataMovemenetInterfaces)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('dataMovemenetInterfaces', TType::LST, 11);
+      $xfer += $output->writeFieldBegin('dataMovemenetInterfaces', TType::LST, 10);
       {
         $output->writeListBegin(TType::STRUCT, count($this->dataMovemenetInterfaces));
         {
-          foreach ($this->dataMovemenetInterfaces as $iter59)
+          foreach ($this->dataMovemenetInterfaces as $iter68)
           {
-            $xfer += $iter59->write($output);
+            $xfer += $iter68->write($output);
           }
         }
         $output->writeListEnd();
