@@ -53,8 +53,7 @@ import org.slf4j.LoggerFactory;
 
   private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField SECURITY_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("securityProtocol", org.apache.thrift.protocol.TType.I32, (short)2);
-  private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManager", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField GLOBUS_GATE_KEEPER_END_POINT_FIELD_DESC = new org.apache.thrift.protocol.TField("globusGateKeeperEndPoint", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField GLOBUS_GATE_KEEPER_END_POINT_FIELD_DESC = new org.apache.thrift.protocol.TField("globusGateKeeperEndPoint", org.apache.thrift.protocol.TType.LIST, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -64,7 +63,6 @@ import org.slf4j.LoggerFactory;
 
   private String jobSubmissionInterfaceId; // required
   private SecurityProtocol securityProtocol; // required
-  private ResourceJobManager resourceJobManager; // required
   private List<String> globusGateKeeperEndPoint; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -75,12 +73,7 @@ import org.slf4j.LoggerFactory;
      * @see SecurityProtocol
      */
     SECURITY_PROTOCOL((short)2, "securityProtocol"),
-    /**
-     * 
-     * @see ResourceJobManager
-     */
-    RESOURCE_JOB_MANAGER((short)3, "resourceJobManager"),
-    GLOBUS_GATE_KEEPER_END_POINT((short)4, "globusGateKeeperEndPoint");
+    GLOBUS_GATE_KEEPER_END_POINT((short)3, "globusGateKeeperEndPoint");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -99,9 +92,7 @@ import org.slf4j.LoggerFactory;
           return JOB_SUBMISSION_INTERFACE_ID;
         case 2: // SECURITY_PROTOCOL
           return SECURITY_PROTOCOL;
-        case 3: // RESOURCE_JOB_MANAGER
-          return RESOURCE_JOB_MANAGER;
-        case 4: // GLOBUS_GATE_KEEPER_END_POINT
+        case 3: // GLOBUS_GATE_KEEPER_END_POINT
           return GLOBUS_GATE_KEEPER_END_POINT;
         default:
           return null;
@@ -151,8 +142,6 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SECURITY_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("securityProtocol", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, SecurityProtocol.class)));
-    tmpMap.put(_Fields.RESOURCE_JOB_MANAGER, new org.apache.thrift.meta_data.FieldMetaData("resourceJobManager", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResourceJobManager.class)));
     tmpMap.put(_Fields.GLOBUS_GATE_KEEPER_END_POINT, new org.apache.thrift.meta_data.FieldMetaData("globusGateKeeperEndPoint", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
@@ -167,13 +156,11 @@ import org.slf4j.LoggerFactory;
 
   public GlobusJobSubmission(
     String jobSubmissionInterfaceId,
-    SecurityProtocol securityProtocol,
-    ResourceJobManager resourceJobManager)
+    SecurityProtocol securityProtocol)
   {
     this();
     this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
     this.securityProtocol = securityProtocol;
-    this.resourceJobManager = resourceJobManager;
   }
 
   /**
@@ -185,9 +172,6 @@ import org.slf4j.LoggerFactory;
     }
     if (other.isSetSecurityProtocol()) {
       this.securityProtocol = other.securityProtocol;
-    }
-    if (other.isSetResourceJobManager()) {
-      this.resourceJobManager = other.resourceJobManager;
     }
     if (other.isSetGlobusGateKeeperEndPoint()) {
       List<String> __this__globusGateKeeperEndPoint = new ArrayList<String>(other.globusGateKeeperEndPoint);
@@ -204,7 +188,6 @@ import org.slf4j.LoggerFactory;
     this.jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
 
     this.securityProtocol = null;
-    this.resourceJobManager = null;
     this.globusGateKeeperEndPoint = null;
   }
 
@@ -259,37 +242,6 @@ import org.slf4j.LoggerFactory;
   public void setSecurityProtocolIsSet(boolean value) {
     if (!value) {
       this.securityProtocol = null;
-    }
-  }
-
-  /**
-   * 
-   * @see ResourceJobManager
-   */
-  public ResourceJobManager getResourceJobManager() {
-    return this.resourceJobManager;
-  }
-
-  /**
-   * 
-   * @see ResourceJobManager
-   */
-  public void setResourceJobManager(ResourceJobManager resourceJobManager) {
-    this.resourceJobManager = resourceJobManager;
-  }
-
-  public void unsetResourceJobManager() {
-    this.resourceJobManager = null;
-  }
-
-  /** Returns true if field resourceJobManager is set (has been assigned a value) and false otherwise */
-  public boolean isSetResourceJobManager() {
-    return this.resourceJobManager != null;
-  }
-
-  public void setResourceJobManagerIsSet(boolean value) {
-    if (!value) {
-      this.resourceJobManager = null;
     }
   }
 
@@ -349,14 +301,6 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case RESOURCE_JOB_MANAGER:
-      if (value == null) {
-        unsetResourceJobManager();
-      } else {
-        setResourceJobManager((ResourceJobManager)value);
-      }
-      break;
-
     case GLOBUS_GATE_KEEPER_END_POINT:
       if (value == null) {
         unsetGlobusGateKeeperEndPoint();
@@ -376,9 +320,6 @@ import org.slf4j.LoggerFactory;
     case SECURITY_PROTOCOL:
       return getSecurityProtocol();
 
-    case RESOURCE_JOB_MANAGER:
-      return getResourceJobManager();
-
     case GLOBUS_GATE_KEEPER_END_POINT:
       return getGlobusGateKeeperEndPoint();
 
@@ -397,8 +338,6 @@ import org.slf4j.LoggerFactory;
       return isSetJobSubmissionInterfaceId();
     case SECURITY_PROTOCOL:
       return isSetSecurityProtocol();
-    case RESOURCE_JOB_MANAGER:
-      return isSetResourceJobManager();
     case GLOBUS_GATE_KEEPER_END_POINT:
       return isSetGlobusGateKeeperEndPoint();
     }
@@ -433,15 +372,6 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_securityProtocol && that_present_securityProtocol))
         return false;
       if (!this.securityProtocol.equals(that.securityProtocol))
-        return false;
-    }
-
-    boolean this_present_resourceJobManager = true && this.isSetResourceJobManager();
-    boolean that_present_resourceJobManager = true && that.isSetResourceJobManager();
-    if (this_present_resourceJobManager || that_present_resourceJobManager) {
-      if (!(this_present_resourceJobManager && that_present_resourceJobManager))
-        return false;
-      if (!this.resourceJobManager.equals(that.resourceJobManager))
         return false;
     }
 
@@ -486,16 +416,6 @@ import org.slf4j.LoggerFactory;
     }
     if (isSetSecurityProtocol()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.securityProtocol, other.securityProtocol);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetResourceJobManager()).compareTo(other.isSetResourceJobManager());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetResourceJobManager()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.resourceJobManager, other.resourceJobManager);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -545,14 +465,6 @@ import org.slf4j.LoggerFactory;
       sb.append(this.securityProtocol);
     }
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("resourceJobManager:");
-    if (this.resourceJobManager == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.resourceJobManager);
-    }
-    first = false;
     if (isSetGlobusGateKeeperEndPoint()) {
       if (!first) sb.append(", ");
       sb.append("globusGateKeeperEndPoint:");
@@ -575,10 +487,6 @@ import org.slf4j.LoggerFactory;
 
     if (!isSetSecurityProtocol()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'securityProtocol' is unset! Struct:" + toString());
-    }
-
-    if (!isSetResourceJobManager()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'resourceJobManager' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -634,24 +542,16 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // RESOURCE_JOB_MANAGER
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
-              struct.setResourceJobManagerIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 4: // GLOBUS_GATE_KEEPER_END_POINT
+          case 3: // GLOBUS_GATE_KEEPER_END_POINT
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
-                struct.globusGateKeeperEndPoint = new ArrayList<String>(_list8.size);
-                for (int _i9 = 0; _i9 < _list8.size; ++_i9)
+                org.apache.thrift.protocol.TList _list18 = iprot.readListBegin();
+                struct.globusGateKeeperEndPoint = new ArrayList<String>(_list18.size);
+                for (int _i19 = 0; _i19 < _list18.size; ++_i19)
                 {
-                  String _elem10;
-                  _elem10 = iprot.readString();
-                  struct.globusGateKeeperEndPoint.add(_elem10);
+                  String _elem20;
+                  _elem20 = iprot.readString();
+                  struct.globusGateKeeperEndPoint.add(_elem20);
                 }
                 iprot.readListEnd();
               }
@@ -683,19 +583,14 @@ import org.slf4j.LoggerFactory;
         oprot.writeI32(struct.securityProtocol.getValue());
         oprot.writeFieldEnd();
       }
-      if (struct.resourceJobManager != null) {
-        oprot.writeFieldBegin(RESOURCE_JOB_MANAGER_FIELD_DESC);
-        oprot.writeI32(struct.resourceJobManager.getValue());
-        oprot.writeFieldEnd();
-      }
       if (struct.globusGateKeeperEndPoint != null) {
         if (struct.isSetGlobusGateKeeperEndPoint()) {
           oprot.writeFieldBegin(GLOBUS_GATE_KEEPER_END_POINT_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.globusGateKeeperEndPoint.size()));
-            for (String _iter11 : struct.globusGateKeeperEndPoint)
+            for (String _iter21 : struct.globusGateKeeperEndPoint)
             {
-              oprot.writeString(_iter11);
+              oprot.writeString(_iter21);
             }
             oprot.writeListEnd();
           }
@@ -721,7 +616,6 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.jobSubmissionInterfaceId);
       oprot.writeI32(struct.securityProtocol.getValue());
-      oprot.writeI32(struct.resourceJobManager.getValue());
       BitSet optionals = new BitSet();
       if (struct.isSetGlobusGateKeeperEndPoint()) {
         optionals.set(0);
@@ -730,9 +624,9 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetGlobusGateKeeperEndPoint()) {
         {
           oprot.writeI32(struct.globusGateKeeperEndPoint.size());
-          for (String _iter12 : struct.globusGateKeeperEndPoint)
+          for (String _iter22 : struct.globusGateKeeperEndPoint)
           {
-            oprot.writeString(_iter12);
+            oprot.writeString(_iter22);
           }
         }
       }
@@ -745,18 +639,16 @@ import org.slf4j.LoggerFactory;
       struct.setJobSubmissionInterfaceIdIsSet(true);
       struct.securityProtocol = SecurityProtocol.findByValue(iprot.readI32());
       struct.setSecurityProtocolIsSet(true);
-      struct.resourceJobManager = ResourceJobManager.findByValue(iprot.readI32());
-      struct.setResourceJobManagerIsSet(true);
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.globusGateKeeperEndPoint = new ArrayList<String>(_list13.size);
-          for (int _i14 = 0; _i14 < _list13.size; ++_i14)
+          org.apache.thrift.protocol.TList _list23 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.globusGateKeeperEndPoint = new ArrayList<String>(_list23.size);
+          for (int _i24 = 0; _i24 < _list23.size; ++_i24)
           {
-            String _elem15;
-            _elem15 = iprot.readString();
-            struct.globusGateKeeperEndPoint.add(_elem15);
+            String _elem25;
+            _elem25 = iprot.readString();
+            struct.globusGateKeeperEndPoint.add(_elem25);
           }
         }
         struct.setGlobusGateKeeperEndPointIsSet(true);

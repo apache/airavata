@@ -17,7 +17,7 @@
 
 
 
-struct ResourceJobManager {
+struct ResourceJobManagerType {
   enum type {
     FORK = 0,
     PBS = 1,
@@ -26,7 +26,21 @@ struct ResourceJobManager {
   };
 };
 
-extern const std::map<int, const char*> _ResourceJobManager_VALUES_TO_NAMES;
+extern const std::map<int, const char*> _ResourceJobManagerType_VALUES_TO_NAMES;
+
+struct JobManagerCommand {
+  enum type {
+    SUBMISSION = 0,
+    JOB_MONITORING = 1,
+    DELETION = 2,
+    CHECK_JOB = 3,
+    SHOW_QUEUE = 4,
+    SHOW_RESERVATION = 5,
+    SHOW_START = 6
+  };
+};
+
+extern const std::map<int, const char*> _JobManagerCommand_VALUES_TO_NAMES;
 
 struct FileSystems {
   enum type {
@@ -56,9 +70,8 @@ struct JobSubmissionProtocol {
   enum type {
     LOCAL = 0,
     SSH = 1,
-    GSISSH = 2,
-    GRAM = 3,
-    UNICORE = 4
+    GLOBUS = 2,
+    UNICORE = 3
   };
 };
 
@@ -75,6 +88,81 @@ struct DataMovementProtocol {
 };
 
 extern const std::map<int, const char*> _DataMovementProtocol_VALUES_TO_NAMES;
+
+typedef struct _ResourceJobManager__isset {
+  _ResourceJobManager__isset() : pushMonitoringEndpoint(false), jobManagerBinPath(false), jobManagerCommands(false) {}
+  bool pushMonitoringEndpoint;
+  bool jobManagerBinPath;
+  bool jobManagerCommands;
+} _ResourceJobManager__isset;
+
+class ResourceJobManager {
+ public:
+
+  static const char* ascii_fingerprint; // = "16E60A0DB3009C6110717701A56245C2";
+  static const uint8_t binary_fingerprint[16]; // = {0x16,0xE6,0x0A,0x0D,0xB3,0x00,0x9C,0x61,0x10,0x71,0x77,0x01,0xA5,0x62,0x45,0xC2};
+
+  ResourceJobManager() : resourceJobManagerType((ResourceJobManagerType::type)0), pushMonitoringEndpoint(), jobManagerBinPath() {
+  }
+
+  virtual ~ResourceJobManager() throw() {}
+
+  ResourceJobManagerType::type resourceJobManagerType;
+  std::string pushMonitoringEndpoint;
+  std::string jobManagerBinPath;
+  std::map<JobManagerCommand::type, std::string>  jobManagerCommands;
+
+  _ResourceJobManager__isset __isset;
+
+  void __set_resourceJobManagerType(const ResourceJobManagerType::type val) {
+    resourceJobManagerType = val;
+  }
+
+  void __set_pushMonitoringEndpoint(const std::string& val) {
+    pushMonitoringEndpoint = val;
+    __isset.pushMonitoringEndpoint = true;
+  }
+
+  void __set_jobManagerBinPath(const std::string& val) {
+    jobManagerBinPath = val;
+    __isset.jobManagerBinPath = true;
+  }
+
+  void __set_jobManagerCommands(const std::map<JobManagerCommand::type, std::string> & val) {
+    jobManagerCommands = val;
+    __isset.jobManagerCommands = true;
+  }
+
+  bool operator == (const ResourceJobManager & rhs) const
+  {
+    if (!(resourceJobManagerType == rhs.resourceJobManagerType))
+      return false;
+    if (__isset.pushMonitoringEndpoint != rhs.__isset.pushMonitoringEndpoint)
+      return false;
+    else if (__isset.pushMonitoringEndpoint && !(pushMonitoringEndpoint == rhs.pushMonitoringEndpoint))
+      return false;
+    if (__isset.jobManagerBinPath != rhs.__isset.jobManagerBinPath)
+      return false;
+    else if (__isset.jobManagerBinPath && !(jobManagerBinPath == rhs.jobManagerBinPath))
+      return false;
+    if (__isset.jobManagerCommands != rhs.__isset.jobManagerCommands)
+      return false;
+    else if (__isset.jobManagerCommands && !(jobManagerCommands == rhs.jobManagerCommands))
+      return false;
+    return true;
+  }
+  bool operator != (const ResourceJobManager &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ResourceJobManager & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(ResourceJobManager &a, ResourceJobManager &b);
 
 typedef struct _BatchQueue__isset {
   _BatchQueue__isset() : queueDescription(false), maxRunTime(false), maxNodes(false), maxProcessors(false), maxJobsInQueue(false) {}
@@ -295,39 +383,27 @@ class GridFTPDataMovement {
 
 void swap(GridFTPDataMovement &a, GridFTPDataMovement &b);
 
-typedef struct _LOCALSubmission__isset {
-  _LOCALSubmission__isset() : monitoringMechanism(false) {}
-  bool monitoringMechanism;
-} _LOCALSubmission__isset;
 
 class LOCALSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "C9C13E23D75AC7D7DB268099D53EE995";
-  static const uint8_t binary_fingerprint[16]; // = {0xC9,0xC1,0x3E,0x23,0xD7,0x5A,0xC7,0xD7,0xDB,0x26,0x80,0x99,0xD5,0x3E,0xE9,0x95};
+  static const char* ascii_fingerprint; // = "D4599FCDE7AF5015D8ECB662C15BB89C";
+  static const uint8_t binary_fingerprint[16]; // = {0xD4,0x59,0x9F,0xCD,0xE7,0xAF,0x50,0x15,0xD8,0xEC,0xB6,0x62,0xC1,0x5B,0xB8,0x9C};
 
-  LOCALSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), resourceJobManager((ResourceJobManager::type)0), monitoringMechanism() {
+  LOCALSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS") {
   }
 
   virtual ~LOCALSubmission() throw() {}
 
   std::string jobSubmissionInterfaceId;
-  ResourceJobManager::type resourceJobManager;
-  std::string monitoringMechanism;
-
-  _LOCALSubmission__isset __isset;
+  ResourceJobManager resourceJobManager;
 
   void __set_jobSubmissionInterfaceId(const std::string& val) {
     jobSubmissionInterfaceId = val;
   }
 
-  void __set_resourceJobManager(const ResourceJobManager::type val) {
+  void __set_resourceJobManager(const ResourceJobManager& val) {
     resourceJobManager = val;
-  }
-
-  void __set_monitoringMechanism(const std::string& val) {
-    monitoringMechanism = val;
-    __isset.monitoringMechanism = true;
   }
 
   bool operator == (const LOCALSubmission & rhs) const
@@ -335,10 +411,6 @@ class LOCALSubmission {
     if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
       return false;
     if (!(resourceJobManager == rhs.resourceJobManager))
-      return false;
-    if (__isset.monitoringMechanism != rhs.__isset.monitoringMechanism)
-      return false;
-    else if (__isset.monitoringMechanism && !(monitoringMechanism == rhs.monitoringMechanism))
       return false;
     return true;
   }
@@ -393,29 +465,27 @@ class LOCALDataMovement {
 void swap(LOCALDataMovement &a, LOCALDataMovement &b);
 
 typedef struct _SSHJobSubmission__isset {
-  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitoringMechanism(false) {}
+  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true) {}
   bool alternativeSSHHostName;
   bool sshPort;
-  bool monitoringMechanism;
 } _SSHJobSubmission__isset;
 
 class SSHJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "7AD7C2665ACC6606EC984DACFC74881E";
-  static const uint8_t binary_fingerprint[16]; // = {0x7A,0xD7,0xC2,0x66,0x5A,0xCC,0x66,0x06,0xEC,0x98,0x4D,0xAC,0xFC,0x74,0x88,0x1E};
+  static const char* ascii_fingerprint; // = "0A593CE0EC92EB95612E7844E2EBB8D9";
+  static const uint8_t binary_fingerprint[16]; // = {0x0A,0x59,0x3C,0xE0,0xEC,0x92,0xEB,0x95,0x61,0x2E,0x78,0x44,0xE2,0xEB,0xB8,0xD9};
 
-  SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), resourceJobManager((ResourceJobManager::type)0), alternativeSSHHostName(), sshPort(22), monitoringMechanism() {
+  SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSSHHostName(), sshPort(22) {
   }
 
   virtual ~SSHJobSubmission() throw() {}
 
   std::string jobSubmissionInterfaceId;
   SecurityProtocol::type securityProtocol;
-  ResourceJobManager::type resourceJobManager;
+  ResourceJobManager resourceJobManager;
   std::string alternativeSSHHostName;
   int32_t sshPort;
-  std::string monitoringMechanism;
 
   _SSHJobSubmission__isset __isset;
 
@@ -427,7 +497,7 @@ class SSHJobSubmission {
     securityProtocol = val;
   }
 
-  void __set_resourceJobManager(const ResourceJobManager::type val) {
+  void __set_resourceJobManager(const ResourceJobManager& val) {
     resourceJobManager = val;
   }
 
@@ -439,11 +509,6 @@ class SSHJobSubmission {
   void __set_sshPort(const int32_t val) {
     sshPort = val;
     __isset.sshPort = true;
-  }
-
-  void __set_monitoringMechanism(const std::string& val) {
-    monitoringMechanism = val;
-    __isset.monitoringMechanism = true;
   }
 
   bool operator == (const SSHJobSubmission & rhs) const
@@ -461,10 +526,6 @@ class SSHJobSubmission {
     if (__isset.sshPort != rhs.__isset.sshPort)
       return false;
     else if (__isset.sshPort && !(sshPort == rhs.sshPort))
-      return false;
-    if (__isset.monitoringMechanism != rhs.__isset.monitoringMechanism)
-      return false;
-    else if (__isset.monitoringMechanism && !(monitoringMechanism == rhs.monitoringMechanism))
       return false;
     return true;
   }
@@ -489,17 +550,16 @@ typedef struct _GlobusJobSubmission__isset {
 class GlobusJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "DF4253F78D7B543C16FA461660D38A03";
-  static const uint8_t binary_fingerprint[16]; // = {0xDF,0x42,0x53,0xF7,0x8D,0x7B,0x54,0x3C,0x16,0xFA,0x46,0x16,0x60,0xD3,0x8A,0x03};
+  static const char* ascii_fingerprint; // = "AF422FFD77BB68BA57079B8B33BC8CF7";
+  static const uint8_t binary_fingerprint[16]; // = {0xAF,0x42,0x2F,0xFD,0x77,0xBB,0x68,0xBA,0x57,0x07,0x9B,0x8B,0x33,0xBC,0x8C,0xF7};
 
-  GlobusJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), resourceJobManager((ResourceJobManager::type)0) {
+  GlobusJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0) {
   }
 
   virtual ~GlobusJobSubmission() throw() {}
 
   std::string jobSubmissionInterfaceId;
   SecurityProtocol::type securityProtocol;
-  ResourceJobManager::type resourceJobManager;
   std::vector<std::string>  globusGateKeeperEndPoint;
 
   _GlobusJobSubmission__isset __isset;
@@ -512,10 +572,6 @@ class GlobusJobSubmission {
     securityProtocol = val;
   }
 
-  void __set_resourceJobManager(const ResourceJobManager::type val) {
-    resourceJobManager = val;
-  }
-
   void __set_globusGateKeeperEndPoint(const std::vector<std::string> & val) {
     globusGateKeeperEndPoint = val;
     __isset.globusGateKeeperEndPoint = true;
@@ -526,8 +582,6 @@ class GlobusJobSubmission {
     if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
       return false;
     if (!(securityProtocol == rhs.securityProtocol))
-      return false;
-    if (!(resourceJobManager == rhs.resourceJobManager))
       return false;
     if (__isset.globusGateKeeperEndPoint != rhs.__isset.globusGateKeeperEndPoint)
       return false;
@@ -651,11 +705,10 @@ class DataMovementInterface {
 void swap(DataMovementInterface &a, DataMovementInterface &b);
 
 typedef struct _ComputeResourceDescription__isset {
-  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), computeResourceDescription(false), resourceJobManager(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovemenetInterfaces(false) {}
+  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovemenetInterfaces(false) {}
   bool hostAliases;
   bool ipAddresses;
-  bool computeResourceDescription;
-  bool resourceJobManager;
+  bool resourceDescription;
   bool batchQueues;
   bool fileSystems;
   bool jobSubmissionInterfaces;
@@ -665,10 +718,10 @@ typedef struct _ComputeResourceDescription__isset {
 class ComputeResourceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "ADC1452A60F79D933D0EE4B9893AD048";
-  static const uint8_t binary_fingerprint[16]; // = {0xAD,0xC1,0x45,0x2A,0x60,0xF7,0x9D,0x93,0x3D,0x0E,0xE4,0xB9,0x89,0x3A,0xD0,0x48};
+  static const char* ascii_fingerprint; // = "95B7C2C0992AC1BEC9B06845F0CB3D24";
+  static const uint8_t binary_fingerprint[16]; // = {0x95,0xB7,0xC2,0xC0,0x99,0x2A,0xC1,0xBE,0xC9,0xB0,0x68,0x45,0xF0,0xCB,0x3D,0x24};
 
-  ComputeResourceDescription() : isEmpty(false), computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), computeResourceDescription(), resourceJobManager((ResourceJobManager::type)0) {
+  ComputeResourceDescription() : isEmpty(false), computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription() {
   }
 
   virtual ~ComputeResourceDescription() throw() {}
@@ -678,8 +731,7 @@ class ComputeResourceDescription {
   std::string hostName;
   std::set<std::string>  hostAliases;
   std::set<std::string>  ipAddresses;
-  std::string computeResourceDescription;
-  ResourceJobManager::type resourceJobManager;
+  std::string resourceDescription;
   std::vector<BatchQueue>  batchQueues;
   std::map<FileSystems::type, std::string>  fileSystems;
   std::vector<JobSubmissionInterface>  jobSubmissionInterfaces;
@@ -709,14 +761,9 @@ class ComputeResourceDescription {
     __isset.ipAddresses = true;
   }
 
-  void __set_computeResourceDescription(const std::string& val) {
-    computeResourceDescription = val;
-    __isset.computeResourceDescription = true;
-  }
-
-  void __set_resourceJobManager(const ResourceJobManager::type val) {
-    resourceJobManager = val;
-    __isset.resourceJobManager = true;
+  void __set_resourceDescription(const std::string& val) {
+    resourceDescription = val;
+    __isset.resourceDescription = true;
   }
 
   void __set_batchQueues(const std::vector<BatchQueue> & val) {
@@ -755,13 +802,9 @@ class ComputeResourceDescription {
       return false;
     else if (__isset.ipAddresses && !(ipAddresses == rhs.ipAddresses))
       return false;
-    if (__isset.computeResourceDescription != rhs.__isset.computeResourceDescription)
+    if (__isset.resourceDescription != rhs.__isset.resourceDescription)
       return false;
-    else if (__isset.computeResourceDescription && !(computeResourceDescription == rhs.computeResourceDescription))
-      return false;
-    if (__isset.resourceJobManager != rhs.__isset.resourceJobManager)
-      return false;
-    else if (__isset.resourceJobManager && !(resourceJobManager == rhs.resourceJobManager))
+    else if (__isset.resourceDescription && !(resourceDescription == rhs.resourceDescription))
       return false;
     if (__isset.batchQueues != rhs.__isset.batchQueues)
       return false;

@@ -557,13 +557,13 @@ import org.slf4j.LoggerFactory;
           case 3: // GRID_FTPEND_POINTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.gridFTPEndPoints = new ArrayList<String>(_list0.size);
-                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                org.apache.thrift.protocol.TList _list10 = iprot.readListBegin();
+                struct.gridFTPEndPoints = new ArrayList<String>(_list10.size);
+                for (int _i11 = 0; _i11 < _list10.size; ++_i11)
                 {
-                  String _elem2;
-                  _elem2 = iprot.readString();
-                  struct.gridFTPEndPoints.add(_elem2);
+                  String _elem12;
+                  _elem12 = iprot.readString();
+                  struct.gridFTPEndPoints.add(_elem12);
                 }
                 iprot.readListEnd();
               }
@@ -599,9 +599,9 @@ import org.slf4j.LoggerFactory;
         oprot.writeFieldBegin(GRID_FTPEND_POINTS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.gridFTPEndPoints.size()));
-          for (String _iter3 : struct.gridFTPEndPoints)
+          for (String _iter13 : struct.gridFTPEndPoints)
           {
-            oprot.writeString(_iter3);
+            oprot.writeString(_iter13);
           }
           oprot.writeListEnd();
         }
@@ -628,9 +628,9 @@ import org.slf4j.LoggerFactory;
       oprot.writeI32(struct.securityProtocol.getValue());
       {
         oprot.writeI32(struct.gridFTPEndPoints.size());
-        for (String _iter4 : struct.gridFTPEndPoints)
+        for (String _iter14 : struct.gridFTPEndPoints)
         {
-          oprot.writeString(_iter4);
+          oprot.writeString(_iter14);
         }
       }
     }
@@ -643,13 +643,13 @@ import org.slf4j.LoggerFactory;
       struct.securityProtocol = SecurityProtocol.findByValue(iprot.readI32());
       struct.setSecurityProtocolIsSet(true);
       {
-        org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-        struct.gridFTPEndPoints = new ArrayList<String>(_list5.size);
-        for (int _i6 = 0; _i6 < _list5.size; ++_i6)
+        org.apache.thrift.protocol.TList _list15 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+        struct.gridFTPEndPoints = new ArrayList<String>(_list15.size);
+        for (int _i16 = 0; _i16 < _list15.size; ++_i16)
         {
-          String _elem7;
-          _elem7 = iprot.readString();
-          struct.gridFTPEndPoints.add(_elem7);
+          String _elem17;
+          _elem17 = iprot.readString();
+          struct.gridFTPEndPoints.add(_elem17);
         }
       }
       struct.setGridFTPEndPointsIsSet(true);
