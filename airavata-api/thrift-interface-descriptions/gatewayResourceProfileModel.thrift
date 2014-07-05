@@ -24,26 +24,30 @@ namespace php Airavata.Model.AppCatalog.GatewayProfile
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
 /**
- * Resource Preferences for each of the gateway
+ * Gateway specific preferences for a Computer Resource
  *
  * computeResourceId:
- *   Corelate the preference for compute resource to
+ *   Corelate the preference to a compute resource.
  *
- * gatewayName:
- *   Name of the Gateway.
+ * overridebyAiravata:
+ *   If turned true, Airavata will override the preferences of better alternatives exist.
  *
- * ipAddress:
- *   IP Addresse of the Hostname.
+ * preferredJobSubmissionProtocol:
+ *   For resources with multiple job submission protocols, the gateway can pick a preferred option.
  *
- * resourceDescription:
- *  A user friendly description of the hostname.
+ * preferredDataMovementProtocol:
+ *   For resources with multiple data movement protocols, the gateway can pick a preferred option.
  *
- * JobSubmissionProtocols:
- *  A computational resources may have one or more ways of submitting Jobs. This structure
- *  will hold all available mechanisms to interact with the resource.
+ * preferredBatchQueue:
+ *  Gateways can choose a defualt batch queue based on average job dimention, reservations or other metrics.
  *
- * DataMovementProtocol:
- *  Option to specify a prefered data movement mechanism of the available options.
+ * scratchLocation:
+ *  Path to the local scratch space on a HPC cluster. Typically used to create working directory for job execution.
+ *
+ * allocationProjectNumber:
+ *  Typically used on HPC machines to charge computing usage to a account number. For instance, on XSEDE once an
+ *    allocation is approved, an allocation number is assigned. Before passing this number with job submittions, the
+ *    account to be used has to be added to the allocation.
  *
 */
 struct ComputeResourcePreference {
@@ -57,26 +61,20 @@ struct ComputeResourcePreference {
 }
 
 /**
- * Gateway Profile
+ * Gateway Resource Profile
  *
  * gatewayID:
- *   Unique identifier for the gateway assigned by Airavata
+ *   Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
  *
  * gatewayName:
  *   Name of the Gateway.
  *
- * ipAddress:
- *   IP Addresse of the Hostname.
+ * gatewayDescription:
+ *  A user friendly description of the gateway.
  *
- * resourceDescription:
- *  A user friendly description of the hostname.
+ * computeResourcePreferences:
+ *  List of resource preferences for each of the registered compute resources.
  *
- * JobSubmissionProtocols:
- *  A computational resources may have one or more ways of submitting Jobs. This structure
- *  will hold all available mechanisms to interact with the resource.
- *
- * DataMovementProtocol:
- *  Option to specify a prefered data movement mechanism of the available options.
  *
 */
 struct GatewayProfile {
