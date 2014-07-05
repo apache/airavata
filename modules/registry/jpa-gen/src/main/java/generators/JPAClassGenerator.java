@@ -31,6 +31,8 @@ import model.SQLData;
 
 public class JPAClassGenerator extends AbstractGenerator{
 //    private static final Logger log = LoggerFactory.getLogger(JPAClassGenerator.class);
+	private String jpaClassPackageName;
+	
     public JPAClassModel createJPAClassModel(SQLData sqlData){
 		JPAClassModel model = new JPAClassModel();
 		model.generatePKClass=sqlData.getPrimaryKeys().size()>1;
@@ -188,6 +190,26 @@ public class JPAClassGenerator extends AbstractGenerator{
 		
 		classStr=addLines(classStr,"}");
 		return classStr;
+	}
+
+	public String generatePersistenceXmlEntry(JPAClassModel model){
+		String xmlEntry=null;
+		xmlEntry=addLines(xmlEntry,"<persistence xmlns=\"http://java.sun.com/xml/ns/persistence\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"1.0\">");
+		xmlEntry=addLines(xmlEntry,tabs(1)+"<persistence-unit name=\"appcatalog_data\">");
+		xmlEntry=addLines(xmlEntry,tabs(2)+"<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>");
+		xmlEntry=addLines(xmlEntry,tabs(2)+"<class>"+getJpaClassPackageName()+"."+model.className+"</class>");
+		xmlEntry=addLines(xmlEntry,tabs(2)+"<exclude-unlisted-classes>true</exclude-unlisted-classes>");
+		xmlEntry=addLines(xmlEntry,tabs(1)+"</persistence-unit>");
+		xmlEntry=addLines(xmlEntry,"</persistence>");
+		return xmlEntry;
+	}
+	
+	public String getJpaClassPackageName() {
+		return jpaClassPackageName;
+	}
+
+	public void setJpaClassPackageName(String jpaClassPackageName) {
+		this.jpaClassPackageName = jpaClassPackageName;
 	}
 	
 }

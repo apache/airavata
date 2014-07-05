@@ -53,9 +53,11 @@ public class JobSubmissionInterfaceGenerator {
 	public static void testJPAClassGen() {
 		SQLData data = createSQLData();
 		JPAClassGenerator jpaClassGenerator = new JPAClassGenerator();
+		jpaClassGenerator.setJpaClassPackageName("org.apache.aiaravata.application.catalog.data.model");
 		JPAClassModel model = jpaClassGenerator.createJPAClassModel(data);
 		System.out.println(jpaClassGenerator.generateJPAClass(model));
 		System.out.println(jpaClassGenerator.generateJPAPKClass(model.pkClassModel));
+		System.out.println(jpaClassGenerator.generatePersistenceXmlEntry(model));
 	}
 	
 	public static void testJPAResourceClassGen() {

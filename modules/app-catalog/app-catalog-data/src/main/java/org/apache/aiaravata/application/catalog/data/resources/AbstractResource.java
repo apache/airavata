@@ -52,6 +52,7 @@ public abstract class AbstractResource implements Resource {
 	public static final String BATCH_QUEUE = "BatchQueue";
 	public static final String COMPUTE_RESOURCE_FILE_SYSTEM = "ComputeResourceFileSystem";
 	public static final String JOB_SUBMISSION_INTERFACE = "JobSubmissionInterface";
+	public static final String DATA_MOVEMENT_INTERFACE = "DataMovementInterface";
 	
     // Compute Resource Table
     public final class ComputeResourceConstants {
@@ -252,6 +253,14 @@ public abstract class AbstractResource implements Resource {
 		public static final String JOB_SUBMISSION_INTERFACE_ID = "jobSubmissionInterfaceId";
 		public static final String COMPUTE_RESOURCE_ID = "computeResourceId";
 		public static final String JOB_SUBMISSION_PROTOCOL = "jobSubmissionProtocol";
+		public static final String PRIORITY_ORDER = "priorityOrder";
+	}
+	
+	// Data Movement Interface Table
+	public final class DataMovementInterfaceConstants {
+		public static final String COMPUTE_RESOURCE_ID = "computeResourceId";
+		public static final String DATA_MOVEMENT_PROTOCOL = "dataMovementProtocol";
+		public static final String DATA_MOVEMENT_INTERFACE_ID = "dataMovementInterfaceId";
 		public static final String PRIORITY_ORDER = "priorityOrder";
 	}
 }
