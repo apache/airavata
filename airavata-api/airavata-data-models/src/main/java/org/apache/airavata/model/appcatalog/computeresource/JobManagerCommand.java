@@ -28,27 +28,42 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * Enumeration of Airavata supported Job Submission Mechanisms for High Perforamance Computing Clusters.
+ * Enumeration of resource job manager commands
  * 
- * SSH:
- *  Execute remote job submission commands using via secure shell protocol.
+ * SUBMISSION:
+ *  Ex: qsub, sbatch
  * 
- * GRAM:
- *  Execute remote jobs via Globus GRAM service.
+ * JOBMONITORING:
+ *  Ex: qstat, squeue
  * 
- * UNICORE:
- *  Execute remote jobs via Unicore services
+ * DELETION:
+ *  Ex: qdel, scancel
+ * 
+ * CHECK_JOB:
+ *  Detailed Status about the Job. Ex: checkjob
+ * 
+ * SHOW_QUEUE:
+ *  List of Queued Job by the schedular. Ex: showq
+ * 
+ * SHOW_RESERVATION:
+ *  List all reservations. Ex:showres, show_res
+ * 
+ * SHOW_START:
+ *  Display the start time of the specified job. Ex: showstart
  * 
  */
-@SuppressWarnings("all") public enum JobSubmissionProtocol implements org.apache.thrift.TEnum {
-  LOCAL(0),
-  SSH(1),
-  GLOBUS(2),
-  UNICORE(3);
+@SuppressWarnings("all") public enum JobManagerCommand implements org.apache.thrift.TEnum {
+  SUBMISSION(0),
+  JOB_MONITORING(1),
+  DELETION(2),
+  CHECK_JOB(3),
+  SHOW_QUEUE(4),
+  SHOW_RESERVATION(5),
+  SHOW_START(6);
 
   private final int value;
 
-  private JobSubmissionProtocol(int value) {
+  private JobManagerCommand(int value) {
     this.value = value;
   }
 
@@ -63,16 +78,22 @@ import org.apache.thrift.TEnum;
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static JobSubmissionProtocol findByValue(int value) { 
+  public static JobManagerCommand findByValue(int value) { 
     switch (value) {
       case 0:
-        return LOCAL;
+        return SUBMISSION;
       case 1:
-        return SSH;
+        return JOB_MONITORING;
       case 2:
-        return GLOBUS;
+        return DELETION;
       case 3:
-        return UNICORE;
+        return CHECK_JOB;
+      case 4:
+        return SHOW_QUEUE;
+      case 5:
+        return SHOW_RESERVATION;
+      case 6:
+        return SHOW_START;
       default:
         return null;
     }

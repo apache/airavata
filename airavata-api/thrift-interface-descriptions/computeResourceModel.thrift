@@ -24,7 +24,7 @@ namespace php Airavata.Model.AppCatalog.ComputeResource
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
 /**
- * Enumeration of local resource job managers supported by Airavata
+ * Enumeration of local resource job manager types supported by Airavata
  *
  * FORK:
  *  Forking of commands without any job manager
@@ -39,11 +39,70 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
  *  The Simple Linux Utility for Resource Management is a open source workload manager.
  *
 */
-enum ResourceJobManager {
+enum ResourceJobManagerType {
     FORK,
     PBS,
     UGE,
     SLURM
+}
+
+/**
+ * Enumeration of resource job manager commands
+ *
+ * SUBMISSION:
+ *  Ex: qsub, sbatch
+ *
+ * JOBMONITORING:
+ *  Ex: qstat, squeue
+ *
+ * DELETION:
+ *  Ex: qdel, scancel
+ *
+ * CHECK_JOB:
+ *  Detailed Status about the Job. Ex: checkjob
+ *
+ * SHOW_QUEUE:
+ *  List of Queued Job by the schedular. Ex: showq
+ *
+ * SHOW_RESERVATION:
+ *  List all reservations. Ex:showres, show_res
+ *
+ * SHOW_START:
+ *  Display the start time of the specified job. Ex: showstart
+ *
+*/
+enum JobManagerCommand {
+    SUBMISSION,
+    JOB_MONITORING,
+    DELETION,
+    CHECK_JOB,
+    SHOW_QUEUE,
+    SHOW_RESERVATION,
+    SHOW_START
+}
+
+/**
+ * Resource Job Manager Information
+ *
+ * resourceJobManagerType:
+ *  A typical HPC cluster has a single Job Manager to manage the resources.
+ *
+ * pushMonitoringEndpoint:
+ *  If the job manager pushes out state changes to a database or bus, specify the service endpoint.
+ *   Ex: Moab Web Service, Moab MongoDB URL, AMQP (GLUE2) Broker
+ *
+ * jobManagerBinPath:
+ *  Path to the Job Manager Installation Binary directory.
+ *
+ * jobManagerCommands:
+ *  An enumeration of commonly used manager commands.
+ *
+*/
+struct ResourceJobManager {
+    1: required ResourceJobManagerType resourceJobManagerType,
+    2: optional string pushMonitoringEndpoint,
+    3: optional string jobManagerBinPath,
+    4: optional map<JobManagerCommand, string> jobManagerCommands
 }
 
 /**
@@ -121,8 +180,7 @@ enum SecurityProtocol {
 enum JobSubmissionProtocol {
     LOCAL,
     SSH,
-    GSISSH,
-    GRAM,
+    GLOBUS,
     UNICORE
 }
 
@@ -192,8 +250,7 @@ struct GridFTPDataMovement {
 */
 struct LOCALSubmission {
     1: required string jobSubmissionInterfaceId = DEFAULT_ID,
-    3: required ResourceJobManager resourceJobManager,
-    6: optional string monitoringMechanism
+    2: required ResourceJobManager resourceJobManager
 }
 
 /**
@@ -223,15 +280,13 @@ struct SSHJobSubmission {
     2: required SecurityProtocol securityProtocol,
     3: required ResourceJobManager resourceJobManager,
     4: optional string alternativeSSHHostName,
-    5: optional i32 sshPort = 22,
-    6: optional string monitoringMechanism
+    5: optional i32 sshPort = 22
 }
 
 struct GlobusJobSubmission {
     1: required string jobSubmissionInterfaceId = DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
-    3: required ResourceJobManager resourceJobManager,
-    4: optional list<string> globusGateKeeperEndPoint
+    3: optional list<string> globusGateKeeperEndPoint
 }
 
 /**
@@ -298,10 +353,9 @@ struct ComputeResourceDescription {
     3: required string hostName,
     4: optional set<string> hostAliases,
     5: optional set<string> ipAddresses,
-    6: optional string computeResourceDescription,
-    7: optional ResourceJobManager resourceJobManager,
-    8: optional list<BatchQueue> batchQueues,
-    9: optional map<FileSystems, string> fileSystems,
-    10: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
-    11: optional list<DataMovementInterface> dataMovemenetInterfaces
+    6: optional string resourceDescription,
+    7: optional list<BatchQueue> batchQueues,
+    8: optional map<FileSystems, string> fileSystems,
+    9: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
+    10: optional list<DataMovementInterface> dataMovemenetInterfaces
 }
