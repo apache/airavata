@@ -240,34 +240,28 @@ public class ApplicationInputResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             ApplicationInput existingApplicationInput = em.find(ApplicationInput.class, new AppInput_PK(interfaceID, inputKey));
             em.close();
-
+            ApplicationInput applicationInput;
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            if (existingApplicationInput != null) {
-                existingApplicationInput.setInterfaceID(interfaceID);
-                ApplicationInterface applicationInterface = em.find(ApplicationInterface.class, interfaceID);
-                existingApplicationInput.setApplicationInterface(applicationInterface);
-                existingApplicationInput.setDataType(dataType);
-                existingApplicationInput.setInputKey(inputKey);
-                existingApplicationInput.setInputVal(inputVal);
-                existingApplicationInput.setMetadata(metadata);
-                existingApplicationInput.setAppArgument(appArgument);
-                existingApplicationInput.setUserFriendlyDesc(userFriendlyDesc);
-                existingApplicationInput.setStandardInput(standareInput);
-                em.merge(existingApplicationInput);
+            if (existingApplicationInput == null) {
+                applicationInput = new ApplicationInput();
             } else {
-                ApplicationInput applicationInput = new ApplicationInput();
-                applicationInput.setInterfaceID(interfaceID);
-                ApplicationInterface applicationInterface = em.find(ApplicationInterface.class, interfaceID);
-                applicationInput.setApplicationInterface(applicationInterface);
-                applicationInput.setDataType(dataType);
-                applicationInput.setInputKey(inputKey);
-                applicationInput.setInputVal(inputVal);
-                applicationInput.setMetadata(metadata);
-                applicationInput.setAppArgument(appArgument);
-                applicationInput.setUserFriendlyDesc(userFriendlyDesc);
-                applicationInput.setStandardInput(standareInput);
+            	applicationInput=existingApplicationInput;
+            }
+            applicationInput.setInterfaceID(interfaceID);
+            ApplicationInterface applicationInterface = em.find(ApplicationInterface.class, interfaceID);
+            applicationInput.setApplicationInterface(applicationInterface);
+            applicationInput.setDataType(dataType);
+            applicationInput.setInputKey(inputKey);
+            applicationInput.setInputVal(inputVal);
+            applicationInput.setMetadata(metadata);
+            applicationInput.setAppArgument(appArgument);
+            applicationInput.setUserFriendlyDesc(userFriendlyDesc);
+            applicationInput.setStandardInput(standareInput);
+            if (existingApplicationInput == null) {
                 em.persist(applicationInput);
+            } else {
+                em.merge(applicationInput);
             }
             em.getTransaction().commit();
             em.close();

@@ -1,3 +1,4 @@
+package model;
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,36 +20,9 @@
  *
  */
 
-package org.apache.aiaravata.application.catalog.data.util;
 
-public enum AppCatalogResourceType {
-    COMPUTE_RESOURCE,
-    HOST_ALIAS,
-    HOST_IPADDRESS,
-    GSISSH_SUBMISSION,
-    GSISSH_EXPORT,
-    GSISSH_PREJOBCOMMAND,
-    GSISSH_POSTJOBCOMMAND,
-    GLOBUS_SUBMISSION,
-    GLOBUS_GK_ENDPOINT,
-    SSH_SUBMISSION,
-    SCP_DATAMOVEMENT,
-    GRID_FTP_DATAMOVEMENT,
-    GRID_FTP_DM_ENDPOINT,
-    JOB_SUBMISSION_PROTOCOL,
-    DATA_MOVEMENT_PROTOCOL,
-    APPLICATION_MODULE,
-    APPLICATION_DEPLOYMENT,
-    LIBRARY_PREPAND_PATH,
-    LIBRARY_APEND_PATH,
-    APP_ENVIRONMENT,
-    APPLICATION_INTERFACE,
-    APP_MODULE_MAPPING,
-    APPLICATION_INPUT,
-    APPLICATION_OUTPUT,
-    GATEWAY_PROFILE,
-    COMPUTE_RESOURCE_PREFERENCE,
-	BATCH_QUEUE,
-	COMPUTE_RESOURCE_FILE_SYSTEM,
-	JOB_SUBMISSION_INTERFACE
+public class JPAResourceClassModel{
+	public String className;
+	public JPAClassModel jpaClassModel;
+	public String jpaClassConstantClassName;
 }
