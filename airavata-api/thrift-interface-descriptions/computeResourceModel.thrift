@@ -329,6 +329,9 @@ struct DataMovementInterface {
  * hostName:
  *   Fully Qualified Host Name.
  *
+ * hostAliases:
+ *   Aliases if any.
+ *
  * ipAddress:
  *   IP Addresses of the Resource.
  *
