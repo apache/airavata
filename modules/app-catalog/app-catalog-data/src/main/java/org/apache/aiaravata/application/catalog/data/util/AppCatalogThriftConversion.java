@@ -174,7 +174,7 @@ public class AppCatalogThriftConversion {
         return globusJobSubmission;
     }
 
-    public static SSHJobSubmission getSSHJobSubmissionDescription (SSHSubmissionResource submission) throws AppCatalogException {
+    public static SSHJobSubmission getSSHJobSubmissionDescription (SshJobSubmissionResource submission) throws AppCatalogException {
         SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
         sshJobSubmission.setJobSubmissionDataID(submission.getSubmissionID());
         sshJobSubmission.setResourceJobManager(ResourceJobManager.valueOf(submission.getResourceJobManager()));
@@ -182,7 +182,7 @@ public class AppCatalogThriftConversion {
         return sshJobSubmission;
     }
 
-    public static SCPDataMovement getSCPDataMovementDescription (SCPDataMovementResource dataMovementResource) throws AppCatalogException {
+    public static SCPDataMovement getSCPDataMovementDescription (ScpDataMovementResource dataMovementResource) throws AppCatalogException {
         SCPDataMovement dataMovement = new SCPDataMovement();
         dataMovement.setDataMovementDataID(dataMovementResource.getDataMoveID());
         dataMovement.setSecurityProtocol(SecurityProtocol.valueOf(dataMovementResource.getSecurityProtocol()));
@@ -190,11 +190,11 @@ public class AppCatalogThriftConversion {
         return dataMovement;
     }
 
-    public static GridFTPDataMovement getGridFTPDataMovementDescription (GridFTPDataMovementResource dataMovementResource) throws AppCatalogException {
+    public static GridFTPDataMovement getGridFTPDataMovementDescription (GridftpDataMovementResource dataMovementResource) throws AppCatalogException {
         GridFTPDataMovement dataMovement = new GridFTPDataMovement();
         dataMovement.setDataMovementDataID(dataMovementResource.getDataMoveID());
         dataMovement.setSecurityProtocol(SecurityProtocol.valueOf(dataMovementResource.getSecurityProtocol()));
-        GridFTPDMEndpointResource endpointResource = new GridFTPDMEndpointResource();
+        GridftpEndpointResource endpointResource = new GridftpEndpointResource();
         List<Resource> endpoints = endpointResource.get(AbstractResource.GridFTPDMEPConstants.DATA_MOVE_ID, dataMovementResource.getDataMoveID());
         if (endpoints != null && !endpoints.isEmpty()){
             dataMovement.setGridFTPEndPoint(getGridFTPDMEPList(endpoints));
@@ -205,7 +205,7 @@ public class AppCatalogThriftConversion {
     public static List<String> getGridFTPDMEPList (List<Resource> endpoints){
         List<String> list = new ArrayList<String>();
         for (Resource resource : endpoints){
-            list.add(((GridFTPDMEndpointResource) resource).getEndpoint());
+            list.add(((GridftpEndpointResource) resource).getEndpoint());
         }
         return list;
     }
@@ -237,7 +237,7 @@ public class AppCatalogThriftConversion {
     public static List<SSHJobSubmission> getSSHSubmissionList (List<Resource> resources) throws AppCatalogException {
         List<SSHJobSubmission> list = new ArrayList<SSHJobSubmission>();
         for (Resource resource : resources){
-            list.add(getSSHJobSubmissionDescription((SSHSubmissionResource) resource));
+            list.add(getSSHJobSubmissionDescription((SshJobSubmissionResource) resource));
         }
         return list;
     }
@@ -245,7 +245,7 @@ public class AppCatalogThriftConversion {
     public static List<GridFTPDataMovement> getGridFTPDataMovementList (List<Resource> resources) throws AppCatalogException {
         List<GridFTPDataMovement> list = new ArrayList<GridFTPDataMovement>();
         for (Resource resource : resources){
-            list.add(getGridFTPDataMovementDescription((GridFTPDataMovementResource) resource));
+            list.add(getGridFTPDataMovementDescription((GridftpDataMovementResource) resource));
         }
         return list;
     }
@@ -253,7 +253,7 @@ public class AppCatalogThriftConversion {
     public static List<SCPDataMovement> getSCPDataMovementList (List<Resource> resources) throws AppCatalogException {
         List<SCPDataMovement> list = new ArrayList<SCPDataMovement>();
         for (Resource resource : resources){
-            list.add(getSCPDataMovementDescription((SCPDataMovementResource) resource));
+            list.add(getSCPDataMovementDescription((ScpDataMovementResource) resource));
         }
         return list;
     }
@@ -290,8 +290,8 @@ public class AppCatalogThriftConversion {
         return resource;
     }
 
-    public static SSHSubmissionResource getSSHJobSubmission (SSHJobSubmission submission){
-        SSHSubmissionResource resource = new SSHSubmissionResource();
+    public static SshJobSubmissionResource getSSHJobSubmission (SSHJobSubmission submission){
+        SshJobSubmissionResource resource = new SshJobSubmissionResource();
         resource.setSubmissionID(submission.getJobSubmissionDataID());
         resource.setResourceJobManager(submission.getResourceJobManager().toString());
         return resource;

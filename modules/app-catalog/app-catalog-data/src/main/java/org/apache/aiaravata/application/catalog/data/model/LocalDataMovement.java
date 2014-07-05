@@ -21,42 +21,29 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-import javax.persistence.*;
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.apache.openjpa.persistence.DataCache;
+
+@DataCache
 @Entity
-@Table(name = "SSH_SUBMISSION")
-public class SSHSubmission implements Serializable {
-    @Id
-    @Column(name = "SUBMISSION_ID")
-    private String submissionID;
-    @Column(name = "RESOURCE_JOB_MANAGER")
-    private String resourceJobManager;
-    @Column(name = "SSH_PORT")
-    private int sshPort;
-
-    public String getSubmissionID() {
-        return submissionID;
-    }
-
-    public void setSubmissionID(String submissionID) {
-        this.submissionID = submissionID;
-    }
-
-    public String getResourceJobManager() {
-        return resourceJobManager;
-    }
-
-    public void setResourceJobManager(String resourceJobManager) {
-        this.resourceJobManager = resourceJobManager;
-    }
-
-    public int getSshPort() {
-        return sshPort;
-    }
-
-    public void setSshPort(int sshPort) {
-        this.sshPort = sshPort;
-    }
-
+@Table(name = "LOCAL_DATA_MOVEMENT")
+public class LocalDataMovement implements Serializable {
+	
+	@Id
+	@Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+	private String dataMovementInterfaceId;
+	
+	public String getDataMovementInterfaceId() {
+		return dataMovementInterfaceId;
+	}
+	
+	public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+		this.dataMovementInterfaceId=dataMovementInterfaceId;
+	}
 }

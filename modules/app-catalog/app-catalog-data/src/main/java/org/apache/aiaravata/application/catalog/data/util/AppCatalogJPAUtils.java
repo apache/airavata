@@ -48,8 +48,8 @@ import org.apache.aiaravata.application.catalog.data.model.GSISSHSubmission;
 import org.apache.aiaravata.application.catalog.data.model.GatewayProfile;
 import org.apache.aiaravata.application.catalog.data.model.GlobusGKEndpoint;
 import org.apache.aiaravata.application.catalog.data.model.GlobusJobSubmission;
-import org.apache.aiaravata.application.catalog.data.model.GridFTPDMEndpoint;
-import org.apache.aiaravata.application.catalog.data.model.GridFTPDataMovement;
+import org.apache.aiaravata.application.catalog.data.model.GridftpDataMovement;
+import org.apache.aiaravata.application.catalog.data.model.GridftpEndpoint;
 import org.apache.aiaravata.application.catalog.data.model.HostAlias;
 import org.apache.aiaravata.application.catalog.data.model.HostIPAddress;
 import org.apache.aiaravata.application.catalog.data.model.JobManagerCommand;
@@ -57,9 +57,11 @@ import org.apache.aiaravata.application.catalog.data.model.JobSubmissionInterfac
 import org.apache.aiaravata.application.catalog.data.model.JobSubmissionProtocol;
 import org.apache.aiaravata.application.catalog.data.model.LibraryApendPath;
 import org.apache.aiaravata.application.catalog.data.model.LibraryPrepandPath;
+import org.apache.aiaravata.application.catalog.data.model.LocalDataMovement;
+import org.apache.aiaravata.application.catalog.data.model.LocalSubmission;
 import org.apache.aiaravata.application.catalog.data.model.ResourceJobManager;
-import org.apache.aiaravata.application.catalog.data.model.SCPDataMovement;
-import org.apache.aiaravata.application.catalog.data.model.SSHSubmission;
+import org.apache.aiaravata.application.catalog.data.model.SshJobSubmission;
+import org.apache.aiaravata.application.catalog.data.model.ScpDataMovement;
 import org.apache.aiaravata.application.catalog.data.resources.AppDeploymentResource;
 import org.apache.aiaravata.application.catalog.data.resources.AppEnvironmentResource;
 import org.apache.aiaravata.application.catalog.data.resources.AppInterfaceResource;
@@ -80,8 +82,8 @@ import org.apache.aiaravata.application.catalog.data.resources.GSISSHSubmissionR
 import org.apache.aiaravata.application.catalog.data.resources.GatewayProfileResource;
 import org.apache.aiaravata.application.catalog.data.resources.GlobusGKEndpointResource;
 import org.apache.aiaravata.application.catalog.data.resources.GlobusJobSubmissionResource;
-import org.apache.aiaravata.application.catalog.data.resources.GridFTPDMEndpointResource;
-import org.apache.aiaravata.application.catalog.data.resources.GridFTPDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.GridftpEndpointResource;
 import org.apache.aiaravata.application.catalog.data.resources.HostAliasResource;
 import org.apache.aiaravata.application.catalog.data.resources.HostIPAddressResource;
 import org.apache.aiaravata.application.catalog.data.resources.JobManagerCommandResource;
@@ -89,10 +91,12 @@ import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionInte
 import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionProtocolResource;
 import org.apache.aiaravata.application.catalog.data.resources.LibraryApendPathResource;
 import org.apache.aiaravata.application.catalog.data.resources.LibraryPrepandPathResource;
+import org.apache.aiaravata.application.catalog.data.resources.LocalDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.LocalSubmissionResource;
 import org.apache.aiaravata.application.catalog.data.resources.Resource;
 import org.apache.aiaravata.application.catalog.data.resources.ResourceJobManagerResource;
-import org.apache.aiaravata.application.catalog.data.resources.SCPDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.SSHSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.slf4j.Logger;
@@ -212,34 +216,34 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a GlobusJobSubmission.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GlobusJobSubmission.");
                 }
-            case SSH_SUBMISSION:
-                if (o instanceof SSHSubmission){
-                    return createSSHSubmission((SSHSubmission) o);
-                }else {
-                    logger.error("Object should be a SSHSubmission.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a SSHSubmission.");
-                }
-            case SCP_DATAMOVEMENT:
-                if (o instanceof SCPDataMovement){
-                    return createSCPDataMovement((SCPDataMovement) o);
-                }else {
-                    logger.error("Object should be a SCPDataMovement.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a SCPDataMovement.");
-                }
-            case GRID_FTP_DATAMOVEMENT:
-                if (o instanceof GridFTPDataMovement){
-                    return createGridFTPDataMovement((GridFTPDataMovement) o);
-                }else {
-                    logger.error("Object should be a GridFTPDataMovement.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a GridFTPDataMovement.");
-                }
-            case GRID_FTP_DM_ENDPOINT:
-                if (o instanceof GridFTPDMEndpoint){
-                    return createGridFTPDMEP((GridFTPDMEndpoint) o);
-                }else {
-                    logger.error("Object should be a GridFTPDataMovement.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a GridFTPDataMovement.");
-                }
+            case SSH_JOB_SUBMISSION:
+				if (o instanceof SshJobSubmission){
+					return createSshJobSubmission((SshJobSubmission) o);
+				}else{
+					logger.error("Object should be a Ssh Job Submission.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Ssh Job Submission.");
+				}
+            case SCP_DATA_MOVEMENT:
+				if (o instanceof ScpDataMovement){
+					return createScpDataMovement((ScpDataMovement) o);
+				}else{
+					logger.error("Object should be a Scp Data Movement.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Scp Data Movement.");
+				}
+            case GRIDFTP_DATA_MOVEMENT:
+				if (o instanceof GridftpDataMovement){
+					return createGridftpDataMovement((GridftpDataMovement) o);
+				}else{
+					logger.error("Object should be a Gridftp Data Movement.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Gridftp Data Movement.");
+				}
+            case GRIDFTP_ENDPOINT:
+				if (o instanceof GridftpEndpoint){
+					return createGridftpEndpoint((GridftpEndpoint) o);
+				}else{
+					logger.error("Object should be a Gridftp Endpoint.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Gridftp Endpoint.");
+				}
             case JOB_SUBMISSION_PROTOCOL:
                 if (o instanceof JobSubmissionProtocol){
                     return createJobSubmissionProtocol((JobSubmissionProtocol) o);
@@ -373,11 +377,39 @@ public class AppCatalogJPAUtils {
 					logger.error("Object should be a Job Manager Command.", new IllegalArgumentException());
 					throw new IllegalArgumentException("Object should be a Job Manager Command.");
 				}
+			case LOCAL_SUBMISSION:
+				if (o instanceof LocalSubmission){
+					return createLocalSubmission((LocalSubmission) o);
+				}else{
+					logger.error("Object should be a Local Submission.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Local Submission.");
+				}
+			case LOCAL_DATA_MOVEMENT:
+				if (o instanceof LocalDataMovement){
+					return createLocalDataMovement((LocalDataMovement) o);
+				}else{
+					logger.error("Object should be a Local Data Movement.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Local Data Movement.");
+				}
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
                 throw new IllegalArgumentException("Illegal data type..");
         }
     }
+	
+	private static Resource createLocalDataMovement(LocalDataMovement o) {
+		LocalDataMovementResource localDataMovementResource = new LocalDataMovementResource();
+		localDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+		return localDataMovementResource;
+	}
+	
+    private static Resource createLocalSubmission(LocalSubmission o) {
+		LocalSubmissionResource localSubmissionResource = new LocalSubmissionResource();
+		localSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
+		localSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
+		localSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
+		return localSubmissionResource;
+	}
     
     private static Resource createJobManagerCommand(JobManagerCommand o) {
 		JobManagerCommandResource jobManagerCommandResource = new JobManagerCommandResource();
@@ -512,38 +544,42 @@ public class AppCatalogJPAUtils {
         resource.setGlobusJobSubmissionResource((GlobusJobSubmissionResource)createGlobusJobSubmission(o.getGlobusSubmission()));
         return resource;
     }
+	
+	private static Resource createSshJobSubmission(SshJobSubmission o) {
+		SshJobSubmissionResource sshJobSubmissionResource = new SshJobSubmissionResource();
+		sshJobSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
+		sshJobSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
+		sshJobSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
+		sshJobSubmissionResource.setAlternativeSshHostname(o.getAlternativeSshHostname());
+		sshJobSubmissionResource.setSecurityProtocol(o.getSecurityProtocol());
+		sshJobSubmissionResource.setSshPort(o.getSshPort());
+		return sshJobSubmissionResource;
+	}
 
-    private static Resource createSSHSubmission(SSHSubmission o) {
-        SSHSubmissionResource resource = new SSHSubmissionResource();
-        resource.setSubmissionID(o.getSubmissionID());
-        resource.setResourceJobManager(o.getResourceJobManager());
-        resource.setSshPort(o.getSshPort());
-        return resource;
-    }
+    private static Resource createScpDataMovement(ScpDataMovement o) {
+		ScpDataMovementResource scpDataMovementResource = new ScpDataMovementResource();
+		scpDataMovementResource.setQueueDescription(o.getQueueDescription());
+		scpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+		scpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
+		scpDataMovementResource.setAlternativeScpHostname(o.getAlternativeScpHostname());
+		scpDataMovementResource.setSshPort(o.getSshPort());
+		return scpDataMovementResource;
+	}
 
-    private static Resource createSCPDataMovement(SCPDataMovement o) {
-        SCPDataMovementResource resource = new SCPDataMovementResource();
-        resource.setDataMoveID(o.getDataMoveID());
-        resource.setSecurityProtocol(o.getSecurityProtocol());
-        resource.setSshPort(o.getSshPort());
-        return resource;
-    }
+    private static Resource createGridftpDataMovement(GridftpDataMovement o) {
+		GridftpDataMovementResource gridftpDataMovementResource = new GridftpDataMovementResource();
+		gridftpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+		gridftpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
+		return gridftpDataMovementResource;
+	}
 
-    private static Resource createGridFTPDataMovement(GridFTPDataMovement o) {
-        GridFTPDataMovementResource resource = new GridFTPDataMovementResource();
-        resource.setDataMoveID(o.getDataMoveID());
-        resource.setSecurityProtocol(o.getSecurityProtocol());
-        resource.setGridFTPEP(o.getGridFTPEP());
-        return resource;
-    }
-
-    private static Resource createGridFTPDMEP(GridFTPDMEndpoint o) {
-        GridFTPDMEndpointResource resource = new GridFTPDMEndpointResource();
-        resource.setDataMoveId(o.getDataMoveId());
-        resource.setEndpoint(o.getEndpoint());
-        resource.setGridFTPDataMovementResource((GridFTPDataMovementResource) createGridFTPDataMovement(o.getGridFTPDataMovement()));
-        return resource;
-    }
+    private static Resource createGridftpEndpoint(GridftpEndpoint o) {
+		GridftpEndpointResource gridftpEndpointResource = new GridftpEndpointResource();
+		gridftpEndpointResource.setEndpoint(o.getEndpoint());
+		gridftpEndpointResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+		gridftpEndpointResource.setGridftpDataMovementResource((GridftpDataMovementResource)createGridftpDataMovement(o.getGridftpDataMovement()));
+		return gridftpEndpointResource;
+	}
 
     private static Resource createJobSubmissionProtocol(JobSubmissionProtocol o) {
         JobSubmissionProtocolResource resource = new JobSubmissionProtocolResource();

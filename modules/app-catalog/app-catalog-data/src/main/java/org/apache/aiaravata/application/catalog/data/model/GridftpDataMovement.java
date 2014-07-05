@@ -23,42 +23,38 @@ package org.apache.aiaravata.application.catalog.data.model;
 
 import java.io.Serializable;
 
-public class GridFTPDMEndPointPK implements Serializable {
-    private String dataMoveId;
-    private String endpoint;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-    public GridFTPDMEndPointPK(String dataMoveId, String endpoint) {
-        this.dataMoveId = dataMoveId;
-        this.endpoint = endpoint;
-    }
+import org.apache.openjpa.persistence.DataCache;
 
-    public GridFTPDMEndPointPK() {
-        ;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return 1;
-    }
-
-    public String getDataMoveId() {
-        return dataMoveId;
-    }
-
-    public void setDataMoveId(String dataMoveId) {
-        this.dataMoveId = dataMoveId;
-    }
-
-    public String getEndpoint() {
-        return endpoint;
-    }
-
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
+@DataCache
+@Entity
+@Table(name = "GRIDFTP_DATA_MOVEMENT")
+public class GridftpDataMovement implements Serializable {
+	
+	@Id
+	@Column(name = "DATA_MOVEMENT_INTERFACE_ID")
+	private String dataMovementInterfaceId;
+	
+	@Column(name = "SECURITY_PROTOCOL")
+	private String securityProtocol;
+	
+	public String getDataMovementInterfaceId() {
+		return dataMovementInterfaceId;
+	}
+	
+	public String getSecurityProtocol() {
+		return securityProtocol;
+	}
+	
+	public void setDataMovementInterfaceId(String dataMovementInterfaceId) {
+		this.dataMovementInterfaceId=dataMovementInterfaceId;
+	}
+	
+	public void setSecurityProtocol(String securityProtocol) {
+		this.securityProtocol=securityProtocol;
+	}
 }
