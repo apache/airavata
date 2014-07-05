@@ -48,6 +48,8 @@ public class ServerMain {
 	private static int serverPID=-1;
 	private static final String serverStartedFileNamePrefix = "server-start";
 	private static boolean systemShutDown=false;
+	private static String STOP_COMMAND_STR = "stop";
+
 //	private static boolean shutdownHookCalledBefore=false;
     static{
 		servers = new ArrayList<IServer>();
@@ -105,7 +107,7 @@ public class ServerMain {
 	public static void main(String args[]) throws ParseException, IOException {
 		AiravataUtils.setExecutionAsServer();
 		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
-		if (commandLineParameters.getArguments().contains("stop")){
+		if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
 			performServerStopRequest(commandLineParameters);
 		}else{
 			performServerStart(args);

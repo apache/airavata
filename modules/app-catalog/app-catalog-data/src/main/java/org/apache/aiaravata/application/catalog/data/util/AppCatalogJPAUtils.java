@@ -21,18 +21,76 @@
 
 package org.apache.aiaravata.application.catalog.data.util;
 
-import org.apache.aiaravata.application.catalog.data.model.*;
-import org.apache.aiaravata.application.catalog.data.resources.*;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.apache.aiaravata.application.catalog.data.model.AppEnvironment;
+import org.apache.aiaravata.application.catalog.data.model.AppModuleMapping;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationInput;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationInterface;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationModule;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationOutput;
+import org.apache.aiaravata.application.catalog.data.model.BatchQueue;
+import org.apache.aiaravata.application.catalog.data.model.ComputeResource;
+import org.apache.aiaravata.application.catalog.data.model.ComputeResourceFileSystem;
+import org.apache.aiaravata.application.catalog.data.model.ComputeResourcePreference;
+import org.apache.aiaravata.application.catalog.data.model.DataMovementProtocol;
+import org.apache.aiaravata.application.catalog.data.model.GSISSHExport;
+import org.apache.aiaravata.application.catalog.data.model.GSISSHPostJobCommand;
+import org.apache.aiaravata.application.catalog.data.model.GSISSHPreJobCommand;
+import org.apache.aiaravata.application.catalog.data.model.GSISSHSubmission;
+import org.apache.aiaravata.application.catalog.data.model.GatewayProfile;
+import org.apache.aiaravata.application.catalog.data.model.GlobusGKEndpoint;
+import org.apache.aiaravata.application.catalog.data.model.GlobusJobSubmission;
+import org.apache.aiaravata.application.catalog.data.model.GridFTPDMEndpoint;
+import org.apache.aiaravata.application.catalog.data.model.GridFTPDataMovement;
+import org.apache.aiaravata.application.catalog.data.model.HostAlias;
+import org.apache.aiaravata.application.catalog.data.model.HostIPAddress;
+import org.apache.aiaravata.application.catalog.data.model.JobSubmissionInterface;
+import org.apache.aiaravata.application.catalog.data.model.JobSubmissionProtocol;
+import org.apache.aiaravata.application.catalog.data.model.LibraryApendPath;
+import org.apache.aiaravata.application.catalog.data.model.LibraryPrepandPath;
+import org.apache.aiaravata.application.catalog.data.model.SCPDataMovement;
+import org.apache.aiaravata.application.catalog.data.model.SSHSubmission;
+import org.apache.aiaravata.application.catalog.data.resources.AppDeploymentResource;
+import org.apache.aiaravata.application.catalog.data.resources.AppEnvironmentResource;
+import org.apache.aiaravata.application.catalog.data.resources.AppInterfaceResource;
+import org.apache.aiaravata.application.catalog.data.resources.AppModuleMappingResource;
+import org.apache.aiaravata.application.catalog.data.resources.AppModuleResource;
+import org.apache.aiaravata.application.catalog.data.resources.ApplicationInputResource;
+import org.apache.aiaravata.application.catalog.data.resources.ApplicationOutputResource;
+import org.apache.aiaravata.application.catalog.data.resources.BatchQueueResource;
+import org.apache.aiaravata.application.catalog.data.resources.ComputeHostPreferenceResource;
+import org.apache.aiaravata.application.catalog.data.resources.ComputeHostResource;
+import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceFileSystemResource;
+import org.apache.aiaravata.application.catalog.data.resources.DataMovementProtocolResource;
+import org.apache.aiaravata.application.catalog.data.resources.GSISSHExportResource;
+import org.apache.aiaravata.application.catalog.data.resources.GSISSHPostJobCommandResource;
+import org.apache.aiaravata.application.catalog.data.resources.GSISSHPreJobCommandResource;
+import org.apache.aiaravata.application.catalog.data.resources.GSISSHSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.GatewayProfileResource;
+import org.apache.aiaravata.application.catalog.data.resources.GlobusGKEndpointResource;
+import org.apache.aiaravata.application.catalog.data.resources.GlobusJobSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.GridFTPDMEndpointResource;
+import org.apache.aiaravata.application.catalog.data.resources.GridFTPDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.HostAliasResource;
+import org.apache.aiaravata.application.catalog.data.resources.HostIPAddressResource;
+import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionInterfaceResource;
+import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionProtocolResource;
+import org.apache.aiaravata.application.catalog.data.resources.LibraryApendPathResource;
+import org.apache.aiaravata.application.catalog.data.resources.LibraryPrepandPathResource;
+import org.apache.aiaravata.application.catalog.data.resources.Resource;
+import org.apache.aiaravata.application.catalog.data.resources.SCPDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.SSHSubmissionResource;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AppCatalogJPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(AppCatalogJPAUtils.class);
@@ -267,12 +325,64 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a ApplicationInput.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a ApplicationInput.");
                 }
+            case BATCH_QUEUE:
+				if (o instanceof BatchQueue){
+					return createBatchQueue((BatchQueue) o);
+				}else{
+					logger.error("Object should be a Batch Queue.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Batch Queue.");
+				}
+            case COMPUTE_RESOURCE_FILE_SYSTEM:
+				if (o instanceof ComputeResourceFileSystem){
+					return createComputeResourceFileSystem((ComputeResourceFileSystem) o);
+				}else{
+					logger.error("Object should be a Compute Resource File System.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Compute Resource File System.");
+				}
+            case JOB_SUBMISSION_INTERFACE:
+				if (o instanceof JobSubmissionInterface){
+					return createJobSubmissionInterface((JobSubmissionInterface) o);
+				}else{
+					logger.error("Object should be a Job Submission Interface.", new IllegalArgumentException());
+					throw new IllegalArgumentException("Object should be a Job Submission Interface.");
+				}
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
                 throw new IllegalArgumentException("Illegal data type..");
         }
     }
-
+    
+    private static Resource createJobSubmissionInterface(JobSubmissionInterface o) {
+		JobSubmissionInterfaceResource jobSubmissionInterfaceResource = new JobSubmissionInterfaceResource();
+		jobSubmissionInterfaceResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
+		jobSubmissionInterfaceResource.setComputeResourceId(o.getComputeResourceId());
+		jobSubmissionInterfaceResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+		jobSubmissionInterfaceResource.setJobSubmissionProtocol(o.getJobSubmissionProtocol());
+		jobSubmissionInterfaceResource.setPriorityOrder(o.getPriorityOrder());
+		return jobSubmissionInterfaceResource;
+	}
+    
+    private static Resource createComputeResourceFileSystem(ComputeResourceFileSystem o) {
+		ComputeResourceFileSystemResource computeResourceFileSystemResource = new ComputeResourceFileSystemResource();
+		computeResourceFileSystemResource.setComputeResourceId(o.getComputeResourceId());
+		computeResourceFileSystemResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+		computeResourceFileSystemResource.setPath(o.getPath());
+		computeResourceFileSystemResource.setFileSystem(o.getFileSystem());
+		return computeResourceFileSystemResource;
+	}
+    
+    private static Resource createBatchQueue(BatchQueue o) {
+		BatchQueueResource batchQueueResource = new BatchQueueResource();
+		batchQueueResource.setComputeResourceId(o.getComputeResourceId());
+		batchQueueResource.setComputeHostResource((ComputeHostResource)createComputeResource(o.getComputeResource()));
+		batchQueueResource.setMaxRuntime(o.getMaxRuntime());
+		batchQueueResource.setMaxJobInQueue(o.getMaxJobInQueue());
+		batchQueueResource.setQueueDescription(o.getQueueDescription());
+		batchQueueResource.setQueueName(o.getQueueName());
+		batchQueueResource.setMaxProcessors(o.getMaxProcessors());
+		batchQueueResource.setMaxNodes(o.getMaxNodes());
+		return batchQueueResource;
+	}
     private static Resource createComputeResource(ComputeResource o) {
         ComputeHostResource hostResource = new ComputeHostResource();
         hostResource.setResoureId(o.getResourceID());
