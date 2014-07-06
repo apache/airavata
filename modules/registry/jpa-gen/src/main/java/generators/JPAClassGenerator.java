@@ -171,9 +171,15 @@ public class JPAClassGenerator extends AbstractGenerator{
 		}
 		classStr=addLines(classStr,columnFields.toArray(new String[]{}));
 		String constructorParametersString=commaSeperatedString(parameterList,", ");
-		constructorMethod=addLines(tabs(1)+"public "+model.className+"("+constructorParametersString+"){",constructorMethod);
+		constructorMethod=addLines(tabs(1), tabs(1)+"public "+model.className+"("+constructorParametersString+"){",constructorMethod);
 		constructorMethod=addLines(constructorMethod, tabs(1)+"}");
+		String emptyConstructorMethod=null;
+		emptyConstructorMethod=addLines(tabs(1),tabs(1)+"public "+model.className+"(){",tabs(1)+"}");
+		
+		classStr=addLines(classStr,emptyConstructorMethod);
 		classStr=addLines(classStr,constructorMethod);
+		
+
 
 
 		classStr=addLines(classStr,tabs(1));

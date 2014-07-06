@@ -42,7 +42,7 @@ public interface ComputeResource {
      * @param computeResourceId compute resource id
      * @param jobSubmissionId job submission id
      */
-    void addSSHJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException;
+    void addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException;
 
     String addLocalJobSubmission (LOCALSubmission localSubmission) throws AppCatalogException;
 
@@ -53,12 +53,6 @@ public interface ComputeResource {
      */
     String addGlobusJobSubmission (GlobusJobSubmission globusJobSubmission) throws AppCatalogException;
 
-    /**
-     * This will add a GlobusJobSubmission protocol to the database
-     * @param computeResourceId compute resource id
-     * @param jobSubmissionId job submission id
-     */
-    void addGlobusJobSubmissionProtocol (String computeResourceId, String jobSubmissionId) throws AppCatalogException;
 
     String addLocalDataMovement (LOCALDataMovement localDataMovement) throws AppCatalogException;
 
@@ -74,7 +68,7 @@ public interface ComputeResource {
      * @param computeResourceId compute resource id
      * @param dataMoveId data movement id
      */
-    void addScpDataMovementProtocol (String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException;
+    void addDataMovementProtocol (String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException;
 
     /**
      * This method will add a GridFTP Data movement to the database
@@ -82,13 +76,6 @@ public interface ComputeResource {
      * @return uniquely generated data move id
      */
     String addGridFTPDataMovement (GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException;
-
-    /**
-     * This will add a GridFTPDataMovement protocol to the database
-     * @param computeResourceId compute resource id
-     * @param dataMoveId data movement id
-     */
-    void addGridFTPDataMovementProtocol (String computeResourceId, String dataMoveId) throws AppCatalogException;
 
     /**
      * This method will retrieve compute resource object on given resource id

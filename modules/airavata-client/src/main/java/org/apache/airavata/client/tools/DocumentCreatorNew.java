@@ -21,111 +21,129 @@
 package org.apache.airavata.client.tools;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ApplicationDeployment;
 import org.airavata.appcatalog.cpi.ApplicationInterface;
 import org.airavata.appcatalog.cpi.ComputeResource;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.airavata.appcatalog.cpi.GProfile;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.JobTypeType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.ParameterType;
-import org.apache.airavata.schemas.gfac.ProjectAccountType;
-import org.apache.airavata.schemas.gfac.QueueType;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayProfile;
 
 public class DocumentCreatorNew {
 
-//    private AppCatalog appcatalog = null;
-//    private String trestleshpcHostAddress = "trestles.sdsc.edu";
-//    private String lonestarHostAddress = "lonestar.tacc.utexas.edu";
-//    private String stampedeHostAddress  = "stampede.tacc.xsede.org";
-//    private String gridftpAddress = "gsiftp://trestles-dm1.sdsc.edu:2811";
-//    private String gramAddress = "trestles-login1.sdsc.edu:2119/jobmanager-pbstest2";
-//
-//
-//    public DocumentCreatorNew(AppCatalog appcatalog) {
-//        this.appcatalog = appcatalog;
-//    }
-//
-//    public void createLocalHostDocs() {
-//        HostDescription descriptor = new HostDescription();
-//        descriptor.getType().setHostName("localhost");
-//        descriptor.getType().setHostAddress("127.0.0.1");
-//        try {
-//            airavataAPI.getApplicationManager().saveHostDescription(descriptor);
-//        } catch (AiravataAPIInvocationException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
-//
-//        String serviceName = "SimpleEcho0";
-//        ServiceDescription serviceDescription = new ServiceDescription();
-//        List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
-//        List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
-//        serviceDescription.getType().setName(serviceName);
-//        serviceDescription.getType().setDescription("Echo service");
-//        // Creating input parameters
-//        InputParameterType parameter = InputParameterType.Factory.newInstance();
-//        parameter.setParameterName("echo_input");
-//        parameter.setParameterDescription("echo input");
-//        ParameterType parameterType = parameter.addNewParameterType();
-//        parameterType.setType(DataType.STRING);
-//        parameterType.setName("String");
-//        inputParameters.add(parameter);
-//
-//        // Creating output parameters
-//        OutputParameterType outputParameter = OutputParameterType.Factory.newInstance();
-//        outputParameter.setParameterName("echo_output");
-//        outputParameter.setParameterDescription("Echo output");
-//        ParameterType outputParaType = outputParameter.addNewParameterType();
-//        outputParaType.setType(DataType.STRING);
-//        outputParaType.setName("String");
-//        outputParameters.add(outputParameter);
-//
-//        // Setting input and output parameters to serviceDescriptor
-//        serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
-//        serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
-//
-//        try {
-//            airavataAPI.getApplicationManager().saveServiceDescription(serviceDescription);
-//        } catch (AiravataAPIInvocationException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
-//
-//        ApplicationDescription applicationDeploymentDescription = new ApplicationDescription();
-//        ApplicationDeploymentDescriptionType applicationDeploymentDescriptionType = applicationDeploymentDescription
-//                .getType();
-//        applicationDeploymentDescriptionType.addNewApplicationName().setStringValue("EchoApplication");
-//        applicationDeploymentDescriptionType.setExecutableLocation("/bin/echo");
-//        applicationDeploymentDescriptionType.setScratchWorkingDirectory("/tmp");
-//
-//        try {
-//            airavataAPI.getApplicationManager().saveApplicationDescription(serviceName, "localhost", applicationDeploymentDescription);
-//        } catch (AiravataAPIInvocationException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
-//    }
+    private AppCatalog appcatalog = null;
+    private String trestleshpcHostAddress = "trestles.sdsc.edu";
+    private String lonestarHostAddress = "lonestar.tacc.utexas.edu";
+    private String stampedeHostAddress  = "stampede.tacc.xsede.org";
+    private String gridftpAddress = "gsiftp://trestles-dm1.sdsc.edu:2811";
+    private String gramAddress = "trestles-login1.sdsc.edu:2119/jobmanager-pbstest2";
+
+
+    public DocumentCreatorNew(AppCatalog appcatalog) {
+        this.appcatalog = appcatalog;
+    }
+
+    public void createLocalHostDocs() throws AppCatalogException {
+    	ComputeResource computeResource = appcatalog.getComputeResource();
+    	ApplicationInterface applicationInterface = appcatalog.getApplicationInterface();
+    	ApplicationDeployment applicationDeployment = appcatalog.getApplicationDeployment();
+    	GProfile gatewayProfile = appcatalog.getGatewayProfile();
+    	
+    	ComputeResourceDescription host = new ComputeResourceDescription();
+    	host.setHostName("localhost");
+    	host.setHostAliases(new HashSet<String>());
+    	host.getHostAliases().add("127.0.0.1");
+    	host.setComputeResourceId(computeResource.addComputeResource(host));
+    	
+    	LOCALSubmission localSubmission = new LOCALSubmission();
+    	ResourceJobManager resourceJobManager=new ResourceJobManager();;
+    	resourceJobManager.setResourceJobManagerType(ResourceJobManagerType.FORK);
+		localSubmission.setResourceJobManager(resourceJobManager);
+		localSubmission.setJobSubmissionInterfaceId(computeResource.addLocalJobSubmission(localSubmission));
+		
+		
+		LOCALDataMovement localDataMovement = new LOCALDataMovement();
+		localDataMovement.setDataMovementInterfaceId(computeResource.addLocalDataMovement(localDataMovement));
+		
+		
+		JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface();
+		jobSubmissionInterface.setJobSubmissionInterfaceId(localSubmission.getJobSubmissionInterfaceId());
+		jobSubmissionInterface.setJobSubmissionProtocol(JobSubmissionProtocol.LOCAL);
+		jobSubmissionInterface.setPriorityOrder(1);
+		
+		DataMovementInterface dataMovementInterface = new DataMovementInterface();
+		dataMovementInterface.setDataMovementInterfaceId(localDataMovement.getDataMovementInterfaceId());
+		dataMovementInterface.setDataMovementProtocol(DataMovementProtocol.LOCAL);
+		dataMovementInterface.setPriorityOrder(1);
+		computeResource.addDataMovementProtocol(host.getComputeResourceId(), dataMovementInterface);
+
+		ApplicationModule module = new ApplicationModule();
+		module.setAppModuleDescription("Local host echo applications");
+		module.setAppModuleName("echo");
+		module.setAppModuleVersion("1.0.0");
+		module.setAppModuleId(applicationInterface.addApplicationModule(module));
+		
+    	ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
+    	application.setApplicationName("SimpleEcho0");
+    	application.setApplicationModules(new ArrayList<String>());
+    	application.getApplicationModules().add(module.getAppModuleId());
+    	
+		// Creating input parameters
+    	application.setApplicationInputs(new ArrayList<InputDataObjectType>());
+        InputDataObjectType input = new InputDataObjectType();
+        input.setApplicationArgument("echo_input");
+        input.setName("echo_input");
+        input.setUserFriendlyDescription("Echo Input Data");
+        input.setType(DataType.STRING);
+        application.getApplicationInputs().add(input);
+        
+        // Creating output parameters
+    	application.setApplicationOutputs(new ArrayList<OutputDataObjectType>());
+    	OutputDataObjectType output=new OutputDataObjectType();
+    	output.setName("echo_output");
+    	output.setType(DataType.STRING);
+		application.getApplicationOutputs().add(output);
+
+		
+		application.setApplicationInterfaceId(applicationInterface.addApplicationInterface(application));
+		
+		ApplicationDeploymentDescription deployment = new ApplicationDeploymentDescription();
+		deployment.setAppDeploymentDescription("Local echo app depoyment");
+		deployment.setAppModuleId(module.getAppModuleId());
+		deployment.setComputeHostId(host.getComputeResourceId());
+		deployment.setExecutablePath("/bin/echo");
+		
+		deployment.setAppDeploymentId(applicationDeployment.addApplicationDeployment(deployment));
+
+		GatewayProfile profile = new GatewayProfile();
+		profile.setGatewayID("default");
+
+		ComputeResourcePreference computeResourcePreference = new ComputeResourcePreference();
+		computeResourcePreference.setComputeResourceId(host.getComputeResourceId());
+		computeResourcePreference.setScratchLocation("/tmp");
+		profile.addToComputeResourcePreferences(computeResourcePreference );
+		
+		gatewayProfile.addGatewayProfile(profile);
+
+    }
 //    
 //
 //    public InputDataObjectType createAppInput (String inputName, String value, org.apache.airavata.model.appcatalog.appinterface.DataType type ){
@@ -823,12 +841,5 @@ public class DocumentCreatorNew {
 //		}
 //
 //	}
-//    public AiravataAPI getAiravataAPI() {
-//        return airavataAPI;
-//    }
-//
-//    public void setAiravataAPI(AiravataAPI airavataAPI) {
-//        this.airavataAPI = airavataAPI;
-//    }
 }
 

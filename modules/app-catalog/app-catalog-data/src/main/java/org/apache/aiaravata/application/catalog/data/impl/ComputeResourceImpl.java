@@ -202,27 +202,20 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
         try {
+    		addResourceJobManager(sshJobSubmission.getResourceJobManager());
         	sshJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("SSH"));
-        	return saveSSHJobSubmission(sshJobSubmission);
+    		SshJobSubmissionResource resource = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
+    		resource.save();
+        	return resource.getJobSubmissionInterfaceId();
         }catch (Exception e) {
             logger.error("Error while saving SSH Job Submission...", e);
             throw new AppCatalogException(e);
         }
     }
 
-	protected String saveSSHJobSubmission(SSHJobSubmission sshJobSubmission)
-			throws AppCatalogException {
-		SshJobSubmissionResource resource = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
-		resource.save();
-		return resource.getJobSubmissionInterfaceId();
-	}
-
     @Override
-    public void addSSHJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException {
+    public void addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException {
         try {
-        	if (jobSubmissionInterface.getJobSubmissionProtocol()!=JobSubmissionProtocol.SSH){
-        		throw new AppCatalogException("Invalid Job Submission Type "+jobSubmissionInterface.getJobSubmissionProtocol().toString());
-        	}
         	JobSubmissionInterfaceResource jsi = AppCatalogThriftConversion.getJobSubmissionInterface(jobSubmissionInterface);
         	jsi.setComputeResourceId(computeResourceId);
         	ComputeResourceResource computeResourceResource = new ComputeResourceResource();
@@ -230,7 +223,7 @@ public class ComputeResourceImpl implements ComputeResource {
         	jsi.setComputeHostResource(computeResourceResource);
             jsi.save();
         }catch (Exception e){
-            logger.error("Error while saving SSH Job Submission Protocol...", e);
+            logger.error("Error while saving "+jobSubmissionInterface.getJobSubmissionProtocol().toString()+" Job Submission Protocol...", e);
             throw new AppCatalogException(e);
         }
     }
@@ -332,22 +325,6 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public void addGlobusJobSubmissionProtocol(String computeResourceId, String jobSubmissionId) throws AppCatalogException {
-//        try {
-//            JobSubmissionProtocolResource resource = new JobSubmissionProtocolResource();
-//            resource.setResourceID(computeResourceId);
-//            resource.setSubmissionID(jobSubmissionId);
-//            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
-//            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
-//            resource.setJobType(JobSubmissionProtocol.GRAM.toString());
-//            resource.save();
-//        }catch (Exception e){
-//            logger.error("Error while saving Globus Job Submission Protocol...", e);
-//            throw new AppCatalogException(e);
-//        }
-    }
-
-    @Override
     public String addScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
         try {
         	scpDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("SCP"));
@@ -361,11 +338,8 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public void addScpDataMovementProtocol(String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException {
+    public void addDataMovementProtocol(String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException {
         try {
-        	if (dataMovementInterface.getDataMovementProtocol()!=DataMovementProtocol.SCP){
-        		throw new AppCatalogException("Invalid Data Movement Type "+dataMovementInterface.getDataMovementProtocol().toString());
-        	}
         	DataMovementInterfaceResource dmi = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
         	dmi.setComputeResourceId(computeResourceId);
         	ComputeResourceResource computeResourceResource = new ComputeResourceResource();
@@ -373,7 +347,7 @@ public class ComputeResourceImpl implements ComputeResource {
         	dmi.setComputeHostResource(computeResourceResource);
         	dmi.save();
         }catch (Exception e){
-            logger.error("Error while saving SCP data movement Protocol...", e);
+            logger.error("Error while saving "+dataMovementInterface.getDataMovementProtocol().toString()+" data movement Protocol...", e);
             throw new AppCatalogException(e);
         }
     }
@@ -397,22 +371,6 @@ public class ComputeResourceImpl implements ComputeResource {
             return resource.getDataMovementInterfaceId();
         }catch (Exception e){
             logger.error("Error while saving GridFTP Data Movement...", e);
-            throw new AppCatalogException(e);
-        }
-    }
-
-    @Override
-    public void addGridFTPDataMovementProtocol(String computeResourceId, String dataMoveId) throws AppCatalogException {
-        try {
-            DataMovementProtocolResource resource = new DataMovementProtocolResource();
-            resource.setResourceID(computeResourceId);
-            resource.setDataMoveID(dataMoveId);
-            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
-            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
-            resource.setDataMoveType(DataMovementProtocol.GridFTP.toString());
-            resource.save();
-        }catch (Exception e){
-            logger.error("Error while saving GridFTP data movement Protocol...", e);
             throw new AppCatalogException(e);
         }
     }
@@ -655,8 +613,8 @@ public class ComputeResourceImpl implements ComputeResource {
 	@Override
 	public String addResourceJobManager(ResourceJobManager resourceJobManager)
 			throws AppCatalogException {
+		resourceJobManager.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
 		ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(resourceJobManager);
-		resource.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
 		resource.save();
 		Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
 		for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
@@ -673,6 +631,7 @@ public class ComputeResourceImpl implements ComputeResource {
 	public String addLocalJobSubmission(LOCALSubmission localSubmission)
 			throws AppCatalogException {
 		localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));
+		addResourceJobManager(localSubmission.getResourceJobManager());
 		LocalSubmissionResource localJobSubmission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
     	localJobSubmission.save();
     	return localJobSubmission.getJobSubmissionInterfaceId();
