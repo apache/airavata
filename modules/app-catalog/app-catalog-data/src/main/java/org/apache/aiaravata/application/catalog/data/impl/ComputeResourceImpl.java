@@ -39,6 +39,8 @@ import org.apache.aiaravata.application.catalog.data.resources.HostAliasResource
 import org.apache.aiaravata.application.catalog.data.resources.HostIPAddressResource;
 import org.apache.aiaravata.application.catalog.data.resources.JobManagerCommandResource;
 import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionInterfaceResource;
+import org.apache.aiaravata.application.catalog.data.resources.LocalDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.LocalSubmissionResource;
 import org.apache.aiaravata.application.catalog.data.resources.Resource;
 import org.apache.aiaravata.application.catalog.data.resources.ResourceJobManagerResource;
 import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
@@ -670,28 +672,34 @@ public class ComputeResourceImpl implements ComputeResource {
 	@Override
 	public String addLocalJobSubmission(LOCALSubmission localSubmission)
 			throws AppCatalogException {
-		// TODO Auto-generated method stub
-		return null;
+		localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));
+		LocalSubmissionResource localJobSubmission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
+    	localJobSubmission.save();
+    	return localJobSubmission.getJobSubmissionInterfaceId();
 	}
 
 	@Override
 	public String addLocalDataMovement(LOCALDataMovement localDataMovement)
 			throws AppCatalogException {
-		// TODO Auto-generated method stub
-		return null;
+		localDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("LOCAL"));
+		LocalDataMovementResource ldm = AppCatalogThriftConversion.getLocalDataMovement(localDataMovement);
+		ldm.save();
+    	return ldm.getDataMovementInterfaceId();
 	}
 
 	@Override
 	public LOCALSubmission getLocalJobSubmission(String submissionId)
 			throws AppCatalogException {
-		// TODO Auto-generated method stub
-		return null;
+		LocalSubmissionResource localSubmissionResource = new LocalSubmissionResource();
+		localSubmissionResource= (LocalSubmissionResource)localSubmissionResource.get(submissionId);
+		return AppCatalogThriftConversion.getLocalJobSubmission(localSubmissionResource);
 	}
 
 	@Override
 	public LOCALDataMovement getLocalDataMovement(String datamovementId)
 			throws AppCatalogException {
-		// TODO Auto-generated method stub
-		return null;
+		LocalDataMovementResource localDataMovementResource = new LocalDataMovementResource();
+		localDataMovementResource = (LocalDataMovementResource) localDataMovementResource.get(datamovementId);
+		return AppCatalogThriftConversion.getLocalDataMovement(localDataMovementResource);
 	}
 }

@@ -54,6 +54,8 @@ import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionInte
 import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionProtocolResource;
 import org.apache.aiaravata.application.catalog.data.resources.LibraryApendPathResource;
 import org.apache.aiaravata.application.catalog.data.resources.LibraryPrepandPathResource;
+import org.apache.aiaravata.application.catalog.data.resources.LocalDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.LocalSubmissionResource;
 import org.apache.aiaravata.application.catalog.data.resources.Resource;
 import org.apache.aiaravata.application.catalog.data.resources.ResourceJobManagerResource;
 import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
@@ -74,6 +76,8 @@ import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
@@ -270,8 +274,38 @@ public class AppCatalogThriftConversion {
         return resource;
     }
 
+    public static LocalDataMovementResource getLocalDataMovement(LOCALDataMovement localSubmission)throws AppCatalogException{
+    	LocalDataMovementResource submission = new LocalDataMovementResource();
+    	submission.setDataMovementInterfaceId(localSubmission.getDataMovementInterfaceId());
+    	return submission;
+    }
+    
+    public static LOCALDataMovement getLocalDataMovement(LocalDataMovementResource localSubmission)throws AppCatalogException{
+    	LOCALDataMovement submission = new LOCALDataMovement();
+    	submission.setDataMovementInterfaceId(localSubmission.getDataMovementInterfaceId());
+    	return submission;
+    }
+    
+    
+    public static LocalSubmissionResource getLocalJobSubmission(LOCALSubmission localSubmission)throws AppCatalogException{
+    	LocalSubmissionResource submission = new LocalSubmissionResource();
+    	submission.setJobSubmissionInterfaceId(localSubmission.getJobSubmissionInterfaceId());
+    	ResourceJobManagerResource resourceJobManager = getResourceJobManager(localSubmission.getResourceJobManager());
+    	submission.setResourceJobManagerId(resourceJobManager.getResourceJobManagerId());
+    	submission.setResourceJobManagerResource(resourceJobManager);
+    	return submission;
+    }
+    
+    public static LOCALSubmission getLocalJobSubmission(LocalSubmissionResource localSubmission)throws AppCatalogException{
+    	LOCALSubmission submission = new LOCALSubmission();
+    	submission.setJobSubmissionInterfaceId(localSubmission.getJobSubmissionInterfaceId());
+    	submission.setResourceJobManager(getResourceJobManager(localSubmission.getResourceJobManagerResource()));
+    	return submission;
+    }
+    
     public static ResourceJobManagerResource getResourceJobManager(ResourceJobManager manager){
     	ResourceJobManagerResource r = new ResourceJobManagerResource();
+    	r.setResourceJobManagerId(manager.getJobManagerBinPath());
     	r.setJobManagerBinPath(manager.getJobManagerBinPath());
     	r.setPushMonitoringEndpoint(manager.getPushMonitoringEndpoint());
     	r.setResourceJobManagerType(manager.getResourceJobManagerType().toString());
@@ -280,6 +314,7 @@ public class AppCatalogThriftConversion {
     
     public static ResourceJobManager getResourceJobManager(ResourceJobManagerResource manager) throws AppCatalogException{
     	ResourceJobManager r = new ResourceJobManager();
+    	r.setResourceJobManagerId(manager.getResourceJobManagerId());
     	r.setJobManagerBinPath(manager.getJobManagerBinPath());
     	r.setPushMonitoringEndpoint(manager.getPushMonitoringEndpoint());
     	r.setResourceJobManagerType(ResourceJobManagerType.valueOf(manager.getResourceJobManagerType()));
