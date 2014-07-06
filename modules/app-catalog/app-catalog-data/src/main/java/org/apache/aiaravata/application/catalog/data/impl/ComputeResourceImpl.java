@@ -103,7 +103,7 @@ public class ComputeResourceImpl implements ComputeResource {
 			ComputeResourceDescription description,
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
-		List<DataMovementInterface> dataMovemenetInterfaces = description.getDataMovemenetInterfaces();
+		List<DataMovementInterface> dataMovemenetInterfaces = description.getDataMovementInterfaces();
 		if (dataMovemenetInterfaces != null && !dataMovemenetInterfaces.isEmpty()) {
 		    for (DataMovementInterface dataMovementInterface : dataMovemenetInterfaces) {
 		    	DataMovementInterfaceResource dmir = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
