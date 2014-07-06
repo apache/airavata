@@ -60,7 +60,8 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             deploymentResource.setHostResource((ComputeResourceResource)computeHostResource.get(deploymentDescription.getComputeHostId()));
             deploymentResource.setAppDes(deploymentDescription.getAppDeploymentDescription());
             deploymentResource.setExecutablePath(deploymentDescription.getExecutablePath());
-            deploymentResource.setEnvModuleLoadCMD(deploymentDescription.getModuleLoadCmd());
+            //TODO
+//            deploymentResource.setEnvModuleLoadCMD(deploymentDescription.getModuleLoadCmd());
             deploymentResource.save();
             deploymentDescription.setAppDeploymentId(deploymentResource.getDeploymentId());
 
@@ -127,7 +128,8 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             existingDep.setHostResource((ComputeResourceResource)computeHostResource.get(updatedDeployment.getComputeHostId()));
             existingDep.setAppDes(updatedDeployment.getAppDeploymentDescription());
             existingDep.setExecutablePath(updatedDeployment.getExecutablePath());
-            existingDep.setEnvModuleLoadCMD(updatedDeployment.getModuleLoadCmd());
+            //TODO
+//            existingDep.setEnvModuleLoadCMD(updatedDeployment.getModuleLoadCmd());
             existingDep.save();
 
             List<SetEnvPaths> libPrependPaths = updatedDeployment.getLibPrependPaths();

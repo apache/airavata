@@ -75,12 +75,6 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.GSISSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
@@ -91,16 +85,9 @@ import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.JobTypeType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.ParameterType;
-import org.apache.airavata.schemas.gfac.ProjectAccountType;
-import org.apache.airavata.schemas.gfac.QueueType;
-import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZKUtil;
 import org.apache.zookeeper.ZooKeeper;
@@ -265,118 +252,118 @@ public class BetterGfacImpl implements GFac {
 		hostDescription.getType().setHostName(computeResource.getHostName());
 		hostDescription.getType().setHostAddress(computeResource.getIpAddresses().iterator().next());
 		
-		String preferredJobSubmissionProtocol = computeResource.getPreferredJobSubmissionProtocol(); 
-		String preferredDataMovementProtocol = computeResource.getDataMovementProtocols().keySet().iterator().next(); 
-
-		if (preferredJobSubmissionProtocol==null){
-			preferredJobSubmissionProtocol=computeResource.getJobSubmissionProtocols().keySet().iterator().next();
-		}
-		JobSubmissionProtocol jobSubmissionProtocol = computeResource.getJobSubmissionProtocols().get(preferredJobSubmissionProtocol);
-		DataMovementProtocol dataMovementProtocol = computeResource.getDataMovementProtocols().get(preferredDataMovementProtocol);
-
-		if (jobSubmissionProtocol==JobSubmissionProtocol.GRAM){
-			hostDescription.getType().changeType(GlobusHostType.type);
-			
-			applicationDescription.getType().changeType(HpcApplicationDeploymentType.type);
-			HpcApplicationDeploymentType app=(HpcApplicationDeploymentType)applicationDescription.getType();
-			
-			GlobusJobSubmission globusJobSubmission = appCatalog.getComputeResource().getGlobusJobSubmission(preferredJobSubmissionProtocol);
-			((GlobusHostType)hostDescription.getType()).setGlobusGateKeeperEndPointArray(globusJobSubmission.getGlobusGateKeeperEndPoint().toArray(new String[]{}));
-			if (dataMovementProtocol==DataMovementProtocol.GridFTP) {
-				GridFTPDataMovement gridFTPDataMovement = appCatalog.getComputeResource().getGridFTPDataMovement(preferredDataMovementProtocol);
-				((GlobusHostType) hostDescription.getType())
-						.setGridFTPEndPointArray(gridFTPDataMovement
-								.getGridFTPEndPoint().toArray(
-										new String[] {}));
-			}
-			////////////////
-			if (computeResource.getHostName().equalsIgnoreCase("trestles.sdsc.edu")){
-		        ProjectAccountType projectAccountType = app.addNewProjectAccount();
-		        projectAccountType.setProjectAccountNumber("sds128");
-	
-		        QueueType queueType = app.addNewQueue();
-		        queueType.setQueueName("normal");
-	
-		        app.setCpuCount(1);
-		        app.setJobType(JobTypeType.SERIAL);
-		        app.setNodeCount(1);
-		        app.setProcessorsPerNode(1);
-	
-		        String tempDir = "/home/ogce/scratch";
-		        app.setScratchWorkingDirectory(tempDir);
-		        app.setMaxMemory(10);
-			}
-			////////////////
-		} else if (jobSubmissionProtocol==JobSubmissionProtocol.GSISSH){
-			hostDescription.getType().changeType(GsisshHostType.type);
-			applicationDescription.getType().changeType(HpcApplicationDeploymentType.type);
-			HpcApplicationDeploymentType app=(HpcApplicationDeploymentType)applicationDescription.getType();
-			
-			GSISSHJobSubmission gsisshJobSubmission = appCatalog.getComputeResource().getGSISSHJobSubmission(preferredJobSubmissionProtocol);
-	        ((GsisshHostType) hostDescription.getType()).setPort(gsisshJobSubmission.getSshPort());
-	        ((GsisshHostType) hostDescription.getType()).setInstalledPath(gsisshJobSubmission.getInstalledPath());
-	        if (computeResource.getHostName().equalsIgnoreCase("lonestar.tacc.utexas.edu")){
-	        	((GsisshHostType) hostDescription.getType()).setJobManager("sge");
-	            ((GsisshHostType) hostDescription.getType()).setInstalledPath("/opt/sge6.2/bin/lx24-amd64/");
-	            ((GsisshHostType) hostDescription.getType()).setPort(22);
-	            ProjectAccountType projectAccountType = app.addNewProjectAccount();
-	            projectAccountType.setProjectAccountNumber("TG-STA110014S");
-	            QueueType queueType = app.addNewQueue();
-	            queueType.setQueueName("normal");
-	            app.setCpuCount(1);
-	            app.setJobType(JobTypeType.SERIAL);
-	            app.setNodeCount(1);
-	            app.setProcessorsPerNode(1);
-	            app.setMaxWallTime(10);
-	            String tempDir = "/home1/01437/ogce";
-	            app.setScratchWorkingDirectory(tempDir);
-	            app.setInstalledParentPath("/opt/sge6.2/bin/lx24-amd64/");
-	        } else if (computeResource.getHostName().equalsIgnoreCase("stampede.tacc.xsede.org")){
-		        ((GsisshHostType) hostDescription.getType()).setJobManager("slurm");
-		        ((GsisshHostType) hostDescription.getType()).setInstalledPath("/usr/bin/");
-		        ((GsisshHostType) hostDescription.getType()).setPort(2222);
-		        ((GsisshHostType) hostDescription.getType()).setMonitorMode("push");
-		        
-		        ProjectAccountType projectAccountType = app.addNewProjectAccount();
-		        projectAccountType.setProjectAccountNumber("TG-STA110014S");
-
-		        QueueType queueType = app.addNewQueue();
-		        queueType.setQueueName("normal");
-
-		        app.setCpuCount(1);
-		        app.setJobType(JobTypeType.SERIAL);
-		        app.setNodeCount(1);
-		        app.setProcessorsPerNode(1);
-		        app.setMaxWallTime(10);
-		        String tempDir = "/home1/01437/ogce";
-		        app.setScratchWorkingDirectory(tempDir);
-		        app.setInstalledParentPath("/usr/bin/");
-
-			} else if (computeResource.getHostName().equalsIgnoreCase("trestles.sdsc.edu")){
-	        	ProjectAccountType projectAccountType = app.addNewProjectAccount();
-	            projectAccountType.setProjectAccountNumber("sds128");
-
-	            QueueType queueType = app.addNewQueue();
-	            queueType.setQueueName("normal");
-
-	            app.setCpuCount(1);
-	            app.setJobType(JobTypeType.SERIAL);
-	            app.setNodeCount(1);
-	            app.setProcessorsPerNode(1);
-	            app.setMaxWallTime(10);
-	            String tempDir = "/oasis/scratch/trestles/ogce/temp_project/";
-	            app.setScratchWorkingDirectory(tempDir);
-	            app.setInstalledParentPath("/opt/torque/bin/");
-	        }
-		} else if (jobSubmissionProtocol==JobSubmissionProtocol.SSH){
-			hostDescription.getType().changeType(SSHHostType.type);
-			SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionProtocol);
-			applicationDescription.getType().setExecutableLocation(applicationDeployement.getExecutablePath());
-			//TODO update scratch location
-			if (computeResource.getHostName().equalsIgnoreCase("gw111.iu.xsede.org")){
-				applicationDescription.getType().setScratchWorkingDirectory("/tmp");
-			}
-		}
+//		String preferredJobSubmissionProtocol = computeResource.getPreferredJobSubmissionProtocol(); 
+//		String preferredDataMovementProtocol = computeResource.getDataMovementProtocols().keySet().iterator().next(); 
+//
+//		if (preferredJobSubmissionProtocol==null){
+//			preferredJobSubmissionProtocol=computeResource.getJobSubmissionProtocols().keySet().iterator().next();
+//		}
+//		JobSubmissionProtocol jobSubmissionProtocol = computeResource.getJobSubmissionProtocols().get(preferredJobSubmissionProtocol);
+//		DataMovementProtocol dataMovementProtocol = computeResource.getDataMovementProtocols().get(preferredDataMovementProtocol);
+//
+//		if (jobSubmissionProtocol==JobSubmissionProtocol.GRAM){
+//			hostDescription.getType().changeType(GlobusHostType.type);
+//			
+//			applicationDescription.getType().changeType(HpcApplicationDeploymentType.type);
+//			HpcApplicationDeploymentType app=(HpcApplicationDeploymentType)applicationDescription.getType();
+//			
+//			GlobusJobSubmission globusJobSubmission = appCatalog.getComputeResource().getGlobusJobSubmission(preferredJobSubmissionProtocol);
+//			((GlobusHostType)hostDescription.getType()).setGlobusGateKeeperEndPointArray(globusJobSubmission.getGlobusGateKeeperEndPoint().toArray(new String[]{}));
+//			if (dataMovementProtocol==DataMovementProtocol.GridFTP) {
+//				GridFTPDataMovement gridFTPDataMovement = appCatalog.getComputeResource().getGridFTPDataMovement(preferredDataMovementProtocol);
+//				((GlobusHostType) hostDescription.getType())
+//						.setGridFTPEndPointArray(gridFTPDataMovement
+//								.getGridFTPEndPoint().toArray(
+//										new String[] {}));
+//			}
+//			////////////////
+//			if (computeResource.getHostName().equalsIgnoreCase("trestles.sdsc.edu")){
+//		        ProjectAccountType projectAccountType = app.addNewProjectAccount();
+//		        projectAccountType.setProjectAccountNumber("sds128");
+//	
+//		        QueueType queueType = app.addNewQueue();
+//		        queueType.setQueueName("normal");
+//	
+//		        app.setCpuCount(1);
+//		        app.setJobType(JobTypeType.SERIAL);
+//		        app.setNodeCount(1);
+//		        app.setProcessorsPerNode(1);
+//	
+//		        String tempDir = "/home/ogce/scratch";
+//		        app.setScratchWorkingDirectory(tempDir);
+//		        app.setMaxMemory(10);
+//			}
+//			////////////////
+//		} else if (jobSubmissionProtocol==JobSubmissionProtocol.GSISSH){
+//			hostDescription.getType().changeType(GsisshHostType.type);
+//			applicationDescription.getType().changeType(HpcApplicationDeploymentType.type);
+//			HpcApplicationDeploymentType app=(HpcApplicationDeploymentType)applicationDescription.getType();
+//			
+//			GSISSHJobSubmission gsisshJobSubmission = appCatalog.getComputeResource().getGSISSHJobSubmission(preferredJobSubmissionProtocol);
+//	        ((GsisshHostType) hostDescription.getType()).setPort(gsisshJobSubmission.getSshPort());
+//	        ((GsisshHostType) hostDescription.getType()).setInstalledPath(gsisshJobSubmission.getInstalledPath());
+//	        if (computeResource.getHostName().equalsIgnoreCase("lonestar.tacc.utexas.edu")){
+//	        	((GsisshHostType) hostDescription.getType()).setJobManager("sge");
+//	            ((GsisshHostType) hostDescription.getType()).setInstalledPath("/opt/sge6.2/bin/lx24-amd64/");
+//	            ((GsisshHostType) hostDescription.getType()).setPort(22);
+//	            ProjectAccountType projectAccountType = app.addNewProjectAccount();
+//	            projectAccountType.setProjectAccountNumber("TG-STA110014S");
+//	            QueueType queueType = app.addNewQueue();
+//	            queueType.setQueueName("normal");
+//	            app.setCpuCount(1);
+//	            app.setJobType(JobTypeType.SERIAL);
+//	            app.setNodeCount(1);
+//	            app.setProcessorsPerNode(1);
+//	            app.setMaxWallTime(10);
+//	            String tempDir = "/home1/01437/ogce";
+//	            app.setScratchWorkingDirectory(tempDir);
+//	            app.setInstalledParentPath("/opt/sge6.2/bin/lx24-amd64/");
+//	        } else if (computeResource.getHostName().equalsIgnoreCase("stampede.tacc.xsede.org")){
+//		        ((GsisshHostType) hostDescription.getType()).setJobManager("slurm");
+//		        ((GsisshHostType) hostDescription.getType()).setInstalledPath("/usr/bin/");
+//		        ((GsisshHostType) hostDescription.getType()).setPort(2222);
+//		        ((GsisshHostType) hostDescription.getType()).setMonitorMode("push");
+//		        
+//		        ProjectAccountType projectAccountType = app.addNewProjectAccount();
+//		        projectAccountType.setProjectAccountNumber("TG-STA110014S");
+//
+//		        QueueType queueType = app.addNewQueue();
+//		        queueType.setQueueName("normal");
+//
+//		        app.setCpuCount(1);
+//		        app.setJobType(JobTypeType.SERIAL);
+//		        app.setNodeCount(1);
+//		        app.setProcessorsPerNode(1);
+//		        app.setMaxWallTime(10);
+//		        String tempDir = "/home1/01437/ogce";
+//		        app.setScratchWorkingDirectory(tempDir);
+//		        app.setInstalledParentPath("/usr/bin/");
+//
+//			} else if (computeResource.getHostName().equalsIgnoreCase("trestles.sdsc.edu")){
+//	        	ProjectAccountType projectAccountType = app.addNewProjectAccount();
+//	            projectAccountType.setProjectAccountNumber("sds128");
+//
+//	            QueueType queueType = app.addNewQueue();
+//	            queueType.setQueueName("normal");
+//
+//	            app.setCpuCount(1);
+//	            app.setJobType(JobTypeType.SERIAL);
+//	            app.setNodeCount(1);
+//	            app.setProcessorsPerNode(1);
+//	            app.setMaxWallTime(10);
+//	            String tempDir = "/oasis/scratch/trestles/ogce/temp_project/";
+//	            app.setScratchWorkingDirectory(tempDir);
+//	            app.setInstalledParentPath("/opt/torque/bin/");
+//	        }
+//		} else if (jobSubmissionProtocol==JobSubmissionProtocol.SSH){
+//			hostDescription.getType().changeType(SSHHostType.type);
+//			SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionProtocol);
+//			applicationDescription.getType().setExecutableLocation(applicationDeployement.getExecutablePath());
+//			//TODO update scratch location
+//			if (computeResource.getHostName().equalsIgnoreCase("gw111.iu.xsede.org")){
+//				applicationDescription.getType().setScratchWorkingDirectory("/tmp");
+//			}
+//		}
 		
 		ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface().getApplicationInterface(applicationId);
 		

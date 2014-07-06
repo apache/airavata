@@ -1,9 +1,15 @@
 package org.airavata.appcatalog.cpi;
 
-import org.apache.airavata.model.appcatalog.computeresource.*;
-
 import java.util.List;
 import java.util.Map;
+
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 
 public interface ComputeResource {
     /**
@@ -31,21 +37,7 @@ public interface ComputeResource {
      * @param computeResourceId compute resource id
      * @param jobSubmissionId job submission id
      */
-    void addSSHJobSubmissionProtocol(String computeResourceId, String jobSubmissionId) throws AppCatalogException;
-
-    /**
-     * This method will add a GSISSHJobSubmission to the database
-     * @param gsisshJobSubmission GSISSHJobSubmission object
-     * @return uniquely generated submission id
-     */
-    String addGSISSHJobSubmission (GSISSHJobSubmission gsisshJobSubmission) throws AppCatalogException;
-
-    /**
-     * This will add a GSISSHJobSubmission protocol to the database
-     * @param computeResourceId compute resource id
-     * @param jobSubmissionId job submission id
-     */
-    void addGSISSHJobSubmissionProtocol (String computeResourceId, String jobSubmissionId) throws AppCatalogException;
+    void addSSHJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException;
 
     /**
      * This method will add a GlobusJobSubmission to the database
@@ -73,7 +65,7 @@ public interface ComputeResource {
      * @param computeResourceId compute resource id
      * @param dataMoveId data movement id
      */
-    void addScpDataMovementProtocol (String computeResourceId, String dataMoveId) throws AppCatalogException;
+    void addScpDataMovementProtocol (String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException;
 
     /**
      * This method will add a GridFTP Data movement to the database
@@ -103,33 +95,19 @@ public interface ComputeResource {
      */
     List<ComputeResourceDescription> getComputeResourceList (Map<String, String> filters) throws AppCatalogException;
 
-    /**
-     * This method will retrieve GSISSHJobSubmission object
-     * @param submissionId unique submission id
-     * @return GSISSHSubmission object
-     */
-    GSISSHJobSubmission getGSISSHJobSubmission (String submissionId) throws AppCatalogException;
-
-    /**
-     * This method will return a list of GSISSHSubmission objects according to given search criteria
-     * @param filters map should be provided as the field name and it's value
-     * @return list of GSISSHSubmission objects
-     */
-    List<GSISSHJobSubmission> getGSISSHJobSubmissionList (Map<String, String> filters) throws AppCatalogException;
-
-    /**
-     * This method will retrieve GlobusJobSubmission object
-     * @param submissionId unique submission id
-     * @return GlobusJobSubmission object
-     */
-    GlobusJobSubmission getGlobusJobSubmission (String submissionId) throws AppCatalogException;
-
-    /**
-     * This method will return a list of GlobusJobSubmission objects according to given search criteria
-     * @param filters map should be provided as the field name and it's value
-     * @return list of GlobusJobSubmission objects
-     */
-    List<GlobusJobSubmission> getGlobusJobSubmissionList (Map<String, String> filters) throws AppCatalogException;
+//    /**
+//     * This method will retrieve GlobusJobSubmission object
+//     * @param submissionId unique submission id
+//     * @return GlobusJobSubmission object
+//     */
+//    GlobusJobSubmission getGlobusJobSubmission (String submissionId) throws AppCatalogException;
+//
+//    /**
+//     * This method will return a list of GlobusJobSubmission objects according to given search criteria
+//     * @param filters map should be provided as the field name and it's value
+//     * @return list of GlobusJobSubmission objects
+//     */
+//    List<GlobusJobSubmission> getGlobusJobSubmissionList (Map<String, String> filters) throws AppCatalogException;
 
     /**
      * This method will retrieve GSISSHJobSubmission object
@@ -138,12 +116,12 @@ public interface ComputeResource {
      */
     SSHJobSubmission getSSHJobSubmission (String submissionId) throws AppCatalogException;
 
-    /**
-     * This method will return a list of GSISSHSubmission objects according to given search criteria
-     * @param filters map should be provided as the field name and it's value
-     * @return list of GSISSHSubmission objects
-     */
-    List<SSHJobSubmission> getSSHJobSubmissionList (Map<String, String> filters) throws AppCatalogException;
+//    /**
+//     * This method will return a list of GSISSHSubmission objects according to given search criteria
+//     * @param filters map should be provided as the field name and it's value
+//     * @return list of GSISSHSubmission objects
+//     */
+//    List<SSHJobSubmission> getSSHJobSubmissionList (Map<String, String> filters) throws AppCatalogException;
     /**
      * This method will retrieve SCP Data movement object
      * @param dataMoveId unique data move id
@@ -151,12 +129,12 @@ public interface ComputeResource {
      */
     SCPDataMovement getSCPDataMovement (String dataMoveId) throws AppCatalogException;
 
-    /**
-     * This method will return a list of SCPDataMovement objects according to given search criteria
-     * @param filters map should be provided as the field name and it's value
-     * @return list of SCPDataMovement objects
-     */
-    List<SCPDataMovement> getSCPDataMovementList (Map<String, String> filters) throws AppCatalogException;
+//    /**
+//     * This method will return a list of SCPDataMovement objects according to given search criteria
+//     * @param filters map should be provided as the field name and it's value
+//     * @return list of SCPDataMovement objects
+//     */
+//    List<SCPDataMovement> getSCPDataMovementList (Map<String, String> filters) throws AppCatalogException;
 
     /**
      * This method will retrieve GridFTPDataMovement object
@@ -165,12 +143,12 @@ public interface ComputeResource {
      */
     GridFTPDataMovement getGridFTPDataMovement (String dataMoveId) throws AppCatalogException;
 
-    /**
-     * This method will return a list of GridFTPDataMovement objects according to given search criteria
-     * @param filters map should be provided as the field name and it's value
-     * @return list of GridFTPDataMovement objects
-     */
-    List<GridFTPDataMovement> getGridFTPDataMovementList (Map<String, String> filters) throws AppCatalogException;
+//    /**
+//     * This method will return a list of GridFTPDataMovement objects according to given search criteria
+//     * @param filters map should be provided as the field name and it's value
+//     * @return list of GridFTPDataMovement objects
+//     */
+//    List<GridFTPDataMovement> getGridFTPDataMovementList (Map<String, String> filters) throws AppCatalogException;
 
     /**
      * This method will check whether the given resource already exists in the system
