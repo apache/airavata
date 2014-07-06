@@ -60,6 +60,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             deploymentResource.setHostResource((ComputeResourceResource)computeHostResource.get(deploymentDescription.getComputeHostId()));
             deploymentResource.setAppDes(deploymentDescription.getAppDeploymentDescription());
             deploymentResource.setExecutablePath(deploymentDescription.getExecutablePath());
+            deploymentResource.setParallelism(deploymentDescription.getParallelism().toString());
             //TODO
 //            deploymentResource.setEnvModuleLoadCMD(deploymentDescription.getModuleLoadCmd());
             deploymentResource.save();
@@ -128,7 +129,9 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             existingDep.setHostResource((ComputeResourceResource)computeHostResource.get(updatedDeployment.getComputeHostId()));
             existingDep.setAppDes(updatedDeployment.getAppDeploymentDescription());
             existingDep.setExecutablePath(updatedDeployment.getExecutablePath());
+            existingDep.setParallelism(updatedDeployment.getParallelism().toString());
             //TODO
+            
 //            existingDep.setEnvModuleLoadCMD(updatedDeployment.getModuleLoadCmd());
             existingDep.save();
 

@@ -43,6 +43,7 @@ public class AppDeploymentResource extends AbstractResource {
     private String appModuleId;
     private String hostId;
     private String executablePath;
+    private String parallelism;
     private String appDes;
     private String envModuleLoadCMD;
     private ComputeResourceResource hostResource;
@@ -294,6 +295,7 @@ public class AppDeploymentResource extends AbstractResource {
                 existingDeployment.setHostID(hostId);
                 existingDeployment.setExecutablePath(executablePath);
                 existingDeployment.setEnvModuleLoaString(envModuleLoadCMD);
+                existingDeployment.setParallelism(parallelism);
                 em.merge(existingDeployment);
             }else {
                 ApplicationDeployment deployment  = new ApplicationDeployment();
@@ -305,6 +307,7 @@ public class AppDeploymentResource extends AbstractResource {
                 deployment.setComputeResource(computeHost);
                 deployment.setExecutablePath(executablePath);
                 deployment.setEnvModuleLoaString(envModuleLoadCMD);
+                deployment.setParallelism(parallelism);
                 em.persist(deployment);
             }
             em.getTransaction().commit();
@@ -343,4 +346,12 @@ public class AppDeploymentResource extends AbstractResource {
             }
         }
     }
+
+	public String getParallelism() {
+		return parallelism;
+	}
+
+	public void setParallelism(String parallelism) {
+		this.parallelism = parallelism;
+	}
 }

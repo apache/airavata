@@ -40,7 +40,9 @@ public class ApplicationDeployment implements Serializable {
     private String applicationDesc;
     @Column(name = "ENV_MODULE_LOAD_CMD")
     private String envModuleLoaString;
-
+    @Column(name = "PARALLELISM")
+    private String parallelism;
+    
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "APP_MODULE_ID")
     private ApplicationModule applicationModule;
@@ -113,4 +115,12 @@ public class ApplicationDeployment implements Serializable {
     public void setComputeResource(ComputeResource computeResource) {
         this.computeResource = computeResource;
     }
+
+	public String getParallelism() {
+		return parallelism;
+	}
+
+	public void setParallelism(String parallelism) {
+		this.parallelism = parallelism;
+	}
 }
