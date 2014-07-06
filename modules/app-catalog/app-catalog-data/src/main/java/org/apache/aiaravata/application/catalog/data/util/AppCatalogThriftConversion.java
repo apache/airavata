@@ -136,7 +136,7 @@ public class AppCatalogThriftConversion {
         DataMovementInterfaceResource dmiResource = new DataMovementInterfaceResource();
         List<Resource> dmiList = dmiResource.get(AbstractResource.DataMovementInterfaceConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
         if (dmiList != null && !dmiList.isEmpty()){
-            description.setDataMovemenetInterfaces(getDataMovementInterfaces(batchQueues));
+            description.setDataMovementInterfaces(getDataMovementInterfaces(batchQueues));
         }
         return description;
     }
