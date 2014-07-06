@@ -171,6 +171,7 @@ public abstract class AbstractResource implements Resource {
         public static final String EXECUTABLE_PATH = "executablePath";
         public static final String APPLICATION_DESC = "applicationDesc";
         public static final String ENV_MODULE_LOAD_CMD = "envModuleLoaString";
+        public static final String PARALLELISM = "parallelism";
     }
 
     public final class LibraryPrepandPathConstants {

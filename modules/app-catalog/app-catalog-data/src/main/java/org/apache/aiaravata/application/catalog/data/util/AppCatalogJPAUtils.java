@@ -615,6 +615,7 @@ public class AppCatalogJPAUtils {
         resource.setEnvModuleLoadCMD(o.getEnvModuleLoaString());
         resource.setHostId(o.getHostID());
         resource.setExecutablePath(o.getExecutablePath());
+        resource.setParallelism(o.getParallelism());
         resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
         resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
         return resource;

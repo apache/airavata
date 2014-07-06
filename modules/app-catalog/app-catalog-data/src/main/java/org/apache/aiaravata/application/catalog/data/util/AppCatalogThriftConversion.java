@@ -62,6 +62,7 @@ import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementRe
 import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
@@ -580,6 +581,7 @@ public class AppCatalogThriftConversion {
         description.setAppModuleId(resource.getAppModuleId());
         description.setComputeHostId(resource.getHostId());
         description.setExecutablePath(resource.getExecutablePath());
+        description.setParallelism(ApplicationParallelismType.valueOf(resource.getParallelism()));
         description.setAppDeploymentDescription(resource.getAppDes());
         //TODO ModuleLoadCmds is a list now. need to create a table for this and the jpa layer
 //        description.setModuleLoadCmds(resource.getEnvModuleLoadCMD());
