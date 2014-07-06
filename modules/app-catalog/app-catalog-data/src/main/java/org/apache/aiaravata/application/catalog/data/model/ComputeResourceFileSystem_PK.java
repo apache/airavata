@@ -31,6 +31,9 @@ public class ComputeResourceFileSystem_PK implements Serializable {
 		this.fileSystem = fileSystem;
 	}
 	
+	public ComputeResourceFileSystem_PK() {
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		return false;

@@ -31,6 +31,9 @@ public class GridftpEndpoint_PK implements Serializable {
 		this.dataMovementInterfaceId = dataMovementInterfaceId;
 	}
 	
+	public GridftpEndpoint_PK() {
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		return false;
