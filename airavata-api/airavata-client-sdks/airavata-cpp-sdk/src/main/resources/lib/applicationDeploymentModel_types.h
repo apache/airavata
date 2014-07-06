@@ -17,6 +17,17 @@
 
 
 
+struct ApplicationParallelismType {
+  enum type {
+    SERIAL = 0,
+    MPI = 1,
+    OPENMP = 2,
+    OPENMP_MPI = 3
+  };
+};
+
+extern const std::map<int, const char*> _ApplicationParallelismType_VALUES_TO_NAMES;
+
 
 class SetEnvPaths {
  public:
@@ -151,10 +162,10 @@ typedef struct _ApplicationDeploymentDescription__isset {
 class ApplicationDeploymentDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "3A2FD6631F126C4A6D132FA8EEFDAD7E";
-  static const uint8_t binary_fingerprint[16]; // = {0x3A,0x2F,0xD6,0x63,0x1F,0x12,0x6C,0x4A,0x6D,0x13,0x2F,0xA8,0xEE,0xFD,0xAD,0x7E};
+  static const char* ascii_fingerprint; // = "19A9841A9F4627A2C10F4A28E2CF0E17";
+  static const uint8_t binary_fingerprint[16]; // = {0x19,0xA9,0x84,0x1A,0x9F,0x46,0x27,0xA2,0xC1,0x0F,0x4A,0x28,0xE2,0xCF,0x0E,0x17};
 
-  ApplicationDeploymentDescription() : isEmpty(false), appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), appDeploymentDescription() {
+  ApplicationDeploymentDescription() : isEmpty(false), appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism((ApplicationParallelismType::type)0), appDeploymentDescription() {
   }
 
   virtual ~ApplicationDeploymentDescription() throw() {}
@@ -164,6 +175,7 @@ class ApplicationDeploymentDescription {
   std::string appModuleId;
   std::string computeHostId;
   std::string executablePath;
+  ApplicationParallelismType::type parallelism;
   std::string appDeploymentDescription;
   std::vector<std::string>  moduleLoadCmds;
   std::vector<SetEnvPaths>  libPrependPaths;
@@ -190,6 +202,10 @@ class ApplicationDeploymentDescription {
 
   void __set_executablePath(const std::string& val) {
     executablePath = val;
+  }
+
+  void __set_parallelism(const ApplicationParallelismType::type val) {
+    parallelism = val;
   }
 
   void __set_appDeploymentDescription(const std::string& val) {
@@ -228,6 +244,8 @@ class ApplicationDeploymentDescription {
     if (!(computeHostId == rhs.computeHostId))
       return false;
     if (!(executablePath == rhs.executablePath))
+      return false;
+    if (!(parallelism == rhs.parallelism))
       return false;
     if (__isset.appDeploymentDescription != rhs.__isset.appDeploymentDescription)
       return false;

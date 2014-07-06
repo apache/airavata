@@ -82,11 +82,12 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField APP_MODULE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleId", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField COMPUTE_HOST_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeHostId", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField EXECUTABLE_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("executablePath", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField APP_DEPLOYMENT_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("appDeploymentDescription", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField MODULE_LOAD_CMDS_FIELD_DESC = new org.apache.thrift.protocol.TField("moduleLoadCmds", org.apache.thrift.protocol.TType.LIST, (short)7);
-  private static final org.apache.thrift.protocol.TField LIB_PREPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libPrependPaths", org.apache.thrift.protocol.TType.LIST, (short)8);
-  private static final org.apache.thrift.protocol.TField LIB_APPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libAppendPaths", org.apache.thrift.protocol.TType.LIST, (short)9);
-  private static final org.apache.thrift.protocol.TField SET_ENVIRONMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("setEnvironment", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField PARALLELISM_FIELD_DESC = new org.apache.thrift.protocol.TField("parallelism", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField APP_DEPLOYMENT_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("appDeploymentDescription", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField MODULE_LOAD_CMDS_FIELD_DESC = new org.apache.thrift.protocol.TField("moduleLoadCmds", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField LIB_PREPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libPrependPaths", org.apache.thrift.protocol.TType.LIST, (short)9);
+  private static final org.apache.thrift.protocol.TField LIB_APPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libAppendPaths", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField SET_ENVIRONMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("setEnvironment", org.apache.thrift.protocol.TType.LIST, (short)11);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -99,6 +100,7 @@ import org.slf4j.LoggerFactory;
   private String appModuleId; // required
   private String computeHostId; // required
   private String executablePath; // required
+  private ApplicationParallelismType parallelism; // required
   private String appDeploymentDescription; // optional
   private List<String> moduleLoadCmds; // optional
   private List<SetEnvPaths> libPrependPaths; // optional
@@ -112,11 +114,16 @@ import org.slf4j.LoggerFactory;
     APP_MODULE_ID((short)3, "appModuleId"),
     COMPUTE_HOST_ID((short)4, "computeHostId"),
     EXECUTABLE_PATH((short)5, "executablePath"),
-    APP_DEPLOYMENT_DESCRIPTION((short)6, "appDeploymentDescription"),
-    MODULE_LOAD_CMDS((short)7, "moduleLoadCmds"),
-    LIB_PREPEND_PATHS((short)8, "libPrependPaths"),
-    LIB_APPEND_PATHS((short)9, "libAppendPaths"),
-    SET_ENVIRONMENT((short)10, "setEnvironment");
+    /**
+     * 
+     * @see ApplicationParallelismType
+     */
+    PARALLELISM((short)6, "parallelism"),
+    APP_DEPLOYMENT_DESCRIPTION((short)7, "appDeploymentDescription"),
+    MODULE_LOAD_CMDS((short)8, "moduleLoadCmds"),
+    LIB_PREPEND_PATHS((short)9, "libPrependPaths"),
+    LIB_APPEND_PATHS((short)10, "libAppendPaths"),
+    SET_ENVIRONMENT((short)11, "setEnvironment");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -141,15 +148,17 @@ import org.slf4j.LoggerFactory;
           return COMPUTE_HOST_ID;
         case 5: // EXECUTABLE_PATH
           return EXECUTABLE_PATH;
-        case 6: // APP_DEPLOYMENT_DESCRIPTION
+        case 6: // PARALLELISM
+          return PARALLELISM;
+        case 7: // APP_DEPLOYMENT_DESCRIPTION
           return APP_DEPLOYMENT_DESCRIPTION;
-        case 7: // MODULE_LOAD_CMDS
+        case 8: // MODULE_LOAD_CMDS
           return MODULE_LOAD_CMDS;
-        case 8: // LIB_PREPEND_PATHS
+        case 9: // LIB_PREPEND_PATHS
           return LIB_PREPEND_PATHS;
-        case 9: // LIB_APPEND_PATHS
+        case 10: // LIB_APPEND_PATHS
           return LIB_APPEND_PATHS;
-        case 10: // SET_ENVIRONMENT
+        case 11: // SET_ENVIRONMENT
           return SET_ENVIRONMENT;
         default:
           return null;
@@ -207,6 +216,8 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EXECUTABLE_PATH, new org.apache.thrift.meta_data.FieldMetaData("executablePath", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.PARALLELISM, new org.apache.thrift.meta_data.FieldMetaData("parallelism", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ApplicationParallelismType.class)));
     tmpMap.put(_Fields.APP_DEPLOYMENT_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("appDeploymentDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.MODULE_LOAD_CMDS, new org.apache.thrift.meta_data.FieldMetaData("moduleLoadCmds", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -237,7 +248,8 @@ import org.slf4j.LoggerFactory;
     String appDeploymentId,
     String appModuleId,
     String computeHostId,
-    String executablePath)
+    String executablePath,
+    ApplicationParallelismType parallelism)
   {
     this();
     this.isEmpty = isEmpty;
@@ -246,6 +258,7 @@ import org.slf4j.LoggerFactory;
     this.appModuleId = appModuleId;
     this.computeHostId = computeHostId;
     this.executablePath = executablePath;
+    this.parallelism = parallelism;
   }
 
   /**
@@ -265,6 +278,9 @@ import org.slf4j.LoggerFactory;
     }
     if (other.isSetExecutablePath()) {
       this.executablePath = other.executablePath;
+    }
+    if (other.isSetParallelism()) {
+      this.parallelism = other.parallelism;
     }
     if (other.isSetAppDeploymentDescription()) {
       this.appDeploymentDescription = other.appDeploymentDescription;
@@ -309,6 +325,7 @@ import org.slf4j.LoggerFactory;
     this.appModuleId = null;
     this.computeHostId = null;
     this.executablePath = null;
+    this.parallelism = null;
     this.appDeploymentDescription = null;
     this.moduleLoadCmds = null;
     this.libPrependPaths = null;
@@ -427,6 +444,37 @@ import org.slf4j.LoggerFactory;
   public void setExecutablePathIsSet(boolean value) {
     if (!value) {
       this.executablePath = null;
+    }
+  }
+
+  /**
+   * 
+   * @see ApplicationParallelismType
+   */
+  public ApplicationParallelismType getParallelism() {
+    return this.parallelism;
+  }
+
+  /**
+   * 
+   * @see ApplicationParallelismType
+   */
+  public void setParallelism(ApplicationParallelismType parallelism) {
+    this.parallelism = parallelism;
+  }
+
+  public void unsetParallelism() {
+    this.parallelism = null;
+  }
+
+  /** Returns true if field parallelism is set (has been assigned a value) and false otherwise */
+  public boolean isSetParallelism() {
+    return this.parallelism != null;
+  }
+
+  public void setParallelismIsSet(boolean value) {
+    if (!value) {
+      this.parallelism = null;
     }
   }
 
@@ -647,6 +695,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case PARALLELISM:
+      if (value == null) {
+        unsetParallelism();
+      } else {
+        setParallelism((ApplicationParallelismType)value);
+      }
+      break;
+
     case APP_DEPLOYMENT_DESCRIPTION:
       if (value == null) {
         unsetAppDeploymentDescription();
@@ -707,6 +763,9 @@ import org.slf4j.LoggerFactory;
     case EXECUTABLE_PATH:
       return getExecutablePath();
 
+    case PARALLELISM:
+      return getParallelism();
+
     case APP_DEPLOYMENT_DESCRIPTION:
       return getAppDeploymentDescription();
 
@@ -743,6 +802,8 @@ import org.slf4j.LoggerFactory;
       return isSetComputeHostId();
     case EXECUTABLE_PATH:
       return isSetExecutablePath();
+    case PARALLELISM:
+      return isSetParallelism();
     case APP_DEPLOYMENT_DESCRIPTION:
       return isSetAppDeploymentDescription();
     case MODULE_LOAD_CMDS:
@@ -812,6 +873,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_executablePath && that_present_executablePath))
         return false;
       if (!this.executablePath.equals(that.executablePath))
+        return false;
+    }
+
+    boolean this_present_parallelism = true && this.isSetParallelism();
+    boolean that_present_parallelism = true && that.isSetParallelism();
+    if (this_present_parallelism || that_present_parallelism) {
+      if (!(this_present_parallelism && that_present_parallelism))
+        return false;
+      if (!this.parallelism.equals(that.parallelism))
         return false;
     }
 
@@ -926,6 +996,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetParallelism()).compareTo(other.isSetParallelism());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetParallelism()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.parallelism, other.parallelism);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetAppDeploymentDescription()).compareTo(other.isSetAppDeploymentDescription());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1031,6 +1111,14 @@ import org.slf4j.LoggerFactory;
       sb.append(this.executablePath);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("parallelism:");
+    if (this.parallelism == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.parallelism);
+    }
+    first = false;
     if (isSetAppDeploymentDescription()) {
       if (!first) sb.append(", ");
       sb.append("appDeploymentDescription:");
@@ -1105,6 +1193,10 @@ import org.slf4j.LoggerFactory;
 
     if (!isSetExecutablePath()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'executablePath' is unset! Struct:" + toString());
+    }
+
+    if (!isSetParallelism()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'parallelism' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -1186,7 +1278,15 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // APP_DEPLOYMENT_DESCRIPTION
+          case 6: // PARALLELISM
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.parallelism = ApplicationParallelismType.findByValue(iprot.readI32());
+              struct.setParallelismIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // APP_DEPLOYMENT_DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.appDeploymentDescription = iprot.readString();
               struct.setAppDeploymentDescriptionIsSet(true);
@@ -1194,7 +1294,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // MODULE_LOAD_CMDS
+          case 8: // MODULE_LOAD_CMDS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -1212,7 +1312,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // LIB_PREPEND_PATHS
+          case 9: // LIB_PREPEND_PATHS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
@@ -1231,7 +1331,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // LIB_APPEND_PATHS
+          case 10: // LIB_APPEND_PATHS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
@@ -1250,7 +1350,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // SET_ENVIRONMENT
+          case 11: // SET_ENVIRONMENT
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
@@ -1303,6 +1403,11 @@ import org.slf4j.LoggerFactory;
       if (struct.executablePath != null) {
         oprot.writeFieldBegin(EXECUTABLE_PATH_FIELD_DESC);
         oprot.writeString(struct.executablePath);
+        oprot.writeFieldEnd();
+      }
+      if (struct.parallelism != null) {
+        oprot.writeFieldBegin(PARALLELISM_FIELD_DESC);
+        oprot.writeI32(struct.parallelism.getValue());
         oprot.writeFieldEnd();
       }
       if (struct.appDeploymentDescription != null) {
@@ -1390,6 +1495,7 @@ import org.slf4j.LoggerFactory;
       oprot.writeString(struct.appModuleId);
       oprot.writeString(struct.computeHostId);
       oprot.writeString(struct.executablePath);
+      oprot.writeI32(struct.parallelism.getValue());
       BitSet optionals = new BitSet();
       if (struct.isSetAppDeploymentDescription()) {
         optionals.set(0);
@@ -1461,6 +1567,8 @@ import org.slf4j.LoggerFactory;
       struct.setComputeHostIdIsSet(true);
       struct.executablePath = iprot.readString();
       struct.setExecutablePathIsSet(true);
+      struct.parallelism = ApplicationParallelismType.findByValue(iprot.readI32());
+      struct.setParallelismIsSet(true);
       BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.appDeploymentDescription = iprot.readString();

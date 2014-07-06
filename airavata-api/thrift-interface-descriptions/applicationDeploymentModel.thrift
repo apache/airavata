@@ -67,6 +67,28 @@ struct ApplicationModule {
 }
 
 /**
+ * Enumeration of application parallelism supported by Airavata
+ *
+ * SERIAL:
+ *  Single processor applications without any parallelization.
+ *
+ * MPI:
+ *  Messaging Passing Interface.
+ *
+ * OPENMP:
+ *  Shared Memory Implementtaion.
+ *
+ * OPENMP_MPI:
+ *  Hybrid Applications.
+ *
+*/
+enum ApplicationParallelismType {
+    SERIAL,
+    MPI,
+    OPENMP,
+    OPENMP_MPI
+}
+/**
  * Application Deployment Description
  *
  * appDeploymentId: Airavata Internal Unique Job ID. This is set by the registry.
@@ -98,9 +120,10 @@ struct ApplicationDeploymentDescription {
     3: required string appModuleId,
     4: required string computeHostId,
     5: required string executablePath,
-	6: optional string appDeploymentDescription,
-	7: optional list<string> moduleLoadCmds,
-	8: optional list<SetEnvPaths> libPrependPaths,
-	9: optional list<SetEnvPaths> libAppendPaths,
-	10: optional list<SetEnvPaths> setEnvironment,
+    6: required ApplicationParallelismType parallelism,
+	7: optional string appDeploymentDescription,
+	8: optional list<string> moduleLoadCmds,
+	9: optional list<SetEnvPaths> libPrependPaths,
+	10: optional list<SetEnvPaths> libAppendPaths,
+	11: optional list<SetEnvPaths> setEnvironment,
 }
