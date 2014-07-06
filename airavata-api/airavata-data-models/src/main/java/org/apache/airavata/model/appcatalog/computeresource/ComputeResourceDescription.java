@@ -56,6 +56,9 @@ import org.slf4j.LoggerFactory;
  * hostName:
  *   Fully Qualified Host Name.
  * 
+ * hostAliases:
+ *   Aliases if any.
+ * 
  * ipAddress:
  *   IP Addresses of the Resource.
  * 

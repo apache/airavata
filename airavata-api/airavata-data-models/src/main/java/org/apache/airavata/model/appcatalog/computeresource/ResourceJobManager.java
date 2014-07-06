@@ -68,10 +68,11 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class ResourceJobManager implements org.apache.thrift.TBase<ResourceJobManager, ResourceJobManager._Fields>, java.io.Serializable, Cloneable, Comparable<ResourceJobManager> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ResourceJobManager");
 
-  private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManagerType", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField PUSH_MONITORING_ENDPOINT_FIELD_DESC = new org.apache.thrift.protocol.TField("pushMonitoringEndpoint", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField JOB_MANAGER_BIN_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerBinPath", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField JOB_MANAGER_COMMANDS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerCommands", org.apache.thrift.protocol.TType.MAP, (short)4);
+  private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManagerId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManagerType", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField PUSH_MONITORING_ENDPOINT_FIELD_DESC = new org.apache.thrift.protocol.TField("pushMonitoringEndpoint", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField JOB_MANAGER_BIN_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerBinPath", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField JOB_MANAGER_COMMANDS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerCommands", org.apache.thrift.protocol.TType.MAP, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -79,6 +80,7 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ResourceJobManagerTupleSchemeFactory());
   }
 
+  private String resourceJobManagerId; // required
   private ResourceJobManagerType resourceJobManagerType; // required
   private String pushMonitoringEndpoint; // optional
   private String jobManagerBinPath; // optional
@@ -86,14 +88,15 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+    RESOURCE_JOB_MANAGER_ID((short)1, "resourceJobManagerId"),
     /**
      * 
      * @see ResourceJobManagerType
      */
-    RESOURCE_JOB_MANAGER_TYPE((short)1, "resourceJobManagerType"),
-    PUSH_MONITORING_ENDPOINT((short)2, "pushMonitoringEndpoint"),
-    JOB_MANAGER_BIN_PATH((short)3, "jobManagerBinPath"),
-    JOB_MANAGER_COMMANDS((short)4, "jobManagerCommands");
+    RESOURCE_JOB_MANAGER_TYPE((short)2, "resourceJobManagerType"),
+    PUSH_MONITORING_ENDPOINT((short)3, "pushMonitoringEndpoint"),
+    JOB_MANAGER_BIN_PATH((short)4, "jobManagerBinPath"),
+    JOB_MANAGER_COMMANDS((short)5, "jobManagerCommands");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -108,13 +111,15 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // RESOURCE_JOB_MANAGER_TYPE
+        case 1: // RESOURCE_JOB_MANAGER_ID
+          return RESOURCE_JOB_MANAGER_ID;
+        case 2: // RESOURCE_JOB_MANAGER_TYPE
           return RESOURCE_JOB_MANAGER_TYPE;
-        case 2: // PUSH_MONITORING_ENDPOINT
+        case 3: // PUSH_MONITORING_ENDPOINT
           return PUSH_MONITORING_ENDPOINT;
-        case 3: // JOB_MANAGER_BIN_PATH
+        case 4: // JOB_MANAGER_BIN_PATH
           return JOB_MANAGER_BIN_PATH;
-        case 4: // JOB_MANAGER_COMMANDS
+        case 5: // JOB_MANAGER_COMMANDS
           return JOB_MANAGER_COMMANDS;
         default:
           return null;
@@ -160,6 +165,8 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+    tmpMap.put(_Fields.RESOURCE_JOB_MANAGER_ID, new org.apache.thrift.meta_data.FieldMetaData("resourceJobManagerId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.RESOURCE_JOB_MANAGER_TYPE, new org.apache.thrift.meta_data.FieldMetaData("resourceJobManagerType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ResourceJobManagerType.class)));
     tmpMap.put(_Fields.PUSH_MONITORING_ENDPOINT, new org.apache.thrift.meta_data.FieldMetaData("pushMonitoringEndpoint", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -175,12 +182,16 @@ import org.slf4j.LoggerFactory;
   }
 
   public ResourceJobManager() {
+    this.resourceJobManagerId = "DO_NOT_SET_AT_CLIENTS";
+
   }
 
   public ResourceJobManager(
+    String resourceJobManagerId,
     ResourceJobManagerType resourceJobManagerType)
   {
     this();
+    this.resourceJobManagerId = resourceJobManagerId;
     this.resourceJobManagerType = resourceJobManagerType;
   }
 
@@ -188,6 +199,9 @@ import org.slf4j.LoggerFactory;
    * Performs a deep copy on <i>other</i>.
    */
   public ResourceJobManager(ResourceJobManager other) {
+    if (other.isSetResourceJobManagerId()) {
+      this.resourceJobManagerId = other.resourceJobManagerId;
+    }
     if (other.isSetResourceJobManagerType()) {
       this.resourceJobManagerType = other.resourceJobManagerType;
     }
@@ -220,10 +234,35 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
+    this.resourceJobManagerId = "DO_NOT_SET_AT_CLIENTS";
+
     this.resourceJobManagerType = null;
     this.pushMonitoringEndpoint = null;
     this.jobManagerBinPath = null;
     this.jobManagerCommands = null;
+  }
+
+  public String getResourceJobManagerId() {
+    return this.resourceJobManagerId;
+  }
+
+  public void setResourceJobManagerId(String resourceJobManagerId) {
+    this.resourceJobManagerId = resourceJobManagerId;
+  }
+
+  public void unsetResourceJobManagerId() {
+    this.resourceJobManagerId = null;
+  }
+
+  /** Returns true if field resourceJobManagerId is set (has been assigned a value) and false otherwise */
+  public boolean isSetResourceJobManagerId() {
+    return this.resourceJobManagerId != null;
+  }
+
+  public void setResourceJobManagerIdIsSet(boolean value) {
+    if (!value) {
+      this.resourceJobManagerId = null;
+    }
   }
 
   /**
@@ -339,6 +378,14 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
+    case RESOURCE_JOB_MANAGER_ID:
+      if (value == null) {
+        unsetResourceJobManagerId();
+      } else {
+        setResourceJobManagerId((String)value);
+      }
+      break;
+
     case RESOURCE_JOB_MANAGER_TYPE:
       if (value == null) {
         unsetResourceJobManagerType();
@@ -376,6 +423,9 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
+    case RESOURCE_JOB_MANAGER_ID:
+      return getResourceJobManagerId();
+
     case RESOURCE_JOB_MANAGER_TYPE:
       return getResourceJobManagerType();
 
@@ -399,6 +449,8 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
+    case RESOURCE_JOB_MANAGER_ID:
+      return isSetResourceJobManagerId();
     case RESOURCE_JOB_MANAGER_TYPE:
       return isSetResourceJobManagerType();
     case PUSH_MONITORING_ENDPOINT:
@@ -423,6 +475,15 @@ import org.slf4j.LoggerFactory;
   public boolean equals(ResourceJobManager that) {
     if (that == null)
       return false;
+
+    boolean this_present_resourceJobManagerId = true && this.isSetResourceJobManagerId();
+    boolean that_present_resourceJobManagerId = true && that.isSetResourceJobManagerId();
+    if (this_present_resourceJobManagerId || that_present_resourceJobManagerId) {
+      if (!(this_present_resourceJobManagerId && that_present_resourceJobManagerId))
+        return false;
+      if (!this.resourceJobManagerId.equals(that.resourceJobManagerId))
+        return false;
+    }
 
     boolean this_present_resourceJobManagerType = true && this.isSetResourceJobManagerType();
     boolean that_present_resourceJobManagerType = true && that.isSetResourceJobManagerType();
@@ -476,6 +537,16 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
+    lastComparison = Boolean.valueOf(isSetResourceJobManagerId()).compareTo(other.isSetResourceJobManagerId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetResourceJobManagerId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.resourceJobManagerId, other.resourceJobManagerId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetResourceJobManagerType()).compareTo(other.isSetResourceJobManagerType());
     if (lastComparison != 0) {
       return lastComparison;
@@ -536,6 +607,14 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("ResourceJobManager(");
     boolean first = true;
 
+    sb.append("resourceJobManagerId:");
+    if (this.resourceJobManagerId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.resourceJobManagerId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("resourceJobManagerType:");
     if (this.resourceJobManagerType == null) {
       sb.append("null");
@@ -579,6 +658,10 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
+    if (!isSetResourceJobManagerId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'resourceJobManagerId' is unset! Struct:" + toString());
+    }
+
     if (!isSetResourceJobManagerType()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'resourceJobManagerType' is unset! Struct:" + toString());
     }
@@ -620,7 +703,15 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // RESOURCE_JOB_MANAGER_TYPE
+          case 1: // RESOURCE_JOB_MANAGER_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.resourceJobManagerId = iprot.readString();
+              struct.setResourceJobManagerIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 2: // RESOURCE_JOB_MANAGER_TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.resourceJobManagerType = ResourceJobManagerType.findByValue(iprot.readI32());
               struct.setResourceJobManagerTypeIsSet(true);
@@ -628,7 +719,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // PUSH_MONITORING_ENDPOINT
+          case 3: // PUSH_MONITORING_ENDPOINT
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.pushMonitoringEndpoint = iprot.readString();
               struct.setPushMonitoringEndpointIsSet(true);
@@ -636,7 +727,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // JOB_MANAGER_BIN_PATH
+          case 4: // JOB_MANAGER_BIN_PATH
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.jobManagerBinPath = iprot.readString();
               struct.setJobManagerBinPathIsSet(true);
@@ -644,7 +735,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // JOB_MANAGER_COMMANDS
+          case 5: // JOB_MANAGER_COMMANDS
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map0 = iprot.readMapBegin();
@@ -677,6 +768,11 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
+      if (struct.resourceJobManagerId != null) {
+        oprot.writeFieldBegin(RESOURCE_JOB_MANAGER_ID_FIELD_DESC);
+        oprot.writeString(struct.resourceJobManagerId);
+        oprot.writeFieldEnd();
+      }
       if (struct.resourceJobManagerType != null) {
         oprot.writeFieldBegin(RESOURCE_JOB_MANAGER_TYPE_FIELD_DESC);
         oprot.writeI32(struct.resourceJobManagerType.getValue());
@@ -728,6 +824,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ResourceJobManager struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
+      oprot.writeString(struct.resourceJobManagerId);
       oprot.writeI32(struct.resourceJobManagerType.getValue());
       BitSet optionals = new BitSet();
       if (struct.isSetPushMonitoringEndpoint()) {
@@ -761,6 +858,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ResourceJobManager struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
+      struct.resourceJobManagerId = iprot.readString();
+      struct.setResourceJobManagerIdIsSet(true);
       struct.resourceJobManagerType = ResourceJobManagerType.findByValue(iprot.readI32());
       struct.setResourceJobManagerTypeIsSet(true);
       BitSet incoming = iprot.readBitSet(3);

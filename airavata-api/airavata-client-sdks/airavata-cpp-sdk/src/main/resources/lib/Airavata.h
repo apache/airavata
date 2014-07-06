@@ -54,6 +54,10 @@ class AiravataIf {
   virtual bool deleteApplicationInterface(const std::string& appInterfaceId) = 0;
   virtual void getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
   virtual void getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
+  virtual void registerComputeResource(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription) = 0;
+  virtual void getComputeResource( ::ComputeResourceDescription& _return, const std::string& computeResourceId) = 0;
+  virtual bool updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription) = 0;
+  virtual bool deleteComputeResource(const std::string& computeResourceId) = 0;
 };
 
 class AiravataIfFactory {
@@ -206,6 +210,20 @@ class AiravataNull : virtual public AiravataIf {
   }
   void getApplicationOutputs(std::vector< ::OutputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
     return;
+  }
+  void registerComputeResource(std::string& /* _return */, const  ::ComputeResourceDescription& /* computeResourceDescription */) {
+    return;
+  }
+  void getComputeResource( ::ComputeResourceDescription& /* _return */, const std::string& /* computeResourceId */) {
+    return;
+  }
+  bool updateComputeResource(const std::string& /* computeResourceId */, const  ::ComputeResourceDescription& /* computeResourceDescription */) {
+    bool _return = false;
+    return _return;
+  }
+  bool deleteComputeResource(const std::string& /* computeResourceId */) {
+    bool _return = false;
+    return _return;
   }
 };
 
@@ -5384,6 +5402,542 @@ class Airavata_getApplicationOutputs_presult {
 
 };
 
+
+class Airavata_registerComputeResource_args {
+ public:
+
+  Airavata_registerComputeResource_args() {
+  }
+
+  virtual ~Airavata_registerComputeResource_args() throw() {}
+
+   ::ComputeResourceDescription computeResourceDescription;
+
+  void __set_computeResourceDescription(const  ::ComputeResourceDescription& val) {
+    computeResourceDescription = val;
+  }
+
+  bool operator == (const Airavata_registerComputeResource_args & rhs) const
+  {
+    if (!(computeResourceDescription == rhs.computeResourceDescription))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerComputeResource_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerComputeResource_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_registerComputeResource_pargs {
+ public:
+
+
+  virtual ~Airavata_registerComputeResource_pargs() throw() {}
+
+  const  ::ComputeResourceDescription* computeResourceDescription;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerComputeResource_result__isset {
+  _Airavata_registerComputeResource_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_registerComputeResource_result__isset;
+
+class Airavata_registerComputeResource_result {
+ public:
+
+  Airavata_registerComputeResource_result() : success() {
+  }
+
+  virtual ~Airavata_registerComputeResource_result() throw() {}
+
+  std::string success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerComputeResource_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_registerComputeResource_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerComputeResource_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerComputeResource_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerComputeResource_presult__isset {
+  _Airavata_registerComputeResource_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_registerComputeResource_presult__isset;
+
+class Airavata_registerComputeResource_presult {
+ public:
+
+
+  virtual ~Airavata_registerComputeResource_presult() throw() {}
+
+  std::string* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerComputeResource_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getComputeResource_args {
+ public:
+
+  Airavata_getComputeResource_args() : computeResourceId() {
+  }
+
+  virtual ~Airavata_getComputeResource_args() throw() {}
+
+  std::string computeResourceId;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  bool operator == (const Airavata_getComputeResource_args & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getComputeResource_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getComputeResource_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getComputeResource_pargs {
+ public:
+
+
+  virtual ~Airavata_getComputeResource_pargs() throw() {}
+
+  const std::string* computeResourceId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getComputeResource_result__isset {
+  _Airavata_getComputeResource_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getComputeResource_result__isset;
+
+class Airavata_getComputeResource_result {
+ public:
+
+  Airavata_getComputeResource_result() {
+  }
+
+  virtual ~Airavata_getComputeResource_result() throw() {}
+
+   ::ComputeResourceDescription success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getComputeResource_result__isset __isset;
+
+  void __set_success(const  ::ComputeResourceDescription& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getComputeResource_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getComputeResource_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getComputeResource_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getComputeResource_presult__isset {
+  _Airavata_getComputeResource_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getComputeResource_presult__isset;
+
+class Airavata_getComputeResource_presult {
+ public:
+
+
+  virtual ~Airavata_getComputeResource_presult() throw() {}
+
+   ::ComputeResourceDescription* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getComputeResource_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_updateComputeResource_args {
+ public:
+
+  Airavata_updateComputeResource_args() : computeResourceId() {
+  }
+
+  virtual ~Airavata_updateComputeResource_args() throw() {}
+
+  std::string computeResourceId;
+   ::ComputeResourceDescription computeResourceDescription;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_computeResourceDescription(const  ::ComputeResourceDescription& val) {
+    computeResourceDescription = val;
+  }
+
+  bool operator == (const Airavata_updateComputeResource_args & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(computeResourceDescription == rhs.computeResourceDescription))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateComputeResource_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateComputeResource_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_updateComputeResource_pargs {
+ public:
+
+
+  virtual ~Airavata_updateComputeResource_pargs() throw() {}
+
+  const std::string* computeResourceId;
+  const  ::ComputeResourceDescription* computeResourceDescription;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateComputeResource_result__isset {
+  _Airavata_updateComputeResource_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateComputeResource_result__isset;
+
+class Airavata_updateComputeResource_result {
+ public:
+
+  Airavata_updateComputeResource_result() : success(0) {
+  }
+
+  virtual ~Airavata_updateComputeResource_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateComputeResource_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_updateComputeResource_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateComputeResource_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateComputeResource_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateComputeResource_presult__isset {
+  _Airavata_updateComputeResource_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateComputeResource_presult__isset;
+
+class Airavata_updateComputeResource_presult {
+ public:
+
+
+  virtual ~Airavata_updateComputeResource_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateComputeResource_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_deleteComputeResource_args {
+ public:
+
+  Airavata_deleteComputeResource_args() : computeResourceId() {
+  }
+
+  virtual ~Airavata_deleteComputeResource_args() throw() {}
+
+  std::string computeResourceId;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  bool operator == (const Airavata_deleteComputeResource_args & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteComputeResource_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteComputeResource_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_deleteComputeResource_pargs {
+ public:
+
+
+  virtual ~Airavata_deleteComputeResource_pargs() throw() {}
+
+  const std::string* computeResourceId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteComputeResource_result__isset {
+  _Airavata_deleteComputeResource_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteComputeResource_result__isset;
+
+class Airavata_deleteComputeResource_result {
+ public:
+
+  Airavata_deleteComputeResource_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteComputeResource_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteComputeResource_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_deleteComputeResource_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteComputeResource_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteComputeResource_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteComputeResource_presult__isset {
+  _Airavata_deleteComputeResource_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteComputeResource_presult__isset;
+
+class Airavata_deleteComputeResource_presult {
+ public:
+
+
+  virtual ~Airavata_deleteComputeResource_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteComputeResource_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AiravataClient : virtual public AiravataIf {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -5521,6 +6075,18 @@ class AiravataClient : virtual public AiravataIf {
   void getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return, const std::string& appInterfaceId);
   void send_getApplicationOutputs(const std::string& appInterfaceId);
   void recv_getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return);
+  void registerComputeResource(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription);
+  void send_registerComputeResource(const  ::ComputeResourceDescription& computeResourceDescription);
+  void recv_registerComputeResource(std::string& _return);
+  void getComputeResource( ::ComputeResourceDescription& _return, const std::string& computeResourceId);
+  void send_getComputeResource(const std::string& computeResourceId);
+  void recv_getComputeResource( ::ComputeResourceDescription& _return);
+  bool updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription);
+  void send_updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription);
+  bool recv_updateComputeResource();
+  bool deleteComputeResource(const std::string& computeResourceId);
+  void send_deleteComputeResource(const std::string& computeResourceId);
+  bool recv_deleteComputeResource();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -5575,6 +6141,10 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_deleteApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationInputs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationOutputs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_registerComputeResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getComputeResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateComputeResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteComputeResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
@@ -5617,6 +6187,10 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["deleteApplicationInterface"] = &AiravataProcessor::process_deleteApplicationInterface;
     processMap_["getApplicationInputs"] = &AiravataProcessor::process_getApplicationInputs;
     processMap_["getApplicationOutputs"] = &AiravataProcessor::process_getApplicationOutputs;
+    processMap_["registerComputeResource"] = &AiravataProcessor::process_registerComputeResource;
+    processMap_["getComputeResource"] = &AiravataProcessor::process_getComputeResource;
+    processMap_["updateComputeResource"] = &AiravataProcessor::process_updateComputeResource;
+    processMap_["deleteComputeResource"] = &AiravataProcessor::process_deleteComputeResource;
   }
 
   virtual ~AiravataProcessor() {}
@@ -6020,6 +6594,44 @@ class AiravataMultiface : virtual public AiravataIf {
     }
     ifaces_[i]->getApplicationOutputs(_return, appInterfaceId);
     return;
+  }
+
+  void registerComputeResource(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->registerComputeResource(_return, computeResourceDescription);
+    }
+    ifaces_[i]->registerComputeResource(_return, computeResourceDescription);
+    return;
+  }
+
+  void getComputeResource( ::ComputeResourceDescription& _return, const std::string& computeResourceId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getComputeResource(_return, computeResourceId);
+    }
+    ifaces_[i]->getComputeResource(_return, computeResourceId);
+    return;
+  }
+
+  bool updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateComputeResource(computeResourceId, computeResourceDescription);
+    }
+    return ifaces_[i]->updateComputeResource(computeResourceId, computeResourceDescription);
+  }
+
+  bool deleteComputeResource(const std::string& computeResourceId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteComputeResource(computeResourceId);
+    }
+    return ifaces_[i]->deleteComputeResource(computeResourceId);
   }
 
 };

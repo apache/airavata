@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
+*/
 
-/*
+/**
  * Application Programming Interface definition for Apache Airavata Services.
  *   this parent thrift file is contains all service interfaces. The data models are 
  *   described in respective thrift files.
@@ -40,7 +40,7 @@ namespace perl AiravataAPI
 namespace py airavata.api
 namespace js AiravataAPI
 
-/*
+/**
  * Airavata Interface Versions depend upon this Thrift Interface File. When Making changes, please edit the
  *  Version Constants according to Semantic Versioning Specification (SemVer) http://semver.org.
  *
@@ -52,16 +52,19 @@ namespace js AiravataAPI
  *  - Minor: Incremented for backward compatible changes. An example would be the addition of a new optional methods.
  *  - Patch: Incremented for bug fixes. The patch level should be increased for every edit that doesn't result
  *              in a change to major/minor version numbers.
+ *
 */
 const string AIRAVATA_API_VERSION = "0.12.0"
 
 service Airavata {
 
-/*
+/**
  * Apache Airavata API Service Methods. For data structures associated in the signatures, please see included thrift files
 */
 
-  /** Query Airavata to fetch the API version */
+  /**
+   * Fetch Apache Airavata API version
+  */
   string getAPIVersion()
         throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
@@ -76,7 +79,7 @@ service Airavata {
               2: airavataErrors.AiravataClientException ace,
               3: airavataErrors.AiravataSystemException ase)
 
-/**
+  /**
    * Update a Project
    *
   */
@@ -540,7 +543,6 @@ service Airavata {
    * @return appModuleId
    *   Returns a server-side generated airavata appModule globally unique identifier.
    *
-   *
   */
   string registerApplicationModule(1: required applicationDeploymentModel.ApplicationModule applicationModule)
     	throws (1: airavataErrors.InvalidRequestException ire,
@@ -555,7 +557,6 @@ service Airavata {
    *
    * @return applicationModule
    *   Returns a application Module Object.
-   *
    *
   */
   applicationDeploymentModel.ApplicationModule getApplicationModule(1: required string appModuleId)
@@ -575,7 +576,6 @@ service Airavata {
    * @return status
    *   Returns a success/failure of the update.
    *
-   *
   */
   bool updateApplicationModule(1: required string appModuleId,
             2: required applicationDeploymentModel.ApplicationModule applicationModule)
@@ -591,7 +591,6 @@ service Airavata {
    *
    * @return status
    *   Returns a success/failure of the deletion.
-   *
    *
   */
   bool deleteApplicationModule(1: required string appModuleId)
@@ -613,7 +612,6 @@ service Airavata {
    * @return appDeploymentId
    *   Returns a server-side generated airavata appDeployment globally unique identifier.
    *
-   *
   */
   string registerApplicationDeployment(1: required applicationDeploymentModel.ApplicationDeploymentDescription applicationDeployment)
     	throws (1: airavataErrors.InvalidRequestException ire,
@@ -628,7 +626,6 @@ service Airavata {
    *
    * @return applicationDeployment
    *   Returns a application Deployment Object.
-   *
    *
   */
   applicationDeploymentModel.ApplicationDeploymentDescription getApplicationDeployment(1: required string appDeploymentId)
@@ -648,7 +645,6 @@ service Airavata {
    * @return status
    *   Returns a success/failure of the update.
    *
-   *
   */
   bool updateApplicationDeployment(1: required string appDeploymentId,
             2: required applicationDeploymentModel.ApplicationDeploymentDescription applicationDeployment)
@@ -664,7 +660,6 @@ service Airavata {
    *
    * @return status
    *   Returns a success/failure of the deletion.
-   *
    *
   */
   bool deleteApplicationDeployment(1: required string appDeploymentId)
@@ -700,7 +695,6 @@ service Airavata {
    *
    * @return appInterfaceId
    *   Returns a server-side generated airavata application interface globally unique identifier.
-   *
    *
   */
   string registerApplicationInterface(1: required applicationInterfaceModel.ApplicationInterfaceDescription
@@ -791,4 +785,77 @@ service Airavata {
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
 
-}
+/*
+ * Compute Resource
+ *
+*/
+
+  /**
+   * Register a Compute Resource.
+   *
+   * @param computeResourceDescription
+   *    Compute Resource Object created from the datamodel.
+   *
+   * @return computeResourceId
+   *   Returns a server-side generated airavata compute resource globally unique identifier.
+   *
+  */
+  string registerComputeResource(1: required computeResourceModel.ComputeResourceDescription
+                                            computeResourceDescription)
+    	throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch the given Compute Resource.
+   *
+   * @param computeResourceId
+   *   The identifier for the requested compute resource
+   *
+   * @return computeResourceDescription
+   *    Compute Resource Object created from the datamodel..
+   *
+  */
+  computeResourceModel.ComputeResourceDescription getComputeResource(1: required string computeResourceId)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Update a Compute Resource.
+   *
+   * @param computeResourceId
+   *   The identifier for the requested compute resource to be updated.
+   *
+   * @param computeResourceDescription
+   *    Compute Resource Object created from the datamodel.
+   *
+   * @return status
+   *   Returns a success/failure of the update.
+   *
+  */
+  bool updateComputeResource(1: required string computeResourceId,
+            2: required computeResourceModel.ComputeResourceDescription computeResourceDescription)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Delete a Compute Resource.
+   *
+   * @param computeResourceId
+   *   The identifier for the requested compute resource to be deleted.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool deleteComputeResource(1: required string computeResourceId)
+         	throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+
+ //End of API
+ }
+

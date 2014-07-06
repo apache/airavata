@@ -49,26 +49,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Gateway Profile
+ * Gateway Resource Profile
  * 
  * gatewayID:
- *   Unique identifier for the gateway assigned by Airavata
+ *   Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
  * 
  * gatewayName:
  *   Name of the Gateway.
  * 
- * ipAddress:
- *   IP Addresse of the Hostname.
+ * gatewayDescription:
+ *  A user friendly description of the gateway.
  * 
- * resourceDescription:
- *  A user friendly description of the hostname.
+ * computeResourcePreferences:
+ *  List of resource preferences for each of the registered compute resources.
  * 
- * JobSubmissionProtocols:
- *  A computational resources may have one or more ways of submitting Jobs. This structure
- *  will hold all available mechanisms to interact with the resource.
- * 
- * DataMovementProtocol:
- *  Option to specify a prefered data movement mechanism of the available options.
  * 
  */
 @SuppressWarnings("all") public class GatewayProfile implements org.apache.thrift.TBase<GatewayProfile, GatewayProfile._Fields>, java.io.Serializable, Cloneable, Comparable<GatewayProfile> {

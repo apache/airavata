@@ -217,6 +217,26 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getApplicationOutputs\n");
   }
 
+  void registerComputeResource(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription) {
+    // Your implementation goes here
+    printf("registerComputeResource\n");
+  }
+
+  void getComputeResource( ::ComputeResourceDescription& _return, const std::string& computeResourceId) {
+    // Your implementation goes here
+    printf("getComputeResource\n");
+  }
+
+  bool updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription) {
+    // Your implementation goes here
+    printf("updateComputeResource\n");
+  }
+
+  bool deleteComputeResource(const std::string& computeResourceId) {
+    // Your implementation goes here
+    printf("deleteComputeResource\n");
+  }
+
 };
 
 int main(int argc, char **argv) {
