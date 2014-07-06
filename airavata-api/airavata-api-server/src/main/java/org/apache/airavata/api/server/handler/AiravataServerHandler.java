@@ -43,6 +43,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
@@ -1485,6 +1486,55 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             exception.setMessage("Error while retrieving application outputs. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    /**
+     * Register a Compute Resource.
+     *
+     * @param computeResourceDescription Compute Resource Object created from the datamodel.
+     * @return computeResourceId
+     * Returns a server-side generated airavata compute resource globally unique identifier.
+     */
+    @Override
+    public String registerComputeResource(ComputeResourceDescription computeResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Fetch the given Compute Resource.
+     *
+     * @param computeResourceId The identifier for the requested compute resource
+     * @return computeResourceDescription
+     * Compute Resource Object created from the datamodel..
+     */
+    @Override
+    public ComputeResourceDescription getComputeResource(String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Update a Compute Resource.
+     *
+     * @param computeResourceId          The identifier for the requested compute resource to be updated.
+     * @param computeResourceDescription Compute Resource Object created from the datamodel.
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    public boolean updateComputeResource(String computeResourceId, ComputeResourceDescription computeResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Delete a Compute Resource.
+     *
+     * @param computeResourceId The identifier for the requested compute resource to be deleted.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteComputeResource(String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
     }
 
 }
