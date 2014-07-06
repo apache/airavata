@@ -8,6 +8,9 @@ import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterfac
 import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 
@@ -32,12 +35,16 @@ public interface ComputeResource {
      */
     String addSSHJobSubmission (SSHJobSubmission sshJobSubmission) throws AppCatalogException;
 
+    String addResourceJobManager(ResourceJobManager resourceJobManager) throws AppCatalogException;
+    
     /**
      * This will add a SSHJobSubmission protocol to the database
      * @param computeResourceId compute resource id
      * @param jobSubmissionId job submission id
      */
     void addSSHJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException;
+
+    String addLocalJobSubmission (LOCALSubmission localSubmission) throws AppCatalogException;
 
     /**
      * This method will add a GlobusJobSubmission to the database
@@ -52,6 +59,8 @@ public interface ComputeResource {
      * @param jobSubmissionId job submission id
      */
     void addGlobusJobSubmissionProtocol (String computeResourceId, String jobSubmissionId) throws AppCatalogException;
+
+    String addLocalDataMovement (LOCALDataMovement localDataMovement) throws AppCatalogException;
 
     /**
      * This method will add a SCPData movement to the database
@@ -163,4 +172,8 @@ public interface ComputeResource {
      */
     void removeComputeResource (String resourceId) throws AppCatalogException;
 
+    LOCALSubmission getLocalJobSubmission(String submissionId) throws AppCatalogException;
+    
+    LOCALDataMovement getLocalDataMovement(String datamovementId) throws AppCatalogException;
+    
 }

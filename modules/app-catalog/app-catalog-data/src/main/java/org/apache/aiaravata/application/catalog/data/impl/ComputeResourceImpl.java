@@ -37,8 +37,10 @@ import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMoveme
 import org.apache.aiaravata.application.catalog.data.resources.GridftpEndpointResource;
 import org.apache.aiaravata.application.catalog.data.resources.HostAliasResource;
 import org.apache.aiaravata.application.catalog.data.resources.HostIPAddressResource;
+import org.apache.aiaravata.application.catalog.data.resources.JobManagerCommandResource;
 import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionInterfaceResource;
 import org.apache.aiaravata.application.catalog.data.resources.Resource;
+import org.apache.aiaravata.application.catalog.data.resources.ResourceJobManagerResource;
 import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
 import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
@@ -50,8 +52,12 @@ import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol
 import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
 import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.slf4j.Logger;
@@ -643,4 +649,49 @@ public class ComputeResourceImpl implements ComputeResource {
             throw new AppCatalogException(e);
         }
     }
+
+	@Override
+	public String addResourceJobManager(ResourceJobManager resourceJobManager)
+			throws AppCatalogException {
+		ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(resourceJobManager);
+		resource.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
+		resource.save();
+		Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
+		for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
+			JobManagerCommandResource r = new JobManagerCommandResource();
+	    	r.setCommandType(commandType.toString());
+	    	r.setCommand(jobManagerCommands.get(commandType));
+	    	r.setResourceJobManagerId(resource.getResourceJobManagerId());
+	    	r.save();
+		}
+		return resource.getResourceJobManagerId();
+	}
+
+	@Override
+	public String addLocalJobSubmission(LOCALSubmission localSubmission)
+			throws AppCatalogException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String addLocalDataMovement(LOCALDataMovement localDataMovement)
+			throws AppCatalogException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LOCALSubmission getLocalJobSubmission(String submissionId)
+			throws AppCatalogException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LOCALDataMovement getLocalDataMovement(String datamovementId)
+			throws AppCatalogException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
