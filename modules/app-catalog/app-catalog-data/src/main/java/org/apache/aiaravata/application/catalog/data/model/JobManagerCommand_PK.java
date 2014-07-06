@@ -31,6 +31,9 @@ public class JobManagerCommand_PK implements Serializable {
 		this.commandType = commandType;
 	}
 	
+	public JobManagerCommand_PK() {
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		return false;

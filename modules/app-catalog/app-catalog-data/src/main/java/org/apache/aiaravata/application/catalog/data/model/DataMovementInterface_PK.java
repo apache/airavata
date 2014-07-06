@@ -31,6 +31,9 @@ public class DataMovementInterface_PK implements Serializable {
 		this.dataMovementInterfaceId = dataMovementInterfaceId;
 	}
 	
+	public DataMovementInterface_PK() {
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		return false;

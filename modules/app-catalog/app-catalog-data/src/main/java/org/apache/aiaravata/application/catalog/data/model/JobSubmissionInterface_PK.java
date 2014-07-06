@@ -31,6 +31,9 @@ public class JobSubmissionInterface_PK implements Serializable {
 		this.computeResourceId = computeResourceId;
 	}
 	
+	public JobSubmissionInterface_PK() {
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		return false;

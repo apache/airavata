@@ -31,6 +31,9 @@ public class BatchQueue_PK implements Serializable {
 		this.queueName = queueName;
 	}
 	
+	public BatchQueue_PK() {
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		return false;
