@@ -106,8 +106,8 @@ const char* _kDataMovementProtocolNames[] = {
 };
 const std::map<int, const char*> _DataMovementProtocol_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kDataMovementProtocolValues, _kDataMovementProtocolNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
-const char* ResourceJobManager::ascii_fingerprint = "16E60A0DB3009C6110717701A56245C2";
-const uint8_t ResourceJobManager::binary_fingerprint[16] = {0x16,0xE6,0x0A,0x0D,0xB3,0x00,0x9C,0x61,0x10,0x71,0x77,0x01,0xA5,0x62,0x45,0xC2};
+const char* ResourceJobManager::ascii_fingerprint = "F61CAF80247D0E44C8D52504F3A43BED";
+const uint8_t ResourceJobManager::binary_fingerprint[16] = {0xF6,0x1C,0xAF,0x80,0x24,0x7D,0x0E,0x44,0xC8,0xD5,0x25,0x04,0xF3,0xA4,0x3B,0xED};
 
 uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -120,6 +120,7 @@ uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) 
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_resourceJobManagerId = false;
   bool isset_resourceJobManagerType = false;
 
   while (true)
@@ -131,6 +132,14 @@ uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) 
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->resourceJobManagerId);
+          isset_resourceJobManagerId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast0;
           xfer += iprot->readI32(ecast0);
@@ -140,7 +149,7 @@ uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) 
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->pushMonitoringEndpoint);
           this->__isset.pushMonitoringEndpoint = true;
@@ -148,7 +157,7 @@ uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) 
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->jobManagerBinPath);
           this->__isset.jobManagerBinPath = true;
@@ -156,7 +165,7 @@ uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) 
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->jobManagerCommands.clear();
@@ -190,6 +199,8 @@ uint32_t ResourceJobManager::read(::apache::thrift::protocol::TProtocol* iprot) 
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_resourceJobManagerId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_resourceJobManagerType)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -199,22 +210,26 @@ uint32_t ResourceJobManager::write(::apache::thrift::protocol::TProtocol* oprot)
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ResourceJobManager");
 
-  xfer += oprot->writeFieldBegin("resourceJobManagerType", ::apache::thrift::protocol::T_I32, 1);
+  xfer += oprot->writeFieldBegin("resourceJobManagerId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->resourceJobManagerId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("resourceJobManagerType", ::apache::thrift::protocol::T_I32, 2);
   xfer += oprot->writeI32((int32_t)this->resourceJobManagerType);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.pushMonitoringEndpoint) {
-    xfer += oprot->writeFieldBegin("pushMonitoringEndpoint", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeFieldBegin("pushMonitoringEndpoint", ::apache::thrift::protocol::T_STRING, 3);
     xfer += oprot->writeString(this->pushMonitoringEndpoint);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.jobManagerBinPath) {
-    xfer += oprot->writeFieldBegin("jobManagerBinPath", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeFieldBegin("jobManagerBinPath", ::apache::thrift::protocol::T_STRING, 4);
     xfer += oprot->writeString(this->jobManagerBinPath);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.jobManagerCommands) {
-    xfer += oprot->writeFieldBegin("jobManagerCommands", ::apache::thrift::protocol::T_MAP, 4);
+    xfer += oprot->writeFieldBegin("jobManagerCommands", ::apache::thrift::protocol::T_MAP, 5);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_I32, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->jobManagerCommands.size()));
       std::map<JobManagerCommand::type, std::string> ::const_iterator _iter9;
@@ -234,6 +249,7 @@ uint32_t ResourceJobManager::write(::apache::thrift::protocol::TProtocol* oprot)
 
 void swap(ResourceJobManager &a, ResourceJobManager &b) {
   using ::std::swap;
+  swap(a.resourceJobManagerId, b.resourceJobManagerId);
   swap(a.resourceJobManagerType, b.resourceJobManagerType);
   swap(a.pushMonitoringEndpoint, b.pushMonitoringEndpoint);
   swap(a.jobManagerBinPath, b.jobManagerBinPath);
@@ -605,8 +621,8 @@ void swap(GridFTPDataMovement &a, GridFTPDataMovement &b) {
   swap(a.gridFTPEndPoints, b.gridFTPEndPoints);
 }
 
-const char* LOCALSubmission::ascii_fingerprint = "D4599FCDE7AF5015D8ECB662C15BB89C";
-const uint8_t LOCALSubmission::binary_fingerprint[16] = {0xD4,0x59,0x9F,0xCD,0xE7,0xAF,0x50,0x15,0xD8,0xEC,0xB6,0x62,0xC1,0x5B,0xB8,0x9C};
+const char* LOCALSubmission::ascii_fingerprint = "A5A35C842CBE1CA9D6A13C5974C6FB8F";
+const uint8_t LOCALSubmission::binary_fingerprint[16] = {0xA5,0xA3,0x5C,0x84,0x2C,0xBE,0x1C,0xA9,0xD6,0xA1,0x3C,0x59,0x74,0xC6,0xFB,0x8F};
 
 uint32_t LOCALSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -749,8 +765,8 @@ void swap(LOCALDataMovement &a, LOCALDataMovement &b) {
   swap(a.dataMovementInterfaceId, b.dataMovementInterfaceId);
 }
 
-const char* SSHJobSubmission::ascii_fingerprint = "0A593CE0EC92EB95612E7844E2EBB8D9";
-const uint8_t SSHJobSubmission::binary_fingerprint[16] = {0x0A,0x59,0x3C,0xE0,0xEC,0x92,0xEB,0x95,0x61,0x2E,0x78,0x44,0xE2,0xEB,0xB8,0xD9};
+const char* SSHJobSubmission::ascii_fingerprint = "8BC403A3B093DDB0CB8F04ED699DBA3D";
+const uint8_t SSHJobSubmission::binary_fingerprint[16] = {0x8B,0xC4,0x03,0xA3,0xB0,0x93,0xDD,0xB0,0xCB,0x8F,0x04,0xED,0x69,0x9D,0xBA,0x3D};
 
 uint32_t SSHJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
 

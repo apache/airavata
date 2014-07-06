@@ -49,26 +49,30 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Resource Preferences for each of the gateway
+ * Gateway specific preferences for a Computer Resource
  * 
  * computeResourceId:
- *   Corelate the preference for compute resource to
+ *   Corelate the preference to a compute resource.
  * 
- * gatewayName:
- *   Name of the Gateway.
+ * overridebyAiravata:
+ *   If turned true, Airavata will override the preferences of better alternatives exist.
  * 
- * ipAddress:
- *   IP Addresse of the Hostname.
+ * preferredJobSubmissionProtocol:
+ *   For resources with multiple job submission protocols, the gateway can pick a preferred option.
  * 
- * resourceDescription:
- *  A user friendly description of the hostname.
+ * preferredDataMovementProtocol:
+ *   For resources with multiple data movement protocols, the gateway can pick a preferred option.
  * 
- * JobSubmissionProtocols:
- *  A computational resources may have one or more ways of submitting Jobs. This structure
- *  will hold all available mechanisms to interact with the resource.
+ * preferredBatchQueue:
+ *  Gateways can choose a defualt batch queue based on average job dimention, reservations or other metrics.
  * 
- * DataMovementProtocol:
- *  Option to specify a prefered data movement mechanism of the available options.
+ * scratchLocation:
+ *  Path to the local scratch space on a HPC cluster. Typically used to create working directory for job execution.
+ * 
+ * allocationProjectNumber:
+ *  Typically used on HPC machines to charge computing usage to a account number. For instance, on XSEDE once an
+ *    allocation is approved, an allocation number is assigned. Before passing this number with job submittions, the
+ *    account to be used has to be added to the allocation.
  * 
  */
 @SuppressWarnings("all") public class ComputeResourcePreference implements org.apache.thrift.TBase<ComputeResourcePreference, ComputeResourcePreference._Fields>, java.io.Serializable, Cloneable, Comparable<ComputeResourcePreference> {

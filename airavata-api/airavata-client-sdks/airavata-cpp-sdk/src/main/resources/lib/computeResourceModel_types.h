@@ -99,20 +99,25 @@ typedef struct _ResourceJobManager__isset {
 class ResourceJobManager {
  public:
 
-  static const char* ascii_fingerprint; // = "16E60A0DB3009C6110717701A56245C2";
-  static const uint8_t binary_fingerprint[16]; // = {0x16,0xE6,0x0A,0x0D,0xB3,0x00,0x9C,0x61,0x10,0x71,0x77,0x01,0xA5,0x62,0x45,0xC2};
+  static const char* ascii_fingerprint; // = "F61CAF80247D0E44C8D52504F3A43BED";
+  static const uint8_t binary_fingerprint[16]; // = {0xF6,0x1C,0xAF,0x80,0x24,0x7D,0x0E,0x44,0xC8,0xD5,0x25,0x04,0xF3,0xA4,0x3B,0xED};
 
-  ResourceJobManager() : resourceJobManagerType((ResourceJobManagerType::type)0), pushMonitoringEndpoint(), jobManagerBinPath() {
+  ResourceJobManager() : resourceJobManagerId("DO_NOT_SET_AT_CLIENTS"), resourceJobManagerType((ResourceJobManagerType::type)0), pushMonitoringEndpoint(), jobManagerBinPath() {
   }
 
   virtual ~ResourceJobManager() throw() {}
 
+  std::string resourceJobManagerId;
   ResourceJobManagerType::type resourceJobManagerType;
   std::string pushMonitoringEndpoint;
   std::string jobManagerBinPath;
   std::map<JobManagerCommand::type, std::string>  jobManagerCommands;
 
   _ResourceJobManager__isset __isset;
+
+  void __set_resourceJobManagerId(const std::string& val) {
+    resourceJobManagerId = val;
+  }
 
   void __set_resourceJobManagerType(const ResourceJobManagerType::type val) {
     resourceJobManagerType = val;
@@ -135,6 +140,8 @@ class ResourceJobManager {
 
   bool operator == (const ResourceJobManager & rhs) const
   {
+    if (!(resourceJobManagerId == rhs.resourceJobManagerId))
+      return false;
     if (!(resourceJobManagerType == rhs.resourceJobManagerType))
       return false;
     if (__isset.pushMonitoringEndpoint != rhs.__isset.pushMonitoringEndpoint)
@@ -387,8 +394,8 @@ void swap(GridFTPDataMovement &a, GridFTPDataMovement &b);
 class LOCALSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "D4599FCDE7AF5015D8ECB662C15BB89C";
-  static const uint8_t binary_fingerprint[16]; // = {0xD4,0x59,0x9F,0xCD,0xE7,0xAF,0x50,0x15,0xD8,0xEC,0xB6,0x62,0xC1,0x5B,0xB8,0x9C};
+  static const char* ascii_fingerprint; // = "A5A35C842CBE1CA9D6A13C5974C6FB8F";
+  static const uint8_t binary_fingerprint[16]; // = {0xA5,0xA3,0x5C,0x84,0x2C,0xBE,0x1C,0xA9,0xD6,0xA1,0x3C,0x59,0x74,0xC6,0xFB,0x8F};
 
   LOCALSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS") {
   }
@@ -473,8 +480,8 @@ typedef struct _SSHJobSubmission__isset {
 class SSHJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "0A593CE0EC92EB95612E7844E2EBB8D9";
-  static const uint8_t binary_fingerprint[16]; // = {0x0A,0x59,0x3C,0xE0,0xEC,0x92,0xEB,0x95,0x61,0x2E,0x78,0x44,0xE2,0xEB,0xB8,0xD9};
+  static const char* ascii_fingerprint; // = "8BC403A3B093DDB0CB8F04ED699DBA3D";
+  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xC4,0x03,0xA3,0xB0,0x93,0xDD,0xB0,0xCB,0x8F,0x04,0xED,0x69,0x9D,0xBA,0x3D};
 
   SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSSHHostName(), sshPort(22) {
   }

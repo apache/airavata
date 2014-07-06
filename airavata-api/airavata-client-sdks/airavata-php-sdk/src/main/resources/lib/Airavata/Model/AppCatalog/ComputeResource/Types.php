@@ -110,6 +110,7 @@ final class DataMovementProtocol {
 class ResourceJobManager {
   static $_TSPEC;
 
+  public $resourceJobManagerId = "DO_NOT_SET_AT_CLIENTS";
   public $resourceJobManagerType = null;
   public $pushMonitoringEndpoint = null;
   public $jobManagerBinPath = null;
@@ -119,18 +120,22 @@ class ResourceJobManager {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
+          'var' => 'resourceJobManagerId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
           'var' => 'resourceJobManagerType',
           'type' => TType::I32,
           ),
-        2 => array(
+        3 => array(
           'var' => 'pushMonitoringEndpoint',
           'type' => TType::STRING,
           ),
-        3 => array(
+        4 => array(
           'var' => 'jobManagerBinPath',
           'type' => TType::STRING,
           ),
-        4 => array(
+        5 => array(
           'var' => 'jobManagerCommands',
           'type' => TType::MAP,
           'ktype' => TType::I32,
@@ -145,6 +150,9 @@ class ResourceJobManager {
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['resourceJobManagerId'])) {
+        $this->resourceJobManagerId = $vals['resourceJobManagerId'];
+      }
       if (isset($vals['resourceJobManagerType'])) {
         $this->resourceJobManagerType = $vals['resourceJobManagerType'];
       }
@@ -180,27 +188,34 @@ class ResourceJobManager {
       switch ($fid)
       {
         case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->resourceJobManagerId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->resourceJobManagerType);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 2:
+        case 3:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->pushMonitoringEndpoint);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 3:
+        case 4:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->jobManagerBinPath);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 4:
+        case 5:
           if ($ftype == TType::MAP) {
             $this->jobManagerCommands = array();
             $_size0 = 0;
@@ -233,18 +248,23 @@ class ResourceJobManager {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ResourceJobManager');
+    if ($this->resourceJobManagerId !== null) {
+      $xfer += $output->writeFieldBegin('resourceJobManagerId', TType::STRING, 1);
+      $xfer += $output->writeString($this->resourceJobManagerId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->resourceJobManagerType !== null) {
-      $xfer += $output->writeFieldBegin('resourceJobManagerType', TType::I32, 1);
+      $xfer += $output->writeFieldBegin('resourceJobManagerType', TType::I32, 2);
       $xfer += $output->writeI32($this->resourceJobManagerType);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->pushMonitoringEndpoint !== null) {
-      $xfer += $output->writeFieldBegin('pushMonitoringEndpoint', TType::STRING, 2);
+      $xfer += $output->writeFieldBegin('pushMonitoringEndpoint', TType::STRING, 3);
       $xfer += $output->writeString($this->pushMonitoringEndpoint);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->jobManagerBinPath !== null) {
-      $xfer += $output->writeFieldBegin('jobManagerBinPath', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('jobManagerBinPath', TType::STRING, 4);
       $xfer += $output->writeString($this->jobManagerBinPath);
       $xfer += $output->writeFieldEnd();
     }
@@ -252,7 +272,7 @@ class ResourceJobManager {
       if (!is_array($this->jobManagerCommands)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('jobManagerCommands', TType::MAP, 4);
+      $xfer += $output->writeFieldBegin('jobManagerCommands', TType::MAP, 5);
       {
         $output->writeMapBegin(TType::I32, TType::STRING, count($this->jobManagerCommands));
         {
