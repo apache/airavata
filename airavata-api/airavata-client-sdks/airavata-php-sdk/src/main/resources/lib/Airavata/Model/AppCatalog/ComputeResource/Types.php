@@ -1435,7 +1435,7 @@ class ComputeResourceDescription {
   public $batchQueues = null;
   public $fileSystems = null;
   public $jobSubmissionInterfaces = null;
-  public $dataMovemenetInterfaces = null;
+  public $dataMovementInterfaces = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1503,7 +1503,7 @@ class ComputeResourceDescription {
             ),
           ),
         10 => array(
-          'var' => 'dataMovemenetInterfaces',
+          'var' => 'dataMovementInterfaces',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
           'elem' => array(
@@ -1541,8 +1541,8 @@ class ComputeResourceDescription {
       if (isset($vals['jobSubmissionInterfaces'])) {
         $this->jobSubmissionInterfaces = $vals['jobSubmissionInterfaces'];
       }
-      if (isset($vals['dataMovemenetInterfaces'])) {
-        $this->dataMovemenetInterfaces = $vals['dataMovemenetInterfaces'];
+      if (isset($vals['dataMovementInterfaces'])) {
+        $this->dataMovementInterfaces = $vals['dataMovementInterfaces'];
       }
     }
   }
@@ -1694,7 +1694,7 @@ class ComputeResourceDescription {
           break;
         case 10:
           if ($ftype == TType::LST) {
-            $this->dataMovemenetInterfaces = array();
+            $this->dataMovementInterfaces = array();
             $_size54 = 0;
             $_etype57 = 0;
             $xfer += $input->readListBegin($_etype57, $_size54);
@@ -1703,7 +1703,7 @@ class ComputeResourceDescription {
               $elem59 = null;
               $elem59 = new \Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface();
               $xfer += $elem59->read($input);
-              $this->dataMovemenetInterfaces []= $elem59;
+              $this->dataMovementInterfaces []= $elem59;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -1837,15 +1837,15 @@ class ComputeResourceDescription {
       }
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->dataMovemenetInterfaces !== null) {
-      if (!is_array($this->dataMovemenetInterfaces)) {
+    if ($this->dataMovementInterfaces !== null) {
+      if (!is_array($this->dataMovementInterfaces)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('dataMovemenetInterfaces', TType::LST, 10);
+      $xfer += $output->writeFieldBegin('dataMovementInterfaces', TType::LST, 10);
       {
-        $output->writeListBegin(TType::STRUCT, count($this->dataMovemenetInterfaces));
+        $output->writeListBegin(TType::STRUCT, count($this->dataMovementInterfaces));
         {
-          foreach ($this->dataMovemenetInterfaces as $iter68)
+          foreach ($this->dataMovementInterfaces as $iter68)
           {
             $xfer += $iter68->write($output);
           }

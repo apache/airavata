@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  *  If the login to ssh is different than the hostname itself, specify it here
  * 
  * sshPort:
- *  If a non-defualt port needs to used, specify it.
+ *  If a non-default port needs to used, specify it.
  */
 @SuppressWarnings("all") public class SSHJobSubmission implements org.apache.thrift.TBase<SSHJobSubmission, SSHJobSubmission._Fields>, java.io.Serializable, Cloneable, Comparable<SSHJobSubmission> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("SSHJobSubmission");
