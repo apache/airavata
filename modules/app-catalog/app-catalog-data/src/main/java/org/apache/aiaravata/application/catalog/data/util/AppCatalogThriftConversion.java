@@ -45,7 +45,6 @@ import org.apache.aiaravata.application.catalog.data.resources.DataMovementInter
 import org.apache.aiaravata.application.catalog.data.resources.DataMovementProtocolResource;
 import org.apache.aiaravata.application.catalog.data.resources.GatewayProfileResource;
 import org.apache.aiaravata.application.catalog.data.resources.GlobusGKEndpointResource;
-import org.apache.aiaravata.application.catalog.data.resources.GlobusJobSubmissionResource;
 import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMovementResource;
 import org.apache.aiaravata.application.catalog.data.resources.GridftpEndpointResource;
 import org.apache.aiaravata.application.catalog.data.resources.HostAliasResource;
@@ -71,7 +70,6 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
-import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
@@ -322,7 +320,6 @@ public class AppCatalogThriftConversion {
 //
 //        return globusJobSubmission;
 //    }
-
 
     public static SCPDataMovement getSCPDataMovementDescription (ScpDataMovementResource dataMovementResource) throws AppCatalogException {
         SCPDataMovement dataMovement = new SCPDataMovement();
