@@ -99,10 +99,11 @@ enum JobManagerCommand {
  *
 */
 struct ResourceJobManager {
-    1: required ResourceJobManagerType resourceJobManagerType,
-    2: optional string pushMonitoringEndpoint,
-    3: optional string jobManagerBinPath,
-    4: optional map<JobManagerCommand, string> jobManagerCommands
+    1: required string resourceJobManagerId = DEFAULT_ID,
+    2: required ResourceJobManagerType resourceJobManagerType,
+    3: optional string pushMonitoringEndpoint,
+    4: optional string jobManagerBinPath,
+    5: optional map<JobManagerCommand, string> jobManagerCommands
 }
 
 /**
