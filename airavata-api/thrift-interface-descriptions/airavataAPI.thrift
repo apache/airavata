@@ -790,7 +790,7 @@ service Airavata {
  *
 */
 
-  /**
+/**
    * Register a Compute Resource.
    *
    * @param computeResourceDescription
@@ -806,7 +806,7 @@ service Airavata {
               2: airavataErrors.AiravataClientException ace,
               3: airavataErrors.AiravataSystemException ase)
 
-  /**
+/**
    * Fetch the given Compute Resource.
    *
    * @param computeResourceId
@@ -821,7 +821,7 @@ service Airavata {
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
 
-  /**
+/**
    * Update a Compute Resource.
    *
    * @param computeResourceId
@@ -840,7 +840,7 @@ service Airavata {
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
 
-  /**
+/**
    * Delete a Compute Resource.
    *
    * @param computeResourceId
