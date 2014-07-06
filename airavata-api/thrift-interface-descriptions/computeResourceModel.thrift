@@ -166,7 +166,7 @@ enum SecurityProtocol {
 }
 
 /**
- * Enumeration of Airavata supported Job Submission Mechanisms for High Perforamance Computing Clusters.
+ * Enumeration of Airavata supported Job Submission Mechanisms for High Performance Computing Clusters.
  *
  * SSH:
  *  Execute remote job submission commands using via secure shell protocol.
@@ -216,7 +216,7 @@ enum DataMovementProtocol {
  *  If the login to scp is different than the hostname itself, specify it here
  *
  * sshPort:
- *  If a non-defualt port needs to used, specify it.
+ *  If a non-default port needs to used, specify it.
 */
 struct SCPDataMovement {
     1: required string dataMovementInterfaceId = DEFAULT_ID,
@@ -232,7 +232,7 @@ struct SCPDataMovement {
  *  If the login to scp is different than the hostname itself, specify it here
  *
  * sshPort:
- *  If a non-defualt port needs to used, specify it.
+ *  If a non-default port needs to used, specify it.
 */
 struct GridFTPDataMovement {
     1: required string dataMovementInterfaceId = DEFAULT_ID,
@@ -247,7 +247,7 @@ struct GridFTPDataMovement {
  *  If the login to ssh is different than the hostname itself, specify it here
  *
  * sshPort:
- *  If a non-defualt port needs to used, specify it.
+ *  If a non-default port needs to used, specify it.
 */
 struct LOCALSubmission {
     1: required string jobSubmissionInterfaceId = DEFAULT_ID,
@@ -274,7 +274,7 @@ struct LOCALDataMovement {
  *  If the login to ssh is different than the hostname itself, specify it here
  *
  * sshPort:
- *  If a non-defualt port needs to used, specify it.
+ *  If a non-default port needs to used, specify it.
 */
 struct SSHJobSubmission {
     1: required string jobSubmissionInterfaceId = DEFAULT_ID,
@@ -361,5 +361,5 @@ struct ComputeResourceDescription {
     7: optional list<BatchQueue> batchQueues,
     8: optional map<FileSystems, string> fileSystems,
     9: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
-    10: optional list<DataMovementInterface> dataMovemenetInterfaces
+    10: optional list<DataMovementInterface> dataMovementInterfaces
 }

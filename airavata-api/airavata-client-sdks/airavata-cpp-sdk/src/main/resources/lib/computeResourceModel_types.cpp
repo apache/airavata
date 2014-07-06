@@ -1373,19 +1373,19 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
       case 10:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
-            this->dataMovemenetInterfaces.clear();
+            this->dataMovementInterfaces.clear();
             uint32_t _size58;
             ::apache::thrift::protocol::TType _etype61;
             xfer += iprot->readListBegin(_etype61, _size58);
-            this->dataMovemenetInterfaces.resize(_size58);
+            this->dataMovementInterfaces.resize(_size58);
             uint32_t _i62;
             for (_i62 = 0; _i62 < _size58; ++_i62)
             {
-              xfer += this->dataMovemenetInterfaces[_i62].read(iprot);
+              xfer += this->dataMovementInterfaces[_i62].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
-          this->__isset.dataMovemenetInterfaces = true;
+          this->__isset.dataMovementInterfaces = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -1495,12 +1495,12 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     }
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.dataMovemenetInterfaces) {
-    xfer += oprot->writeFieldBegin("dataMovemenetInterfaces", ::apache::thrift::protocol::T_LIST, 10);
+  if (this->__isset.dataMovementInterfaces) {
+    xfer += oprot->writeFieldBegin("dataMovementInterfaces", ::apache::thrift::protocol::T_LIST, 10);
     {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataMovemenetInterfaces.size()));
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataMovementInterfaces.size()));
       std::vector<DataMovementInterface> ::const_iterator _iter68;
-      for (_iter68 = this->dataMovemenetInterfaces.begin(); _iter68 != this->dataMovemenetInterfaces.end(); ++_iter68)
+      for (_iter68 = this->dataMovementInterfaces.begin(); _iter68 != this->dataMovementInterfaces.end(); ++_iter68)
       {
         xfer += (*_iter68).write(oprot);
       }
@@ -1524,7 +1524,7 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.batchQueues, b.batchQueues);
   swap(a.fileSystems, b.fileSystems);
   swap(a.jobSubmissionInterfaces, b.jobSubmissionInterfaces);
-  swap(a.dataMovemenetInterfaces, b.dataMovemenetInterfaces);
+  swap(a.dataMovementInterfaces, b.dataMovementInterfaces);
   swap(a.__isset, b.__isset);
 }
 

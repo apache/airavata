@@ -28,7 +28,7 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * Enumeration of Airavata supported Job Submission Mechanisms for High Perforamance Computing Clusters.
+ * Enumeration of Airavata supported Job Submission Mechanisms for High Performance Computing Clusters.
  * 
  * SSH:
  *  Execute remote job submission commands using via secure shell protocol.

@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  *  If the login to scp is different than the hostname itself, specify it here
  * 
  * sshPort:
- *  If a non-defualt port needs to used, specify it.
+ *  If a non-default port needs to used, specify it.
  */
 @SuppressWarnings("all") public class GridFTPDataMovement implements org.apache.thrift.TBase<GridFTPDataMovement, GridFTPDataMovement._Fields>, java.io.Serializable, Cloneable, Comparable<GridFTPDataMovement> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GridFTPDataMovement");

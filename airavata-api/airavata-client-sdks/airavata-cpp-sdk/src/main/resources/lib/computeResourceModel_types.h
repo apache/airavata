@@ -712,14 +712,14 @@ class DataMovementInterface {
 void swap(DataMovementInterface &a, DataMovementInterface &b);
 
 typedef struct _ComputeResourceDescription__isset {
-  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovemenetInterfaces(false) {}
+  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false) {}
   bool hostAliases;
   bool ipAddresses;
   bool resourceDescription;
   bool batchQueues;
   bool fileSystems;
   bool jobSubmissionInterfaces;
-  bool dataMovemenetInterfaces;
+  bool dataMovementInterfaces;
 } _ComputeResourceDescription__isset;
 
 class ComputeResourceDescription {
@@ -742,7 +742,7 @@ class ComputeResourceDescription {
   std::vector<BatchQueue>  batchQueues;
   std::map<FileSystems::type, std::string>  fileSystems;
   std::vector<JobSubmissionInterface>  jobSubmissionInterfaces;
-  std::vector<DataMovementInterface>  dataMovemenetInterfaces;
+  std::vector<DataMovementInterface>  dataMovementInterfaces;
 
   _ComputeResourceDescription__isset __isset;
 
@@ -788,9 +788,9 @@ class ComputeResourceDescription {
     __isset.jobSubmissionInterfaces = true;
   }
 
-  void __set_dataMovemenetInterfaces(const std::vector<DataMovementInterface> & val) {
-    dataMovemenetInterfaces = val;
-    __isset.dataMovemenetInterfaces = true;
+  void __set_dataMovementInterfaces(const std::vector<DataMovementInterface> & val) {
+    dataMovementInterfaces = val;
+    __isset.dataMovementInterfaces = true;
   }
 
   bool operator == (const ComputeResourceDescription & rhs) const
@@ -825,9 +825,9 @@ class ComputeResourceDescription {
       return false;
     else if (__isset.jobSubmissionInterfaces && !(jobSubmissionInterfaces == rhs.jobSubmissionInterfaces))
       return false;
-    if (__isset.dataMovemenetInterfaces != rhs.__isset.dataMovemenetInterfaces)
+    if (__isset.dataMovementInterfaces != rhs.__isset.dataMovementInterfaces)
       return false;
-    else if (__isset.dataMovemenetInterfaces && !(dataMovemenetInterfaces == rhs.dataMovemenetInterfaces))
+    else if (__isset.dataMovementInterfaces && !(dataMovementInterfaces == rhs.dataMovementInterfaces))
       return false;
     return true;
   }

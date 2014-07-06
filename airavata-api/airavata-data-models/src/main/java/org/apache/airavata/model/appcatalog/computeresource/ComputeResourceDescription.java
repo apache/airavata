@@ -89,7 +89,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField BATCH_QUEUES_FIELD_DESC = new org.apache.thrift.protocol.TField("batchQueues", org.apache.thrift.protocol.TType.LIST, (short)7);
   private static final org.apache.thrift.protocol.TField FILE_SYSTEMS_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSystems", org.apache.thrift.protocol.TType.MAP, (short)8);
   private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaces", org.apache.thrift.protocol.TType.LIST, (short)9);
-  private static final org.apache.thrift.protocol.TField DATA_MOVEMENET_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovemenetInterfaces", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementInterfaces", org.apache.thrift.protocol.TType.LIST, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -106,7 +106,7 @@ import org.slf4j.LoggerFactory;
   private List<BatchQueue> batchQueues; // optional
   private Map<FileSystems,String> fileSystems; // optional
   private List<JobSubmissionInterface> jobSubmissionInterfaces; // optional
-  private List<DataMovementInterface> dataMovemenetInterfaces; // optional
+  private List<DataMovementInterface> dataMovementInterfaces; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -119,7 +119,7 @@ import org.slf4j.LoggerFactory;
     BATCH_QUEUES((short)7, "batchQueues"),
     FILE_SYSTEMS((short)8, "fileSystems"),
     JOB_SUBMISSION_INTERFACES((short)9, "jobSubmissionInterfaces"),
-    DATA_MOVEMENET_INTERFACES((short)10, "dataMovemenetInterfaces");
+    DATA_MOVEMENT_INTERFACES((short)10, "dataMovementInterfaces");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -152,8 +152,8 @@ import org.slf4j.LoggerFactory;
           return FILE_SYSTEMS;
         case 9: // JOB_SUBMISSION_INTERFACES
           return JOB_SUBMISSION_INTERFACES;
-        case 10: // DATA_MOVEMENET_INTERFACES
-          return DATA_MOVEMENET_INTERFACES;
+        case 10: // DATA_MOVEMENT_INTERFACES
+          return DATA_MOVEMENT_INTERFACES;
         default:
           return null;
       }
@@ -196,7 +196,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __ISEMPTY_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENET_INTERFACES};
+  private _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -224,7 +224,7 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.JOB_SUBMISSION_INTERFACES, new org.apache.thrift.meta_data.FieldMetaData("jobSubmissionInterfaces", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, JobSubmissionInterface.class))));
-    tmpMap.put(_Fields.DATA_MOVEMENET_INTERFACES, new org.apache.thrift.meta_data.FieldMetaData("dataMovemenetInterfaces", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.DATA_MOVEMENT_INTERFACES, new org.apache.thrift.meta_data.FieldMetaData("dataMovementInterfaces", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DataMovementInterface.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -302,12 +302,12 @@ import org.slf4j.LoggerFactory;
       }
       this.jobSubmissionInterfaces = __this__jobSubmissionInterfaces;
     }
-    if (other.isSetDataMovemenetInterfaces()) {
-      List<DataMovementInterface> __this__dataMovemenetInterfaces = new ArrayList<DataMovementInterface>(other.dataMovemenetInterfaces.size());
-      for (DataMovementInterface other_element : other.dataMovemenetInterfaces) {
-        __this__dataMovemenetInterfaces.add(new DataMovementInterface(other_element));
+    if (other.isSetDataMovementInterfaces()) {
+      List<DataMovementInterface> __this__dataMovementInterfaces = new ArrayList<DataMovementInterface>(other.dataMovementInterfaces.size());
+      for (DataMovementInterface other_element : other.dataMovementInterfaces) {
+        __this__dataMovementInterfaces.add(new DataMovementInterface(other_element));
       }
-      this.dataMovemenetInterfaces = __this__dataMovemenetInterfaces;
+      this.dataMovementInterfaces = __this__dataMovementInterfaces;
     }
   }
 
@@ -328,7 +328,7 @@ import org.slf4j.LoggerFactory;
     this.batchQueues = null;
     this.fileSystems = null;
     this.jobSubmissionInterfaces = null;
-    this.dataMovemenetInterfaces = null;
+    this.dataMovementInterfaces = null;
   }
 
   public boolean isIsEmpty() {
@@ -608,41 +608,41 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public int getDataMovemenetInterfacesSize() {
-    return (this.dataMovemenetInterfaces == null) ? 0 : this.dataMovemenetInterfaces.size();
+  public int getDataMovementInterfacesSize() {
+    return (this.dataMovementInterfaces == null) ? 0 : this.dataMovementInterfaces.size();
   }
 
-  public java.util.Iterator<DataMovementInterface> getDataMovemenetInterfacesIterator() {
-    return (this.dataMovemenetInterfaces == null) ? null : this.dataMovemenetInterfaces.iterator();
+  public java.util.Iterator<DataMovementInterface> getDataMovementInterfacesIterator() {
+    return (this.dataMovementInterfaces == null) ? null : this.dataMovementInterfaces.iterator();
   }
 
-  public void addToDataMovemenetInterfaces(DataMovementInterface elem) {
-    if (this.dataMovemenetInterfaces == null) {
-      this.dataMovemenetInterfaces = new ArrayList<DataMovementInterface>();
+  public void addToDataMovementInterfaces(DataMovementInterface elem) {
+    if (this.dataMovementInterfaces == null) {
+      this.dataMovementInterfaces = new ArrayList<DataMovementInterface>();
     }
-    this.dataMovemenetInterfaces.add(elem);
+    this.dataMovementInterfaces.add(elem);
   }
 
-  public List<DataMovementInterface> getDataMovemenetInterfaces() {
-    return this.dataMovemenetInterfaces;
+  public List<DataMovementInterface> getDataMovementInterfaces() {
+    return this.dataMovementInterfaces;
   }
 
-  public void setDataMovemenetInterfaces(List<DataMovementInterface> dataMovemenetInterfaces) {
-    this.dataMovemenetInterfaces = dataMovemenetInterfaces;
+  public void setDataMovementInterfaces(List<DataMovementInterface> dataMovementInterfaces) {
+    this.dataMovementInterfaces = dataMovementInterfaces;
   }
 
-  public void unsetDataMovemenetInterfaces() {
-    this.dataMovemenetInterfaces = null;
+  public void unsetDataMovementInterfaces() {
+    this.dataMovementInterfaces = null;
   }
 
-  /** Returns true if field dataMovemenetInterfaces is set (has been assigned a value) and false otherwise */
-  public boolean isSetDataMovemenetInterfaces() {
-    return this.dataMovemenetInterfaces != null;
+  /** Returns true if field dataMovementInterfaces is set (has been assigned a value) and false otherwise */
+  public boolean isSetDataMovementInterfaces() {
+    return this.dataMovementInterfaces != null;
   }
 
-  public void setDataMovemenetInterfacesIsSet(boolean value) {
+  public void setDataMovementInterfacesIsSet(boolean value) {
     if (!value) {
-      this.dataMovemenetInterfaces = null;
+      this.dataMovementInterfaces = null;
     }
   }
 
@@ -720,11 +720,11 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case DATA_MOVEMENET_INTERFACES:
+    case DATA_MOVEMENT_INTERFACES:
       if (value == null) {
-        unsetDataMovemenetInterfaces();
+        unsetDataMovementInterfaces();
       } else {
-        setDataMovemenetInterfaces((List<DataMovementInterface>)value);
+        setDataMovementInterfaces((List<DataMovementInterface>)value);
       }
       break;
 
@@ -760,8 +760,8 @@ import org.slf4j.LoggerFactory;
     case JOB_SUBMISSION_INTERFACES:
       return getJobSubmissionInterfaces();
 
-    case DATA_MOVEMENET_INTERFACES:
-      return getDataMovemenetInterfaces();
+    case DATA_MOVEMENT_INTERFACES:
+      return getDataMovementInterfaces();
 
     }
     throw new IllegalStateException();
@@ -792,8 +792,8 @@ import org.slf4j.LoggerFactory;
       return isSetFileSystems();
     case JOB_SUBMISSION_INTERFACES:
       return isSetJobSubmissionInterfaces();
-    case DATA_MOVEMENET_INTERFACES:
-      return isSetDataMovemenetInterfaces();
+    case DATA_MOVEMENT_INTERFACES:
+      return isSetDataMovementInterfaces();
     }
     throw new IllegalStateException();
   }
@@ -892,12 +892,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_dataMovemenetInterfaces = true && this.isSetDataMovemenetInterfaces();
-    boolean that_present_dataMovemenetInterfaces = true && that.isSetDataMovemenetInterfaces();
-    if (this_present_dataMovemenetInterfaces || that_present_dataMovemenetInterfaces) {
-      if (!(this_present_dataMovemenetInterfaces && that_present_dataMovemenetInterfaces))
+    boolean this_present_dataMovementInterfaces = true && this.isSetDataMovementInterfaces();
+    boolean that_present_dataMovementInterfaces = true && that.isSetDataMovementInterfaces();
+    if (this_present_dataMovementInterfaces || that_present_dataMovementInterfaces) {
+      if (!(this_present_dataMovementInterfaces && that_present_dataMovementInterfaces))
         return false;
-      if (!this.dataMovemenetInterfaces.equals(that.dataMovemenetInterfaces))
+      if (!this.dataMovementInterfaces.equals(that.dataMovementInterfaces))
         return false;
     }
 
@@ -1007,12 +1007,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetDataMovemenetInterfaces()).compareTo(other.isSetDataMovemenetInterfaces());
+    lastComparison = Boolean.valueOf(isSetDataMovementInterfaces()).compareTo(other.isSetDataMovementInterfaces());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetDataMovemenetInterfaces()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataMovemenetInterfaces, other.dataMovemenetInterfaces);
+    if (isSetDataMovementInterfaces()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataMovementInterfaces, other.dataMovementInterfaces);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1116,13 +1116,13 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
-    if (isSetDataMovemenetInterfaces()) {
+    if (isSetDataMovementInterfaces()) {
       if (!first) sb.append(", ");
-      sb.append("dataMovemenetInterfaces:");
-      if (this.dataMovemenetInterfaces == null) {
+      sb.append("dataMovementInterfaces:");
+      if (this.dataMovementInterfaces == null) {
         sb.append("null");
       } else {
-        sb.append(this.dataMovemenetInterfaces);
+        sb.append(this.dataMovementInterfaces);
       }
       first = false;
     }
@@ -1309,21 +1309,21 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // DATA_MOVEMENET_INTERFACES
+          case 10: // DATA_MOVEMENT_INTERFACES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list42 = iprot.readListBegin();
-                struct.dataMovemenetInterfaces = new ArrayList<DataMovementInterface>(_list42.size);
+                struct.dataMovementInterfaces = new ArrayList<DataMovementInterface>(_list42.size);
                 for (int _i43 = 0; _i43 < _list42.size; ++_i43)
                 {
                   DataMovementInterface _elem44;
                   _elem44 = new DataMovementInterface();
                   _elem44.read(iprot);
-                  struct.dataMovemenetInterfaces.add(_elem44);
+                  struct.dataMovementInterfaces.add(_elem44);
                 }
                 iprot.readListEnd();
               }
-              struct.setDataMovemenetInterfacesIsSet(true);
+              struct.setDataMovementInterfacesIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1432,12 +1432,12 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.dataMovemenetInterfaces != null) {
-        if (struct.isSetDataMovemenetInterfaces()) {
-          oprot.writeFieldBegin(DATA_MOVEMENET_INTERFACES_FIELD_DESC);
+      if (struct.dataMovementInterfaces != null) {
+        if (struct.isSetDataMovementInterfaces()) {
+          oprot.writeFieldBegin(DATA_MOVEMENT_INTERFACES_FIELD_DESC);
           {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.dataMovemenetInterfaces.size()));
-            for (DataMovementInterface _iter50 : struct.dataMovemenetInterfaces)
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.dataMovementInterfaces.size()));
+            for (DataMovementInterface _iter50 : struct.dataMovementInterfaces)
             {
               _iter50.write(oprot);
             }
@@ -1485,7 +1485,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetJobSubmissionInterfaces()) {
         optionals.set(5);
       }
-      if (struct.isSetDataMovemenetInterfaces()) {
+      if (struct.isSetDataMovementInterfaces()) {
         optionals.set(6);
       }
       oprot.writeBitSet(optionals, 7);
@@ -1538,10 +1538,10 @@ import org.slf4j.LoggerFactory;
           }
         }
       }
-      if (struct.isSetDataMovemenetInterfaces()) {
+      if (struct.isSetDataMovementInterfaces()) {
         {
-          oprot.writeI32(struct.dataMovemenetInterfaces.size());
-          for (DataMovementInterface _iter56 : struct.dataMovemenetInterfaces)
+          oprot.writeI32(struct.dataMovementInterfaces.size());
+          for (DataMovementInterface _iter56 : struct.dataMovementInterfaces)
           {
             _iter56.write(oprot);
           }
@@ -1635,16 +1635,16 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(6)) {
         {
           org.apache.thrift.protocol.TList _list73 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.dataMovemenetInterfaces = new ArrayList<DataMovementInterface>(_list73.size);
+          struct.dataMovementInterfaces = new ArrayList<DataMovementInterface>(_list73.size);
           for (int _i74 = 0; _i74 < _list73.size; ++_i74)
           {
             DataMovementInterface _elem75;
             _elem75 = new DataMovementInterface();
             _elem75.read(iprot);
-            struct.dataMovemenetInterfaces.add(_elem75);
+            struct.dataMovementInterfaces.add(_elem75);
           }
         }
-        struct.setDataMovemenetInterfacesIsSet(true);
+        struct.setDataMovementInterfacesIsSet(true);
       }
     }
   }
