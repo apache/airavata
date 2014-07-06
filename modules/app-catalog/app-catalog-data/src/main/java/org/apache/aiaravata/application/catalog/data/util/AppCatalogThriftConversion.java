@@ -21,8 +21,44 @@
 
 package org.apache.aiaravata.application.catalog.data.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.resources.*;
+import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
+import org.apache.aiaravata.application.catalog.data.resources.AppDeploymentResource;
+import org.apache.aiaravata.application.catalog.data.resources.AppEnvironmentResource;
+import org.apache.aiaravata.application.catalog.data.resources.AppInterfaceResource;
+import org.apache.aiaravata.application.catalog.data.resources.AppModuleMappingResource;
+import org.apache.aiaravata.application.catalog.data.resources.AppModuleResource;
+import org.apache.aiaravata.application.catalog.data.resources.ApplicationInputResource;
+import org.apache.aiaravata.application.catalog.data.resources.ApplicationOutputResource;
+import org.apache.aiaravata.application.catalog.data.resources.BatchQueueResource;
+import org.apache.aiaravata.application.catalog.data.resources.ComputeHostPreferenceResource;
+import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceFileSystemResource;
+import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceResource;
+import org.apache.aiaravata.application.catalog.data.resources.DataMovementInterfaceResource;
+import org.apache.aiaravata.application.catalog.data.resources.DataMovementProtocolResource;
+import org.apache.aiaravata.application.catalog.data.resources.GatewayProfileResource;
+import org.apache.aiaravata.application.catalog.data.resources.GlobusGKEndpointResource;
+import org.apache.aiaravata.application.catalog.data.resources.GlobusJobSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.GridftpEndpointResource;
+import org.apache.aiaravata.application.catalog.data.resources.HostAliasResource;
+import org.apache.aiaravata.application.catalog.data.resources.HostIPAddressResource;
+import org.apache.aiaravata.application.catalog.data.resources.JobManagerCommandResource;
+import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionInterfaceResource;
+import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionProtocolResource;
+import org.apache.aiaravata.application.catalog.data.resources.LibraryApendPathResource;
+import org.apache.aiaravata.application.catalog.data.resources.LibraryPrepandPathResource;
+import org.apache.aiaravata.application.catalog.data.resources.Resource;
+import org.apache.aiaravata.application.catalog.data.resources.ResourceJobManagerResource;
+import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
@@ -30,49 +66,75 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
+import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayProfile;
-
-import java.util.*;
 
 public class AppCatalogThriftConversion {
     public static ComputeResourceResource getComputeHostResource (ComputeResourceDescription description){
         ComputeResourceResource resource = new ComputeResourceResource();
         resource.setHostName(description.getHostName());
-        resource.setDescription(description.getComputeResourceDescription());
-        resource.setPreferredJobSubmissionProtocol(description.getPreferredJobSubmissionProtocol());
-        resource.setPreferredJobSubmissionProtocol(description.getResourceId());
+        resource.setResourceDescription(description.getResourceDescription());
+        resource.setResourceId(description.getComputeResourceId());
         return resource;
     }
 
     public static ComputeResourceDescription getComputeHostDescription (ComputeResourceResource resource) throws AppCatalogException{
         ComputeResourceDescription description = new ComputeResourceDescription();
-        description.setResourceId(resource.getResoureId());
+        description.setComputeResourceId(resource.getResourceId());
         description.setHostName(resource.getHostName());
-        description.setResourceDescription(resource.getDescription());
-        description.setPreferredJobSubmissionProtocol(resource.getPreferredJobSubmissionProtocol());
+        description.setResourceDescription(resource.getResourceDescription());
         HostAliasResource aliasResource = new HostAliasResource();
-        List<Resource> resources = aliasResource.get(AbstractResource.HostAliasConstants.RESOURCE_ID, resource.getResoureId());
+        List<Resource> resources = aliasResource.get(AbstractResource.HostAliasConstants.RESOURCE_ID, resource.getResourceId());
         if (resources != null && !resources.isEmpty()){
             description.setHostAliases(getHostAliases(resources));
         }
         HostIPAddressResource ipAddressResource = new HostIPAddressResource();
-        List<Resource> ipAddresses = ipAddressResource.get(AbstractResource.HostIPAddressConstants.RESOURCE_ID, resource.getResoureId());
+        List<Resource> ipAddresses = ipAddressResource.get(AbstractResource.HostIPAddressConstants.RESOURCE_ID, resource.getResourceId());
         if (ipAddresses != null && !ipAddresses.isEmpty()){
             description.setIpAddresses(getIpAddresses(ipAddresses));
         }
 
-        JobSubmissionProtocolResource submissionProtocolResource = new JobSubmissionProtocolResource();
-        List<Resource> submissionProtocols = submissionProtocolResource.get(AbstractResource.JobSubmissionProtocolConstants.RESOURCE_ID, resource.getResoureId());
-        if (submissionProtocols != null && !submissionProtocols.isEmpty()){
-            description.setJobSubmissionProtocols(getJobSubmissionProtocolList(submissionProtocols));
+        BatchQueueResource bqResource = new BatchQueueResource();
+        List<Resource> batchQueues = bqResource.get(AbstractResource.BatchQueueConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
+        if (batchQueues != null && !batchQueues.isEmpty()){
+            description.setBatchQueues(getBatchQueues(batchQueues));
         }
-
-        DataMovementProtocolResource movementProtocolResource = new DataMovementProtocolResource();
-        List<Resource> dataMoveProtocols = movementProtocolResource.get(AbstractResource.DataMoveProtocolConstants.RESOURCE_ID, resource.getResoureId());
-        if (dataMoveProtocols != null && !dataMoveProtocols.isEmpty()){
-            description.setDataMovementProtocols(getDataMoveProtocolList(dataMoveProtocols));
+        
+        ComputeResourceFileSystemResource fsResource = new ComputeResourceFileSystemResource();
+        List<Resource> fsList = fsResource.get(AbstractResource.ComputeResourceFileSystemConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
+        description.setFileSystems(new HashMap<FileSystems,String>());
+        if (fsList != null && !fsList.isEmpty()){
+        	for (Resource r : fsList) {
+        		ComputeResourceFileSystemResource rr=(ComputeResourceFileSystemResource)r;
+        		description.getFileSystems().put(FileSystems.valueOf(rr.getFileSystem()), rr.getPath());
+			}
+        }
+        
+        JobSubmissionInterfaceResource jsiResource = new JobSubmissionInterfaceResource();
+        List<Resource> hsiList = jsiResource.get(AbstractResource.JobSubmissionInterfaceConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
+        if (hsiList != null && !hsiList.isEmpty()){
+            description.setJobSubmissionInterfaces(getJobSubmissionInterfaces(batchQueues));
+        }
+        
+        DataMovementInterfaceResource dmiResource = new DataMovementInterfaceResource();
+        List<Resource> dmiList = dmiResource.get(AbstractResource.DataMovementInterfaceConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
+        if (dmiList != null && !dmiList.isEmpty()){
+            description.setDataMovemenetInterfaces(getDataMovementInterfaces(batchQueues));
         }
         return description;
     }
@@ -100,7 +162,85 @@ public class AppCatalogThriftConversion {
         }
         return hostIpAddresses;
     }
+    
+    public static List<BatchQueue> getBatchQueues (List<Resource> resources){
+    	List<BatchQueue> batchQueues = new ArrayList<BatchQueue>();
+        for (Resource resource : resources){
+        	batchQueues.add(getBatchQueue((BatchQueueResource)resource));
+        }
+        return batchQueues;
+    }
+    
+    public static List<DataMovementInterface> getDataMovementInterfaces(List<Resource> resources){
+    	List<DataMovementInterface> dataMovementInterfaces = new ArrayList<DataMovementInterface>();
+        for (Resource resource : resources){
+        	dataMovementInterfaces.add(getDataMovementInterface((DataMovementInterfaceResource)resource));
+        }
+        return dataMovementInterfaces;
+    }
+    
+    public static DataMovementInterface getDataMovementInterface(DataMovementInterfaceResource resource){
+    	DataMovementInterface dmi = new DataMovementInterface();
+    	dmi.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
+    	dmi.setDataMovementProtocol(DataMovementProtocol.valueOf(resource.getDataMovementProtocol()));
+    	dmi.setPriorityOrder(resource.getPriorityOrder());
+        return dmi;
+    }
+    
+    public static DataMovementInterfaceResource getDataMovementInterface(DataMovementInterface resource){
+    	DataMovementInterfaceResource dmi = new DataMovementInterfaceResource();
+    	dmi.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
+    	dmi.setDataMovementProtocol(resource.getDataMovementProtocol().toString());
+    	dmi.setPriorityOrder(resource.getPriorityOrder());
+        return dmi;
+    }
+    
+    public static List<JobSubmissionInterface> getJobSubmissionInterfaces(List<Resource> resources){
+    	List<JobSubmissionInterface> jobSubmissionInterfaces = new ArrayList<JobSubmissionInterface>();
+        for (Resource resource : resources){
+        	jobSubmissionInterfaces.add(getJobSubmissionInterface((JobSubmissionInterfaceResource)resource));
+        }
+        return jobSubmissionInterfaces;
+    }
+    
+    public static JobSubmissionInterface getJobSubmissionInterface(JobSubmissionInterfaceResource resource){
+    	JobSubmissionInterface jsi = new JobSubmissionInterface();
+    	jsi.setJobSubmissionInterfaceId(resource.getJobSubmissionInterfaceId());
+    	jsi.setJobSubmissionProtocol(JobSubmissionProtocol.valueOf(resource.getJobSubmissionProtocol()));
+    	jsi.setPriorityOrder(resource.getPriorityOrder());
+        return jsi;
+    }
+    
+    public static JobSubmissionInterfaceResource getJobSubmissionInterface(JobSubmissionInterface resource){
+    	JobSubmissionInterfaceResource jsi = new JobSubmissionInterfaceResource();
+    	jsi.setJobSubmissionInterfaceId(resource.getJobSubmissionInterfaceId());
+    	jsi.setJobSubmissionProtocol(resource.getJobSubmissionProtocol().toString());
+    	jsi.setPriorityOrder(resource.getPriorityOrder());
+        return jsi;
+    }
+    
+    public static BatchQueue getBatchQueue(BatchQueueResource resource){
+    	BatchQueue batchQueue = new BatchQueue();
+    	batchQueue.setMaxJobsInQueue(resource.getMaxJobInQueue());
+    	batchQueue.setMaxNodes(resource.getMaxNodes());
+    	batchQueue.setMaxProcessors(resource.getMaxProcessors());
+    	batchQueue.setMaxRunTime(resource.getMaxRuntime());
+    	batchQueue.setQueueDescription(resource.getQueueDescription());
+    	batchQueue.setQueueName(resource.getQueueName());
+        return batchQueue;
+    }
 
+    public static BatchQueueResource getBatchQueue(BatchQueue resource){
+    	BatchQueueResource batchQueue = new BatchQueueResource();
+    	batchQueue.setMaxJobInQueue(resource.getMaxJobsInQueue());
+    	batchQueue.setMaxNodes(resource.getMaxNodes());
+    	batchQueue.setMaxProcessors(resource.getMaxProcessors());
+    	batchQueue.setMaxRuntime(resource.getMaxRunTime());
+    	batchQueue.setQueueDescription(resource.getQueueDescription());
+    	batchQueue.setQueueName(resource.getQueueName());
+        return batchQueue;
+    }
+    
     public static Map<String, JobSubmissionProtocol> getJobSubmissionProtocolList(List<Resource> resources){
        Map<String, JobSubmissionProtocol> protocols = new HashMap<String, JobSubmissionProtocol>();
         for (Resource resource : resources){
@@ -119,89 +259,108 @@ public class AppCatalogThriftConversion {
         return protocols;
     }
 
-
-    public static GSISSHSubmissionResource getGSISSHSubmission (GSISSHJobSubmission submission){
-        GSISSHSubmissionResource resource = new GSISSHSubmissionResource();
-        resource.setSubmissionID(submission.getJobSubmissionDataID());
-        resource.setMonitorMode(submission.getMonitorMode());
-        resource.setInstalledPath(submission.getInstalledPath());
-        resource.setResourceJobManager(submission.getResourceJobManager().toString());
+    public static SshJobSubmissionResource getSSHJobSubmission (SSHJobSubmission submission){
+    	SshJobSubmissionResource resource = new SshJobSubmissionResource();
+        resource.setAlternativeSshHostname(submission.getAlternativeSSHHostName());
+        resource.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
+        ResourceJobManagerResource resourceJobManager = getResourceJobManager(submission.getResourceJobManager());
+        resourceJobManager.setResourceJobManagerId(submission.getJobSubmissionInterfaceId());
+        resource.setResourceJobManagerId(resourceJobManager.getResourceJobManagerId());
+        resource.setResourceJobManagerResource(resourceJobManager);
+        resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
         resource.setSshPort(submission.getSshPort());
         return resource;
     }
 
-    public static GSISSHJobSubmission getGSISSHSubmissionDescription (GSISSHSubmissionResource submission) throws AppCatalogException {
-        GSISSHJobSubmission gsisshJobSubmission = new GSISSHJobSubmission();
-        gsisshJobSubmission.setJobSubmissionDataID(submission.getSubmissionID());
-        gsisshJobSubmission.setResourceJobManager(ResourceJobManager.valueOf(submission.getResourceJobManager()));
-        gsisshJobSubmission.setSshPort(submission.getSshPort());
-        gsisshJobSubmission.setInstalledPath(submission.getInstalledPath());
-        gsisshJobSubmission.setMonitorMode(submission.getMonitorMode());
-
-        GSISSHExportResource exportResource = new GSISSHExportResource();
-        List<Resource> exports = exportResource.get(AbstractResource.GSISSHExportConstants.SUBMISSION_ID, submission.getSubmissionID());
-        if (exports != null && !exports.isEmpty()){
-            gsisshJobSubmission.setExports(getGSISSHExports(exports));
-        }
-
-        GSISSHPostJobCommandResource postJobCommandResource = new GSISSHPostJobCommandResource();
-        List<Resource> resources = postJobCommandResource.get(AbstractResource.GSISSHPostJobCommandConstants.SUBMISSION_ID, submission.getSubmissionID());
-        if (resources != null && !resources.isEmpty()){
-            gsisshJobSubmission.setPostJobCommands(getGSISSHPostJobCommands(resources));
-        }
-
-        GSISSHPreJobCommandResource preJobCommandResource = new GSISSHPreJobCommandResource();
-        List<Resource> preJobCommands = preJobCommandResource.get(AbstractResource.GSISSHPreJobCommandConstants.SUBMISSION_ID, submission.getSubmissionID());
-        if (preJobCommands != null && !preJobCommands.isEmpty()){
-            gsisshJobSubmission.setPreJobCommands(getGSISSHPreJobCommands(preJobCommands));
-        }
-
-        return gsisshJobSubmission;
+    public static ResourceJobManagerResource getResourceJobManager(ResourceJobManager manager){
+    	ResourceJobManagerResource r = new ResourceJobManagerResource();
+    	r.setJobManagerBinPath(manager.getJobManagerBinPath());
+    	r.setPushMonitoringEndpoint(manager.getPushMonitoringEndpoint());
+    	r.setResourceJobManagerType(manager.getResourceJobManagerType().toString());
+    	return r;
     }
-
-    public static GlobusJobSubmission getGlobusJobSubmissionDescription (GlobusJobSubmissionResource submission) throws AppCatalogException {
-        GlobusJobSubmission globusJobSubmission = new GlobusJobSubmission();
-        globusJobSubmission.setJobSubmissionDataID(submission.getSubmissionID());
-        globusJobSubmission.setResourceJobManager(ResourceJobManager.valueOf(submission.getResourceJobManager()));
-        globusJobSubmission.setSecurityProtocol(SecurityProtocol.valueOf(submission.getSecurityProtocol()));
-
-        GlobusGKEndpointResource endpointResource = new GlobusGKEndpointResource();
-        List<Resource> endpoints = endpointResource.get(AbstractResource.GlobusEPConstants.SUBMISSION_ID, submission.getSubmissionID());
-        if (endpoints != null && !endpoints.isEmpty()){
-            globusJobSubmission.setGlobusGateKeeperEndPoint(getGlobusGateKeeperEndPointList(endpoints));
+    
+    public static ResourceJobManager getResourceJobManager(ResourceJobManagerResource manager) throws AppCatalogException{
+    	ResourceJobManager r = new ResourceJobManager();
+    	r.setJobManagerBinPath(manager.getJobManagerBinPath());
+    	r.setPushMonitoringEndpoint(manager.getPushMonitoringEndpoint());
+    	r.setResourceJobManagerType(ResourceJobManagerType.valueOf(manager.getResourceJobManagerType()));
+    	r.setJobManagerCommands(new HashMap<JobManagerCommand, String>());
+    	JobManagerCommandResource jmcr=new JobManagerCommandResource();
+        List<Resource> jmcrList = jmcr.get(AbstractResource.JobManagerCommandConstants.RESOURCE_JOB_MANAGER_ID, manager.getResourceJobManagerId());
+        if (jmcrList != null && !jmcrList.isEmpty()){
+        	for (Resource rrr : jmcrList) {
+        		JobManagerCommandResource rr=(JobManagerCommandResource)rrr;
+        		r.getJobManagerCommands().put(JobManagerCommand.valueOf(rr.getCommandType()), rr.getCommand());
+			}
         }
-
-        return globusJobSubmission;
+    	return r;
     }
-
+    
+    
     public static SSHJobSubmission getSSHJobSubmissionDescription (SshJobSubmissionResource submission) throws AppCatalogException {
-        SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
-        sshJobSubmission.setJobSubmissionDataID(submission.getSubmissionID());
-        sshJobSubmission.setResourceJobManager(ResourceJobManager.valueOf(submission.getResourceJobManager()));
-        sshJobSubmission.setSshPort(submission.getSshPort());
+    	SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
+    	sshJobSubmission.setAlternativeSSHHostName(submission.getAlternativeSshHostname());
+    	sshJobSubmission.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
+    	sshJobSubmission.setResourceJobManager(getResourceJobManager(submission.getResourceJobManagerResource()));
+    	sshJobSubmission.setSecurityProtocol(SecurityProtocol.valueOf(submission.getSecurityProtocol()));
+    	sshJobSubmission.setSshPort(submission.getSshPort());
         return sshJobSubmission;
     }
 
+//    public static GlobusJobSubmission getGlobusJobSubmissionDescription (GlobusJobSubmissionResource submission) throws AppCatalogException {
+//        GlobusJobSubmission globusJobSubmission = new GlobusJobSubmission();
+//        globusJobSubmission.setJobSubmissionInterfaceId(submission.getSubmissionID());
+//        globusJobSubmission.setResourceJobManager(ResourceJobManager.valueOf(submission.getResourceJobManager()));
+//        globusJobSubmission.setSecurityProtocol(SecurityProtocol.valueOf(submission.getSecurityProtocol()));
+//
+//        GlobusGKEndpointResource endpointResource = new GlobusGKEndpointResource();
+//        List<Resource> endpoints = endpointResource.get(AbstractResource.GlobusEPConstants.SUBMISSION_ID, submission.getSubmissionID());
+//        if (endpoints != null && !endpoints.isEmpty()){
+//            globusJobSubmission.setGlobusGateKeeperEndPoint(getGlobusGateKeeperEndPointList(endpoints));
+//        }
+//
+//        return globusJobSubmission;
+//    }
+
+
     public static SCPDataMovement getSCPDataMovementDescription (ScpDataMovementResource dataMovementResource) throws AppCatalogException {
         SCPDataMovement dataMovement = new SCPDataMovement();
-        dataMovement.setDataMovementDataID(dataMovementResource.getDataMoveID());
+        dataMovement.setDataMovementInterfaceId(dataMovementResource.getDataMovementInterfaceId());
+        dataMovement.setAlternativeSCPHostName(dataMovementResource.getAlternativeScpHostname());
         dataMovement.setSecurityProtocol(SecurityProtocol.valueOf(dataMovementResource.getSecurityProtocol()));
+        dataMovement.setSshPort(dataMovementResource.getSshPort());
+        return dataMovement;
+    }
+    
+    public static ScpDataMovementResource getSCPDataMovementDescription (SCPDataMovement dataMovementResource) throws AppCatalogException {
+    	ScpDataMovementResource dataMovement = new ScpDataMovementResource();
+        dataMovement.setDataMovementInterfaceId(dataMovementResource.getDataMovementInterfaceId());
+        dataMovement.setAlternativeScpHostname(dataMovementResource.getAlternativeSCPHostName());
+        dataMovement.setSecurityProtocol(dataMovementResource.getSecurityProtocol().toString());
         dataMovement.setSshPort(dataMovementResource.getSshPort());
         return dataMovement;
     }
 
     public static GridFTPDataMovement getGridFTPDataMovementDescription (GridftpDataMovementResource dataMovementResource) throws AppCatalogException {
         GridFTPDataMovement dataMovement = new GridFTPDataMovement();
-        dataMovement.setDataMovementDataID(dataMovementResource.getDataMoveID());
+        dataMovement.setDataMovementInterfaceId(dataMovementResource.getDataMovementInterfaceId());
         dataMovement.setSecurityProtocol(SecurityProtocol.valueOf(dataMovementResource.getSecurityProtocol()));
         GridftpEndpointResource endpointResource = new GridftpEndpointResource();
-        List<Resource> endpoints = endpointResource.get(AbstractResource.GridFTPDMEPConstants.DATA_MOVE_ID, dataMovementResource.getDataMoveID());
+        List<Resource> endpoints = endpointResource.get(AbstractResource.GridftpEndpointConstants.DATA_MOVEMENT_INTERFACE_ID, dataMovementResource.getDataMovementInterfaceId());
         if (endpoints != null && !endpoints.isEmpty()){
-            dataMovement.setGridFTPEndPoint(getGridFTPDMEPList(endpoints));
+            dataMovement.setGridFTPEndPoints(getGridFTPDMEPList(endpoints));
         }
         return dataMovement;
     }
 
+    public static GridftpDataMovementResource getGridFTPDataMovementDescription (GridFTPDataMovement dataMovementResource) throws AppCatalogException {
+    	GridftpDataMovementResource dataMovement = new GridftpDataMovementResource();
+        dataMovement.setDataMovementInterfaceId(dataMovementResource.getDataMovementInterfaceId());
+        dataMovement.setSecurityProtocol(dataMovementResource.getSecurityProtocol().toString());
+        return dataMovement;
+    }
+    
     public static List<String> getGridFTPDMEPList (List<Resource> endpoints){
         List<String> list = new ArrayList<String>();
         for (Resource resource : endpoints){
@@ -217,85 +376,78 @@ public class AppCatalogThriftConversion {
         }
         return list;
     }
-
-    public static List<GSISSHJobSubmission> getGSISSHSubmissionList (List<Resource> resources) throws AppCatalogException {
-        List<GSISSHJobSubmission> list = new ArrayList<GSISSHJobSubmission>();
-        for (Resource resource : resources){
-            list.add(getGSISSHSubmissionDescription((GSISSHSubmissionResource) resource));
-        }
-        return list;
-    }
-
-    public static List<GlobusJobSubmission> getGlobusSubmissionList (List<Resource> resources) throws AppCatalogException {
-        List<GlobusJobSubmission> list = new ArrayList<GlobusJobSubmission>();
-        for (Resource resource : resources){
-            list.add(getGlobusJobSubmissionDescription((GlobusJobSubmissionResource) resource));
-        }
-        return list;
-    }
-
-    public static List<SSHJobSubmission> getSSHSubmissionList (List<Resource> resources) throws AppCatalogException {
-        List<SSHJobSubmission> list = new ArrayList<SSHJobSubmission>();
-        for (Resource resource : resources){
-            list.add(getSSHJobSubmissionDescription((SshJobSubmissionResource) resource));
-        }
-        return list;
-    }
-
-    public static List<GridFTPDataMovement> getGridFTPDataMovementList (List<Resource> resources) throws AppCatalogException {
-        List<GridFTPDataMovement> list = new ArrayList<GridFTPDataMovement>();
-        for (Resource resource : resources){
-            list.add(getGridFTPDataMovementDescription((GridftpDataMovementResource) resource));
-        }
-        return list;
-    }
-
-    public static List<SCPDataMovement> getSCPDataMovementList (List<Resource> resources) throws AppCatalogException {
-        List<SCPDataMovement> list = new ArrayList<SCPDataMovement>();
-        for (Resource resource : resources){
-            list.add(getSCPDataMovementDescription((ScpDataMovementResource) resource));
-        }
-        return list;
-    }
-
-    public static Set<String> getGSISSHExports (List<Resource> gsisshExportResources){
-        Set<String> exports = new HashSet<String>();
-        for (Resource resource : gsisshExportResources){
-            exports.add(((GSISSHExportResource) resource).getExport());
-        }
-        return exports;
-    }
-
-    public static List<String> getGSISSHPreJobCommands (List<Resource> gsisshPreJobCommandResources){
-        List<String> list = new ArrayList<String>();
-        for (Resource resource : gsisshPreJobCommandResources){
-            list.add(((GSISSHPreJobCommandResource) resource).getCommand());
-        }
-        return list;
-    }
-
-    public static List<String> getGSISSHPostJobCommands (List<Resource> gsisshPostJobCommandResources){
-        List<String> list = new ArrayList<String>();
-        for (Resource resource : gsisshPostJobCommandResources){
-            list.add(((GSISSHPostJobCommandResource) resource).getCommand());
-        }
-        return list;
-    }
-
-    public static GlobusJobSubmissionResource getGlobusJobSubmission (GlobusJobSubmission submission){
-        GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
-        resource.setSubmissionID(submission.getJobSubmissionDataID());
-        resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
-        resource.setResourceJobManager(submission.getResourceJobManager().toString());
-        return resource;
-    }
-
-    public static SshJobSubmissionResource getSSHJobSubmission (SSHJobSubmission submission){
-        SshJobSubmissionResource resource = new SshJobSubmissionResource();
-        resource.setSubmissionID(submission.getJobSubmissionDataID());
-        resource.setResourceJobManager(submission.getResourceJobManager().toString());
-        return resource;
-    }
+//
+//    public static List<GSISSHJobSubmission> getGSISSHSubmissionList (List<Resource> resources) throws AppCatalogException {
+//        List<GSISSHJobSubmission> list = new ArrayList<GSISSHJobSubmission>();
+//        for (Resource resource : resources){
+//            list.add(getGSISSHSubmissionDescription((GSISSHSubmissionResource) resource));
+//        }
+//        return list;
+//    }
+//
+//    public static List<GlobusJobSubmission> getGlobusSubmissionList (List<Resource> resources) throws AppCatalogException {
+//        List<GlobusJobSubmission> list = new ArrayList<GlobusJobSubmission>();
+//        for (Resource resource : resources){
+//            list.add(getGlobusJobSubmissionDescription((GlobusJobSubmissionResource) resource));
+//        }
+//        return list;
+//    }
+//
+//    public static List<SSHJobSubmission> getSSHSubmissionList (List<Resource> resources) throws AppCatalogException {
+//        List<SSHJobSubmission> list = new ArrayList<SSHJobSubmission>();
+//        for (Resource resource : resources){
+//            list.add(getSSHJobSubmissionDescription((SshJobSubmissionResource) resource));
+//        }
+//        return list;
+//    }
+//
+//    public static List<GridFTPDataMovement> getGridFTPDataMovementList (List<Resource> resources) throws AppCatalogException {
+//        List<GridFTPDataMovement> list = new ArrayList<GridFTPDataMovement>();
+//        for (Resource resource : resources){
+//            list.add(getGridFTPDataMovementDescription((GridftpDataMovementResource) resource));
+//        }
+//        return list;
+//    }
+//
+//    public static List<SCPDataMovement> getSCPDataMovementList (List<Resource> resources) throws AppCatalogException {
+//        List<SCPDataMovement> list = new ArrayList<SCPDataMovement>();
+//        for (Resource resource : resources){
+//            list.add(getSCPDataMovementDescription((ScpDataMovementResource) resource));
+//        }
+//        return list;
+//    }
+//
+//    public static Set<String> getGSISSHExports (List<Resource> gsisshExportResources){
+//        Set<String> exports = new HashSet<String>();
+//        for (Resource resource : gsisshExportResources){
+//            exports.add(((GSISSHExportResource) resource).getExport());
+//        }
+//        return exports;
+//    }
+//
+//    public static List<String> getGSISSHPreJobCommands (List<Resource> gsisshPreJobCommandResources){
+//        List<String> list = new ArrayList<String>();
+//        for (Resource resource : gsisshPreJobCommandResources){
+//            list.add(((GSISSHPreJobCommandResource) resource).getCommand());
+//        }
+//        return list;
+//    }
+//
+//    public static List<String> getGSISSHPostJobCommands (List<Resource> gsisshPostJobCommandResources){
+//        List<String> list = new ArrayList<String>();
+//        for (Resource resource : gsisshPostJobCommandResources){
+//            list.add(((GSISSHPostJobCommandResource) resource).getCommand());
+//        }
+//        return list;
+//    }
+//
+//    public static GlobusJobSubmissionResource getGlobusJobSubmission (GlobusJobSubmission submission){
+//        GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
+//        resource.setSubmissionID(submission.getJobSubmissionDataID());
+//        resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
+//        resource.setResourceJobManager(submission.getResourceJobManager().toString());
+//        return resource;
+//    }
 
     public static ApplicationModule getApplicationModuleDesc (AppModuleResource resource){
         ApplicationModule module = new ApplicationModule();
@@ -397,7 +549,8 @@ public class AppCatalogThriftConversion {
         description.setComputeHostId(resource.getHostId());
         description.setExecutablePath(resource.getExecutablePath());
         description.setAppDeploymentDescription(resource.getAppDes());
-        description.setModuleLoadCmd(resource.getEnvModuleLoadCMD());
+        //TODO ModuleLoadCmds is a list now. need to create a table for this and the jpa layer
+//        description.setModuleLoadCmds(resource.getEnvModuleLoadCMD());
 
         LibraryPrepandPathResource prepandPathResource = new LibraryPrepandPathResource();
         List<Resource> libPrepandPaths = prepandPathResource.get(AbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, resource.getDeploymentId());
