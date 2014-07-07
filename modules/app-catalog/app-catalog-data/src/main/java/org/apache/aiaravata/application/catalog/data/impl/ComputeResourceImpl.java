@@ -202,7 +202,6 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
         try {
-    		addResourceJobManager(sshJobSubmission.getResourceJobManager());
         	sshJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("SSH"));
     		String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
     		SshJobSubmissionResource resource = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
