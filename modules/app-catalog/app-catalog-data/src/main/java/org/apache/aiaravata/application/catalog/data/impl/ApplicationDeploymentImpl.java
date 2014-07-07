@@ -65,11 +65,18 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             if (parallelism != null){
                 deploymentResource.setParallelism(parallelism.toString());
             }
-
-            //TODO
-//            deploymentResource.setEnvModuleLoadCMD(deploymentDescription.getModuleLoadCmd());
             deploymentResource.save();
             deploymentDescription.setAppDeploymentId(deploymentResource.getDeploymentId());
+
+            List<String> moduleLoadCmds = deploymentDescription.getModuleLoadCmds();
+            if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){
+                for (String cmd : moduleLoadCmds){
+                    ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
+                    cmdResource.setAppDeploymentId(deploymentDescription.getAppDeploymentId());
+                    cmdResource.setCmd(cmd);
+                    cmdResource.save();
+                }
+            }
 
             List<SetEnvPaths> libPrependPaths = deploymentDescription.getLibPrependPaths();
             if (libPrependPaths != null && !libPrependPaths.isEmpty()){
@@ -137,11 +144,22 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             if (updatedDeployment.getParallelism() != null){
                 deploymentResource.setParallelism(updatedDeployment.getParallelism().toString());
             }
-            //TODO
-            
-//            existingDep.setEnvModuleLoadCMD(updatedDeployment.getModuleLoadCmd());
+
             existingDep.save();
 
+            List<String> moduleLoadCmds = updatedDeployment.getModuleLoadCmds();
+            if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){
+                for (String cmd : moduleLoadCmds){
+                    ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, deploymentId);
+                    ids.put(AbstractResource.ModuleLoadCmdConstants.CMD, cmd);
+                    ModuleLoadCmdResource existingModuleLoad = (ModuleLoadCmdResource)cmdResource.get(ids);
+                    existingModuleLoad.setCmd(cmd);
+                    existingModuleLoad.setAppDeploymentResource(existingDep);
+                    existingModuleLoad.save();
+                }
+            }
             List<SetEnvPaths> libPrependPaths = updatedDeployment.getLibPrependPaths();
             if (libPrependPaths != null && !libPrependPaths.isEmpty()){
                 for (SetEnvPaths path : libPrependPaths){
