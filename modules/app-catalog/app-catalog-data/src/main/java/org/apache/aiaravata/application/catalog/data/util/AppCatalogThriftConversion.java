@@ -270,7 +270,9 @@ public class AppCatalogThriftConversion {
         resourceJobManager.setResourceJobManagerId(submission.getJobSubmissionInterfaceId());
         resource.setResourceJobManagerId(resourceJobManager.getResourceJobManagerId());
         resource.setResourceJobManagerResource(resourceJobManager);
-        resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
+        if (submission.getSecurityProtocol() != null){
+            resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
+        }
         resource.setSshPort(submission.getSshPort());
         return resource;
     }

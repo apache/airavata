@@ -41,6 +41,7 @@ public class ApplicationOutput implements Serializable {
     private String outputKeyType;
     @Column(name = "METADATA")
     private String metadata;
+    @Lob
     @Column(name = "VALUE")
     private String value;
 
