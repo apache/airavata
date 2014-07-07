@@ -204,7 +204,10 @@ public class ComputeResourceImpl implements ComputeResource {
         try {
     		addResourceJobManager(sshJobSubmission.getResourceJobManager());
         	sshJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("SSH"));
+    		String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
     		SshJobSubmissionResource resource = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
+    		resource.setResourceJobManagerId(resourceJobManagerId);
+    		resource.getResourceJobManagerResource().setResourceJobManagerId(resourceJobManagerId);
     		resource.save();
         	return resource.getJobSubmissionInterfaceId();
         }catch (Exception e) {
@@ -631,8 +634,10 @@ public class ComputeResourceImpl implements ComputeResource {
 	public String addLocalJobSubmission(LOCALSubmission localSubmission)
 			throws AppCatalogException {
 		localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));
-		addResourceJobManager(localSubmission.getResourceJobManager());
+		String resourceJobManagerId = addResourceJobManager(localSubmission.getResourceJobManager());
 		LocalSubmissionResource localJobSubmission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
+		localJobSubmission.setResourceJobManagerId(resourceJobManagerId);
+		localJobSubmission.getResourceJobManagerResource().setResourceJobManagerId(resourceJobManagerId);
     	localJobSubmission.save();
     	return localJobSubmission.getJobSubmissionInterfaceId();
 	}
