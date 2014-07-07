@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.GProfile;
+import org.airavata.appcatalog.cpi.GwyResourceProfile;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
@@ -40,16 +40,15 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayProfile;
 
 public class DocumentCreatorUtils {
 
-	public static void addNewComputeResourcePreference(GProfile gatewayProfile,
+	public static void addNewComputeResourcePreference(GwyResourceProfile gatewayProfile,
 			String gatewayID, String computeResourceId, String scratchLocation,
 			String allocationProjectNumber, boolean overridebyAiravata,
 			String preferredBatchQueue, String preferredJobSubmissionProtocol,
 			String preferredDataMovementProtocol) throws AppCatalogException {
-		GatewayProfile profile = null;
+        org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile profile = null;
 		boolean gatewayProfileExists=true;
 		try {
 			profile=gatewayProfile.getGatewayProfile(gatewayID);
@@ -57,7 +56,7 @@ public class DocumentCreatorUtils {
 			e.printStackTrace();
 		}
 		if (profile==null){
-			profile= new GatewayProfile();
+			profile= new org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile();
 			gatewayProfileExists=false;
 		}
 		profile.setGatewayID(gatewayID);

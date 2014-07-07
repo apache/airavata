@@ -24,5 +24,5 @@ public interface AppCatalog {
      * @return Gateway profile interface
      * @throws AppCatalogException
      */
-    GProfile getGatewayProfile() throws AppCatalogException;
+    GwyResourceProfile getGatewayProfile() throws AppCatalogException;
 }

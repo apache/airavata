@@ -24,7 +24,6 @@ package org.apache.airavata.persistance.registry.jpa.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayProfile;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ActionableGroup;
 import org.apache.airavata.model.workspace.experiment.AdvancedInputDataHandling;

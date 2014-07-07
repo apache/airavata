@@ -23,12 +23,8 @@ package org.apache.airavata.client.tools;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.ApplicationDeployment;
-import org.airavata.appcatalog.cpi.ApplicationInterface;
-import org.airavata.appcatalog.cpi.ComputeResource;
-import org.airavata.appcatalog.cpi.GProfile;
+import org.airavata.appcatalog.cpi.*;
+import org.airavata.appcatalog.cpi.GwyResourceProfile;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
@@ -58,7 +54,7 @@ public class DocumentCreatorNew {
 	private ComputeResource computeResource;
 	private ApplicationInterface applicationInterface;
 	private ApplicationDeployment applicationDeployment;
-	private GProfile gatewayProfile;
+	private GwyResourceProfile gatewayProfile;
 	
     public DocumentCreatorNew(AppCatalog appcatalog) throws AppCatalogException {
         this.appcatalog = appcatalog;
