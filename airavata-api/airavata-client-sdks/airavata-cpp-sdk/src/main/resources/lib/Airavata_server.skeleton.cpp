@@ -217,6 +217,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getApplicationOutputs\n");
   }
 
+  void getAvailableAppInterfaceComputeResources(std::vector<std::string> & _return, const std::string& appInterfaceId) {
+    // Your implementation goes here
+    printf("getAvailableAppInterfaceComputeResources\n");
+  }
+
   void registerComputeResource(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription) {
     // Your implementation goes here
     printf("registerComputeResource\n");
@@ -225,6 +230,11 @@ class AiravataHandler : virtual public AiravataIf {
   void getComputeResource( ::ComputeResourceDescription& _return, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("getComputeResource\n");
+  }
+
+  void getAllComputeResourceNames(std::map<std::string, std::string> & _return) {
+    // Your implementation goes here
+    printf("getAllComputeResourceNames\n");
   }
 
   bool updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription) {
@@ -317,7 +327,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteDataMovementInterface\n");
   }
 
-  void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile) {
+  bool registerGatewayResourceProfile(const  ::GatewayResourceProfile& gatewayResourceProfile) {
     // Your implementation goes here
     printf("registerGatewayResourceProfile\n");
   }

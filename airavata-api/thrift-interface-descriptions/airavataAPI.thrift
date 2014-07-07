@@ -732,6 +732,21 @@ service Airavata {
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
 
+  /**
+   * Fetch a list of all deployed Compute Hosts for a given application interfaces.
+   *
+   * @param appInterfaceId
+   *   The identifier for the requested application interface
+   *
+   * @return list<string>
+   *   Returns a list of available Resources. Deployments of each modules listed within the interfaces will be listed.
+   *
+  */
+  list<string> getAvailableAppInterfaceComputeResources(1: required string appInterfaceId)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
 /*
  * Compute Resource
  *
@@ -764,6 +779,18 @@ service Airavata {
    *
   */
   computeResourceModel.ComputeResourceDescription getComputeResource(1: required string computeResourceId)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch all registered Compute Resources.
+   *
+   * @return A map of registered compute resource id's and thier corresponding hostnames.
+   *    Compute Resource Object created from the datamodel..
+   *
+  */
+  map<string, string> getAllComputeResourceNames()
       	throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
@@ -1128,12 +1155,14 @@ service Airavata {
    *
    * @param gatewayResourceProfile
    *    Gateway Resource Profile Object.
+   *    The GatewayID should be obtained from Airavata gateway registration and passed to register a corresponding
+   *      resource profile.
    *
-   * @return gatewayID
-   *   Returns a server-side generated airavata compute resource globally unique identifier.
+   * @return status
+   *   Returns a success/failure of the update.
    *
   */
-  string registerGatewayResourceProfile(
+  bool registerGatewayResourceProfile(
                     1: required gatewayResourceProfileModel.GatewayResourceProfile gatewayResourceProfile)
     	throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.AiravataClientException ace,
