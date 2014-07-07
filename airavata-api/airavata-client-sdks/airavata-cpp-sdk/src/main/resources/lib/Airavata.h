@@ -74,6 +74,15 @@ class AiravataIf {
   virtual bool changeDataMovementPriorities(const std::map<std::string, int32_t> & dataMovementPriorityMap) = 0;
   virtual bool deleteJobSubmissionInterface(const std::string& jobSubmissionInterfaceId) = 0;
   virtual bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId) = 0;
+  virtual void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile) = 0;
+  virtual void getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID) = 0;
+  virtual bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile) = 0;
+  virtual bool deleteGatewayResourceProfile(const std::string& gatewayID) = 0;
+  virtual bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference) = 0;
+  virtual void getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId) = 0;
+  virtual void getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return, const std::string& gatewayID) = 0;
+  virtual bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference) = 0;
+  virtual bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId) = 0;
 };
 
 class AiravataIfFactory {
@@ -302,6 +311,38 @@ class AiravataNull : virtual public AiravataIf {
     return _return;
   }
   bool deleteDataMovementInterface(const std::string& /* dataMovementInterfaceId */) {
+    bool _return = false;
+    return _return;
+  }
+  void registerGatewayResourceProfile(std::string& /* _return */, const  ::GatewayResourceProfile& /* gatewayResourceProfile */) {
+    return;
+  }
+  void getGatewayResourceProfile( ::GatewayResourceProfile& /* _return */, const std::string& /* gatewayID */) {
+    return;
+  }
+  bool updateGatewayResourceProfile(const std::string& /* gatewayID */, const  ::GatewayResourceProfile& /* gatewayResourceProfile */) {
+    bool _return = false;
+    return _return;
+  }
+  bool deleteGatewayResourceProfile(const std::string& /* gatewayID */) {
+    bool _return = false;
+    return _return;
+  }
+  bool addGatewayComputeResourcePreference(const std::string& /* gatewayID */, const std::string& /* computeResourceId */, const  ::ComputeResourcePreference& /* computeResourcePreference */) {
+    bool _return = false;
+    return _return;
+  }
+  void getGatewayComputeResourcePreference( ::ComputeResourcePreference& /* _return */, const std::string& /* gatewayID */, const std::string& /* computeResourceId */) {
+    return;
+  }
+  void getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & /* _return */, const std::string& /* gatewayID */) {
+    return;
+  }
+  bool updateGatewayComputeResourcePreference(const std::string& /* gatewayID */, const std::string& /* computeResourceId */, const  ::ComputeResourcePreference& /* computeResourcePreference */) {
+    bool _return = false;
+    return _return;
+  }
+  bool deleteGatewayComputeResourcePreference(const std::string& /* gatewayID */, const std::string& /* computeResourceId */) {
     bool _return = false;
     return _return;
   }
@@ -8266,6 +8307,1250 @@ class Airavata_deleteDataMovementInterface_presult {
 
 };
 
+
+class Airavata_registerGatewayResourceProfile_args {
+ public:
+
+  Airavata_registerGatewayResourceProfile_args() {
+  }
+
+  virtual ~Airavata_registerGatewayResourceProfile_args() throw() {}
+
+   ::GatewayResourceProfile gatewayResourceProfile;
+
+  void __set_gatewayResourceProfile(const  ::GatewayResourceProfile& val) {
+    gatewayResourceProfile = val;
+  }
+
+  bool operator == (const Airavata_registerGatewayResourceProfile_args & rhs) const
+  {
+    if (!(gatewayResourceProfile == rhs.gatewayResourceProfile))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerGatewayResourceProfile_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerGatewayResourceProfile_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_registerGatewayResourceProfile_pargs {
+ public:
+
+
+  virtual ~Airavata_registerGatewayResourceProfile_pargs() throw() {}
+
+  const  ::GatewayResourceProfile* gatewayResourceProfile;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerGatewayResourceProfile_result__isset {
+  _Airavata_registerGatewayResourceProfile_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_registerGatewayResourceProfile_result__isset;
+
+class Airavata_registerGatewayResourceProfile_result {
+ public:
+
+  Airavata_registerGatewayResourceProfile_result() : success() {
+  }
+
+  virtual ~Airavata_registerGatewayResourceProfile_result() throw() {}
+
+  std::string success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerGatewayResourceProfile_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_registerGatewayResourceProfile_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerGatewayResourceProfile_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerGatewayResourceProfile_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerGatewayResourceProfile_presult__isset {
+  _Airavata_registerGatewayResourceProfile_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_registerGatewayResourceProfile_presult__isset;
+
+class Airavata_registerGatewayResourceProfile_presult {
+ public:
+
+
+  virtual ~Airavata_registerGatewayResourceProfile_presult() throw() {}
+
+  std::string* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerGatewayResourceProfile_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getGatewayResourceProfile_args {
+ public:
+
+  Airavata_getGatewayResourceProfile_args() : gatewayID() {
+  }
+
+  virtual ~Airavata_getGatewayResourceProfile_args() throw() {}
+
+  std::string gatewayID;
+
+  void __set_gatewayID(const std::string& val) {
+    gatewayID = val;
+  }
+
+  bool operator == (const Airavata_getGatewayResourceProfile_args & rhs) const
+  {
+    if (!(gatewayID == rhs.gatewayID))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGatewayResourceProfile_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGatewayResourceProfile_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getGatewayResourceProfile_pargs {
+ public:
+
+
+  virtual ~Airavata_getGatewayResourceProfile_pargs() throw() {}
+
+  const std::string* gatewayID;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGatewayResourceProfile_result__isset {
+  _Airavata_getGatewayResourceProfile_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getGatewayResourceProfile_result__isset;
+
+class Airavata_getGatewayResourceProfile_result {
+ public:
+
+  Airavata_getGatewayResourceProfile_result() {
+  }
+
+  virtual ~Airavata_getGatewayResourceProfile_result() throw() {}
+
+   ::GatewayResourceProfile success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getGatewayResourceProfile_result__isset __isset;
+
+  void __set_success(const  ::GatewayResourceProfile& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getGatewayResourceProfile_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGatewayResourceProfile_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGatewayResourceProfile_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGatewayResourceProfile_presult__isset {
+  _Airavata_getGatewayResourceProfile_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getGatewayResourceProfile_presult__isset;
+
+class Airavata_getGatewayResourceProfile_presult {
+ public:
+
+
+  virtual ~Airavata_getGatewayResourceProfile_presult() throw() {}
+
+   ::GatewayResourceProfile* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getGatewayResourceProfile_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_updateGatewayResourceProfile_args {
+ public:
+
+  Airavata_updateGatewayResourceProfile_args() : gatewayID() {
+  }
+
+  virtual ~Airavata_updateGatewayResourceProfile_args() throw() {}
+
+  std::string gatewayID;
+   ::GatewayResourceProfile gatewayResourceProfile;
+
+  void __set_gatewayID(const std::string& val) {
+    gatewayID = val;
+  }
+
+  void __set_gatewayResourceProfile(const  ::GatewayResourceProfile& val) {
+    gatewayResourceProfile = val;
+  }
+
+  bool operator == (const Airavata_updateGatewayResourceProfile_args & rhs) const
+  {
+    if (!(gatewayID == rhs.gatewayID))
+      return false;
+    if (!(gatewayResourceProfile == rhs.gatewayResourceProfile))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateGatewayResourceProfile_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateGatewayResourceProfile_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_updateGatewayResourceProfile_pargs {
+ public:
+
+
+  virtual ~Airavata_updateGatewayResourceProfile_pargs() throw() {}
+
+  const std::string* gatewayID;
+  const  ::GatewayResourceProfile* gatewayResourceProfile;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateGatewayResourceProfile_result__isset {
+  _Airavata_updateGatewayResourceProfile_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateGatewayResourceProfile_result__isset;
+
+class Airavata_updateGatewayResourceProfile_result {
+ public:
+
+  Airavata_updateGatewayResourceProfile_result() : success(0) {
+  }
+
+  virtual ~Airavata_updateGatewayResourceProfile_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateGatewayResourceProfile_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_updateGatewayResourceProfile_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateGatewayResourceProfile_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateGatewayResourceProfile_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateGatewayResourceProfile_presult__isset {
+  _Airavata_updateGatewayResourceProfile_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateGatewayResourceProfile_presult__isset;
+
+class Airavata_updateGatewayResourceProfile_presult {
+ public:
+
+
+  virtual ~Airavata_updateGatewayResourceProfile_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateGatewayResourceProfile_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_deleteGatewayResourceProfile_args {
+ public:
+
+  Airavata_deleteGatewayResourceProfile_args() : gatewayID() {
+  }
+
+  virtual ~Airavata_deleteGatewayResourceProfile_args() throw() {}
+
+  std::string gatewayID;
+
+  void __set_gatewayID(const std::string& val) {
+    gatewayID = val;
+  }
+
+  bool operator == (const Airavata_deleteGatewayResourceProfile_args & rhs) const
+  {
+    if (!(gatewayID == rhs.gatewayID))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteGatewayResourceProfile_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteGatewayResourceProfile_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_deleteGatewayResourceProfile_pargs {
+ public:
+
+
+  virtual ~Airavata_deleteGatewayResourceProfile_pargs() throw() {}
+
+  const std::string* gatewayID;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteGatewayResourceProfile_result__isset {
+  _Airavata_deleteGatewayResourceProfile_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteGatewayResourceProfile_result__isset;
+
+class Airavata_deleteGatewayResourceProfile_result {
+ public:
+
+  Airavata_deleteGatewayResourceProfile_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteGatewayResourceProfile_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteGatewayResourceProfile_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_deleteGatewayResourceProfile_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteGatewayResourceProfile_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteGatewayResourceProfile_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteGatewayResourceProfile_presult__isset {
+  _Airavata_deleteGatewayResourceProfile_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteGatewayResourceProfile_presult__isset;
+
+class Airavata_deleteGatewayResourceProfile_presult {
+ public:
+
+
+  virtual ~Airavata_deleteGatewayResourceProfile_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteGatewayResourceProfile_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_addGatewayComputeResourcePreference_args {
+ public:
+
+  Airavata_addGatewayComputeResourcePreference_args() : gatewayID(), computeResourceId() {
+  }
+
+  virtual ~Airavata_addGatewayComputeResourcePreference_args() throw() {}
+
+  std::string gatewayID;
+  std::string computeResourceId;
+   ::ComputeResourcePreference computeResourcePreference;
+
+  void __set_gatewayID(const std::string& val) {
+    gatewayID = val;
+  }
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_computeResourcePreference(const  ::ComputeResourcePreference& val) {
+    computeResourcePreference = val;
+  }
+
+  bool operator == (const Airavata_addGatewayComputeResourcePreference_args & rhs) const
+  {
+    if (!(gatewayID == rhs.gatewayID))
+      return false;
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(computeResourcePreference == rhs.computeResourcePreference))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addGatewayComputeResourcePreference_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addGatewayComputeResourcePreference_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_addGatewayComputeResourcePreference_pargs {
+ public:
+
+
+  virtual ~Airavata_addGatewayComputeResourcePreference_pargs() throw() {}
+
+  const std::string* gatewayID;
+  const std::string* computeResourceId;
+  const  ::ComputeResourcePreference* computeResourcePreference;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addGatewayComputeResourcePreference_result__isset {
+  _Airavata_addGatewayComputeResourcePreference_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addGatewayComputeResourcePreference_result__isset;
+
+class Airavata_addGatewayComputeResourcePreference_result {
+ public:
+
+  Airavata_addGatewayComputeResourcePreference_result() : success(0) {
+  }
+
+  virtual ~Airavata_addGatewayComputeResourcePreference_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addGatewayComputeResourcePreference_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_addGatewayComputeResourcePreference_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addGatewayComputeResourcePreference_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addGatewayComputeResourcePreference_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addGatewayComputeResourcePreference_presult__isset {
+  _Airavata_addGatewayComputeResourcePreference_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addGatewayComputeResourcePreference_presult__isset;
+
+class Airavata_addGatewayComputeResourcePreference_presult {
+ public:
+
+
+  virtual ~Airavata_addGatewayComputeResourcePreference_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addGatewayComputeResourcePreference_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getGatewayComputeResourcePreference_args {
+ public:
+
+  Airavata_getGatewayComputeResourcePreference_args() : gatewayID(), computeResourceId() {
+  }
+
+  virtual ~Airavata_getGatewayComputeResourcePreference_args() throw() {}
+
+  std::string gatewayID;
+  std::string computeResourceId;
+
+  void __set_gatewayID(const std::string& val) {
+    gatewayID = val;
+  }
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  bool operator == (const Airavata_getGatewayComputeResourcePreference_args & rhs) const
+  {
+    if (!(gatewayID == rhs.gatewayID))
+      return false;
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGatewayComputeResourcePreference_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGatewayComputeResourcePreference_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getGatewayComputeResourcePreference_pargs {
+ public:
+
+
+  virtual ~Airavata_getGatewayComputeResourcePreference_pargs() throw() {}
+
+  const std::string* gatewayID;
+  const std::string* computeResourceId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGatewayComputeResourcePreference_result__isset {
+  _Airavata_getGatewayComputeResourcePreference_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getGatewayComputeResourcePreference_result__isset;
+
+class Airavata_getGatewayComputeResourcePreference_result {
+ public:
+
+  Airavata_getGatewayComputeResourcePreference_result() {
+  }
+
+  virtual ~Airavata_getGatewayComputeResourcePreference_result() throw() {}
+
+   ::ComputeResourcePreference success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getGatewayComputeResourcePreference_result__isset __isset;
+
+  void __set_success(const  ::ComputeResourcePreference& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getGatewayComputeResourcePreference_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGatewayComputeResourcePreference_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGatewayComputeResourcePreference_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGatewayComputeResourcePreference_presult__isset {
+  _Airavata_getGatewayComputeResourcePreference_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getGatewayComputeResourcePreference_presult__isset;
+
+class Airavata_getGatewayComputeResourcePreference_presult {
+ public:
+
+
+  virtual ~Airavata_getGatewayComputeResourcePreference_presult() throw() {}
+
+   ::ComputeResourcePreference* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getGatewayComputeResourcePreference_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getAllGatewayComputeResourcePreferences_args {
+ public:
+
+  Airavata_getAllGatewayComputeResourcePreferences_args() : gatewayID() {
+  }
+
+  virtual ~Airavata_getAllGatewayComputeResourcePreferences_args() throw() {}
+
+  std::string gatewayID;
+
+  void __set_gatewayID(const std::string& val) {
+    gatewayID = val;
+  }
+
+  bool operator == (const Airavata_getAllGatewayComputeResourcePreferences_args & rhs) const
+  {
+    if (!(gatewayID == rhs.gatewayID))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllGatewayComputeResourcePreferences_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllGatewayComputeResourcePreferences_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllGatewayComputeResourcePreferences_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllGatewayComputeResourcePreferences_pargs() throw() {}
+
+  const std::string* gatewayID;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllGatewayComputeResourcePreferences_result__isset {
+  _Airavata_getAllGatewayComputeResourcePreferences_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllGatewayComputeResourcePreferences_result__isset;
+
+class Airavata_getAllGatewayComputeResourcePreferences_result {
+ public:
+
+  Airavata_getAllGatewayComputeResourcePreferences_result() {
+  }
+
+  virtual ~Airavata_getAllGatewayComputeResourcePreferences_result() throw() {}
+
+  std::vector< ::ComputeResourcePreference>  success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllGatewayComputeResourcePreferences_result__isset __isset;
+
+  void __set_success(const std::vector< ::ComputeResourcePreference> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getAllGatewayComputeResourcePreferences_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllGatewayComputeResourcePreferences_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllGatewayComputeResourcePreferences_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllGatewayComputeResourcePreferences_presult__isset {
+  _Airavata_getAllGatewayComputeResourcePreferences_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllGatewayComputeResourcePreferences_presult__isset;
+
+class Airavata_getAllGatewayComputeResourcePreferences_presult {
+ public:
+
+
+  virtual ~Airavata_getAllGatewayComputeResourcePreferences_presult() throw() {}
+
+  std::vector< ::ComputeResourcePreference> * success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllGatewayComputeResourcePreferences_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_updateGatewayComputeResourcePreference_args {
+ public:
+
+  Airavata_updateGatewayComputeResourcePreference_args() : gatewayID(), computeResourceId() {
+  }
+
+  virtual ~Airavata_updateGatewayComputeResourcePreference_args() throw() {}
+
+  std::string gatewayID;
+  std::string computeResourceId;
+   ::ComputeResourcePreference computeResourcePreference;
+
+  void __set_gatewayID(const std::string& val) {
+    gatewayID = val;
+  }
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_computeResourcePreference(const  ::ComputeResourcePreference& val) {
+    computeResourcePreference = val;
+  }
+
+  bool operator == (const Airavata_updateGatewayComputeResourcePreference_args & rhs) const
+  {
+    if (!(gatewayID == rhs.gatewayID))
+      return false;
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(computeResourcePreference == rhs.computeResourcePreference))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateGatewayComputeResourcePreference_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateGatewayComputeResourcePreference_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_updateGatewayComputeResourcePreference_pargs {
+ public:
+
+
+  virtual ~Airavata_updateGatewayComputeResourcePreference_pargs() throw() {}
+
+  const std::string* gatewayID;
+  const std::string* computeResourceId;
+  const  ::ComputeResourcePreference* computeResourcePreference;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateGatewayComputeResourcePreference_result__isset {
+  _Airavata_updateGatewayComputeResourcePreference_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateGatewayComputeResourcePreference_result__isset;
+
+class Airavata_updateGatewayComputeResourcePreference_result {
+ public:
+
+  Airavata_updateGatewayComputeResourcePreference_result() : success(0) {
+  }
+
+  virtual ~Airavata_updateGatewayComputeResourcePreference_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateGatewayComputeResourcePreference_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_updateGatewayComputeResourcePreference_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateGatewayComputeResourcePreference_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateGatewayComputeResourcePreference_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateGatewayComputeResourcePreference_presult__isset {
+  _Airavata_updateGatewayComputeResourcePreference_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateGatewayComputeResourcePreference_presult__isset;
+
+class Airavata_updateGatewayComputeResourcePreference_presult {
+ public:
+
+
+  virtual ~Airavata_updateGatewayComputeResourcePreference_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateGatewayComputeResourcePreference_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_deleteGatewayComputeResourcePreference_args {
+ public:
+
+  Airavata_deleteGatewayComputeResourcePreference_args() : gatewayID(), computeResourceId() {
+  }
+
+  virtual ~Airavata_deleteGatewayComputeResourcePreference_args() throw() {}
+
+  std::string gatewayID;
+  std::string computeResourceId;
+
+  void __set_gatewayID(const std::string& val) {
+    gatewayID = val;
+  }
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  bool operator == (const Airavata_deleteGatewayComputeResourcePreference_args & rhs) const
+  {
+    if (!(gatewayID == rhs.gatewayID))
+      return false;
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteGatewayComputeResourcePreference_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteGatewayComputeResourcePreference_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_deleteGatewayComputeResourcePreference_pargs {
+ public:
+
+
+  virtual ~Airavata_deleteGatewayComputeResourcePreference_pargs() throw() {}
+
+  const std::string* gatewayID;
+  const std::string* computeResourceId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteGatewayComputeResourcePreference_result__isset {
+  _Airavata_deleteGatewayComputeResourcePreference_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteGatewayComputeResourcePreference_result__isset;
+
+class Airavata_deleteGatewayComputeResourcePreference_result {
+ public:
+
+  Airavata_deleteGatewayComputeResourcePreference_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteGatewayComputeResourcePreference_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteGatewayComputeResourcePreference_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_deleteGatewayComputeResourcePreference_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteGatewayComputeResourcePreference_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteGatewayComputeResourcePreference_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteGatewayComputeResourcePreference_presult__isset {
+  _Airavata_deleteGatewayComputeResourcePreference_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteGatewayComputeResourcePreference_presult__isset;
+
+class Airavata_deleteGatewayComputeResourcePreference_presult {
+ public:
+
+
+  virtual ~Airavata_deleteGatewayComputeResourcePreference_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteGatewayComputeResourcePreference_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AiravataClient : virtual public AiravataIf {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -8463,6 +9748,33 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId);
   void send_deleteDataMovementInterface(const std::string& dataMovementInterfaceId);
   bool recv_deleteDataMovementInterface();
+  void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile);
+  void send_registerGatewayResourceProfile(const  ::GatewayResourceProfile& gatewayResourceProfile);
+  void recv_registerGatewayResourceProfile(std::string& _return);
+  void getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID);
+  void send_getGatewayResourceProfile(const std::string& gatewayID);
+  void recv_getGatewayResourceProfile( ::GatewayResourceProfile& _return);
+  bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile);
+  void send_updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile);
+  bool recv_updateGatewayResourceProfile();
+  bool deleteGatewayResourceProfile(const std::string& gatewayID);
+  void send_deleteGatewayResourceProfile(const std::string& gatewayID);
+  bool recv_deleteGatewayResourceProfile();
+  bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference);
+  void send_addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference);
+  bool recv_addGatewayComputeResourcePreference();
+  void getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId);
+  void send_getGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId);
+  void recv_getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return);
+  void getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return, const std::string& gatewayID);
+  void send_getAllGatewayComputeResourcePreferences(const std::string& gatewayID);
+  void recv_getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return);
+  bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference);
+  void send_updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference);
+  bool recv_updateGatewayComputeResourcePreference();
+  bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId);
+  void send_deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId);
+  bool recv_deleteGatewayComputeResourcePreference();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -8537,6 +9849,15 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_changeDataMovementPriorities(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteJobSubmissionInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteDataMovementInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_registerGatewayResourceProfile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getGatewayResourceProfile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateGatewayResourceProfile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteGatewayResourceProfile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addGatewayComputeResourcePreference(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getGatewayComputeResourcePreference(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllGatewayComputeResourcePreferences(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateGatewayComputeResourcePreference(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteGatewayComputeResourcePreference(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
@@ -8599,6 +9920,15 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["changeDataMovementPriorities"] = &AiravataProcessor::process_changeDataMovementPriorities;
     processMap_["deleteJobSubmissionInterface"] = &AiravataProcessor::process_deleteJobSubmissionInterface;
     processMap_["deleteDataMovementInterface"] = &AiravataProcessor::process_deleteDataMovementInterface;
+    processMap_["registerGatewayResourceProfile"] = &AiravataProcessor::process_registerGatewayResourceProfile;
+    processMap_["getGatewayResourceProfile"] = &AiravataProcessor::process_getGatewayResourceProfile;
+    processMap_["updateGatewayResourceProfile"] = &AiravataProcessor::process_updateGatewayResourceProfile;
+    processMap_["deleteGatewayResourceProfile"] = &AiravataProcessor::process_deleteGatewayResourceProfile;
+    processMap_["addGatewayComputeResourcePreference"] = &AiravataProcessor::process_addGatewayComputeResourcePreference;
+    processMap_["getGatewayComputeResourcePreference"] = &AiravataProcessor::process_getGatewayComputeResourcePreference;
+    processMap_["getAllGatewayComputeResourcePreferences"] = &AiravataProcessor::process_getAllGatewayComputeResourcePreferences;
+    processMap_["updateGatewayComputeResourcePreference"] = &AiravataProcessor::process_updateGatewayComputeResourcePreference;
+    processMap_["deleteGatewayComputeResourcePreference"] = &AiravataProcessor::process_deleteGatewayComputeResourcePreference;
   }
 
   virtual ~AiravataProcessor() {}
@@ -9184,6 +10514,91 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->deleteDataMovementInterface(dataMovementInterfaceId);
     }
     return ifaces_[i]->deleteDataMovementInterface(dataMovementInterfaceId);
+  }
+
+  void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->registerGatewayResourceProfile(_return, gatewayResourceProfile);
+    }
+    ifaces_[i]->registerGatewayResourceProfile(_return, gatewayResourceProfile);
+    return;
+  }
+
+  void getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getGatewayResourceProfile(_return, gatewayID);
+    }
+    ifaces_[i]->getGatewayResourceProfile(_return, gatewayID);
+    return;
+  }
+
+  bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
+    }
+    return ifaces_[i]->updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
+  }
+
+  bool deleteGatewayResourceProfile(const std::string& gatewayID) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteGatewayResourceProfile(gatewayID);
+    }
+    return ifaces_[i]->deleteGatewayResourceProfile(gatewayID);
+  }
+
+  bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->addGatewayComputeResourcePreference(gatewayID, computeResourceId, computeResourcePreference);
+    }
+    return ifaces_[i]->addGatewayComputeResourcePreference(gatewayID, computeResourceId, computeResourcePreference);
+  }
+
+  void getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getGatewayComputeResourcePreference(_return, gatewayID, computeResourceId);
+    }
+    ifaces_[i]->getGatewayComputeResourcePreference(_return, gatewayID, computeResourceId);
+    return;
+  }
+
+  void getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return, const std::string& gatewayID) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllGatewayComputeResourcePreferences(_return, gatewayID);
+    }
+    ifaces_[i]->getAllGatewayComputeResourcePreferences(_return, gatewayID);
+    return;
+  }
+
+  bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateGatewayComputeResourcePreference(gatewayID, computeResourceId, computeResourcePreference);
+    }
+    return ifaces_[i]->updateGatewayComputeResourcePreference(gatewayID, computeResourceId, computeResourcePreference);
+  }
+
+  bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
+    }
+    return ifaces_[i]->deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
   }
 
 };

@@ -45,6 +45,8 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
@@ -1871,6 +1873,122 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteDataMovementInterface(String dataMovementInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Register a Gateway Resource Profile.
+     *
+     * @param gatewayResourceProfile Gateway Resource Profile Object.
+     * @return gatewayID
+     * Returns a server-side generated airavata compute resource globally unique identifier.
+     */
+    @Override
+    public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Fetch the given Gateway Resource Profile.
+     *
+     * @param gatewayID The identifier for the requested gateway resource
+     * @return gatewayResourceProfile
+     * Gateway Resource Profile Object.
+     */
+    @Override
+    public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Update a Gateway Resource Profile.
+     *
+     * @param gatewayID              The identifier for the requested gateway resource to be updated.
+     * @param gatewayResourceProfile Gateway Resource Profile Object.
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Delete the given Gateway Resource Profile.
+     *
+     * @param gatewayID The identifier for the requested gateway resource to be deleted.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteGatewayResourceProfile(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Add a Compute Resource Preference to a registered gateway profile.
+     *
+     * @param gatewayID                 The identifier for the gateway profile to be added.
+     * @param computeResourceId         Preferences related to a particular compute resource
+     * @param computeResourcePreference The ComputeResourcePreference object to be added to the resource profile.
+     * @return status
+     * Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+     * Instead an update should be used.
+     */
+    @Override
+    public boolean addGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Fetch a Compute Resource Preference of a registered gateway profile.
+     *
+     * @param gatewayID         The identifier for the gateway profile to be requested
+     * @param computeResourceId Preferences related to a particular compute resource
+     * @return computeResourcePreference
+     * Returns the ComputeResourcePreference object.
+     */
+    @Override
+    public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Fetch all Compute Resource Preferences of a registered gateway profile.
+     *
+     * @param gatewayID The identifier for the gateway profile to be requested
+     * @return computeResourcePreference
+     * Returns the ComputeResourcePreference object.
+     */
+    @Override
+    public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Update a Compute Resource Preference to a registered gateway profile.
+     *
+     * @param gatewayID                 The identifier for the gateway profile to be updated.
+     * @param computeResourceId         Preferences related to a particular compute resource
+     * @param computeResourcePreference The ComputeResourcePreference object to be updated to the resource profile.
+     * @return status
+     * Returns a success/failure of the updation.
+     */
+    @Override
+    public boolean updateGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Delete the Compute Resource Preference of a registered gateway profile.
+     *
+     * @param gatewayID         The identifier for the gateway profile to be deleted.
+     * @param computeResourceId Preferences related to a particular compute resource
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return false;
     }
 
