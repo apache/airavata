@@ -170,6 +170,12 @@ public class ComputeResourceTest {
             List<ComputeResourceDescription> computeResourceList = computeResource.getComputeResourceList(cfilters);
             System.out.println("**********Size of compute resources ************* : " +  computeResourceList.size());
 
+            List<ComputeResourceDescription> allComputeResourceList = computeResource.getAllComputeResourceList();
+            System.out.println("**********Size of all compute resources ************* : " +  allComputeResourceList.size());
+
+            List<String> allComputeResourceIdList = computeResource.getAllComputeResourceIdList();
+            System.out.println("**********Size of all compute resources ids ************* : " +  allComputeResourceIdList.size());
+
 //            Map<String, String> globusfilters = new HashMap<String, String>();
 //            globusfilters.put(AbstractResource.GlobusJobSubmissionConstants.RESOURCE_JOB_MANAGER, ResourceJobManager.PBS.toString());
 //            List<GlobusJobSubmission> gList = computeResource.getGlobusJobSubmissionList(globusfilters);

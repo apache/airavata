@@ -22,7 +22,11 @@
 package org.apache.airavata.app.catalog.test;
 
 import org.airavata.appcatalog.cpi.*;
+import org.airavata.appcatalog.cpi.ApplicationDeployment;
+import org.airavata.appcatalog.cpi.ApplicationInterface;
+import org.airavata.appcatalog.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.aiaravata.application.catalog.data.model.*;
 import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.app.catalog.test.util.Initialize;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -121,6 +125,13 @@ public class AppDeploymentTest {
         hostFilter.put(AbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, hostId);
         List<ApplicationDeploymentDescription> applicationDeployementsForHost = appDep.getApplicationDeployements(hostFilter);
         System.out.println("******** Size of App deployments for host *********** : " + applicationDeployementsForHost.size());
+
+        List<String> allApplicationDeployementIds = appDep.getAllApplicationDeployementIds();
+        System.out.println("******** Size of all App deployments ids *********** : " + allApplicationDeployementIds.size());
+
+        List<ApplicationDeploymentDescription> allApplicationDeployements = appDep.getAllApplicationDeployements();
+        System.out.println("******** Size of all App deployments *********** : " + allApplicationDeployements.size());
+
         assertTrue("App interface saved successfully", app != null);
     }
 

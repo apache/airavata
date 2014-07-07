@@ -132,8 +132,18 @@ public class GridftpEndpointResource extends AbstractResource {
 		}
 		return gridftpEndpointResources;
 	}
-	
-	@Override
+
+    @Override
+    public List<Resource> getAll() throws AppCatalogException {
+        return null;
+    }
+
+    @Override
+    public List<String> getAllIds() throws AppCatalogException {
+        return null;
+    }
+
+    @Override
 	public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
 		List<String> gridftpEndpointResourceIDs = new ArrayList<String>();
 		EntityManager em = null;
