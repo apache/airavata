@@ -43,7 +43,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
@@ -1534,6 +1534,81 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteComputeResource(String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Add a Local Job Submission details to a compute resource
+     * App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+     *
+     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+     * @param localSubmission   The LOCALSubmission object to be added to the resource.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean addLocalSubmissionDetails(String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Add a SSH Job Submission details to a compute resource
+     * App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+     *
+     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+     * @param sshJobSubmission  The SSHJobSubmission object to be added to the resource.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean addSSHJobSubmissionDetails(String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Add a Local data moevement details to a compute resource
+     * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+     *
+     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+     * @param localDataMovement The LOCALDataMovement object to be added to the resource.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean addLocalDataMovementDetails(String computeResourceId, int priorityOrder, LOCALDataMovement localDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Add a SCP data moevement details to a compute resource
+     * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+     *
+     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+     * @param scpDataMovement   The SCPDataMovement object to be added to the resource.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean addSCPDataMovementDetails(String computeResourceId, int priorityOrder, SCPDataMovement scpDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Add a GridFTP data moevement details to a compute resource
+     * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+     *
+     * @param computeResourceId   The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param priorityOrder       Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+     * @param gridFTPDataMovement The GridFTPDataMovement object to be added to the resource.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean addGridFTPDataMovementDetails(String computeResourceId, int priorityOrder, GridFTPDataMovement gridFTPDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return false;
     }
 

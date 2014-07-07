@@ -58,6 +58,11 @@ class AiravataIf {
   virtual void getComputeResource( ::ComputeResourceDescription& _return, const std::string& computeResourceId) = 0;
   virtual bool updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription) = 0;
   virtual bool deleteComputeResource(const std::string& computeResourceId) = 0;
+  virtual bool addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission) = 0;
+  virtual bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission) = 0;
+  virtual bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement) = 0;
+  virtual bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement) = 0;
+  virtual bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement) = 0;
 };
 
 class AiravataIfFactory {
@@ -222,6 +227,26 @@ class AiravataNull : virtual public AiravataIf {
     return _return;
   }
   bool deleteComputeResource(const std::string& /* computeResourceId */) {
+    bool _return = false;
+    return _return;
+  }
+  bool addLocalSubmissionDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::LOCALSubmission& /* localSubmission */) {
+    bool _return = false;
+    return _return;
+  }
+  bool addSSHJobSubmissionDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::SSHJobSubmission& /* sshJobSubmission */) {
+    bool _return = false;
+    return _return;
+  }
+  bool addLocalDataMovementDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::LOCALDataMovement& /* localDataMovement */) {
+    bool _return = false;
+    return _return;
+  }
+  bool addSCPDataMovementDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::SCPDataMovement& /* scpDataMovement */) {
+    bool _return = false;
+    return _return;
+  }
+  bool addGridFTPDataMovementDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::GridFTPDataMovement& /* gridFTPDataMovement */) {
     bool _return = false;
     return _return;
   }
@@ -5938,6 +5963,746 @@ class Airavata_deleteComputeResource_presult {
 
 };
 
+
+class Airavata_addLocalSubmissionDetails_args {
+ public:
+
+  Airavata_addLocalSubmissionDetails_args() : computeResourceId(), priorityOrder(0) {
+  }
+
+  virtual ~Airavata_addLocalSubmissionDetails_args() throw() {}
+
+  std::string computeResourceId;
+  int32_t priorityOrder;
+   ::LOCALSubmission localSubmission;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_priorityOrder(const int32_t val) {
+    priorityOrder = val;
+  }
+
+  void __set_localSubmission(const  ::LOCALSubmission& val) {
+    localSubmission = val;
+  }
+
+  bool operator == (const Airavata_addLocalSubmissionDetails_args & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(priorityOrder == rhs.priorityOrder))
+      return false;
+    if (!(localSubmission == rhs.localSubmission))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addLocalSubmissionDetails_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addLocalSubmissionDetails_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_addLocalSubmissionDetails_pargs {
+ public:
+
+
+  virtual ~Airavata_addLocalSubmissionDetails_pargs() throw() {}
+
+  const std::string* computeResourceId;
+  const int32_t* priorityOrder;
+  const  ::LOCALSubmission* localSubmission;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addLocalSubmissionDetails_result__isset {
+  _Airavata_addLocalSubmissionDetails_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addLocalSubmissionDetails_result__isset;
+
+class Airavata_addLocalSubmissionDetails_result {
+ public:
+
+  Airavata_addLocalSubmissionDetails_result() : success(0) {
+  }
+
+  virtual ~Airavata_addLocalSubmissionDetails_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addLocalSubmissionDetails_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_addLocalSubmissionDetails_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addLocalSubmissionDetails_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addLocalSubmissionDetails_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addLocalSubmissionDetails_presult__isset {
+  _Airavata_addLocalSubmissionDetails_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addLocalSubmissionDetails_presult__isset;
+
+class Airavata_addLocalSubmissionDetails_presult {
+ public:
+
+
+  virtual ~Airavata_addLocalSubmissionDetails_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addLocalSubmissionDetails_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_addSSHJobSubmissionDetails_args {
+ public:
+
+  Airavata_addSSHJobSubmissionDetails_args() : computeResourceId(), priorityOrder(0) {
+  }
+
+  virtual ~Airavata_addSSHJobSubmissionDetails_args() throw() {}
+
+  std::string computeResourceId;
+  int32_t priorityOrder;
+   ::SSHJobSubmission sshJobSubmission;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_priorityOrder(const int32_t val) {
+    priorityOrder = val;
+  }
+
+  void __set_sshJobSubmission(const  ::SSHJobSubmission& val) {
+    sshJobSubmission = val;
+  }
+
+  bool operator == (const Airavata_addSSHJobSubmissionDetails_args & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(priorityOrder == rhs.priorityOrder))
+      return false;
+    if (!(sshJobSubmission == rhs.sshJobSubmission))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addSSHJobSubmissionDetails_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addSSHJobSubmissionDetails_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_addSSHJobSubmissionDetails_pargs {
+ public:
+
+
+  virtual ~Airavata_addSSHJobSubmissionDetails_pargs() throw() {}
+
+  const std::string* computeResourceId;
+  const int32_t* priorityOrder;
+  const  ::SSHJobSubmission* sshJobSubmission;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addSSHJobSubmissionDetails_result__isset {
+  _Airavata_addSSHJobSubmissionDetails_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addSSHJobSubmissionDetails_result__isset;
+
+class Airavata_addSSHJobSubmissionDetails_result {
+ public:
+
+  Airavata_addSSHJobSubmissionDetails_result() : success(0) {
+  }
+
+  virtual ~Airavata_addSSHJobSubmissionDetails_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addSSHJobSubmissionDetails_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_addSSHJobSubmissionDetails_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addSSHJobSubmissionDetails_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addSSHJobSubmissionDetails_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addSSHJobSubmissionDetails_presult__isset {
+  _Airavata_addSSHJobSubmissionDetails_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addSSHJobSubmissionDetails_presult__isset;
+
+class Airavata_addSSHJobSubmissionDetails_presult {
+ public:
+
+
+  virtual ~Airavata_addSSHJobSubmissionDetails_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addSSHJobSubmissionDetails_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_addLocalDataMovementDetails_args {
+ public:
+
+  Airavata_addLocalDataMovementDetails_args() : computeResourceId(), priorityOrder(0) {
+  }
+
+  virtual ~Airavata_addLocalDataMovementDetails_args() throw() {}
+
+  std::string computeResourceId;
+  int32_t priorityOrder;
+   ::LOCALDataMovement localDataMovement;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_priorityOrder(const int32_t val) {
+    priorityOrder = val;
+  }
+
+  void __set_localDataMovement(const  ::LOCALDataMovement& val) {
+    localDataMovement = val;
+  }
+
+  bool operator == (const Airavata_addLocalDataMovementDetails_args & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(priorityOrder == rhs.priorityOrder))
+      return false;
+    if (!(localDataMovement == rhs.localDataMovement))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addLocalDataMovementDetails_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addLocalDataMovementDetails_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_addLocalDataMovementDetails_pargs {
+ public:
+
+
+  virtual ~Airavata_addLocalDataMovementDetails_pargs() throw() {}
+
+  const std::string* computeResourceId;
+  const int32_t* priorityOrder;
+  const  ::LOCALDataMovement* localDataMovement;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addLocalDataMovementDetails_result__isset {
+  _Airavata_addLocalDataMovementDetails_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addLocalDataMovementDetails_result__isset;
+
+class Airavata_addLocalDataMovementDetails_result {
+ public:
+
+  Airavata_addLocalDataMovementDetails_result() : success(0) {
+  }
+
+  virtual ~Airavata_addLocalDataMovementDetails_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addLocalDataMovementDetails_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_addLocalDataMovementDetails_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addLocalDataMovementDetails_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addLocalDataMovementDetails_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addLocalDataMovementDetails_presult__isset {
+  _Airavata_addLocalDataMovementDetails_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addLocalDataMovementDetails_presult__isset;
+
+class Airavata_addLocalDataMovementDetails_presult {
+ public:
+
+
+  virtual ~Airavata_addLocalDataMovementDetails_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addLocalDataMovementDetails_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_addSCPDataMovementDetails_args {
+ public:
+
+  Airavata_addSCPDataMovementDetails_args() : computeResourceId(), priorityOrder(0) {
+  }
+
+  virtual ~Airavata_addSCPDataMovementDetails_args() throw() {}
+
+  std::string computeResourceId;
+  int32_t priorityOrder;
+   ::SCPDataMovement scpDataMovement;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_priorityOrder(const int32_t val) {
+    priorityOrder = val;
+  }
+
+  void __set_scpDataMovement(const  ::SCPDataMovement& val) {
+    scpDataMovement = val;
+  }
+
+  bool operator == (const Airavata_addSCPDataMovementDetails_args & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(priorityOrder == rhs.priorityOrder))
+      return false;
+    if (!(scpDataMovement == rhs.scpDataMovement))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addSCPDataMovementDetails_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addSCPDataMovementDetails_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_addSCPDataMovementDetails_pargs {
+ public:
+
+
+  virtual ~Airavata_addSCPDataMovementDetails_pargs() throw() {}
+
+  const std::string* computeResourceId;
+  const int32_t* priorityOrder;
+  const  ::SCPDataMovement* scpDataMovement;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addSCPDataMovementDetails_result__isset {
+  _Airavata_addSCPDataMovementDetails_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addSCPDataMovementDetails_result__isset;
+
+class Airavata_addSCPDataMovementDetails_result {
+ public:
+
+  Airavata_addSCPDataMovementDetails_result() : success(0) {
+  }
+
+  virtual ~Airavata_addSCPDataMovementDetails_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addSCPDataMovementDetails_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_addSCPDataMovementDetails_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addSCPDataMovementDetails_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addSCPDataMovementDetails_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addSCPDataMovementDetails_presult__isset {
+  _Airavata_addSCPDataMovementDetails_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addSCPDataMovementDetails_presult__isset;
+
+class Airavata_addSCPDataMovementDetails_presult {
+ public:
+
+
+  virtual ~Airavata_addSCPDataMovementDetails_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addSCPDataMovementDetails_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_addGridFTPDataMovementDetails_args {
+ public:
+
+  Airavata_addGridFTPDataMovementDetails_args() : computeResourceId(), priorityOrder(0) {
+  }
+
+  virtual ~Airavata_addGridFTPDataMovementDetails_args() throw() {}
+
+  std::string computeResourceId;
+  int32_t priorityOrder;
+   ::GridFTPDataMovement gridFTPDataMovement;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_priorityOrder(const int32_t val) {
+    priorityOrder = val;
+  }
+
+  void __set_gridFTPDataMovement(const  ::GridFTPDataMovement& val) {
+    gridFTPDataMovement = val;
+  }
+
+  bool operator == (const Airavata_addGridFTPDataMovementDetails_args & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(priorityOrder == rhs.priorityOrder))
+      return false;
+    if (!(gridFTPDataMovement == rhs.gridFTPDataMovement))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addGridFTPDataMovementDetails_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addGridFTPDataMovementDetails_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_addGridFTPDataMovementDetails_pargs {
+ public:
+
+
+  virtual ~Airavata_addGridFTPDataMovementDetails_pargs() throw() {}
+
+  const std::string* computeResourceId;
+  const int32_t* priorityOrder;
+  const  ::GridFTPDataMovement* gridFTPDataMovement;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addGridFTPDataMovementDetails_result__isset {
+  _Airavata_addGridFTPDataMovementDetails_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addGridFTPDataMovementDetails_result__isset;
+
+class Airavata_addGridFTPDataMovementDetails_result {
+ public:
+
+  Airavata_addGridFTPDataMovementDetails_result() : success(0) {
+  }
+
+  virtual ~Airavata_addGridFTPDataMovementDetails_result() throw() {}
+
+  bool success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addGridFTPDataMovementDetails_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_addGridFTPDataMovementDetails_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addGridFTPDataMovementDetails_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addGridFTPDataMovementDetails_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addGridFTPDataMovementDetails_presult__isset {
+  _Airavata_addGridFTPDataMovementDetails_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addGridFTPDataMovementDetails_presult__isset;
+
+class Airavata_addGridFTPDataMovementDetails_presult {
+ public:
+
+
+  virtual ~Airavata_addGridFTPDataMovementDetails_presult() throw() {}
+
+  bool* success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addGridFTPDataMovementDetails_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AiravataClient : virtual public AiravataIf {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -6087,6 +6852,21 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteComputeResource(const std::string& computeResourceId);
   void send_deleteComputeResource(const std::string& computeResourceId);
   bool recv_deleteComputeResource();
+  bool addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission);
+  void send_addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission);
+  bool recv_addLocalSubmissionDetails();
+  bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission);
+  void send_addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission);
+  bool recv_addSSHJobSubmissionDetails();
+  bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement);
+  void send_addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement);
+  bool recv_addLocalDataMovementDetails();
+  bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement);
+  void send_addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement);
+  bool recv_addSCPDataMovementDetails();
+  bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement);
+  void send_addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement);
+  bool recv_addGridFTPDataMovementDetails();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -6145,6 +6925,11 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getComputeResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateComputeResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteComputeResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addLocalSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addSSHJobSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addLocalDataMovementDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addSCPDataMovementDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addGridFTPDataMovementDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
@@ -6191,6 +6976,11 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getComputeResource"] = &AiravataProcessor::process_getComputeResource;
     processMap_["updateComputeResource"] = &AiravataProcessor::process_updateComputeResource;
     processMap_["deleteComputeResource"] = &AiravataProcessor::process_deleteComputeResource;
+    processMap_["addLocalSubmissionDetails"] = &AiravataProcessor::process_addLocalSubmissionDetails;
+    processMap_["addSSHJobSubmissionDetails"] = &AiravataProcessor::process_addSSHJobSubmissionDetails;
+    processMap_["addLocalDataMovementDetails"] = &AiravataProcessor::process_addLocalDataMovementDetails;
+    processMap_["addSCPDataMovementDetails"] = &AiravataProcessor::process_addSCPDataMovementDetails;
+    processMap_["addGridFTPDataMovementDetails"] = &AiravataProcessor::process_addGridFTPDataMovementDetails;
   }
 
   virtual ~AiravataProcessor() {}
@@ -6632,6 +7422,51 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->deleteComputeResource(computeResourceId);
     }
     return ifaces_[i]->deleteComputeResource(computeResourceId);
+  }
+
+  bool addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
+    }
+    return ifaces_[i]->addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
+  }
+
+  bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
+    }
+    return ifaces_[i]->addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
+  }
+
+  bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->addLocalDataMovementDetails(computeResourceId, priorityOrder, localDataMovement);
+    }
+    return ifaces_[i]->addLocalDataMovementDetails(computeResourceId, priorityOrder, localDataMovement);
+  }
+
+  bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->addSCPDataMovementDetails(computeResourceId, priorityOrder, scpDataMovement);
+    }
+    return ifaces_[i]->addSCPDataMovementDetails(computeResourceId, priorityOrder, scpDataMovement);
+  }
+
+  bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->addGridFTPDataMovementDetails(computeResourceId, priorityOrder, gridFTPDataMovement);
+    }
+    return ifaces_[i]->addGridFTPDataMovementDetails(computeResourceId, priorityOrder, gridFTPDataMovement);
   }
 
 };

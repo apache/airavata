@@ -237,6 +237,31 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteComputeResource\n");
   }
 
+  bool addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission) {
+    // Your implementation goes here
+    printf("addLocalSubmissionDetails\n");
+  }
+
+  bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission) {
+    // Your implementation goes here
+    printf("addSSHJobSubmissionDetails\n");
+  }
+
+  bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement) {
+    // Your implementation goes here
+    printf("addLocalDataMovementDetails\n");
+  }
+
+  bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement) {
+    // Your implementation goes here
+    printf("addSCPDataMovementDetails\n");
+  }
+
+  bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement) {
+    // Your implementation goes here
+    printf("addGridFTPDataMovementDetails\n");
+  }
+
 };
 
 int main(int argc, char **argv) {
