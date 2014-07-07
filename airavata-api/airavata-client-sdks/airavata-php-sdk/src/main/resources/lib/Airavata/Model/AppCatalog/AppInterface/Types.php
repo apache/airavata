@@ -380,6 +380,7 @@ class ApplicationInterfaceDescription {
   public $isEmpty = false;
   public $applicationInterfaceId = "DO_NOT_SET_AT_CLIENTS";
   public $applicationName = null;
+  public $applicationDesription = null;
   public $applicationModules = null;
   public $applicationInputs = null;
   public $applicationOutputs = null;
@@ -400,6 +401,10 @@ class ApplicationInterfaceDescription {
           'type' => TType::STRING,
           ),
         4 => array(
+          'var' => 'applicationDesription',
+          'type' => TType::STRING,
+          ),
+        5 => array(
           'var' => 'applicationModules',
           'type' => TType::LST,
           'etype' => TType::STRING,
@@ -407,7 +412,7 @@ class ApplicationInterfaceDescription {
             'type' => TType::STRING,
             ),
           ),
-        5 => array(
+        6 => array(
           'var' => 'applicationInputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -416,7 +421,7 @@ class ApplicationInterfaceDescription {
             'class' => '\Airavata\Model\AppCatalog\AppInterface\InputDataObjectType',
             ),
           ),
-        6 => array(
+        7 => array(
           'var' => 'applicationOutputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -436,6 +441,9 @@ class ApplicationInterfaceDescription {
       }
       if (isset($vals['applicationName'])) {
         $this->applicationName = $vals['applicationName'];
+      }
+      if (isset($vals['applicationDesription'])) {
+        $this->applicationDesription = $vals['applicationDesription'];
       }
       if (isset($vals['applicationModules'])) {
         $this->applicationModules = $vals['applicationModules'];
@@ -490,6 +498,13 @@ class ApplicationInterfaceDescription {
           }
           break;
         case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->applicationDesription);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
           if ($ftype == TType::LST) {
             $this->applicationModules = array();
             $_size0 = 0;
@@ -506,7 +521,7 @@ class ApplicationInterfaceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 6:
           if ($ftype == TType::LST) {
             $this->applicationInputs = array();
             $_size6 = 0;
@@ -524,7 +539,7 @@ class ApplicationInterfaceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 7:
           if ($ftype == TType::LST) {
             $this->applicationOutputs = array();
             $_size12 = 0;
@@ -570,11 +585,16 @@ class ApplicationInterfaceDescription {
       $xfer += $output->writeString($this->applicationName);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->applicationDesription !== null) {
+      $xfer += $output->writeFieldBegin('applicationDesription', TType::STRING, 4);
+      $xfer += $output->writeString($this->applicationDesription);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->applicationModules !== null) {
       if (!is_array($this->applicationModules)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('applicationModules', TType::LST, 4);
+      $xfer += $output->writeFieldBegin('applicationModules', TType::LST, 5);
       {
         $output->writeListBegin(TType::STRING, count($this->applicationModules));
         {
@@ -591,7 +611,7 @@ class ApplicationInterfaceDescription {
       if (!is_array($this->applicationInputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('applicationInputs', TType::LST, 5);
+      $xfer += $output->writeFieldBegin('applicationInputs', TType::LST, 6);
       {
         $output->writeListBegin(TType::STRUCT, count($this->applicationInputs));
         {
@@ -608,7 +628,7 @@ class ApplicationInterfaceDescription {
       if (!is_array($this->applicationOutputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('applicationOutputs', TType::LST, 6);
+      $xfer += $output->writeFieldBegin('applicationOutputs', TType::LST, 7);
       {
         $output->writeListBegin(TType::STRUCT, count($this->applicationOutputs));
         {

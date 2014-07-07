@@ -215,7 +215,8 @@ class OutputDataObjectType {
 void swap(OutputDataObjectType &a, OutputDataObjectType &b);
 
 typedef struct _ApplicationInterfaceDescription__isset {
-  _ApplicationInterfaceDescription__isset() : applicationModules(false), applicationInputs(false), applicationOutputs(false) {}
+  _ApplicationInterfaceDescription__isset() : applicationDesription(false), applicationModules(false), applicationInputs(false), applicationOutputs(false) {}
+  bool applicationDesription;
   bool applicationModules;
   bool applicationInputs;
   bool applicationOutputs;
@@ -224,10 +225,10 @@ typedef struct _ApplicationInterfaceDescription__isset {
 class ApplicationInterfaceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "EF5E3A4F34CCD8942A56C19B7B92E473";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0x5E,0x3A,0x4F,0x34,0xCC,0xD8,0x94,0x2A,0x56,0xC1,0x9B,0x7B,0x92,0xE4,0x73};
+  static const char* ascii_fingerprint; // = "B4A4B770076264D5948E96332AE8D291";
+  static const uint8_t binary_fingerprint[16]; // = {0xB4,0xA4,0xB7,0x70,0x07,0x62,0x64,0xD5,0x94,0x8E,0x96,0x33,0x2A,0xE8,0xD2,0x91};
 
-  ApplicationInterfaceDescription() : isEmpty(false), applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName() {
+  ApplicationInterfaceDescription() : isEmpty(false), applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDesription() {
   }
 
   virtual ~ApplicationInterfaceDescription() throw() {}
@@ -235,6 +236,7 @@ class ApplicationInterfaceDescription {
   bool isEmpty;
   std::string applicationInterfaceId;
   std::string applicationName;
+  std::string applicationDesription;
   std::vector<std::string>  applicationModules;
   std::vector<InputDataObjectType>  applicationInputs;
   std::vector<OutputDataObjectType>  applicationOutputs;
@@ -251,6 +253,11 @@ class ApplicationInterfaceDescription {
 
   void __set_applicationName(const std::string& val) {
     applicationName = val;
+  }
+
+  void __set_applicationDesription(const std::string& val) {
+    applicationDesription = val;
+    __isset.applicationDesription = true;
   }
 
   void __set_applicationModules(const std::vector<std::string> & val) {
@@ -275,6 +282,10 @@ class ApplicationInterfaceDescription {
     if (!(applicationInterfaceId == rhs.applicationInterfaceId))
       return false;
     if (!(applicationName == rhs.applicationName))
+      return false;
+    if (__isset.applicationDesription != rhs.__isset.applicationDesription)
+      return false;
+    else if (__isset.applicationDesription && !(applicationDesription == rhs.applicationDesription))
       return false;
     if (__isset.applicationModules != rhs.__isset.applicationModules)
       return false;

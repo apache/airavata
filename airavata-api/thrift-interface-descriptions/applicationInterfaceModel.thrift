@@ -113,17 +113,22 @@ struct OutputDataObjectType {
 /**
  * Application Interface Description
  *
+ * applicationModules:
+ *   Associate all application modules with versions which interface is applicable to.
  *
- * appDeploymentId:
- *   Corelated the interface to a particular application deployment
+ * applicationInputs:
+ *   Inputs to be passed to the application
  *
- * FIXME: add a description
+ * applicationOutputs:
+ *   Outputs generated from the application
+ *
 */
 struct ApplicationInterfaceDescription {
     1: required bool isEmpty = 0,
     2: required string applicationInterfaceId = DEFAULT_ID,
     3: required string applicationName,
-    4: optional list<string> applicationModules,
-    5: optional list<InputDataObjectType> applicationInputs,
-    6: optional list<OutputDataObjectType> applicationOutputs
+    4: optional string applicationDesription,
+    5: optional list<string> applicationModules,
+    6: optional list<InputDataObjectType> applicationInputs,
+    7: optional list<OutputDataObjectType> applicationOutputs
 }
