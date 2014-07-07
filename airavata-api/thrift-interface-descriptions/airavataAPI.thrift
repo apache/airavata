@@ -382,59 +382,6 @@ service Airavata {
 
   map<string, experimentModel.JobStatus> getJobStatuses(1: required string airavataExperimentId)
 
-
-  /**
-   * Configure and Launch a previously created experiment with required inputs, scheduling, security and other quality of service
-   *   parameters. This method also launches the experiment after it is configured. If you would like to configure only 
-   *   and launch at a later time or partially configure then ConfigureExperiment should be used.
-   *
-   * @param airavataExperimentId
-   *    The identifier for the requested experiment. This is returned during the create experiment step.
-   * 
-   * @param experimentConfigurationData
-   *    The configuration information of the experiment with application input parameters, computational resource scheduling
-   *      information, special input output handling and additional quality of service parameters.
-   *
-   * @param airavataCredStoreToken:
-   *   A requirement to execute experiments within Airavata is to first register the targeted remote computational account
-   *     credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
-   *     generated token associated with the registered credentials. The client has to security posses this token id and is
-   *     required to pass it to Airavata Server for all execution requests.
-   *   Note: At this point only the credential store token is required so the string is directly passed here. In future if 
-   *     if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
-   *
-   * @return
-   *   The server-side generated experiment GUID.
-   *
-   * @throws org.apache.airavata.model.error.InvalidRequestException
-   *    For any incorrect forming of the request itself.
-   * 
-   * @throws org.apache.airavata.model.error.AiravataClientException
-   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-   *      
-   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
-   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
-   *         gateway registration steps and retry this request.
-   *
-   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
-   *         For now this is a place holder.
-   *
-   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
-   *         is implemented, the authorization will be more substantial.
-   *
-   * @throws org.apache.airavata.model.error.AiravataSystemException
-   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
-   *       rather an Airavata Administrator will be notified to take corrective action.
-   *
-  */
-//  string updateAndLaunchExperiment (1: string airavataExperimentId
-//                                       2: experimentModel.Experiment experiment,
-//                                       3: string airavataCredStoreToken)
-//    throws (1: airavataErrors.InvalidRequestException ire,
-//            2: airavataErrors.ExperimentNotFoundException enf,
-//            3: airavataErrors.AiravataClientException ace,
-//            4: airavataErrors.AiravataSystemException ase)
-
   /**
    * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
    *   The client has to subsequently update this configuration if needed and launch the cloned experiment. 
@@ -1167,6 +1114,177 @@ service Airavata {
    *
   */
   bool deleteDataMovementInterface(1: required string dataMovementInterfaceId)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+/*
+ * Gateway Resource Profile
+ *
+*/
+
+  /**
+   * Register a Gateway Resource Profile.
+   *
+   * @param gatewayResourceProfile
+   *    Gateway Resource Profile Object.
+   *
+   * @return gatewayID
+   *   Returns a server-side generated airavata compute resource globally unique identifier.
+   *
+  */
+  string registerGatewayResourceProfile(
+                    1: required gatewayResourceProfileModel.GatewayResourceProfile gatewayResourceProfile)
+    	throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch the given Gateway Resource Profile.
+   *
+   * @param gatewayID
+   *   The identifier for the requested gateway resource
+   *
+   * @return gatewayResourceProfile
+   *    Gateway Resource Profile Object.
+   *
+  */
+  gatewayResourceProfileModel.GatewayResourceProfile getGatewayResourceProfile(1: required string gatewayID)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Update a Gateway Resource Profile.
+   *
+   * @param gatewayID
+   *   The identifier for the requested gateway resource to be updated.
+   *
+   * @param gatewayResourceProfile
+   *    Gateway Resource Profile Object.
+   *
+   * @return status
+   *   Returns a success/failure of the update.
+   *
+  */
+  bool updateGatewayResourceProfile(1: required string gatewayID,
+            2: required gatewayResourceProfileModel.GatewayResourceProfile gatewayResourceProfile)
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Delete the given Gateway Resource Profile.
+   *
+   * @param gatewayID
+   *   The identifier for the requested gateway resource to be deleted.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool deleteGatewayResourceProfile(1: required string gatewayID)
+         	throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Add a Compute Resource Preference to a registered gateway profile.
+   *
+   * @param gatewayID
+   *   The identifier for the gateway profile to be added.
+   *
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   *
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be added to the resource profile.
+   *
+   * @return status
+   *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+   *    Instead an update should be used.
+   *
+  */
+  bool addGatewayComputeResourcePreference(1: required string gatewayID,
+            2: required string computeResourceId,
+            3: required gatewayResourceProfileModel.ComputeResourcePreference computeResourcePreference)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch a Compute Resource Preference of a registered gateway profile.
+   *
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
+   *
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   *
+   * @return computeResourcePreference
+   *   Returns the ComputeResourcePreference object.
+   *
+  */
+  gatewayResourceProfileModel.ComputeResourcePreference getGatewayComputeResourcePreference(1: required string gatewayID,
+            2: required string computeResourceId)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch all Compute Resource Preferences of a registered gateway profile.
+   *
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
+   *
+   * @return computeResourcePreference
+   *   Returns the ComputeResourcePreference object.
+   *
+  */
+  list<gatewayResourceProfileModel.ComputeResourcePreference>
+            getAllGatewayComputeResourcePreferences(1: required string gatewayID)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Update a Compute Resource Preference to a registered gateway profile.
+   *
+   * @param gatewayID
+   *   The identifier for the gateway profile to be updated.
+   *
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   *
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be updated to the resource profile.
+   *
+   * @return status
+   *   Returns a success/failure of the updation.
+   *
+  */
+  bool updateGatewayComputeResourcePreference(1: required string gatewayID,
+            2: required string computeResourceId,
+            3: required gatewayResourceProfileModel.ComputeResourcePreference computeResourcePreference)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Delete the Compute Resource Preference of a registered gateway profile.
+   *
+   * @param gatewayID
+   *   The identifier for the gateway profile to be deleted.
+   *
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool deleteGatewayComputeResourcePreference(1: required string gatewayID,
+            2: required string computeResourceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)

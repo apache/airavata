@@ -76,6 +76,15 @@ interface AiravataIf {
   public function changeDataMovementPriorities($dataMovementPriorityMap);
   public function deleteJobSubmissionInterface($jobSubmissionInterfaceId);
   public function deleteDataMovementInterface($dataMovementInterfaceId);
+  public function registerGatewayResourceProfile(\Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile $gatewayResourceProfile);
+  public function getGatewayResourceProfile($gatewayID);
+  public function updateGatewayResourceProfile($gatewayID, \Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile $gatewayResourceProfile);
+  public function deleteGatewayResourceProfile($gatewayID);
+  public function addGatewayComputeResourcePreference($gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference);
+  public function getGatewayComputeResourcePreference($gatewayID, $computeResourceId);
+  public function getAllGatewayComputeResourcePreferences($gatewayID);
+  public function updateGatewayComputeResourcePreference($gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference);
+  public function deleteGatewayComputeResourcePreference($gatewayID, $computeResourceId);
 }
 
 class AiravataClient implements \Airavata\API\AiravataIf {
@@ -3637,6 +3646,553 @@ class AiravataClient implements \Airavata\API\AiravataIf {
       throw $result->ase;
     }
     throw new \Exception("deleteDataMovementInterface failed: unknown result");
+  }
+
+  public function registerGatewayResourceProfile(\Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile $gatewayResourceProfile)
+  {
+    $this->send_registerGatewayResourceProfile($gatewayResourceProfile);
+    return $this->recv_registerGatewayResourceProfile();
+  }
+
+  public function send_registerGatewayResourceProfile(\Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile $gatewayResourceProfile)
+  {
+    $args = new \Airavata\API\Airavata_registerGatewayResourceProfile_args();
+    $args->gatewayResourceProfile = $gatewayResourceProfile;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'registerGatewayResourceProfile', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('registerGatewayResourceProfile', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_registerGatewayResourceProfile()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_registerGatewayResourceProfile_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_registerGatewayResourceProfile_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("registerGatewayResourceProfile failed: unknown result");
+  }
+
+  public function getGatewayResourceProfile($gatewayID)
+  {
+    $this->send_getGatewayResourceProfile($gatewayID);
+    return $this->recv_getGatewayResourceProfile();
+  }
+
+  public function send_getGatewayResourceProfile($gatewayID)
+  {
+    $args = new \Airavata\API\Airavata_getGatewayResourceProfile_args();
+    $args->gatewayID = $gatewayID;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getGatewayResourceProfile', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getGatewayResourceProfile', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getGatewayResourceProfile()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getGatewayResourceProfile_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_getGatewayResourceProfile_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("getGatewayResourceProfile failed: unknown result");
+  }
+
+  public function updateGatewayResourceProfile($gatewayID, \Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile $gatewayResourceProfile)
+  {
+    $this->send_updateGatewayResourceProfile($gatewayID, $gatewayResourceProfile);
+    return $this->recv_updateGatewayResourceProfile();
+  }
+
+  public function send_updateGatewayResourceProfile($gatewayID, \Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile $gatewayResourceProfile)
+  {
+    $args = new \Airavata\API\Airavata_updateGatewayResourceProfile_args();
+    $args->gatewayID = $gatewayID;
+    $args->gatewayResourceProfile = $gatewayResourceProfile;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'updateGatewayResourceProfile', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('updateGatewayResourceProfile', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_updateGatewayResourceProfile()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_updateGatewayResourceProfile_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_updateGatewayResourceProfile_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("updateGatewayResourceProfile failed: unknown result");
+  }
+
+  public function deleteGatewayResourceProfile($gatewayID)
+  {
+    $this->send_deleteGatewayResourceProfile($gatewayID);
+    return $this->recv_deleteGatewayResourceProfile();
+  }
+
+  public function send_deleteGatewayResourceProfile($gatewayID)
+  {
+    $args = new \Airavata\API\Airavata_deleteGatewayResourceProfile_args();
+    $args->gatewayID = $gatewayID;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'deleteGatewayResourceProfile', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('deleteGatewayResourceProfile', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_deleteGatewayResourceProfile()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_deleteGatewayResourceProfile_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_deleteGatewayResourceProfile_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("deleteGatewayResourceProfile failed: unknown result");
+  }
+
+  public function addGatewayComputeResourcePreference($gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference)
+  {
+    $this->send_addGatewayComputeResourcePreference($gatewayID, $computeResourceId, $computeResourcePreference);
+    return $this->recv_addGatewayComputeResourcePreference();
+  }
+
+  public function send_addGatewayComputeResourcePreference($gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference)
+  {
+    $args = new \Airavata\API\Airavata_addGatewayComputeResourcePreference_args();
+    $args->gatewayID = $gatewayID;
+    $args->computeResourceId = $computeResourceId;
+    $args->computeResourcePreference = $computeResourcePreference;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'addGatewayComputeResourcePreference', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('addGatewayComputeResourcePreference', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_addGatewayComputeResourcePreference()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_addGatewayComputeResourcePreference_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_addGatewayComputeResourcePreference_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("addGatewayComputeResourcePreference failed: unknown result");
+  }
+
+  public function getGatewayComputeResourcePreference($gatewayID, $computeResourceId)
+  {
+    $this->send_getGatewayComputeResourcePreference($gatewayID, $computeResourceId);
+    return $this->recv_getGatewayComputeResourcePreference();
+  }
+
+  public function send_getGatewayComputeResourcePreference($gatewayID, $computeResourceId)
+  {
+    $args = new \Airavata\API\Airavata_getGatewayComputeResourcePreference_args();
+    $args->gatewayID = $gatewayID;
+    $args->computeResourceId = $computeResourceId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getGatewayComputeResourcePreference', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getGatewayComputeResourcePreference', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getGatewayComputeResourcePreference()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getGatewayComputeResourcePreference_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_getGatewayComputeResourcePreference_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("getGatewayComputeResourcePreference failed: unknown result");
+  }
+
+  public function getAllGatewayComputeResourcePreferences($gatewayID)
+  {
+    $this->send_getAllGatewayComputeResourcePreferences($gatewayID);
+    return $this->recv_getAllGatewayComputeResourcePreferences();
+  }
+
+  public function send_getAllGatewayComputeResourcePreferences($gatewayID)
+  {
+    $args = new \Airavata\API\Airavata_getAllGatewayComputeResourcePreferences_args();
+    $args->gatewayID = $gatewayID;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'getAllGatewayComputeResourcePreferences', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('getAllGatewayComputeResourcePreferences', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_getAllGatewayComputeResourcePreferences()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_getAllGatewayComputeResourcePreferences_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_getAllGatewayComputeResourcePreferences_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("getAllGatewayComputeResourcePreferences failed: unknown result");
+  }
+
+  public function updateGatewayComputeResourcePreference($gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference)
+  {
+    $this->send_updateGatewayComputeResourcePreference($gatewayID, $computeResourceId, $computeResourcePreference);
+    return $this->recv_updateGatewayComputeResourcePreference();
+  }
+
+  public function send_updateGatewayComputeResourcePreference($gatewayID, $computeResourceId, \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference $computeResourcePreference)
+  {
+    $args = new \Airavata\API\Airavata_updateGatewayComputeResourcePreference_args();
+    $args->gatewayID = $gatewayID;
+    $args->computeResourceId = $computeResourceId;
+    $args->computeResourcePreference = $computeResourcePreference;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'updateGatewayComputeResourcePreference', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('updateGatewayComputeResourcePreference', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_updateGatewayComputeResourcePreference()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_updateGatewayComputeResourcePreference_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_updateGatewayComputeResourcePreference_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("updateGatewayComputeResourcePreference failed: unknown result");
+  }
+
+  public function deleteGatewayComputeResourcePreference($gatewayID, $computeResourceId)
+  {
+    $this->send_deleteGatewayComputeResourcePreference($gatewayID, $computeResourceId);
+    return $this->recv_deleteGatewayComputeResourcePreference();
+  }
+
+  public function send_deleteGatewayComputeResourcePreference($gatewayID, $computeResourceId)
+  {
+    $args = new \Airavata\API\Airavata_deleteGatewayComputeResourcePreference_args();
+    $args->gatewayID = $gatewayID;
+    $args->computeResourceId = $computeResourceId;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'deleteGatewayComputeResourcePreference', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('deleteGatewayComputeResourcePreference', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_deleteGatewayComputeResourcePreference()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_deleteGatewayComputeResourcePreference_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_deleteGatewayComputeResourcePreference_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("deleteGatewayComputeResourcePreference failed: unknown result");
   }
 
 }
@@ -17071,6 +17627,2094 @@ class Airavata_deleteDataMovementInterface_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_deleteDataMovementInterface_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_registerGatewayResourceProfile_args {
+  static $_TSPEC;
+
+  public $gatewayResourceProfile = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'gatewayResourceProfile',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['gatewayResourceProfile'])) {
+        $this->gatewayResourceProfile = $vals['gatewayResourceProfile'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_registerGatewayResourceProfile_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->gatewayResourceProfile = new \Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile();
+            $xfer += $this->gatewayResourceProfile->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_registerGatewayResourceProfile_args');
+    if ($this->gatewayResourceProfile !== null) {
+      if (!is_object($this->gatewayResourceProfile)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('gatewayResourceProfile', TType::STRUCT, 1);
+      $xfer += $this->gatewayResourceProfile->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_registerGatewayResourceProfile_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRING,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_registerGatewayResourceProfile_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_registerGatewayResourceProfile_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getGatewayResourceProfile_args {
+  static $_TSPEC;
+
+  public $gatewayID = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getGatewayResourceProfile_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getGatewayResourceProfile_args');
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 1);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getGatewayResourceProfile_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile',
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getGatewayResourceProfile_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRUCT) {
+            $this->success = new \Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile();
+            $xfer += $this->success->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getGatewayResourceProfile_result');
+    if ($this->success !== null) {
+      if (!is_object($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::STRUCT, 0);
+      $xfer += $this->success->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_updateGatewayResourceProfile_args {
+  static $_TSPEC;
+
+  public $gatewayID = null;
+  public $gatewayResourceProfile = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'gatewayResourceProfile',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+      if (isset($vals['gatewayResourceProfile'])) {
+        $this->gatewayResourceProfile = $vals['gatewayResourceProfile'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_updateGatewayResourceProfile_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->gatewayResourceProfile = new \Airavata\Model\AppCatalog\GatewayProfile\GatewayResourceProfile();
+            $xfer += $this->gatewayResourceProfile->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_updateGatewayResourceProfile_args');
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 1);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayResourceProfile !== null) {
+      if (!is_object($this->gatewayResourceProfile)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('gatewayResourceProfile', TType::STRUCT, 2);
+      $xfer += $this->gatewayResourceProfile->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_updateGatewayResourceProfile_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_updateGatewayResourceProfile_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_updateGatewayResourceProfile_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_deleteGatewayResourceProfile_args {
+  static $_TSPEC;
+
+  public $gatewayID = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_deleteGatewayResourceProfile_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_deleteGatewayResourceProfile_args');
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 1);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_deleteGatewayResourceProfile_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_deleteGatewayResourceProfile_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_deleteGatewayResourceProfile_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_addGatewayComputeResourcePreference_args {
+  static $_TSPEC;
+
+  public $gatewayID = null;
+  public $computeResourceId = null;
+  public $computeResourcePreference = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'computeResourcePreference',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
+      if (isset($vals['computeResourcePreference'])) {
+        $this->computeResourcePreference = $vals['computeResourcePreference'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_addGatewayComputeResourcePreference_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->computeResourcePreference = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
+            $xfer += $this->computeResourcePreference->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_addGatewayComputeResourcePreference_args');
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 1);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->computeResourcePreference !== null) {
+      if (!is_object($this->computeResourcePreference)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('computeResourcePreference', TType::STRUCT, 3);
+      $xfer += $this->computeResourcePreference->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_addGatewayComputeResourcePreference_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_addGatewayComputeResourcePreference_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_addGatewayComputeResourcePreference_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getGatewayComputeResourcePreference_args {
+  static $_TSPEC;
+
+  public $gatewayID = null;
+  public $computeResourceId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getGatewayComputeResourcePreference_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getGatewayComputeResourcePreference_args');
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 1);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getGatewayComputeResourcePreference_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference',
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getGatewayComputeResourcePreference_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::STRUCT) {
+            $this->success = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
+            $xfer += $this->success->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getGatewayComputeResourcePreference_result');
+    if ($this->success !== null) {
+      if (!is_object($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::STRUCT, 0);
+      $xfer += $this->success->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getAllGatewayComputeResourcePreferences_args {
+  static $_TSPEC;
+
+  public $gatewayID = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getAllGatewayComputeResourcePreferences_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getAllGatewayComputeResourcePreferences_args');
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 1);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_getAllGatewayComputeResourcePreferences_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference',
+            ),
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_getAllGatewayComputeResourcePreferences_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::LST) {
+            $this->success = array();
+            $_size111 = 0;
+            $_etype114 = 0;
+            $xfer += $input->readListBegin($_etype114, $_size111);
+            for ($_i115 = 0; $_i115 < $_size111; ++$_i115)
+            {
+              $elem116 = null;
+              $elem116 = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
+              $xfer += $elem116->read($input);
+              $this->success []= $elem116;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_getAllGatewayComputeResourcePreferences_result');
+    if ($this->success !== null) {
+      if (!is_array($this->success)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('success', TType::LST, 0);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->success));
+        {
+          foreach ($this->success as $iter117)
+          {
+            $xfer += $iter117->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_updateGatewayComputeResourcePreference_args {
+  static $_TSPEC;
+
+  public $gatewayID = null;
+  public $computeResourceId = null;
+  public $computeResourcePreference = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'computeResourcePreference',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
+      if (isset($vals['computeResourcePreference'])) {
+        $this->computeResourcePreference = $vals['computeResourcePreference'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_updateGatewayComputeResourcePreference_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->computeResourcePreference = new \Airavata\Model\AppCatalog\GatewayProfile\ComputeResourcePreference();
+            $xfer += $this->computeResourcePreference->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_updateGatewayComputeResourcePreference_args');
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 1);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->computeResourcePreference !== null) {
+      if (!is_object($this->computeResourcePreference)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('computeResourcePreference', TType::STRUCT, 3);
+      $xfer += $this->computeResourcePreference->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_updateGatewayComputeResourcePreference_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_updateGatewayComputeResourcePreference_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_updateGatewayComputeResourcePreference_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_deleteGatewayComputeResourcePreference_args {
+  static $_TSPEC;
+
+  public $gatewayID = null;
+  public $computeResourceId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'gatewayID',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['gatewayID'])) {
+        $this->gatewayID = $vals['gatewayID'];
+      }
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_deleteGatewayComputeResourcePreference_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayID);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_deleteGatewayComputeResourcePreference_args');
+    if ($this->gatewayID !== null) {
+      $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 1);
+      $xfer += $output->writeString($this->gatewayID);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_deleteGatewayComputeResourcePreference_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_deleteGatewayComputeResourcePreference_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_deleteGatewayComputeResourcePreference_result');
     if ($this->success !== null) {
       $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
       $xfer += $output->writeBool($this->success);

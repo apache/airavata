@@ -317,6 +317,51 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteDataMovementInterface\n");
   }
 
+  void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile) {
+    // Your implementation goes here
+    printf("registerGatewayResourceProfile\n");
+  }
+
+  void getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID) {
+    // Your implementation goes here
+    printf("getGatewayResourceProfile\n");
+  }
+
+  bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile) {
+    // Your implementation goes here
+    printf("updateGatewayResourceProfile\n");
+  }
+
+  bool deleteGatewayResourceProfile(const std::string& gatewayID) {
+    // Your implementation goes here
+    printf("deleteGatewayResourceProfile\n");
+  }
+
+  bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference) {
+    // Your implementation goes here
+    printf("addGatewayComputeResourcePreference\n");
+  }
+
+  void getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId) {
+    // Your implementation goes here
+    printf("getGatewayComputeResourcePreference\n");
+  }
+
+  void getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return, const std::string& gatewayID) {
+    // Your implementation goes here
+    printf("getAllGatewayComputeResourcePreferences\n");
+  }
+
+  bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference) {
+    // Your implementation goes here
+    printf("updateGatewayComputeResourcePreference\n");
+  }
+
+  bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId) {
+    // Your implementation goes here
+    printf("deleteGatewayComputeResourcePreference\n");
+  }
+
 };
 
 int main(int argc, char **argv) {
