@@ -260,17 +260,15 @@ public class BetterGfacImpl implements GFac {
         ServiceDescription legacyServiceDescription = new ServiceDescription();
         ServiceDescriptionType legacyServiceDescType = legacyServiceDescription.getType();
         ApplicationDescription legacyAppDescription = new ApplicationDescription();
-        HpcApplicationDeploymentType legacyHPCAppDescType =
-                (HpcApplicationDeploymentType)legacyAppDescription.getType();
         HostDescription legacyHostDescription= new HostDescription();
         HostDescriptionType legacyHostDescType = legacyHostDescription.getType();
 
+        ///////////////SERVICE DESCRIPTOR///////////////////////////////
         //Fetch the application inputs and outputs from the app interface and create the legacy service description.
-        List<InputParameterType> legacyInputParameters = new ArrayList<InputParameterType>();
-        List<OutputParameterType> legacyOutputParameters = new ArrayList<OutputParameterType>();
         legacyServiceDescType.setName(applicationInterface.getApplicationName());
         legacyServiceDescType.setDescription(applicationInterface.getApplicationName());
-
+        List<InputParameterType> legacyInputParameters = new ArrayList<InputParameterType>();
+        List<OutputParameterType> legacyOutputParameters = new ArrayList<OutputParameterType>();
         List<InputDataObjectType> applicationInputs = applicationInterface.getApplicationInputs();
         for (InputDataObjectType dataObjectType : applicationInputs) {
             InputParameterType parameter = InputParameterType.Factory.newInstance();
@@ -291,6 +289,7 @@ public class BetterGfacImpl implements GFac {
             parameter.addParameterValue(dataObjectType.getValue());
             legacyInputParameters.add(parameter);
         }
+        
         List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
         for (OutputDataObjectType dataObjectType : applicationOutputs) {
             OutputParameterType parameter = OutputParameterType.Factory.newInstance();
@@ -314,60 +313,79 @@ public class BetterGfacImpl implements GFac {
         legacyServiceDescType.setInputParametersArray(legacyInputParameters.toArray(new InputParameterType[]{}));
         legacyServiceDescType.setOutputParametersArray(legacyOutputParameters.toArray(new OutputParameterType[]{}));
 
-        //Fetch deployment information and fill-in legacy doc
-        legacyHPCAppDescType.addNewApplicationName().setStringValue(applicationDeploymentId);
-        legacyHPCAppDescType.setExecutableLocation(applicationDeployment.getExecutablePath());
-        switch (applicationDeployment.getParallelism()) {
-            case SERIAL:
-                legacyHPCAppDescType.setJobType(JobTypeType.SERIAL);
-            case MPI:
-                legacyHPCAppDescType.setJobType(JobTypeType.MPI);
-            case OPENMP:
-                legacyHPCAppDescType.setJobType(JobTypeType.OPEN_MP);
-        }
-
-        //Fetch scheduling information from experiment request
-        ComputationalResourceScheduling taskSchedule = taskData.getTaskScheduling();
-        QueueType queueType = legacyHPCAppDescType.addNewQueue();
-        queueType.setQueueName(taskSchedule.getQueueName());
-        legacyHPCAppDescType.setCpuCount(taskSchedule.getTotalCPUCount());
-        legacyHPCAppDescType.setNodeCount(taskSchedule.getNodeCount());
-        legacyHPCAppDescType.setMaxWallTime(taskSchedule.getWallTimeLimit());
-        //legacyHPCAppDescType.setInstalledParentPath();
-
-
-        //Fetch from gateway profile
-        ProjectAccountType projectAccountType = legacyHPCAppDescType.addNewProjectAccount();
-	    projectAccountType.setProjectAccountNumber(gatewayResourcePreferences.getAllocationProjectNumber());
-        legacyHPCAppDescType.setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
-
+        ////////////////////-----------  HOST DESCRIPTOR  -----------------//////////////////////
         //Fetch the host description details and fill-in legacy doc
         legacyHostDescType.setHostName(computeResource.getHostName());
         legacyHostDescType.setHostAddress(computeResource.getHostName());
+
+        ResourceJobManager resourceJobManager = null;
+        for (JobSubmissionInterface jobSubmissionInterface : computeResource.getJobSubmissionInterfaces()){
+        	switch(jobSubmissionInterface.getJobSubmissionProtocol()){
+        		case LOCAL:
+        			LOCALSubmission localSubmission =
+                    appCatalog.getComputeResource().getLocalJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+        			resourceJobManager = localSubmission.getResourceJobManager();
+        			break;
+        		case SSH:
+        			SSHJobSubmission sshJobSubmission =
+                    appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+		            resourceJobManager = sshJobSubmission.getResourceJobManager();
+		            switch (sshJobSubmission.getSecurityProtocol()){
+		            	case GSI:
+		            		legacyHostDescription.getType().changeType(GsisshHostType.type);
+		                    ((GsisshHostType) legacyHostDescription.getType()).setJobManager
+		                            (resourceJobManager.getResourceJobManagerType().name());
+		                    ((GsisshHostType) legacyHostDescType).setInstalledPath(resourceJobManager.getJobManagerBinPath());
+		                    // applicationDescription.setInstalledParentPath(resourceJobManager.getJobManagerBinPath());
+		                    ((GsisshHostType) legacyHostDescType).setPort(sshJobSubmission.getSshPort());
+		                    break;
+		            	case SSH_KEYS:
+		            		legacyHostDescType.changeType(SSHHostType.type);
+		                    break;
+					default:
+						break;
+		            }
+		            break;
+				default:
+					break;
+        	}
+        }
+        
+        /////////////////////---------------- APPLICATION DESCRIPTOR ---------------------/////////////////////////
+        //Fetch deployment information and fill-in legacy doc
+        legacyAppDescription.getType().addNewApplicationName().setStringValue(applicationDeployment.getAppDeploymentDescription());
+        legacyAppDescription.getType().setExecutableLocation(applicationDeployment.getExecutablePath());
+		if (legacyHostDescription.getType() instanceof GsisshHostType){
+        	legacyAppDescription.getType().changeType(HpcApplicationDeploymentType.type);
+        	HpcApplicationDeploymentType legacyHPCAppDescType = (HpcApplicationDeploymentType) legacyAppDescription.getType();
+			 switch (applicationDeployment.getParallelism()) {
+			     case SERIAL:
+			         legacyHPCAppDescType.setJobType(JobTypeType.SERIAL);
+			     case MPI:
+			         legacyHPCAppDescType.setJobType(JobTypeType.MPI);
+			     case OPENMP:
+			         legacyHPCAppDescType.setJobType(JobTypeType.OPEN_MP);
+			     default:
+					break;
+			 }
+			 //Fetch scheduling information from experiment request
+			 ComputationalResourceScheduling taskSchedule = taskData.getTaskScheduling();
+			 QueueType queueType = legacyHPCAppDescType.addNewQueue();
+			 queueType.setQueueName(taskSchedule.getQueueName());
+			 legacyHPCAppDescType.setCpuCount(taskSchedule.getTotalCPUCount());
+			 legacyHPCAppDescType.setNodeCount(taskSchedule.getNodeCount());
+			 legacyHPCAppDescType.setMaxWallTime(taskSchedule.getWallTimeLimit());
+			 if (resourceJobManager!=null){
+				 legacyHPCAppDescType.setInstalledParentPath(resourceJobManager.getJobManagerBinPath());
+			 }
+			 ProjectAccountType projectAccountType = legacyHPCAppDescType.addNewProjectAccount();
+			projectAccountType.setProjectAccountNumber(gatewayResourcePreferences.getAllocationProjectNumber());
+        }
+		legacyAppDescription.getType().setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
+        //Fetch from gateway profile
+
         //hostDescription.getType().setHostAddress(computeResource.getIpAddresses().iterator().next());
-
-        for (JobSubmissionInterface jobSubmissionInterface : computeResource.getJobSubmissionInterfaces())
-            if (jobSubmissionInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
-                LOCALSubmission localSubmission =
-                        appCatalog.getComputeResource().getLocalJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
-            } else {
-                if (jobSubmissionInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-
-                    //Fetch from App catalog Compute Resource
-                    SSHJobSubmission sshJobSubmission =
-                            appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
-                    if (sshJobSubmission.getSecurityProtocol() == SecurityProtocol.GSI) {
-                        ResourceJobManager resourceJobManager = sshJobSubmission.getResourceJobManager();
-                        ((GsisshHostType) legacyHostDescription.getType()).setJobManager
-                                (resourceJobManager.getResourceJobManagerType().name());
-                        ((GsisshHostType) legacyHostDescType).setInstalledPath(resourceJobManager.getJobManagerBinPath());
-                        // applicationDescription.setInstalledParentPath(resourceJobManager.getJobManagerBinPath());
-                        ((GsisshHostType) legacyHostDescType).setPort(sshJobSubmission.getSshPort());
-
-                    }
-
-                }
-            }
+        
 		
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         Properties configurationProperties = ServerSettings.getProperties();
