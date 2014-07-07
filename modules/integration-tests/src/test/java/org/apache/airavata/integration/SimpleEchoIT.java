@@ -24,11 +24,15 @@ package org.apache.airavata.integration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.client.tools.DocumentCreator;
+import org.apache.airavata.client.tools.DocumentCreatorNew;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.DataType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
@@ -52,8 +56,8 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         log.info("Running job in localhost");
         log.info("========================");
         log.info("Adding applications...");
-        DocumentCreator documentCreator = new DocumentCreator(airavataAPI);
-        documentCreator.createLocalHostDocs();
+        DocumentCreatorNew documentCreatorNew = new DocumentCreatorNew(getClient());
+        documentCreatorNew.createLocalHostDocs();
 
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();

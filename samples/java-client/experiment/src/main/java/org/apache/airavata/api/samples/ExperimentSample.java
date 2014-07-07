@@ -30,7 +30,7 @@ import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreator;
+import org.apache.airavata.client.tools.DocumentCreatorNew;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.error.AiravataClientConnectException;
@@ -56,16 +56,16 @@ public class ExperimentSample {
         return  AiravataAPIFactory.getAPI("default", "admin");
     }
 	
-	protected static Airavata.Client getClient() throws ApplicationSettingsException, AiravataClientConnectException {
+	protected static Airavata.Client getClient() throws Exception {
         String THRIFT_SERVER_HOST = ClientSettings.getSetting("thrift.server.host");
         int THRIFT_SERVER_PORT = Integer.parseInt(ClientSettings.getSetting("thrift.server.port"));
         return AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
 
     }
-	public static void main(String[] args) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, ApplicationSettingsException, TException, AiravataAPIInvocationException, AiravataClientConnectException {
+	public static void main(String[] args) throws Exception {
 	AiravataAPI airavataAPI = getAiravataAPI();
-	DocumentCreator documentCreator = new DocumentCreator(airavataAPI);
-        documentCreator.createLocalHostDocs();
+	DocumentCreatorNew documentCreatorNew = new DocumentCreatorNew(AppCatalogFactory.getAppCatalog());
+        documentCreatorNew.createLocalHostDocs();
         String user = "admin";
 
         Project project=new Project();
