@@ -17,6 +17,6 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
-$GLOBALS['airavataAPI_CONSTANTS']['AIRAVATA_API_VERSION'] = "0.12.0";
+$GLOBALS['airavataAPI_CONSTANTS']['AIRAVATA_API_VERSION'] = "0.13.0";
 
 

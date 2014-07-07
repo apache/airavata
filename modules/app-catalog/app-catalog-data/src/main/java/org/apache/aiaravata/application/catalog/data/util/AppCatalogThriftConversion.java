@@ -581,7 +581,9 @@ public class AppCatalogThriftConversion {
         description.setAppModuleId(resource.getAppModuleId());
         description.setComputeHostId(resource.getHostId());
         description.setExecutablePath(resource.getExecutablePath());
-        description.setParallelism(ApplicationParallelismType.valueOf(resource.getParallelism()));
+        if (resource.getParallelism() != null){
+            description.setParallelism(ApplicationParallelismType.valueOf(resource.getParallelism()));
+        }
         description.setAppDeploymentDescription(resource.getAppDes());
         //TODO ModuleLoadCmds is a list now. need to create a table for this and the jpa layer
 //        description.setModuleLoadCmds(resource.getEnvModuleLoadCMD());

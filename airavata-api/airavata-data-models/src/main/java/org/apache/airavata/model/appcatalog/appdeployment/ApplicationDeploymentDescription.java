@@ -241,6 +241,8 @@ import org.slf4j.LoggerFactory;
 
     this.appDeploymentId = "DO_NOT_SET_AT_CLIENTS";
 
+    this.parallelism = org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType.SERIAL;
+
   }
 
   public ApplicationDeploymentDescription(
@@ -325,7 +327,8 @@ import org.slf4j.LoggerFactory;
     this.appModuleId = null;
     this.computeHostId = null;
     this.executablePath = null;
-    this.parallelism = null;
+    this.parallelism = org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType.SERIAL;
+
     this.appDeploymentDescription = null;
     this.moduleLoadCmds = null;
     this.libPrependPaths = null;

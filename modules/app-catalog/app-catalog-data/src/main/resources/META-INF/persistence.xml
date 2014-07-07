@@ -23,7 +23,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
     <persistence-unit name="appcatalog_data">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
-	<class>org.apache.aiaravata.application.catalog.data.model.ComputeResource</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.ComputeResource</class>
         <class>org.apache.aiaravata.application.catalog.data.model.DataMovementProtocol</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GlobusJobSubmission</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GlobusGKEndpoint</class>
@@ -34,10 +34,10 @@
         <class>org.apache.aiaravata.application.catalog.data.model.HostAlias</class>
         <class>org.apache.aiaravata.application.catalog.data.model.HostIPAddress</class>
         <class>org.apache.aiaravata.application.catalog.data.model.JobSubmissionProtocol</class>
-	<class>org.apache.aiaravata.application.catalog.data.model.ScpDataMovement</class>
-	<class>org.apache.aiaravata.application.catalog.data.model.GridftpDataMovement</class>
-	<class>org.apache.aiaravata.application.catalog.data.model.GridftpEndpoint</class>
-	<class>org.apache.aiaravata.application.catalog.data.model.SshJobSubmission</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.ScpDataMovement</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.GridftpDataMovement</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.GridftpEndpoint</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.SshJobSubmission</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ApplicationModule</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment</class>
         <class>org.apache.aiaravata.application.catalog.data.model.LibraryPrepandPath</class>
@@ -52,11 +52,11 @@
         <class>org.apache.aiaravata.application.catalog.data.model.BatchQueue</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ComputeResourceFileSystem</class>
         <class>org.apache.aiaravata.application.catalog.data.model.JobSubmissionInterface</class>
-	<class>org.apache.aiaravata.application.catalog.data.model.DataMovementInterface</class>
-	<class>org.apache.aiaravata.application.catalog.data.model.ResourceJobManager</class>
-	<class>org.apache.aiaravata.application.catalog.data.model.JobManagerCommand</class>
-	<class>org.apache.aiaravata.application.catalog.data.model.LocalSubmission</class>
-	<class>org.apache.aiaravata.application.catalog.data.model.LocalDataMovement</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.DataMovementInterface</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.ResourceJobManager</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.JobManagerCommand</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.LocalSubmission</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.LocalDataMovement</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>
