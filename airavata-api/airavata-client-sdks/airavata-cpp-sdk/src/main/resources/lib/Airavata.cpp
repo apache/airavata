@@ -8763,6 +8763,479 @@ uint32_t Airavata_deleteApplicationInterface_presult::read(::apache::thrift::pro
   return xfer;
 }
 
+uint32_t Airavata_getAllApplicationInterfaceNames_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaceNames_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getAllApplicationInterfaceNames_args");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaceNames_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getAllApplicationInterfaceNames_pargs");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaceNames_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
+          {
+            this->success.clear();
+            uint32_t _size125;
+            ::apache::thrift::protocol::TType _ktype126;
+            ::apache::thrift::protocol::TType _vtype127;
+            xfer += iprot->readMapBegin(_ktype126, _vtype127, _size125);
+            uint32_t _i129;
+            for (_i129 = 0; _i129 < _size125; ++_i129)
+            {
+              std::string _key130;
+              xfer += iprot->readString(_key130);
+              std::string& _val131 = this->success[_key130];
+              xfer += iprot->readString(_val131);
+            }
+            xfer += iprot->readMapEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaceNames_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_getAllApplicationInterfaceNames_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
+    {
+      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
+      std::map<std::string, std::string> ::const_iterator _iter132;
+      for (_iter132 = this->success.begin(); _iter132 != this->success.end(); ++_iter132)
+      {
+        xfer += oprot->writeString(_iter132->first);
+        xfer += oprot->writeString(_iter132->second);
+      }
+      xfer += oprot->writeMapEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaceNames_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
+          {
+            (*(this->success)).clear();
+            uint32_t _size133;
+            ::apache::thrift::protocol::TType _ktype134;
+            ::apache::thrift::protocol::TType _vtype135;
+            xfer += iprot->readMapBegin(_ktype134, _vtype135, _size133);
+            uint32_t _i137;
+            for (_i137 = 0; _i137 < _size133; ++_i137)
+            {
+              std::string _key138;
+              xfer += iprot->readString(_key138);
+              std::string& _val139 = (*(this->success))[_key138];
+              xfer += iprot->readString(_val139);
+            }
+            xfer += iprot->readMapEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaces_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaces_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getAllApplicationInterfaces_args");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaces_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getAllApplicationInterfaces_pargs");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaces_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->success.clear();
+            uint32_t _size140;
+            ::apache::thrift::protocol::TType _etype143;
+            xfer += iprot->readListBegin(_etype143, _size140);
+            this->success.resize(_size140);
+            uint32_t _i144;
+            for (_i144 = 0; _i144 < _size140; ++_i144)
+            {
+              xfer += this->success[_i144].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaces_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_getAllApplicationInterfaces_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
+      std::vector< ::ApplicationInterfaceDescription> ::const_iterator _iter145;
+      for (_iter145 = this->success.begin(); _iter145 != this->success.end(); ++_iter145)
+      {
+        xfer += (*_iter145).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllApplicationInterfaces_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            (*(this->success)).clear();
+            uint32_t _size146;
+            ::apache::thrift::protocol::TType _etype149;
+            xfer += iprot->readListBegin(_etype149, _size146);
+            (*(this->success)).resize(_size146);
+            uint32_t _i150;
+            for (_i150 = 0; _i150 < _size146; ++_i150)
+            {
+              xfer += (*(this->success))[_i150].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
 uint32_t Airavata_getApplicationInputs_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
@@ -8856,14 +9329,14 @@ uint32_t Airavata_getApplicationInputs_result::read(::apache::thrift::protocol::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size125;
-            ::apache::thrift::protocol::TType _etype128;
-            xfer += iprot->readListBegin(_etype128, _size125);
-            this->success.resize(_size125);
-            uint32_t _i129;
-            for (_i129 = 0; _i129 < _size125; ++_i129)
+            uint32_t _size151;
+            ::apache::thrift::protocol::TType _etype154;
+            xfer += iprot->readListBegin(_etype154, _size151);
+            this->success.resize(_size151);
+            uint32_t _i155;
+            for (_i155 = 0; _i155 < _size151; ++_i155)
             {
-              xfer += this->success[_i129].read(iprot);
+              xfer += this->success[_i155].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -8918,10 +9391,10 @@ uint32_t Airavata_getApplicationInputs_result::write(::apache::thrift::protocol:
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::InputDataObjectType> ::const_iterator _iter130;
-      for (_iter130 = this->success.begin(); _iter130 != this->success.end(); ++_iter130)
+      std::vector< ::InputDataObjectType> ::const_iterator _iter156;
+      for (_iter156 = this->success.begin(); _iter156 != this->success.end(); ++_iter156)
       {
-        xfer += (*_iter130).write(oprot);
+        xfer += (*_iter156).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -8968,14 +9441,14 @@ uint32_t Airavata_getApplicationInputs_presult::read(::apache::thrift::protocol:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size131;
-            ::apache::thrift::protocol::TType _etype134;
-            xfer += iprot->readListBegin(_etype134, _size131);
-            (*(this->success)).resize(_size131);
-            uint32_t _i135;
-            for (_i135 = 0; _i135 < _size131; ++_i135)
+            uint32_t _size157;
+            ::apache::thrift::protocol::TType _etype160;
+            xfer += iprot->readListBegin(_etype160, _size157);
+            (*(this->success)).resize(_size157);
+            uint32_t _i161;
+            for (_i161 = 0; _i161 < _size157; ++_i161)
             {
-              xfer += (*(this->success))[_i135].read(iprot);
+              xfer += (*(this->success))[_i161].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -9113,14 +9586,14 @@ uint32_t Airavata_getApplicationOutputs_result::read(::apache::thrift::protocol:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size136;
-            ::apache::thrift::protocol::TType _etype139;
-            xfer += iprot->readListBegin(_etype139, _size136);
-            this->success.resize(_size136);
-            uint32_t _i140;
-            for (_i140 = 0; _i140 < _size136; ++_i140)
+            uint32_t _size162;
+            ::apache::thrift::protocol::TType _etype165;
+            xfer += iprot->readListBegin(_etype165, _size162);
+            this->success.resize(_size162);
+            uint32_t _i166;
+            for (_i166 = 0; _i166 < _size162; ++_i166)
             {
-              xfer += this->success[_i140].read(iprot);
+              xfer += this->success[_i166].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -9175,10 +9648,10 @@ uint32_t Airavata_getApplicationOutputs_result::write(::apache::thrift::protocol
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::OutputDataObjectType> ::const_iterator _iter141;
-      for (_iter141 = this->success.begin(); _iter141 != this->success.end(); ++_iter141)
+      std::vector< ::OutputDataObjectType> ::const_iterator _iter167;
+      for (_iter167 = this->success.begin(); _iter167 != this->success.end(); ++_iter167)
       {
-        xfer += (*_iter141).write(oprot);
+        xfer += (*_iter167).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -9225,14 +9698,14 @@ uint32_t Airavata_getApplicationOutputs_presult::read(::apache::thrift::protocol
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size142;
-            ::apache::thrift::protocol::TType _etype145;
-            xfer += iprot->readListBegin(_etype145, _size142);
-            (*(this->success)).resize(_size142);
-            uint32_t _i146;
-            for (_i146 = 0; _i146 < _size142; ++_i146)
+            uint32_t _size168;
+            ::apache::thrift::protocol::TType _etype171;
+            xfer += iprot->readListBegin(_etype171, _size168);
+            (*(this->success)).resize(_size168);
+            uint32_t _i172;
+            for (_i172 = 0; _i172 < _size168; ++_i172)
             {
-              xfer += (*(this->success))[_i146].read(iprot);
+              xfer += (*(this->success))[_i172].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -9370,14 +9843,14 @@ uint32_t Airavata_getAvailableAppInterfaceComputeResources_result::read(::apache
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size147;
-            ::apache::thrift::protocol::TType _etype150;
-            xfer += iprot->readListBegin(_etype150, _size147);
-            this->success.resize(_size147);
-            uint32_t _i151;
-            for (_i151 = 0; _i151 < _size147; ++_i151)
+            uint32_t _size173;
+            ::apache::thrift::protocol::TType _etype176;
+            xfer += iprot->readListBegin(_etype176, _size173);
+            this->success.resize(_size173);
+            uint32_t _i177;
+            for (_i177 = 0; _i177 < _size173; ++_i177)
             {
-              xfer += iprot->readString(this->success[_i151]);
+              xfer += iprot->readString(this->success[_i177]);
             }
             xfer += iprot->readListEnd();
           }
@@ -9432,10 +9905,10 @@ uint32_t Airavata_getAvailableAppInterfaceComputeResources_result::write(::apach
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::vector<std::string> ::const_iterator _iter152;
-      for (_iter152 = this->success.begin(); _iter152 != this->success.end(); ++_iter152)
+      std::vector<std::string> ::const_iterator _iter178;
+      for (_iter178 = this->success.begin(); _iter178 != this->success.end(); ++_iter178)
       {
-        xfer += oprot->writeString((*_iter152));
+        xfer += oprot->writeString((*_iter178));
       }
       xfer += oprot->writeListEnd();
     }
@@ -9482,14 +9955,14 @@ uint32_t Airavata_getAvailableAppInterfaceComputeResources_presult::read(::apach
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size153;
-            ::apache::thrift::protocol::TType _etype156;
-            xfer += iprot->readListBegin(_etype156, _size153);
-            (*(this->success)).resize(_size153);
-            uint32_t _i157;
-            for (_i157 = 0; _i157 < _size153; ++_i157)
+            uint32_t _size179;
+            ::apache::thrift::protocol::TType _etype182;
+            xfer += iprot->readListBegin(_etype182, _size179);
+            (*(this->success)).resize(_size179);
+            uint32_t _i183;
+            for (_i183 = 0; _i183 < _size179; ++_i183)
             {
-              xfer += iprot->readString((*(this->success))[_i157]);
+              xfer += iprot->readString((*(this->success))[_i183]);
             }
             xfer += iprot->readListEnd();
           }
@@ -10053,17 +10526,17 @@ uint32_t Airavata_getAllComputeResourceNames_result::read(::apache::thrift::prot
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->success.clear();
-            uint32_t _size158;
-            ::apache::thrift::protocol::TType _ktype159;
-            ::apache::thrift::protocol::TType _vtype160;
-            xfer += iprot->readMapBegin(_ktype159, _vtype160, _size158);
-            uint32_t _i162;
-            for (_i162 = 0; _i162 < _size158; ++_i162)
+            uint32_t _size184;
+            ::apache::thrift::protocol::TType _ktype185;
+            ::apache::thrift::protocol::TType _vtype186;
+            xfer += iprot->readMapBegin(_ktype185, _vtype186, _size184);
+            uint32_t _i188;
+            for (_i188 = 0; _i188 < _size184; ++_i188)
             {
-              std::string _key163;
-              xfer += iprot->readString(_key163);
-              std::string& _val164 = this->success[_key163];
-              xfer += iprot->readString(_val164);
+              std::string _key189;
+              xfer += iprot->readString(_key189);
+              std::string& _val190 = this->success[_key189];
+              xfer += iprot->readString(_val190);
             }
             xfer += iprot->readMapEnd();
           }
@@ -10118,11 +10591,11 @@ uint32_t Airavata_getAllComputeResourceNames_result::write(::apache::thrift::pro
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::map<std::string, std::string> ::const_iterator _iter165;
-      for (_iter165 = this->success.begin(); _iter165 != this->success.end(); ++_iter165)
+      std::map<std::string, std::string> ::const_iterator _iter191;
+      for (_iter191 = this->success.begin(); _iter191 != this->success.end(); ++_iter191)
       {
-        xfer += oprot->writeString(_iter165->first);
-        xfer += oprot->writeString(_iter165->second);
+        xfer += oprot->writeString(_iter191->first);
+        xfer += oprot->writeString(_iter191->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -10169,17 +10642,17 @@ uint32_t Airavata_getAllComputeResourceNames_presult::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             (*(this->success)).clear();
-            uint32_t _size166;
-            ::apache::thrift::protocol::TType _ktype167;
-            ::apache::thrift::protocol::TType _vtype168;
-            xfer += iprot->readMapBegin(_ktype167, _vtype168, _size166);
-            uint32_t _i170;
-            for (_i170 = 0; _i170 < _size166; ++_i170)
+            uint32_t _size192;
+            ::apache::thrift::protocol::TType _ktype193;
+            ::apache::thrift::protocol::TType _vtype194;
+            xfer += iprot->readMapBegin(_ktype193, _vtype194, _size192);
+            uint32_t _i196;
+            for (_i196 = 0; _i196 < _size192; ++_i196)
             {
-              std::string _key171;
-              xfer += iprot->readString(_key171);
-              std::string& _val172 = (*(this->success))[_key171];
-              xfer += iprot->readString(_val172);
+              std::string _key197;
+              xfer += iprot->readString(_key197);
+              std::string& _val198 = (*(this->success))[_key197];
+              xfer += iprot->readString(_val198);
             }
             xfer += iprot->readMapEnd();
           }
@@ -13741,17 +14214,17 @@ uint32_t Airavata_changeJobSubmissionPriorities_args::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->jobSubmissionPriorityMap.clear();
-            uint32_t _size173;
-            ::apache::thrift::protocol::TType _ktype174;
-            ::apache::thrift::protocol::TType _vtype175;
-            xfer += iprot->readMapBegin(_ktype174, _vtype175, _size173);
-            uint32_t _i177;
-            for (_i177 = 0; _i177 < _size173; ++_i177)
+            uint32_t _size199;
+            ::apache::thrift::protocol::TType _ktype200;
+            ::apache::thrift::protocol::TType _vtype201;
+            xfer += iprot->readMapBegin(_ktype200, _vtype201, _size199);
+            uint32_t _i203;
+            for (_i203 = 0; _i203 < _size199; ++_i203)
             {
-              std::string _key178;
-              xfer += iprot->readString(_key178);
-              int32_t& _val179 = this->jobSubmissionPriorityMap[_key178];
-              xfer += iprot->readI32(_val179);
+              std::string _key204;
+              xfer += iprot->readString(_key204);
+              int32_t& _val205 = this->jobSubmissionPriorityMap[_key204];
+              xfer += iprot->readI32(_val205);
             }
             xfer += iprot->readMapEnd();
           }
@@ -13781,11 +14254,11 @@ uint32_t Airavata_changeJobSubmissionPriorities_args::write(::apache::thrift::pr
   xfer += oprot->writeFieldBegin("jobSubmissionPriorityMap", ::apache::thrift::protocol::T_MAP, 1);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->jobSubmissionPriorityMap.size()));
-    std::map<std::string, int32_t> ::const_iterator _iter180;
-    for (_iter180 = this->jobSubmissionPriorityMap.begin(); _iter180 != this->jobSubmissionPriorityMap.end(); ++_iter180)
+    std::map<std::string, int32_t> ::const_iterator _iter206;
+    for (_iter206 = this->jobSubmissionPriorityMap.begin(); _iter206 != this->jobSubmissionPriorityMap.end(); ++_iter206)
     {
-      xfer += oprot->writeString(_iter180->first);
-      xfer += oprot->writeI32(_iter180->second);
+      xfer += oprot->writeString(_iter206->first);
+      xfer += oprot->writeI32(_iter206->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -13803,11 +14276,11 @@ uint32_t Airavata_changeJobSubmissionPriorities_pargs::write(::apache::thrift::p
   xfer += oprot->writeFieldBegin("jobSubmissionPriorityMap", ::apache::thrift::protocol::T_MAP, 1);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->jobSubmissionPriorityMap)).size()));
-    std::map<std::string, int32_t> ::const_iterator _iter181;
-    for (_iter181 = (*(this->jobSubmissionPriorityMap)).begin(); _iter181 != (*(this->jobSubmissionPriorityMap)).end(); ++_iter181)
+    std::map<std::string, int32_t> ::const_iterator _iter207;
+    for (_iter207 = (*(this->jobSubmissionPriorityMap)).begin(); _iter207 != (*(this->jobSubmissionPriorityMap)).end(); ++_iter207)
     {
-      xfer += oprot->writeString(_iter181->first);
-      xfer += oprot->writeI32(_iter181->second);
+      xfer += oprot->writeString(_iter207->first);
+      xfer += oprot->writeI32(_iter207->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -13999,17 +14472,17 @@ uint32_t Airavata_changeDataMovementPriorities_args::read(::apache::thrift::prot
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->dataMovementPriorityMap.clear();
-            uint32_t _size182;
-            ::apache::thrift::protocol::TType _ktype183;
-            ::apache::thrift::protocol::TType _vtype184;
-            xfer += iprot->readMapBegin(_ktype183, _vtype184, _size182);
-            uint32_t _i186;
-            for (_i186 = 0; _i186 < _size182; ++_i186)
+            uint32_t _size208;
+            ::apache::thrift::protocol::TType _ktype209;
+            ::apache::thrift::protocol::TType _vtype210;
+            xfer += iprot->readMapBegin(_ktype209, _vtype210, _size208);
+            uint32_t _i212;
+            for (_i212 = 0; _i212 < _size208; ++_i212)
             {
-              std::string _key187;
-              xfer += iprot->readString(_key187);
-              int32_t& _val188 = this->dataMovementPriorityMap[_key187];
-              xfer += iprot->readI32(_val188);
+              std::string _key213;
+              xfer += iprot->readString(_key213);
+              int32_t& _val214 = this->dataMovementPriorityMap[_key213];
+              xfer += iprot->readI32(_val214);
             }
             xfer += iprot->readMapEnd();
           }
@@ -14039,11 +14512,11 @@ uint32_t Airavata_changeDataMovementPriorities_args::write(::apache::thrift::pro
   xfer += oprot->writeFieldBegin("dataMovementPriorityMap", ::apache::thrift::protocol::T_MAP, 1);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->dataMovementPriorityMap.size()));
-    std::map<std::string, int32_t> ::const_iterator _iter189;
-    for (_iter189 = this->dataMovementPriorityMap.begin(); _iter189 != this->dataMovementPriorityMap.end(); ++_iter189)
+    std::map<std::string, int32_t> ::const_iterator _iter215;
+    for (_iter215 = this->dataMovementPriorityMap.begin(); _iter215 != this->dataMovementPriorityMap.end(); ++_iter215)
     {
-      xfer += oprot->writeString(_iter189->first);
-      xfer += oprot->writeI32(_iter189->second);
+      xfer += oprot->writeString(_iter215->first);
+      xfer += oprot->writeI32(_iter215->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -14061,11 +14534,11 @@ uint32_t Airavata_changeDataMovementPriorities_pargs::write(::apache::thrift::pr
   xfer += oprot->writeFieldBegin("dataMovementPriorityMap", ::apache::thrift::protocol::T_MAP, 1);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->dataMovementPriorityMap)).size()));
-    std::map<std::string, int32_t> ::const_iterator _iter190;
-    for (_iter190 = (*(this->dataMovementPriorityMap)).begin(); _iter190 != (*(this->dataMovementPriorityMap)).end(); ++_iter190)
+    std::map<std::string, int32_t> ::const_iterator _iter216;
+    for (_iter216 = (*(this->dataMovementPriorityMap)).begin(); _iter216 != (*(this->dataMovementPriorityMap)).end(); ++_iter216)
     {
-      xfer += oprot->writeString(_iter190->first);
-      xfer += oprot->writeI32(_iter190->second);
+      xfer += oprot->writeString(_iter216->first);
+      xfer += oprot->writeI32(_iter216->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -16201,14 +16674,14 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_result::read(::apache:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size191;
-            ::apache::thrift::protocol::TType _etype194;
-            xfer += iprot->readListBegin(_etype194, _size191);
-            this->success.resize(_size191);
-            uint32_t _i195;
-            for (_i195 = 0; _i195 < _size191; ++_i195)
+            uint32_t _size217;
+            ::apache::thrift::protocol::TType _etype220;
+            xfer += iprot->readListBegin(_etype220, _size217);
+            this->success.resize(_size217);
+            uint32_t _i221;
+            for (_i221 = 0; _i221 < _size217; ++_i221)
             {
-              xfer += this->success[_i195].read(iprot);
+              xfer += this->success[_i221].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -16263,10 +16736,10 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_result::write(::apache
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::ComputeResourcePreference> ::const_iterator _iter196;
-      for (_iter196 = this->success.begin(); _iter196 != this->success.end(); ++_iter196)
+      std::vector< ::ComputeResourcePreference> ::const_iterator _iter222;
+      for (_iter222 = this->success.begin(); _iter222 != this->success.end(); ++_iter222)
       {
-        xfer += (*_iter196).write(oprot);
+        xfer += (*_iter222).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -16313,14 +16786,14 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_presult::read(::apache
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size197;
-            ::apache::thrift::protocol::TType _etype200;
-            xfer += iprot->readListBegin(_etype200, _size197);
-            (*(this->success)).resize(_size197);
-            uint32_t _i201;
-            for (_i201 = 0; _i201 < _size197; ++_i201)
+            uint32_t _size223;
+            ::apache::thrift::protocol::TType _etype226;
+            xfer += iprot->readListBegin(_etype226, _size223);
+            (*(this->success)).resize(_size223);
+            uint32_t _i227;
+            for (_i227 = 0; _i227 < _size223; ++_i227)
             {
-              xfer += (*(this->success))[_i201].read(iprot);
+              xfer += (*(this->success))[_i227].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -19329,6 +19802,138 @@ bool AiravataClient::recv_deleteApplicationInterface()
     throw result.ase;
   }
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteApplicationInterface failed: unknown result");
+}
+
+void AiravataClient::getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return)
+{
+  send_getAllApplicationInterfaceNames();
+  recv_getAllApplicationInterfaceNames(_return);
+}
+
+void AiravataClient::send_getAllApplicationInterfaceNames()
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getAllApplicationInterfaceNames", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getAllApplicationInterfaceNames_pargs args;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getAllApplicationInterfaceNames") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_getAllApplicationInterfaceNames_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllApplicationInterfaceNames failed: unknown result");
+}
+
+void AiravataClient::getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return)
+{
+  send_getAllApplicationInterfaces();
+  recv_getAllApplicationInterfaces(_return);
+}
+
+void AiravataClient::send_getAllApplicationInterfaces()
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getAllApplicationInterfaces", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getAllApplicationInterfaces_pargs args;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getAllApplicationInterfaces") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_getAllApplicationInterfaces_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllApplicationInterfaces failed: unknown result");
 }
 
 void AiravataClient::getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId)
@@ -23904,6 +24509,132 @@ void AiravataProcessor::process_deleteApplicationInterface(int32_t seqid, ::apac
 
   if (this->eventHandler_.get() != NULL) {
     this->eventHandler_->postWrite(ctx, "Airavata.deleteApplicationInterface", bytes);
+  }
+}
+
+void AiravataProcessor::process_getAllApplicationInterfaceNames(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.getAllApplicationInterfaceNames", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getAllApplicationInterfaceNames");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.getAllApplicationInterfaceNames");
+  }
+
+  Airavata_getAllApplicationInterfaceNames_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.getAllApplicationInterfaceNames", bytes);
+  }
+
+  Airavata_getAllApplicationInterfaceNames_result result;
+  try {
+    iface_->getAllApplicationInterfaceNames(result.success);
+    result.__isset.success = true;
+  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.getAllApplicationInterfaceNames");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getAllApplicationInterfaceNames", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.getAllApplicationInterfaceNames");
+  }
+
+  oprot->writeMessageBegin("getAllApplicationInterfaceNames", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.getAllApplicationInterfaceNames", bytes);
+  }
+}
+
+void AiravataProcessor::process_getAllApplicationInterfaces(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.getAllApplicationInterfaces", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getAllApplicationInterfaces");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.getAllApplicationInterfaces");
+  }
+
+  Airavata_getAllApplicationInterfaces_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.getAllApplicationInterfaces", bytes);
+  }
+
+  Airavata_getAllApplicationInterfaces_result result;
+  try {
+    iface_->getAllApplicationInterfaces(result.success);
+    result.__isset.success = true;
+  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.getAllApplicationInterfaces");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getAllApplicationInterfaces", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.getAllApplicationInterfaces");
+  }
+
+  oprot->writeMessageBegin("getAllApplicationInterfaces", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.getAllApplicationInterfaces", bytes);
   }
 }
 

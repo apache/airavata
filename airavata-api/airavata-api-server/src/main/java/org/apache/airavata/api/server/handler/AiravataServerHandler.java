@@ -1458,6 +1458,28 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     }
 
     /**
+     * Fetch name and id of  Application Interface documents.
+     *
+     * @return map<applicationId, applicationInterfaceNames>
+     * Returns a list of application interfaces with corresponsing id's
+     */
+    @Override
+    public Map<String, String> getAllApplicationInterfaceNames() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
+     * Fetch all Application Interface documents.
+     *
+     * @return map<applicationId, applicationInterfaceNames>
+     * Returns a list of application interfaces documents
+     */
+    @Override
+    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
      * Fetch the list of Application Inputs.
      *
      * @param appInterfaceId The identifier for the requested application interface

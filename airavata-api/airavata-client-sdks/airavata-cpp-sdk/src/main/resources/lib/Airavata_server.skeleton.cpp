@@ -207,6 +207,16 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteApplicationInterface\n");
   }
 
+  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return) {
+    // Your implementation goes here
+    printf("getAllApplicationInterfaceNames\n");
+  }
+
+  void getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return) {
+    // Your implementation goes here
+    printf("getAllApplicationInterfaces\n");
+  }
+
   void getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("getApplicationInputs\n");
