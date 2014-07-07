@@ -638,7 +638,29 @@ public class ComputeResourceImpl implements ComputeResource {
         }
     }
 
-	@Override
+    @Override
+    public void removeJobSubmissionInterface(String jobSubmissionInterfaceId) throws AppCatalogException {
+        try {
+            JobSubmissionInterfaceResource resource = new JobSubmissionInterfaceResource();
+            resource.remove(jobSubmissionInterfaceId);
+        }catch (Exception e){
+            logger.error("Error while removing job submission interface..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public void removeDataMovementInterface(String dataMovementInterfaceId) throws AppCatalogException {
+        try {
+            DataMovementInterfaceResource resource = new DataMovementInterfaceResource();
+            resource.remove(dataMovementInterfaceId);
+        }catch (Exception e){
+            logger.error("Error while removing data movement interface..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
 	public String addResourceJobManager(ResourceJobManager resourceJobManager)
 			throws AppCatalogException {
 		resourceJobManager.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));

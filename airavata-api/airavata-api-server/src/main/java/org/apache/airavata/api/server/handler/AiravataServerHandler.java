@@ -2032,7 +2032,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteJobSubmissionInterface(String jobSubmissionInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getComputeResource().removeJobSubmissionInterface(jobSubmissionInterfaceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while deleting job submission interface...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting job submission interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2044,7 +2054,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteDataMovementInterface(String dataMovementInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getComputeResource().removeDataMovementInterface(dataMovementInterfaceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while deleting data movement interface...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting data movement interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
