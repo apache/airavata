@@ -28,75 +28,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
-import org.apache.aiaravata.application.catalog.data.model.AppEnvironment;
-import org.apache.aiaravata.application.catalog.data.model.AppModuleMapping;
-import org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment;
-import org.apache.aiaravata.application.catalog.data.model.ApplicationInput;
-import org.apache.aiaravata.application.catalog.data.model.ApplicationInterface;
-import org.apache.aiaravata.application.catalog.data.model.ApplicationModule;
-import org.apache.aiaravata.application.catalog.data.model.ApplicationOutput;
-import org.apache.aiaravata.application.catalog.data.model.BatchQueue;
-import org.apache.aiaravata.application.catalog.data.model.ComputeResource;
-import org.apache.aiaravata.application.catalog.data.model.ComputeResourceFileSystem;
-import org.apache.aiaravata.application.catalog.data.model.ComputeResourcePreference;
-import org.apache.aiaravata.application.catalog.data.model.DataMovementInterface;
-import org.apache.aiaravata.application.catalog.data.model.DataMovementProtocol;
-import org.apache.aiaravata.application.catalog.data.model.GSISSHExport;
-import org.apache.aiaravata.application.catalog.data.model.GSISSHPostJobCommand;
-import org.apache.aiaravata.application.catalog.data.model.GSISSHPreJobCommand;
-import org.apache.aiaravata.application.catalog.data.model.GSISSHSubmission;
-import org.apache.aiaravata.application.catalog.data.model.GatewayProfile;
-import org.apache.aiaravata.application.catalog.data.model.GlobusGKEndpoint;
-import org.apache.aiaravata.application.catalog.data.model.GlobusJobSubmission;
-import org.apache.aiaravata.application.catalog.data.model.GridftpDataMovement;
-import org.apache.aiaravata.application.catalog.data.model.GridftpEndpoint;
-import org.apache.aiaravata.application.catalog.data.model.HostAlias;
-import org.apache.aiaravata.application.catalog.data.model.HostIPAddress;
-import org.apache.aiaravata.application.catalog.data.model.JobManagerCommand;
-import org.apache.aiaravata.application.catalog.data.model.JobSubmissionInterface;
-import org.apache.aiaravata.application.catalog.data.model.JobSubmissionProtocol;
-import org.apache.aiaravata.application.catalog.data.model.LibraryApendPath;
-import org.apache.aiaravata.application.catalog.data.model.LibraryPrepandPath;
-import org.apache.aiaravata.application.catalog.data.model.LocalDataMovement;
-import org.apache.aiaravata.application.catalog.data.model.LocalSubmission;
-import org.apache.aiaravata.application.catalog.data.model.ResourceJobManager;
-import org.apache.aiaravata.application.catalog.data.model.SshJobSubmission;
-import org.apache.aiaravata.application.catalog.data.model.ScpDataMovement;
-import org.apache.aiaravata.application.catalog.data.resources.AppDeploymentResource;
-import org.apache.aiaravata.application.catalog.data.resources.AppEnvironmentResource;
-import org.apache.aiaravata.application.catalog.data.resources.AppInterfaceResource;
-import org.apache.aiaravata.application.catalog.data.resources.AppModuleMappingResource;
-import org.apache.aiaravata.application.catalog.data.resources.AppModuleResource;
-import org.apache.aiaravata.application.catalog.data.resources.ApplicationInputResource;
-import org.apache.aiaravata.application.catalog.data.resources.ApplicationOutputResource;
-import org.apache.aiaravata.application.catalog.data.resources.BatchQueueResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeHostPreferenceResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceFileSystemResource;
-import org.apache.aiaravata.application.catalog.data.resources.DataMovementInterfaceResource;
-import org.apache.aiaravata.application.catalog.data.resources.DataMovementProtocolResource;
-import org.apache.aiaravata.application.catalog.data.resources.GSISSHExportResource;
-import org.apache.aiaravata.application.catalog.data.resources.GSISSHPostJobCommandResource;
-import org.apache.aiaravata.application.catalog.data.resources.GSISSHPreJobCommandResource;
-import org.apache.aiaravata.application.catalog.data.resources.GSISSHSubmissionResource;
-import org.apache.aiaravata.application.catalog.data.resources.GatewayProfileResource;
-import org.apache.aiaravata.application.catalog.data.resources.GlobusGKEndpointResource;
-import org.apache.aiaravata.application.catalog.data.resources.GlobusJobSubmissionResource;
-import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.GridftpEndpointResource;
-import org.apache.aiaravata.application.catalog.data.resources.HostAliasResource;
-import org.apache.aiaravata.application.catalog.data.resources.HostIPAddressResource;
-import org.apache.aiaravata.application.catalog.data.resources.JobManagerCommandResource;
-import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionInterfaceResource;
-import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionProtocolResource;
-import org.apache.aiaravata.application.catalog.data.resources.LibraryApendPathResource;
-import org.apache.aiaravata.application.catalog.data.resources.LibraryPrepandPathResource;
-import org.apache.aiaravata.application.catalog.data.resources.LocalDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.LocalSubmissionResource;
-import org.apache.aiaravata.application.catalog.data.resources.Resource;
-import org.apache.aiaravata.application.catalog.data.resources.ResourceJobManagerResource;
-import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
-import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.model.*;
+import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.slf4j.Logger;
@@ -391,6 +324,13 @@ public class AppCatalogJPAUtils {
 					logger.error("Object should be a Local Data Movement.", new IllegalArgumentException());
 					throw new IllegalArgumentException("Object should be a Local Data Movement.");
 				}
+            case MODULE_LOAD_CMD:
+                        if (o instanceof ModuleLoadCmd){
+                            return createModuleLoadCmd((ModuleLoadCmd) o);
+                        }else{
+                            logger.error("Object should be a Module Load Cmd.", new IllegalArgumentException());
+                            throw new IllegalArgumentException("Object should be a Module Load Cmd.");
+                }
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
                 throw new IllegalArgumentException("Illegal data type..");
@@ -612,7 +552,6 @@ public class AppCatalogJPAUtils {
         resource.setDeploymentId(o.getDeploymentID());
         resource.setAppDes(o.getApplicationDesc());
         resource.setAppModuleId(o.getAppModuleID());
-        resource.setEnvModuleLoadCMD(o.getEnvModuleLoaString());
         resource.setHostId(o.getHostID());
         resource.setExecutablePath(o.getExecutablePath());
         resource.setParallelism(o.getParallelism());
@@ -707,5 +646,13 @@ public class AppCatalogJPAUtils {
         resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeHostResource()));
         resource.setGatewayProfile((GatewayProfileResource)createGatewayProfile(o.getGatewayProfile()));
         return resource;
+    }
+
+    private static Resource createModuleLoadCmd(ModuleLoadCmd o) {
+        ModuleLoadCmdResource moduleLoadCmdResource = new ModuleLoadCmdResource();
+        moduleLoadCmdResource.setCmd(o.getCmd());
+        moduleLoadCmdResource.setAppDeploymentId(o.getAppDeploymentId());
+        moduleLoadCmdResource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        return moduleLoadCmdResource;
     }
 }

@@ -29,37 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
-import org.apache.aiaravata.application.catalog.data.resources.AppDeploymentResource;
-import org.apache.aiaravata.application.catalog.data.resources.AppEnvironmentResource;
-import org.apache.aiaravata.application.catalog.data.resources.AppInterfaceResource;
-import org.apache.aiaravata.application.catalog.data.resources.AppModuleMappingResource;
-import org.apache.aiaravata.application.catalog.data.resources.AppModuleResource;
-import org.apache.aiaravata.application.catalog.data.resources.ApplicationInputResource;
-import org.apache.aiaravata.application.catalog.data.resources.ApplicationOutputResource;
-import org.apache.aiaravata.application.catalog.data.resources.BatchQueueResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeHostPreferenceResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceFileSystemResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceResource;
-import org.apache.aiaravata.application.catalog.data.resources.DataMovementInterfaceResource;
-import org.apache.aiaravata.application.catalog.data.resources.DataMovementProtocolResource;
-import org.apache.aiaravata.application.catalog.data.resources.GatewayProfileResource;
-import org.apache.aiaravata.application.catalog.data.resources.GlobusGKEndpointResource;
-import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.GridftpEndpointResource;
-import org.apache.aiaravata.application.catalog.data.resources.HostAliasResource;
-import org.apache.aiaravata.application.catalog.data.resources.HostIPAddressResource;
-import org.apache.aiaravata.application.catalog.data.resources.JobManagerCommandResource;
-import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionInterfaceResource;
-import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionProtocolResource;
-import org.apache.aiaravata.application.catalog.data.resources.LibraryApendPathResource;
-import org.apache.aiaravata.application.catalog.data.resources.LibraryPrepandPathResource;
-import org.apache.aiaravata.application.catalog.data.resources.LocalDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.LocalSubmissionResource;
-import org.apache.aiaravata.application.catalog.data.resources.Resource;
-import org.apache.aiaravata.application.catalog.data.resources.ResourceJobManagerResource;
-import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
@@ -587,9 +557,13 @@ public class AppCatalogThriftConversion {
             description.setParallelism(ApplicationParallelismType.valueOf(resource.getParallelism()));
         }
         description.setAppDeploymentDescription(resource.getAppDes());
-        //TODO ModuleLoadCmds is a list now. need to create a table for this and the jpa layer
-//        description.setModuleLoadCmds(resource.getEnvModuleLoadCMD());
-
+        ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
+        List<Resource> moduleLoadCmds = cmdResource.get(AbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, resource.getDeploymentId());
+        if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){
+            for (Resource moduleLoadCmd : moduleLoadCmds){
+                description.addToModuleLoadCmds(((ModuleLoadCmdResource) moduleLoadCmd).getCmd());
+            }
+        }
         LibraryPrepandPathResource prepandPathResource = new LibraryPrepandPathResource();
         List<Resource> libPrepandPaths = prepandPathResource.get(AbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, resource.getDeploymentId());
         if (libPrepandPaths != null && !libPrepandPaths.isEmpty()){
