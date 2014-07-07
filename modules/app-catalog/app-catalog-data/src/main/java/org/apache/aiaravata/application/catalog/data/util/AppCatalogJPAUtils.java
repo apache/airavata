@@ -591,6 +591,7 @@ public class AppCatalogJPAUtils {
         AppInterfaceResource resource = new AppInterfaceResource();
         resource.setInterfaceId(o.getInterfaceID());
         resource.setAppName(o.getAppName());
+        resource.setAppDescription(o.getAppDescription());
         return resource;
     }
 

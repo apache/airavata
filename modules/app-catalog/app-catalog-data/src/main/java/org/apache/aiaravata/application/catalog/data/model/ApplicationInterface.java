@@ -35,6 +35,8 @@ public class ApplicationInterface implements Serializable {
     private String interfaceID;
     @Column(name = "APPLICATION_NAME")
     private String appName;
+    @Column(name = "APPLICATION_DESCRIPTION")
+    private String appDescription;
 
     public String getInterfaceID() {
         return interfaceID;
@@ -50,5 +52,13 @@ public class ApplicationInterface implements Serializable {
 
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+
+    public String getAppDescription() {
+        return appDescription;
+    }
+
+    public void setAppDescription(String appDescription) {
+        this.appDescription = appDescription;
     }
 }
