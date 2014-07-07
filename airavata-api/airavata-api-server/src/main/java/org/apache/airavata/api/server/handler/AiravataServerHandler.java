@@ -2116,7 +2116,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+    	try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            return gatewayProfile.getComputeResourcePreference(gatewayID, computeResourceId);
+        } catch (AppCatalogException e) {
+            logger.error("Error while reading gateway compute resource preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while reading gateway compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2128,7 +2138,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+    	try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            return gatewayProfile.getGatewayProfile(gatewayID).getComputeResourcePreferences();
+        } catch (AppCatalogException e) {
+            logger.error("Error while reading gateway compute resource preferences...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while reading gateway compute resource preferences. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2142,7 +2162,32 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean updateGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+            List<ComputeResourcePreference> computeResourcePreferences = profile.getComputeResourcePreferences();
+            ComputeResourcePreference preferenceToRemove = null;
+            for (ComputeResourcePreference preference : computeResourcePreferences) {
+				if (preference.getComputeResourceId().equals(computeResourceId)){
+					preferenceToRemove=preference;
+					break;
+				}
+			}
+            if (preferenceToRemove!=null) {
+				profile.getComputeResourcePreferences().remove(
+						preferenceToRemove);
+			}
+            profile.getComputeResourcePreferences().add(computeResourcePreference);
+            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while reading gateway compute resource preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating gateway compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2155,7 +2200,31 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+            List<ComputeResourcePreference> computeResourcePreferences = profile.getComputeResourcePreferences();
+            ComputeResourcePreference preferenceToRemove = null;
+            for (ComputeResourcePreference preference : computeResourcePreferences) {
+				if (preference.getComputeResourceId().equals(computeResourceId)){
+					preferenceToRemove=preference;
+					break;
+				}
+			}
+            if (preferenceToRemove!=null) {
+				profile.getComputeResourcePreferences().remove(
+						preferenceToRemove);
+			}
+            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while reading gateway compute resource preference...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating gateway compute resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
 }
