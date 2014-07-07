@@ -156,6 +156,21 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
      */
     @Override
     public ComputeResourcePreference getComputeResourcePreference(String gatewayId, String hostId) throws AppCatalogException {
+        try {
+            ComputeHostPreferenceResource prefResource = new ComputeHostPreferenceResource();
+            List<Resource> computePrefList = prefResource.get(AbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
+            for (Resource resource : computePrefList){
+                ComputeHostPreferenceResource cmP = (ComputeHostPreferenceResource) resource;
+                if (cmP.getResourceId() != null && !cmP.getResourceId().equals("")){
+                    if (cmP.getResourceId().equals(hostId)){
+                        return AppCatalogThriftConversion.getComputeResourcePreference(cmP);
+                    }
+                }
+            }
+        }catch (Exception e) {
+            logger.error("Error while retrieving compute resource preference...", e);
+            throw new AppCatalogException(e);
+        }
         return null;
     }
 
@@ -165,6 +180,13 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
      */
     @Override
     public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) throws AppCatalogException {
-        return null;
+        try {
+            ComputeHostPreferenceResource prefResource = new ComputeHostPreferenceResource();
+            List<Resource> computePrefList = prefResource.get(AbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
+            return AppCatalogThriftConversion.getComputeResourcePreferences(computePrefList);
+        }catch (Exception e) {
+            logger.error("Error while retrieving compute resource preference...", e);
+            throw new AppCatalogException(e);
+        }
     }
 }

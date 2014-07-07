@@ -158,11 +158,28 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         return gfac_cpi_serviceConstants.GFAC_CPI_VERSION;
     }
 
-    public boolean submitJob(String experimentId, String taskId) throws TException {
+    /**
+     * * After creating the experiment Data and Task Data in the orchestrator
+     * * Orchestrator has to invoke this operation for each Task per experiment to run
+     * * the actual Job related actions.
+     * *
+     * * @param experimentID
+     * * @param taskID
+     * * @param gatewayId:
+     * *  The GatewayId is inferred from security context and passed onto gfac.
+     * * @return sucess/failure
+     * *
+     * *
+     *
+     * @param experimentId
+     * @param taskId
+     * @param gatewayId
+     */
+    public boolean submitJob(String experimentId, String taskId, String gatewayId) throws TException {
         logger.info("GFac Recieved the Experiment: " + experimentId + " TaskId: " + taskId);
         GFac gfac = getGfac();
         try {
-            return gfac.submitJob(experimentId, taskId);
+            return gfac.submitJob(experimentId, taskId, gatewayId);
         } catch (GFacException e) {
             throw new TException("Error launching the experiment : " + e.getMessage(), e);
         }

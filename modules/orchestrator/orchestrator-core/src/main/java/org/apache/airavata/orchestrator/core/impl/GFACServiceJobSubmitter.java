@@ -95,7 +95,8 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
             GfacService.Client localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
             if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {      // before submitting the job we check again the state of the node
                 if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild,tokenId)) {
-                    return localhost.submitJob(experimentID, taskID);
+                    //FIXME:: The GatewayID is temporarily read from properties file. It should instead be inferred from the token.
+                    return localhost.submitJob(experimentID, taskID, ServerSettings.getSetting(Constants.GATEWAY_NAME));
                 }
             }
         } catch (TException e) {

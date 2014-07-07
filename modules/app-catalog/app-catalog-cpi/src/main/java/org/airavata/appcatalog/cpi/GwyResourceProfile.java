@@ -1,7 +1,5 @@
 package org.airavata.appcatalog.cpi;
 
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 
@@ -13,14 +11,14 @@ public interface GwyResourceProfile {
      * @param gatewayProfile gateway profile
      * @return gateway id
      */
-    String addGatewayResourceProfile(org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gatewayProfile) throws AppCatalogException;
+    String addGatewayResourceProfile(GatewayResourceProfile gatewayProfile) throws AppCatalogException;
 
     /**
      * This method will update a gateway profile
      * @param gatewayId unique gateway id
      * @param updatedProfile updated profile
      */
-    void updateGatewayResourceProfile(String gatewayId, org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile updatedProfile) throws AppCatalogException;
+    void updateGatewayResourceProfile(String gatewayId, GatewayResourceProfile updatedProfile) throws AppCatalogException;
 
     /**
      *
