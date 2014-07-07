@@ -32,9 +32,17 @@ import java.util.Random;
 
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.airavata.appcatalog.cpi.ApplicationDeployment;
 import org.airavata.appcatalog.cpi.ComputeResource;
+import org.airavata.appcatalog.cpi.GwyResourceProfile;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
+import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.LocalDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.LocalSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -1500,7 +1508,29 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public List<String> getAvailableAppInterfaceComputeResources(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+    	try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            ApplicationDeployment applicationDeployment = appCatalog.getApplicationDeployment();
+            List<String> computeResourceIdList = new ArrayList<String>();
+            List<String> applicationModules = appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId).getApplicationModules();
+        	HashMap<String, String> filters = new HashMap<String,String>();
+            for (String moduleId : applicationModules) {
+            	filters.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, moduleId);
+				List<ApplicationDeploymentDescription> applicationDeployements = applicationDeployment.getApplicationDeployements(filters);
+            	for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
+					if (!computeResourceIdList.contains(deploymentDescription.getComputeHostId())){
+						computeResourceIdList.add(deploymentDescription.getComputeHostId());
+					}
+				}
+			}
+            return computeResourceIdList;
+        } catch (AppCatalogException e) {
+            logger.error("Error while saving compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while saving compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1638,7 +1668,18 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            LocalSubmissionResource submission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
+            submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            submission.save();
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     private void addJobSubmissionInterface(ComputeResource computeResource,
@@ -1689,7 +1730,18 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            SshJobSubmissionResource submission = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
+            submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            submission.save();
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1729,7 +1781,18 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean updateLocalDataMovementDetails(String jobSubmissionInterfaceId, LOCALDataMovement localDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            LocalDataMovementResource movment = AppCatalogThriftConversion.getLocalDataMovement(localDataMovement);
+            movment.setDataMovementInterfaceId(jobSubmissionInterfaceId);
+            movment.save();
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     private void addDataMovementInterface(ComputeResource computeResource,
@@ -1781,7 +1844,18 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean updateSCPDataMovementDetails(String jobSubmissionInterfaceId, SCPDataMovement scpDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            ScpDataMovementResource movment = AppCatalogThriftConversion.getSCPDataMovementDescription(scpDataMovement);
+            movment.setDataMovementInterfaceId(jobSubmissionInterfaceId);
+            movment.save();
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1822,7 +1896,18 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean updateGridFTPDataMovementDetails(String jobSubmissionInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            GridftpDataMovementResource movment = AppCatalogThriftConversion.getGridFTPDataMovementDescription(gridFTPDataMovement);
+            movment.setDataMovementInterfaceId(jobSubmissionInterfaceId);
+            movment.save();
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1910,7 +1995,18 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            gatewayProfile.addGatewayProfile(gatewayResourceProfile);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while registering gateway resource profile...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while registering gateway resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1922,7 +2018,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+    	try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            return gatewayProfile.getGatewayProfile(gatewayID);
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving gateway resource profile...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving gateway resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1935,7 +2041,18 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            gatewayProfile.updateGatewayProfile(gatewayID, gatewayResourceProfile);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while updating gateway resource profile...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating gateway resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1947,7 +2064,18 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteGatewayResourceProfile(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            gatewayProfile.removeGatewayProfile(gatewayID);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while removing gateway resource profile...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while removing gateway resource profile. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1962,7 +2090,20 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean addGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+    	try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+            profile.addToComputeResourcePreferences(computeResourcePreference);
+            gatewayProfile.updateGatewayProfile(gatewayID, profile);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while registering gateway resource profile...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding gateway resource preference. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
