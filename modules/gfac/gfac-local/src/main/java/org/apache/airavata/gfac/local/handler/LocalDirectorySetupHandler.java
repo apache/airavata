@@ -36,11 +36,11 @@ public class LocalDirectorySetupHandler implements GFacHandler {
     private static final Logger log = LoggerFactory.getLogger(LocalDirectorySetupHandler.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        log.info("Invoking GramDirectorySetupHandler ...");
+        log.info("Invoking LocalDirectorySetupHandler ...");
         HostDescriptionType type = jobExecutionContext.getApplicationContext().getHostDescription().getType();
         ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
         ApplicationDeploymentDescriptionType app = applicationDeploymentDescription.getType();
-        log.debug("working diectroy = " + app.getStaticWorkingDirectory());
+        log.debug("working directory = " + app.getStaticWorkingDirectory());
         log.debug("temp directory = " + app.getScratchWorkingDirectory());
 
         makeFileSystemDir(app.getStaticWorkingDirectory(),jobExecutionContext);
@@ -53,7 +53,7 @@ public class LocalDirectorySetupHandler implements GFacHandler {
            if (f.isDirectory() && f.exists()) {
                return;
            } else if (!new File(dir).mkdir()) {
-               throw new GFacHandlerException("Cannot make directory "+dir);
+               throw new GFacHandlerException("Cannot create directory " + dir);
            }
     }
 

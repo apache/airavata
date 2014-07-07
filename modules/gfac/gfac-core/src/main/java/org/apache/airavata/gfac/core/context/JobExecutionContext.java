@@ -92,6 +92,16 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     private String serviceName;
 
     private String experimentID;
+
+    public String getGatewayID() {
+        return gatewayID;
+    }
+
+    public void setGatewayID(String gatewayID) {
+        this.gatewayID = gatewayID;
+    }
+
+    private String gatewayID;
     
     private String status;
 

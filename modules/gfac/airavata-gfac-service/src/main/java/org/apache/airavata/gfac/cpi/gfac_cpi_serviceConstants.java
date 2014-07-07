@@ -50,6 +50,6 @@ import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("all") public class gfac_cpi_serviceConstants {
 
-  public static final String GFAC_CPI_VERSION = "0.12.0";
+  public static final String GFAC_CPI_VERSION = "0.13.0";
 
 }
