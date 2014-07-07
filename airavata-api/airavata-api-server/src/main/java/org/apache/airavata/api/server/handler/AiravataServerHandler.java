@@ -2176,22 +2176,19 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            GatewayResourceProfile profile;
             if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
-            	profile=new GatewayResourceProfile();
-            	profile.setGatewayID(gatewayID);
-            	profile.setGatewayName(gatewayID);
-            	gatewayProfile.addGatewayResourceProfile(profile);
+            	throw new AppCatalogException("Gateway resource profile '"+gatewayID+"' does not exist!!!");
             }
-            profile = gatewayProfile.getGatewayProfile(gatewayID);
+            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+            gatewayProfile.removeGatewayResourceProfile(gatewayID);
             profile.addToComputeResourcePreferences(computeResourcePreference);
             gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;
         } catch (AppCatalogException e) {
-            logger.error("Error while registering gateway resource profile...", e);
+            logger.error("Error while registering gateway resource profile preference...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while adding gateway resource preference. More info : " + e.getMessage());
+            exception.setMessage("Error while registering gateway resource profile preference. More info : " + e.getMessage());
             throw exception;
         }
     }

@@ -21,20 +21,19 @@
 
 package org.apache.aiaravata.application.catalog.data.impl;
 
+import java.util.List;
+
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.GwyResourceProfile;
-import org.apache.aiaravata.application.catalog.data.resources.*;
+import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
+import org.apache.aiaravata.application.catalog.data.resources.ComputeHostPreferenceResource;
+import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceResource;
+import org.apache.aiaravata.application.catalog.data.resources.GatewayProfileResource;
+import org.apache.aiaravata.application.catalog.data.resources.Resource;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
-import org.apache.aiaravata.application.catalog.data.util.AppCatalogUtils;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class GwyResourceProfileImpl implements GwyResourceProfile {
     private final static Logger logger = LoggerFactory.getLogger(GwyResourceProfileImpl.class);
@@ -86,23 +85,18 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()){
                 for (ComputeResourcePreference preference : computeResourcePreferences ){
                     ComputeHostPreferenceResource resource = new ComputeHostPreferenceResource();
-                    Map<String, String> ids = new HashMap<String, String>();
-                    ids.put(AbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
-                    ids.put(AbstractResource.ComputeResourcePreferenceConstants.RESOURCE_ID, preference.getComputeResourceId());
-                    ComputeHostPreferenceResource existingPreferenceResource = (ComputeHostPreferenceResource)resource.get(ids);
-
-                    existingPreferenceResource.setGatewayProfile(existingGP);
-                    existingPreferenceResource.setResourceId(preference.getComputeResourceId());
+                    resource.setGatewayProfile(existingGP);
+                    resource.setResourceId(preference.getComputeResourceId());
                     ComputeResourceResource computeHostResource = new ComputeResourceResource();
-                    existingPreferenceResource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
-                    existingPreferenceResource.setGatewayId(gatewayId);
-                    existingPreferenceResource.setOverrideByAiravata(preference.isOverridebyAiravata());
-                    existingPreferenceResource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol());
-                    existingPreferenceResource.setPreferedDMProtocol(preference.getPreferredDataMovementProtocol());
-                    existingPreferenceResource.setBatchQueue(preference.getPreferredBatchQueue());
-                    existingPreferenceResource.setProjectNumber(preference.getAllocationProjectNumber());
-                    existingPreferenceResource.setScratchLocation(preference.getScratchLocation());
-                    existingPreferenceResource.save();
+                    resource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
+                    resource.setGatewayId(gatewayId);
+                    resource.setOverrideByAiravata(preference.isOverridebyAiravata());
+                    resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol());
+                    resource.setPreferedDMProtocol(preference.getPreferredDataMovementProtocol());
+                    resource.setBatchQueue(preference.getPreferredBatchQueue());
+                    resource.setProjectNumber(preference.getAllocationProjectNumber());
+                    resource.setScratchLocation(preference.getScratchLocation());
+                    resource.save();
                 }
             }
         }catch (Exception e) {
