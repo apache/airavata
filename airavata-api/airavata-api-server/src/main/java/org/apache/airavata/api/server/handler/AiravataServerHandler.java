@@ -1465,7 +1465,23 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public Map<String, String> getAllApplicationInterfaceNames() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            List<ApplicationInterfaceDescription> allApplicationInterfaces = appCatalog.getApplicationInterface().getAllApplicationInterfaces();
+            Map<String, String> allApplicationInterfacesMap = new HashMap<String, String>();
+            if (allApplicationInterfaces != null && !allApplicationInterfaces.isEmpty()){
+                for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces){
+                    allApplicationInterfacesMap.put(interfaceDescription.getApplicationInterfaceId(), interfaceDescription.getApplicationName());
+                }
+            }
+            return allApplicationInterfacesMap;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application interfaces...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application interfaces. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1476,7 +1492,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().getAllApplicationInterfaces();
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application interfaces...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application interfaces. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
