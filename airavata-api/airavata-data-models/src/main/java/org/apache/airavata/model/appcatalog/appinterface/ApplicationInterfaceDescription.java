@@ -51,11 +51,15 @@ import org.slf4j.LoggerFactory;
 /**
  * Application Interface Description
  * 
+ * applicationModules:
+ *   Associate all application modules with versions which interface is applicable to.
  * 
- * appDeploymentId:
- *   Corelated the interface to a particular application deployment
+ * applicationInputs:
+ *   Inputs to be passed to the application
  * 
- * FIXME: add a description
+ * applicationOutputs:
+ *   Outputs generated from the application
+ * 
  */
 @SuppressWarnings("all") public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<ApplicationInterfaceDescription, ApplicationInterfaceDescription._Fields>, java.io.Serializable, Cloneable, Comparable<ApplicationInterfaceDescription> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ApplicationInterfaceDescription");
@@ -63,9 +67,10 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField IS_EMPTY_FIELD_DESC = new org.apache.thrift.protocol.TField("isEmpty", org.apache.thrift.protocol.TType.BOOL, (short)1);
   private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField APPLICATION_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationName", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField APPLICATION_MODULES_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationModules", org.apache.thrift.protocol.TType.LIST, (short)4);
-  private static final org.apache.thrift.protocol.TField APPLICATION_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInputs", org.apache.thrift.protocol.TType.LIST, (short)5);
-  private static final org.apache.thrift.protocol.TField APPLICATION_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationOutputs", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField APPLICATION_DESRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationDesription", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField APPLICATION_MODULES_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationModules", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField APPLICATION_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInputs", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField APPLICATION_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationOutputs", org.apache.thrift.protocol.TType.LIST, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -76,6 +81,7 @@ import org.slf4j.LoggerFactory;
   private boolean isEmpty; // required
   private String applicationInterfaceId; // required
   private String applicationName; // required
+  private String applicationDesription; // optional
   private List<String> applicationModules; // optional
   private List<InputDataObjectType> applicationInputs; // optional
   private List<OutputDataObjectType> applicationOutputs; // optional
@@ -85,9 +91,10 @@ import org.slf4j.LoggerFactory;
     IS_EMPTY((short)1, "isEmpty"),
     APPLICATION_INTERFACE_ID((short)2, "applicationInterfaceId"),
     APPLICATION_NAME((short)3, "applicationName"),
-    APPLICATION_MODULES((short)4, "applicationModules"),
-    APPLICATION_INPUTS((short)5, "applicationInputs"),
-    APPLICATION_OUTPUTS((short)6, "applicationOutputs");
+    APPLICATION_DESRIPTION((short)4, "applicationDesription"),
+    APPLICATION_MODULES((short)5, "applicationModules"),
+    APPLICATION_INPUTS((short)6, "applicationInputs"),
+    APPLICATION_OUTPUTS((short)7, "applicationOutputs");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -108,11 +115,13 @@ import org.slf4j.LoggerFactory;
           return APPLICATION_INTERFACE_ID;
         case 3: // APPLICATION_NAME
           return APPLICATION_NAME;
-        case 4: // APPLICATION_MODULES
+        case 4: // APPLICATION_DESRIPTION
+          return APPLICATION_DESRIPTION;
+        case 5: // APPLICATION_MODULES
           return APPLICATION_MODULES;
-        case 5: // APPLICATION_INPUTS
+        case 6: // APPLICATION_INPUTS
           return APPLICATION_INPUTS;
-        case 6: // APPLICATION_OUTPUTS
+        case 7: // APPLICATION_OUTPUTS
           return APPLICATION_OUTPUTS;
         default:
           return null;
@@ -156,7 +165,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __ISEMPTY_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.APPLICATION_MODULES,_Fields.APPLICATION_INPUTS,_Fields.APPLICATION_OUTPUTS};
+  private _Fields optionals[] = {_Fields.APPLICATION_DESRIPTION,_Fields.APPLICATION_MODULES,_Fields.APPLICATION_INPUTS,_Fields.APPLICATION_OUTPUTS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -165,6 +174,8 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.APPLICATION_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationInterfaceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APPLICATION_NAME, new org.apache.thrift.meta_data.FieldMetaData("applicationName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.APPLICATION_DESRIPTION, new org.apache.thrift.meta_data.FieldMetaData("applicationDesription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APPLICATION_MODULES, new org.apache.thrift.meta_data.FieldMetaData("applicationModules", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
@@ -210,6 +221,9 @@ import org.slf4j.LoggerFactory;
     if (other.isSetApplicationName()) {
       this.applicationName = other.applicationName;
     }
+    if (other.isSetApplicationDesription()) {
+      this.applicationDesription = other.applicationDesription;
+    }
     if (other.isSetApplicationModules()) {
       List<String> __this__applicationModules = new ArrayList<String>(other.applicationModules);
       this.applicationModules = __this__applicationModules;
@@ -241,6 +255,7 @@ import org.slf4j.LoggerFactory;
     this.applicationInterfaceId = "DO_NOT_SET_AT_CLIENTS";
 
     this.applicationName = null;
+    this.applicationDesription = null;
     this.applicationModules = null;
     this.applicationInputs = null;
     this.applicationOutputs = null;
@@ -311,6 +326,29 @@ import org.slf4j.LoggerFactory;
   public void setApplicationNameIsSet(boolean value) {
     if (!value) {
       this.applicationName = null;
+    }
+  }
+
+  public String getApplicationDesription() {
+    return this.applicationDesription;
+  }
+
+  public void setApplicationDesription(String applicationDesription) {
+    this.applicationDesription = applicationDesription;
+  }
+
+  public void unsetApplicationDesription() {
+    this.applicationDesription = null;
+  }
+
+  /** Returns true if field applicationDesription is set (has been assigned a value) and false otherwise */
+  public boolean isSetApplicationDesription() {
+    return this.applicationDesription != null;
+  }
+
+  public void setApplicationDesriptionIsSet(boolean value) {
+    if (!value) {
+      this.applicationDesription = null;
     }
   }
 
@@ -454,6 +492,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case APPLICATION_DESRIPTION:
+      if (value == null) {
+        unsetApplicationDesription();
+      } else {
+        setApplicationDesription((String)value);
+      }
+      break;
+
     case APPLICATION_MODULES:
       if (value == null) {
         unsetApplicationModules();
@@ -492,6 +538,9 @@ import org.slf4j.LoggerFactory;
     case APPLICATION_NAME:
       return getApplicationName();
 
+    case APPLICATION_DESRIPTION:
+      return getApplicationDesription();
+
     case APPLICATION_MODULES:
       return getApplicationModules();
 
@@ -518,6 +567,8 @@ import org.slf4j.LoggerFactory;
       return isSetApplicationInterfaceId();
     case APPLICATION_NAME:
       return isSetApplicationName();
+    case APPLICATION_DESRIPTION:
+      return isSetApplicationDesription();
     case APPLICATION_MODULES:
       return isSetApplicationModules();
     case APPLICATION_INPUTS:
@@ -565,6 +616,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_applicationName && that_present_applicationName))
         return false;
       if (!this.applicationName.equals(that.applicationName))
+        return false;
+    }
+
+    boolean this_present_applicationDesription = true && this.isSetApplicationDesription();
+    boolean that_present_applicationDesription = true && that.isSetApplicationDesription();
+    if (this_present_applicationDesription || that_present_applicationDesription) {
+      if (!(this_present_applicationDesription && that_present_applicationDesription))
+        return false;
+      if (!this.applicationDesription.equals(that.applicationDesription))
         return false;
     }
 
@@ -641,6 +701,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetApplicationDesription()).compareTo(other.isSetApplicationDesription());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetApplicationDesription()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationDesription, other.applicationDesription);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetApplicationModules()).compareTo(other.isSetApplicationModules());
     if (lastComparison != 0) {
       return lastComparison;
@@ -710,6 +780,16 @@ import org.slf4j.LoggerFactory;
       sb.append(this.applicationName);
     }
     first = false;
+    if (isSetApplicationDesription()) {
+      if (!first) sb.append(", ");
+      sb.append("applicationDesription:");
+      if (this.applicationDesription == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationDesription);
+      }
+      first = false;
+    }
     if (isSetApplicationModules()) {
       if (!first) sb.append(", ");
       sb.append("applicationModules:");
@@ -821,7 +901,15 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // APPLICATION_MODULES
+          case 4: // APPLICATION_DESRIPTION
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.applicationDesription = iprot.readString();
+              struct.setApplicationDesriptionIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // APPLICATION_MODULES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -839,7 +927,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // APPLICATION_INPUTS
+          case 6: // APPLICATION_INPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
@@ -858,7 +946,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // APPLICATION_OUTPUTS
+          case 7: // APPLICATION_OUTPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
@@ -902,6 +990,13 @@ import org.slf4j.LoggerFactory;
         oprot.writeFieldBegin(APPLICATION_NAME_FIELD_DESC);
         oprot.writeString(struct.applicationName);
         oprot.writeFieldEnd();
+      }
+      if (struct.applicationDesription != null) {
+        if (struct.isSetApplicationDesription()) {
+          oprot.writeFieldBegin(APPLICATION_DESRIPTION_FIELD_DESC);
+          oprot.writeString(struct.applicationDesription);
+          oprot.writeFieldEnd();
+        }
       }
       if (struct.applicationModules != null) {
         if (struct.isSetApplicationModules()) {
@@ -966,16 +1061,22 @@ import org.slf4j.LoggerFactory;
       oprot.writeString(struct.applicationInterfaceId);
       oprot.writeString(struct.applicationName);
       BitSet optionals = new BitSet();
-      if (struct.isSetApplicationModules()) {
+      if (struct.isSetApplicationDesription()) {
         optionals.set(0);
       }
-      if (struct.isSetApplicationInputs()) {
+      if (struct.isSetApplicationModules()) {
         optionals.set(1);
       }
-      if (struct.isSetApplicationOutputs()) {
+      if (struct.isSetApplicationInputs()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetApplicationOutputs()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetApplicationDesription()) {
+        oprot.writeString(struct.applicationDesription);
+      }
       if (struct.isSetApplicationModules()) {
         {
           oprot.writeI32(struct.applicationModules.size());
@@ -1014,8 +1115,12 @@ import org.slf4j.LoggerFactory;
       struct.setApplicationInterfaceIdIsSet(true);
       struct.applicationName = iprot.readString();
       struct.setApplicationNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
+        struct.applicationDesription = iprot.readString();
+        struct.setApplicationDesriptionIsSet(true);
+      }
+      if (incoming.get(1)) {
         {
           org.apache.thrift.protocol.TList _list15 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
           struct.applicationModules = new ArrayList<String>(_list15.size);
@@ -1028,7 +1133,7 @@ import org.slf4j.LoggerFactory;
         }
         struct.setApplicationModulesIsSet(true);
       }
-      if (incoming.get(1)) {
+      if (incoming.get(2)) {
         {
           org.apache.thrift.protocol.TList _list18 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.applicationInputs = new ArrayList<InputDataObjectType>(_list18.size);
@@ -1042,7 +1147,7 @@ import org.slf4j.LoggerFactory;
         }
         struct.setApplicationInputsIsSet(true);
       }
-      if (incoming.get(2)) {
+      if (incoming.get(3)) {
         {
           org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.applicationOutputs = new ArrayList<OutputDataObjectType>(_list21.size);
