@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.samples;
 
+import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
@@ -33,6 +34,7 @@ import org.apache.airavata.client.AiravataAPIFactory;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
+import org.apache.airavata.client.tools.DocumentCreatorNew;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.schemas.gfac.InputParameterType;
@@ -55,31 +57,31 @@ public class CreateLaunchExperiment {
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
-
+    private static Airavata.Client client;
     public static void main(String[] args) {
         try {
             AiravataUtils.setExecutionAsClient();
-            final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavata.getAPIVersion());
+            client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
+            System.out.println("API version is " + client.getAPIVersion());
             addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForTrestles(airavata);
 //            final String expId = createExperimentForStampede(airavata);
-            final String expId = createExperimentForLocalHost(airavata);
+            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentWRFTrestles(airavata);
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
-            launchExperiment(airavata, expId);
+            launchExperiment(client, expId);
             System.out.println("Launched successfully");
-            List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
-            List<ExperimentSummary> searchedExps1 = searchExperimentsByName(airavata, "admin", "echo");
-            List<ExperimentSummary> searchedExps2 = searchExperimentsByDesc(airavata, "admin", "Echo");
-            List<ExperimentSummary> searchedExps3 = searchExperimentsByApplication(airavata, "admin", "cho");
-            List<Project> projects = getAllUserProject(airavata, "admin");
-            List<Project> searchProjects1 = searchProjectsByProjectName(airavata, "admin", "project");
-            List<Project> searchProjects2 = searchProjectsByProjectDesc(airavata, "admin", "test");
+            List<Experiment> experiments = getExperimentsForUser(client, "admin");
+            List<ExperimentSummary> searchedExps1 = searchExperimentsByName(client, "admin", "echo");
+            List<ExperimentSummary> searchedExps2 = searchExperimentsByDesc(client, "admin", "Echo");
+            List<ExperimentSummary> searchedExps3 = searchExperimentsByApplication(client, "admin", "cho");
+            List<Project> projects = getAllUserProject(client, "admin");
+            List<Project> searchProjects1 = searchProjectsByProjectName(client, "admin", "project");
+            List<Project> searchProjects2 = searchProjectsByProjectDesc(client, "admin", "test");
             for (Experiment exp : experiments) {
                 System.out.println(" exp id : " + exp.getExperimentID());
                 System.out.println("experiment Description : " + exp.getDescription());
@@ -127,7 +129,7 @@ public class CreateLaunchExperiment {
                     Map<String, JobStatus> jobStatuses = null;
                     while (true) {
                         try {
-                            jobStatuses = airavata.getJobStatuses(expId);
+                            jobStatuses = client.getJobStatuses(expId);
                             Set<String> strings = jobStatuses.keySet();
                             for (String key : strings) {
                                 JobStatus jobStatus = jobStatuses.get(key);
@@ -142,7 +144,7 @@ public class CreateLaunchExperiment {
                                     }
                                 }
                             }
-                            ExperimentStatus experimentStatus = airavata.getExperimentStatus(expId);
+                            ExperimentStatus experimentStatus = client.getExperimentStatus(expId);
                             if (experimentStatus.getExperimentState().equals(ExperimentState.FAILED)) {
                                 return;
                             }
@@ -169,13 +171,13 @@ public class CreateLaunchExperiment {
             }
 
 //            System.out.println(airavata.getExperimentStatus(expId));
-            List<DataObjectType> output = airavata.getExperimentOutputs(expId);
+            List<DataObjectType> output = client.getExperimentOutputs(expId);
             for (DataObjectType dataObjectType : output) {
                 System.out.println(dataObjectType.getKey() + " : " + dataObjectType.getType() + " : " + dataObjectType.getValue());
 
 
             }
-            String clonedExpId = cloneExperiment(airavata, expId);
+            String clonedExpId = cloneExperiment(client, expId);
             System.out.println("Cloned Experiment ID : " + clonedExpId);
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (Exception e) {
@@ -186,22 +188,20 @@ public class CreateLaunchExperiment {
 
     public static void addDescriptors() throws AiravataAPIInvocationException, ApplicationSettingsException {
         try {
-            DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
+        	DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
+//            DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
             documentCreator.createLocalHostDocs();
             documentCreator.createSSHHostDocs();
-            documentCreator.createGramDocs();
+//            documentCreator.createGramDocs();
             documentCreator.createPBSDocsForOGCE();
             documentCreator.createSlurmDocs();
             documentCreator.createSGEDocs();
-            documentCreator.createEchoHostDocs();
-            documentCreator.createBigRedDocs();
-        } catch (AiravataAPIInvocationException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new AiravataAPIInvocationException(e);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
+//            documentCreator.createEchoHostDocs();
+//            documentCreator.createBigRedDocs();
+        } catch (Exception e) {
+            logger.error("Unable to create documents", e.getMessage());
             throw new ApplicationSettingsException(e.getMessage());
-        }
+		}
     }
 
     private static AiravataAPI getAiravataAPI() throws AiravataAPIInvocationException, ApplicationSettingsException {
