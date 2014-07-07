@@ -645,12 +645,14 @@ public class ComputeResourceImpl implements ComputeResource {
 		ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(resourceJobManager);
 		resource.save();
 		Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-		for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
-			JobManagerCommandResource r = new JobManagerCommandResource();
-	    	r.setCommandType(commandType.toString());
-	    	r.setCommand(jobManagerCommands.get(commandType));
-	    	r.setResourceJobManagerId(resource.getResourceJobManagerId());
-	    	r.save();
+		if (jobManagerCommands!=null) {
+			for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
+				JobManagerCommandResource r = new JobManagerCommandResource();
+				r.setCommandType(commandType.toString());
+				r.setCommand(jobManagerCommands.get(commandType));
+				r.setResourceJobManagerId(resource.getResourceJobManagerId());
+				r.save();
+			}
 		}
 		return resource.getResourceJobManagerId();
 	}
