@@ -41,6 +41,7 @@ public class ApplicationInput implements Serializable {
     private String inputKeyType;
     @Column(name = "METADATA")
     private String metadata;
+    @Lob
     @Column(name = "VALUE")
     private String value;
 

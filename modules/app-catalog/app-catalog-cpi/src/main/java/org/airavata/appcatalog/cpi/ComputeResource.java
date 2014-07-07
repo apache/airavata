@@ -40,7 +40,6 @@ public interface ComputeResource {
     /**
      * This will add a SSHJobSubmission protocol to the database
      * @param computeResourceId compute resource id
-     * @param jobSubmissionId job submission id
      */
     void addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException;
 
@@ -66,7 +65,6 @@ public interface ComputeResource {
     /**
      * This will add a SCPDataMovement protocol to the database
      * @param computeResourceId compute resource id
-     * @param dataMoveId data movement id
      */
     void addDataMovementProtocol (String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException;
 
