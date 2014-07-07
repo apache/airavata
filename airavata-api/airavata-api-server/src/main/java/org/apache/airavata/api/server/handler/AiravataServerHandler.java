@@ -1603,7 +1603,20 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
         }
     }
 
-	private void addJobSubmissionInterface(ComputeResource computeResource,
+    /**
+     * Update the given Local Job Submission details
+     *
+     * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be updated.
+     * @param localSubmission          The LOCALSubmission object to be updated.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    private void addJobSubmissionInterface(ComputeResource computeResource,
 			String computeResourceId, String jobSubmissionInterfaceId,
 			JobSubmissionProtocol protocolType, int priorityOrder)
 			throws AppCatalogException {
@@ -1642,6 +1655,19 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     }
 
     /**
+     * Update the given SSH Job Submission details
+     *
+     * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be updated.
+     * @param sshJobSubmission         The SSHJobSubmission object to be updated.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
      * Add a Local data moevement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
      *
@@ -1667,8 +1693,21 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             throw exception;
         }
     }
-    
-	private void addDataMovementInterface(ComputeResource computeResource,
+
+    /**
+     * Update the given Local data movement details
+     *
+     * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be updated.
+     * @param localDataMovement        The LOCALDataMovement object to be updated.
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    public boolean updateLocalDataMovementDetails(String jobSubmissionInterfaceId, LOCALDataMovement localDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    private void addDataMovementInterface(ComputeResource computeResource,
 			String computeResourceId, String dataMovementInterfaceId,
 			DataMovementProtocol protocolType, int priorityOrder)
 			throws AppCatalogException {
@@ -1707,6 +1746,20 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     }
 
     /**
+     * Update the given scp data movement details
+     * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+     *
+     * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be updated.
+     * @param scpDataMovement          The SCPDataMovement object to be updated.
+     * @return status
+     * Returns a success/failure of the update.
+     */
+    @Override
+    public boolean updateSCPDataMovementDetails(String jobSubmissionInterfaceId, SCPDataMovement scpDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
      * Add a GridFTP data moevement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
      *
@@ -1731,6 +1784,94 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    /**
+     * Update the given GridFTP data movement details to a compute resource
+     * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+     *
+     * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be updated.
+     * @param gridFTPDataMovement      The GridFTPDataMovement object to be updated.
+     * @return status
+     * Returns a success/failure of the updation.
+     */
+    @Override
+    public boolean updateGridFTPDataMovementDetails(String jobSubmissionInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Change the priority of a given job submisison interface
+     *
+     * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be changed
+     * @param newPriorityOrder
+     * @return status
+     * Returns a success/failure of the change.
+     */
+    @Override
+    public boolean changeJobSubmissionPriority(String jobSubmissionInterfaceId, int newPriorityOrder) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Change the priority of a given data movement interface
+     *
+     * @param dataMovementInterfaceId The identifier of the DataMovement Interface to be changed
+     * @param newPriorityOrder
+     * @return status
+     * Returns a success/failure of the change.
+     */
+    @Override
+    public boolean changeDataMovementPriority(String dataMovementInterfaceId, int newPriorityOrder) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Change the priorities of a given set of job submission interfaces
+     *
+     * @param jobSubmissionPriorityMap A Map of identifiers of the JobSubmission Interfaces and thier associated priorities to be set.
+     * @return status
+     * Returns a success/failure of the changes.
+     */
+    @Override
+    public boolean changeJobSubmissionPriorities(Map<String, Integer> jobSubmissionPriorityMap) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Change the priorities of a given set of data movement interfaces
+     *
+     * @param dataMovementPriorityMap A Map of identifiers of the DataMovement Interfaces and thier associated priorities to be set.
+     * @return status
+     * Returns a success/failure of the changes.
+     */
+    @Override
+    public boolean changeDataMovementPriorities(Map<String, Integer> dataMovementPriorityMap) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Delete a given job submisison interface
+     *
+     * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be changed
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteJobSubmissionInterface(String jobSubmissionInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
+    }
+
+    /**
+     * Delete a given data movement interface
+     *
+     * @param dataMovementInterfaceId The identifier of the DataMovement Interface to be changed
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean deleteDataMovementInterface(String dataMovementInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
     }
 
 }

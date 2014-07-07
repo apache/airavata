@@ -881,6 +881,25 @@ service Airavata {
             3: airavataErrors.AiravataSystemException ase)
 
   /**
+   * Update the given Local Job Submission details
+   *
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   *
+   * @param localSubmission
+   *   The LOCALSubmission object to be updated.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool updateLocalSubmissionDetails(1: required string jobSubmissionInterfaceId,
+            2: required computeResourceModel.LOCALSubmission localSubmission)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
    * Add a SSH Job Submission details to a compute resource
    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
    *
@@ -905,7 +924,26 @@ service Airavata {
             3: airavataErrors.AiravataSystemException ase)
 
   /**
-   * Add a Local data moevement details to a compute resource
+   * Update the given SSH Job Submission details
+   *
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   *
+   * @param sshJobSubmission
+   *   The SSHJobSubmission object to be updated.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool updateSSHJobSubmissionDetails(1: required string jobSubmissionInterfaceId,
+            2: required computeResourceModel.SSHJobSubmission sshJobSubmission)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
    * @param computeResourceId
@@ -918,7 +956,7 @@ service Airavata {
    *   The LOCALDataMovement object to be added to the resource.
    *
    * @return status
-   *   Returns a success/failure of the deletion.
+   *   Returns a success/failure of the addition.
    *
   */
   bool addLocalDataMovementDetails(1: required string computeResourceId,
@@ -929,7 +967,26 @@ service Airavata {
             3: airavataErrors.AiravataSystemException ase)
 
   /**
-   * Add a SCP data moevement details to a compute resource
+   * Update the given Local data movement details
+   *
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   *
+   * @param localDataMovement
+   *   The LOCALDataMovement object to be updated.
+   *
+   * @return status
+   *   Returns a success/failure of the update.
+   *
+  */
+  bool updateLocalDataMovementDetails(1: required string jobSubmissionInterfaceId,
+            2: required computeResourceModel.LOCALDataMovement localDataMovement)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
    * @param computeResourceId
@@ -953,7 +1010,27 @@ service Airavata {
             3: airavataErrors.AiravataSystemException ase)
 
   /**
-   * Add a GridFTP data moevement details to a compute resource
+   * Update the given scp data movement details
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   *
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   *
+   * @param scpDataMovement
+   *   The SCPDataMovement object to be updated.
+   *
+   * @return status
+   *   Returns a success/failure of the update.
+   *
+  */
+  bool updateSCPDataMovementDetails(1: required string jobSubmissionInterfaceId,
+            2: required computeResourceModel.SCPDataMovement scpDataMovement)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Add a GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
    * @param computeResourceId
@@ -972,6 +1049,124 @@ service Airavata {
   bool addGridFTPDataMovementDetails(1: required string computeResourceId,
             2: required i32 priorityOrder,
             3: required computeResourceModel.GridFTPDataMovement gridFTPDataMovement)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Update the given GridFTP data movement details to a compute resource
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   *
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   *
+   * @param gridFTPDataMovement
+   *   The GridFTPDataMovement object to be updated.
+   *
+   * @return status
+   *   Returns a success/failure of the updation.
+   *
+  */
+  bool updateGridFTPDataMovementDetails(1: required string jobSubmissionInterfaceId,
+            2: required computeResourceModel.GridFTPDataMovement gridFTPDataMovement)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Change the priority of a given job submisison interface
+   *
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be changed
+   *
+   * @param priorityOrder
+   *   The new priority of the job manager interface.
+   *
+   * @return status
+   *   Returns a success/failure of the change.
+   *
+  */
+  bool changeJobSubmissionPriority(1: required string jobSubmissionInterfaceId,
+            2: required i32 newPriorityOrder)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Change the priority of a given data movement interface
+   *
+   * @param dataMovementInterfaceId
+   *   The identifier of the DataMovement Interface to be changed
+   *
+   * @param priorityOrder
+   *   The new priority of the data movement interface.
+   *
+   * @return status
+   *   Returns a success/failure of the change.
+   *
+  */
+  bool changeDataMovementPriority(1: required string dataMovementInterfaceId,
+            2: required i32 newPriorityOrder)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Change the priorities of a given set of job submission interfaces
+   *
+   * @param jobSubmissionPriorityMap
+   *   A Map of identifiers of the JobSubmission Interfaces and thier associated priorities to be set.
+   *
+   * @return status
+   *   Returns a success/failure of the changes.
+   *
+  */
+  bool changeJobSubmissionPriorities(1: required map<string, i32> jobSubmissionPriorityMap)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Change the priorities of a given set of data movement interfaces
+   *
+   * @param dataMovementPriorityMap
+   *   A Map of identifiers of the DataMovement Interfaces and thier associated priorities to be set.
+   *
+   * @return status
+   *   Returns a success/failure of the changes.
+   *
+  */
+  bool changeDataMovementPriorities(1: required map<string, i32> dataMovementPriorityMap)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Delete a given job submisison interface
+   *
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be changed
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool deleteJobSubmissionInterface(1: required string jobSubmissionInterfaceId)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Delete a given data movement interface
+   *
+   * @param dataMovementInterfaceId
+   *   The identifier of the DataMovement Interface to be changed
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool deleteDataMovementInterface(1: required string dataMovementInterfaceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
