@@ -35,6 +35,7 @@ import org.apache.airavata.gfac.monitor.core.PullMonitor;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.openjpa.lib.log.Log;
@@ -65,16 +66,19 @@ public class HPCPullMonitor extends PullMonitor {
 
     private GFac gfac;
 
-    public HPCPullMonitor(){
+    private AuthenticationInfo authenticationInfo;
+
+    public HPCPullMonitor() {
         connections = new HashMap<String, ResourceConnection>();
         this.queue = new LinkedBlockingDeque<UserMonitorData>();
         publisher = new MonitorPublisher(new EventBus());
     }
 
-     public HPCPullMonitor(MonitorPublisher monitorPublisher){
+    public HPCPullMonitor(MonitorPublisher monitorPublisher, AuthenticationInfo authInfo) {
         connections = new HashMap<String, ResourceConnection>();
         this.queue = new LinkedBlockingDeque<UserMonitorData>();
         publisher = monitorPublisher;
+        authenticationInfo = authInfo;
     }
 
     public HPCPullMonitor(BlockingQueue<UserMonitorData> queue, MonitorPublisher publisher) {
@@ -82,7 +86,6 @@ public class HPCPullMonitor extends PullMonitor {
         this.publisher = publisher;
         connections = new HashMap<String, ResourceConnection>();
     }
-
 
 
     public void run() {
@@ -95,7 +98,7 @@ public class HPCPullMonitor extends PullMonitor {
                 startPulling();
                 // After finishing one iteration of the full queue this thread sleeps 1 second
                 Thread.sleep(10000);
-            } catch (Exception e){
+            } catch (Exception e) {
                 // we catch all the exceptions here because no matter what happens we do not stop running this
                 // thread, but ideally we should report proper error messages, but this is handled in startPulling
                 // method, incase something happen in Thread.sleep we handle it with this catch block.
@@ -105,7 +108,7 @@ public class HPCPullMonitor extends PullMonitor {
         }
         // thread is going to return so we close all the connections
         Iterator<String> iterator = connections.keySet().iterator();
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             String next = iterator.next();
             ResourceConnection resourceConnection = connections.get(next);
             try {
@@ -145,7 +148,7 @@ public class HPCPullMonitor extends PullMonitor {
                         logger.debug("We already have this connection so not going to create one");
                         connection = connections.get(hostName);
                     } else {
-                        connection = new ResourceConnection(iHostMonitorData);
+                        connection = new ResourceConnection(iHostMonitorData,getAuthenticationInfo());
                         connections.put(hostName, connection);
                     }
                     List<MonitorID> monitorID = iHostMonitorData.getMonitorIDs();
@@ -164,10 +167,10 @@ public class HPCPullMonitor extends PullMonitor {
                         if (jobStatus.getState().equals(JobState.COMPLETE)) {
                             completedJobs.add(iMonitorID);
                             try {
-								gfac.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
-							} catch (GFacException e) {
-								logger.info(e.getLocalizedMessage(),e);
-							}
+                                gfac.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
+                            } catch (GFacException e) {
+                                logger.info(e.getLocalizedMessage(), e);
+                            }
                         } else if (iMonitorID.getFailedCount() > 2 && iMonitorID.getStatus().equals(JobState.UNKNOWN)) {
                             logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
@@ -188,7 +191,7 @@ public class HPCPullMonitor extends PullMonitor {
             queue.put(take);
             // cleaning up the completed jobs, this method will remove some of the userMonitorData from the queue if
             // they become empty
-            for(MonitorID completedJob:completedJobs){
+            for (MonitorID completedJob : completedJobs) {
                 CommonUtils.removeMonitorFromQueue(queue, completedJob);
             }
         } catch (InterruptedException e) {
@@ -306,5 +309,13 @@ public class HPCPullMonitor extends PullMonitor {
 
     public void setGfac(GFac gfac) {
         this.gfac = gfac;
+    }
+
+    public AuthenticationInfo getAuthenticationInfo() {
+        return authenticationInfo;
+    }
+
+    public void setAuthenticationInfo(AuthenticationInfo authenticationInfo) {
+        this.authenticationInfo = authenticationInfo;
     }
 }

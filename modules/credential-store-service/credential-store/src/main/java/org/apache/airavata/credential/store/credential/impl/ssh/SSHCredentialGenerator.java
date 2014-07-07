@@ -23,6 +23,9 @@ package org.apache.airavata.credential.store.credential.impl.ssh;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.airavata.credential.store.store.CredentialStoreException;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
@@ -60,7 +63,7 @@ public class SSHCredentialGenerator {
             String password = generateRandomString();
             // We are encrypting the private key with the hash of (tokenId+password). 
             // Any client which wants to use this private key will also generate a hash and then use it to decrypt the key.  
-            kpair.writePrivateKey(fileName,generateHash(tokenId,password).getBytes());
+            kpair.writePrivateKey(fileName,password.getBytes());
             kpair.writePublicKey(fileName + ".pub"  , "");
             kpair.dispose();
             byte[] priKey = FileUtils.readFileToByteArray(new File(fileName));
@@ -80,9 +83,18 @@ public class SSHCredentialGenerator {
 	}
 	
 	private String generateHash(String tokenId, String password) {
-		// TODO: Hash the password generated and return it
-		return null;
-	}
+        byte[] bytesOfMessage = new byte[0];
+        try {
+            bytesOfMessage = password.getBytes("UTF-8");
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            return new String( md.digest(bytesOfMessage));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return  null;
+    }
 
 	// Generate a random alphanumberic string of 16 characters length
 	private String generateRandomString() {

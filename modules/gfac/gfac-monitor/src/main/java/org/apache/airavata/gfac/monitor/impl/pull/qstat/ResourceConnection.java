@@ -24,7 +24,9 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
+import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -41,16 +43,43 @@ public class ResourceConnection {
 
     private PBSCluster cluster;
 
+    private AuthenticationInfo authenticationInfo;
 
-    public ResourceConnection(HostMonitorData hostMonitorData) throws SSHApiException {
+
+    public ResourceConnection(HostMonitorData hostMonitorData,AuthenticationInfo authInfo) throws SSHApiException {
         MonitorID monitorID = hostMonitorData.getMonitorIDs().get(0);
         try {
-            GSISecurityContext securityContext = (GSISecurityContext)monitorID.getJobExecutionContext().getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT);
-            cluster = (PBSCluster)securityContext.getPbsCluster();
+            GSISecurityContext securityContext = (GSISecurityContext) monitorID.getJobExecutionContext().getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT);
+            if(securityContext != null) {
+                cluster = (PBSCluster) securityContext.getPbsCluster();
+            }else {
+                SSHSecurityContext sshSecurityContext = (SSHSecurityContext) monitorID.getJobExecutionContext().getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
+                cluster = (PBSCluster)securityContext.getPbsCluster();
+            }
+
+            // we just use cluster configuration from the incoming request and construct a new cluster because for monitoring
+            // we are using our own credentials and not using one users account to do everything.
+            authenticationInfo = authInfo;
+            cluster = new PBSCluster(cluster.getServerInfo(), authenticationInfo, cluster.getJobManagerConfiguration());
         } catch (GFacException e) {
             log.error("Error reading data from job ExecutionContext");
         }
     }
+
+    public ResourceConnection(HostMonitorData hostMonitorData) throws SSHApiException {
+        MonitorID monitorID = hostMonitorData.getMonitorIDs().get(0);
+        try {
+            GSISecurityContext securityContext = (GSISecurityContext) monitorID.getJobExecutionContext().getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT);
+            cluster = (PBSCluster) securityContext.getPbsCluster();
+
+            // we just use cluster configuration from the incoming request and construct a new cluster because for monitoring
+            // we are using our own credentials and not using one users account to do everything.
+            cluster = new PBSCluster(cluster.getServerInfo(), authenticationInfo, cluster.getJobManagerConfiguration());
+        } catch (GFacException e) {
+            log.error("Error reading data from job ExecutionContext");
+        }
+    }
+
     public JobState getJobStatus(MonitorID monitorID) throws SSHApiException {
         String jobID = monitorID.getJobID();
         //todo so currently we execute the qstat for each job but we can use user based monitoring
@@ -58,9 +87,9 @@ public class ResourceConnection {
         return getStatusFromString(cluster.getJobStatus(jobID).toString());
     }
 
-    public Map<String,JobState> getJobStatuses(List<MonitorID> monitorIDs) throws SSHApiException {
-        Map<String,JobStatus> treeMap = new TreeMap<String,JobStatus>();
-        Map<String,JobState> treeMap1 = new TreeMap<String,JobState>();
+    public Map<String, JobState> getJobStatuses(List<MonitorID> monitorIDs) throws SSHApiException {
+        Map<String, JobStatus> treeMap = new TreeMap<String, JobStatus>();
+        Map<String, JobState> treeMap1 = new TreeMap<String, JobState>();
         // creating a sorted map with all the jobIds and with the predefined
         // status as UNKNOWN
         for (MonitorID monitorID : monitorIDs) {
@@ -69,36 +98,37 @@ public class ResourceConnection {
         String userName = cluster.getServerInfo().getUserName();
         //todo so currently we execute the qstat for each job but we can use user based monitoring
         //todo or we should concatenate all the commands and execute them in one go and parse the response
-        cluster.getJobStatuses(userName,treeMap);
-        for(String key:treeMap.keySet()){
-            treeMap1.put(key,getStatusFromString(treeMap.get(key).toString()));
+        cluster.getJobStatuses(userName, treeMap);
+        for (String key : treeMap.keySet()) {
+            treeMap1.put(key, getStatusFromString(treeMap.get(key).toString()));
         }
         return treeMap1;
     }
+
     private JobState getStatusFromString(String status) {
         log.info("parsing the job status returned : " + status);
-        if(status != null){
-            if("C".equals(status) || "CD".equals(status)|| "E".equals(status) || "CG".equals(status)){
+        if (status != null) {
+            if ("C".equals(status) || "CD".equals(status) || "E".equals(status) || "CG".equals(status)) {
                 return JobState.COMPLETE;
-            }else if("H".equals(status) || "h".equals(status)){
+            } else if ("H".equals(status) || "h".equals(status)) {
                 return JobState.HELD;
-            }else if("Q".equals(status) || "qw".equals(status)){
+            } else if ("Q".equals(status) || "qw".equals(status)) {
                 return JobState.QUEUED;
-            }else if("R".equals(status)  || "CF".equals(status) || "r".equals(status)){
+            } else if ("R".equals(status) || "CF".equals(status) || "r".equals(status)) {
                 return JobState.ACTIVE;
-            }else if ("T".equals(status)) {
+            } else if ("T".equals(status)) {
                 return JobState.HELD;
             } else if ("W".equals(status) || "PD".equals(status)) {
                 return JobState.QUEUED;
             } else if ("S".equals(status)) {
                 return JobState.SUSPENDED;
-            }else if("CA".equals(status)){
+            } else if ("CA".equals(status)) {
                 return JobState.CANCELED;
-            }else if ("F".equals(status) || "NF".equals(status) || "TO".equals(status)) {
+            } else if ("F".equals(status) || "NF".equals(status) || "TO".equals(status)) {
                 return JobState.FAILED;
-            }else if ("PR".equals(status) || "Er".equals(status)) {
+            } else if ("PR".equals(status) || "Er".equals(status)) {
                 return JobState.FAILED;
-            }else if ("U".equals(status)){
+            } else if ("U".equals(status)) {
                 return JobState.UNKNOWN;
             }
         }

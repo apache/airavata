@@ -2692,12 +2692,11 @@ public class AiravataJPARegistry extends AiravataRegistry2{
 
 	private static DBUtil getDBConnector() throws RegException {
         try {
-        	String url = RegistrySettings.getSetting("registry.jdbc.url");
-        	String driver = RegistrySettings.getSetting("registry.jdbc.driver");
-        	String username = RegistrySettings.getSetting("registry.jdbc.user");
-        	String password = RegistrySettings.getSetting("registry.jdbc.password");
-        	DBUtil dbConnector = new DBUtil(url,username,password,driver);
-            return dbConnector;
+            String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
+            String jdbcUsr = ServerSettings.getCredentialStoreDBUser();
+            String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
+            String driver = ServerSettings.getCredentialStoreDBDriver();
+        	return new DBUtil(jdbcUrl,jdbcUsr,jdbcPass,driver);
         } catch (InstantiationException e) {
         	logger.error("Error while accesing registrty settings ", e);
         	throw new RegException("Error while accesing registrty settings ", e);
@@ -2710,7 +2709,10 @@ public class AiravataJPARegistry extends AiravataRegistry2{
         } catch (RegistrySettingsException e) {
         	logger.error("Error while reading registrty settings ", e);
         	throw new RegException("Error while accesing registrty settings ", e);
-		}
+		} catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
