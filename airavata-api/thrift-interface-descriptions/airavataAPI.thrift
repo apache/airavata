@@ -703,6 +703,32 @@ service Airavata {
                    3: airavataErrors.AiravataSystemException ase)
 
   /**
+   * Fetch name and id of  Application Interface documents.
+   *
+   *
+   * @return map<applicationId, applicationInterfaceNames>
+   *   Returns a list of application interfaces with corresponsing id's
+   *
+  */
+  map<string, string> getAllApplicationInterfaceNames ()
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch all Application Interface documents.
+   *
+   *
+   * @return map<applicationId, applicationInterfaceNames>
+   *   Returns a list of application interfaces documents
+   *
+  */
+  list<applicationInterfaceModel.ApplicationInterfaceDescription> getAllApplicationInterfaces ()
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  /**
    * Fetch the list of Application Inputs.
    *
    * @param appInterfaceId

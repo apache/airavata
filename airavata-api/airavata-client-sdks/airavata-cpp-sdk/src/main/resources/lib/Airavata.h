@@ -52,6 +52,8 @@ class AiravataIf {
   virtual void getApplicationInterface( ::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId) = 0;
   virtual bool updateApplicationInterface(const std::string& appInterfaceId, const  ::ApplicationInterfaceDescription& applicationInterface) = 0;
   virtual bool deleteApplicationInterface(const std::string& appInterfaceId) = 0;
+  virtual void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return) = 0;
+  virtual void getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return) = 0;
   virtual void getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
   virtual void getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
   virtual void getAvailableAppInterfaceComputeResources(std::vector<std::string> & _return, const std::string& appInterfaceId) = 0;
@@ -231,6 +233,12 @@ class AiravataNull : virtual public AiravataIf {
   bool deleteApplicationInterface(const std::string& /* appInterfaceId */) {
     bool _return = false;
     return _return;
+  }
+  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & /* _return */) {
+    return;
+  }
+  void getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & /* _return */) {
+    return;
   }
   void getApplicationInputs(std::vector< ::InputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
     return;
@@ -5269,6 +5277,254 @@ class Airavata_deleteApplicationInterface_presult {
 };
 
 
+class Airavata_getAllApplicationInterfaceNames_args {
+ public:
+
+  Airavata_getAllApplicationInterfaceNames_args() {
+  }
+
+  virtual ~Airavata_getAllApplicationInterfaceNames_args() throw() {}
+
+
+  bool operator == (const Airavata_getAllApplicationInterfaceNames_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const Airavata_getAllApplicationInterfaceNames_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllApplicationInterfaceNames_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllApplicationInterfaceNames_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllApplicationInterfaceNames_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllApplicationInterfaceNames_result__isset {
+  _Airavata_getAllApplicationInterfaceNames_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllApplicationInterfaceNames_result__isset;
+
+class Airavata_getAllApplicationInterfaceNames_result {
+ public:
+
+  Airavata_getAllApplicationInterfaceNames_result() {
+  }
+
+  virtual ~Airavata_getAllApplicationInterfaceNames_result() throw() {}
+
+  std::map<std::string, std::string>  success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllApplicationInterfaceNames_result__isset __isset;
+
+  void __set_success(const std::map<std::string, std::string> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getAllApplicationInterfaceNames_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllApplicationInterfaceNames_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllApplicationInterfaceNames_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllApplicationInterfaceNames_presult__isset {
+  _Airavata_getAllApplicationInterfaceNames_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllApplicationInterfaceNames_presult__isset;
+
+class Airavata_getAllApplicationInterfaceNames_presult {
+ public:
+
+
+  virtual ~Airavata_getAllApplicationInterfaceNames_presult() throw() {}
+
+  std::map<std::string, std::string> * success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllApplicationInterfaceNames_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getAllApplicationInterfaces_args {
+ public:
+
+  Airavata_getAllApplicationInterfaces_args() {
+  }
+
+  virtual ~Airavata_getAllApplicationInterfaces_args() throw() {}
+
+
+  bool operator == (const Airavata_getAllApplicationInterfaces_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const Airavata_getAllApplicationInterfaces_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllApplicationInterfaces_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllApplicationInterfaces_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllApplicationInterfaces_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllApplicationInterfaces_result__isset {
+  _Airavata_getAllApplicationInterfaces_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllApplicationInterfaces_result__isset;
+
+class Airavata_getAllApplicationInterfaces_result {
+ public:
+
+  Airavata_getAllApplicationInterfaces_result() {
+  }
+
+  virtual ~Airavata_getAllApplicationInterfaces_result() throw() {}
+
+  std::vector< ::ApplicationInterfaceDescription>  success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllApplicationInterfaces_result__isset __isset;
+
+  void __set_success(const std::vector< ::ApplicationInterfaceDescription> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getAllApplicationInterfaces_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllApplicationInterfaces_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllApplicationInterfaces_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllApplicationInterfaces_presult__isset {
+  _Airavata_getAllApplicationInterfaces_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllApplicationInterfaces_presult__isset;
+
+class Airavata_getAllApplicationInterfaces_presult {
+ public:
+
+
+  virtual ~Airavata_getAllApplicationInterfaces_presult() throw() {}
+
+  std::vector< ::ApplicationInterfaceDescription> * success;
+   ::airavata::api::error::InvalidRequestException ire;
+   ::airavata::api::error::AiravataClientException ace;
+   ::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllApplicationInterfaces_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_getApplicationInputs_args {
  public:
 
@@ -9947,6 +10203,12 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteApplicationInterface(const std::string& appInterfaceId);
   void send_deleteApplicationInterface(const std::string& appInterfaceId);
   bool recv_deleteApplicationInterface();
+  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return);
+  void send_getAllApplicationInterfaceNames();
+  void recv_getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return);
+  void getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return);
+  void send_getAllApplicationInterfaces();
+  void recv_getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return);
   void getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId);
   void send_getApplicationInputs(const std::string& appInterfaceId);
   void recv_getApplicationInputs(std::vector< ::InputDataObjectType> & _return);
@@ -10098,6 +10360,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllApplicationInterfaceNames(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllApplicationInterfaces(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationInputs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationOutputs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAvailableAppInterfaceComputeResources(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -10171,6 +10435,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getApplicationInterface"] = &AiravataProcessor::process_getApplicationInterface;
     processMap_["updateApplicationInterface"] = &AiravataProcessor::process_updateApplicationInterface;
     processMap_["deleteApplicationInterface"] = &AiravataProcessor::process_deleteApplicationInterface;
+    processMap_["getAllApplicationInterfaceNames"] = &AiravataProcessor::process_getAllApplicationInterfaceNames;
+    processMap_["getAllApplicationInterfaces"] = &AiravataProcessor::process_getAllApplicationInterfaces;
     processMap_["getApplicationInputs"] = &AiravataProcessor::process_getApplicationInputs;
     processMap_["getApplicationOutputs"] = &AiravataProcessor::process_getApplicationOutputs;
     processMap_["getAvailableAppInterfaceComputeResources"] = &AiravataProcessor::process_getAvailableAppInterfaceComputeResources;
@@ -10587,6 +10853,26 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->deleteApplicationInterface(appInterfaceId);
     }
     return ifaces_[i]->deleteApplicationInterface(appInterfaceId);
+  }
+
+  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllApplicationInterfaceNames(_return);
+    }
+    ifaces_[i]->getAllApplicationInterfaceNames(_return);
+    return;
+  }
+
+  void getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllApplicationInterfaces(_return);
+    }
+    ifaces_[i]->getAllApplicationInterfaces(_return);
+    return;
   }
 
   void getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId) {
