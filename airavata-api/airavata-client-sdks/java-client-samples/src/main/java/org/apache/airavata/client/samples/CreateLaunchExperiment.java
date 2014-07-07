@@ -80,80 +80,80 @@ public class CreateLaunchExperiment {
             List<Project> projects = getAllUserProject(airavata, "admin");
             List<Project> searchProjects1 = searchProjectsByProjectName(airavata, "admin", "project");
             List<Project> searchProjects2 = searchProjectsByProjectDesc(airavata, "admin", "test");
-            for (Experiment exp : experiments){
+            for (Experiment exp : experiments) {
                 System.out.println(" exp id : " + exp.getExperimentID());
-                System.out.println("experiment Description : " + exp.getDescription()) ;
+                System.out.println("experiment Description : " + exp.getDescription());
                 if (exp.getExperimentStatus() != null) {
                     System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
                 }
             }
 
-            for (ExperimentSummary exp : searchedExps1){
+            for (ExperimentSummary exp : searchedExps1) {
                 System.out.println("search results by experiment name");
-                System.out.println("experiment ID : " + exp.getExperimentID()) ;
-                System.out.println("experiment Description : " + exp.getDescription()) ;
+                System.out.println("experiment ID : " + exp.getExperimentID());
+                System.out.println("experiment Description : " + exp.getDescription());
                 if (exp.getExperimentStatus() != null) {
                     System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
                 }
             }
 
-            for (ExperimentSummary exp : searchedExps2){
+            for (ExperimentSummary exp : searchedExps2) {
                 System.out.println("search results by experiment desc");
-                System.out.println("experiment ID : " + exp.getExperimentID()) ;
+                System.out.println("experiment ID : " + exp.getExperimentID());
                 if (exp.getExperimentStatus() != null) {
                     System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
                 }
             }
 
-            for (ExperimentSummary exp : searchedExps3){
+            for (ExperimentSummary exp : searchedExps3) {
                 System.out.println("search results by application");
-                System.out.println("experiment ID : " + exp.getExperimentID()) ;
+                System.out.println("experiment ID : " + exp.getExperimentID());
                 if (exp.getExperimentStatus() != null) {
                     System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
                 }
             }
 
-            for (Project pr : searchProjects1){
+            for (Project pr : searchProjects1) {
                 System.out.println(" project id : " + pr.getProjectID());
             }
 
-            for (Project pr : searchProjects2){
+            for (Project pr : searchProjects2) {
                 System.out.println(" project id : " + pr.getProjectID());
                 System.out.println(" project desc : " + pr.getDescription());
             }
 
-            Thread monitor = (new Thread(){
-                 public void run() {
-                     Map<String, JobStatus> jobStatuses = null;
-                     while (true) {
-                         try {
-                             jobStatuses = airavata.getJobStatuses(expId);
-                             Set<String> strings = jobStatuses.keySet();
-                             for (String key : strings) {
-                                 JobStatus jobStatus = jobStatuses.get(key);
-                                 if(jobStatus == null){
-                                     return;
-                                 }else {
-                                     if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
-                                         System.out.println("Job completed Job ID: " + key);
-                                         return;
-                                     }else{
+            Thread monitor = (new Thread() {
+                public void run() {
+                    Map<String, JobStatus> jobStatuses = null;
+                    while (true) {
+                        try {
+                            jobStatuses = airavata.getJobStatuses(expId);
+                            Set<String> strings = jobStatuses.keySet();
+                            for (String key : strings) {
+                                JobStatus jobStatus = jobStatuses.get(key);
+                                if (jobStatus == null) {
+                                    return;
+                                } else {
+                                    if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
+                                        System.out.println("Job completed Job ID: " + key);
+                                        return;
+                                    } else {
                                         System.out.println("Job ID:" + key + jobStatuses.get(key).getJobState().toString());
-                                     }
-                                 }
-                             }
-                             ExperimentStatus experimentStatus = airavata.getExperimentStatus(expId);
-                             if(experimentStatus.getExperimentState().equals(ExperimentState.FAILED)){
-                            	 return;
-                             }
-							System.out.println(experimentStatus);
-                             Thread.sleep(5000);
-                         } catch (Exception e) {
-                             e.printStackTrace();
-                         }
-                     }
+                                    }
+                                }
+                            }
+                            ExperimentStatus experimentStatus = airavata.getExperimentStatus(expId);
+                            if (experimentStatus.getExperimentState().equals(ExperimentState.FAILED)) {
+                                return;
+                            }
+                            System.out.println(experimentStatus);
+                            Thread.sleep(5000);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-                 }
+                }
             });
             monitor.start();
             try {
@@ -161,20 +161,20 @@ public class CreateLaunchExperiment {
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				e.printStackTrace(); // To change body of catch statement use
-										// File | Settings | File Templates.
-			}
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace(); // To change body of catch statement use
+                // File | Settings | File Templates.
+            }
 
 //            System.out.println(airavata.getExperimentStatus(expId));
             List<DataObjectType> output = airavata.getExperimentOutputs(expId);
             for (DataObjectType dataObjectType : output) {
                 System.out.println(dataObjectType.getKey() + " : " + dataObjectType.getType() + " : " + dataObjectType.getValue());
-                
-				
-			}
+
+
+            }
             String clonedExpId = cloneExperiment(airavata, expId);
             System.out.println("Cloned Experiment ID : " + clonedExpId);
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
@@ -184,7 +184,7 @@ public class CreateLaunchExperiment {
         }
     }
 
-    public static void addDescriptors() throws AiravataAPIInvocationException,ApplicationSettingsException  {
+    public static void addDescriptors() throws AiravataAPIInvocationException, ApplicationSettingsException {
         try {
             DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
             documentCreator.createLocalHostDocs();
@@ -194,6 +194,7 @@ public class CreateLaunchExperiment {
             documentCreator.createSlurmDocs();
             documentCreator.createSGEDocs();
             documentCreator.createEchoHostDocs();
+            documentCreator.createBigRedDocs();
         } catch (AiravataAPIInvocationException e) {
             logger.error("Unable to create airavata API", e.getMessage());
             throw new AiravataAPIInvocationException(e);
@@ -219,8 +220,8 @@ public class CreateLaunchExperiment {
         return airavataAPI;
     }
 
-    public static String createExperimentForTrestles(Airavata.Client client) throws TException  {
-        try{
+    public static String createExperimentForTrestles(Airavata.Client client) throws TException {
+        try {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("echo_input");
@@ -255,50 +256,50 @@ public class CreateLaunchExperiment {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        }catch (TException e) {
+        } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
         }
     }
-    
-    public static String createExperimentWRFTrestles(Airavata.Client client) throws TException  {
-        try{
+
+    public static String createExperimentWRFTrestles(Airavata.Client client) throws TException {
+        try {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("WRF_Namelist");
             input.setType(DataType.URI);
             input.setValue("/Users/raminder/Downloads/wrf_sample_inputs/namelist.input");
-            
+
             DataObjectType input1 = new DataObjectType();
             input1.setKey("WRF_Input_File");
             input1.setType(DataType.URI);
             input1.setValue("/Users/raminder/Downloads/wrf_sample_inputs/wrfinput_d01");
-            
+
             DataObjectType input2 = new DataObjectType();
             input2.setKey("WRF_Boundary_File");
             input2.setType(DataType.URI);
             input2.setValue("/Users/raminder/Downloads/wrf_sample_inputs/wrfbdy_d01");
-            
+
             exInputs.add(input);
             exInputs.add(input1);
             exInputs.add(input2);
 
-           
+
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
             output.setKey("WRF_Output");
             output.setType(DataType.URI);
             output.setValue("");
-            
+
             DataObjectType output1 = new DataObjectType();
             output1.setKey("WRF_Execution_Log");
             output1.setType(DataType.URI);
             output1.setValue("");
-            
-            
+
+
             exOut.add(output);
             exOut.add(output1);
-           
+
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", "WRF", exInputs);
@@ -320,35 +321,35 @@ public class CreateLaunchExperiment {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        }catch (TException e) {
+        } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
         }
     }
 
-    public static String cloneExperiment(Airavata.Client client, String expId) throws TException  {
-        try{
+    public static String cloneExperiment(Airavata.Client client, String expId) throws TException {
+        try {
             return client.cloneExperiment(expId, "cloneExperiment1");
-        }catch (TException e) {
+        } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
         }
     }
 
-    public static void updateExperiment(Airavata.Client client, String expId) throws TException  {
-        try{
+    public static void updateExperiment(Airavata.Client client, String expId) throws TException {
+        try {
             Experiment experiment = client.getExperiment(expId);
             experiment.setDescription("updatedDescription");
-            client.updateExperiment(expId, experiment );
-        }catch (TException e) {
+            client.updateExperiment(expId, experiment);
+        } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
         }
     }
 
 
-    public static String createExperimentForLocalHost(Airavata.Client client) throws TException  {
-        try{
+    public static String createExperimentForLocalHost(Airavata.Client client) throws TException {
+        try {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("echo_input");
@@ -386,14 +387,14 @@ public class CreateLaunchExperiment {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        }catch (TException e) {
+        } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
         }
     }
-    
-    public static String createExperimentForSSHHost(Airavata.Client client) throws TException  {
-        try{
+
+    public static String createExperimentForSSHHost(Airavata.Client client) throws TException {
+        try {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("echo_input");
@@ -432,13 +433,14 @@ public class CreateLaunchExperiment {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        }catch (TException e) {
+        } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
         }
     }
-    public static String createExperimentForStampede(Airavata.Client client) throws TException  {
-        try{
+
+    public static String createExperimentForStampede(Airavata.Client client) throws TException {
+        try {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("echo_input");
@@ -477,13 +479,14 @@ public class CreateLaunchExperiment {
         } catch (AiravataClientException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        }catch (TException e) {
+        } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
         }
     }
-       public static String createExperimentForLonestar(Airavata.Client client) throws TException  {
-        try{
+
+    public static String createExperimentForLonestar(Airavata.Client client) throws TException {
+        try {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("echo_input");
@@ -531,15 +534,60 @@ public class CreateLaunchExperiment {
                 }
             }
             throw e;
-        }catch (TException e) {
+        } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
         }
     }
-       
-       
-    public static void launchExperiment (Airavata.Client client, String expId)
-            throws TException{
+
+    public static String createExperimentForBR2(Airavata.Client client) throws TException {
+        try {
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("echo_input");
+            input.setType(DataType.STRING);
+            input.setValue("echo_output=Hello World");
+            exInputs.add(input);
+
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("echo_output");
+            output.setType(DataType.STRING);
+            output.setValue("");
+            exOut.add(output);
+
+            Project project = ProjectModelUtil.createProject("default", "admin", "test project");
+            String projectId = client.createProject(project);
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", "SimpleEchoBR", exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("bigred2.uits.iu.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+            scheduling.setResourceHostId("bigred2.uits.iu.edu");
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            userConfigurationData.setAiravataAutoSchedule(false);
+            userConfigurationData.setOverrideManualScheduledParams(false);
+            userConfigurationData.setComputationalResourceScheduling(scheduling);
+            simpleExperiment.setUserConfigurationData(userConfigurationData);
+            return client.createExperiment(simpleExperiment);
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+    }
+
+    public static void launchExperiment(Airavata.Client client, String expId)
+            throws TException {
         try {
             client.launchExperiment(expId, "testToken");
         } catch (ExperimentNotFoundException e) {
@@ -554,13 +602,13 @@ public class CreateLaunchExperiment {
         } catch (AiravataClientException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new AiravataClientException(e);
-        }catch (TException e) {
+        } catch (TException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new TException(e);
         }
     }
 
-    public static List<Experiment> getExperimentsForUser (Airavata.Client client, String user){
+    public static List<Experiment> getExperimentsForUser(Airavata.Client client, String user) {
         try {
             return client.getAllUserExperiments(user);
         } catch (AiravataSystemException e) {
@@ -569,13 +617,13 @@ public class CreateLaunchExperiment {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        }catch (TException e){
+        } catch (TException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static List<Project> getAllUserProject (Airavata.Client client, String user){
+    public static List<Project> getAllUserProject(Airavata.Client client, String user) {
         try {
             return client.getAllUserProjects(user);
         } catch (AiravataSystemException e) {
@@ -584,13 +632,13 @@ public class CreateLaunchExperiment {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        }catch (TException e){
+        } catch (TException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static List<Project> searchProjectsByProjectName (Airavata.Client client, String user, String projectName){
+    public static List<Project> searchProjectsByProjectName(Airavata.Client client, String user, String projectName) {
         try {
             return client.searchProjectsByProjectName(user, projectName);
         } catch (AiravataSystemException e) {
@@ -599,13 +647,13 @@ public class CreateLaunchExperiment {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        }catch (TException e){
+        } catch (TException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static List<Project> searchProjectsByProjectDesc (Airavata.Client client, String user, String desc){
+    public static List<Project> searchProjectsByProjectDesc(Airavata.Client client, String user, String desc) {
         try {
             return client.searchProjectsByProjectDesc(user, desc);
         } catch (AiravataSystemException e) {
@@ -614,14 +662,14 @@ public class CreateLaunchExperiment {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        }catch (TException e){
+        } catch (TException e) {
             e.printStackTrace();
         }
         return null;
     }
 
 
-    public static List<ExperimentSummary> searchExperimentsByName (Airavata.Client client, String user, String expName){
+    public static List<ExperimentSummary> searchExperimentsByName(Airavata.Client client, String user, String expName) {
         try {
             return client.searchExperimentsByName(user, expName);
         } catch (AiravataSystemException e) {
@@ -630,13 +678,13 @@ public class CreateLaunchExperiment {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        }catch (TException e){
+        } catch (TException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static List<ExperimentSummary> searchExperimentsByDesc(Airavata.Client client, String user, String desc){
+    public static List<ExperimentSummary> searchExperimentsByDesc(Airavata.Client client, String user, String desc) {
         try {
             return client.searchExperimentsByDesc(user, desc);
         } catch (AiravataSystemException e) {
@@ -645,13 +693,13 @@ public class CreateLaunchExperiment {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        }catch (TException e){
+        } catch (TException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static List<ExperimentSummary> searchExperimentsByApplication(Airavata.Client client, String user, String app){
+    public static List<ExperimentSummary> searchExperimentsByApplication(Airavata.Client client, String user, String app) {
         try {
             return client.searchExperimentsByApplication(user, app);
         } catch (AiravataSystemException e) {
@@ -660,7 +708,7 @@ public class CreateLaunchExperiment {
             e.printStackTrace();
         } catch (AiravataClientException e) {
             e.printStackTrace();
-        }catch (TException e){
+        } catch (TException e) {
             e.printStackTrace();
         }
         return null;

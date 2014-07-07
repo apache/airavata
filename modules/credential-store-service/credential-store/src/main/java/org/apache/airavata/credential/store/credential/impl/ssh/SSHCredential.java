@@ -38,6 +38,19 @@ public class SSHCredential extends Credential implements Serializable {
     private byte[] publicKey;
     private String passphrase;
     private String gateway;
+    private String username;
+
+
+    public SSHCredential() {
+    }
+
+    public SSHCredential(byte[] privatekey, byte[] publicKey, String passphrase, String gateway,String username) {
+        this.privatekey = privatekey;
+        this.publicKey = publicKey;
+        this.passphrase = passphrase;
+        this.gateway = gateway;
+        this.username = username;
+    }
 
     public byte[] getPrivateKey() {
         return privatekey;

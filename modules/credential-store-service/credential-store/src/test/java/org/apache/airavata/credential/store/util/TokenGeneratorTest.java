@@ -30,7 +30,7 @@ import junit.framework.TestCase;
  * Time: 4:20 PM
  */
 
-public class TokenGeneratorTest extends TestCase {
+public class    TokenGeneratorTest extends TestCase {
 
     public void testGenerateToken() throws Exception {
 

@@ -62,9 +62,9 @@ public class GridPullMonitorHandler extends ThreadedHandler {
             setAuthenticationInfo(new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
                     7512, 17280000, certPath));
             if(GFacImpl.getMonitorPublisher() != null){
-                hpcPullMonitor = new HPCPullMonitor(GFacImpl.getMonitorPublisher());    // todo remove the GFacImpl
+                hpcPullMonitor = new HPCPullMonitor(GFacImpl.getMonitorPublisher(),getAuthenticationInfo());    // we use our own credentials for monitoring, not from the store
             }else {
-                hpcPullMonitor = new HPCPullMonitor(BetterGfacImpl.getMonitorPublisher());
+                hpcPullMonitor = new HPCPullMonitor(BetterGfacImpl.getMonitorPublisher(),getAuthenticationInfo());  // we use our own credentials for monitoring, not from the store
             }
         } catch (ApplicationSettingsException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

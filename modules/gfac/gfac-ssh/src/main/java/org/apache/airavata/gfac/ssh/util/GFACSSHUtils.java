@@ -28,9 +28,12 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
+import org.apache.airavata.gfac.ssh.security.TokenizedSSHAuthInfo;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
@@ -57,39 +60,31 @@ public class GFACSSHUtils {
                 || registeredHost.getType() instanceof GsisshHostType) {
             logger.error("This is a wrong method to invoke to non ssh host types,please check your gfac-config.xml");
         } else if (registeredHost.getType() instanceof SSHHostType) {
-            Properties configurationProperties = ServerSettings.getProperties();
-            String sshUserName = configurationProperties.getProperty(Constants.SSH_USER_NAME);
-            String sshPrivateKey = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY);
-            String sshPrivateKeyPass = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
-            String sshPassword = configurationProperties.getProperty(Constants.SSH_PASSWORD);
-            String sshPublicKey = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
             SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
-            AuthenticationInfo authenticationInfo = null;
-            // we give higher preference to the password over keypair ssh authentication
-            if (sshPassword != null) {
-                authenticationInfo = new DefaultPasswordAuthenticationInfo(sshPassword);
-            } else {
-                authenticationInfo = new DefaultPublicKeyFileAuthentication(sshPublicKey, sshPrivateKey, sshPrivateKeyPass);
-            }
-            ServerInfo serverInfo = new ServerInfo(sshUserName, registeredHost.getType().getHostAddress());
+            String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
+            RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
+            requestData.setTokenId(credentialStoreToken);
+
+            ServerInfo serverInfo = new ServerInfo(null, registeredHost.getType().getHostAddress());
 
             Cluster pbsCluster = null;
             try {
+                TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(GFacUtils.getCredentialReader(), requestData);
                 String installedParentPath = "/";
                 if (((SSHHostType) registeredHost.getType()).getHpcResource()) {
                     installedParentPath = ((HpcApplicationDeploymentType)
                             jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
                 }
-                pbsCluster = new PBSCluster(serverInfo, authenticationInfo,
+                pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
                         CommonUtils.getPBSJobManager(installedParentPath));
-            } catch (SSHApiException e) {
+            } catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
             sshSecurityContext.setPbsCluster(pbsCluster);
-            sshSecurityContext.setUsername(sshUserName);
             jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
         }
     }
+
     public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext,
                                                     ApplicationDeploymentDescriptionType app, Cluster cluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
