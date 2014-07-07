@@ -11,7 +11,7 @@ namespace airavata { namespace api {
 const airavataAPIConstants g_airavataAPI_constants;
 
 airavataAPIConstants::airavataAPIConstants() {
-  AIRAVATA_API_VERSION = "0.12.0";
+  AIRAVATA_API_VERSION = "0.13.0";
 
 }
 

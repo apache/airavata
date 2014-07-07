@@ -282,7 +282,7 @@ class ApplicationDeploymentDescription {
   public $appModuleId = null;
   public $computeHostId = null;
   public $executablePath = null;
-  public $parallelism = null;
+  public $parallelism =   0;
   public $appDeploymentDescription = null;
   public $moduleLoadCmds = null;
   public $libPrependPaths = null;

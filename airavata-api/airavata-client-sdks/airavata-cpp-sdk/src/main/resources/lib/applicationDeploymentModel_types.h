@@ -166,6 +166,8 @@ class ApplicationDeploymentDescription {
   static const uint8_t binary_fingerprint[16]; // = {0x19,0xA9,0x84,0x1A,0x9F,0x46,0x27,0xA2,0xC1,0x0F,0x4A,0x28,0xE2,0xCF,0x0E,0x17};
 
   ApplicationDeploymentDescription() : isEmpty(false), appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism((ApplicationParallelismType::type)0), appDeploymentDescription() {
+    parallelism = (ApplicationParallelismType::type)0;
+
   }
 
   virtual ~ApplicationDeploymentDescription() throw() {}

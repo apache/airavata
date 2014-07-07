@@ -27,6 +27,7 @@ import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,11 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             deploymentResource.setHostResource((ComputeResourceResource)computeHostResource.get(deploymentDescription.getComputeHostId()));
             deploymentResource.setAppDes(deploymentDescription.getAppDeploymentDescription());
             deploymentResource.setExecutablePath(deploymentDescription.getExecutablePath());
-            deploymentResource.setParallelism(deploymentDescription.getParallelism().toString());
+            ApplicationParallelismType parallelism = deploymentDescription.getParallelism();
+            if (parallelism != null){
+                deploymentResource.setParallelism(parallelism.toString());
+            }
+
             //TODO
 //            deploymentResource.setEnvModuleLoadCMD(deploymentDescription.getModuleLoadCmd());
             deploymentResource.save();
@@ -129,7 +134,9 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             existingDep.setHostResource((ComputeResourceResource)computeHostResource.get(updatedDeployment.getComputeHostId()));
             existingDep.setAppDes(updatedDeployment.getAppDeploymentDescription());
             existingDep.setExecutablePath(updatedDeployment.getExecutablePath());
-            existingDep.setParallelism(updatedDeployment.getParallelism().toString());
+            if (updatedDeployment.getParallelism() != null){
+                deploymentResource.setParallelism(updatedDeployment.getParallelism().toString());
+            }
             //TODO
             
 //            existingDep.setEnvModuleLoadCMD(updatedDeployment.getModuleLoadCmd());

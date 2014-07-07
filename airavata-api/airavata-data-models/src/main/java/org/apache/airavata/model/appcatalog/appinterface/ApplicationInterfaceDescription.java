@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
  * appDeploymentId:
  *   Corelated the interface to a particular application deployment
  * 
- * 
+ * FIXME: add a description
  */
 @SuppressWarnings("all") public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<ApplicationInterfaceDescription, ApplicationInterfaceDescription._Fields>, java.io.Serializable, Cloneable, Comparable<ApplicationInterfaceDescription> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ApplicationInterfaceDescription");
