@@ -1630,7 +1630,23 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public Map<String, String> getAllComputeResourceNames() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            List<ComputeResourceDescription> allComputeResourceList = appCatalog.getComputeResource().getAllComputeResourceList();
+            if (allComputeResourceList != null && !allComputeResourceList.isEmpty()){
+                Map<String, String> allComputeResources = new HashMap<String, String>();
+                for (ComputeResourceDescription resourceDescription : allComputeResourceList){
+                    allComputeResources.put(resourceDescription.getComputeResourceId(), resourceDescription.getHostName());
+                }
+                return allComputeResources;
+            }
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
