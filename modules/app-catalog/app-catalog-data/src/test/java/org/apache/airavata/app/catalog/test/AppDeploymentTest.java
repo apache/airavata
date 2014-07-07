@@ -87,6 +87,7 @@ public class AppDeploymentTest {
         description.setComputeHostId(hostId);
         description.setExecutablePath("/home/a/b/c");
         description.setAppDeploymentDescription("test app deployment");
+        description.addToModuleLoadCmds("");
         //TODO
 //        description.setModuleLoadCmd("module load");?
         List<SetEnvPaths> libPrepandPaths = new ArrayList<SetEnvPaths>();
