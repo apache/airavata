@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.GwyResourceProfile;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
@@ -43,23 +42,10 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 
 public class DocumentCreatorUtils {
 
-	public static void addNewComputeResourcePreference(GwyResourceProfile gatewayProfile,
-			String gatewayID, String computeResourceId, String scratchLocation,
+	public static ComputeResourcePreference createComputeResourcePreference(String computeResourceId, String scratchLocation,
 			String allocationProjectNumber, boolean overridebyAiravata,
 			String preferredBatchQueue, String preferredJobSubmissionProtocol,
 			String preferredDataMovementProtocol) throws AppCatalogException {
-        org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile profile = null;
-		boolean gatewayProfileExists=true;
-		try {
-			profile=gatewayProfile.getGatewayProfile(gatewayID);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (profile==null){
-			profile= new org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile();
-			gatewayProfileExists=false;
-		}
-		profile.setGatewayID(gatewayID);
 		ComputeResourcePreference computeResourcePreference = new ComputeResourcePreference();
 		computeResourcePreference.setComputeResourceId(computeResourceId);
 		computeResourcePreference.setOverridebyAiravata(overridebyAiravata);
@@ -68,12 +54,7 @@ public class DocumentCreatorUtils {
 		computeResourcePreference.setPreferredDataMovementProtocol(preferredDataMovementProtocol);
 		computeResourcePreference.setPreferredJobSubmissionProtocol(preferredJobSubmissionProtocol);
 		computeResourcePreference.setScratchLocation(scratchLocation);
-		profile.addToComputeResourcePreferences(computeResourcePreference );
-		if (gatewayProfileExists){
-			gatewayProfile.updateGatewayProfile(gatewayID, profile);
-		}else{
-			gatewayProfile.addGatewayProfile(profile);
-		}
+		return computeResourcePreference;
 	}
 
 	public static ApplicationDeploymentDescription createApplicationDeployment(

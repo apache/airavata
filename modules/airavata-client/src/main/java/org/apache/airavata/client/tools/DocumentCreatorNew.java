@@ -23,18 +23,15 @@ package org.apache.airavata.client.tools;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import org.airavata.appcatalog.cpi.*;
-import org.airavata.appcatalog.cpi.GwyResourceProfile;
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
@@ -42,6 +39,11 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerTy
 import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.thrift.TException;
 
 public class DocumentCreatorNew {
 
@@ -51,38 +53,30 @@ public class DocumentCreatorNew {
     private String stampedeHostAddress  = "stampede.tacc.xsede.org";
     private String gridftpAddress = "gsiftp://trestles-dm1.sdsc.edu:2811";
     private String gramAddress = "trestles-login1.sdsc.edu:2119/jobmanager-pbstest2";
-	private ComputeResource computeResource;
-	private ApplicationInterface applicationInterface;
-	private ApplicationDeployment applicationDeployment;
-	private GwyResourceProfile gatewayProfile;
+    private Airavata.Client client;
+	private GatewayResourceProfile gatewayResourceProfile;
 	
-    public DocumentCreatorNew(AppCatalog appcatalog) throws AppCatalogException {
-        this.appcatalog = appcatalog;
-    	computeResource = appcatalog.getComputeResource();
-    	applicationInterface = appcatalog.getApplicationInterface();
-    	applicationDeployment = appcatalog.getApplicationDeployment();
-    	gatewayProfile = appcatalog.getGatewayProfile();
+    public DocumentCreatorNew(Airavata.Client client) throws AppCatalogException {
+    	this.client = client;
 	}
 
-    public void createLocalHostDocs() throws AppCatalogException {
+    public void createLocalHostDocs() throws AppCatalogException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	//Define compute resource host
     	ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription(
     			"localhost", new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})), new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})));
-    	host.setComputeResourceId(computeResource.addComputeResource(host));
+    	host.setComputeResourceId(client.registerComputeResource(host));
     	
     	LOCALSubmission localSubmission = new LOCALSubmission();
     	ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.FORK, null, null,null);
 		localSubmission.setResourceJobManager(resourceJobManager);
-		localSubmission.setJobSubmissionInterfaceId(computeResource.addLocalJobSubmission(localSubmission));
-		computeResource.addJobSubmissionProtocol(host.getComputeResourceId(),DocumentCreatorUtils.createJobSubmissionInterface(localSubmission.getJobSubmissionInterfaceId(),JobSubmissionProtocol.LOCAL, 1));
+		client.addLocalSubmissionDetails(host.getComputeResourceId(), 1, localSubmission);
 		
 		LOCALDataMovement localDataMovement = new LOCALDataMovement();
-		localDataMovement.setDataMovementInterfaceId(computeResource.addLocalDataMovement(localDataMovement));
-		computeResource.addDataMovementProtocol(host.getComputeResourceId(), DocumentCreatorUtils.createDataMovementInterface(localDataMovement.getDataMovementInterfaceId(), DataMovementProtocol.LOCAL,1));
+		client.addLocalDataMovementDetails(host.getComputeResourceId(), 1,localDataMovement);
 
 		//Define application module
 		ApplicationModule module = DocumentCreatorUtils.createApplicationModule("echo","1.0.0", "Local host echo applications");
-		module.setAppModuleId(applicationInterface.addApplicationModule(module));
+		module.setAppModuleId(client.registerApplicationModule(module));
 		
 		//Define application interfaces
     	ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
@@ -90,54 +84,60 @@ public class DocumentCreatorNew {
 		application.addToApplicationModules(module.getAppModuleId());
     	application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input","echo_input","Echo Input Data",null,DataType.STRING));
 		application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("echo_output", null, DataType.STRING));
-		application.setApplicationInterfaceId(applicationInterface.addApplicationInterface(application));
+		application.setApplicationInterfaceId(client.registerApplicationInterface(application));
 		
 		//Define application deployment
 		ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module.getAppModuleId(), "/bin/echo",ApplicationParallelismType.SERIAL, "Local echo app depoyment");
-		deployment.setAppDeploymentId(applicationDeployment.addApplicationDeployment(deployment));
+		deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
 
 		//Define gateway profile
-		DocumentCreatorUtils.addNewComputeResourcePreference(gatewayProfile, "default",
+		client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(
 				host.getComputeResourceId(), "/tmp", null,
 				false, null,
-				null, null);
+				null, null));
     }
 
-    public void createSSHHostDocs() throws AppCatalogException {
+    private GatewayResourceProfile getGatewayResourceProfile() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException{
+    	if (gatewayResourceProfile==null){
+			gatewayResourceProfile = new GatewayResourceProfile();
+			gatewayResourceProfile.setGatewayID("default");
+			gatewayResourceProfile.setGatewayName("default");
+			client.registerGatewayResourceProfile(gatewayResourceProfile);
+    	}
+		return gatewayResourceProfile;
+
+    }
+    public void createSSHHostDocs() throws AppCatalogException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription("gw111.iu.xsede.org", null, null);
         host.addToIpAddresses("gw111.iu.xsede.org");
         host.addToHostAliases("gw111.iu.xsede.org");
         host.setResourceDescription("gw111 ssh access");
-        host.setComputeResourceId(computeResource.addComputeResource(host));
+        host.setComputeResourceId(client.registerComputeResource(host));
         
         SSHJobSubmission jobSubmission = new SSHJobSubmission();
         jobSubmission.setSshPort(22);
         ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.FORK, null, null, null);
         jobSubmission.setResourceJobManager(resourceJobManager);
-        jobSubmission.setJobSubmissionInterfaceId(computeResource.addSSHJobSubmission(jobSubmission));
-        JobSubmissionInterface jobSubmissionInterface = DocumentCreatorUtils.createJobSubmissionInterface(jobSubmission.getJobSubmissionInterfaceId(), JobSubmissionProtocol.SSH, 1);
-        computeResource.addJobSubmissionProtocol(host.getComputeResourceId(), jobSubmissionInterface);
+        client.addSSHJobSubmissionDetails(host.getComputeResourceId(), 1, jobSubmission);
     	
         SCPDataMovement scpDataMovement = new SCPDataMovement();
         scpDataMovement.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
         scpDataMovement.setSshPort(22);
-        scpDataMovement.setDataMovementInterfaceId(computeResource.addScpDataMovement(scpDataMovement));
-        DataMovementInterface dataMovementInterface = DocumentCreatorUtils.createDataMovementInterface(scpDataMovement.getDataMovementInterfaceId(), DataMovementProtocol.SCP, 1);
-        computeResource.addDataMovementProtocol(host.getComputeResourceId(), dataMovementInterface);
+        client.addSCPDataMovementDetails(host.getComputeResourceId(), 1, scpDataMovement);
         
         ApplicationModule module = DocumentCreatorUtils.createApplicationModule("echo", "1.1", null);
-        module.setAppModuleId(applicationInterface.addApplicationModule(module));;
+        module.setAppModuleId(client.registerApplicationModule(module));;
         
         ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module.getAppModuleId(), "/bin/echo", ApplicationParallelismType.SERIAL, "SSHEchoApplication");
-        applicationDeployment.addApplicationDeployment(deployment);
+        client.registerApplicationDeployment(deployment);
         
         ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
         application.setApplicationName("SSHEcho1");
         application.addToApplicationModules(module.getAppModuleId());
         application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input","echo_input", null, null, DataType.STRING));
         application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("echo_output", null, DataType.STRING));
-        applicationInterface.addApplicationInterface(application);
-        DocumentCreatorUtils.addNewComputeResourcePreference(appcatalog.getGatewayProfile(), "default", host.getComputeResourceId(), "/tmp", null, false, null, null, null);
+        client.registerApplicationInterface(application);
+        client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/tmp", null, false, null, null, null));
     }
     
 //
@@ -232,33 +232,28 @@ public class DocumentCreatorNew {
 ////        }
 //    }
 //
-    public void createPBSDocsForOGCE() throws AppCatalogException {
+    public void createPBSDocsForOGCE() throws AppCatalogException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	
     	ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription(trestleshpcHostAddress, null, null);
     	host.addToIpAddresses(trestleshpcHostAddress);
     	host.addToHostAliases(trestleshpcHostAddress);
-    	host.setComputeResourceId(computeResource.addComputeResource(host));
+    	host.setComputeResourceId(client.registerComputeResource(host));
     	
     	SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
     	ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.PBS, "/opt/torque/bin/", null, null);
     	sshJobSubmission.setResourceJobManager(resourceJobManager);
     	sshJobSubmission.setSecurityProtocol(SecurityProtocol.GSI);
     	sshJobSubmission.setSshPort(22);
-    	sshJobSubmission.setJobSubmissionInterfaceId(computeResource.addSSHJobSubmission(sshJobSubmission));
-    	JobSubmissionInterface jobSubmissionInterface = DocumentCreatorUtils.createJobSubmissionInterface(sshJobSubmission.getJobSubmissionInterfaceId(), JobSubmissionProtocol.SSH, 1);
-    	computeResource.addJobSubmissionProtocol(host.getComputeResourceId(), jobSubmissionInterface);
+    	client.addSSHJobSubmissionDetails(host.getComputeResourceId(), 1, sshJobSubmission);
     	
     	SCPDataMovement scpDataMovement = new SCPDataMovement();
     	scpDataMovement.setSecurityProtocol(SecurityProtocol.GSI);
     	scpDataMovement.setSshPort(22);
     	
-    	scpDataMovement.setDataMovementInterfaceId(computeResource.addScpDataMovement(scpDataMovement));
-    	
-    	DataMovementInterface dataMovementInterface = DocumentCreatorUtils.createDataMovementInterface(scpDataMovement.getDataMovementInterfaceId(), DataMovementProtocol.SCP, 1);
-    	computeResource.addDataMovementProtocol(host.getComputeResourceId(), dataMovementInterface);
+    	client.addSCPDataMovementDetails(host.getComputeResourceId(), 1, scpDataMovement);
     	
         ApplicationModule module1 = DocumentCreatorUtils.createApplicationModule("echo", "1.2", null);
-        module1.setAppModuleId(applicationInterface.addApplicationModule(module1));
+        module1.setAppModuleId(client.registerApplicationModule(module1));
         
     	ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
         application.setApplicationName("SimpleEcho2");
@@ -266,16 +261,16 @@ public class DocumentCreatorNew {
         application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input", "echo_input", "echo_input", null, DataType.STRING));
         application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("echo_output", null, DataType.STRING));
 
-        application.setApplicationInterfaceId(applicationInterface.addApplicationInterface(application));
+        application.setApplicationInterfaceId(client.registerApplicationInterface(application));
 
         ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module1.getAppModuleId(), "/bin/echo", ApplicationParallelismType.SERIAL, "Echo application");
-        deployment.setAppDeploymentId(applicationDeployment.addApplicationDeployment(deployment));
+        deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
         
-        DocumentCreatorUtils.addNewComputeResourcePreference(gatewayProfile, "default", host.getComputeResourceId(), "/oasis/scratch/trestles/ogce/temp_project/", "sds128", false, null, null, null);
+        client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/oasis/scratch/trestles/ogce/temp_project/", "sds128", false, null, null, null));
 
 
         ApplicationModule module2 = DocumentCreatorUtils.createApplicationModule("wrf", "1.0.0", null);
-        module2.setAppModuleId(applicationInterface.addApplicationModule(module2));
+        module2.setAppModuleId(client.registerApplicationModule(module2));
         ApplicationInterfaceDescription application2 = new ApplicationInterfaceDescription();
         application2.setApplicationName("WRF");
         application2.addToApplicationModules(module2.getAppModuleId());
@@ -285,55 +280,51 @@ public class DocumentCreatorNew {
 
         application2.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("WRF_Output", null, DataType.URI));
         application2.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("WRF_Execution_Log", null, DataType.URI));
-        application2.setApplicationInterfaceId(applicationInterface.addApplicationInterface(application2));
+        application2.setApplicationInterfaceId(client.registerApplicationInterface(application2));
 
         ApplicationDeploymentDescription deployment2 = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module2.getAppModuleId(), "/home/ogce/apps/wrf_wrapper.sh", ApplicationParallelismType.MPI,"WRF");
-        deployment2.setAppDeploymentId(applicationDeployment.addApplicationDeployment(deployment2));
+        deployment2.setAppDeploymentId(client.registerApplicationDeployment(deployment2));
     }
     
-    public void createSlurmDocs() throws AppCatalogException {
+    public void createSlurmDocs() throws AppCatalogException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription(stampedeHostAddress, null, null);
     	host.addToHostAliases(stampedeHostAddress);
     	host.addToIpAddresses(stampedeHostAddress);
-    	host.setComputeResourceId(computeResource.addComputeResource(host));
+    	host.setComputeResourceId(client.registerComputeResource(host));
 
     	ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.SLURM, "/usr/bin/", null, "push");
     	SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
     	sshJobSubmission.setResourceJobManager(resourceJobManager);
     	sshJobSubmission.setSecurityProtocol(SecurityProtocol.GSI);
     	sshJobSubmission.setSshPort(2222);
-    	sshJobSubmission.setJobSubmissionInterfaceId(computeResource.addSSHJobSubmission(sshJobSubmission));
-    	JobSubmissionInterface jobSubmissionInterface = DocumentCreatorUtils.createJobSubmissionInterface(sshJobSubmission.getJobSubmissionInterfaceId(), JobSubmissionProtocol.SSH, 1);
-    	computeResource.addJobSubmissionProtocol(host.getComputeResourceId(), jobSubmissionInterface);
+    	client.addSSHJobSubmissionDetails(host.getComputeResourceId(), 1, sshJobSubmission);
     	
        	SCPDataMovement scpDataMovement = new SCPDataMovement();
     	scpDataMovement.setSecurityProtocol(SecurityProtocol.GSI);
     	scpDataMovement.setSshPort(22);
-    	scpDataMovement.setDataMovementInterfaceId(computeResource.addScpDataMovement(scpDataMovement));
-    	DataMovementInterface dataMovementInterface = DocumentCreatorUtils.createDataMovementInterface(scpDataMovement.getDataMovementInterfaceId(), DataMovementProtocol.SCP, 1);
-    	computeResource.addDataMovementProtocol(host.getComputeResourceId(), dataMovementInterface);
+    	client.addSCPDataMovementDetails(host.getComputeResourceId(), 1, scpDataMovement);
     	
     	ApplicationModule module = DocumentCreatorUtils.createApplicationModule("echo", "1.3", null);
-    	module.setAppModuleId(applicationInterface.addApplicationModule(module));
+    	module.setAppModuleId(client.registerApplicationModule(module));
     	
     	ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
     	application.setApplicationName("SimpleEcho3");
     	application.addToApplicationModules(module.getAppModuleId());
     	application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input", "echo_input", null, null, DataType.STRING));
     	application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("echo_output", null, DataType.STRING));
-        application.setApplicationInterfaceId(applicationInterface.addApplicationInterface(application));
+        application.setApplicationInterfaceId(client.registerApplicationInterface(application));
 
         ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module.getAppModuleId(), "/bin/echo", ApplicationParallelismType.SERIAL, "EchoLocal");
-        deployment.setAppDeploymentId(applicationDeployment.addApplicationDeployment(deployment));
+        deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
         
-        DocumentCreatorUtils.addNewComputeResourcePreference(gatewayProfile, "default", host.getComputeResourceId(), "/home1/01437/ogce", "TG-STA110014S", false, null, null, null);
+        client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/home1/01437/ogce", "TG-STA110014S", false, null, null, null));
     }
 
-    public void createSGEDocs() throws AppCatalogException {
+    public void createSGEDocs() throws AppCatalogException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription(lonestarHostAddress, null, null);
     	host.addToHostAliases(lonestarHostAddress);
     	host.addToIpAddresses(lonestarHostAddress);
-    	host.setComputeResourceId(computeResource.addComputeResource(host));
+    	host.setComputeResourceId(client.registerComputeResource(host));
     	
     	ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.UGE, "/opt/sge6.2/bin/lx24-amd64/", null, null);
     	SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
@@ -341,30 +332,27 @@ public class DocumentCreatorNew {
     	sshJobSubmission.setSecurityProtocol(SecurityProtocol.GSI);
     	sshJobSubmission.setSshPort(22);
 
-    	JobSubmissionInterface jobSubmissionInterface = DocumentCreatorUtils.createJobSubmissionInterface(sshJobSubmission.getJobSubmissionInterfaceId(), JobSubmissionProtocol.SSH, 1);
-    	computeResource.addJobSubmissionProtocol(host.getComputeResourceId(), jobSubmissionInterface);
+    	client.addSSHJobSubmissionDetails(host.getComputeResourceId(), 1, sshJobSubmission);
     	
     	SCPDataMovement scpDataMovement = new SCPDataMovement();
     	scpDataMovement.setSecurityProtocol(SecurityProtocol.GSI);
     	scpDataMovement.setSshPort(22);
-    	scpDataMovement.setDataMovementInterfaceId(computeResource.addScpDataMovement(scpDataMovement));
-    	DataMovementInterface dataMovementInterface = DocumentCreatorUtils.createDataMovementInterface(scpDataMovement.getDataMovementInterfaceId(), DataMovementProtocol.SCP, 1);
-    	computeResource.addDataMovementProtocol(host.getComputeResourceId(), dataMovementInterface);
+    	client.addSCPDataMovementDetails(host.getComputeResourceId(), 1, scpDataMovement);
     	
         ApplicationModule module = DocumentCreatorUtils.createApplicationModule("echo", "1.4", null);
-        module.setAppModuleId(applicationInterface.addApplicationModule(module));
+        module.setAppModuleId(client.registerApplicationModule(module));
         
         ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
         application.setApplicationName("SimpleEcho4");
         application.addToApplicationModules(module.getAppModuleId());
     	application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input", "echo_input", null, null, DataType.STRING));
     	application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("echo_output", null, DataType.STRING));
-        application.setApplicationInterfaceId(applicationInterface.addApplicationInterface(application));
+        application.setApplicationInterfaceId(client.registerApplicationInterface(application));
 
         ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module.getAppModuleId(), "/bin/echo", ApplicationParallelismType.SERIAL, "EchoLocal");
-        deployment.setAppDeploymentId(applicationDeployment.addApplicationDeployment(deployment));
+        deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
         
-        DocumentCreatorUtils.addNewComputeResourcePreference(gatewayProfile, "default", host.getComputeResourceId(), "/home1/01437/ogce", "TG-STA110014S", false, null, null, null);
+        client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/home1/01437/ogce", "TG-STA110014S", false, null, null, null));
     }
 
 //	public void createEchoHostDocs() {
