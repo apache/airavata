@@ -26,7 +26,7 @@
 include "../../../airavata-api/thrift-interface-descriptions/airavataErrors.thrift"
 namespace java org.apache.airavata.orchestrator.cpi
 
-const string ORCHESTRATOR_CPI_VERSION = "0.12.0"
+const string ORCHESTRATOR_CPI_VERSION = "0.13.0"
 
 service OrchestratorService {
 
