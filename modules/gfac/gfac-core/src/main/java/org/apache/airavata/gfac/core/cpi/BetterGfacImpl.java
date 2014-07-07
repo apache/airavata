@@ -74,20 +74,14 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
-import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.TaskState;
+import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.ParameterType;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZKUtil;
 import org.apache.zookeeper.ZooKeeper;
@@ -217,10 +211,10 @@ public class BetterGfacImpl implements GFac {
      * @return
      * @throws GFacException
      */
-    public boolean submitJob(String experimentID, String taskID) throws GFacException {
+    public boolean submitJob(String experimentID, String taskID, String gatewayID) throws GFacException {
         JobExecutionContext jobExecutionContext = null;
         try {
-            jobExecutionContext = createJEC(experimentID, taskID);
+            jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
             return submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
@@ -228,203 +222,159 @@ public class BetterGfacImpl implements GFac {
         }
     }
 
-    private JobExecutionContext createJEC(String experimentID, String taskID) throws Exception {
+    private JobExecutionContext createJEC(String experimentID, String taskID, String gatewayID) throws Exception {
+
         JobExecutionContext jobExecutionContext;
+
+        /** FIXME:
+         * A temporary wrapper to co-relate the app catalog and experiment thrift models to old gfac schema documents.
+         * The serviceName in ExperimentData and service name in ServiceDescriptor has to be same.
+         * 1. Get the Task from the task ID and construct the Job object and save it in to registry
+         * 2. Add properties of description documents to jobExecutionContext which will be used inside the providers.
+         */
+
+        //Fetch the Task details for the requested experimentID from the registry. Extract required pointers from the Task object.
         TaskDetails taskData = (TaskDetails) registry.get(RegistryModelType.TASK_DETAIL, taskID);
-
-        // this is wear our new model and old model is mapping (so serviceName in ExperimentData and service name in ServiceDescriptor
-        // has to be same.
-
-        // 1. Get the Task from the task ID and construct the Job object and save it in to registry
-        // 2. Add another property to jobExecutionContext and read them inside the provider and use it.
-        String applicationId = taskData.getApplicationId();
-        if (applicationId == null) {
-            throw new GFacException("Error executing the job because there is not Application Name in this Experiment:  " + applicationId);
+        String applicationInterfaceId = taskData.getApplicationId();
+        String applicationDeploymentId = taskData.getApplicationDeploymentId();
+        if (null == applicationInterfaceId) {
+            throw new GFacException("Error executing the job. The required Application Id is missing");
+        }
+        if (null == applicationDeploymentId) {
+            throw new GFacException("Error executing the job. The required Application deployment Id is missing");
         }
 
         AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
-		ApplicationDeploymentDescription applicationDeployement = appCatalog.getApplicationDeployment().getApplicationDeployement(taskData.getApplicationDeploymentId());
-		ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(applicationDeployement.getComputeHostId());
 
-		HostDescription hostDescription= new HostDescription();
-        ApplicationDescription applicationDescription = new ApplicationDescription();
+        //fetch the compute resource, application interface and deployment information from app catalog
+        ApplicationInterfaceDescription applicationInterface = appCatalog.
+                getApplicationInterface().getApplicationInterface(applicationInterfaceId);
+		ApplicationDeploymentDescription applicationDeployment = appCatalog.
+                getApplicationDeployment().getApplicationDeployement(applicationDeploymentId);
+		ComputeResourceDescription computeResource = appCatalog.getComputeResource().
+                getComputeResource(applicationDeployment.getComputeHostId());
+        ComputeResourcePreference gatewayResourcePreferences = appCatalog.getGatewayProfile().
+                        getComputeResourcePreference(gatewayID, applicationDeployment.getComputeHostId());
 
-		hostDescription.getType().setHostName(computeResource.getHostName());
-		hostDescription.getType().setHostAddress(computeResource.getIpAddresses().iterator().next());
-		
-//		String preferredJobSubmissionProtocol = computeResource.getPreferredJobSubmissionProtocol(); 
-//		String preferredDataMovementProtocol = computeResource.getDataMovementProtocols().keySet().iterator().next(); 
-//
-//		if (preferredJobSubmissionProtocol==null){
-//			preferredJobSubmissionProtocol=computeResource.getJobSubmissionProtocols().keySet().iterator().next();
-//		}
-//		JobSubmissionProtocol jobSubmissionProtocol = computeResource.getJobSubmissionProtocols().get(preferredJobSubmissionProtocol);
-//		DataMovementProtocol dataMovementProtocol = computeResource.getDataMovementProtocols().get(preferredDataMovementProtocol);
-//
-//		if (jobSubmissionProtocol==JobSubmissionProtocol.GRAM){
-//			hostDescription.getType().changeType(GlobusHostType.type);
-//			
-//			applicationDescription.getType().changeType(HpcApplicationDeploymentType.type);
-//			HpcApplicationDeploymentType app=(HpcApplicationDeploymentType)applicationDescription.getType();
-//			
-//			GlobusJobSubmission globusJobSubmission = appCatalog.getComputeResource().getGlobusJobSubmission(preferredJobSubmissionProtocol);
-//			((GlobusHostType)hostDescription.getType()).setGlobusGateKeeperEndPointArray(globusJobSubmission.getGlobusGateKeeperEndPoint().toArray(new String[]{}));
-//			if (dataMovementProtocol==DataMovementProtocol.GridFTP) {
-//				GridFTPDataMovement gridFTPDataMovement = appCatalog.getComputeResource().getGridFTPDataMovement(preferredDataMovementProtocol);
-//				((GlobusHostType) hostDescription.getType())
-//						.setGridFTPEndPointArray(gridFTPDataMovement
-//								.getGridFTPEndPoint().toArray(
-//										new String[] {}));
-//			}
-//			////////////////
-//			if (computeResource.getHostName().equalsIgnoreCase("trestles.sdsc.edu")){
-//		        ProjectAccountType projectAccountType = app.addNewProjectAccount();
-//		        projectAccountType.setProjectAccountNumber("sds128");
-//	
-//		        QueueType queueType = app.addNewQueue();
-//		        queueType.setQueueName("normal");
-//	
-//		        app.setCpuCount(1);
-//		        app.setJobType(JobTypeType.SERIAL);
-//		        app.setNodeCount(1);
-//		        app.setProcessorsPerNode(1);
-//	
-//		        String tempDir = "/home/ogce/scratch";
-//		        app.setScratchWorkingDirectory(tempDir);
-//		        app.setMaxMemory(10);
-//			}
-//			////////////////
-//		} else if (jobSubmissionProtocol==JobSubmissionProtocol.GSISSH){
-//			hostDescription.getType().changeType(GsisshHostType.type);
-//			applicationDescription.getType().changeType(HpcApplicationDeploymentType.type);
-//			HpcApplicationDeploymentType app=(HpcApplicationDeploymentType)applicationDescription.getType();
-//			
-//			GSISSHJobSubmission gsisshJobSubmission = appCatalog.getComputeResource().getGSISSHJobSubmission(preferredJobSubmissionProtocol);
-//	        ((GsisshHostType) hostDescription.getType()).setPort(gsisshJobSubmission.getSshPort());
-//	        ((GsisshHostType) hostDescription.getType()).setInstalledPath(gsisshJobSubmission.getInstalledPath());
-//	        if (computeResource.getHostName().equalsIgnoreCase("lonestar.tacc.utexas.edu")){
-//	        	((GsisshHostType) hostDescription.getType()).setJobManager("sge");
-//	            ((GsisshHostType) hostDescription.getType()).setInstalledPath("/opt/sge6.2/bin/lx24-amd64/");
-//	            ((GsisshHostType) hostDescription.getType()).setPort(22);
-//	            ProjectAccountType projectAccountType = app.addNewProjectAccount();
-//	            projectAccountType.setProjectAccountNumber("TG-STA110014S");
-//	            QueueType queueType = app.addNewQueue();
-//	            queueType.setQueueName("normal");
-//	            app.setCpuCount(1);
-//	            app.setJobType(JobTypeType.SERIAL);
-//	            app.setNodeCount(1);
-//	            app.setProcessorsPerNode(1);
-//	            app.setMaxWallTime(10);
-//	            String tempDir = "/home1/01437/ogce";
-//	            app.setScratchWorkingDirectory(tempDir);
-//	            app.setInstalledParentPath("/opt/sge6.2/bin/lx24-amd64/");
-//	        } else if (computeResource.getHostName().equalsIgnoreCase("stampede.tacc.xsede.org")){
-//		        ((GsisshHostType) hostDescription.getType()).setJobManager("slurm");
-//		        ((GsisshHostType) hostDescription.getType()).setInstalledPath("/usr/bin/");
-//		        ((GsisshHostType) hostDescription.getType()).setPort(2222);
-//		        ((GsisshHostType) hostDescription.getType()).setMonitorMode("push");
-//		        
-//		        ProjectAccountType projectAccountType = app.addNewProjectAccount();
-//		        projectAccountType.setProjectAccountNumber("TG-STA110014S");
-//
-//		        QueueType queueType = app.addNewQueue();
-//		        queueType.setQueueName("normal");
-//
-//		        app.setCpuCount(1);
-//		        app.setJobType(JobTypeType.SERIAL);
-//		        app.setNodeCount(1);
-//		        app.setProcessorsPerNode(1);
-//		        app.setMaxWallTime(10);
-//		        String tempDir = "/home1/01437/ogce";
-//		        app.setScratchWorkingDirectory(tempDir);
-//		        app.setInstalledParentPath("/usr/bin/");
-//
-//			} else if (computeResource.getHostName().equalsIgnoreCase("trestles.sdsc.edu")){
-//	        	ProjectAccountType projectAccountType = app.addNewProjectAccount();
-//	            projectAccountType.setProjectAccountNumber("sds128");
-//
-//	            QueueType queueType = app.addNewQueue();
-//	            queueType.setQueueName("normal");
-//
-//	            app.setCpuCount(1);
-//	            app.setJobType(JobTypeType.SERIAL);
-//	            app.setNodeCount(1);
-//	            app.setProcessorsPerNode(1);
-//	            app.setMaxWallTime(10);
-//	            String tempDir = "/oasis/scratch/trestles/ogce/temp_project/";
-//	            app.setScratchWorkingDirectory(tempDir);
-//	            app.setInstalledParentPath("/opt/torque/bin/");
-//	        }
-//		} else if (jobSubmissionProtocol==JobSubmissionProtocol.SSH){
-//			hostDescription.getType().changeType(SSHHostType.type);
-//			SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionProtocol);
-//			applicationDescription.getType().setExecutableLocation(applicationDeployement.getExecutablePath());
-//			//TODO update scratch location
-//			if (computeResource.getHostName().equalsIgnoreCase("gw111.iu.xsede.org")){
-//				applicationDescription.getType().setScratchWorkingDirectory("/tmp");
-//			}
-//		}
-		
-		ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface().getApplicationInterface(applicationId);
-		
-		ServiceDescription serviceDescription = new ServiceDescription();
-		List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
-		List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
-		serviceDescription.getType().setName(applicationInterface.getApplicationName());
-		serviceDescription.getType().setDescription(applicationInterface.getApplicationName());
+        //Create the legacy schema docs to fill-in
+        ServiceDescription legacyServiceDescription = new ServiceDescription();
+        ServiceDescriptionType legacyServiceDescType = legacyServiceDescription.getType();
+        ApplicationDescription legacyAppDescription = new ApplicationDescription();
+        HpcApplicationDeploymentType legacyHPCAppDescType =
+                (HpcApplicationDeploymentType)legacyAppDescription.getType();
+        HostDescription legacyHostDescription= new HostDescription();
+        HostDescriptionType legacyHostDescType = legacyHostDescription.getType();
 
-		List<InputDataObjectType> applicationInputs = applicationInterface.getApplicationInputs();
-		for (InputDataObjectType dataObjectType : applicationInputs) {
-			InputParameterType parameter = InputParameterType.Factory.newInstance();
-			parameter.setParameterName(dataObjectType.getApplicationArgument());
-			parameter.setParameterDescription(dataObjectType.getUserFriendlyDescription());
-			ParameterType parameterType = parameter.addNewParameterType();
-			switch (dataObjectType.getType()){
-				case FLOAT:
-					parameterType.setType(DataType.FLOAT); break;
-				case INTEGER:
-					parameterType.setType(DataType.INTEGER); break;
-				case STRING:
-					parameterType.setType(DataType.STRING); break;
-				case URI:
-					parameterType.setType(DataType.URI); break;
-			}
-			parameterType.setName(parameterType.getType().toString());
-			parameter.addParameterValue(dataObjectType.getValue());
-			inputParameters.add(parameter);
-		}
-		List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
-		for (OutputDataObjectType dataObjectType : applicationOutputs) {
-			OutputParameterType parameter = OutputParameterType.Factory.newInstance();
-			parameter.setParameterName(dataObjectType.getName());
-			parameter.setParameterDescription(dataObjectType.getName());
-			ParameterType parameterType = parameter.addNewParameterType();
-			switch (dataObjectType.getType()){
-				case FLOAT:
-					parameterType.setType(DataType.FLOAT); break;
-				case INTEGER:
-					parameterType.setType(DataType.INTEGER); break;
-				case STRING:
-					parameterType.setType(DataType.STRING); break;
-				case URI:
-					parameterType.setType(DataType.URI); break;
-			}
-			parameterType.setName(parameterType.getType().toString());
-			outputParameters.add(parameter);
-		}
-		
-		serviceDescription.getType().setInputParametersArray(inputParameters.toArray(new InputParameterType[]{}));
-		serviceDescription.getType().setOutputParametersArray(outputParameters.toArray(new OutputParameterType[]{}));
-		
-		
+        //Fetch the application inputs and outputs from the app interface and create the legacy service description.
+        List<InputParameterType> legacyInputParameters = new ArrayList<InputParameterType>();
+        List<OutputParameterType> legacyOutputParameters = new ArrayList<OutputParameterType>();
+        legacyServiceDescType.setName(applicationInterface.getApplicationName());
+        legacyServiceDescType.setDescription(applicationInterface.getApplicationName());
+
+        List<InputDataObjectType> applicationInputs = applicationInterface.getApplicationInputs();
+        for (InputDataObjectType dataObjectType : applicationInputs) {
+            InputParameterType parameter = InputParameterType.Factory.newInstance();
+            parameter.setParameterName(dataObjectType.getApplicationArgument());
+            parameter.setParameterDescription(dataObjectType.getUserFriendlyDescription());
+            ParameterType parameterType = parameter.addNewParameterType();
+            switch (dataObjectType.getType()){
+                case FLOAT:
+                    parameterType.setType(DataType.FLOAT); break;
+                case INTEGER:
+                    parameterType.setType(DataType.INTEGER); break;
+                case STRING:
+                    parameterType.setType(DataType.STRING); break;
+                case URI:
+                    parameterType.setType(DataType.URI); break;
+            }
+            parameterType.setName(parameterType.getType().toString());
+            parameter.addParameterValue(dataObjectType.getValue());
+            legacyInputParameters.add(parameter);
+        }
+        List<OutputDataObjectType> applicationOutputs = applicationInterface.getApplicationOutputs();
+        for (OutputDataObjectType dataObjectType : applicationOutputs) {
+            OutputParameterType parameter = OutputParameterType.Factory.newInstance();
+            parameter.setParameterName(dataObjectType.getName());
+            parameter.setParameterDescription(dataObjectType.getName());
+            ParameterType parameterType = parameter.addNewParameterType();
+            switch (dataObjectType.getType()){
+                case FLOAT:
+                    parameterType.setType(DataType.FLOAT); break;
+                case INTEGER:
+                    parameterType.setType(DataType.INTEGER); break;
+                case STRING:
+                    parameterType.setType(DataType.STRING); break;
+                case URI:
+                    parameterType.setType(DataType.URI); break;
+            }
+            parameterType.setName(parameterType.getType().toString());
+            legacyOutputParameters.add(parameter);
+        }
+
+        legacyServiceDescType.setInputParametersArray(legacyInputParameters.toArray(new InputParameterType[]{}));
+        legacyServiceDescType.setOutputParametersArray(legacyOutputParameters.toArray(new OutputParameterType[]{}));
+
+        //Fetch deployment information and fill-in legacy doc
+        legacyHPCAppDescType.addNewApplicationName().setStringValue(applicationDeploymentId);
+        legacyHPCAppDescType.setExecutableLocation(applicationDeployment.getExecutablePath());
+        switch (applicationDeployment.getParallelism()) {
+            case SERIAL:
+                legacyHPCAppDescType.setJobType(JobTypeType.SERIAL);
+            case MPI:
+                legacyHPCAppDescType.setJobType(JobTypeType.MPI);
+            case OPENMP:
+                legacyHPCAppDescType.setJobType(JobTypeType.OPEN_MP);
+        }
+
+        //Fetch scheduling information from experiment request
+        ComputationalResourceScheduling taskSchedule = taskData.getTaskScheduling();
+        QueueType queueType = legacyHPCAppDescType.addNewQueue();
+        queueType.setQueueName(taskSchedule.getQueueName());
+        legacyHPCAppDescType.setCpuCount(taskSchedule.getTotalCPUCount());
+        legacyHPCAppDescType.setNodeCount(taskSchedule.getNodeCount());
+        legacyHPCAppDescType.setMaxWallTime(taskSchedule.getWallTimeLimit());
+        //legacyHPCAppDescType.setInstalledParentPath();
+
+
+        //Fetch from gateway profile
+        ProjectAccountType projectAccountType = legacyHPCAppDescType.addNewProjectAccount();
+	    projectAccountType.setProjectAccountNumber(gatewayResourcePreferences.getAllocationProjectNumber());
+        legacyHPCAppDescType.setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
+
+        //Fetch the host description details and fill-in legacy doc
+        legacyHostDescType.setHostName(computeResource.getHostName());
+        legacyHostDescType.setHostAddress(computeResource.getHostName());
+        //hostDescription.getType().setHostAddress(computeResource.getIpAddresses().iterator().next());
+
+        for (JobSubmissionInterface jobSubmissionInterface : computeResource.getJobSubmissionInterfaces())
+            if (jobSubmissionInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
+                LOCALSubmission localSubmission =
+                        appCatalog.getComputeResource().getLocalJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+            } else {
+                if (jobSubmissionInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
+
+                    //Fetch from App catalog Compute Resource
+                    SSHJobSubmission sshJobSubmission =
+                            appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                    if (sshJobSubmission.getSecurityProtocol() == SecurityProtocol.GSI) {
+                        ResourceJobManager resourceJobManager = sshJobSubmission.getResourceJobManager();
+                        ((GsisshHostType) legacyHostDescription.getType()).setJobManager
+                                (resourceJobManager.getResourceJobManagerType().name());
+                        ((GsisshHostType) legacyHostDescType).setInstalledPath(resourceJobManager.getJobManagerBinPath());
+                        // applicationDescription.setInstalledParentPath(resourceJobManager.getJobManagerBinPath());
+                        ((GsisshHostType) legacyHostDescType).setPort(sshJobSubmission.getSshPort());
+
+                    }
+
+                }
+            }
 		
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         Properties configurationProperties = ServerSettings.getProperties();
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
 
-
         // start constructing jobexecutioncontext
-        jobExecutionContext = new JobExecutionContext(gFacConfiguration, applicationId);
+        jobExecutionContext = new JobExecutionContext(gFacConfiguration, applicationInterfaceId);
 
         // setting experiment/task/workflownode related information
         Experiment experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentID);
@@ -432,23 +382,24 @@ public class BetterGfacImpl implements GFac {
         jobExecutionContext.setExperimentID(experimentID);
         jobExecutionContext.setWorkflowNodeDetails(experiment.getWorkflowNodeDetailsList().get(0));
         jobExecutionContext.setTaskData(taskData);
+        jobExecutionContext.setGatewayID(gatewayID);
 
         // setting the registry
         jobExecutionContext.setRegistry(registry);
 
         ApplicationContext applicationContext = new ApplicationContext();
-        applicationContext.setApplicationDeploymentDescription(applicationDescription);
-        applicationContext.setHostDescription(hostDescription);
-        applicationContext.setServiceDescription(serviceDescription);
+//        applicationContext.setApplicationDeploymentDescription(applicationDescription);
+        applicationContext.setHostDescription(legacyHostDescription);
+        applicationContext.setServiceDescription(legacyServiceDescription);
         jobExecutionContext.setApplicationContext(applicationContext);
 
         List<DataObjectType> experimentInputs = taskData.getApplicationInputs();
         jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getMessageContext(experimentInputs,
-                serviceDescription.getType().getInputParametersArray())));
+                legacyServiceDescription.getType().getInputParametersArray())));
 
         List<DataObjectType> outputData = taskData.getApplicationOutputs();
         jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getMessageContext(outputData,
-                serviceDescription.getType().getOutputParametersArray())));
+                legacyServiceDescription.getType().getOutputParametersArray())));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setGfac(this);
@@ -719,7 +670,8 @@ public class BetterGfacImpl implements GFac {
             handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
         } else {
             try {
-                jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID());
+                jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
             } catch (Exception e) {
                 log.error("Error constructing job execution context during outhandler invocation");
                 throw new GFacException(e);
@@ -837,7 +789,8 @@ public class BetterGfacImpl implements GFac {
             handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
         } else {
             try {
-                jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID());
+                jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
             } catch (Exception e) {
                 log.error("Error constructing job execution context during outhandler invocation");
                 throw new GFacException(e);

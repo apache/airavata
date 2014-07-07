@@ -37,7 +37,7 @@ public interface GFac {
      * @return boolean Successful acceptence of the jobExecution returns a true value
      * @throws org.apache.airavata.gfac.GFacException
      */
-    public boolean submitJob(String experimentID,String taskID) throws GFacException;
+    public boolean submitJob(String experimentID,String taskID, String gatewayID) throws GFacException;
 
     /**
      * This method can be used in a handler to ivvoke outhandler asynchronously

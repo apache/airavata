@@ -193,10 +193,10 @@ public class GFacImpl implements GFac {
      * @return
      * @throws GFacException
      */
-    public boolean submitJob(String experimentID,String taskID) throws GFacException {
+    public boolean submitJob(String experimentID,String taskID, String gatewayID) throws GFacException {
         JobExecutionContext jobExecutionContext = null;
         try {
-            jobExecutionContext = createJEC(experimentID, taskID);
+            jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
             return submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
@@ -204,7 +204,7 @@ public class GFacImpl implements GFac {
         }
     }
 
-    private JobExecutionContext createJEC(String experimentID, String taskID) throws Exception {
+    private JobExecutionContext createJEC(String experimentID, String taskID, String gatewayID) throws Exception {
         JobExecutionContext jobExecutionContext;
         TaskDetails taskData = (TaskDetails) registry.get(RegistryModelType.TASK_DETAIL, taskID);
 
@@ -413,7 +413,8 @@ public class GFacImpl implements GFac {
          handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
         }else {
             try {
-                jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID());
+                jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
             } catch (Exception e) {
                 log.error("Error constructing job execution context during outhandler invocation");
                 throw new GFacException(e);
