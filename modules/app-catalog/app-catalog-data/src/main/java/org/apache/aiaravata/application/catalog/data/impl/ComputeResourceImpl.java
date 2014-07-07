@@ -412,6 +412,32 @@ public class ComputeResourceImpl implements ComputeResource {
         return null;
     }
 
+    @Override
+    public List<ComputeResourceDescription> getAllComputeResourceList() throws AppCatalogException {
+        try {
+            ComputeResourceResource resource = new ComputeResourceResource();
+            List<Resource> resources = resource.getAll();
+            if (resources != null && !resources.isEmpty()){
+                return AppCatalogThriftConversion.getComputeDescriptionList(resources);
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource list...", e);
+            throw new AppCatalogException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getAllComputeResourceIdList() throws AppCatalogException {
+        try {
+            ComputeResourceResource resource = new ComputeResourceResource();
+            return resource.getAllIds();
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource list...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
 //    @Override
 //    public GSISSHJobSubmission getGSISSHJobSubmission(String submissionId) throws AppCatalogException {
 //        try {
@@ -612,19 +638,43 @@ public class ComputeResourceImpl implements ComputeResource {
         }
     }
 
-	@Override
+    @Override
+    public void removeJobSubmissionInterface(String jobSubmissionInterfaceId) throws AppCatalogException {
+        try {
+            JobSubmissionInterfaceResource resource = new JobSubmissionInterfaceResource();
+            resource.remove(jobSubmissionInterfaceId);
+        }catch (Exception e){
+            logger.error("Error while removing job submission interface..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public void removeDataMovementInterface(String dataMovementInterfaceId) throws AppCatalogException {
+        try {
+            DataMovementInterfaceResource resource = new DataMovementInterfaceResource();
+            resource.remove(dataMovementInterfaceId);
+        }catch (Exception e){
+            logger.error("Error while removing data movement interface..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
 	public String addResourceJobManager(ResourceJobManager resourceJobManager)
 			throws AppCatalogException {
 		resourceJobManager.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
 		ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(resourceJobManager);
 		resource.save();
 		Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-		for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
-			JobManagerCommandResource r = new JobManagerCommandResource();
-	    	r.setCommandType(commandType.toString());
-	    	r.setCommand(jobManagerCommands.get(commandType));
-	    	r.setResourceJobManagerId(resource.getResourceJobManagerId());
-	    	r.save();
+		if (jobManagerCommands!=null) {
+			for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
+				JobManagerCommandResource r = new JobManagerCommandResource();
+				r.setCommandType(commandType.toString());
+				r.setCommand(jobManagerCommands.get(commandType));
+				r.setResourceJobManagerId(resource.getResourceJobManagerId());
+				r.save();
+			}
 		}
 		return resource.getResourceJobManagerId();
 	}

@@ -214,6 +214,72 @@ public class AppDeploymentResource extends AbstractResource {
     }
 
     @Override
+    public List<Resource> getAll() throws AppCatalogException {
+        List<Resource> appDeployments = new ArrayList<Resource>();
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_DEPLOYMENT);
+            Query q = generator.selectQuery(em);
+            List results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        ApplicationDeployment deployment = (ApplicationDeployment) result;
+                        AppDeploymentResource deploymentResource =
+                                (AppDeploymentResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APPLICATION_DEPLOYMENT, deployment);
+                        appDeployments.add(deploymentResource);
+                    }
+                }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return appDeployments;
+    }
+
+    @Override
+    public List<String> getAllIds() throws AppCatalogException {
+        List<String> appDeployments = new ArrayList<String>();
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_DEPLOYMENT);
+            Query q = generator.selectQuery(em);
+            List results = q.getResultList();
+            if (results.size() != 0) {
+                for (Object result : results) {
+                    ApplicationDeployment deployment = (ApplicationDeployment) result;
+                    appDeployments.add(deployment.getDeploymentID());
+                }
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return appDeployments;
+    }
+
+    @Override
     public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
         List<String> appDeployments = new ArrayList<String>();
         EntityManager em = null;

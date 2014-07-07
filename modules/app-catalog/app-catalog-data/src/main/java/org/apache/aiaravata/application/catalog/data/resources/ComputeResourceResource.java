@@ -132,8 +132,69 @@ public class ComputeResourceResource extends AbstractResource {
 		}
 		return computeResourceResources;
 	}
-	
-	@Override
+
+    @Override
+    public List<Resource> getAll() throws AppCatalogException {
+        List<Resource> computeResourceResources = new ArrayList<Resource>();
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(COMPUTE_RESOURCE);
+            Query q = generator.selectQuery(em);
+            List<?> results = q.getResultList();
+            for (Object result : results) {
+                ComputeResource computeResource = (ComputeResource) result;
+                ComputeResourceResource computeResourceResource = (ComputeResourceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE, computeResource);
+                computeResourceResources.add(computeResourceResource);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return computeResourceResources;
+    }
+
+    @Override
+    public List<String> getAllIds() throws AppCatalogException {
+        List<String> computeResourceResources = new ArrayList<String>();
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(COMPUTE_RESOURCE);
+            Query q = generator.selectQuery(em);
+            List<?> results = q.getResultList();
+            for (Object result : results) {
+                ComputeResource computeResource = (ComputeResource) result;
+                computeResourceResources.add(computeResource.getResourceId());
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return computeResourceResources;
+    }
+
+    @Override
 	public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
 		List<String> computeResourceResourceIDs = new ArrayList<String>();
 		EntityManager em = null;

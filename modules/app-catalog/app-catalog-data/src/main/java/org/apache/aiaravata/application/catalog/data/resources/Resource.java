@@ -49,6 +49,20 @@ public interface Resource {
      */
     List<Resource> get(String fieldName, Object value) throws AppCatalogException;
 
+    /**
+     *
+     * @return
+     * @throws AppCatalogException
+     */
+    List<Resource> getAll() throws AppCatalogException;
+
+    /**
+     *
+     * @return
+     * @throws AppCatalogException
+     */
+    List<String> getAllIds() throws AppCatalogException;
+
     /** This method will return list of resource ids according to given criteria
      * @param fieldName field name
      * @param value value of the field

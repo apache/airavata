@@ -282,6 +282,33 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
+    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces() throws AppCatalogException {
+        try {
+            AppInterfaceResource resource = new AppInterfaceResource();
+            List<Resource> resources = resource.getAll();
+            if (resources != null && !resources.isEmpty()){
+                return AppCatalogThriftConversion.getAppInterfaceDescList(resources);
+            }
+
+        }catch (Exception e){
+            logger.error("Error while retrieving app interface list...", e);
+            throw new AppCatalogException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getAllApplicationInterfaceIds() throws AppCatalogException {
+        try {
+            AppInterfaceResource resource = new AppInterfaceResource();
+            return resource.getAllIds();
+        }catch (Exception e){
+            logger.error("Error while retrieving app interface list...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
     public boolean removeApplicationInterface(String interfaceId) throws AppCatalogException {
         try {
             AppInterfaceResource resource = new AppInterfaceResource();

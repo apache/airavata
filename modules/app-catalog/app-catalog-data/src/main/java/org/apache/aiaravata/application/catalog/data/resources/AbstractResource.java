@@ -228,7 +228,7 @@ public abstract class AbstractResource implements Resource {
     }
 
     public final class ComputeResourcePreferenceConstants {
-        public static final String GATEWAY_ID = "gatewayID";
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String RESOURCE_ID = "resourceId";
         public static final String OVERRIDE_BY_AIRAVATA = "overrideByAiravata";
         public static final String PREFERED_JOB_SUB_PROTOCOL = "preferedJobSubmissionProtocol";

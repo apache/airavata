@@ -126,6 +126,12 @@ public class AppInterfaceTest {
             List<ApplicationInterfaceDescription> apps = appInterface.getApplicationInterfaces(filters);
             System.out.println("********** Size og app interfaces ************* : " + apps.size());
 
+            List<ApplicationInterfaceDescription> appInts = appInterface.getAllApplicationInterfaces();
+            System.out.println("********** Size of all app interfaces ************* : " + appInts.size());
+
+            List<String> appIntIds = appInterface.getAllApplicationInterfaceIds();
+            System.out.println("********** Size of all app interface ids ************* : " + appIntIds.size());
+
             assertTrue("App interface saved successfully", ainterface != null);
         }catch (AppCatalogException e) {
             e.printStackTrace();

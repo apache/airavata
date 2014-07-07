@@ -89,6 +89,22 @@ public interface ComputeResource {
      */
     List<ComputeResourceDescription> getComputeResourceList (Map<String, String> filters) throws AppCatalogException;
 
+    /**
+     * This method will retrieve all the compute resources
+     * @return list of compute resources
+     * @throws AppCatalogException
+     */
+    List<ComputeResourceDescription> getAllComputeResourceList () throws AppCatalogException;
+
+    /**
+     * This method will retrieve all the compute resource ids
+     * @return list of compute resource ids
+     * @throws AppCatalogException
+     */
+    List<String> getAllComputeResourceIdList () throws AppCatalogException;
+
+
+
 //    /**
 //     * This method will retrieve GlobusJobSubmission object
 //     * @param submissionId unique submission id
@@ -156,6 +172,22 @@ public interface ComputeResource {
      * @param resourceId unique resource id
      */
     void removeComputeResource (String resourceId) throws AppCatalogException;
+
+    /**
+     * This method will remove job submission interface
+     * @param jobSubmissionInterfaceId unique job submission interface id
+     * @throws AppCatalogException
+     */
+    void removeJobSubmissionInterface(String jobSubmissionInterfaceId) throws AppCatalogException;
+
+    /**
+     * This method will remove data movement interface
+     * @param dataMovementInterfaceId unique data movement id
+     * @throws AppCatalogException
+     */
+    void removeDataMovementInterface(String dataMovementInterfaceId)  throws AppCatalogException;
+
+
 
     LOCALSubmission getLocalJobSubmission(String submissionId) throws AppCatalogException;
     
