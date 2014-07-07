@@ -1492,6 +1492,18 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     }
 
     /**
+     * Fetch a list of all deployed Compute Hosts for a given application interfaces.
+     *
+     * @param appInterfaceId The identifier for the requested application interface
+     * @return list<string>
+     * Returns a list of available Resources. Deployments of each modules listed within the interfaces will be listed.
+     */
+    @Override
+    public List<String> getAvailableAppInterfaceComputeResources(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    /**
      * Register a Compute Resource.
      *
      * @param computeResourceDescription Compute Resource Object created from the datamodel.
@@ -1531,6 +1543,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             exception.setMessage("Error while retrieving compute resource. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    /**
+     * Fetch all registered Compute Resources.
+     *
+     * @return A map of registered compute resource id's and thier corresponding hostnames.
+     * Compute Resource Object created from the datamodel..
+     */
+    @Override
+    public Map<String, String> getAllComputeResourceNames() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
     }
 
     /**
@@ -1880,12 +1903,14 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      * Register a Gateway Resource Profile.
      *
      * @param gatewayResourceProfile Gateway Resource Profile Object.
-     * @return gatewayID
-     * Returns a server-side generated airavata compute resource globally unique identifier.
+     *   The GatewayID should be obtained from Airavata gateway registration and passed to register a corresponding
+     *      resource profile.
+     * @return status.
+     * Returns a success/failure of the registration.
      */
     @Override
-    public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+    public boolean registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
     }
 
     /**
