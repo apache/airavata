@@ -2156,7 +2156,14 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+            GatewayResourceProfile profile;
+            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+            	profile=new GatewayResourceProfile();
+            	profile.setGatewayID(gatewayID);
+            	profile.setGatewayName(gatewayID);
+            	gatewayProfile.addGatewayResourceProfile(profile);
+            }
+            profile = gatewayProfile.getGatewayProfile(gatewayID);
             profile.addToComputeResourcePreferences(computeResourcePreference);
             gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;
