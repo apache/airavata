@@ -117,7 +117,7 @@ struct OutputDataObjectType {
  * appDeploymentId:
  *   Corelated the interface to a particular application deployment
  *
- *
+ * FIXME: add a description
 */
 struct ApplicationInterfaceDescription {
     1: required bool isEmpty = 0,

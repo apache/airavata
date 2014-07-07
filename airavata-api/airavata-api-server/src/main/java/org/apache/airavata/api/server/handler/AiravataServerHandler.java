@@ -1998,7 +1998,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            gatewayProfile.addGatewayProfile(gatewayResourceProfile);
+            gatewayProfile.addGatewayResourceProfile(gatewayResourceProfile);
             return true;
         } catch (AppCatalogException e) {
             logger.error("Error while registering gateway resource profile...", e);
@@ -2044,7 +2044,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            gatewayProfile.updateGatewayProfile(gatewayID, gatewayResourceProfile);
+            gatewayProfile.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
             return true;
         } catch (AppCatalogException e) {
             logger.error("Error while updating gateway resource profile...", e);
@@ -2067,7 +2067,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            gatewayProfile.removeGatewayProfile(gatewayID);
+            gatewayProfile.removeGatewayResourceProfile(gatewayID);
             return true;
         } catch (AppCatalogException e) {
             logger.error("Error while removing gateway resource profile...", e);
@@ -2095,7 +2095,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
             profile.addToComputeResourcePreferences(computeResourcePreference);
-            gatewayProfile.updateGatewayProfile(gatewayID, profile);
+            gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;
         } catch (AppCatalogException e) {
             logger.error("Error while registering gateway resource profile...", e);

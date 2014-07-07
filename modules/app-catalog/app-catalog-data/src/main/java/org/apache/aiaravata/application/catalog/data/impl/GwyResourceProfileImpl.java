@@ -40,7 +40,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     private final static Logger logger = LoggerFactory.getLogger(GwyResourceProfileImpl.class);
 
     @Override
-    public String addGatewayProfile(org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gatewayProfile) throws AppCatalogException {
+    public String addGatewayResourceProfile(org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gatewayProfile) throws AppCatalogException {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
             profileResource.setGatewayName(gatewayProfile.getGatewayName());
@@ -74,7 +74,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     }
 
     @Override
-    public void updateGatewayProfile(String gatewayId, org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile updatedProfile) throws AppCatalogException {
+    public void updateGatewayResourceProfile(String gatewayId, org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile updatedProfile) throws AppCatalogException {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
             GatewayProfileResource existingGP = (GatewayProfileResource)profileResource.get(gatewayId);
@@ -127,48 +127,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     }
 
     @Override
-    public JobSubmissionProtocol getPreferedJobSubmissionProtocol(String gatewayId, String hostId) throws AppCatalogException{
-        try {
-            ComputeHostPreferenceResource prefResource = new ComputeHostPreferenceResource();
-            List<Resource> computePrefList = prefResource.get(AbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
-            if (computePrefList != null && !computePrefList.isEmpty()){
-                for (Resource pref : computePrefList){
-                    ComputeHostPreferenceResource preferenceResource = (ComputeHostPreferenceResource)pref;
-                    if (preferenceResource.getResourceId().equals(hostId)){
-                        return JobSubmissionProtocol.valueOf(preferenceResource.getPreferredJobProtocol());
-                    }
-                }
-            }
-        }catch (Exception e) {
-            logger.error("Error while retrieving job submission protocol for given host and gateway...", e);
-            throw new AppCatalogException(e);
-        }
-        return null;
-    }
-
-    @Override
-    public DataMovementProtocol getPreferedDMProtocol(String gatewayId, String hostId) throws AppCatalogException{
-        try {
-            ComputeHostPreferenceResource prefResource = new ComputeHostPreferenceResource();
-            List<Resource> computePrefList = prefResource.get(AbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
-            if (computePrefList != null && !computePrefList.isEmpty()){
-                for (Resource pref : computePrefList){
-                    ComputeHostPreferenceResource preferenceResource = (ComputeHostPreferenceResource)pref;
-                    if (preferenceResource.getResourceId().equals(hostId)){
-                        return DataMovementProtocol.valueOf(preferenceResource.getPreferedDMProtocol());
-                    }
-                }
-            }
-        }catch (Exception e) {
-            logger.error("Error while retrieving data movement protocol for given host and gateway...", e);
-            throw new AppCatalogException(e);
-        }
-        return null;
-    }
-
-
-    @Override
-    public boolean removeGatewayProfile(String gatewayId) throws AppCatalogException {
+    public boolean removeGatewayResourceProfile(String gatewayId) throws AppCatalogException {
        try {
            GatewayProfileResource resource = new GatewayProfileResource();
            resource.remove(gatewayId);
@@ -180,7 +139,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     }
 
     @Override
-    public boolean isGatewayProfileExists(String gatewayId) throws AppCatalogException {
+    public boolean isGatewayResourceProfileExists(String gatewayId) throws AppCatalogException {
         try {
             GatewayProfileResource resource = new GatewayProfileResource();
             return resource.isExists(gatewayId);
@@ -188,5 +147,24 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             logger.error("Error while retrieving gateway profile...", e);
             throw new AppCatalogException(e);
         }
+    }
+
+    /**
+     * @param gatewayId
+     * @param hostId
+     * @return ComputeResourcePreference
+     */
+    @Override
+    public ComputeResourcePreference getComputeResourcePreference(String gatewayId, String hostId) throws AppCatalogException {
+        return null;
+    }
+
+    /**
+     * @param gatewayId
+     * @return
+     */
+    @Override
+    public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) throws AppCatalogException {
+        return null;
     }
 }
