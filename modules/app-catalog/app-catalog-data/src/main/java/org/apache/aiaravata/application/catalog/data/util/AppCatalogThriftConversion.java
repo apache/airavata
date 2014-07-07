@@ -278,7 +278,7 @@ public class AppCatalogThriftConversion {
     
     public static ResourceJobManagerResource getResourceJobManager(ResourceJobManager manager){
     	ResourceJobManagerResource r = new ResourceJobManagerResource();
-    	r.setResourceJobManagerId(manager.getJobManagerBinPath());
+    	r.setResourceJobManagerId(manager.getResourceJobManagerId());
     	r.setJobManagerBinPath(manager.getJobManagerBinPath());
     	r.setPushMonitoringEndpoint(manager.getPushMonitoringEndpoint());
     	r.setResourceJobManagerType(manager.getResourceJobManagerType().toString());

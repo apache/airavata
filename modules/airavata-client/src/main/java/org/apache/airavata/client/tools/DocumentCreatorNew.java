@@ -64,6 +64,7 @@ public class DocumentCreatorNew {
     	//Define compute resource host
     	ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription(
     			"localhost", new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})), new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})));
+    	host.setIsEmpty(false);
     	host.setComputeResourceId(client.registerComputeResource(host));
     	
     	LOCALSubmission localSubmission = new LOCALSubmission();
@@ -80,6 +81,7 @@ public class DocumentCreatorNew {
 		
 		//Define application interfaces
     	ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
+    	application.setIsEmpty(false);
     	application.setApplicationName("SimpleEcho0");
 		application.addToApplicationModules(module.getAppModuleId());
     	application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input","echo_input","Echo Input Data",null,DataType.STRING));
@@ -132,6 +134,7 @@ public class DocumentCreatorNew {
         client.registerApplicationDeployment(deployment);
         
         ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
+    	application.setIsEmpty(false);
         application.setApplicationName("SSHEcho1");
         application.addToApplicationModules(module.getAppModuleId());
         application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input","echo_input", null, null, DataType.STRING));
@@ -256,6 +259,7 @@ public class DocumentCreatorNew {
         module1.setAppModuleId(client.registerApplicationModule(module1));
         
     	ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
+    	application.setIsEmpty(false);
         application.setApplicationName("SimpleEcho2");
         application.addToApplicationModules(module1.getAppModuleId());
         application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input", "echo_input", "echo_input", null, DataType.STRING));
@@ -272,6 +276,7 @@ public class DocumentCreatorNew {
         ApplicationModule module2 = DocumentCreatorUtils.createApplicationModule("wrf", "1.0.0", null);
         module2.setAppModuleId(client.registerApplicationModule(module2));
         ApplicationInterfaceDescription application2 = new ApplicationInterfaceDescription();
+    	application2.setIsEmpty(false);
         application2.setApplicationName("WRF");
         application2.addToApplicationModules(module2.getAppModuleId());
         application2.addToApplicationInputs(DocumentCreatorUtils.createAppInput("WRF_Namelist", "WRF_Namelist", null, null, DataType.URI));
@@ -308,6 +313,7 @@ public class DocumentCreatorNew {
     	module.setAppModuleId(client.registerApplicationModule(module));
     	
     	ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
+    	application.setIsEmpty(false);
     	application.setApplicationName("SimpleEcho3");
     	application.addToApplicationModules(module.getAppModuleId());
     	application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input", "echo_input", null, null, DataType.STRING));
@@ -343,6 +349,7 @@ public class DocumentCreatorNew {
         module.setAppModuleId(client.registerApplicationModule(module));
         
         ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
+    	application.setIsEmpty(false);
         application.setApplicationName("SimpleEcho4");
         application.addToApplicationModules(module.getAppModuleId());
     	application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input", "echo_input", null, null, DataType.STRING));

@@ -206,6 +206,16 @@ public class AppModuleMappingResource extends AbstractResource {
     }
 
     @Override
+    public List<Resource> getAll() throws AppCatalogException {
+        return null;
+    }
+
+    @Override
+    public List<String> getAllIds() throws AppCatalogException {
+        return null;
+    }
+
+    @Override
     public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
         logger.error("Unsupported for objects with a composite identifier");
         throw new AppCatalogException("Unsupported for objects with a composite identifier");

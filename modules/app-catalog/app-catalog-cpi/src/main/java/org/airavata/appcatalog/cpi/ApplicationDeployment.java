@@ -34,6 +34,10 @@ public interface ApplicationDeployment {
      */
     List<ApplicationDeploymentDescription> getApplicationDeployements (Map<String, String> filters) throws AppCatalogException;
 
+    List<ApplicationDeploymentDescription> getAllApplicationDeployements () throws AppCatalogException;
+
+    List<String> getAllApplicationDeployementIds () throws AppCatalogException;
+
     /**
      * Check whether application deployment exists
      * @param deploymentId unique deployment id

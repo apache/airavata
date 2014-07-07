@@ -1465,7 +1465,23 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public Map<String, String> getAllApplicationInterfaceNames() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            List<ApplicationInterfaceDescription> allApplicationInterfaces = appCatalog.getApplicationInterface().getAllApplicationInterfaces();
+            Map<String, String> allApplicationInterfacesMap = new HashMap<String, String>();
+            if (allApplicationInterfaces != null && !allApplicationInterfaces.isEmpty()){
+                for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces){
+                    allApplicationInterfacesMap.put(interfaceDescription.getApplicationInterfaceId(), interfaceDescription.getApplicationName());
+                }
+            }
+            return allApplicationInterfacesMap;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application interfaces...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application interfaces. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1476,7 +1492,16 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().getAllApplicationInterfaces();
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application interfaces...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application interfaces. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1605,7 +1630,23 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public Map<String, String> getAllComputeResourceNames() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            List<ComputeResourceDescription> allComputeResourceList = appCatalog.getComputeResource().getAllComputeResourceList();
+            Map<String, String> allComputeResources = new HashMap<String, String>();
+            if (allComputeResourceList != null && !allComputeResourceList.isEmpty()){
+                for (ComputeResourceDescription resourceDescription : allComputeResourceList){
+                    allComputeResources.put(resourceDescription.getComputeResourceId(), resourceDescription.getHostName());
+                }
+            }
+            return allComputeResources;
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1991,7 +2032,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteJobSubmissionInterface(String jobSubmissionInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getComputeResource().removeJobSubmissionInterface(jobSubmissionInterfaceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while deleting job submission interface...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting job submission interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2003,7 +2054,17 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      */
     @Override
     public boolean deleteDataMovementInterface(String dataMovementInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getComputeResource().removeDataMovementInterface(dataMovementInterfaceId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while deleting data movement interface...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting data movement interface. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -2115,7 +2176,14 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
+            GatewayResourceProfile profile;
+            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+            	profile=new GatewayResourceProfile();
+            	profile.setGatewayID(gatewayID);
+            	profile.setGatewayName(gatewayID);
+            	gatewayProfile.addGatewayResourceProfile(profile);
+            }
+            profile = gatewayProfile.getGatewayProfile(gatewayID);
             profile.addToComputeResourcePreferences(computeResourcePreference);
             gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;

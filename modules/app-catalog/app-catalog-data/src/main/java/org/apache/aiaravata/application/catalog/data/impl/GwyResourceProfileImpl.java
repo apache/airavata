@@ -44,7 +44,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
             profileResource.setGatewayName(gatewayProfile.getGatewayName());
-            profileResource.setGatewayID(AppCatalogUtils.getID(gatewayProfile.getGatewayName()));
+            profileResource.setGatewayID(gatewayProfile.getGatewayName());
             profileResource.setGatewayDesc(gatewayProfile.getGatewayDescription());
             profileResource.save();
             gatewayProfile.setGatewayID(profileResource.getGatewayID());

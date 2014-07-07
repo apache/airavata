@@ -148,6 +148,16 @@ public class HostAliasResource extends AbstractResource {
         return hostAliasResources;
     }
 
+    @Override
+    public List<Resource> getAll() throws AppCatalogException {
+        return null;
+    }
+
+    @Override
+    public List<String> getAllIds() throws AppCatalogException {
+        return null;
+    }
+
     public List<String> getIds(String fieldName, Object value) throws AppCatalogException {
 
         List<String> hostAliasResourceIDs = new ArrayList<String>();
