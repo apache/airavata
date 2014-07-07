@@ -2,7 +2,10 @@ package org.airavata.appcatalog.cpi;
 
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+
+import java.util.List;
 
 public interface GwyResourceProfile {
     /**
@@ -10,14 +13,14 @@ public interface GwyResourceProfile {
      * @param gatewayProfile gateway profile
      * @return gateway id
      */
-    String addGatewayProfile (org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gatewayProfile) throws AppCatalogException;
+    String addGatewayResourceProfile(org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gatewayProfile) throws AppCatalogException;
 
     /**
      * This method will update a gateway profile
      * @param gatewayId unique gateway id
      * @param updatedProfile updated profile
      */
-    void updateGatewayProfile (String gatewayId, org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile updatedProfile) throws AppCatalogException;
+    void updateGatewayResourceProfile(String gatewayId, org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile updatedProfile) throws AppCatalogException;
 
     /**
      *
@@ -27,34 +30,31 @@ public interface GwyResourceProfile {
     org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile getGatewayProfile (String gatewayId) throws AppCatalogException;
 
     /**
-     *
-     * @param gatewayId
-     * @param hostId
-     * @return
-     */
-    JobSubmissionProtocol getPreferedJobSubmissionProtocol (String gatewayId, String hostId) throws AppCatalogException;
-
-    /**
-     *
-     * @param gatewayId
-     * @param hostId
-     * @return
-     */
-    DataMovementProtocol getPreferedDMProtocol (String gatewayId, String hostId) throws AppCatalogException;
-
-
-    /**
      * This method will remove a gateway profile
      * @param gatewayId unique gateway id
      * @return true or false
      */
-    boolean removeGatewayProfile (String gatewayId) throws AppCatalogException;
+    boolean removeGatewayResourceProfile(String gatewayId) throws AppCatalogException;
 
     /**
      * This method will check whether gateway profile exists
      * @param gatewayId unique gateway id
      * @return true or false
      */
-    boolean isGatewayProfileExists (String gatewayId) throws AppCatalogException;
+    boolean isGatewayResourceProfileExists(String gatewayId) throws AppCatalogException;
 
+    /**
+     *
+     * @param gatewayId
+     * @param hostId
+     * @return ComputeResourcePreference
+     */
+    ComputeResourcePreference getComputeResourcePreference (String gatewayId, String hostId) throws AppCatalogException;
+
+    /**
+     *
+     * @param gatewayId
+     * @return
+     */
+    List<ComputeResourcePreference> getAllComputeResourcePreferences (String gatewayId) throws AppCatalogException;
 }

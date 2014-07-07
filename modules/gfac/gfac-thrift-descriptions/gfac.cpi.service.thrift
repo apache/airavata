@@ -25,7 +25,7 @@
 
 namespace java org.apache.airavata.gfac.cpi
 
-const string GFAC_CPI_VERSION = "0.12.0"
+const string GFAC_CPI_VERSION = "0.13.0"
 
 service GfacService {
 
@@ -39,11 +39,14 @@ service GfacService {
      *
      * @param experimentID
      * @param taskID
+     * @param gatewayId:
+     *  The GatewayId is inferred from security context and passed onto gfac.
      * @return sucess/failure
      *
     **/
   bool submitJob (1: required string experimentId,
-                  2: required string taskId)
+                  2: required string taskId
+                  3: required string gatewayId)
 
     /**
      *
