@@ -64,6 +64,7 @@ public class DocumentCreatorNew {
     	//Define compute resource host
     	ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription(
     			"localhost", new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})), new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})));
+    	host.setIsEmpty(false);
     	host.setComputeResourceId(client.registerComputeResource(host));
     	
     	LOCALSubmission localSubmission = new LOCALSubmission();
