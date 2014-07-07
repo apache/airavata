@@ -75,6 +75,14 @@ public interface ApplicationInterface {
     List<ApplicationInterfaceDescription> getApplicationInterfaces(Map<String, String> filters) throws AppCatalogException;
 
     /**
+     * This method will return all the application interfaces
+     * @return list of all the application interfaces
+     */
+    List<ApplicationInterfaceDescription> getAllApplicationInterfaces() throws AppCatalogException;
+
+    List<String> getAllApplicationInterfaceIds() throws AppCatalogException;
+
+    /**
      * Remove application interface
      * @param interfaceId unique interface id
      */

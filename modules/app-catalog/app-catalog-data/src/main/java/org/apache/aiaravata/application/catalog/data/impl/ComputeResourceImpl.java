@@ -412,6 +412,32 @@ public class ComputeResourceImpl implements ComputeResource {
         return null;
     }
 
+    @Override
+    public List<ComputeResourceDescription> getAllComputeResourceList() throws AppCatalogException {
+        try {
+            ComputeResourceResource resource = new ComputeResourceResource();
+            List<Resource> resources = resource.getAll();
+            if (resources != null && !resources.isEmpty()){
+                return AppCatalogThriftConversion.getComputeDescriptionList(resources);
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource list...", e);
+            throw new AppCatalogException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getAllComputeResourceIdList() throws AppCatalogException {
+        try {
+            ComputeResourceResource resource = new ComputeResourceResource();
+            return resource.getAllIds();
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource list...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
 //    @Override
 //    public GSISSHJobSubmission getGSISSHJobSubmission(String submissionId) throws AppCatalogException {
 //        try {

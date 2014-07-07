@@ -89,6 +89,12 @@ public interface ComputeResource {
      */
     List<ComputeResourceDescription> getComputeResourceList (Map<String, String> filters) throws AppCatalogException;
 
+    List<ComputeResourceDescription> getAllComputeResourceList () throws AppCatalogException;
+
+    List<String> getAllComputeResourceIdList () throws AppCatalogException;
+
+
+
 //    /**
 //     * This method will retrieve GlobusJobSubmission object
 //     * @param submissionId unique submission id

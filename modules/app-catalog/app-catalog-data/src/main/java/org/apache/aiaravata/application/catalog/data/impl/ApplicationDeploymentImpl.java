@@ -235,6 +235,33 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     }
 
     @Override
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployements() throws AppCatalogException {
+        try {
+            AppDeploymentResource resource = new AppDeploymentResource();
+            List<Resource> resources = resource.getAll();
+            if (resources != null && !resources.isEmpty()){
+                return AppCatalogThriftConversion.getAppDepDescList(resources);
+            }
+
+        }catch (Exception e){
+            logger.error("Error while retrieving app deployment list...", e);
+            throw new AppCatalogException(e);
+        }
+        return null;
+    }
+
+    @Override
+    public List<String> getAllApplicationDeployementIds() throws AppCatalogException {
+        try {
+            AppDeploymentResource resource = new AppDeploymentResource();
+            return resource.getAllIds();
+        }catch (Exception e){
+            logger.error("Error while retrieving app deployment list...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
     public boolean isAppDeploymentExists(String deploymentId) throws AppCatalogException {
         try {
            AppDeploymentResource deploymentResource = new AppDeploymentResource();
