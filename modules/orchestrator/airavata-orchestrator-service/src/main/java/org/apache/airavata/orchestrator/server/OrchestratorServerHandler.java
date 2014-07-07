@@ -429,7 +429,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 								+ applicationId);
 			}
 			ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(taskData, applicationId);
-			taskData.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
+			taskData.setApplicationDescriptorId(applicationDeploymentDescription.getAppDeploymentId());
 			registry.update(RegistryModelType.TASK_DETAIL, taskData,taskData.getTaskID());
 			List<Object> workflowNodeDetailList = registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL,
 							org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants.TASK_LIST, taskData);
