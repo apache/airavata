@@ -21,12 +21,8 @@
 
 package org.apache.aiaravata.application.catalog.data.impl;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.ApplicationDeployment;
-import org.airavata.appcatalog.cpi.ApplicationInterface;
-import org.airavata.appcatalog.cpi.ComputeResource;
-import org.airavata.appcatalog.cpi.GProfile;
+import org.airavata.appcatalog.cpi.*;
+import org.airavata.appcatalog.cpi.GwyResourceProfile;
 
 public class AppCatalogImpl implements AppCatalog {
     @Override
@@ -45,7 +41,7 @@ public class AppCatalogImpl implements AppCatalog {
     }
 
 	@Override
-	public GProfile getGatewayProfile() throws AppCatalogException {
-		return new GatewayProfileImpl();
+	public GwyResourceProfile getGatewayProfile() throws AppCatalogException {
+		return new GwyResourceProfileImpl();
 	}
 }

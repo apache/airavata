@@ -65,8 +65,8 @@ import org.slf4j.LoggerFactory;
  * 
  * 
  */
-@SuppressWarnings("all") public class GatewayProfile implements org.apache.thrift.TBase<GatewayProfile, GatewayProfile._Fields>, java.io.Serializable, Cloneable, Comparable<GatewayProfile> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GatewayProfile");
+@SuppressWarnings("all") public class GatewayResourceProfile implements org.apache.thrift.TBase<GatewayResourceProfile, GatewayResourceProfile._Fields>, java.io.Serializable, Cloneable, Comparable<GatewayResourceProfile> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GatewayResourceProfile");
 
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayID", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField GATEWAY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayName", org.apache.thrift.protocol.TType.STRING, (short)2);
@@ -75,8 +75,8 @@ import org.slf4j.LoggerFactory;
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new GatewayProfileStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new GatewayProfileTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new GatewayResourceProfileStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new GatewayResourceProfileTupleSchemeFactory());
   }
 
   private String gatewayID; // required
@@ -166,15 +166,15 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ComputeResourcePreference.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GatewayProfile.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(GatewayResourceProfile.class, metaDataMap);
   }
 
-  public GatewayProfile() {
+  public GatewayResourceProfile() {
     this.gatewayID = "DO_NOT_SET_AT_CLIENTS";
 
   }
 
-  public GatewayProfile(
+  public GatewayResourceProfile(
     String gatewayID,
     String gatewayName)
   {
@@ -186,7 +186,7 @@ import org.slf4j.LoggerFactory;
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public GatewayProfile(GatewayProfile other) {
+  public GatewayResourceProfile(GatewayResourceProfile other) {
     if (other.isSetGatewayID()) {
       this.gatewayID = other.gatewayID;
     }
@@ -205,8 +205,8 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public GatewayProfile deepCopy() {
-    return new GatewayProfile(this);
+  public GatewayResourceProfile deepCopy() {
+    return new GatewayResourceProfile(this);
   }
 
   @Override
@@ -403,12 +403,12 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof GatewayProfile)
-      return this.equals((GatewayProfile)that);
+    if (that instanceof GatewayResourceProfile)
+      return this.equals((GatewayResourceProfile)that);
     return false;
   }
 
-  public boolean equals(GatewayProfile that) {
+  public boolean equals(GatewayResourceProfile that) {
     if (that == null)
       return false;
 
@@ -457,7 +457,7 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(GatewayProfile other) {
+  public int compareTo(GatewayResourceProfile other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -521,7 +521,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("GatewayProfile(");
+    StringBuilder sb = new StringBuilder("GatewayResourceProfile(");
     boolean first = true;
 
     sb.append("gatewayID:");
@@ -592,15 +592,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class GatewayProfileStandardSchemeFactory implements SchemeFactory {
-    public GatewayProfileStandardScheme getScheme() {
-      return new GatewayProfileStandardScheme();
+  private static class GatewayResourceProfileStandardSchemeFactory implements SchemeFactory {
+    public GatewayResourceProfileStandardScheme getScheme() {
+      return new GatewayResourceProfileStandardScheme();
     }
   }
 
-  private static class GatewayProfileStandardScheme extends StandardScheme<GatewayProfile> {
+  private static class GatewayResourceProfileStandardScheme extends StandardScheme<GatewayResourceProfile> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, GatewayProfile struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, GatewayResourceProfile struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -662,7 +662,7 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, GatewayProfile struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, GatewayResourceProfile struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -703,16 +703,16 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class GatewayProfileTupleSchemeFactory implements SchemeFactory {
-    public GatewayProfileTupleScheme getScheme() {
-      return new GatewayProfileTupleScheme();
+  private static class GatewayResourceProfileTupleSchemeFactory implements SchemeFactory {
+    public GatewayResourceProfileTupleScheme getScheme() {
+      return new GatewayResourceProfileTupleScheme();
     }
   }
 
-  private static class GatewayProfileTupleScheme extends TupleScheme<GatewayProfile> {
+  private static class GatewayResourceProfileTupleScheme extends TupleScheme<GatewayResourceProfile> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, GatewayProfile struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, GatewayResourceProfile struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.gatewayID);
       oprot.writeString(struct.gatewayName);
@@ -739,7 +739,7 @@ import org.slf4j.LoggerFactory;
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, GatewayProfile struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, GatewayResourceProfile struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.gatewayID = iprot.readString();
       struct.setGatewayIDIsSet(true);

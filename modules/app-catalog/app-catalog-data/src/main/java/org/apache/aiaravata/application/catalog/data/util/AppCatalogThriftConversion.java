@@ -85,7 +85,7 @@ import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 
 public class AppCatalogThriftConversion {
     public static ComputeResourceResource getComputeHostResource (ComputeResourceDescription description){
@@ -679,8 +679,8 @@ public class AppCatalogThriftConversion {
         return preferences;
     }
 
-    public static GatewayProfile getGatewayProfile (GatewayProfileResource gw, List<ComputeResourcePreference> preferences){
-        GatewayProfile gatewayProfile = new GatewayProfile();
+    public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences){
+        GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
         gatewayProfile.setGatewayDescription(gw.getGatewayDesc());
         gatewayProfile.setGatewayName(gw.getGatewayName());

@@ -22,14 +22,13 @@
 package org.apache.aiaravata.application.catalog.data.impl;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.GProfile;
+import org.airavata.appcatalog.cpi.GwyResourceProfile;
 import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogUtils;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,11 +36,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GatewayProfileImpl implements GProfile {
-    private final static Logger logger = LoggerFactory.getLogger(GatewayProfileImpl.class);
+public class GwyResourceProfileImpl implements GwyResourceProfile {
+    private final static Logger logger = LoggerFactory.getLogger(GwyResourceProfileImpl.class);
 
     @Override
-    public String addGatewayProfile(GatewayProfile gatewayProfile) throws AppCatalogException {
+    public String addGatewayProfile(org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gatewayProfile) throws AppCatalogException {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
             profileResource.setGatewayName(gatewayProfile.getGatewayName());
@@ -75,7 +74,7 @@ public class GatewayProfileImpl implements GProfile {
     }
 
     @Override
-    public void updateGatewayProfile(String gatewayId, GatewayProfile updatedProfile) throws AppCatalogException {
+    public void updateGatewayProfile(String gatewayId, org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile updatedProfile) throws AppCatalogException {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
             GatewayProfileResource existingGP = (GatewayProfileResource)profileResource.get(gatewayId);
@@ -113,14 +112,14 @@ public class GatewayProfileImpl implements GProfile {
     }
 
     @Override
-    public GatewayProfile getGatewayProfile(String gatewayId) throws AppCatalogException {
+    public org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile getGatewayProfile(String gatewayId) throws AppCatalogException {
         try {
             GatewayProfileResource resource = new GatewayProfileResource();
             GatewayProfileResource gwresource = (GatewayProfileResource)resource.get(gatewayId);
             ComputeHostPreferenceResource prefResource = new ComputeHostPreferenceResource();
             List<Resource> computePrefList = prefResource.get(AbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
             List<ComputeResourcePreference> computeResourcePreferences = AppCatalogThriftConversion.getComputeResourcePreferences(computePrefList);
-            return AppCatalogThriftConversion.getGatewayProfile(gwresource, computeResourcePreferences);
+            return AppCatalogThriftConversion.getGatewayResourceProfile(gwresource, computeResourcePreferences);
         }catch (Exception e) {
             logger.error("Error while retrieving gateway profile...", e);
             throw new AppCatalogException(e);

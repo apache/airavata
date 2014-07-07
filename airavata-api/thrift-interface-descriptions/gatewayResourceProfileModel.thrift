@@ -77,7 +77,7 @@ struct ComputeResourcePreference {
  *
  *
 */
-struct GatewayProfile {
+struct GatewayResourceProfile {
     1: required string gatewayID = DEFAULT_ID,
     2: required string gatewayName,
     3: optional string gatewayDescription,

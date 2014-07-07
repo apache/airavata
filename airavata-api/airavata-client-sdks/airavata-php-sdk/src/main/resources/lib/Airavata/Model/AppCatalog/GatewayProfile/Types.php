@@ -209,7 +209,7 @@ class ComputeResourcePreference {
 
 }
 
-class GatewayProfile {
+class GatewayResourceProfile {
   static $_TSPEC;
 
   public $gatewayID = "DO_NOT_SET_AT_CLIENTS";
@@ -260,7 +260,7 @@ class GatewayProfile {
   }
 
   public function getName() {
-    return 'GatewayProfile';
+    return 'GatewayResourceProfile';
   }
 
   public function read($input)
@@ -329,7 +329,7 @@ class GatewayProfile {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('GatewayProfile');
+    $xfer += $output->writeStructBegin('GatewayResourceProfile');
     if ($this->gatewayID !== null) {
       $xfer += $output->writeFieldBegin('gatewayID', TType::STRING, 1);
       $xfer += $output->writeString($this->gatewayID);
