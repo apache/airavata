@@ -223,9 +223,13 @@ public class ComputeHostPreferenceResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         ComputeResourcePreference preference = (ComputeResourcePreference) result;
-                        ComputeHostPreferenceResource preferenceResource =
-                                (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
-                        preferenceResourceList.add(preferenceResource);
+                        if (preference.getComputeHostResource()!=null) {
+							ComputeHostPreferenceResource preferenceResource = (ComputeHostPreferenceResource) AppCatalogJPAUtils
+									.getResource(
+											AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE,
+											preference);
+							preferenceResourceList.add(preferenceResource);
+						}
                     }
                 }
             } else if (fieldName.equals(ComputeResourcePreferenceConstants.GATEWAY_ID)) {
@@ -235,9 +239,11 @@ public class ComputeHostPreferenceResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         ComputeResourcePreference preference = (ComputeResourcePreference) result;
-                        ComputeHostPreferenceResource preferenceResource =
-                                (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
-                        preferenceResourceList.add(preferenceResource);
+                        if (preference.getComputeHostResource()!=null) {
+	                        ComputeHostPreferenceResource preferenceResource =
+	                                (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
+	                        preferenceResourceList.add(preferenceResource);
+                        }
                     }
                 }
             } else if (fieldName.equals(ComputeResourcePreferenceConstants.PREFERED_JOB_SUB_PROTOCOL)) {
@@ -247,9 +253,13 @@ public class ComputeHostPreferenceResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         ComputeResourcePreference preference = (ComputeResourcePreference) result;
-                        ComputeHostPreferenceResource preferenceResource =
-                                (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
-                        preferenceResourceList.add(preferenceResource);
+                        if (preference.getComputeHostResource()!=null) {
+							ComputeHostPreferenceResource preferenceResource = (ComputeHostPreferenceResource) AppCatalogJPAUtils
+									.getResource(
+											AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE,
+											preference);
+							preferenceResourceList.add(preferenceResource);
+						}
                     }
                 }
             } else if (fieldName.equals(ComputeResourcePreferenceConstants.PREFERED_DATA_MOVE_PROTOCOL)) {
@@ -259,9 +269,13 @@ public class ComputeHostPreferenceResource extends AbstractResource {
                 if (results.size() != 0) {
                     for (Object result : results) {
                         ComputeResourcePreference preference = (ComputeResourcePreference) result;
-                        ComputeHostPreferenceResource preferenceResource =
-                                (ComputeHostPreferenceResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE, preference);
-                        preferenceResourceList.add(preferenceResource);
+                        if (preference.getResourceId()!=null) {
+							ComputeHostPreferenceResource preferenceResource = (ComputeHostPreferenceResource) AppCatalogJPAUtils
+									.getResource(
+											AppCatalogResourceType.COMPUTE_RESOURCE_PREFERENCE,
+											preference);
+							preferenceResourceList.add(preferenceResource);
+						}
                     }
                 }
             } else {

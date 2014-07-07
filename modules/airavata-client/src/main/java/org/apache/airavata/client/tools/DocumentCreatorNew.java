@@ -39,6 +39,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerTy
 import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
@@ -93,18 +94,29 @@ public class DocumentCreatorNew {
 		deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
 
 		//Define gateway profile
-		client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(
+		ComputeResourcePreference computeResourcePreference = DocumentCreatorUtils.createComputeResourcePreference(
 				host.getComputeResourceId(), "/tmp", null,
 				false, null,
-				null, null));
+				null, null);
+//		gatewayResourceProfile = new GatewayResourceProfile();
+//		gatewayResourceProfile.setGatewayID("default");
+//		gatewayResourceProfile.setGatewayName("default");
+//		gatewayResourceProfile.addToComputeResourcePreferences(computeResourcePreference);
+//		client.registerGatewayResourceProfile(gatewayResourceProfile);
+		client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), computeResourcePreference);
     }
 
     private GatewayResourceProfile getGatewayResourceProfile() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException{
     	if (gatewayResourceProfile==null){
-			gatewayResourceProfile = new GatewayResourceProfile();
-			gatewayResourceProfile.setGatewayID("default");
-			gatewayResourceProfile.setGatewayName("default");
-			client.registerGatewayResourceProfile(gatewayResourceProfile);
+    		try {
+				gatewayResourceProfile = client.getGatewayResourceProfile("default");
+			} catch (Exception e) {
+				gatewayResourceProfile = new GatewayResourceProfile();
+				gatewayResourceProfile.setGatewayID("default");
+				gatewayResourceProfile.setGatewayName("default");
+				client.registerGatewayResourceProfile(gatewayResourceProfile);
+			}
+			
     	}
 		return gatewayResourceProfile;
 
