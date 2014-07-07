@@ -45,7 +45,6 @@ public class AppDeploymentResource extends AbstractResource {
     private String executablePath;
     private String parallelism;
     private String appDes;
-    private String envModuleLoadCMD;
     private ComputeResourceResource hostResource;
     private AppModuleResource moduleResource;
 
@@ -87,14 +86,6 @@ public class AppDeploymentResource extends AbstractResource {
 
     public void setAppDes(String appDes) {
         this.appDes = appDes;
-    }
-
-    public String getEnvModuleLoadCMD() {
-        return envModuleLoadCMD;
-    }
-
-    public void setEnvModuleLoadCMD(String envModuleLoadCMD) {
-        this.envModuleLoadCMD = envModuleLoadCMD;
     }
 
     public ComputeResourceResource getHostResource() {
@@ -294,7 +285,6 @@ public class AppDeploymentResource extends AbstractResource {
                 existingDeployment.setComputeResource(computeHost);
                 existingDeployment.setHostID(hostId);
                 existingDeployment.setExecutablePath(executablePath);
-                existingDeployment.setEnvModuleLoaString(envModuleLoadCMD);
                 existingDeployment.setParallelism(parallelism);
                 em.merge(existingDeployment);
             }else {
@@ -306,7 +296,6 @@ public class AppDeploymentResource extends AbstractResource {
                 deployment.setApplicationModule(applicationModule);
                 deployment.setComputeResource(computeHost);
                 deployment.setExecutablePath(executablePath);
-                deployment.setEnvModuleLoaString(envModuleLoadCMD);
                 deployment.setParallelism(parallelism);
                 em.persist(deployment);
             }

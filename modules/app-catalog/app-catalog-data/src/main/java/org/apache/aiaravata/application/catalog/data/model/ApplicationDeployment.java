@@ -38,8 +38,6 @@ public class ApplicationDeployment implements Serializable {
     private String executablePath;
     @Column(name = "APPLICATION_DESC")
     private String applicationDesc;
-    @Column(name = "ENV_MODULE_LOAD_CMD")
-    private String envModuleLoaString;
     @Column(name = "PARALLELISM")
     private String parallelism;
     
@@ -90,14 +88,6 @@ public class ApplicationDeployment implements Serializable {
 
     public void setApplicationDesc(String applicationDesc) {
         this.applicationDesc = applicationDesc;
-    }
-
-    public String getEnvModuleLoaString() {
-        return envModuleLoaString;
-    }
-
-    public void setEnvModuleLoaString(String envModuleLoaString) {
-        this.envModuleLoaString = envModuleLoaString;
     }
 
     public ApplicationModule getApplicationModule() {
