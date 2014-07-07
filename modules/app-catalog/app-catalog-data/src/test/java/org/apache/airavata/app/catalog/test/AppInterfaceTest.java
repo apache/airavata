@@ -88,6 +88,7 @@ public class AppInterfaceTest {
             outputs.add(output1);
             outputs.add(output2);
             description.setApplicationName("testApplication");
+            description.setApplicationDesription("my testApplication");
             description.setApplicationModules(modules);
             description.setApplicationInputs(inputs);
             description.setApplicationOutputs(outputs);
@@ -97,6 +98,7 @@ public class AppInterfaceTest {
             if (appInterface.isApplicationInterfaceExists(appID)){
                 ainterface = appInterface.getApplicationInterface(appID);
                 System.out.println("********** application name ************* : " + ainterface.getApplicationName());
+                System.out.println("********** application description ************* : " + ainterface.getApplicationDesription());
             }
             ApplicationModule wrfModule = appInterface.getApplicationModule(wrfModuleId);
             System.out.println("********** WRF module name ************* : " + wrfModule.getAppModuleName());

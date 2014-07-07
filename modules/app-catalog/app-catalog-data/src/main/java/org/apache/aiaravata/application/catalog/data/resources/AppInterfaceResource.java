@@ -39,6 +39,7 @@ public class AppInterfaceResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(AppInterfaceResource.class);
     private String interfaceId;
     private String appName;
+    private String appDescription;
 
     public String getInterfaceId() {
         return interfaceId;
@@ -54,6 +55,14 @@ public class AppInterfaceResource extends AbstractResource {
 
     public void setAppName(String appName) {
         this.appName = appName;
+    }
+
+    public String getAppDescription() {
+        return appDescription;
+    }
+
+    public void setAppDescription(String appDescription) {
+        this.appDescription = appDescription;
     }
 
     @Override
@@ -271,14 +280,15 @@ public class AppInterfaceResource extends AbstractResource {
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-
             if (existigAppInterface !=  null){
                 existigAppInterface.setAppName(appName);
+                existigAppInterface.setAppDescription(appDescription);
                 em.merge(existigAppInterface);
             }else {
                 ApplicationInterface applicationInterface = new ApplicationInterface();
                 applicationInterface.setInterfaceID(interfaceId);
                 applicationInterface.setAppName(appName);
+                applicationInterface.setAppDescription(appDescription);
                 em.persist(applicationInterface);
             }
             em.getTransaction().commit();

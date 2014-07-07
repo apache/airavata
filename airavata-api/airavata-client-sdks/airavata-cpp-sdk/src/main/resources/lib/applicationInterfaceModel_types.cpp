@@ -302,8 +302,8 @@ void swap(OutputDataObjectType &a, OutputDataObjectType &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* ApplicationInterfaceDescription::ascii_fingerprint = "EF5E3A4F34CCD8942A56C19B7B92E473";
-const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0xEF,0x5E,0x3A,0x4F,0x34,0xCC,0xD8,0x94,0x2A,0x56,0xC1,0x9B,0x7B,0x92,0xE4,0x73};
+const char* ApplicationInterfaceDescription::ascii_fingerprint = "B4A4B770076264D5948E96332AE8D291";
+const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0xB4,0xA4,0xB7,0x70,0x07,0x62,0x64,0xD5,0x94,0x8E,0x96,0x33,0x2A,0xE8,0xD2,0x91};
 
 uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -353,6 +353,14 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
         }
         break;
       case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->applicationDesription);
+          this->__isset.applicationDesription = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationModules.clear();
@@ -372,7 +380,7 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationInputs.clear();
@@ -392,7 +400,7 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationOutputs.clear();
@@ -446,8 +454,13 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
   xfer += oprot->writeString(this->applicationName);
   xfer += oprot->writeFieldEnd();
 
+  if (this->__isset.applicationDesription) {
+    xfer += oprot->writeFieldBegin("applicationDesription", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeString(this->applicationDesription);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.applicationModules) {
-    xfer += oprot->writeFieldBegin("applicationModules", ::apache::thrift::protocol::T_LIST, 4);
+    xfer += oprot->writeFieldBegin("applicationModules", ::apache::thrift::protocol::T_LIST, 5);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->applicationModules.size()));
       std::vector<std::string> ::const_iterator _iter17;
@@ -460,7 +473,7 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.applicationInputs) {
-    xfer += oprot->writeFieldBegin("applicationInputs", ::apache::thrift::protocol::T_LIST, 5);
+    xfer += oprot->writeFieldBegin("applicationInputs", ::apache::thrift::protocol::T_LIST, 6);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->applicationInputs.size()));
       std::vector<InputDataObjectType> ::const_iterator _iter18;
@@ -473,7 +486,7 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.applicationOutputs) {
-    xfer += oprot->writeFieldBegin("applicationOutputs", ::apache::thrift::protocol::T_LIST, 6);
+    xfer += oprot->writeFieldBegin("applicationOutputs", ::apache::thrift::protocol::T_LIST, 7);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->applicationOutputs.size()));
       std::vector<OutputDataObjectType> ::const_iterator _iter19;
@@ -495,6 +508,7 @@ void swap(ApplicationInterfaceDescription &a, ApplicationInterfaceDescription &b
   swap(a.isEmpty, b.isEmpty);
   swap(a.applicationInterfaceId, b.applicationInterfaceId);
   swap(a.applicationName, b.applicationName);
+  swap(a.applicationDesription, b.applicationDesription);
   swap(a.applicationModules, b.applicationModules);
   swap(a.applicationInputs, b.applicationInputs);
   swap(a.applicationOutputs, b.applicationOutputs);
