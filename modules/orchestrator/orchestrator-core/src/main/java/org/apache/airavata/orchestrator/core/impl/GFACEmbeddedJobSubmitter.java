@@ -21,6 +21,8 @@
 package org.apache.airavata.orchestrator.core.impl;
 
 
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
@@ -55,7 +57,7 @@ public class GFACEmbeddedJobSubmitter implements JobSubmitter {
 
     public boolean submit(String experimentID, String taskID) throws OrchestratorException {
         try {
-            return gfac.submitJob(experimentID, taskID);
+            return gfac.submitJob(experimentID, taskID, ServerSettings.getSetting(Constants.GATEWAY_NAME));
         } catch (Exception e) {
             String error = "Error launching the job : " + experimentID;
             logger.error(error);
