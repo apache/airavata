@@ -242,9 +242,19 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addLocalSubmissionDetails\n");
   }
 
+  bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALSubmission& localSubmission) {
+    // Your implementation goes here
+    printf("updateLocalSubmissionDetails\n");
+  }
+
   bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission) {
     // Your implementation goes here
     printf("addSSHJobSubmissionDetails\n");
+  }
+
+  bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::SSHJobSubmission& sshJobSubmission) {
+    // Your implementation goes here
+    printf("updateSSHJobSubmissionDetails\n");
   }
 
   bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement) {
@@ -252,14 +262,59 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addLocalDataMovementDetails\n");
   }
 
+  bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALDataMovement& localDataMovement) {
+    // Your implementation goes here
+    printf("updateLocalDataMovementDetails\n");
+  }
+
   bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("addSCPDataMovementDetails\n");
   }
 
+  bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::SCPDataMovement& scpDataMovement) {
+    // Your implementation goes here
+    printf("updateSCPDataMovementDetails\n");
+  }
+
   bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("addGridFTPDataMovementDetails\n");
+  }
+
+  bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::GridFTPDataMovement& gridFTPDataMovement) {
+    // Your implementation goes here
+    printf("updateGridFTPDataMovementDetails\n");
+  }
+
+  bool changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder) {
+    // Your implementation goes here
+    printf("changeJobSubmissionPriority\n");
+  }
+
+  bool changeDataMovementPriority(const std::string& dataMovementInterfaceId, const int32_t newPriorityOrder) {
+    // Your implementation goes here
+    printf("changeDataMovementPriority\n");
+  }
+
+  bool changeJobSubmissionPriorities(const std::map<std::string, int32_t> & jobSubmissionPriorityMap) {
+    // Your implementation goes here
+    printf("changeJobSubmissionPriorities\n");
+  }
+
+  bool changeDataMovementPriorities(const std::map<std::string, int32_t> & dataMovementPriorityMap) {
+    // Your implementation goes here
+    printf("changeDataMovementPriorities\n");
+  }
+
+  bool deleteJobSubmissionInterface(const std::string& jobSubmissionInterfaceId) {
+    // Your implementation goes here
+    printf("deleteJobSubmissionInterface\n");
+  }
+
+  bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId) {
+    // Your implementation goes here
+    printf("deleteDataMovementInterface\n");
   }
 
 };
