@@ -790,7 +790,7 @@ service Airavata {
  *
 */
 
-/**
+  /**
    * Register a Compute Resource.
    *
    * @param computeResourceDescription
@@ -806,7 +806,7 @@ service Airavata {
               2: airavataErrors.AiravataClientException ace,
               3: airavataErrors.AiravataSystemException ase)
 
-/**
+  /**
    * Fetch the given Compute Resource.
    *
    * @param computeResourceId
@@ -821,7 +821,7 @@ service Airavata {
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
 
-/**
+  /**
    * Update a Compute Resource.
    *
    * @param computeResourceId
@@ -840,7 +840,7 @@ service Airavata {
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
 
-/**
+  /**
    * Delete a Compute Resource.
    *
    * @param computeResourceId
@@ -855,6 +855,126 @@ service Airavata {
                    2: airavataErrors.AiravataClientException ace,
                    3: airavataErrors.AiravataSystemException ase)
 
+  /**
+   * Add a Local Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   *
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   *
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   *
+   * @param localSubmission
+   *   The LOCALSubmission object to be added to the resource.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool addLocalSubmissionDetails(1: required string computeResourceId,
+            2: required i32 priorityOrder,
+            3: required computeResourceModel.LOCALSubmission localSubmission)
+
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Add a SSH Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   *
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   *
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   *
+   * @param sshJobSubmission
+   *   The SSHJobSubmission object to be added to the resource.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool addSSHJobSubmissionDetails(1: required string computeResourceId,
+            2: required i32 priorityOrder,
+            3: required computeResourceModel.SSHJobSubmission sshJobSubmission)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Add a Local data moevement details to a compute resource
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   *
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   *
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   *
+   * @param localDataMovement
+   *   The LOCALDataMovement object to be added to the resource.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool addLocalDataMovementDetails(1: required string computeResourceId,
+            2: required i32 priorityOrder,
+            3: required computeResourceModel.LOCALDataMovement localDataMovement)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Add a SCP data moevement details to a compute resource
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   *
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   *
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   *
+   * @param scpDataMovement
+   *   The SCPDataMovement object to be added to the resource.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool addSCPDataMovementDetails(1: required string computeResourceId,
+            2: required i32 priorityOrder,
+            3: required computeResourceModel.SCPDataMovement scpDataMovement)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Add a GridFTP data moevement details to a compute resource
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   *
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   *
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   *
+   * @param gridFTPDataMovement
+   *   The GridFTPDataMovement object to be added to the resource.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool addGridFTPDataMovementDetails(1: required string computeResourceId,
+            2: required i32 priorityOrder,
+            3: required computeResourceModel.GridFTPDataMovement gridFTPDataMovement)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
 
  //End of API
  }
