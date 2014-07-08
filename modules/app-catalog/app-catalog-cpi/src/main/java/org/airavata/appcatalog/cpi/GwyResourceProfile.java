@@ -25,7 +25,7 @@ public interface GwyResourceProfile {
      * @param gatewayId
      * @return
      */
-    org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile getGatewayProfile (String gatewayId) throws AppCatalogException;
+   GatewayResourceProfile getGatewayProfile (String gatewayId) throws AppCatalogException;
 
     /**
      * This method will remove a gateway profile

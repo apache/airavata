@@ -338,6 +338,7 @@ public class ComputeHostPreferenceResource extends AbstractResource {
                 existingPreference.setPreferedDataMoveProtocol(preferedDMProtocol);
                 existingPreference.setScratchLocation(scratchLocation);
                 existingPreference.setProjectNumber(projectNumber);
+                existingPreference.setBatchQueue(batchQueue);
                 em.merge(existingPreference);
             } else {
                 ComputeResourcePreference resourcePreference = new ComputeResourcePreference();
@@ -350,6 +351,7 @@ public class ComputeHostPreferenceResource extends AbstractResource {
                 resourcePreference.setPreferedDataMoveProtocol(preferedDMProtocol);
                 resourcePreference.setScratchLocation(scratchLocation);
                 resourcePreference.setProjectNumber(projectNumber);
+                resourcePreference.setBatchQueue(batchQueue);
                 em.persist(resourcePreference);
             }
             em.getTransaction().commit();
