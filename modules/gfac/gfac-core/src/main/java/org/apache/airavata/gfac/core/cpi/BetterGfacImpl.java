@@ -260,6 +260,7 @@ public class BetterGfacImpl implements GFac {
         ServiceDescription legacyServiceDescription = new ServiceDescription();
         ServiceDescriptionType legacyServiceDescType = legacyServiceDescription.getType();
         ApplicationDescription legacyAppDescription = new ApplicationDescription();
+        ApplicationDeploymentDescriptionType legacyAppDescType = legacyAppDescription.getType();
         HostDescription legacyHostDescription= new HostDescription();
         HostDescriptionType legacyHostDescType = legacyHostDescription.getType();
 
@@ -332,8 +333,8 @@ public class BetterGfacImpl implements GFac {
 		            resourceJobManager = sshJobSubmission.getResourceJobManager();
 		            switch (sshJobSubmission.getSecurityProtocol()){
 		            	case GSI:
-		            		legacyHostDescription.getType().changeType(GsisshHostType.type);
-		                    ((GsisshHostType) legacyHostDescription.getType()).setJobManager
+                            legacyHostDescType.changeType(GsisshHostType.type);
+		                    ((GsisshHostType) legacyHostDescType).setJobManager
 		                            (resourceJobManager.getResourceJobManagerType().name());
 		                    ((GsisshHostType) legacyHostDescType).setInstalledPath(resourceJobManager.getJobManagerBinPath());
 		                    // applicationDescription.setInstalledParentPath(resourceJobManager.getJobManagerBinPath());
@@ -353,11 +354,11 @@ public class BetterGfacImpl implements GFac {
         
         /////////////////////---------------- APPLICATION DESCRIPTOR ---------------------/////////////////////////
         //Fetch deployment information and fill-in legacy doc
-        legacyAppDescription.getType().addNewApplicationName().setStringValue(applicationDeployment.getAppDeploymentDescription());
-        legacyAppDescription.getType().setExecutableLocation(applicationDeployment.getExecutablePath());
-		if (legacyHostDescription.getType() instanceof GsisshHostType){
-        	legacyAppDescription.getType().changeType(HpcApplicationDeploymentType.type);
-        	HpcApplicationDeploymentType legacyHPCAppDescType = (HpcApplicationDeploymentType) legacyAppDescription.getType();
+        legacyAppDescType.addNewApplicationName().setStringValue(applicationDeployment.getAppDeploymentDescription());
+        legacyAppDescType.setExecutableLocation(applicationDeployment.getExecutablePath());
+		if ((legacyHostDescType instanceof GsisshHostType) || (legacyHostDescType instanceof SSHHostType)){
+            legacyAppDescType.changeType(HpcApplicationDeploymentType.type);
+        	HpcApplicationDeploymentType legacyHPCAppDescType = (HpcApplicationDeploymentType) legacyAppDescType;
 			 switch (applicationDeployment.getParallelism()) {
 			     case SERIAL:
 			         legacyHPCAppDescType.setJobType(JobTypeType.SERIAL);
@@ -381,7 +382,7 @@ public class BetterGfacImpl implements GFac {
 			 ProjectAccountType projectAccountType = legacyHPCAppDescType.addNewProjectAccount();
 			projectAccountType.setProjectAccountNumber(gatewayResourcePreferences.getAllocationProjectNumber());
         }
-		legacyAppDescription.getType().setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
+        legacyAppDescType.setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
         //Fetch from gateway profile
 
         //hostDescription.getType().setHostAddress(computeResource.getIpAddresses().iterator().next());
@@ -409,15 +410,16 @@ public class BetterGfacImpl implements GFac {
 //        applicationContext.setApplicationDeploymentDescription(applicationDescription);
         applicationContext.setHostDescription(legacyHostDescription);
         applicationContext.setServiceDescription(legacyServiceDescription);
+        applicationContext.setApplicationDeploymentDescription(legacyAppDescription);
         jobExecutionContext.setApplicationContext(applicationContext);
 
         List<DataObjectType> experimentInputs = taskData.getApplicationInputs();
         jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getMessageContext(experimentInputs,
-                legacyServiceDescription.getType().getInputParametersArray())));
+                legacyServiceDescType.getInputParametersArray())));
 
         List<DataObjectType> outputData = taskData.getApplicationOutputs();
         jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getMessageContext(outputData,
-                legacyServiceDescription.getType().getOutputParametersArray())));
+                legacyServiceDescType.getOutputParametersArray())));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setGfac(this);
