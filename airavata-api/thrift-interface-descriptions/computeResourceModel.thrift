@@ -352,14 +352,14 @@ struct DataMovementInterface {
  *
 */
 struct ComputeResourceDescription {
-    1: required bool isEmpty = 0,
-    2: required string computeResourceId = DEFAULT_ID,
-    3: required string hostName,
-    4: optional set<string> hostAliases,
-    5: optional set<string> ipAddresses,
-    6: optional string resourceDescription,
-    7: optional list<BatchQueue> batchQueues,
-    8: optional map<FileSystems, string> fileSystems,
-    9: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
-    10: optional list<DataMovementInterface> dataMovementInterfaces
+//    1: required bool isEmpty = 0,
+    1: required string computeResourceId = DEFAULT_ID,
+    2: required string hostName,
+    3: optional set<string> hostAliases,
+    4: optional set<string> ipAddresses,
+    5: optional string resourceDescription,
+    6: optional list<BatchQueue> batchQueues,
+    7: optional map<FileSystems, string> fileSystems,
+    8: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
+    9: optional list<DataMovementInterface> dataMovementInterfaces
 }

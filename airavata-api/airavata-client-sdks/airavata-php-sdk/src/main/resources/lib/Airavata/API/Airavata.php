@@ -18881,7 +18881,7 @@ class Airavata_registerGatewayResourceProfile_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::BOOL,
+          'type' => TType::STRING,
           ),
         1 => array(
           'var' => 'ire',
@@ -18936,8 +18936,8 @@ class Airavata_registerGatewayResourceProfile_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->success);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -18980,8 +18980,8 @@ class Airavata_registerGatewayResourceProfile_result {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_registerGatewayResourceProfile_result');
     if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
-      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {

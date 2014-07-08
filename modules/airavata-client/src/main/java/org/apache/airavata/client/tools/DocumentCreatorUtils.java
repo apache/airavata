@@ -61,7 +61,7 @@ public class DocumentCreatorUtils {
 			String computeResourceId, String appModuleId,
 			String executablePath, ApplicationParallelismType parallelism, String appDeploymentDescription) {
 		ApplicationDeploymentDescription deployment = new ApplicationDeploymentDescription();
-		deployment.setIsEmpty(false);
+//		deployment.setIsEmpty(false);
 		deployment.setAppDeploymentDescription(appDeploymentDescription);
 		deployment.setAppModuleId(appModuleId);
 		deployment.setComputeHostId(computeResourceId);
@@ -124,7 +124,7 @@ public class DocumentCreatorUtils {
 
 	public static InputDataObjectType createAppInput (String inputName, String argumentName, String description, String value, org.apache.airavata.model.appcatalog.appinterface.DataType type ){
         InputDataObjectType input = new InputDataObjectType();
-        input.setIsEmpty(false);
+//        input.setIsEmpty(false);
         if (inputName!=null) {
 			input.setName(inputName);
 		}
