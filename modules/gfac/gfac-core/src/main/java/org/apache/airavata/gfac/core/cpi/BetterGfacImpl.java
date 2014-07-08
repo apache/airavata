@@ -394,7 +394,7 @@ public class BetterGfacImpl implements GFac {
 			legacyAppDescType.setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
 		}else{
 			legacyAppDescType.setScratchWorkingDirectory("/tmp");
-			log.warn("gateway resource profile for gateway id '"+gatewayID+"'.");
+			log.warn("Missing gateway resource profile for gateway id '"+gatewayID+"'.");
 		}
 		
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
