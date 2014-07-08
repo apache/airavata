@@ -30,6 +30,7 @@ import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
@@ -62,7 +63,8 @@ public class TestCreateLaunchExperiment {
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.getAPIVersion());
             getAllComputeResources(airavata);
-            getAVailableComputeResourcesForApp(airavata, "Amber_0cecdf39-1ce2-4d98-bc76-87447e10fd4d");
+            getAppModule(airavata, "amber_c476de64-ca5c-415a-94e9-b77fbe67b806");
+//            getAVailableComputeResourcesForApp(airavata, "Amber_0cecdf39-1ce2-4d98-bc76-87447e10fd4d");
 //            for (int i = 0; i < 10 ; i++){
 //                long time = System.currentTimeMillis();
 //                List<ExperimentSummary> experiments = getExperimentsForApplication(airavata, "ultrascan", "US3Application");
@@ -146,6 +148,25 @@ public class TestCreateLaunchExperiment {
             e.printStackTrace();
         }
     }
+
+    public static void getAppModule (Airavata.Client client, String moduleId){
+        try {
+            ApplicationModule applicationModule = client.getApplicationModule(moduleId);
+            if (applicationModule != null){
+                System.out.println("module name :" + applicationModule.getAppModuleName());
+                System.out.println("module version :" + applicationModule.getAppModuleVersion());
+            }
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static void getAVailableComputeResourcesForApp (Airavata.Client client, String applicationName){
         try {

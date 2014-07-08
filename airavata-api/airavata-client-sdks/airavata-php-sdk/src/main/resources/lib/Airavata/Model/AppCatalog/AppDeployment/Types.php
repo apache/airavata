@@ -125,7 +125,6 @@ class SetEnvPaths {
 class ApplicationModule {
   static $_TSPEC;
 
-  public $isEmpty = false;
   public $appModuleId = "DO_NOT_SET_AT_CLIENTS";
   public $appModuleName = null;
   public $appModuleVersion = null;
@@ -135,31 +134,24 @@ class ApplicationModule {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'isEmpty',
-          'type' => TType::BOOL,
-          ),
-        2 => array(
           'var' => 'appModuleId',
           'type' => TType::STRING,
           ),
-        3 => array(
+        2 => array(
           'var' => 'appModuleName',
           'type' => TType::STRING,
           ),
-        4 => array(
+        3 => array(
           'var' => 'appModuleVersion',
           'type' => TType::STRING,
           ),
-        5 => array(
+        4 => array(
           'var' => 'appModuleDescription',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['isEmpty'])) {
-        $this->isEmpty = $vals['isEmpty'];
-      }
       if (isset($vals['appModuleId'])) {
         $this->appModuleId = $vals['appModuleId'];
       }
@@ -195,34 +187,27 @@ class ApplicationModule {
       switch ($fid)
       {
         case 1:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->isEmpty);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->appModuleId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 3:
+        case 2:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->appModuleName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 4:
+        case 3:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->appModuleVersion);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 4:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->appModuleDescription);
           } else {
@@ -242,28 +227,23 @@ class ApplicationModule {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationModule');
-    if ($this->isEmpty !== null) {
-      $xfer += $output->writeFieldBegin('isEmpty', TType::BOOL, 1);
-      $xfer += $output->writeBool($this->isEmpty);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->appModuleId !== null) {
-      $xfer += $output->writeFieldBegin('appModuleId', TType::STRING, 2);
+      $xfer += $output->writeFieldBegin('appModuleId', TType::STRING, 1);
       $xfer += $output->writeString($this->appModuleId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->appModuleName !== null) {
-      $xfer += $output->writeFieldBegin('appModuleName', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('appModuleName', TType::STRING, 2);
       $xfer += $output->writeString($this->appModuleName);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->appModuleVersion !== null) {
-      $xfer += $output->writeFieldBegin('appModuleVersion', TType::STRING, 4);
+      $xfer += $output->writeFieldBegin('appModuleVersion', TType::STRING, 3);
       $xfer += $output->writeString($this->appModuleVersion);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->appModuleDescription !== null) {
-      $xfer += $output->writeFieldBegin('appModuleDescription', TType::STRING, 5);
+      $xfer += $output->writeFieldBegin('appModuleDescription', TType::STRING, 4);
       $xfer += $output->writeString($this->appModuleDescription);
       $xfer += $output->writeFieldEnd();
     }

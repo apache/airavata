@@ -59,11 +59,10 @@ struct SetEnvPaths {
  *
 */
 struct ApplicationModule {
-    1: required bool isEmpty = 0,
-    2: required string appModuleId = DEFAULT_ID,
-    3: required string appModuleName,
-    4: optional string appModuleVersion,
-    5: optional string appModuleDescription
+    1: required string appModuleId = DEFAULT_ID,
+    2: required string appModuleName,
+    3: optional string appModuleVersion,
+    4: optional string appModuleDescription
 }
 
 /**

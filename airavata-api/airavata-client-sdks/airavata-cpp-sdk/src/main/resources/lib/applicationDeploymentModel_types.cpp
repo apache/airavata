@@ -104,8 +104,8 @@ void swap(SetEnvPaths &a, SetEnvPaths &b) {
   swap(a.value, b.value);
 }
 
-const char* ApplicationModule::ascii_fingerprint = "EAD3BFBDF5BD64DF63F11230D11B43DE";
-const uint8_t ApplicationModule::binary_fingerprint[16] = {0xEA,0xD3,0xBF,0xBD,0xF5,0xBD,0x64,0xDF,0x63,0xF1,0x12,0x30,0xD1,0x1B,0x43,0xDE};
+const char* ApplicationModule::ascii_fingerprint = "FED0FBEAA0C90D1589E8B650561B7675";
+const uint8_t ApplicationModule::binary_fingerprint[16] = {0xFE,0xD0,0xFB,0xEA,0xA0,0xC9,0x0D,0x15,0x89,0xE8,0xB6,0x50,0x56,0x1B,0x76,0x75};
 
 uint32_t ApplicationModule::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -118,7 +118,6 @@ uint32_t ApplicationModule::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_isEmpty = false;
   bool isset_appModuleId = false;
   bool isset_appModuleName = false;
 
@@ -131,14 +130,6 @@ uint32_t ApplicationModule::read(::apache::thrift::protocol::TProtocol* iprot) {
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->isEmpty);
-          isset_isEmpty = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->appModuleId);
           isset_appModuleId = true;
@@ -146,7 +137,7 @@ uint32_t ApplicationModule::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->appModuleName);
           isset_appModuleName = true;
@@ -154,7 +145,7 @@ uint32_t ApplicationModule::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->appModuleVersion);
           this->__isset.appModuleVersion = true;
@@ -162,7 +153,7 @@ uint32_t ApplicationModule::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->appModuleDescription);
           this->__isset.appModuleDescription = true;
@@ -179,8 +170,6 @@ uint32_t ApplicationModule::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_isEmpty)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_appModuleId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_appModuleName)
@@ -192,25 +181,21 @@ uint32_t ApplicationModule::write(::apache::thrift::protocol::TProtocol* oprot) 
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ApplicationModule");
 
-  xfer += oprot->writeFieldBegin("isEmpty", ::apache::thrift::protocol::T_BOOL, 1);
-  xfer += oprot->writeBool(this->isEmpty);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("appModuleId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("appModuleId", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->appModuleId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("appModuleName", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeFieldBegin("appModuleName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->appModuleName);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.appModuleVersion) {
-    xfer += oprot->writeFieldBegin("appModuleVersion", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeFieldBegin("appModuleVersion", ::apache::thrift::protocol::T_STRING, 3);
     xfer += oprot->writeString(this->appModuleVersion);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.appModuleDescription) {
-    xfer += oprot->writeFieldBegin("appModuleDescription", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeFieldBegin("appModuleDescription", ::apache::thrift::protocol::T_STRING, 4);
     xfer += oprot->writeString(this->appModuleDescription);
     xfer += oprot->writeFieldEnd();
   }
@@ -221,7 +206,6 @@ uint32_t ApplicationModule::write(::apache::thrift::protocol::TProtocol* oprot) 
 
 void swap(ApplicationModule &a, ApplicationModule &b) {
   using ::std::swap;
-  swap(a.isEmpty, b.isEmpty);
   swap(a.appModuleId, b.appModuleId);
   swap(a.appModuleName, b.appModuleName);
   swap(a.appModuleVersion, b.appModuleVersion);
