@@ -67,14 +67,14 @@ enum DataType{
  *
 */
 struct InputDataObjectType {
-    1: required bool isEmpty = 0,
-    2: required string name,
-    3: optional string value,
-    4: optional DataType type,
-    5: optional string applicationArgument,
-    6: optional bool standardInput = 0,
-    7: optional string userFriendlyDescription,
-    8: optional string metaData
+//    1: required bool isEmpty = 0,
+    1: required string name,
+    2: optional string value,
+    3: optional DataType type,
+    4: optional string applicationArgument,
+    5: optional bool standardInput = 0,
+    6: optional string userFriendlyDescription,
+    7: optional string metaData
 }
 
 /**
@@ -124,11 +124,11 @@ struct OutputDataObjectType {
  *
 */
 struct ApplicationInterfaceDescription {
-    1: required bool isEmpty = 0,
-    2: required string applicationInterfaceId = DEFAULT_ID,
-    3: required string applicationName,
-    4: optional string applicationDesription,
-    5: optional list<string> applicationModules,
-    6: optional list<InputDataObjectType> applicationInputs,
-    7: optional list<OutputDataObjectType> applicationOutputs
+//    1: required bool isEmpty = 0,
+    1: required string applicationInterfaceId = DEFAULT_ID,
+    2: required string applicationName,
+    3: optional string applicationDesription,
+    4: optional list<string> applicationModules,
+    5: optional list<InputDataObjectType> applicationInputs,
+    6: optional list<OutputDataObjectType> applicationOutputs
 }

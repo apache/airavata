@@ -1426,7 +1426,6 @@ class DataMovementInterface {
 class ComputeResourceDescription {
   static $_TSPEC;
 
-  public $isEmpty = false;
   public $computeResourceId = "DO_NOT_SET_AT_CLIENTS";
   public $hostName = null;
   public $hostAliases = null;
@@ -1441,18 +1440,14 @@ class ComputeResourceDescription {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'isEmpty',
-          'type' => TType::BOOL,
-          ),
-        2 => array(
           'var' => 'computeResourceId',
           'type' => TType::STRING,
           ),
-        3 => array(
+        2 => array(
           'var' => 'hostName',
           'type' => TType::STRING,
           ),
-        4 => array(
+        3 => array(
           'var' => 'hostAliases',
           'type' => TType::SET,
           'etype' => TType::STRING,
@@ -1460,7 +1455,7 @@ class ComputeResourceDescription {
             'type' => TType::STRING,
             ),
           ),
-        5 => array(
+        4 => array(
           'var' => 'ipAddresses',
           'type' => TType::SET,
           'etype' => TType::STRING,
@@ -1468,11 +1463,11 @@ class ComputeResourceDescription {
             'type' => TType::STRING,
             ),
           ),
-        6 => array(
+        5 => array(
           'var' => 'resourceDescription',
           'type' => TType::STRING,
           ),
-        7 => array(
+        6 => array(
           'var' => 'batchQueues',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -1481,7 +1476,7 @@ class ComputeResourceDescription {
             'class' => '\Airavata\Model\AppCatalog\ComputeResource\BatchQueue',
             ),
           ),
-        8 => array(
+        7 => array(
           'var' => 'fileSystems',
           'type' => TType::MAP,
           'ktype' => TType::I32,
@@ -1493,7 +1488,7 @@ class ComputeResourceDescription {
             'type' => TType::STRING,
             ),
           ),
-        9 => array(
+        8 => array(
           'var' => 'jobSubmissionInterfaces',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -1502,7 +1497,7 @@ class ComputeResourceDescription {
             'class' => '\Airavata\Model\AppCatalog\ComputeResource\JobSubmissionInterface',
             ),
           ),
-        10 => array(
+        9 => array(
           'var' => 'dataMovementInterfaces',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -1514,9 +1509,6 @@ class ComputeResourceDescription {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['isEmpty'])) {
-        $this->isEmpty = $vals['isEmpty'];
-      }
       if (isset($vals['computeResourceId'])) {
         $this->computeResourceId = $vals['computeResourceId'];
       }
@@ -1567,27 +1559,20 @@ class ComputeResourceDescription {
       switch ($fid)
       {
         case 1:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->isEmpty);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->computeResourceId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 3:
+        case 2:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->hostName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 4:
+        case 3:
           if ($ftype == TType::SET) {
             $this->hostAliases = array();
             $_size23 = 0;
@@ -1608,7 +1593,7 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 4:
           if ($ftype == TType::SET) {
             $this->ipAddresses = array();
             $_size29 = 0;
@@ -1629,14 +1614,14 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 5:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->resourceDescription);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 7:
+        case 6:
           if ($ftype == TType::LST) {
             $this->batchQueues = array();
             $_size35 = 0;
@@ -1654,7 +1639,7 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
+        case 7:
           if ($ftype == TType::MAP) {
             $this->fileSystems = array();
             $_size41 = 0;
@@ -1674,7 +1659,7 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 9:
+        case 8:
           if ($ftype == TType::LST) {
             $this->jobSubmissionInterfaces = array();
             $_size48 = 0;
@@ -1692,7 +1677,7 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 10:
+        case 9:
           if ($ftype == TType::LST) {
             $this->dataMovementInterfaces = array();
             $_size54 = 0;
@@ -1723,18 +1708,13 @@ class ComputeResourceDescription {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ComputeResourceDescription');
-    if ($this->isEmpty !== null) {
-      $xfer += $output->writeFieldBegin('isEmpty', TType::BOOL, 1);
-      $xfer += $output->writeBool($this->isEmpty);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->computeResourceId !== null) {
-      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 2);
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 1);
       $xfer += $output->writeString($this->computeResourceId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->hostName !== null) {
-      $xfer += $output->writeFieldBegin('hostName', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('hostName', TType::STRING, 2);
       $xfer += $output->writeString($this->hostName);
       $xfer += $output->writeFieldEnd();
     }
@@ -1742,7 +1722,7 @@ class ComputeResourceDescription {
       if (!is_array($this->hostAliases)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('hostAliases', TType::SET, 4);
+      $xfer += $output->writeFieldBegin('hostAliases', TType::SET, 3);
       {
         $output->writeSetBegin(TType::STRING, count($this->hostAliases));
         {
@@ -1763,7 +1743,7 @@ class ComputeResourceDescription {
       if (!is_array($this->ipAddresses)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('ipAddresses', TType::SET, 5);
+      $xfer += $output->writeFieldBegin('ipAddresses', TType::SET, 4);
       {
         $output->writeSetBegin(TType::STRING, count($this->ipAddresses));
         {
@@ -1781,7 +1761,7 @@ class ComputeResourceDescription {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->resourceDescription !== null) {
-      $xfer += $output->writeFieldBegin('resourceDescription', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('resourceDescription', TType::STRING, 5);
       $xfer += $output->writeString($this->resourceDescription);
       $xfer += $output->writeFieldEnd();
     }
@@ -1789,7 +1769,7 @@ class ComputeResourceDescription {
       if (!is_array($this->batchQueues)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('batchQueues', TType::LST, 7);
+      $xfer += $output->writeFieldBegin('batchQueues', TType::LST, 6);
       {
         $output->writeListBegin(TType::STRUCT, count($this->batchQueues));
         {
@@ -1806,7 +1786,7 @@ class ComputeResourceDescription {
       if (!is_array($this->fileSystems)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('fileSystems', TType::MAP, 8);
+      $xfer += $output->writeFieldBegin('fileSystems', TType::MAP, 7);
       {
         $output->writeMapBegin(TType::I32, TType::STRING, count($this->fileSystems));
         {
@@ -1824,7 +1804,7 @@ class ComputeResourceDescription {
       if (!is_array($this->jobSubmissionInterfaces)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('jobSubmissionInterfaces', TType::LST, 9);
+      $xfer += $output->writeFieldBegin('jobSubmissionInterfaces', TType::LST, 8);
       {
         $output->writeListBegin(TType::STRUCT, count($this->jobSubmissionInterfaces));
         {
@@ -1841,7 +1821,7 @@ class ComputeResourceDescription {
       if (!is_array($this->dataMovementInterfaces)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('dataMovementInterfaces', TType::LST, 10);
+      $xfer += $output->writeFieldBegin('dataMovementInterfaces', TType::LST, 9);
       {
         $output->writeListBegin(TType::STRUCT, count($this->dataMovementInterfaces));
         {

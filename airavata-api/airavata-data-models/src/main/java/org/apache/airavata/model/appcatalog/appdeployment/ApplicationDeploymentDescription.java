@@ -77,17 +77,16 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class ApplicationDeploymentDescription implements org.apache.thrift.TBase<ApplicationDeploymentDescription, ApplicationDeploymentDescription._Fields>, java.io.Serializable, Cloneable, Comparable<ApplicationDeploymentDescription> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ApplicationDeploymentDescription");
 
-  private static final org.apache.thrift.protocol.TField IS_EMPTY_FIELD_DESC = new org.apache.thrift.protocol.TField("isEmpty", org.apache.thrift.protocol.TType.BOOL, (short)1);
-  private static final org.apache.thrift.protocol.TField APP_DEPLOYMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appDeploymentId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField APP_MODULE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField COMPUTE_HOST_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeHostId", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField EXECUTABLE_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("executablePath", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField PARALLELISM_FIELD_DESC = new org.apache.thrift.protocol.TField("parallelism", org.apache.thrift.protocol.TType.I32, (short)6);
-  private static final org.apache.thrift.protocol.TField APP_DEPLOYMENT_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("appDeploymentDescription", org.apache.thrift.protocol.TType.STRING, (short)7);
-  private static final org.apache.thrift.protocol.TField MODULE_LOAD_CMDS_FIELD_DESC = new org.apache.thrift.protocol.TField("moduleLoadCmds", org.apache.thrift.protocol.TType.LIST, (short)8);
-  private static final org.apache.thrift.protocol.TField LIB_PREPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libPrependPaths", org.apache.thrift.protocol.TType.LIST, (short)9);
-  private static final org.apache.thrift.protocol.TField LIB_APPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libAppendPaths", org.apache.thrift.protocol.TType.LIST, (short)10);
-  private static final org.apache.thrift.protocol.TField SET_ENVIRONMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("setEnvironment", org.apache.thrift.protocol.TType.LIST, (short)11);
+  private static final org.apache.thrift.protocol.TField APP_DEPLOYMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appDeploymentId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField APP_MODULE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleId", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField COMPUTE_HOST_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeHostId", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField EXECUTABLE_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("executablePath", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField PARALLELISM_FIELD_DESC = new org.apache.thrift.protocol.TField("parallelism", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField APP_DEPLOYMENT_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("appDeploymentDescription", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField MODULE_LOAD_CMDS_FIELD_DESC = new org.apache.thrift.protocol.TField("moduleLoadCmds", org.apache.thrift.protocol.TType.LIST, (short)7);
+  private static final org.apache.thrift.protocol.TField LIB_PREPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libPrependPaths", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField LIB_APPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libAppendPaths", org.apache.thrift.protocol.TType.LIST, (short)9);
+  private static final org.apache.thrift.protocol.TField SET_ENVIRONMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("setEnvironment", org.apache.thrift.protocol.TType.LIST, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -95,7 +94,6 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ApplicationDeploymentDescriptionTupleSchemeFactory());
   }
 
-  private boolean isEmpty; // required
   private String appDeploymentId; // required
   private String appModuleId; // required
   private String computeHostId; // required
@@ -109,21 +107,20 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    IS_EMPTY((short)1, "isEmpty"),
-    APP_DEPLOYMENT_ID((short)2, "appDeploymentId"),
-    APP_MODULE_ID((short)3, "appModuleId"),
-    COMPUTE_HOST_ID((short)4, "computeHostId"),
-    EXECUTABLE_PATH((short)5, "executablePath"),
+    APP_DEPLOYMENT_ID((short)1, "appDeploymentId"),
+    APP_MODULE_ID((short)2, "appModuleId"),
+    COMPUTE_HOST_ID((short)3, "computeHostId"),
+    EXECUTABLE_PATH((short)4, "executablePath"),
     /**
      * 
      * @see ApplicationParallelismType
      */
-    PARALLELISM((short)6, "parallelism"),
-    APP_DEPLOYMENT_DESCRIPTION((short)7, "appDeploymentDescription"),
-    MODULE_LOAD_CMDS((short)8, "moduleLoadCmds"),
-    LIB_PREPEND_PATHS((short)9, "libPrependPaths"),
-    LIB_APPEND_PATHS((short)10, "libAppendPaths"),
-    SET_ENVIRONMENT((short)11, "setEnvironment");
+    PARALLELISM((short)5, "parallelism"),
+    APP_DEPLOYMENT_DESCRIPTION((short)6, "appDeploymentDescription"),
+    MODULE_LOAD_CMDS((short)7, "moduleLoadCmds"),
+    LIB_PREPEND_PATHS((short)8, "libPrependPaths"),
+    LIB_APPEND_PATHS((short)9, "libAppendPaths"),
+    SET_ENVIRONMENT((short)10, "setEnvironment");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -138,27 +135,25 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // IS_EMPTY
-          return IS_EMPTY;
-        case 2: // APP_DEPLOYMENT_ID
+        case 1: // APP_DEPLOYMENT_ID
           return APP_DEPLOYMENT_ID;
-        case 3: // APP_MODULE_ID
+        case 2: // APP_MODULE_ID
           return APP_MODULE_ID;
-        case 4: // COMPUTE_HOST_ID
+        case 3: // COMPUTE_HOST_ID
           return COMPUTE_HOST_ID;
-        case 5: // EXECUTABLE_PATH
+        case 4: // EXECUTABLE_PATH
           return EXECUTABLE_PATH;
-        case 6: // PARALLELISM
+        case 5: // PARALLELISM
           return PARALLELISM;
-        case 7: // APP_DEPLOYMENT_DESCRIPTION
+        case 6: // APP_DEPLOYMENT_DESCRIPTION
           return APP_DEPLOYMENT_DESCRIPTION;
-        case 8: // MODULE_LOAD_CMDS
+        case 7: // MODULE_LOAD_CMDS
           return MODULE_LOAD_CMDS;
-        case 9: // LIB_PREPEND_PATHS
+        case 8: // LIB_PREPEND_PATHS
           return LIB_PREPEND_PATHS;
-        case 10: // LIB_APPEND_PATHS
+        case 9: // LIB_APPEND_PATHS
           return LIB_APPEND_PATHS;
-        case 11: // SET_ENVIRONMENT
+        case 10: // SET_ENVIRONMENT
           return SET_ENVIRONMENT;
         default:
           return null;
@@ -200,14 +195,10 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private static final int __ISEMPTY_ISSET_ID = 0;
-  private byte __isset_bitfield = 0;
   private _Fields optionals[] = {_Fields.APP_DEPLOYMENT_DESCRIPTION,_Fields.MODULE_LOAD_CMDS,_Fields.LIB_PREPEND_PATHS,_Fields.LIB_APPEND_PATHS,_Fields.SET_ENVIRONMENT};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.IS_EMPTY, new org.apache.thrift.meta_data.FieldMetaData("isEmpty", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.APP_DEPLOYMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("appDeploymentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APP_MODULE_ID, new org.apache.thrift.meta_data.FieldMetaData("appModuleId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -237,8 +228,6 @@ import org.slf4j.LoggerFactory;
   }
 
   public ApplicationDeploymentDescription() {
-    this.isEmpty = false;
-
     this.appDeploymentId = "DO_NOT_SET_AT_CLIENTS";
 
     this.parallelism = org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType.SERIAL;
@@ -246,7 +235,6 @@ import org.slf4j.LoggerFactory;
   }
 
   public ApplicationDeploymentDescription(
-    boolean isEmpty,
     String appDeploymentId,
     String appModuleId,
     String computeHostId,
@@ -254,8 +242,6 @@ import org.slf4j.LoggerFactory;
     ApplicationParallelismType parallelism)
   {
     this();
-    this.isEmpty = isEmpty;
-    setIsEmptyIsSet(true);
     this.appDeploymentId = appDeploymentId;
     this.appModuleId = appModuleId;
     this.computeHostId = computeHostId;
@@ -267,8 +253,6 @@ import org.slf4j.LoggerFactory;
    * Performs a deep copy on <i>other</i>.
    */
   public ApplicationDeploymentDescription(ApplicationDeploymentDescription other) {
-    __isset_bitfield = other.__isset_bitfield;
-    this.isEmpty = other.isEmpty;
     if (other.isSetAppDeploymentId()) {
       this.appDeploymentId = other.appDeploymentId;
     }
@@ -320,8 +304,6 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.isEmpty = false;
-
     this.appDeploymentId = "DO_NOT_SET_AT_CLIENTS";
 
     this.appModuleId = null;
@@ -334,28 +316,6 @@ import org.slf4j.LoggerFactory;
     this.libPrependPaths = null;
     this.libAppendPaths = null;
     this.setEnvironment = null;
-  }
-
-  public boolean isIsEmpty() {
-    return this.isEmpty;
-  }
-
-  public void setIsEmpty(boolean isEmpty) {
-    this.isEmpty = isEmpty;
-    setIsEmptyIsSet(true);
-  }
-
-  public void unsetIsEmpty() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISEMPTY_ISSET_ID);
-  }
-
-  /** Returns true if field isEmpty is set (has been assigned a value) and false otherwise */
-  public boolean isSetIsEmpty() {
-    return EncodingUtils.testBit(__isset_bitfield, __ISEMPTY_ISSET_ID);
-  }
-
-  public void setIsEmptyIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISEMPTY_ISSET_ID, value);
   }
 
   public String getAppDeploymentId() {
@@ -658,14 +618,6 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case IS_EMPTY:
-      if (value == null) {
-        unsetIsEmpty();
-      } else {
-        setIsEmpty((Boolean)value);
-      }
-      break;
-
     case APP_DEPLOYMENT_ID:
       if (value == null) {
         unsetAppDeploymentId();
@@ -751,9 +703,6 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case IS_EMPTY:
-      return Boolean.valueOf(isIsEmpty());
-
     case APP_DEPLOYMENT_ID:
       return getAppDeploymentId();
 
@@ -795,8 +744,6 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case IS_EMPTY:
-      return isSetIsEmpty();
     case APP_DEPLOYMENT_ID:
       return isSetAppDeploymentId();
     case APP_MODULE_ID:
@@ -833,15 +780,6 @@ import org.slf4j.LoggerFactory;
   public boolean equals(ApplicationDeploymentDescription that) {
     if (that == null)
       return false;
-
-    boolean this_present_isEmpty = true;
-    boolean that_present_isEmpty = true;
-    if (this_present_isEmpty || that_present_isEmpty) {
-      if (!(this_present_isEmpty && that_present_isEmpty))
-        return false;
-      if (this.isEmpty != that.isEmpty)
-        return false;
-    }
 
     boolean this_present_appDeploymentId = true && this.isSetAppDeploymentId();
     boolean that_present_appDeploymentId = true && that.isSetAppDeploymentId();
@@ -949,16 +887,6 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetIsEmpty()).compareTo(other.isSetIsEmpty());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetIsEmpty()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isEmpty, other.isEmpty);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetAppDeploymentId()).compareTo(other.isSetAppDeploymentId());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1079,10 +1007,6 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("ApplicationDeploymentDescription(");
     boolean first = true;
 
-    sb.append("isEmpty:");
-    sb.append(this.isEmpty);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("appDeploymentId:");
     if (this.appDeploymentId == null) {
       sb.append("null");
@@ -1178,10 +1102,6 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetIsEmpty()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'isEmpty' is unset! Struct:" + toString());
-    }
-
     if (!isSetAppDeploymentId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'appDeploymentId' is unset! Struct:" + toString());
     }
@@ -1215,8 +1135,6 @@ import org.slf4j.LoggerFactory;
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -1241,15 +1159,7 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // IS_EMPTY
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.isEmpty = iprot.readBool();
-              struct.setIsEmptyIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // APP_DEPLOYMENT_ID
+          case 1: // APP_DEPLOYMENT_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.appDeploymentId = iprot.readString();
               struct.setAppDeploymentIdIsSet(true);
@@ -1257,7 +1167,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // APP_MODULE_ID
+          case 2: // APP_MODULE_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.appModuleId = iprot.readString();
               struct.setAppModuleIdIsSet(true);
@@ -1265,7 +1175,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // COMPUTE_HOST_ID
+          case 3: // COMPUTE_HOST_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.computeHostId = iprot.readString();
               struct.setComputeHostIdIsSet(true);
@@ -1273,7 +1183,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // EXECUTABLE_PATH
+          case 4: // EXECUTABLE_PATH
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.executablePath = iprot.readString();
               struct.setExecutablePathIsSet(true);
@@ -1281,7 +1191,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // PARALLELISM
+          case 5: // PARALLELISM
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.parallelism = ApplicationParallelismType.findByValue(iprot.readI32());
               struct.setParallelismIsSet(true);
@@ -1289,7 +1199,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // APP_DEPLOYMENT_DESCRIPTION
+          case 6: // APP_DEPLOYMENT_DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.appDeploymentDescription = iprot.readString();
               struct.setAppDeploymentDescriptionIsSet(true);
@@ -1297,7 +1207,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // MODULE_LOAD_CMDS
+          case 7: // MODULE_LOAD_CMDS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -1315,7 +1225,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // LIB_PREPEND_PATHS
+          case 8: // LIB_PREPEND_PATHS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
@@ -1334,7 +1244,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // LIB_APPEND_PATHS
+          case 9: // LIB_APPEND_PATHS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
@@ -1353,7 +1263,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // SET_ENVIRONMENT
+          case 10: // SET_ENVIRONMENT
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
@@ -1385,9 +1295,6 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(IS_EMPTY_FIELD_DESC);
-      oprot.writeBool(struct.isEmpty);
-      oprot.writeFieldEnd();
       if (struct.appDeploymentId != null) {
         oprot.writeFieldBegin(APP_DEPLOYMENT_ID_FIELD_DESC);
         oprot.writeString(struct.appDeploymentId);
@@ -1493,7 +1400,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ApplicationDeploymentDescription struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeBool(struct.isEmpty);
       oprot.writeString(struct.appDeploymentId);
       oprot.writeString(struct.appModuleId);
       oprot.writeString(struct.computeHostId);
@@ -1560,8 +1466,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ApplicationDeploymentDescription struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.isEmpty = iprot.readBool();
-      struct.setIsEmptyIsSet(true);
       struct.appDeploymentId = iprot.readString();
       struct.setAppDeploymentIdIsSet(true);
       struct.appModuleId = iprot.readString();

@@ -162,17 +162,16 @@ typedef struct _ApplicationDeploymentDescription__isset {
 class ApplicationDeploymentDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "19A9841A9F4627A2C10F4A28E2CF0E17";
-  static const uint8_t binary_fingerprint[16]; // = {0x19,0xA9,0x84,0x1A,0x9F,0x46,0x27,0xA2,0xC1,0x0F,0x4A,0x28,0xE2,0xCF,0x0E,0x17};
+  static const char* ascii_fingerprint; // = "179A145BD54BBE10649DEF31C71143C9";
+  static const uint8_t binary_fingerprint[16]; // = {0x17,0x9A,0x14,0x5B,0xD5,0x4B,0xBE,0x10,0x64,0x9D,0xEF,0x31,0xC7,0x11,0x43,0xC9};
 
-  ApplicationDeploymentDescription() : isEmpty(false), appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism((ApplicationParallelismType::type)0), appDeploymentDescription() {
+  ApplicationDeploymentDescription() : appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism((ApplicationParallelismType::type)0), appDeploymentDescription() {
     parallelism = (ApplicationParallelismType::type)0;
 
   }
 
   virtual ~ApplicationDeploymentDescription() throw() {}
 
-  bool isEmpty;
   std::string appDeploymentId;
   std::string appModuleId;
   std::string computeHostId;
@@ -185,10 +184,6 @@ class ApplicationDeploymentDescription {
   std::vector<SetEnvPaths>  setEnvironment;
 
   _ApplicationDeploymentDescription__isset __isset;
-
-  void __set_isEmpty(const bool val) {
-    isEmpty = val;
-  }
 
   void __set_appDeploymentId(const std::string& val) {
     appDeploymentId = val;
@@ -237,8 +232,6 @@ class ApplicationDeploymentDescription {
 
   bool operator == (const ApplicationDeploymentDescription & rhs) const
   {
-    if (!(isEmpty == rhs.isEmpty))
-      return false;
     if (!(appDeploymentId == rhs.appDeploymentId))
       return false;
     if (!(appModuleId == rhs.appModuleId))

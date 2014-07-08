@@ -1188,7 +1188,7 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
-  bool registerGatewayResourceProfile(
+  string registerGatewayResourceProfile(
                     1: required gatewayResourceProfileModel.GatewayResourceProfile gatewayResourceProfile)
     	throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.AiravataClientException ace,

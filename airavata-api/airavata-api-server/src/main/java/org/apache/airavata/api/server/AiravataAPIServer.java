@@ -67,14 +67,14 @@ public class AiravataAPIServer implements IServer{
 			TServerTransport serverTransport;
 			
 			if(serverHost == null){
-				serverTransport = new TServerSocket(serverPort, 10000);
+				serverTransport = new TServerSocket(serverPort);
 			}else{
 				InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
-				serverTransport = new TServerSocket(inetSocketAddress, 10000);
+				serverTransport = new TServerSocket(inetSocketAddress);
 			}
 			
             TThreadPoolServer.Args options = new TThreadPoolServer.Args(serverTransport);
-            options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "30"));
+            options.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(Constants.API_SERVER_MIN_THREADS, "50"));
 			server = new TThreadPoolServer(options.processor(airavataAPIServer));
             new Thread() {
 				public void run() {
