@@ -425,7 +425,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			String applicationId = taskData.getApplicationId();
 			if (applicationId == null) {
 				throw new OrchestratorException(
-						"Error executing the job because there is not Application Name in this Experiment:  "
+						"Error executing the job because there is no Application Name in this Experiment:  "
 								+ applicationId);
 			}
 			ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(taskData, applicationId);

@@ -20,28 +20,28 @@
 */
 package org.apache.airavata.orchestrator.core.impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Random;
+
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
-import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 import org.apache.airavata.orchestrator.core.gfac.GFacClientFactory;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.*;
-import org.apache.zookeeper.data.Stat;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Random;
 
 /*
  * this class is responsible for submitting a job to gfac in service mode,
@@ -85,7 +85,7 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
             String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
             String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
             List<String> children = zk.getChildren(gfacServer, this);
-
+            System.out.println(children);
             String pickedChild = children.get(new Random().nextInt(Integer.MAX_VALUE) % children.size());
             // here we are not using an index because the getChildren does not return the same order everytime
 
