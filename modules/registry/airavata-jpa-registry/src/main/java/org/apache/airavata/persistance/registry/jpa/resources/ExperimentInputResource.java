@@ -117,7 +117,9 @@ public class ExperimentInputResource extends AbstractResource {
             Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
             exInput.setExperiment(experiment);
             exInput.setExperiment_id(experiment.getExpId());
-            exInput.setValue(value);
+            if (value != null){
+                exInput.setValue(value.toCharArray());
+            }
             exInput.setInputType(inputType);
             exInput.setMetadata(metadata);
 
@@ -125,7 +127,9 @@ public class ExperimentInputResource extends AbstractResource {
                 existingInput.setEx_key(experimentKey);
                 existingInput.setExperiment(experiment);
                 existingInput.setExperiment_id(experiment.getExpId());
-                existingInput.setValue(value);
+                if (value != null){
+                    existingInput.setValue(value.toCharArray());
+                }
                 existingInput.setInputType(inputType);
                 existingInput.setMetadata(metadata);
                 exInput = em.merge(existingInput);

@@ -597,7 +597,7 @@ public class Utils {
             eInputResource.setInputType(o.getInputType());
             eInputResource.setMetadata(o.getMetadata());
             eInputResource.setExperimentKey(o.getEx_key());
-            eInputResource.setValue(o.getValue());
+            eInputResource.setValue(new String(o.getValue()));
         }
         return eInputResource;
     }
@@ -608,7 +608,7 @@ public class Utils {
             ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
             eOutputResource.setExperimentResource(experimentResource);
             eOutputResource.setExperimentKey(o.getEx_key());
-            eOutputResource.setValue(o.getValue());
+            eOutputResource.setValue(new String(o.getValue()));
             eOutputResource.setOutputType(o.getOutputKeyType());
             eOutputResource.setMetadata(o.getMetadata());
         }
