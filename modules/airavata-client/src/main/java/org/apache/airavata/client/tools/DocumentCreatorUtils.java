@@ -73,7 +73,6 @@ public class DocumentCreatorUtils {
 	public static ApplicationModule createApplicationModule(String appModuleName,
 			String appModuleVersion, String appModuleDescription) {
 		ApplicationModule module = new ApplicationModule();
-		module.setIsEmpty(false);
 		module.setAppModuleDescription(appModuleDescription);
 		module.setAppModuleName(appModuleName);
 		module.setAppModuleVersion(appModuleVersion);
