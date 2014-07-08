@@ -81,25 +81,20 @@ typedef struct _ApplicationModule__isset {
 class ApplicationModule {
  public:
 
-  static const char* ascii_fingerprint; // = "EAD3BFBDF5BD64DF63F11230D11B43DE";
-  static const uint8_t binary_fingerprint[16]; // = {0xEA,0xD3,0xBF,0xBD,0xF5,0xBD,0x64,0xDF,0x63,0xF1,0x12,0x30,0xD1,0x1B,0x43,0xDE};
+  static const char* ascii_fingerprint; // = "FED0FBEAA0C90D1589E8B650561B7675";
+  static const uint8_t binary_fingerprint[16]; // = {0xFE,0xD0,0xFB,0xEA,0xA0,0xC9,0x0D,0x15,0x89,0xE8,0xB6,0x50,0x56,0x1B,0x76,0x75};
 
-  ApplicationModule() : isEmpty(false), appModuleId("DO_NOT_SET_AT_CLIENTS"), appModuleName(), appModuleVersion(), appModuleDescription() {
+  ApplicationModule() : appModuleId("DO_NOT_SET_AT_CLIENTS"), appModuleName(), appModuleVersion(), appModuleDescription() {
   }
 
   virtual ~ApplicationModule() throw() {}
 
-  bool isEmpty;
   std::string appModuleId;
   std::string appModuleName;
   std::string appModuleVersion;
   std::string appModuleDescription;
 
   _ApplicationModule__isset __isset;
-
-  void __set_isEmpty(const bool val) {
-    isEmpty = val;
-  }
 
   void __set_appModuleId(const std::string& val) {
     appModuleId = val;
@@ -121,8 +116,6 @@ class ApplicationModule {
 
   bool operator == (const ApplicationModule & rhs) const
   {
-    if (!(isEmpty == rhs.isEmpty))
-      return false;
     if (!(appModuleId == rhs.appModuleId))
       return false;
     if (!(appModuleName == rhs.appModuleName))
