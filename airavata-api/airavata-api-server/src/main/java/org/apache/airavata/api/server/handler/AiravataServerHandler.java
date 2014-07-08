@@ -1559,17 +1559,21 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             appCatalog = AppCatalogFactory.getAppCatalog();
             ApplicationDeployment applicationDeployment = appCatalog.getApplicationDeployment();
             List<String> computeResourceIdList = new ArrayList<String>();
-            List<String> applicationModules = appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId).getApplicationModules();
+            ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
+            List<String> applicationModules = applicationInterface.getApplicationModules();
         	HashMap<String, String> filters = new HashMap<String,String>();
-            for (String moduleId : applicationModules) {
-            	filters.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, moduleId);
-				List<ApplicationDeploymentDescription> applicationDeployements = applicationDeployment.getApplicationDeployements(filters);
-            	for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
-					if (!computeResourceIdList.contains(deploymentDescription.getComputeHostId())){
-						computeResourceIdList.add(deploymentDescription.getComputeHostId());
-					}
-				}
-			}
+            if (applicationModules != null && !applicationModules.isEmpty()){
+                for (String moduleId : applicationModules) {
+                    filters.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, moduleId);
+                    List<ApplicationDeploymentDescription> applicationDeployements = applicationDeployment.getApplicationDeployements(filters);
+                    for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
+                        if (!computeResourceIdList.contains(deploymentDescription.getComputeHostId())){
+                            computeResourceIdList.add(deploymentDescription.getComputeHostId());
+                        }
+                    }
+                }
+            }
+
             return computeResourceIdList;
         } catch (AppCatalogException e) {
             logger.error("Error while saving compute resource...", e);
