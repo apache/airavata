@@ -117,14 +117,18 @@ public class ExperimentOutputResource extends AbstractResource {
             Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
             exOutput.setExperiment(experiment);
             exOutput.setExperiment_id(experiment.getExpId());
-            exOutput.setValue(value);
+            if (value != null){
+                exOutput.setValue(value.toCharArray());
+            }
             exOutput.setOutputKeyType(outputType);
             exOutput.setMetadata(metadata);
 
             if (existingOutput != null) {
                 existingOutput.setEx_key(experimentKey);
                 existingOutput.setExperiment(experiment);
-                existingOutput.setValue(value);
+                if (value != null){
+                    existingOutput.setValue(value.toCharArray());
+                }
                 existingOutput.setExperiment_id(experiment.getExpId());
                 existingOutput.setOutputKeyType(outputType);
                 existingOutput.setMetadata(metadata);
