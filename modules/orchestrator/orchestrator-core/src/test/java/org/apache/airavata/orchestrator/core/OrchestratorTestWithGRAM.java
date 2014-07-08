@@ -36,60 +36,60 @@ import org.testng.annotations.Test;
 import java.util.*;
 
 public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
-    private static final Logger log = LoggerFactory.getLogger(OrchestratorTestWithGRAM.class);
-
-    private Orchestrator orchestrator;
-
-    private String experimentID;
-
-    @BeforeTest
-    public void setUp() throws Exception {
-        AiravataUtils.setExecutionAsServer();
-        super.setUp();
-        orchestrator = new SimpleOrchestratorImpl();
-        createJobRequestWithDocuments();
-    }
-
-    private void createJobRequestWithDocuments() throws Exception{
-        //Using new airavata-api methods to store experiment metadata
-//        BasicMetadata basicMetadata = new BasicMetadata();
-//        basicMetadata.setExperimentName("test-trestles");
-//        basicMetadata.setUserName("admin");
-//        basicMetadata.setUserNameIsSet(true);
-//        basicMetadata.setProjectID("default");
+//    private static final Logger log = LoggerFactory.getLogger(OrchestratorTestWithGRAM.class);
 //
-//        AdvancedInputDataHandling advancedInputDataHandling = new AdvancedInputDataHandling();
-//        AdvancedOutputDataHandling advancedOutputDataHandling = new AdvancedOutputDataHandling();
-//        ComputationalResourceScheduling computationalResourceScheduling = new ComputationalResourceScheduling();
-//        QualityOfServiceParams qualityOfServiceParams = new QualityOfServiceParams();
-//        ConfigurationData configurationData = new ConfigurationData();
+//    private Orchestrator orchestrator;
 //
-//        HashMap<String, String> exInputs = new HashMap<String, String>();
-//        exInputs.put("echo_input", "echo_output=hello");
+//    private String experimentID;
 //
-//        configurationData.setExperimentInputs(exInputs);
-//        configurationData.setAdvanceInputDataHandling(advancedInputDataHandling);
-//        configurationData.setAdvanceOutputDataHandling(advancedOutputDataHandling);
-//        configurationData.setComputationalResourceScheduling(computationalResourceScheduling);
-//        configurationData.setQosParams(qualityOfServiceParams);
-//        configurationData.setApplicationId("SimpleEcho1");
+//    @BeforeTest
+//    public void setUp() throws Exception {
+//        AiravataUtils.setExecutionAsServer();
+//        super.setUp();
+//        orchestrator = new SimpleOrchestratorImpl();
+//        createJobRequestWithDocuments();
+//    }
 //
-//        Registry registry = new RegistryImpl();
-//        experimentID = (String) registry.add(ParentDataType.EXPERIMENT, basicMetadata);
-//        registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, configurationData, experimentID);
-    }
-
-    @Test
-    public void noDescriptorTest() throws Exception {
-
-//        boolean b = orchestrator.launchExperiment(experimentID);
+//    private void createJobRequestWithDocuments() throws Exception{
+//        //Using new airavata-api methods to store experiment metadata
+////        BasicMetadata basicMetadata = new BasicMetadata();
+////        basicMetadata.setExperimentName("test-trestles");
+////        basicMetadata.setUserName("admin");
+////        basicMetadata.setUserNameIsSet(true);
+////        basicMetadata.setProjectID("default");
+////
+////        AdvancedInputDataHandling advancedInputDataHandling = new AdvancedInputDataHandling();
+////        AdvancedOutputDataHandling advancedOutputDataHandling = new AdvancedOutputDataHandling();
+////        ComputationalResourceScheduling computationalResourceScheduling = new ComputationalResourceScheduling();
+////        QualityOfServiceParams qualityOfServiceParams = new QualityOfServiceParams();
+////        ConfigurationData configurationData = new ConfigurationData();
+////
+////        HashMap<String, String> exInputs = new HashMap<String, String>();
+////        exInputs.put("echo_input", "echo_output=hello");
+////
+////        configurationData.setExperimentInputs(exInputs);
+////        configurationData.setAdvanceInputDataHandling(advancedInputDataHandling);
+////        configurationData.setAdvanceOutputDataHandling(advancedOutputDataHandling);
+////        configurationData.setComputationalResourceScheduling(computationalResourceScheduling);
+////        configurationData.setQosParams(qualityOfServiceParams);
+////        configurationData.setApplicationId("SimpleEcho1");
+////
+////        Registry registry = new RegistryImpl();
+////        experimentID = (String) registry.add(ParentDataType.EXPERIMENT, basicMetadata);
+////        registry.add(ChildDataType.EXPERIMENT_CONFIGURATION_DATA, configurationData, experimentID);
+//    }
 //
-//        if (b) {
-//            Assert.assertTrue(true);
-//        } else {
-//            Assert.assertFalse(true);
-//        }
-    }
+//    @Test
+//    public void noDescriptorTest() throws Exception {
+//
+////        boolean b = orchestrator.launchExperiment(experimentID);
+////
+////        if (b) {
+////            Assert.assertTrue(true);
+////        } else {
+////            Assert.assertFalse(true);
+////        }
+//    }
 
 
 
