@@ -26,6 +26,7 @@ import java.util.HashSet;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
@@ -100,7 +101,7 @@ public class DocumentCreatorNew {
 				null, null);
 		gatewayResourceProfile = new GatewayResourceProfile();
 //		gatewayResourceProfile.setGatewayID("default");
-		gatewayResourceProfile.setGatewayName("default");
+		gatewayResourceProfile.setGatewayName(ClientSettings.getSetting("gateway_id", "php_reference_gateway"));
 		gatewayResourceProfile.addToComputeResourcePreferences(computeResourcePreference);
         String gatewayId = client.registerGatewayResourceProfile(gatewayResourceProfile);
         gatewayResourceProfile.setGatewayID(gatewayId);
