@@ -32,6 +32,7 @@ import org.apache.aiaravata.application.catalog.data.resources.GatewayProfileRes
 import org.apache.aiaravata.application.catalog.data.resources.Resource;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,7 +107,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     }
 
     @Override
-    public org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile getGatewayProfile(String gatewayId) throws AppCatalogException {
+    public GatewayResourceProfile getGatewayProfile(String gatewayId) throws AppCatalogException {
         try {
             GatewayProfileResource resource = new GatewayProfileResource();
             GatewayProfileResource gwresource = (GatewayProfileResource)resource.get(gatewayId);
