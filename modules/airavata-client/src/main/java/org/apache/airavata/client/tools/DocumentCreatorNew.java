@@ -111,12 +111,14 @@ public class DocumentCreatorNew {
     		try {
 				gatewayResourceProfile = client.getGatewayResourceProfile("default");
 			} catch (Exception e) {
+				
+			}
+    		if (gatewayResourceProfile==null) {
 				gatewayResourceProfile = new GatewayResourceProfile();
 				gatewayResourceProfile.setGatewayID("default");
 				gatewayResourceProfile.setGatewayName("default");
 				client.registerGatewayResourceProfile(gatewayResourceProfile);
 			}
-			
     	}
 		return gatewayResourceProfile;
 
