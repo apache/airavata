@@ -135,6 +135,7 @@ public class CreateLaunchExperiment {
                     Map<String, JobStatus> jobStatuses = null;
                     while (true) {
                         try {
+                            Thread.sleep(5000);
                             jobStatuses = client.getJobStatuses(expId);
                             Set<String> strings = jobStatuses.keySet();
                             for (String key : strings) {
@@ -155,7 +156,6 @@ public class CreateLaunchExperiment {
                                 return;
                             }
                             System.out.println(experimentStatus);
-                            Thread.sleep(5000);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

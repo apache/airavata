@@ -38,8 +38,9 @@ public class Experiment_Output  implements Serializable {
     @Id
     @Column(name = "OUTPUT_KEY")
     private String ex_key;
+    @Lob
     @Column(name = "VALUE")
-    private String value;
+    private char[] value;
     @Column(name = "METADATA")
     private String metadata;
     @Column(name = "OUTPUT_KEY_TYPE")
@@ -65,11 +66,11 @@ public class Experiment_Output  implements Serializable {
         this.ex_key = ex_key;
     }
 
-    public String getValue() {
+    public char[] getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(char[] value) {
         this.value = value;
     }
 

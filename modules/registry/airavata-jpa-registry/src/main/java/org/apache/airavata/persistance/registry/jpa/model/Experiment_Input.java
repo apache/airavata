@@ -39,8 +39,9 @@ public class Experiment_Input implements Serializable {
     @Column(name = "INPUT_KEY")
     private String ex_key;
 
+    @Lob
     @Column(name = "VALUE")
-    private String value;
+    private char[] value;
 
     @Column(name = "INPUT_TYPE")
     private String inputType;
@@ -68,11 +69,11 @@ public class Experiment_Input implements Serializable {
         this.ex_key = ex_key;
     }
 
-    public String getValue() {
+    public char[] getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(char[] value) {
         this.value = value;
     }
 
