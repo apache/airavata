@@ -211,22 +211,6 @@ public class CreateLaunchExperiment {
 		}
     }
 
-    private static AiravataAPI getAiravataAPI() throws AiravataAPIInvocationException, ApplicationSettingsException {
-        AiravataAPI airavataAPI;
-        try {
-            String sysUser = ClientSettings.getSetting(DEFAULT_USER);
-            String gateway = ClientSettings.getSetting(DEFAULT_GATEWAY);
-            airavataAPI = AiravataAPIFactory.getAPI(gateway, sysUser);
-        } catch (AiravataAPIInvocationException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new AiravataAPIInvocationException(e);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new ApplicationSettingsException(e.getMessage());
-        }
-        return airavataAPI;
-    }
-
     public static String createExperimentForTrestles(Airavata.Client client) throws TException {
         try {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
@@ -309,7 +293,7 @@ public class CreateLaunchExperiment {
 
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", "WRF", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", pbsWRFAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 32, 2, 1, "normal", 0, 0, 1, "sds128");
@@ -512,7 +496,7 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho4", "Echo", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho4", sgeAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =
