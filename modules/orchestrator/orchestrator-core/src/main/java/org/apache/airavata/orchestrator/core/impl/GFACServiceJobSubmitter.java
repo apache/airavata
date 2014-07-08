@@ -74,7 +74,7 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
     public boolean submit(String experimentID, String taskID, String tokenId) throws OrchestratorException {
         ZooKeeper zk = orchestratorContext.getZk();
         try {
-            if (!zk.getState().isConnected()) {
+            if (zk==null || !zk.getState().isConnected()) {
                 String zkhostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_HOST)
                         + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_PORT);
                 zk = new ZooKeeper(zkhostPort, 6000, this);
