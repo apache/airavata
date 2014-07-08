@@ -1,7 +1,7 @@
 <?php
 namespace Airavata\Client\Samples;
 
-$airavataconfig = parse_ini_file("airavata-client-properties.ini");
+$airavataconfig = parse_ini_file("../conf/airavata-client-properties.ini");
 
 $GLOBALS['THRIFT_ROOT'] = $airavataconfig['THRIFT_LIB_DIR'];
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TTransport.php';
@@ -9,6 +9,7 @@ require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TSocket.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Protocol/TProtocol.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Protocol/TBinaryProtocol.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TException.php';
+require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TTransportException.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TApplicationException.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Exception/TProtocolException.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Base/TBase.php';
@@ -20,8 +21,13 @@ require_once $GLOBALS['THRIFT_ROOT'] . 'StringFunc/Core.php';
 
 $GLOBALS['AIRAVATA_ROOT'] = $airavataconfig['AIRAVATA_PHP_STUBS_DIR'];
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Airavata.php';
-require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Experiment/Types.php';
 require_once $GLOBALS['AIRAVATA_ROOT'] . 'API/Error/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/Workspace/Experiment/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/AppCatalog/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/AppCatalog/ComputeResource/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/AppCatalog/AppDeployment/Types.php';
+require_once $GLOBALS['AIRAVATA_ROOT'] . 'Model/AppCatalog/AppInterface/Types.php';
 
 use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;

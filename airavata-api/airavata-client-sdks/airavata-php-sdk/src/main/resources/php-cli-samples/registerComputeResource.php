@@ -12,29 +12,36 @@ use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
 use Airavata\API\Error\InvalidRequestException;
 
-use Airavata\Model\Workspace\Project;
+use Airavata\Model\AppCatalog\ComputeResource\ComputeResourceDescription;
 
 try
 {
     if ($argc != 3)
     {
-        echo 'php createProject.php <owner> <project_name>';
+        echo 'php registerComputeResource.php <hostName> <resourceDescription>';
     }
     else
     {
-        $project = new Project();
-        $project->owner = $argv[1];
-        $project->name = $argv[2];
+        $hostName = $argv[1];
+        $resourceDescription = $argv[2];
 
-        $projId = $airavataclient->createProject($project);
+        $computeResource = new ComputeResourceDescription();
+        $computeResource->hostName = $hostName;
+        $computeResource->resourceDescription = $resourceDescription;
 
-        if ($projId)
+
+
+
+        $computeResourceId = $airavataclient->registerComputeResource($computeResource);
+
+        if ($computeResourceId)
         {
-            print "$projId";
+            var_dump($computeResource);
+            echo "\n Compute Resource $computeResourceId is registered! \n    ";
         }
         else
         {
-            echo 'Failed to create project.';
+            echo "\n Failed to register compute resource description. \n";
         }
     }
 }
@@ -50,10 +57,10 @@ catch (AiravataSystemException $ase)
 {
     print 'Airavata System Exception: ' . $ase->getMessage()."\n";
 }
-
-
-
-
+catch (\Exception $e)
+{
+    echo 'Exception!<br><br>' . $e->getMessage();
+}
 
 $transport->close();
 

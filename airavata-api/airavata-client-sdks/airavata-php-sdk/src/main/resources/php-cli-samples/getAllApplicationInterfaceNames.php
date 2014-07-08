@@ -11,32 +11,21 @@ global $transport;
 use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
 use Airavata\API\Error\InvalidRequestException;
-
-use Airavata\Model\Workspace\Project;
+use Thrift\Exception\TTransportException;
 
 try
 {
-    if ($argc != 3)
-    {
-        echo 'php createProject.php <owner> <project_name>';
-    }
-    else
-    {
-        $project = new Project();
-        $project->owner = $argv[1];
-        $project->name = $argv[2];
 
-        $projId = $airavataclient->createProject($project);
+        $appInterfaceNameIdList = $airavataclient->getAllApplicationInterfaceNames();
 
-        if ($projId)
+        if ($appInterfaceNameIdList)
         {
-            print "$projId";
+            var_dump($appInterfaceNameIdList);
         }
         else
         {
-            echo 'Failed to create project.';
+            echo "\n Failed to fetch application interface names. \n";
         }
-    }
 }
 catch (InvalidRequestException $ire)
 {
@@ -50,10 +39,10 @@ catch (AiravataSystemException $ase)
 {
     print 'Airavata System Exception: ' . $ase->getMessage()."\n";
 }
-
-
-
-
+catch (\Exception $e)
+{
+    echo 'Exception!<br><br>' . $e->getMessage();
+}
 
 $transport->close();
 

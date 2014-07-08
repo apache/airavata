@@ -13,34 +13,37 @@ use Airavata\API\Error\AiravataSystemException;
 use Airavata\API\Error\InvalidRequestException;
 
 use Airavata\Model\AppCatalog\AppDeployment\ApplicationModule;
+use Airavata\Model\AppCatalog\AppDeployment\ApplicationDeploymentDescription;
 
 try
 {
     if ($argc != 4)
     {
-        echo 'php registerAppModule.php <appModuleName> <appModuleVersion> <appModuleDescription>';
+        echo 'php registerAppDeployment.php <appModuleId> <computeHostId> <executablePath>';
     }
     else
     {
-        $appModuleName = $argv[1];
-        $appModuleVersion = $argv[2];
-        $appModuleDescription = $argv[3];
+        $appModuleId = $argv[1];
+        $computeHostId = $argv[2];
+        $executablePath = $argv[3];
 
-        $appModule = new ApplicationModule();
-        $appModule->appModuleName = $appModuleName;
-        $appModule->appModuleVersion = $appModuleVersion;
-        $appModule->appModuleDescription = $appModuleDescription;
+        $appDeployment = new ApplicationDeploymentDescription();
+        $appDeployment->appModuleId = $appModuleId;
+        $appDeployment->computeHostId = $computeHostId;
+        $appDeployment->executablePath = $executablePath;
 
-        $appModuleId = $airavataclient->registerApplicationModule($appModule);
 
-        if ($appModuleId)
+
+        $appDeploymentId = $airavataclient->registerApplicationDeployment($appDeployment);
+
+        if ($appDeploymentId)
         {
-            var_dump($appModule);
-            echo "Application Module $appModuleId is registered! \n    ";
+            var_dump($appDeployment);
+            echo "Application Deployment $appDeploymentId is registered! \n    ";
         }
         else
         {
-            echo "Failed to register application module. \n";
+            echo "Failed to register application deployment. \n";
         }
     }
 }
@@ -55,6 +58,10 @@ catch (AiravataClientException $ace)
 catch (AiravataSystemException $ase)
 {
     print 'Airavata System Exception: ' . $ase->getMessage()."\n";
+}
+catch (TTransportException $tte)
+{
+    echo 'TTransportException!<br><br>' . $tte->getMessage();
 }
 catch (\Exception $e)
 {

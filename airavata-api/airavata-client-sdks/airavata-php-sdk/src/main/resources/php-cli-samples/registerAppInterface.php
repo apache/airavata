@@ -12,29 +12,34 @@ use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
 use Airavata\API\Error\InvalidRequestException;
 
-use Airavata\Model\Workspace\Project;
+use Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription;
 
 try
 {
-    if ($argc != 3)
+    if ($argc != 4)
     {
-        echo 'php createProject.php <owner> <project_name>';
+        echo 'php registerAppInterface.php <appName> <appDescription> <appModuleId>';
     }
     else
     {
-        $project = new Project();
-        $project->owner = $argv[1];
-        $project->name = $argv[2];
+        $appName = $argv[1];
+        $appDescription = $argv[2];
+        $appModuleId = $argv[3];
 
-        $projId = $airavataclient->createProject($project);
+        $appInterface = new ApplicationInterfaceDescription();
+        $appInterface->applicationName = $appName;
+        $appInterface->applicationDesription = $appDescription;
 
-        if ($projId)
+        $appInterfaceId = $airavataclient->registerApplicationInterface($appInterface);
+
+        if ($appInterfaceId)
         {
-            print "$projId";
+            var_dump($appInterface);
+            echo "\n Application Interface $appInterfaceId is registered! \n    ";
         }
         else
         {
-            echo 'Failed to create project.';
+            echo "\n Failed to register application interface. \n";
         }
     }
 }
@@ -50,10 +55,10 @@ catch (AiravataSystemException $ase)
 {
     print 'Airavata System Exception: ' . $ase->getMessage()."\n";
 }
-
-
-
-
+catch (\Exception $e)
+{
+    echo 'Exception!<br><br>' . $e->getMessage();
+}
 
 $transport->close();
 
