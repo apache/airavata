@@ -337,7 +337,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteDataMovementInterface\n");
   }
 
-  bool registerGatewayResourceProfile(const  ::GatewayResourceProfile& gatewayResourceProfile) {
+  void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile) {
     // Your implementation goes here
     printf("registerGatewayResourceProfile\n");
   }

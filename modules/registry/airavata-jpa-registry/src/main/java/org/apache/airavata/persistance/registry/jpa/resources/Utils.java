@@ -678,7 +678,7 @@ public class Utils {
             inputResource.setTaskDetailResource(taskDetailResource);
             inputResource.setInputKey(o.getInputKey());
             inputResource.setInputType(o.getInputKeyType());
-            inputResource.setValue(o.getValue());
+            inputResource.setValue(new String(o.getValue()));
             inputResource.setMetadata(o.getMetadata());
         }
         return inputResource;
@@ -691,7 +691,7 @@ public class Utils {
             outputResource.setTaskDetailResource(taskDetailResource);
             outputResource.setOutputType(o.getOutputKeyType());
             outputResource.setOutputKey(o.getOutputKey());
-            outputResource.setValue(o.getValue());
+            outputResource.setValue(new String(o.getValue()));
             outputResource.setMetadata(o.getMetadata());
         }
         return outputResource;

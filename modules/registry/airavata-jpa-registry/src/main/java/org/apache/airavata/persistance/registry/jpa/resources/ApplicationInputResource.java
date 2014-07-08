@@ -123,7 +123,10 @@ public class ApplicationInputResource extends AbstractResource {
             applicationInput.setTaskId(taskDetail.getTaskId());
             applicationInput.setInputKey(inputKey);
             applicationInput.setInputKeyType(inputType);
-            applicationInput.setValue(value);
+            if (value != null){
+                applicationInput.setValue(value.toCharArray());
+            }
+
             applicationInput.setMetadata(metadata);
 
             if (existingInput != null) {
@@ -131,7 +134,9 @@ public class ApplicationInputResource extends AbstractResource {
                 existingInput.setTaskId(taskDetail.getTaskId());
                 existingInput.setInputKey(inputKey);
                 existingInput.setInputKeyType(inputType);
-                existingInput.setValue(value);
+                if (value != null){
+                    existingInput.setValue(value.toCharArray());
+                }
                 existingInput.setMetadata(metadata);
                 applicationInput = em.merge(existingInput);
             } else {

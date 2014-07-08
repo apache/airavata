@@ -80,16 +80,15 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class ComputeResourceDescription implements org.apache.thrift.TBase<ComputeResourceDescription, ComputeResourceDescription._Fields>, java.io.Serializable, Cloneable, Comparable<ComputeResourceDescription> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ComputeResourceDescription");
 
-  private static final org.apache.thrift.protocol.TField IS_EMPTY_FIELD_DESC = new org.apache.thrift.protocol.TField("isEmpty", org.apache.thrift.protocol.TType.BOOL, (short)1);
-  private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField HOST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("hostName", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField HOST_ALIASES_FIELD_DESC = new org.apache.thrift.protocol.TField("hostAliases", org.apache.thrift.protocol.TType.SET, (short)4);
-  private static final org.apache.thrift.protocol.TField IP_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("ipAddresses", org.apache.thrift.protocol.TType.SET, (short)5);
-  private static final org.apache.thrift.protocol.TField RESOURCE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceDescription", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField BATCH_QUEUES_FIELD_DESC = new org.apache.thrift.protocol.TField("batchQueues", org.apache.thrift.protocol.TType.LIST, (short)7);
-  private static final org.apache.thrift.protocol.TField FILE_SYSTEMS_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSystems", org.apache.thrift.protocol.TType.MAP, (short)8);
-  private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaces", org.apache.thrift.protocol.TType.LIST, (short)9);
-  private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementInterfaces", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField HOST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("hostName", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField HOST_ALIASES_FIELD_DESC = new org.apache.thrift.protocol.TField("hostAliases", org.apache.thrift.protocol.TType.SET, (short)3);
+  private static final org.apache.thrift.protocol.TField IP_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("ipAddresses", org.apache.thrift.protocol.TType.SET, (short)4);
+  private static final org.apache.thrift.protocol.TField RESOURCE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceDescription", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField BATCH_QUEUES_FIELD_DESC = new org.apache.thrift.protocol.TField("batchQueues", org.apache.thrift.protocol.TType.LIST, (short)6);
+  private static final org.apache.thrift.protocol.TField FILE_SYSTEMS_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSystems", org.apache.thrift.protocol.TType.MAP, (short)7);
+  private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaces", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementInterfaces", org.apache.thrift.protocol.TType.LIST, (short)9);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -97,7 +96,6 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ComputeResourceDescriptionTupleSchemeFactory());
   }
 
-  private boolean isEmpty; // required
   private String computeResourceId; // required
   private String hostName; // required
   private Set<String> hostAliases; // optional
@@ -110,16 +108,15 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    IS_EMPTY((short)1, "isEmpty"),
-    COMPUTE_RESOURCE_ID((short)2, "computeResourceId"),
-    HOST_NAME((short)3, "hostName"),
-    HOST_ALIASES((short)4, "hostAliases"),
-    IP_ADDRESSES((short)5, "ipAddresses"),
-    RESOURCE_DESCRIPTION((short)6, "resourceDescription"),
-    BATCH_QUEUES((short)7, "batchQueues"),
-    FILE_SYSTEMS((short)8, "fileSystems"),
-    JOB_SUBMISSION_INTERFACES((short)9, "jobSubmissionInterfaces"),
-    DATA_MOVEMENT_INTERFACES((short)10, "dataMovementInterfaces");
+    COMPUTE_RESOURCE_ID((short)1, "computeResourceId"),
+    HOST_NAME((short)2, "hostName"),
+    HOST_ALIASES((short)3, "hostAliases"),
+    IP_ADDRESSES((short)4, "ipAddresses"),
+    RESOURCE_DESCRIPTION((short)5, "resourceDescription"),
+    BATCH_QUEUES((short)6, "batchQueues"),
+    FILE_SYSTEMS((short)7, "fileSystems"),
+    JOB_SUBMISSION_INTERFACES((short)8, "jobSubmissionInterfaces"),
+    DATA_MOVEMENT_INTERFACES((short)9, "dataMovementInterfaces");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -134,25 +131,23 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // IS_EMPTY
-          return IS_EMPTY;
-        case 2: // COMPUTE_RESOURCE_ID
+        case 1: // COMPUTE_RESOURCE_ID
           return COMPUTE_RESOURCE_ID;
-        case 3: // HOST_NAME
+        case 2: // HOST_NAME
           return HOST_NAME;
-        case 4: // HOST_ALIASES
+        case 3: // HOST_ALIASES
           return HOST_ALIASES;
-        case 5: // IP_ADDRESSES
+        case 4: // IP_ADDRESSES
           return IP_ADDRESSES;
-        case 6: // RESOURCE_DESCRIPTION
+        case 5: // RESOURCE_DESCRIPTION
           return RESOURCE_DESCRIPTION;
-        case 7: // BATCH_QUEUES
+        case 6: // BATCH_QUEUES
           return BATCH_QUEUES;
-        case 8: // FILE_SYSTEMS
+        case 7: // FILE_SYSTEMS
           return FILE_SYSTEMS;
-        case 9: // JOB_SUBMISSION_INTERFACES
+        case 8: // JOB_SUBMISSION_INTERFACES
           return JOB_SUBMISSION_INTERFACES;
-        case 10: // DATA_MOVEMENT_INTERFACES
+        case 9: // DATA_MOVEMENT_INTERFACES
           return DATA_MOVEMENT_INTERFACES;
         default:
           return null;
@@ -194,14 +189,10 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private static final int __ISEMPTY_ISSET_ID = 0;
-  private byte __isset_bitfield = 0;
   private _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.IS_EMPTY, new org.apache.thrift.meta_data.FieldMetaData("isEmpty", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.COMPUTE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("computeResourceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.HOST_NAME, new org.apache.thrift.meta_data.FieldMetaData("hostName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -232,20 +223,15 @@ import org.slf4j.LoggerFactory;
   }
 
   public ComputeResourceDescription() {
-    this.isEmpty = false;
-
     this.computeResourceId = "DO_NOT_SET_AT_CLIENTS";
 
   }
 
   public ComputeResourceDescription(
-    boolean isEmpty,
     String computeResourceId,
     String hostName)
   {
     this();
-    this.isEmpty = isEmpty;
-    setIsEmptyIsSet(true);
     this.computeResourceId = computeResourceId;
     this.hostName = hostName;
   }
@@ -254,8 +240,6 @@ import org.slf4j.LoggerFactory;
    * Performs a deep copy on <i>other</i>.
    */
   public ComputeResourceDescription(ComputeResourceDescription other) {
-    __isset_bitfield = other.__isset_bitfield;
-    this.isEmpty = other.isEmpty;
     if (other.isSetComputeResourceId()) {
       this.computeResourceId = other.computeResourceId;
     }
@@ -317,8 +301,6 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.isEmpty = false;
-
     this.computeResourceId = "DO_NOT_SET_AT_CLIENTS";
 
     this.hostName = null;
@@ -329,28 +311,6 @@ import org.slf4j.LoggerFactory;
     this.fileSystems = null;
     this.jobSubmissionInterfaces = null;
     this.dataMovementInterfaces = null;
-  }
-
-  public boolean isIsEmpty() {
-    return this.isEmpty;
-  }
-
-  public void setIsEmpty(boolean isEmpty) {
-    this.isEmpty = isEmpty;
-    setIsEmptyIsSet(true);
-  }
-
-  public void unsetIsEmpty() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISEMPTY_ISSET_ID);
-  }
-
-  /** Returns true if field isEmpty is set (has been assigned a value) and false otherwise */
-  public boolean isSetIsEmpty() {
-    return EncodingUtils.testBit(__isset_bitfield, __ISEMPTY_ISSET_ID);
-  }
-
-  public void setIsEmptyIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISEMPTY_ISSET_ID, value);
   }
 
   public String getComputeResourceId() {
@@ -648,14 +608,6 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case IS_EMPTY:
-      if (value == null) {
-        unsetIsEmpty();
-      } else {
-        setIsEmpty((Boolean)value);
-      }
-      break;
-
     case COMPUTE_RESOURCE_ID:
       if (value == null) {
         unsetComputeResourceId();
@@ -733,9 +685,6 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case IS_EMPTY:
-      return Boolean.valueOf(isIsEmpty());
-
     case COMPUTE_RESOURCE_ID:
       return getComputeResourceId();
 
@@ -774,8 +723,6 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case IS_EMPTY:
-      return isSetIsEmpty();
     case COMPUTE_RESOURCE_ID:
       return isSetComputeResourceId();
     case HOST_NAME:
@@ -810,15 +757,6 @@ import org.slf4j.LoggerFactory;
   public boolean equals(ComputeResourceDescription that) {
     if (that == null)
       return false;
-
-    boolean this_present_isEmpty = true;
-    boolean that_present_isEmpty = true;
-    if (this_present_isEmpty || that_present_isEmpty) {
-      if (!(this_present_isEmpty && that_present_isEmpty))
-        return false;
-      if (this.isEmpty != that.isEmpty)
-        return false;
-    }
 
     boolean this_present_computeResourceId = true && this.isSetComputeResourceId();
     boolean that_present_computeResourceId = true && that.isSetComputeResourceId();
@@ -917,16 +855,6 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetIsEmpty()).compareTo(other.isSetIsEmpty());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetIsEmpty()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isEmpty, other.isEmpty);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetComputeResourceId()).compareTo(other.isSetComputeResourceId());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1037,10 +965,6 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("ComputeResourceDescription(");
     boolean first = true;
 
-    sb.append("isEmpty:");
-    sb.append(this.isEmpty);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("computeResourceId:");
     if (this.computeResourceId == null) {
       sb.append("null");
@@ -1132,10 +1056,6 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetIsEmpty()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'isEmpty' is unset! Struct:" + toString());
-    }
-
     if (!isSetComputeResourceId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'computeResourceId' is unset! Struct:" + toString());
     }
@@ -1157,8 +1077,6 @@ import org.slf4j.LoggerFactory;
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -1183,15 +1101,7 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // IS_EMPTY
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.isEmpty = iprot.readBool();
-              struct.setIsEmptyIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // COMPUTE_RESOURCE_ID
+          case 1: // COMPUTE_RESOURCE_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.computeResourceId = iprot.readString();
               struct.setComputeResourceIdIsSet(true);
@@ -1199,7 +1109,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // HOST_NAME
+          case 2: // HOST_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.hostName = iprot.readString();
               struct.setHostNameIsSet(true);
@@ -1207,7 +1117,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // HOST_ALIASES
+          case 3: // HOST_ALIASES
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
                 org.apache.thrift.protocol.TSet _set26 = iprot.readSetBegin();
@@ -1225,7 +1135,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // IP_ADDRESSES
+          case 4: // IP_ADDRESSES
             if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
               {
                 org.apache.thrift.protocol.TSet _set29 = iprot.readSetBegin();
@@ -1243,7 +1153,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // RESOURCE_DESCRIPTION
+          case 5: // RESOURCE_DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.resourceDescription = iprot.readString();
               struct.setResourceDescriptionIsSet(true);
@@ -1251,7 +1161,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // BATCH_QUEUES
+          case 6: // BATCH_QUEUES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list32 = iprot.readListBegin();
@@ -1270,7 +1180,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // FILE_SYSTEMS
+          case 7: // FILE_SYSTEMS
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
                 org.apache.thrift.protocol.TMap _map35 = iprot.readMapBegin();
@@ -1290,7 +1200,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // JOB_SUBMISSION_INTERFACES
+          case 8: // JOB_SUBMISSION_INTERFACES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list39 = iprot.readListBegin();
@@ -1309,7 +1219,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // DATA_MOVEMENT_INTERFACES
+          case 9: // DATA_MOVEMENT_INTERFACES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list42 = iprot.readListBegin();
@@ -1341,9 +1251,6 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(IS_EMPTY_FIELD_DESC);
-      oprot.writeBool(struct.isEmpty);
-      oprot.writeFieldEnd();
       if (struct.computeResourceId != null) {
         oprot.writeFieldBegin(COMPUTE_RESOURCE_ID_FIELD_DESC);
         oprot.writeString(struct.computeResourceId);
@@ -1463,7 +1370,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ComputeResourceDescription struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeBool(struct.isEmpty);
       oprot.writeString(struct.computeResourceId);
       oprot.writeString(struct.hostName);
       BitSet optionals = new BitSet();
@@ -1552,8 +1458,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ComputeResourceDescription struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.isEmpty = iprot.readBool();
-      struct.setIsEmptyIsSet(true);
       struct.computeResourceId = iprot.readString();
       struct.setComputeResourceIdIsSet(true);
       struct.hostName = iprot.readString();

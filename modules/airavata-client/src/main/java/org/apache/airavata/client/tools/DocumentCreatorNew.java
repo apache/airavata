@@ -65,7 +65,7 @@ public class DocumentCreatorNew {
     	//Define compute resource host
     	ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription(
     			"localhost", new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})), new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})));
-    	host.setIsEmpty(false);
+//    	host.setIsEmpty(true);
     	host.setComputeResourceId(client.registerComputeResource(host));
     	
     	LOCALSubmission localSubmission = new LOCALSubmission();
@@ -82,7 +82,7 @@ public class DocumentCreatorNew {
 		
 		//Define application interfaces
     	ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
-    	application.setIsEmpty(false);
+//    	application.setIsEmpty(false);
     	application.setApplicationName("SimpleEcho0");
 		application.addToApplicationModules(module.getAppModuleId());
     	application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input","echo_input","Echo Input Data",null,DataType.STRING));
@@ -98,29 +98,30 @@ public class DocumentCreatorNew {
 				host.getComputeResourceId(), "/tmp", null,
 				false, null,
 				null, null);
-//		gatewayResourceProfile = new GatewayResourceProfile();
+		gatewayResourceProfile = new GatewayResourceProfile();
 //		gatewayResourceProfile.setGatewayID("default");
-//		gatewayResourceProfile.setGatewayName("default");
-//		gatewayResourceProfile.addToComputeResourcePreferences(computeResourcePreference);
-//		client.registerGatewayResourceProfile(gatewayResourceProfile);
-		client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), computeResourcePreference);
+		gatewayResourceProfile.setGatewayName("default");
+		gatewayResourceProfile.addToComputeResourcePreferences(computeResourcePreference);
+        String gatewayId = client.registerGatewayResourceProfile(gatewayResourceProfile);
+        gatewayResourceProfile.setGatewayID(gatewayId);
+        client.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), host.getComputeResourceId(), computeResourcePreference);
     }
 
-    private GatewayResourceProfile getGatewayResourceProfile() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException{
-    	if (gatewayResourceProfile==null){
-    		try {
-				gatewayResourceProfile = client.getGatewayResourceProfile("default");
-			} catch (Exception e) {
-				
-			}
-    		if (gatewayResourceProfile==null) {
-				gatewayResourceProfile = new GatewayResourceProfile();
-				gatewayResourceProfile.setGatewayID("default");
-				gatewayResourceProfile.setGatewayName("default");
-				client.registerGatewayResourceProfile(gatewayResourceProfile);
-			}
-    	}
-		return gatewayResourceProfile;
+    private GatewayResourceProfile getGatewayResourceProfile() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+//    	if (gatewayResourceProfile==null){
+//    		try {
+//				gatewayResourceProfile = client.getGatewayResourceProfile(ga);
+//			} catch (Exception e) {
+//
+//			}
+        if (gatewayResourceProfile == null) {
+            gatewayResourceProfile = new GatewayResourceProfile();
+//				gatewayResourceProfile.setGatewayID("default");
+            gatewayResourceProfile.setGatewayName("default");
+            gatewayResourceProfile.setGatewayID(client.registerGatewayResourceProfile(gatewayResourceProfile));
+        }
+//    	}
+        return gatewayResourceProfile;
 
     }
     public void createSSHHostDocs() throws AppCatalogException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
@@ -132,6 +133,7 @@ public class DocumentCreatorNew {
         
         SSHJobSubmission jobSubmission = new SSHJobSubmission();
         jobSubmission.setSshPort(22);
+        jobSubmission.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
         ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.FORK, null, null, null);
         jobSubmission.setResourceJobManager(resourceJobManager);
         client.addSSHJobSubmissionDetails(host.getComputeResourceId(), 1, jobSubmission);
@@ -148,7 +150,7 @@ public class DocumentCreatorNew {
         client.registerApplicationDeployment(deployment);
         
         ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
-    	application.setIsEmpty(false);
+//    	application.setIsEmpty(false);
         application.setApplicationName("SSHEcho1");
         application.addToApplicationModules(module.getAppModuleId());
         application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input","echo_input", null, null, DataType.STRING));
@@ -273,7 +275,7 @@ public class DocumentCreatorNew {
         module1.setAppModuleId(client.registerApplicationModule(module1));
         
     	ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
-    	application.setIsEmpty(false);
+//    	application.setIsEmpty(false);
         application.setApplicationName("SimpleEcho2");
         application.addToApplicationModules(module1.getAppModuleId());
         application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input", "echo_input", "echo_input", null, DataType.STRING));
@@ -290,7 +292,7 @@ public class DocumentCreatorNew {
         ApplicationModule module2 = DocumentCreatorUtils.createApplicationModule("wrf", "1.0.0", null);
         module2.setAppModuleId(client.registerApplicationModule(module2));
         ApplicationInterfaceDescription application2 = new ApplicationInterfaceDescription();
-    	application2.setIsEmpty(false);
+//    	application2.setIsEmpty(false);
         application2.setApplicationName("WRF");
         application2.addToApplicationModules(module2.getAppModuleId());
         application2.addToApplicationInputs(DocumentCreatorUtils.createAppInput("WRF_Namelist", "WRF_Namelist", null, null, DataType.URI));
@@ -327,7 +329,7 @@ public class DocumentCreatorNew {
     	module.setAppModuleId(client.registerApplicationModule(module));
     	
     	ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
-    	application.setIsEmpty(false);
+//    	application.setIsEmpty(false);
     	application.setApplicationName("SimpleEcho3");
     	application.addToApplicationModules(module.getAppModuleId());
     	application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input", "echo_input", null, null, DataType.STRING));
@@ -363,7 +365,7 @@ public class DocumentCreatorNew {
         module.setAppModuleId(client.registerApplicationModule(module));
         
         ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
-    	application.setIsEmpty(false);
+//    	application.setIsEmpty(false);
         application.setApplicationName("SimpleEcho4");
         application.addToApplicationModules(module.getAppModuleId());
     	application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input", "echo_input", null, null, DataType.STRING));

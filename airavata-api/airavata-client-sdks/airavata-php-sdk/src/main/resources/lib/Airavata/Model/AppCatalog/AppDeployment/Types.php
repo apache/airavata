@@ -277,7 +277,6 @@ class ApplicationModule {
 class ApplicationDeploymentDescription {
   static $_TSPEC;
 
-  public $isEmpty = false;
   public $appDeploymentId = "DO_NOT_SET_AT_CLIENTS";
   public $appModuleId = null;
   public $computeHostId = null;
@@ -293,34 +292,30 @@ class ApplicationDeploymentDescription {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'isEmpty',
-          'type' => TType::BOOL,
-          ),
-        2 => array(
           'var' => 'appDeploymentId',
           'type' => TType::STRING,
           ),
-        3 => array(
+        2 => array(
           'var' => 'appModuleId',
           'type' => TType::STRING,
           ),
-        4 => array(
+        3 => array(
           'var' => 'computeHostId',
           'type' => TType::STRING,
           ),
-        5 => array(
+        4 => array(
           'var' => 'executablePath',
           'type' => TType::STRING,
           ),
-        6 => array(
+        5 => array(
           'var' => 'parallelism',
           'type' => TType::I32,
           ),
-        7 => array(
+        6 => array(
           'var' => 'appDeploymentDescription',
           'type' => TType::STRING,
           ),
-        8 => array(
+        7 => array(
           'var' => 'moduleLoadCmds',
           'type' => TType::LST,
           'etype' => TType::STRING,
@@ -328,7 +323,7 @@ class ApplicationDeploymentDescription {
             'type' => TType::STRING,
             ),
           ),
-        9 => array(
+        8 => array(
           'var' => 'libPrependPaths',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -337,7 +332,7 @@ class ApplicationDeploymentDescription {
             'class' => '\Airavata\Model\AppCatalog\AppDeployment\SetEnvPaths',
             ),
           ),
-        10 => array(
+        9 => array(
           'var' => 'libAppendPaths',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -346,7 +341,7 @@ class ApplicationDeploymentDescription {
             'class' => '\Airavata\Model\AppCatalog\AppDeployment\SetEnvPaths',
             ),
           ),
-        11 => array(
+        10 => array(
           'var' => 'setEnvironment',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -358,9 +353,6 @@ class ApplicationDeploymentDescription {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['isEmpty'])) {
-        $this->isEmpty = $vals['isEmpty'];
-      }
       if (isset($vals['appDeploymentId'])) {
         $this->appDeploymentId = $vals['appDeploymentId'];
       }
@@ -414,55 +406,48 @@ class ApplicationDeploymentDescription {
       switch ($fid)
       {
         case 1:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->isEmpty);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->appDeploymentId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 3:
+        case 2:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->appModuleId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 4:
+        case 3:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->computeHostId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 5:
+        case 4:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->executablePath);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 5:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->parallelism);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 7:
+        case 6:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->appDeploymentDescription);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
+        case 7:
           if ($ftype == TType::LST) {
             $this->moduleLoadCmds = array();
             $_size0 = 0;
@@ -479,7 +464,7 @@ class ApplicationDeploymentDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 9:
+        case 8:
           if ($ftype == TType::LST) {
             $this->libPrependPaths = array();
             $_size6 = 0;
@@ -497,7 +482,7 @@ class ApplicationDeploymentDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 10:
+        case 9:
           if ($ftype == TType::LST) {
             $this->libAppendPaths = array();
             $_size12 = 0;
@@ -515,7 +500,7 @@ class ApplicationDeploymentDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 11:
+        case 10:
           if ($ftype == TType::LST) {
             $this->setEnvironment = array();
             $_size18 = 0;
@@ -546,38 +531,33 @@ class ApplicationDeploymentDescription {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ApplicationDeploymentDescription');
-    if ($this->isEmpty !== null) {
-      $xfer += $output->writeFieldBegin('isEmpty', TType::BOOL, 1);
-      $xfer += $output->writeBool($this->isEmpty);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->appDeploymentId !== null) {
-      $xfer += $output->writeFieldBegin('appDeploymentId', TType::STRING, 2);
+      $xfer += $output->writeFieldBegin('appDeploymentId', TType::STRING, 1);
       $xfer += $output->writeString($this->appDeploymentId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->appModuleId !== null) {
-      $xfer += $output->writeFieldBegin('appModuleId', TType::STRING, 3);
+      $xfer += $output->writeFieldBegin('appModuleId', TType::STRING, 2);
       $xfer += $output->writeString($this->appModuleId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->computeHostId !== null) {
-      $xfer += $output->writeFieldBegin('computeHostId', TType::STRING, 4);
+      $xfer += $output->writeFieldBegin('computeHostId', TType::STRING, 3);
       $xfer += $output->writeString($this->computeHostId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->executablePath !== null) {
-      $xfer += $output->writeFieldBegin('executablePath', TType::STRING, 5);
+      $xfer += $output->writeFieldBegin('executablePath', TType::STRING, 4);
       $xfer += $output->writeString($this->executablePath);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->parallelism !== null) {
-      $xfer += $output->writeFieldBegin('parallelism', TType::I32, 6);
+      $xfer += $output->writeFieldBegin('parallelism', TType::I32, 5);
       $xfer += $output->writeI32($this->parallelism);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->appDeploymentDescription !== null) {
-      $xfer += $output->writeFieldBegin('appDeploymentDescription', TType::STRING, 7);
+      $xfer += $output->writeFieldBegin('appDeploymentDescription', TType::STRING, 6);
       $xfer += $output->writeString($this->appDeploymentDescription);
       $xfer += $output->writeFieldEnd();
     }
@@ -585,7 +565,7 @@ class ApplicationDeploymentDescription {
       if (!is_array($this->moduleLoadCmds)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('moduleLoadCmds', TType::LST, 8);
+      $xfer += $output->writeFieldBegin('moduleLoadCmds', TType::LST, 7);
       {
         $output->writeListBegin(TType::STRING, count($this->moduleLoadCmds));
         {
@@ -602,7 +582,7 @@ class ApplicationDeploymentDescription {
       if (!is_array($this->libPrependPaths)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('libPrependPaths', TType::LST, 9);
+      $xfer += $output->writeFieldBegin('libPrependPaths', TType::LST, 8);
       {
         $output->writeListBegin(TType::STRUCT, count($this->libPrependPaths));
         {
@@ -619,7 +599,7 @@ class ApplicationDeploymentDescription {
       if (!is_array($this->libAppendPaths)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('libAppendPaths', TType::LST, 10);
+      $xfer += $output->writeFieldBegin('libAppendPaths', TType::LST, 9);
       {
         $output->writeListBegin(TType::STRUCT, count($this->libAppendPaths));
         {
@@ -636,7 +616,7 @@ class ApplicationDeploymentDescription {
       if (!is_array($this->setEnvironment)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('setEnvironment', TType::LST, 11);
+      $xfer += $output->writeFieldBegin('setEnvironment', TType::LST, 10);
       {
         $output->writeListBegin(TType::STRUCT, count($this->setEnvironment));
         {

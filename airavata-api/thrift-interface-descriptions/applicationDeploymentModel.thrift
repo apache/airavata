@@ -115,15 +115,15 @@ enum ApplicationParallelismType {
  *
 */
 struct ApplicationDeploymentDescription {
-    1: required bool isEmpty = 0,
-    2: required string appDeploymentId = DEFAULT_ID,
-    3: required string appModuleId,
-    4: required string computeHostId,
-    5: required string executablePath,
-    6: required ApplicationParallelismType parallelism = ApplicationParallelismType.SERIAL ,
-	7: optional string appDeploymentDescription,
-	8: optional list<string> moduleLoadCmds,
-	9: optional list<SetEnvPaths> libPrependPaths,
-	10: optional list<SetEnvPaths> libAppendPaths,
-	11: optional list<SetEnvPaths> setEnvironment,
+//    1: required bool isEmpty = 0,
+    1: required string appDeploymentId = DEFAULT_ID,
+    2: required string appModuleId,
+    3: required string computeHostId,
+    4: required string executablePath,
+    5: required ApplicationParallelismType parallelism = ApplicationParallelismType.SERIAL ,
+	6: optional string appDeploymentDescription,
+	7: optional list<string> moduleLoadCmds,
+	8: optional list<SetEnvPaths> libPrependPaths,
+	9: optional list<SetEnvPaths> libAppendPaths,
+	10: optional list<SetEnvPaths> setEnvironment,
 }

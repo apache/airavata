@@ -64,13 +64,12 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class ApplicationInterfaceDescription implements org.apache.thrift.TBase<ApplicationInterfaceDescription, ApplicationInterfaceDescription._Fields>, java.io.Serializable, Cloneable, Comparable<ApplicationInterfaceDescription> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ApplicationInterfaceDescription");
 
-  private static final org.apache.thrift.protocol.TField IS_EMPTY_FIELD_DESC = new org.apache.thrift.protocol.TField("isEmpty", org.apache.thrift.protocol.TType.BOOL, (short)1);
-  private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField APPLICATION_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationName", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField APPLICATION_DESRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationDesription", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField APPLICATION_MODULES_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationModules", org.apache.thrift.protocol.TType.LIST, (short)5);
-  private static final org.apache.thrift.protocol.TField APPLICATION_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInputs", org.apache.thrift.protocol.TType.LIST, (short)6);
-  private static final org.apache.thrift.protocol.TField APPLICATION_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationOutputs", org.apache.thrift.protocol.TType.LIST, (short)7);
+  private static final org.apache.thrift.protocol.TField APPLICATION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField APPLICATION_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationName", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField APPLICATION_DESRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationDesription", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField APPLICATION_MODULES_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationModules", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField APPLICATION_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationInputs", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField APPLICATION_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationOutputs", org.apache.thrift.protocol.TType.LIST, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -78,7 +77,6 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ApplicationInterfaceDescriptionTupleSchemeFactory());
   }
 
-  private boolean isEmpty; // required
   private String applicationInterfaceId; // required
   private String applicationName; // required
   private String applicationDesription; // optional
@@ -88,13 +86,12 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    IS_EMPTY((short)1, "isEmpty"),
-    APPLICATION_INTERFACE_ID((short)2, "applicationInterfaceId"),
-    APPLICATION_NAME((short)3, "applicationName"),
-    APPLICATION_DESRIPTION((short)4, "applicationDesription"),
-    APPLICATION_MODULES((short)5, "applicationModules"),
-    APPLICATION_INPUTS((short)6, "applicationInputs"),
-    APPLICATION_OUTPUTS((short)7, "applicationOutputs");
+    APPLICATION_INTERFACE_ID((short)1, "applicationInterfaceId"),
+    APPLICATION_NAME((short)2, "applicationName"),
+    APPLICATION_DESRIPTION((short)3, "applicationDesription"),
+    APPLICATION_MODULES((short)4, "applicationModules"),
+    APPLICATION_INPUTS((short)5, "applicationInputs"),
+    APPLICATION_OUTPUTS((short)6, "applicationOutputs");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -109,19 +106,17 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // IS_EMPTY
-          return IS_EMPTY;
-        case 2: // APPLICATION_INTERFACE_ID
+        case 1: // APPLICATION_INTERFACE_ID
           return APPLICATION_INTERFACE_ID;
-        case 3: // APPLICATION_NAME
+        case 2: // APPLICATION_NAME
           return APPLICATION_NAME;
-        case 4: // APPLICATION_DESRIPTION
+        case 3: // APPLICATION_DESRIPTION
           return APPLICATION_DESRIPTION;
-        case 5: // APPLICATION_MODULES
+        case 4: // APPLICATION_MODULES
           return APPLICATION_MODULES;
-        case 6: // APPLICATION_INPUTS
+        case 5: // APPLICATION_INPUTS
           return APPLICATION_INPUTS;
-        case 7: // APPLICATION_OUTPUTS
+        case 6: // APPLICATION_OUTPUTS
           return APPLICATION_OUTPUTS;
         default:
           return null;
@@ -163,14 +158,10 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private static final int __ISEMPTY_ISSET_ID = 0;
-  private byte __isset_bitfield = 0;
   private _Fields optionals[] = {_Fields.APPLICATION_DESRIPTION,_Fields.APPLICATION_MODULES,_Fields.APPLICATION_INPUTS,_Fields.APPLICATION_OUTPUTS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.IS_EMPTY, new org.apache.thrift.meta_data.FieldMetaData("isEmpty", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.APPLICATION_INTERFACE_ID, new org.apache.thrift.meta_data.FieldMetaData("applicationInterfaceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APPLICATION_NAME, new org.apache.thrift.meta_data.FieldMetaData("applicationName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -191,20 +182,15 @@ import org.slf4j.LoggerFactory;
   }
 
   public ApplicationInterfaceDescription() {
-    this.isEmpty = false;
-
     this.applicationInterfaceId = "DO_NOT_SET_AT_CLIENTS";
 
   }
 
   public ApplicationInterfaceDescription(
-    boolean isEmpty,
     String applicationInterfaceId,
     String applicationName)
   {
     this();
-    this.isEmpty = isEmpty;
-    setIsEmptyIsSet(true);
     this.applicationInterfaceId = applicationInterfaceId;
     this.applicationName = applicationName;
   }
@@ -213,8 +199,6 @@ import org.slf4j.LoggerFactory;
    * Performs a deep copy on <i>other</i>.
    */
   public ApplicationInterfaceDescription(ApplicationInterfaceDescription other) {
-    __isset_bitfield = other.__isset_bitfield;
-    this.isEmpty = other.isEmpty;
     if (other.isSetApplicationInterfaceId()) {
       this.applicationInterfaceId = other.applicationInterfaceId;
     }
@@ -250,8 +234,6 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.isEmpty = false;
-
     this.applicationInterfaceId = "DO_NOT_SET_AT_CLIENTS";
 
     this.applicationName = null;
@@ -259,28 +241,6 @@ import org.slf4j.LoggerFactory;
     this.applicationModules = null;
     this.applicationInputs = null;
     this.applicationOutputs = null;
-  }
-
-  public boolean isIsEmpty() {
-    return this.isEmpty;
-  }
-
-  public void setIsEmpty(boolean isEmpty) {
-    this.isEmpty = isEmpty;
-    setIsEmptyIsSet(true);
-  }
-
-  public void unsetIsEmpty() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISEMPTY_ISSET_ID);
-  }
-
-  /** Returns true if field isEmpty is set (has been assigned a value) and false otherwise */
-  public boolean isSetIsEmpty() {
-    return EncodingUtils.testBit(__isset_bitfield, __ISEMPTY_ISSET_ID);
-  }
-
-  public void setIsEmptyIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISEMPTY_ISSET_ID, value);
   }
 
   public String getApplicationInterfaceId() {
@@ -468,14 +428,6 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case IS_EMPTY:
-      if (value == null) {
-        unsetIsEmpty();
-      } else {
-        setIsEmpty((Boolean)value);
-      }
-      break;
-
     case APPLICATION_INTERFACE_ID:
       if (value == null) {
         unsetApplicationInterfaceId();
@@ -529,9 +481,6 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case IS_EMPTY:
-      return Boolean.valueOf(isIsEmpty());
-
     case APPLICATION_INTERFACE_ID:
       return getApplicationInterfaceId();
 
@@ -561,8 +510,6 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case IS_EMPTY:
-      return isSetIsEmpty();
     case APPLICATION_INTERFACE_ID:
       return isSetApplicationInterfaceId();
     case APPLICATION_NAME:
@@ -591,15 +538,6 @@ import org.slf4j.LoggerFactory;
   public boolean equals(ApplicationInterfaceDescription that) {
     if (that == null)
       return false;
-
-    boolean this_present_isEmpty = true;
-    boolean that_present_isEmpty = true;
-    if (this_present_isEmpty || that_present_isEmpty) {
-      if (!(this_present_isEmpty && that_present_isEmpty))
-        return false;
-      if (this.isEmpty != that.isEmpty)
-        return false;
-    }
 
     boolean this_present_applicationInterfaceId = true && this.isSetApplicationInterfaceId();
     boolean that_present_applicationInterfaceId = true && that.isSetApplicationInterfaceId();
@@ -671,16 +609,6 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetIsEmpty()).compareTo(other.isSetIsEmpty());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetIsEmpty()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isEmpty, other.isEmpty);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetApplicationInterfaceId()).compareTo(other.isSetApplicationInterfaceId());
     if (lastComparison != 0) {
       return lastComparison;
@@ -761,10 +689,6 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("ApplicationInterfaceDescription(");
     boolean first = true;
 
-    sb.append("isEmpty:");
-    sb.append(this.isEmpty);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("applicationInterfaceId:");
     if (this.applicationInterfaceId == null) {
       sb.append("null");
@@ -826,10 +750,6 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetIsEmpty()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'isEmpty' is unset! Struct:" + toString());
-    }
-
     if (!isSetApplicationInterfaceId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'applicationInterfaceId' is unset! Struct:" + toString());
     }
@@ -851,8 +771,6 @@ import org.slf4j.LoggerFactory;
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -877,15 +795,7 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // IS_EMPTY
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.isEmpty = iprot.readBool();
-              struct.setIsEmptyIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // APPLICATION_INTERFACE_ID
+          case 1: // APPLICATION_INTERFACE_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.applicationInterfaceId = iprot.readString();
               struct.setApplicationInterfaceIdIsSet(true);
@@ -893,7 +803,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // APPLICATION_NAME
+          case 2: // APPLICATION_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.applicationName = iprot.readString();
               struct.setApplicationNameIsSet(true);
@@ -901,7 +811,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // APPLICATION_DESRIPTION
+          case 3: // APPLICATION_DESRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.applicationDesription = iprot.readString();
               struct.setApplicationDesriptionIsSet(true);
@@ -909,7 +819,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // APPLICATION_MODULES
+          case 4: // APPLICATION_MODULES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -927,7 +837,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // APPLICATION_INPUTS
+          case 5: // APPLICATION_INPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
@@ -946,7 +856,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // APPLICATION_OUTPUTS
+          case 6: // APPLICATION_OUTPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
@@ -978,9 +888,6 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(IS_EMPTY_FIELD_DESC);
-      oprot.writeBool(struct.isEmpty);
-      oprot.writeFieldEnd();
       if (struct.applicationInterfaceId != null) {
         oprot.writeFieldBegin(APPLICATION_INTERFACE_ID_FIELD_DESC);
         oprot.writeString(struct.applicationInterfaceId);
@@ -1057,7 +964,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ApplicationInterfaceDescription struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeBool(struct.isEmpty);
       oprot.writeString(struct.applicationInterfaceId);
       oprot.writeString(struct.applicationName);
       BitSet optionals = new BitSet();
@@ -1109,8 +1015,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ApplicationInterfaceDescription struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.isEmpty = iprot.readBool();
-      struct.setIsEmptyIsSet(true);
       struct.applicationInterfaceId = iprot.readString();
       struct.setApplicationInterfaceIdIsSet(true);
       struct.applicationName = iprot.readString();

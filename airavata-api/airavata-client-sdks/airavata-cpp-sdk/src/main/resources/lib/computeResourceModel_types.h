@@ -725,15 +725,14 @@ typedef struct _ComputeResourceDescription__isset {
 class ComputeResourceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "95B7C2C0992AC1BEC9B06845F0CB3D24";
-  static const uint8_t binary_fingerprint[16]; // = {0x95,0xB7,0xC2,0xC0,0x99,0x2A,0xC1,0xBE,0xC9,0xB0,0x68,0x45,0xF0,0xCB,0x3D,0x24};
+  static const char* ascii_fingerprint; // = "2CAAC3134218EFF83D46106C39BECE65";
+  static const uint8_t binary_fingerprint[16]; // = {0x2C,0xAA,0xC3,0x13,0x42,0x18,0xEF,0xF8,0x3D,0x46,0x10,0x6C,0x39,0xBE,0xCE,0x65};
 
-  ComputeResourceDescription() : isEmpty(false), computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription() {
+  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription() {
   }
 
   virtual ~ComputeResourceDescription() throw() {}
 
-  bool isEmpty;
   std::string computeResourceId;
   std::string hostName;
   std::set<std::string>  hostAliases;
@@ -745,10 +744,6 @@ class ComputeResourceDescription {
   std::vector<DataMovementInterface>  dataMovementInterfaces;
 
   _ComputeResourceDescription__isset __isset;
-
-  void __set_isEmpty(const bool val) {
-    isEmpty = val;
-  }
 
   void __set_computeResourceId(const std::string& val) {
     computeResourceId = val;
@@ -795,8 +790,6 @@ class ComputeResourceDescription {
 
   bool operator == (const ComputeResourceDescription & rhs) const
   {
-    if (!(isEmpty == rhs.isEmpty))
-      return false;
     if (!(computeResourceId == rhs.computeResourceId))
       return false;
     if (!(hostName == rhs.hostName))

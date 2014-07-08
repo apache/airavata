@@ -78,7 +78,7 @@ class AiravataIf {
   virtual bool changeDataMovementPriorities(const std::map<std::string, int32_t> & dataMovementPriorityMap) = 0;
   virtual bool deleteJobSubmissionInterface(const std::string& jobSubmissionInterfaceId) = 0;
   virtual bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId) = 0;
-  virtual bool registerGatewayResourceProfile(const  ::GatewayResourceProfile& gatewayResourceProfile) = 0;
+  virtual void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile) = 0;
   virtual void getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID) = 0;
   virtual bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile) = 0;
   virtual bool deleteGatewayResourceProfile(const std::string& gatewayID) = 0;
@@ -330,9 +330,8 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  bool registerGatewayResourceProfile(const  ::GatewayResourceProfile& /* gatewayResourceProfile */) {
-    bool _return = false;
-    return _return;
+  void registerGatewayResourceProfile(std::string& /* _return */, const  ::GatewayResourceProfile& /* gatewayResourceProfile */) {
+    return;
   }
   void getGatewayResourceProfile( ::GatewayResourceProfile& /* _return */, const std::string& /* gatewayID */) {
     return;
@@ -8884,19 +8883,19 @@ typedef struct _Airavata_registerGatewayResourceProfile_result__isset {
 class Airavata_registerGatewayResourceProfile_result {
  public:
 
-  Airavata_registerGatewayResourceProfile_result() : success(0) {
+  Airavata_registerGatewayResourceProfile_result() : success() {
   }
 
   virtual ~Airavata_registerGatewayResourceProfile_result() throw() {}
 
-  bool success;
+  std::string success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerGatewayResourceProfile_result__isset __isset;
 
-  void __set_success(const bool val) {
+  void __set_success(const std::string& val) {
     success = val;
   }
 
@@ -8949,7 +8948,7 @@ class Airavata_registerGatewayResourceProfile_presult {
 
   virtual ~Airavata_registerGatewayResourceProfile_presult() throw() {}
 
-  bool* success;
+  std::string* success;
    ::airavata::api::error::InvalidRequestException ire;
    ::airavata::api::error::AiravataClientException ace;
    ::airavata::api::error::AiravataSystemException ase;
@@ -10281,9 +10280,9 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId);
   void send_deleteDataMovementInterface(const std::string& dataMovementInterfaceId);
   bool recv_deleteDataMovementInterface();
-  bool registerGatewayResourceProfile(const  ::GatewayResourceProfile& gatewayResourceProfile);
+  void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile);
   void send_registerGatewayResourceProfile(const  ::GatewayResourceProfile& gatewayResourceProfile);
-  bool recv_registerGatewayResourceProfile();
+  void recv_registerGatewayResourceProfile(std::string& _return);
   void getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID);
   void send_getGatewayResourceProfile(const std::string& gatewayID);
   void recv_getGatewayResourceProfile( ::GatewayResourceProfile& _return);
@@ -11097,13 +11096,14 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteDataMovementInterface(dataMovementInterfaceId);
   }
 
-  bool registerGatewayResourceProfile(const  ::GatewayResourceProfile& gatewayResourceProfile) {
+  void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->registerGatewayResourceProfile(gatewayResourceProfile);
+      ifaces_[i]->registerGatewayResourceProfile(_return, gatewayResourceProfile);
     }
-    return ifaces_[i]->registerGatewayResourceProfile(gatewayResourceProfile);
+    ifaces_[i]->registerGatewayResourceProfile(_return, gatewayResourceProfile);
+    return;
   }
 
   void getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID) {

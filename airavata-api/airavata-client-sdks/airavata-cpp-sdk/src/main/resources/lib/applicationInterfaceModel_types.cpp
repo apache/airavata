@@ -24,8 +24,8 @@ const char* _kDataTypeNames[] = {
 };
 const std::map<int, const char*> _DataType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kDataTypeValues, _kDataTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
-const char* InputDataObjectType::ascii_fingerprint = "0C147F4C4DFD0B9FF70275BF29D07281";
-const uint8_t InputDataObjectType::binary_fingerprint[16] = {0x0C,0x14,0x7F,0x4C,0x4D,0xFD,0x0B,0x9F,0xF7,0x02,0x75,0xBF,0x29,0xD0,0x72,0x81};
+const char* InputDataObjectType::ascii_fingerprint = "24F962C1CE4BE9FBD0F5D5EE9D1D5C00";
+const uint8_t InputDataObjectType::binary_fingerprint[16] = {0x24,0xF9,0x62,0xC1,0xCE,0x4B,0xE9,0xFB,0xD0,0xF5,0xD5,0xEE,0x9D,0x1D,0x5C,0x00};
 
 uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -38,7 +38,6 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_isEmpty = false;
   bool isset_name = false;
 
   while (true)
@@ -50,14 +49,6 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->isEmpty);
-          isset_isEmpty = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->name);
           isset_name = true;
@@ -65,7 +56,7 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->value);
           this->__isset.value = true;
@@ -73,7 +64,7 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast0;
           xfer += iprot->readI32(ecast0);
@@ -83,7 +74,7 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->applicationArgument);
           this->__isset.applicationArgument = true;
@@ -91,7 +82,7 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_BOOL) {
           xfer += iprot->readBool(this->standardInput);
           this->__isset.standardInput = true;
@@ -99,7 +90,7 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userFriendlyDescription);
           this->__isset.userFriendlyDescription = true;
@@ -107,7 +98,7 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->metaData);
           this->__isset.metaData = true;
@@ -124,8 +115,6 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_isEmpty)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_name)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -135,41 +124,37 @@ uint32_t InputDataObjectType::write(::apache::thrift::protocol::TProtocol* oprot
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("InputDataObjectType");
 
-  xfer += oprot->writeFieldBegin("isEmpty", ::apache::thrift::protocol::T_BOOL, 1);
-  xfer += oprot->writeBool(this->isEmpty);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("name", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("name", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->name);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.value) {
-    xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 2);
     xfer += oprot->writeString(this->value);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.type) {
-    xfer += oprot->writeFieldBegin("type", ::apache::thrift::protocol::T_I32, 4);
+    xfer += oprot->writeFieldBegin("type", ::apache::thrift::protocol::T_I32, 3);
     xfer += oprot->writeI32((int32_t)this->type);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.applicationArgument) {
-    xfer += oprot->writeFieldBegin("applicationArgument", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeFieldBegin("applicationArgument", ::apache::thrift::protocol::T_STRING, 4);
     xfer += oprot->writeString(this->applicationArgument);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.standardInput) {
-    xfer += oprot->writeFieldBegin("standardInput", ::apache::thrift::protocol::T_BOOL, 6);
+    xfer += oprot->writeFieldBegin("standardInput", ::apache::thrift::protocol::T_BOOL, 5);
     xfer += oprot->writeBool(this->standardInput);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.userFriendlyDescription) {
-    xfer += oprot->writeFieldBegin("userFriendlyDescription", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeFieldBegin("userFriendlyDescription", ::apache::thrift::protocol::T_STRING, 6);
     xfer += oprot->writeString(this->userFriendlyDescription);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.metaData) {
-    xfer += oprot->writeFieldBegin("metaData", ::apache::thrift::protocol::T_STRING, 8);
+    xfer += oprot->writeFieldBegin("metaData", ::apache::thrift::protocol::T_STRING, 7);
     xfer += oprot->writeString(this->metaData);
     xfer += oprot->writeFieldEnd();
   }
@@ -180,7 +165,6 @@ uint32_t InputDataObjectType::write(::apache::thrift::protocol::TProtocol* oprot
 
 void swap(InputDataObjectType &a, InputDataObjectType &b) {
   using ::std::swap;
-  swap(a.isEmpty, b.isEmpty);
   swap(a.name, b.name);
   swap(a.value, b.value);
   swap(a.type, b.type);
@@ -302,8 +286,8 @@ void swap(OutputDataObjectType &a, OutputDataObjectType &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* ApplicationInterfaceDescription::ascii_fingerprint = "B4A4B770076264D5948E96332AE8D291";
-const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0xB4,0xA4,0xB7,0x70,0x07,0x62,0x64,0xD5,0x94,0x8E,0x96,0x33,0x2A,0xE8,0xD2,0x91};
+const char* ApplicationInterfaceDescription::ascii_fingerprint = "3C4F9F747CEDFDF7A46B0786A7C09268";
+const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0x3C,0x4F,0x9F,0x74,0x7C,0xED,0xFD,0xF7,0xA4,0x6B,0x07,0x86,0xA7,0xC0,0x92,0x68};
 
 uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -316,7 +300,6 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_isEmpty = false;
   bool isset_applicationInterfaceId = false;
   bool isset_applicationName = false;
 
@@ -329,14 +312,6 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->isEmpty);
-          isset_isEmpty = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->applicationInterfaceId);
           isset_applicationInterfaceId = true;
@@ -344,7 +319,7 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->applicationName);
           isset_applicationName = true;
@@ -352,7 +327,7 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->applicationDesription);
           this->__isset.applicationDesription = true;
@@ -360,7 +335,7 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationModules.clear();
@@ -380,7 +355,7 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationInputs.clear();
@@ -400,7 +375,7 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationOutputs.clear();
@@ -429,8 +404,6 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_isEmpty)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_applicationInterfaceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_applicationName)
@@ -442,25 +415,21 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ApplicationInterfaceDescription");
 
-  xfer += oprot->writeFieldBegin("isEmpty", ::apache::thrift::protocol::T_BOOL, 1);
-  xfer += oprot->writeBool(this->isEmpty);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("applicationInterfaceId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("applicationInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->applicationInterfaceId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("applicationName", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeFieldBegin("applicationName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->applicationName);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.applicationDesription) {
-    xfer += oprot->writeFieldBegin("applicationDesription", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeFieldBegin("applicationDesription", ::apache::thrift::protocol::T_STRING, 3);
     xfer += oprot->writeString(this->applicationDesription);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.applicationModules) {
-    xfer += oprot->writeFieldBegin("applicationModules", ::apache::thrift::protocol::T_LIST, 5);
+    xfer += oprot->writeFieldBegin("applicationModules", ::apache::thrift::protocol::T_LIST, 4);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->applicationModules.size()));
       std::vector<std::string> ::const_iterator _iter17;
@@ -473,7 +442,7 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.applicationInputs) {
-    xfer += oprot->writeFieldBegin("applicationInputs", ::apache::thrift::protocol::T_LIST, 6);
+    xfer += oprot->writeFieldBegin("applicationInputs", ::apache::thrift::protocol::T_LIST, 5);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->applicationInputs.size()));
       std::vector<InputDataObjectType> ::const_iterator _iter18;
@@ -486,7 +455,7 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.applicationOutputs) {
-    xfer += oprot->writeFieldBegin("applicationOutputs", ::apache::thrift::protocol::T_LIST, 7);
+    xfer += oprot->writeFieldBegin("applicationOutputs", ::apache::thrift::protocol::T_LIST, 6);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->applicationOutputs.size()));
       std::vector<OutputDataObjectType> ::const_iterator _iter19;
@@ -505,7 +474,6 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
 
 void swap(ApplicationInterfaceDescription &a, ApplicationInterfaceDescription &b) {
   using ::std::swap;
-  swap(a.isEmpty, b.isEmpty);
   swap(a.applicationInterfaceId, b.applicationInterfaceId);
   swap(a.applicationName, b.applicationName);
   swap(a.applicationDesription, b.applicationDesription);
