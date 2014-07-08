@@ -38,7 +38,7 @@ public class AbstractIntegrationTest {
 	private static int THRIFT_SERVER_PORT;
 	protected AiravataAPI airavataAPI;
 	protected Airavata.Client client;
-	private final int TRIES = 5;
+	private final int TRIES = 20;
 	private final int TIME_OUT = 10000;
     final static Logger log = LoggerFactory.getLogger(AbstractIntegrationTest.class);
 

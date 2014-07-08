@@ -62,9 +62,8 @@ public class SingleAppIntegrationTestBase extends AbstractIntegrationTest {
 						}
                         Thread.sleep(2000);
                     } catch (Exception e) {
-                        log.error("Thread interrupted", e.getMessage());
+                        log.error("Thread interrupted", e);
                     }
-                    System.out.println(experimentStatus.getExperimentState().toString());
                     Assert.assertFalse(experimentStatus.getExperimentState().equals(ExperimentState.FAILED));
                 }while(!experimentStatus.getExperimentState().equals(ExperimentState.COMPLETED));
             }
