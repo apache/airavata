@@ -58,6 +58,12 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client client;
+    private static String localHostAppId;
+    private static String sshHostAppId;
+    private static String pbsEchoAppId;
+    private static String pbsWRFAppId;
+    private static String slurmAppId;
+    private static String sgeAppId;
     public static void main(String[] args) {
         try {
             AiravataUtils.setExecutionAsClient();
@@ -190,12 +196,13 @@ public class CreateLaunchExperiment {
         try {
         	DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
 //            DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
-            documentCreator.createLocalHostDocs();
-            documentCreator.createSSHHostDocs();
+            localHostAppId = documentCreator.createLocalHostDocs();
+            sshHostAppId = documentCreator.createSSHHostDocs();
 //            documentCreator.createGramDocs();
-            documentCreator.createPBSDocsForOGCE();
-            documentCreator.createSlurmDocs();
-            documentCreator.createSGEDocs();
+            pbsEchoAppId =documentCreator.createPBSDocsForOGCE_Echo();
+            pbsWRFAppId =documentCreator.createPBSDocsForOGCE_WRF();
+            slurmAppId = documentCreator.createSlurmDocs();
+            sgeAppId = documentCreator.createSGEDocs();
 //            documentCreator.createEchoHostDocs();
 //            documentCreator.createBigRedDocs();
         } catch (Exception e) {
@@ -368,7 +375,7 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "Echo Test", "Echo", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "Echo Test", localHostAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "");
@@ -413,7 +420,7 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SSHEcho1", "SSHEcho1", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SSHEcho1", sshHostAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("gw111.iu.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "sds128");
@@ -459,7 +466,7 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", "SimpleEcho3", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", slurmAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =
