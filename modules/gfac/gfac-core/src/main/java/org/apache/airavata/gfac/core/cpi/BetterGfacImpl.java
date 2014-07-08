@@ -253,10 +253,18 @@ public class BetterGfacImpl implements GFac {
                 getApplicationDeployment().getApplicationDeployement(applicationDeploymentId);
 		ComputeResourceDescription computeResource = appCatalog.getComputeResource().
                 getComputeResource(applicationDeployment.getComputeHostId());
-        ComputeResourcePreference gatewayResourcePreferences = appCatalog.getGatewayProfile().
-                        getComputeResourcePreference(gatewayID, applicationDeployment.getComputeHostId());
-
-        //Create the legacy schema docs to fill-in
+		ComputeResourcePreference gatewayResourcePreferences = appCatalog.getGatewayProfile().
+                getComputeResourcePreference(gatewayID, applicationDeployment.getComputeHostId());
+		if (gatewayResourcePreferences==null) {
+			List<String> gatewayProfileIds = appCatalog.getGatewayProfile()
+					.getGatewayProfileIds(gatewayID);
+			if (gatewayProfileIds.size()>0){
+				gatewayID=gatewayProfileIds.get(0);
+				gatewayResourcePreferences = appCatalog.getGatewayProfile().
+		                getComputeResourcePreference(gatewayID, applicationDeployment.getComputeHostId());
+			}
+		}
+		//Create the legacy schema docs to fill-in
         ServiceDescription legacyServiceDescription = new ServiceDescription();
         ServiceDescriptionType legacyServiceDescType = legacyServiceDescription.getType();
         ApplicationDescription legacyAppDescription = new ApplicationDescription();
@@ -382,11 +390,12 @@ public class BetterGfacImpl implements GFac {
 			 ProjectAccountType projectAccountType = legacyHPCAppDescType.addNewProjectAccount();
 			projectAccountType.setProjectAccountNumber(gatewayResourcePreferences.getAllocationProjectNumber());
         }
-        legacyAppDescType.setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
-        //Fetch from gateway profile
-
-        //hostDescription.getType().setHostAddress(computeResource.getIpAddresses().iterator().next());
-        
+		if (gatewayResourcePreferences!=null){
+			legacyAppDescType.setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
+		}else{
+			legacyAppDescType.setScratchWorkingDirectory("/tmp");
+			log.warn("gateway resource profile for gateway id '"+gatewayID+"'.");
+		}
 		
         URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         Properties configurationProperties = ServerSettings.getProperties();

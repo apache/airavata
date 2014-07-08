@@ -57,7 +57,7 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         log.info("========================");
         log.info("Adding applications...");
         DocumentCreatorNew documentCreatorNew = new DocumentCreatorNew(getClient());
-        documentCreatorNew.createLocalHostDocs();
+        String appId = documentCreatorNew.createLocalHostDocs();
 
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
@@ -77,7 +77,7 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         String projectId = getClient().createProject(project);
 
         Experiment simpleExperiment =
-                ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho0", "SimpleEcho0", exInputs);
+                ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", appId, appId, exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "sds128");
