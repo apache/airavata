@@ -2077,12 +2077,11 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      * Returns a success/failure of the registration.
      */
     @Override
-    public boolean registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
-            gatewayProfile.addGatewayResourceProfile(gatewayResourceProfile);
-            return true;
+            return gatewayProfile.addGatewayResourceProfile(gatewayResourceProfile);
         } catch (AppCatalogException e) {
             logger.error("Error while registering gateway resource profile...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2180,7 +2179,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             	throw new AppCatalogException("Gateway resource profile '"+gatewayID+"' does not exist!!!");
             }
             GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
-            gatewayProfile.removeGatewayResourceProfile(gatewayID);
+//            gatewayProfile.removeGatewayResourceProfile(gatewayID);
             profile.addToComputeResourcePreferences(computeResourcePreference);
             gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;

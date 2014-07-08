@@ -43,7 +43,7 @@ public class ApplicationInput implements Serializable {
     private String metadata;
     @Lob
     @Column(name = "VALUE")
-    private String value;
+    private char[] value;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
@@ -81,11 +81,11 @@ public class ApplicationInput implements Serializable {
         this.metadata = metadata;
     }
 
-    public String getValue() {
+    public char[] getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(char[] value) {
         this.value = value;
     }
 

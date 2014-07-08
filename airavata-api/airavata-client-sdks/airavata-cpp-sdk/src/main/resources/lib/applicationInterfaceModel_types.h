@@ -41,15 +41,14 @@ typedef struct _InputDataObjectType__isset {
 class InputDataObjectType {
  public:
 
-  static const char* ascii_fingerprint; // = "0C147F4C4DFD0B9FF70275BF29D07281";
-  static const uint8_t binary_fingerprint[16]; // = {0x0C,0x14,0x7F,0x4C,0x4D,0xFD,0x0B,0x9F,0xF7,0x02,0x75,0xBF,0x29,0xD0,0x72,0x81};
+  static const char* ascii_fingerprint; // = "24F962C1CE4BE9FBD0F5D5EE9D1D5C00";
+  static const uint8_t binary_fingerprint[16]; // = {0x24,0xF9,0x62,0xC1,0xCE,0x4B,0xE9,0xFB,0xD0,0xF5,0xD5,0xEE,0x9D,0x1D,0x5C,0x00};
 
-  InputDataObjectType() : isEmpty(false), name(), value(), type((DataType::type)0), applicationArgument(), standardInput(false), userFriendlyDescription(), metaData() {
+  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(false), userFriendlyDescription(), metaData() {
   }
 
   virtual ~InputDataObjectType() throw() {}
 
-  bool isEmpty;
   std::string name;
   std::string value;
   DataType::type type;
@@ -59,10 +58,6 @@ class InputDataObjectType {
   std::string metaData;
 
   _InputDataObjectType__isset __isset;
-
-  void __set_isEmpty(const bool val) {
-    isEmpty = val;
-  }
 
   void __set_name(const std::string& val) {
     name = val;
@@ -100,8 +95,6 @@ class InputDataObjectType {
 
   bool operator == (const InputDataObjectType & rhs) const
   {
-    if (!(isEmpty == rhs.isEmpty))
-      return false;
     if (!(name == rhs.name))
       return false;
     if (__isset.value != rhs.__isset.value)
@@ -225,15 +218,14 @@ typedef struct _ApplicationInterfaceDescription__isset {
 class ApplicationInterfaceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "B4A4B770076264D5948E96332AE8D291";
-  static const uint8_t binary_fingerprint[16]; // = {0xB4,0xA4,0xB7,0x70,0x07,0x62,0x64,0xD5,0x94,0x8E,0x96,0x33,0x2A,0xE8,0xD2,0x91};
+  static const char* ascii_fingerprint; // = "3C4F9F747CEDFDF7A46B0786A7C09268";
+  static const uint8_t binary_fingerprint[16]; // = {0x3C,0x4F,0x9F,0x74,0x7C,0xED,0xFD,0xF7,0xA4,0x6B,0x07,0x86,0xA7,0xC0,0x92,0x68};
 
-  ApplicationInterfaceDescription() : isEmpty(false), applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDesription() {
+  ApplicationInterfaceDescription() : applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDesription() {
   }
 
   virtual ~ApplicationInterfaceDescription() throw() {}
 
-  bool isEmpty;
   std::string applicationInterfaceId;
   std::string applicationName;
   std::string applicationDesription;
@@ -242,10 +234,6 @@ class ApplicationInterfaceDescription {
   std::vector<OutputDataObjectType>  applicationOutputs;
 
   _ApplicationInterfaceDescription__isset __isset;
-
-  void __set_isEmpty(const bool val) {
-    isEmpty = val;
-  }
 
   void __set_applicationInterfaceId(const std::string& val) {
     applicationInterfaceId = val;
@@ -277,8 +265,6 @@ class ApplicationInterfaceDescription {
 
   bool operator == (const ApplicationInterfaceDescription & rhs) const
   {
-    if (!(isEmpty == rhs.isEmpty))
-      return false;
     if (!(applicationInterfaceId == rhs.applicationInterfaceId))
       return false;
     if (!(applicationName == rhs.applicationName))

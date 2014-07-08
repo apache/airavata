@@ -229,8 +229,8 @@ void swap(ApplicationModule &a, ApplicationModule &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* ApplicationDeploymentDescription::ascii_fingerprint = "19A9841A9F4627A2C10F4A28E2CF0E17";
-const uint8_t ApplicationDeploymentDescription::binary_fingerprint[16] = {0x19,0xA9,0x84,0x1A,0x9F,0x46,0x27,0xA2,0xC1,0x0F,0x4A,0x28,0xE2,0xCF,0x0E,0x17};
+const char* ApplicationDeploymentDescription::ascii_fingerprint = "179A145BD54BBE10649DEF31C71143C9";
+const uint8_t ApplicationDeploymentDescription::binary_fingerprint[16] = {0x17,0x9A,0x14,0x5B,0xD5,0x4B,0xBE,0x10,0x64,0x9D,0xEF,0x31,0xC7,0x11,0x43,0xC9};
 
 uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -243,7 +243,6 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_isEmpty = false;
   bool isset_appDeploymentId = false;
   bool isset_appModuleId = false;
   bool isset_computeHostId = false;
@@ -259,14 +258,6 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->isEmpty);
-          isset_isEmpty = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->appDeploymentId);
           isset_appDeploymentId = true;
@@ -274,7 +265,7 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->appModuleId);
           isset_appModuleId = true;
@@ -282,7 +273,7 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->computeHostId);
           isset_computeHostId = true;
@@ -290,7 +281,7 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->executablePath);
           isset_executablePath = true;
@@ -298,7 +289,7 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast0;
           xfer += iprot->readI32(ecast0);
@@ -308,7 +299,7 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->appDeploymentDescription);
           this->__isset.appDeploymentDescription = true;
@@ -316,7 +307,7 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->moduleLoadCmds.clear();
@@ -336,7 +327,7 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->libPrependPaths.clear();
@@ -356,7 +347,7 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->libAppendPaths.clear();
@@ -376,7 +367,7 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
-      case 11:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->setEnvironment.clear();
@@ -405,8 +396,6 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_isEmpty)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_appDeploymentId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_appModuleId)
@@ -424,37 +413,33 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ApplicationDeploymentDescription");
 
-  xfer += oprot->writeFieldBegin("isEmpty", ::apache::thrift::protocol::T_BOOL, 1);
-  xfer += oprot->writeBool(this->isEmpty);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("appDeploymentId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("appDeploymentId", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->appDeploymentId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("appModuleId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeFieldBegin("appModuleId", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->appModuleId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("computeHostId", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeFieldBegin("computeHostId", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->computeHostId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("executablePath", ::apache::thrift::protocol::T_STRING, 5);
+  xfer += oprot->writeFieldBegin("executablePath", ::apache::thrift::protocol::T_STRING, 4);
   xfer += oprot->writeString(this->executablePath);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("parallelism", ::apache::thrift::protocol::T_I32, 6);
+  xfer += oprot->writeFieldBegin("parallelism", ::apache::thrift::protocol::T_I32, 5);
   xfer += oprot->writeI32((int32_t)this->parallelism);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.appDeploymentDescription) {
-    xfer += oprot->writeFieldBegin("appDeploymentDescription", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeFieldBegin("appDeploymentDescription", ::apache::thrift::protocol::T_STRING, 6);
     xfer += oprot->writeString(this->appDeploymentDescription);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.moduleLoadCmds) {
-    xfer += oprot->writeFieldBegin("moduleLoadCmds", ::apache::thrift::protocol::T_LIST, 8);
+    xfer += oprot->writeFieldBegin("moduleLoadCmds", ::apache::thrift::protocol::T_LIST, 7);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->moduleLoadCmds.size()));
       std::vector<std::string> ::const_iterator _iter21;
@@ -467,7 +452,7 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.libPrependPaths) {
-    xfer += oprot->writeFieldBegin("libPrependPaths", ::apache::thrift::protocol::T_LIST, 9);
+    xfer += oprot->writeFieldBegin("libPrependPaths", ::apache::thrift::protocol::T_LIST, 8);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->libPrependPaths.size()));
       std::vector<SetEnvPaths> ::const_iterator _iter22;
@@ -480,7 +465,7 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.libAppendPaths) {
-    xfer += oprot->writeFieldBegin("libAppendPaths", ::apache::thrift::protocol::T_LIST, 10);
+    xfer += oprot->writeFieldBegin("libAppendPaths", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->libAppendPaths.size()));
       std::vector<SetEnvPaths> ::const_iterator _iter23;
@@ -493,7 +478,7 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.setEnvironment) {
-    xfer += oprot->writeFieldBegin("setEnvironment", ::apache::thrift::protocol::T_LIST, 11);
+    xfer += oprot->writeFieldBegin("setEnvironment", ::apache::thrift::protocol::T_LIST, 10);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->setEnvironment.size()));
       std::vector<SetEnvPaths> ::const_iterator _iter24;
@@ -512,7 +497,6 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
 
 void swap(ApplicationDeploymentDescription &a, ApplicationDeploymentDescription &b) {
   using ::std::swap;
-  swap(a.isEmpty, b.isEmpty);
   swap(a.appDeploymentId, b.appDeploymentId);
   swap(a.appModuleId, b.appModuleId);
   swap(a.computeHostId, b.computeHostId);

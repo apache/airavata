@@ -123,7 +123,9 @@ public class ApplicationOutputResource extends AbstractResource {
             applicationOutput.setTaskId(taskDetail.getTaskId());
             applicationOutput.setOutputKey(outputKey);
             applicationOutput.setOutputKeyType(outputType);
-            applicationOutput.setValue(value);
+            if (value != null){
+                applicationOutput.setValue(value.toCharArray());
+            }
             applicationOutput.setMetadata(metadata);
 
             if (existingOutput != null) {
@@ -131,7 +133,9 @@ public class ApplicationOutputResource extends AbstractResource {
                 existingOutput.setTaskId(taskDetail.getTaskId());
                 existingOutput.setOutputKey(outputKey);
                 existingOutput.setOutputKeyType(outputType);
-                existingOutput.setValue(value);
+                if (value != null){
+                    existingOutput.setValue(value.toCharArray());
+                }
                 existingOutput.setMetadata(metadata);
                 applicationOutput = em.merge(existingOutput);
             } else {
