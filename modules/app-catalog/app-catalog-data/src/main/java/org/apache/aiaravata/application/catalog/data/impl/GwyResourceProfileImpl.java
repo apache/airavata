@@ -21,6 +21,7 @@
 
 package org.apache.aiaravata.application.catalog.data.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
@@ -182,6 +183,24 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             return AppCatalogThriftConversion.getComputeResourcePreferences(computePrefList);
         }catch (Exception e) {
             logger.error("Error while retrieving compute resource preference...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public List<String> getGatewayProfileIds(String gatewayName) throws AppCatalogException {
+        try {
+            GatewayProfileResource profileResource = new GatewayProfileResource();
+            List<Resource> resourceList = profileResource.get(AbstractResource.GatewayProfileConstants.GATEWAY_NAME, gatewayName);
+            List<String> gatewayIds = new ArrayList<String>();
+            if (resourceList != null && !resourceList.isEmpty()){
+                for (Resource resource : resourceList){
+                    gatewayIds.add(((GatewayProfileResource)resource).getGatewayID());
+                }
+            }
+            return gatewayIds;
+        }catch (Exception e) {
+            logger.error("Error while retrieving gateway ids...", e);
             throw new AppCatalogException(e);
         }
     }

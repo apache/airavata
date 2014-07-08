@@ -55,4 +55,6 @@ public interface GwyResourceProfile {
      * @return
      */
     List<ComputeResourcePreference> getAllComputeResourcePreferences (String gatewayId) throws AppCatalogException;
+
+    List<String> getGatewayProfileIds (String gatewayName) throws AppCatalogException;
 }
