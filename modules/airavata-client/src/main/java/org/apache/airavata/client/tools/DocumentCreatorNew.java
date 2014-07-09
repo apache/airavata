@@ -629,13 +629,13 @@ public class DocumentCreatorNew {
     	application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("echo_output", null, DataType.STRING));
         application.setApplicationInterfaceId(client.registerApplicationInterface(application));
 
-        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module.getAppModuleId(), "/bin/echo", ApplicationParallelismType.SERIAL, "EchoLocal");
+        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module.getAppModuleId(), "/N/u/lginnali/BigRed2/myjob/test.sh", ApplicationParallelismType.SERIAL, "EchoLocal");
         deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
         
         String date = (new Date()).toString();
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
-        String tempDir = "/tmp";
+        String tempDir = "/N/u/lginnali/BigRed2/myjob";
         tempDir = tempDir + File.separator + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();    
         
         client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), tempDir, "TG-STA110014S", false, null, null, null));

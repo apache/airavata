@@ -84,6 +84,7 @@ public class SSHProvider extends AbstractProvider {
             }
         }
         taskID = jobExecutionContext.getTaskData().getTaskID();
+
         if (!((SSHHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getHpcResource()) {
             jobID = "SSH_" + jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress() + "_" + Calendar.getInstance().getTimeInMillis();
             cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
@@ -309,7 +310,7 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        List<ThreadedHandler> daemonHandlers = GFacImpl.getDaemonHandlers();
+        List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         if (daemonHandlers == null) {
             daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         }

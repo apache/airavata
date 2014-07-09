@@ -54,13 +54,12 @@ public class ResourceConnection {
                 cluster = (PBSCluster) securityContext.getPbsCluster();
             }else {
                 SSHSecurityContext sshSecurityContext = (SSHSecurityContext) monitorID.getJobExecutionContext().getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
-                cluster = (PBSCluster)securityContext.getPbsCluster();
+                cluster = (PBSCluster)sshSecurityContext.getPbsCluster();
             }
 
             // we just use cluster configuration from the incoming request and construct a new cluster because for monitoring
             // we are using our own credentials and not using one users account to do everything.
             authenticationInfo = authInfo;
-            cluster = new PBSCluster(cluster.getServerInfo(), authenticationInfo, cluster.getJobManagerConfiguration());
         } catch (GFacException e) {
             log.error("Error reading data from job ExecutionContext");
         }

@@ -126,9 +126,9 @@ public class GSISSHAbstractCluster implements Cluster {
             session.setPassword(password);
 
         } else if (authenticationInfo instanceof SSHPublicKeyFileAuthentication) {
+
             SSHPublicKeyFileAuthentication sshPublicKeyFileAuthentication
                     = (SSHPublicKeyFileAuthentication) authenticationInfo;
-
             String privateKeyFile = sshPublicKeyFileAuthentication.
                     getPrivateKeyFile(serverInfo.getUserName(), serverInfo.getHost());
 

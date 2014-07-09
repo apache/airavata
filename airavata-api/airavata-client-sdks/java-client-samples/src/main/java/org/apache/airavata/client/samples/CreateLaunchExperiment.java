@@ -58,133 +58,31 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client client;
-    private static String localHostAppId = "localhost_692ada33-d4fb-4cdf-861b-a9277d529a27,SimpleEcho0_212a7e71-2d32-4214-97f4-52dac6d07f5d";
-    private static String sshHostAppId = "SimpleEcho2_00e67736-75c7-43b6-844b-3c1c51527dfe";
-    private static String pbsEchoAppId="SimpleEcho2_00e67736-75c7-43b6-844b-3c1c51527dfe";
-    private static String pbsWRFAppId = "WRF_55462229-63f9-4ade-abda-00470ce38904";
-    private static String slurmAppId = "SimpleEcho3_5517fe0c-343f-4fb2-8c17-7e22a36b7785";
-    private static String sgeAppId = "SimpleEcho4_e4aa7814-f63f-4a2d-99ac-b8aebad55c57";
+    private static String localHostAppId="localhost_2342b39f-5870-4704-9a52-e631dc790af7,SimpleEcho0_17c5e56e-beda-42f2-a7ec-5c7654177bc3gw111.iu.xsede.org_d532e952-ca5e-494e-942f-526658bdc13f,DO_NOT_SET_AT_CLIENTS";
+    private static String sshHostAppId;
+    private static String pbsEchoAppId="trestles.sdsc.edu_7d2b65b3-5c96-4d3e-b505-4493ed1f543b,SimpleEcho2_af13af0d-6149-4135-825d-9e2fc9821874";
+    private static String pbsWRFAppId="trestles.sdsc.edu_39b00c1f-074d-4980-8796-69ab70fa38e7,WRF_b7c9f782-233f-4fc5-932b-22023d115431";
+    private static String slurmAppId="stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
+    private static String sgeAppId;
+    private static String br2EchoAppId="bigred2_75f16065-51ff-4965-80b4-dedaa4955095,SimpleEchoBR_be7ff5b9-e8fb-4379-8a1d-9048683260cc";
     public static void main(String[] args) {
         try {
             AiravataUtils.setExecutionAsClient();
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + client.getAPIVersion());
-//            addDescriptors();
+            addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
-            final String expId = createExperimentForTrestles(client);
+//            final String expId = createExperimentForTrestles(client);
 //            final String expId = createExperimentForStampede(client);
 //            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentWRFTrestles(client);
+            final String expId = createExperimentForBR2(client);
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
             launchExperiment(client, expId);
-            System.out.println("Launched successfully");
-            List<Experiment> experiments = getExperimentsForUser(client, "admin");
-            List<ExperimentSummary> searchedExps1 = searchExperimentsByName(client, "admin", "echo");
-            List<ExperimentSummary> searchedExps2 = searchExperimentsByDesc(client, "admin", "Echo");
-            List<ExperimentSummary> searchedExps3 = searchExperimentsByApplication(client, "admin", "cho");
-            List<Project> projects = getAllUserProject(client, "admin");
-            List<Project> searchProjects1 = searchProjectsByProjectName(client, "admin", "project");
-            List<Project> searchProjects2 = searchProjectsByProjectDesc(client, "admin", "test");
-            for (Experiment exp : experiments) {
-                System.out.println(" exp id : " + exp.getExperimentID());
-                System.out.println("experiment Description : " + exp.getDescription());
-                if (exp.getExperimentStatus() != null) {
-                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
-                }
-            }
 
-            for (ExperimentSummary exp : searchedExps1) {
-                System.out.println("search results by experiment name");
-                System.out.println("experiment ID : " + exp.getExperimentID());
-                System.out.println("experiment Description : " + exp.getDescription());
-                if (exp.getExperimentStatus() != null) {
-                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
-                }
-            }
-
-            for (ExperimentSummary exp : searchedExps2) {
-                System.out.println("search results by experiment desc");
-                System.out.println("experiment ID : " + exp.getExperimentID());
-                if (exp.getExperimentStatus() != null) {
-                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
-                }
-            }
-
-            for (ExperimentSummary exp : searchedExps3) {
-                System.out.println("search results by application");
-                System.out.println("experiment ID : " + exp.getExperimentID());
-                if (exp.getExperimentStatus() != null) {
-                    System.out.println(" exp status : " + exp.getExperimentStatus().getExperimentState().toString());
-                }
-            }
-
-            for (Project pr : searchProjects1) {
-                System.out.println(" project id : " + pr.getProjectID());
-            }
-
-            for (Project pr : searchProjects2) {
-                System.out.println(" project id : " + pr.getProjectID());
-                System.out.println(" project desc : " + pr.getDescription());
-            }
-
-            Thread monitor = (new Thread() {
-                public void run() {
-                    Map<String, JobStatus> jobStatuses = null;
-                    while (true) {
-                        try {
-                            Thread.sleep(5000);
-                            jobStatuses = client.getJobStatuses(expId);
-                            Set<String> strings = jobStatuses.keySet();
-                            for (String key : strings) {
-                                JobStatus jobStatus = jobStatuses.get(key);
-                                if (jobStatus == null) {
-                                    return;
-                                } else {
-                                    if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
-                                        System.out.println("Job completed Job ID: " + key);
-                                        return;
-                                    } else {
-                                        System.out.println("Job ID:" + key + jobStatuses.get(key).getJobState().toString());
-                                    }
-                                }
-                            }
-                            ExperimentStatus experimentStatus = client.getExperimentStatus(expId);
-                            if (experimentStatus.getExperimentState().equals(ExperimentState.FAILED)) {
-                                return;
-                            }
-                            System.out.println(experimentStatus);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                }
-            });
-            monitor.start();
-            try {
-                monitor.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace(); // To change body of catch statement use
-                // File | Settings | File Templates.
-            }
-
-//            System.out.println(airavata.getExperimentStatus(expId));
-            List<DataObjectType> output = client.getExperimentOutputs(expId);
-            for (DataObjectType dataObjectType : output) {
-                System.out.println(dataObjectType.getKey() + " : " + dataObjectType.getType() + " : " + dataObjectType.getValue());
-
-
-            }
-            String clonedExpId = cloneExperiment(client, expId);
-            System.out.println("Cloned Experiment ID : " + clonedExpId);
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
@@ -196,21 +94,22 @@ public class CreateLaunchExperiment {
         try {
         	DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
 //            DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
-            localHostAppId = documentCreator.createLocalHostDocs();
-            sshHostAppId = documentCreator.createSSHHostDocs();
+//            localHostAppId = documentCreator.createLocalHostDocs();
+//            sshHostAppId = documentCreator.createSSHHostDocs();
 //            documentCreator.createGramDocs();
-            pbsEchoAppId =documentCreator.createPBSDocsForOGCE_Echo();
-            pbsWRFAppId =documentCreator.createPBSDocsForOGCE_WRF();
-            slurmAppId = documentCreator.createSlurmDocs();
-            sgeAppId = documentCreator.createSGEDocs();
+//            pbsEchoAppId =documentCreator.createPBSDocsForOGCE_Echo();
+//            pbsWRFAppId =documentCreator.createPBSDocsForOGCE_WRF();
+//            slurmAppId = documentCreator.createSlurmDocs();
+//            sgeAppId = documentCreator.createSGEDocs();
 //            documentCreator.createEchoHostDocs();
-//            documentCreator.createBigRedDocs();
+            br2EchoAppId = documentCreator.createBigRedDocs();
             System.out.printf(localHostAppId);
             System.out.println(sshHostAppId);
             System.out.println(pbsEchoAppId);
             System.out.println(pbsWRFAppId);
             System.out.println(slurmAppId);
             System.out.println(sgeAppId);
+            System.out.println(br2EchoAppId);
         } catch (Exception e) {
             logger.error("Unable to create documents", e.getMessage());
             throw new ApplicationSettingsException(e.getMessage());
@@ -557,10 +456,10 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", "SimpleEchoBR", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", br2EchoAppId.split(",")[1], exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("bigred2.uits.iu.edu", 1, 1, 1, "normal", 1, 0, 1, "sds128");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(br2EchoAppId.split(",")[0], 1, 1, 1, "normal", 1, 0, 1, null);
             scheduling.setResourceHostId("bigred2.uits.iu.edu");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
@@ -586,7 +485,9 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            client.launchExperiment(expId, "2b8d3a27-3353-40d6-832f-b5c6457c88bc");
+            String sshTokenId = "9a269d4b-b2a5-4dc6-b83a-895b9efca56a";
+            String gsisshTokenId = "2b8d3a27-3353-40d6-832f-b5c6457c88bc";
+            client.launchExperiment(expId, sshTokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);
