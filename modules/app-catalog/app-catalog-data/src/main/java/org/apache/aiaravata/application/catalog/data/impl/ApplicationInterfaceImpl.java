@@ -180,17 +180,19 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AbstractResource.AppInputConstants.INTERFACE_ID, interfaceId);
                     ids.put(AbstractResource.AppInputConstants.INPUT_KEY, input.getName());
-                    ApplicationInputResource existingResource = (ApplicationInputResource)inputResource.get(ids);
-                    existingResource.setAppInterfaceResource(existingInterface);
-                    existingResource.setInterfaceID(interfaceId);
-                    existingResource.setUserFriendlyDesc(input.getUserFriendlyDescription());
-                    existingResource.setInputKey(input.getName());
-                    existingResource.setInputVal(input.getValue());
-                    existingResource.setDataType(input.getType().toString());
-                    existingResource.setMetadata(input.getMetaData());
-                    existingResource.setStandareInput(input.isStandardInput());
-                    existingResource.setAppArgument(input.getApplicationArgument());
-                    existingResource.save();
+                    if (inputResource.isExists(ids)){
+                        inputResource = (ApplicationInputResource)inputResource.get(ids);
+                    }
+                    inputResource.setAppInterfaceResource(existingInterface);
+                    inputResource.setInterfaceID(interfaceId);
+                    inputResource.setUserFriendlyDesc(input.getUserFriendlyDescription());
+                    inputResource.setInputKey(input.getName());
+                    inputResource.setInputVal(input.getValue());
+                    inputResource.setDataType(input.getType().toString());
+                    inputResource.setMetadata(input.getMetaData());
+                    inputResource.setStandareInput(input.isStandardInput());
+                    inputResource.setAppArgument(input.getApplicationArgument());
+                    inputResource.save();
                 }
             }
 
@@ -201,13 +203,15 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AbstractResource.AppOutputConstants.INTERFACE_ID, interfaceId);
                     ids.put(AbstractResource.AppOutputConstants.OUTPUT_KEY, output.getName());
-                    ApplicationOutputResource existingResource = (ApplicationOutputResource)outputResource.get(ids);
-                    existingResource.setInterfaceID(interfaceId);
-                    existingResource.setAppInterfaceResource(existingInterface);
-                    existingResource.setOutputKey(output.getName());
-                    existingResource.setOutputVal(output.getValue());
-                    existingResource.setDataType(output.getType().toString());
-                    existingResource.save();
+                    if (outputResource.isExists(ids)){
+                        outputResource = (ApplicationOutputResource)outputResource.get(ids);
+                    }
+                    outputResource.setInterfaceID(interfaceId);
+                    outputResource.setAppInterfaceResource(existingInterface);
+                    outputResource.setOutputKey(output.getName());
+                    outputResource.setOutputVal(output.getValue());
+                    outputResource.setDataType(output.getType().toString());
+                    outputResource.save();
                 }
             }
         }catch (Exception e) {

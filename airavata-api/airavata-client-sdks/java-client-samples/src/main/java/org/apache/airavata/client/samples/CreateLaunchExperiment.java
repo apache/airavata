@@ -58,25 +58,25 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client client;
-    private static String localHostAppId;
-    private static String sshHostAppId;
-    private static String pbsEchoAppId="trestles.sdsc.edu_9fcdcdc7-119a-434b-a5ef-8ed67544e855,SimpleEcho2_141c96db-46de-446e-9c39-8234a8bf9d5c";
-    private static String pbsWRFAppId;
-    private static String slurmAppId;
-    private static String sgeAppId;
+    private static String localHostAppId = "localhost_692ada33-d4fb-4cdf-861b-a9277d529a27,SimpleEcho0_212a7e71-2d32-4214-97f4-52dac6d07f5d";
+    private static String sshHostAppId = "SimpleEcho2_00e67736-75c7-43b6-844b-3c1c51527dfe";
+    private static String pbsEchoAppId="SimpleEcho2_00e67736-75c7-43b6-844b-3c1c51527dfe";
+    private static String pbsWRFAppId = "WRF_55462229-63f9-4ade-abda-00470ce38904";
+    private static String slurmAppId = "SimpleEcho3_5517fe0c-343f-4fb2-8c17-7e22a36b7785";
+    private static String sgeAppId = "SimpleEcho4_e4aa7814-f63f-4a2d-99ac-b8aebad55c57";
     public static void main(String[] args) {
         try {
             AiravataUtils.setExecutionAsClient();
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + client.getAPIVersion());
-            addDescriptors();
+//            addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createExperimentForTrestles(client);
-//            final String expId = createExperimentForStampede(airavata);
-            final String expId = createExperimentForLocalHost(client);
+            final String expId = createExperimentForTrestles(client);
+//            final String expId = createExperimentForStampede(client);
+//            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
-//            final String expId = createExperimentWRFTrestles(airavata);
+//            final String expId = createExperimentWRFTrestles(client);
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
             launchExperiment(client, expId);
@@ -265,17 +265,17 @@ public class CreateLaunchExperiment {
             DataObjectType input = new DataObjectType();
             input.setKey("WRF_Namelist");
             input.setType(DataType.URI);
-            input.setValue("/Users/raminder/Downloads/wrf_sample_inputs/namelist.input");
+            input.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/namelist.input");
 
             DataObjectType input1 = new DataObjectType();
             input1.setKey("WRF_Input_File");
             input1.setType(DataType.URI);
-            input1.setValue("/Users/raminder/Downloads/wrf_sample_inputs/wrfinput_d01");
+            input1.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfinput_d01");
 
             DataObjectType input2 = new DataObjectType();
             input2.setKey("WRF_Boundary_File");
             input2.setType(DataType.URI);
-            input2.setValue("/Users/raminder/Downloads/wrf_sample_inputs/wrfbdy_d01");
+            input2.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfbdy_d01");
 
             exInputs.add(input);
             exInputs.add(input1);
@@ -586,7 +586,7 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            client.launchExperiment(expId, "testToken");
+            client.launchExperiment(expId, "2b8d3a27-3353-40d6-832f-b5c6457c88bc");
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);
