@@ -37,7 +37,7 @@ class WorkflowHandler : virtual public WorkflowIf {
     printf("deleteWorkflow\n");
   }
 
-  void registerWorkflow(std::string& _return, const std::string& workflowTemplateId, const  ::Workflow& workflow) {
+  void registerWorkflow(std::string& _return, const  ::Workflow& workflow) {
     // Your implementation goes here
     printf("registerWorkflow\n");
   }

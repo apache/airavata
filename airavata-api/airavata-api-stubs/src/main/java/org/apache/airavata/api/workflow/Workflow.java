@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 
     public void deleteWorkflow(String workflowTemplateId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
-    public String registerWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+    public String registerWorkflow(org.apache.airavata.model.Workflow workflow) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     public void updateWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
 
     public void deleteWorkflow(String workflowTemplateId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void registerWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void registerWorkflow(org.apache.airavata.model.Workflow workflow, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void updateWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -198,16 +198,15 @@ import org.slf4j.LoggerFactory;
       return;
     }
 
-    public String registerWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    public String registerWorkflow(org.apache.airavata.model.Workflow workflow) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
     {
-      send_registerWorkflow(workflowTemplateId, workflow);
+      send_registerWorkflow(workflow);
       return recv_registerWorkflow();
     }
 
-    public void send_registerWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow) throws org.apache.thrift.TException
+    public void send_registerWorkflow(org.apache.airavata.model.Workflow workflow) throws org.apache.thrift.TException
     {
       registerWorkflow_args args = new registerWorkflow_args();
-      args.setWorkflowTemplateId(workflowTemplateId);
       args.setWorkflow(workflow);
       sendBase("registerWorkflow", args);
     }
@@ -436,26 +435,23 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void registerWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void registerWorkflow(org.apache.airavata.model.Workflow workflow, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      registerWorkflow_call method_call = new registerWorkflow_call(workflowTemplateId, workflow, resultHandler, this, ___protocolFactory, ___transport);
+      registerWorkflow_call method_call = new registerWorkflow_call(workflow, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class registerWorkflow_call extends org.apache.thrift.async.TAsyncMethodCall {
-      private String workflowTemplateId;
       private org.apache.airavata.model.Workflow workflow;
-      public registerWorkflow_call(String workflowTemplateId, org.apache.airavata.model.Workflow workflow, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      public registerWorkflow_call(org.apache.airavata.model.Workflow workflow, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
-        this.workflowTemplateId = workflowTemplateId;
         this.workflow = workflow;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("registerWorkflow", org.apache.thrift.protocol.TMessageType.CALL, 0));
         registerWorkflow_args args = new registerWorkflow_args();
-        args.setWorkflowTemplateId(workflowTemplateId);
         args.setWorkflow(workflow);
         args.write(prot);
         prot.writeMessageEnd();
@@ -693,7 +689,7 @@ import org.slf4j.LoggerFactory;
       public registerWorkflow_result getResult(I iface, registerWorkflow_args args) throws org.apache.thrift.TException {
         registerWorkflow_result result = new registerWorkflow_result();
         try {
-          result.success = iface.registerWorkflow(args.workflowTemplateId, args.workflow);
+          result.success = iface.registerWorkflow(args.workflow);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -1076,7 +1072,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, registerWorkflow_args args, org.apache.thrift.async.AsyncMethodCallback<String> resultHandler) throws TException {
-        iface.registerWorkflow(args.workflowTemplateId, args.workflow,resultHandler);
+        iface.registerWorkflow(args.workflow,resultHandler);
       }
     }
 
@@ -4160,8 +4156,7 @@ import org.slf4j.LoggerFactory;
   public static class registerWorkflow_args implements org.apache.thrift.TBase<registerWorkflow_args, registerWorkflow_args._Fields>, java.io.Serializable, Cloneable, Comparable<registerWorkflow_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("registerWorkflow_args");
 
-    private static final org.apache.thrift.protocol.TField WORKFLOW_TEMPLATE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowTemplateId", org.apache.thrift.protocol.TType.STRING, (short)1);
-    private static final org.apache.thrift.protocol.TField WORKFLOW_FIELD_DESC = new org.apache.thrift.protocol.TField("workflow", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField WORKFLOW_FIELD_DESC = new org.apache.thrift.protocol.TField("workflow", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4169,13 +4164,11 @@ import org.slf4j.LoggerFactory;
       schemes.put(TupleScheme.class, new registerWorkflow_argsTupleSchemeFactory());
     }
 
-    public String workflowTemplateId; // required
     public org.apache.airavata.model.Workflow workflow; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      WORKFLOW_TEMPLATE_ID((short)1, "workflowTemplateId"),
-      WORKFLOW((short)2, "workflow");
+      WORKFLOW((short)1, "workflow");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4190,9 +4183,7 @@ import org.slf4j.LoggerFactory;
        */
       public static _Fields findByThriftId(int fieldId) {
         switch(fieldId) {
-          case 1: // WORKFLOW_TEMPLATE_ID
-            return WORKFLOW_TEMPLATE_ID;
-          case 2: // WORKFLOW
+          case 1: // WORKFLOW
             return WORKFLOW;
           default:
             return null;
@@ -4237,8 +4228,6 @@ import org.slf4j.LoggerFactory;
     public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
     static {
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-      tmpMap.put(_Fields.WORKFLOW_TEMPLATE_ID, new org.apache.thrift.meta_data.FieldMetaData("workflowTemplateId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.WORKFLOW, new org.apache.thrift.meta_data.FieldMetaData("workflow", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.Workflow.class)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -4249,11 +4238,9 @@ import org.slf4j.LoggerFactory;
     }
 
     public registerWorkflow_args(
-      String workflowTemplateId,
       org.apache.airavata.model.Workflow workflow)
     {
       this();
-      this.workflowTemplateId = workflowTemplateId;
       this.workflow = workflow;
     }
 
@@ -4261,9 +4248,6 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public registerWorkflow_args(registerWorkflow_args other) {
-      if (other.isSetWorkflowTemplateId()) {
-        this.workflowTemplateId = other.workflowTemplateId;
-      }
       if (other.isSetWorkflow()) {
         this.workflow = new org.apache.airavata.model.Workflow(other.workflow);
       }
@@ -4275,32 +4259,7 @@ import org.slf4j.LoggerFactory;
 
     @Override
     public void clear() {
-      this.workflowTemplateId = null;
       this.workflow = null;
-    }
-
-    public String getWorkflowTemplateId() {
-      return this.workflowTemplateId;
-    }
-
-    public registerWorkflow_args setWorkflowTemplateId(String workflowTemplateId) {
-      this.workflowTemplateId = workflowTemplateId;
-      return this;
-    }
-
-    public void unsetWorkflowTemplateId() {
-      this.workflowTemplateId = null;
-    }
-
-    /** Returns true if field workflowTemplateId is set (has been assigned a value) and false otherwise */
-    public boolean isSetWorkflowTemplateId() {
-      return this.workflowTemplateId != null;
-    }
-
-    public void setWorkflowTemplateIdIsSet(boolean value) {
-      if (!value) {
-        this.workflowTemplateId = null;
-      }
     }
 
     public org.apache.airavata.model.Workflow getWorkflow() {
@@ -4329,14 +4288,6 @@ import org.slf4j.LoggerFactory;
 
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
-      case WORKFLOW_TEMPLATE_ID:
-        if (value == null) {
-          unsetWorkflowTemplateId();
-        } else {
-          setWorkflowTemplateId((String)value);
-        }
-        break;
-
       case WORKFLOW:
         if (value == null) {
           unsetWorkflow();
@@ -4350,9 +4301,6 @@ import org.slf4j.LoggerFactory;
 
     public Object getFieldValue(_Fields field) {
       switch (field) {
-      case WORKFLOW_TEMPLATE_ID:
-        return getWorkflowTemplateId();
-
       case WORKFLOW:
         return getWorkflow();
 
@@ -4367,8 +4315,6 @@ import org.slf4j.LoggerFactory;
       }
 
       switch (field) {
-      case WORKFLOW_TEMPLATE_ID:
-        return isSetWorkflowTemplateId();
       case WORKFLOW:
         return isSetWorkflow();
       }
@@ -4387,15 +4333,6 @@ import org.slf4j.LoggerFactory;
     public boolean equals(registerWorkflow_args that) {
       if (that == null)
         return false;
-
-      boolean this_present_workflowTemplateId = true && this.isSetWorkflowTemplateId();
-      boolean that_present_workflowTemplateId = true && that.isSetWorkflowTemplateId();
-      if (this_present_workflowTemplateId || that_present_workflowTemplateId) {
-        if (!(this_present_workflowTemplateId && that_present_workflowTemplateId))
-          return false;
-        if (!this.workflowTemplateId.equals(that.workflowTemplateId))
-          return false;
-      }
 
       boolean this_present_workflow = true && this.isSetWorkflow();
       boolean that_present_workflow = true && that.isSetWorkflow();
@@ -4422,16 +4359,6 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetWorkflowTemplateId()).compareTo(other.isSetWorkflowTemplateId());
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-      if (isSetWorkflowTemplateId()) {
-        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.workflowTemplateId, other.workflowTemplateId);
-        if (lastComparison != 0) {
-          return lastComparison;
-        }
-      }
       lastComparison = Boolean.valueOf(isSetWorkflow()).compareTo(other.isSetWorkflow());
       if (lastComparison != 0) {
         return lastComparison;
@@ -4462,14 +4389,6 @@ import org.slf4j.LoggerFactory;
       StringBuilder sb = new StringBuilder("registerWorkflow_args(");
       boolean first = true;
 
-      sb.append("workflowTemplateId:");
-      if (this.workflowTemplateId == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.workflowTemplateId);
-      }
-      first = false;
-      if (!first) sb.append(", ");
       sb.append("workflow:");
       if (this.workflow == null) {
         sb.append("null");
@@ -4483,9 +4402,6 @@ import org.slf4j.LoggerFactory;
 
     public void validate() throws org.apache.thrift.TException {
       // check for required fields
-      if (workflowTemplateId == null) {
-        throw new org.apache.thrift.protocol.TProtocolException("Required field 'workflowTemplateId' was not present! Struct: " + toString());
-      }
       if (workflow == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'workflow' was not present! Struct: " + toString());
       }
@@ -4529,15 +4445,7 @@ import org.slf4j.LoggerFactory;
             break;
           }
           switch (schemeField.id) {
-            case 1: // WORKFLOW_TEMPLATE_ID
-              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-                struct.workflowTemplateId = iprot.readString();
-                struct.setWorkflowTemplateIdIsSet(true);
-              } else { 
-                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-              }
-              break;
-            case 2: // WORKFLOW
+            case 1: // WORKFLOW
               if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
                 struct.workflow = new org.apache.airavata.model.Workflow();
                 struct.workflow.read(iprot);
@@ -4561,11 +4469,6 @@ import org.slf4j.LoggerFactory;
         struct.validate();
 
         oprot.writeStructBegin(STRUCT_DESC);
-        if (struct.workflowTemplateId != null) {
-          oprot.writeFieldBegin(WORKFLOW_TEMPLATE_ID_FIELD_DESC);
-          oprot.writeString(struct.workflowTemplateId);
-          oprot.writeFieldEnd();
-        }
         if (struct.workflow != null) {
           oprot.writeFieldBegin(WORKFLOW_FIELD_DESC);
           struct.workflow.write(oprot);
@@ -4588,15 +4491,12 @@ import org.slf4j.LoggerFactory;
       @Override
       public void write(org.apache.thrift.protocol.TProtocol prot, registerWorkflow_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
-        oprot.writeString(struct.workflowTemplateId);
         struct.workflow.write(oprot);
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, registerWorkflow_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        struct.workflowTemplateId = iprot.readString();
-        struct.setWorkflowTemplateIdIsSet(true);
         struct.workflow = new org.apache.airavata.model.Workflow();
         struct.workflow.read(iprot);
         struct.setWorkflowIsSet(true);

@@ -18,7 +18,7 @@ class WorkflowIf {
   virtual void getAllWorkflows(std::vector<std::string> & _return) = 0;
   virtual void getWorkflow( ::Workflow& _return, const std::string& workflowTemplateId) = 0;
   virtual void deleteWorkflow(const std::string& workflowTemplateId) = 0;
-  virtual void registerWorkflow(std::string& _return, const std::string& workflowTemplateId, const  ::Workflow& workflow) = 0;
+  virtual void registerWorkflow(std::string& _return, const  ::Workflow& workflow) = 0;
   virtual void updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow) = 0;
   virtual void getWorkflowTemplateId(std::string& _return, const std::string& workflowName) = 0;
   virtual bool isWorkflowExistWithName(const std::string& workflowName) = 0;
@@ -60,7 +60,7 @@ class WorkflowNull : virtual public WorkflowIf {
   void deleteWorkflow(const std::string& /* workflowTemplateId */) {
     return;
   }
-  void registerWorkflow(std::string& /* _return */, const std::string& /* workflowTemplateId */, const  ::Workflow& /* workflow */) {
+  void registerWorkflow(std::string& /* _return */, const  ::Workflow& /* workflow */) {
     return;
   }
   void updateWorkflow(const std::string& /* workflowTemplateId */, const  ::Workflow& /* workflow */) {
@@ -457,17 +457,12 @@ class Workflow_deleteWorkflow_presult {
 class Workflow_registerWorkflow_args {
  public:
 
-  Workflow_registerWorkflow_args() : workflowTemplateId() {
+  Workflow_registerWorkflow_args() {
   }
 
   virtual ~Workflow_registerWorkflow_args() throw() {}
 
-  std::string workflowTemplateId;
    ::Workflow workflow;
-
-  void __set_workflowTemplateId(const std::string& val) {
-    workflowTemplateId = val;
-  }
 
   void __set_workflow(const  ::Workflow& val) {
     workflow = val;
@@ -475,8 +470,6 @@ class Workflow_registerWorkflow_args {
 
   bool operator == (const Workflow_registerWorkflow_args & rhs) const
   {
-    if (!(workflowTemplateId == rhs.workflowTemplateId))
-      return false;
     if (!(workflow == rhs.workflow))
       return false;
     return true;
@@ -499,7 +492,6 @@ class Workflow_registerWorkflow_pargs {
 
   virtual ~Workflow_registerWorkflow_pargs() throw() {}
 
-  const std::string* workflowTemplateId;
   const  ::Workflow* workflow;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -1016,8 +1008,8 @@ class WorkflowClient : virtual public WorkflowIf {
   void deleteWorkflow(const std::string& workflowTemplateId);
   void send_deleteWorkflow(const std::string& workflowTemplateId);
   void recv_deleteWorkflow();
-  void registerWorkflow(std::string& _return, const std::string& workflowTemplateId, const  ::Workflow& workflow);
-  void send_registerWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow);
+  void registerWorkflow(std::string& _return, const  ::Workflow& workflow);
+  void send_registerWorkflow(const  ::Workflow& workflow);
   void recv_registerWorkflow(std::string& _return);
   void updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow);
   void send_updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow);
@@ -1117,13 +1109,13 @@ class WorkflowMultiface : virtual public WorkflowIf {
     ifaces_[i]->deleteWorkflow(workflowTemplateId);
   }
 
-  void registerWorkflow(std::string& _return, const std::string& workflowTemplateId, const  ::Workflow& workflow) {
+  void registerWorkflow(std::string& _return, const  ::Workflow& workflow) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->registerWorkflow(_return, workflowTemplateId, workflow);
+      ifaces_[i]->registerWorkflow(_return, workflow);
     }
-    ifaces_[i]->registerWorkflow(_return, workflowTemplateId, workflow);
+    ifaces_[i]->registerWorkflow(_return, workflow);
     return;
   }
 

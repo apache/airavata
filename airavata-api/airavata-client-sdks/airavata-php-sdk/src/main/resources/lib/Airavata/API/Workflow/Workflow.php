@@ -20,7 +20,7 @@ interface WorkflowIf {
   public function getAllWorkflows();
   public function getWorkflow($workflowTemplateId);
   public function deleteWorkflow($workflowTemplateId);
-  public function registerWorkflow($workflowTemplateId, \Airavata\Model\Workflow $workflow);
+  public function registerWorkflow(\Airavata\Model\Workflow $workflow);
   public function updateWorkflow($workflowTemplateId, \Airavata\Model\Workflow $workflow);
   public function getWorkflowTemplateId($workflowName);
   public function isWorkflowExistWithName($workflowName);
@@ -213,16 +213,15 @@ class WorkflowClient implements \Airavata\API\Workflow\WorkflowIf {
     return;
   }
 
-  public function registerWorkflow($workflowTemplateId, \Airavata\Model\Workflow $workflow)
+  public function registerWorkflow(\Airavata\Model\Workflow $workflow)
   {
-    $this->send_registerWorkflow($workflowTemplateId, $workflow);
+    $this->send_registerWorkflow($workflow);
     return $this->recv_registerWorkflow();
   }
 
-  public function send_registerWorkflow($workflowTemplateId, \Airavata\Model\Workflow $workflow)
+  public function send_registerWorkflow(\Airavata\Model\Workflow $workflow)
   {
     $args = new \Airavata\API\Workflow\Workflow_registerWorkflow_args();
-    $args->workflowTemplateId = $workflowTemplateId;
     $args->workflow = $workflow;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -1078,17 +1077,12 @@ class Workflow_deleteWorkflow_result {
 class Workflow_registerWorkflow_args {
   static $_TSPEC;
 
-  public $workflowTemplateId = null;
   public $workflow = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'workflowTemplateId',
-          'type' => TType::STRING,
-          ),
-        2 => array(
           'var' => 'workflow',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workflow',
@@ -1096,9 +1090,6 @@ class Workflow_registerWorkflow_args {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['workflowTemplateId'])) {
-        $this->workflowTemplateId = $vals['workflowTemplateId'];
-      }
       if (isset($vals['workflow'])) {
         $this->workflow = $vals['workflow'];
       }
@@ -1125,13 +1116,6 @@ class Workflow_registerWorkflow_args {
       switch ($fid)
       {
         case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->workflowTemplateId);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
           if ($ftype == TType::STRUCT) {
             $this->workflow = new \Airavata\Model\Workflow();
             $xfer += $this->workflow->read($input);
@@ -1152,16 +1136,11 @@ class Workflow_registerWorkflow_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Workflow_registerWorkflow_args');
-    if ($this->workflowTemplateId !== null) {
-      $xfer += $output->writeFieldBegin('workflowTemplateId', TType::STRING, 1);
-      $xfer += $output->writeString($this->workflowTemplateId);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->workflow !== null) {
       if (!is_object($this->workflow)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('workflow', TType::STRUCT, 2);
+      $xfer += $output->writeFieldBegin('workflow', TType::STRUCT, 1);
       $xfer += $this->workflow->write($output);
       $xfer += $output->writeFieldEnd();
     }

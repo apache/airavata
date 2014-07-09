@@ -682,7 +682,6 @@ uint32_t Workflow_registerWorkflow_args::read(::apache::thrift::protocol::TProto
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_workflowTemplateId = false;
   bool isset_workflow = false;
 
   while (true)
@@ -694,14 +693,6 @@ uint32_t Workflow_registerWorkflow_args::read(::apache::thrift::protocol::TProto
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->workflowTemplateId);
-          isset_workflowTemplateId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->workflow.read(iprot);
           isset_workflow = true;
@@ -718,8 +709,6 @@ uint32_t Workflow_registerWorkflow_args::read(::apache::thrift::protocol::TProto
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_workflowTemplateId)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_workflow)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -729,11 +718,7 @@ uint32_t Workflow_registerWorkflow_args::write(::apache::thrift::protocol::TProt
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Workflow_registerWorkflow_args");
 
-  xfer += oprot->writeFieldBegin("workflowTemplateId", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->workflowTemplateId);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("workflow", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += oprot->writeFieldBegin("workflow", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += this->workflow.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -746,11 +731,7 @@ uint32_t Workflow_registerWorkflow_pargs::write(::apache::thrift::protocol::TPro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Workflow_registerWorkflow_pargs");
 
-  xfer += oprot->writeFieldBegin("workflowTemplateId", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->workflowTemplateId)));
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("workflow", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += oprot->writeFieldBegin("workflow", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += (*(this->workflow)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -1784,19 +1765,18 @@ void WorkflowClient::recv_deleteWorkflow()
   return;
 }
 
-void WorkflowClient::registerWorkflow(std::string& _return, const std::string& workflowTemplateId, const  ::Workflow& workflow)
+void WorkflowClient::registerWorkflow(std::string& _return, const  ::Workflow& workflow)
 {
-  send_registerWorkflow(workflowTemplateId, workflow);
+  send_registerWorkflow(workflow);
   recv_registerWorkflow(_return);
 }
 
-void WorkflowClient::send_registerWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow)
+void WorkflowClient::send_registerWorkflow(const  ::Workflow& workflow)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerWorkflow", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Workflow_registerWorkflow_pargs args;
-  args.workflowTemplateId = &workflowTemplateId;
   args.workflow = &workflow;
   args.write(oprot_);
 
@@ -2279,7 +2259,7 @@ void WorkflowProcessor::process_registerWorkflow(int32_t seqid, ::apache::thrift
 
   Workflow_registerWorkflow_result result;
   try {
-    iface_->registerWorkflow(result.success, args.workflowTemplateId, args.workflow);
+    iface_->registerWorkflow(result.success, args.workflow);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
