@@ -105,6 +105,19 @@ public class ServerMain {
 //	}
 	
 	public static void main(String args[]) throws ParseException, IOException {
+//		Properties properties = System.getProperties();
+//		for (Object key : properties.keySet()) {
+//			System.out.println(key.toString()+"     =       "+properties.get(key));
+//		}
+//		Map<String, String> env = System.getenv();
+//
+//		for (Object key : env.keySet()) {
+//			System.out.println(key.toString()+"     =       "+env.get(key));
+//		}
+//		if (true){
+//			return;
+//		}
+		
 		AiravataUtils.setExecutionAsServer();
 		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
 		if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
@@ -241,7 +254,7 @@ public class ServerMain {
 	}
 
 	private static String getServerStartedFileName() {
-		return serverStartedFileNamePrefix+"_"+Integer.toString(serverPID);
+		return new File(new File(System.getenv("AIRAVATA_HOME"),"bin"),serverStartedFileNamePrefix+"_"+Integer.toString(serverPID)).toString();
 	}
 
 	public static void stopAllServers() {
