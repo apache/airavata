@@ -58,25 +58,25 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client client;
-    private static String localHostAppId;
+    private static String localHostAppId="localhost_2342b39f-5870-4704-9a52-e631dc790af7,SimpleEcho0_17c5e56e-beda-42f2-a7ec-5c7654177bc3gw111.iu.xsede.org_d532e952-ca5e-494e-942f-526658bdc13f,DO_NOT_SET_AT_CLIENTS";
     private static String sshHostAppId;
-    private static String pbsEchoAppId="trestles.sdsc.edu_9fcdcdc7-119a-434b-a5ef-8ed67544e855,SimpleEcho2_141c96db-46de-446e-9c39-8234a8bf9d5c";
-    private static String pbsWRFAppId;
-    private static String slurmAppId;
+    private static String pbsEchoAppId="trestles.sdsc.edu_7d2b65b3-5c96-4d3e-b505-4493ed1f543b,SimpleEcho2_af13af0d-6149-4135-825d-9e2fc9821874";
+    private static String pbsWRFAppId="trestles.sdsc.edu_39b00c1f-074d-4980-8796-69ab70fa38e7,WRF_b7c9f782-233f-4fc5-932b-22023d115431";
+    private static String slurmAppId="stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
     private static String sgeAppId;
     public static void main(String[] args) {
         try {
             AiravataUtils.setExecutionAsClient();
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + client.getAPIVersion());
-            addDescriptors();
+//            addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForTrestles(client);
-//            final String expId = createExperimentForStampede(airavata);
-            final String expId = createExperimentForLocalHost(client);
+//            final String expId = createExperimentForStampede(client);
+//            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
-//            final String expId = createExperimentWRFTrestles(airavata);
+            final String expId = createExperimentWRFTrestles(client);
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
             launchExperiment(client, expId);
@@ -265,17 +265,17 @@ public class CreateLaunchExperiment {
             DataObjectType input = new DataObjectType();
             input.setKey("WRF_Namelist");
             input.setType(DataType.URI);
-            input.setValue("/Users/raminder/Downloads/wrf_sample_inputs/namelist.input");
+            input.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/namelist.input");
 
             DataObjectType input1 = new DataObjectType();
             input1.setKey("WRF_Input_File");
             input1.setType(DataType.URI);
-            input1.setValue("/Users/raminder/Downloads/wrf_sample_inputs/wrfinput_d01");
+            input1.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfinput_d01");
 
             DataObjectType input2 = new DataObjectType();
             input2.setKey("WRF_Boundary_File");
             input2.setType(DataType.URI);
-            input2.setValue("/Users/raminder/Downloads/wrf_sample_inputs/wrfbdy_d01");
+            input2.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfbdy_d01");
 
             exInputs.add(input);
             exInputs.add(input1);
@@ -586,7 +586,7 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            client.launchExperiment(expId, "testToken");
+            client.launchExperiment(expId, "2b8d3a27-3353-40d6-832f-b5c6457c88bc");
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);
