@@ -59,7 +59,7 @@ service Workflow {
               2: airavataErrors.AiravataClientException ace,
               3: airavataErrors.AiravataSystemException ase)
 
-  string registerWorkflow(1: required string workflowTemplateId, 2: required workflowDataModel.Workflow workflow)
+  string registerWorkflow(1: required workflowDataModel.Workflow workflow)
         throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)

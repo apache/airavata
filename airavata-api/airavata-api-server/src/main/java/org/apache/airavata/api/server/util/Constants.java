@@ -24,7 +24,7 @@ package org.apache.airavata.api.server.util;
 public class Constants {
     public static final String API_SERVER_PORT = "apiserver.server.port";
     public static final String API_SERVER_HOST = "apiserver.server.host";
-//    public static final String APP_CATALOG_SERVER_PORT = "app.catalog.server.port";
-//    public static final String APP_CATALOG_SERVER_HOST = "app.catalog.server.host";
+    public static final String APP_CATALOG_SERVER_PORT = "workflow.server.port";
+    public static final String APP_CATALOG_SERVER_HOST = "workflow.server.host";
     public static final String API_SERVER_MIN_THREADS = "apiserver.server.min.threads";
 }
