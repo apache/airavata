@@ -175,8 +175,8 @@ void swap(InputDataObjectType &a, InputDataObjectType &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* OutputDataObjectType::ascii_fingerprint = "FFD96F45C68610A5AC6E843C512B01EC";
-const uint8_t OutputDataObjectType::binary_fingerprint[16] = {0xFF,0xD9,0x6F,0x45,0xC6,0x86,0x10,0xA5,0xAC,0x6E,0x84,0x3C,0x51,0x2B,0x01,0xEC};
+const char* OutputDataObjectType::ascii_fingerprint = "B33AE596EF78C48424CF96BCA5D1DF99";
+const uint8_t OutputDataObjectType::binary_fingerprint[16] = {0xB3,0x3A,0xE5,0x96,0xEF,0x78,0xC4,0x84,0x24,0xCF,0x96,0xBC,0xA5,0xD1,0xDF,0x99};
 
 uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -189,7 +189,6 @@ uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_isEmpty = false;
   bool isset_name = false;
 
   while (true)
@@ -201,14 +200,6 @@ uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->isEmpty);
-          isset_isEmpty = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->name);
           isset_name = true;
@@ -216,7 +207,7 @@ uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->value);
           this->__isset.value = true;
@@ -224,7 +215,7 @@ uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast1;
           xfer += iprot->readI32(ecast1);
@@ -243,8 +234,6 @@ uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_isEmpty)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_name)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -254,21 +243,17 @@ uint32_t OutputDataObjectType::write(::apache::thrift::protocol::TProtocol* opro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("OutputDataObjectType");
 
-  xfer += oprot->writeFieldBegin("isEmpty", ::apache::thrift::protocol::T_BOOL, 1);
-  xfer += oprot->writeBool(this->isEmpty);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("name", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("name", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->name);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.value) {
-    xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeFieldBegin("value", ::apache::thrift::protocol::T_STRING, 2);
     xfer += oprot->writeString(this->value);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.type) {
-    xfer += oprot->writeFieldBegin("type", ::apache::thrift::protocol::T_I32, 4);
+    xfer += oprot->writeFieldBegin("type", ::apache::thrift::protocol::T_I32, 3);
     xfer += oprot->writeI32((int32_t)this->type);
     xfer += oprot->writeFieldEnd();
   }
@@ -279,15 +264,14 @@ uint32_t OutputDataObjectType::write(::apache::thrift::protocol::TProtocol* opro
 
 void swap(OutputDataObjectType &a, OutputDataObjectType &b) {
   using ::std::swap;
-  swap(a.isEmpty, b.isEmpty);
   swap(a.name, b.name);
   swap(a.value, b.value);
   swap(a.type, b.type);
   swap(a.__isset, b.__isset);
 }
 
-const char* ApplicationInterfaceDescription::ascii_fingerprint = "3C4F9F747CEDFDF7A46B0786A7C09268";
-const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0x3C,0x4F,0x9F,0x74,0x7C,0xED,0xFD,0xF7,0xA4,0x6B,0x07,0x86,0xA7,0xC0,0x92,0x68};
+const char* ApplicationInterfaceDescription::ascii_fingerprint = "355A0972969341C2A113049339427849";
+const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0x35,0x5A,0x09,0x72,0x96,0x93,0x41,0xC2,0xA1,0x13,0x04,0x93,0x39,0x42,0x78,0x49};
 
 uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
