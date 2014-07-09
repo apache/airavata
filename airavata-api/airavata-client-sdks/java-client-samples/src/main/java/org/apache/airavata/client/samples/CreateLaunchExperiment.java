@@ -58,12 +58,12 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client client;
-    private static String localHostAppId="localhost_2342b39f-5870-4704-9a52-e631dc790af7,SimpleEcho0_17c5e56e-beda-42f2-a7ec-5c7654177bc3gw111.iu.xsede.org_d532e952-ca5e-494e-942f-526658bdc13f,DO_NOT_SET_AT_CLIENTS";
-    private static String sshHostAppId;
-    private static String pbsEchoAppId="trestles.sdsc.edu_7d2b65b3-5c96-4d3e-b505-4493ed1f543b,SimpleEcho2_af13af0d-6149-4135-825d-9e2fc9821874";
-    private static String pbsWRFAppId="trestles.sdsc.edu_39b00c1f-074d-4980-8796-69ab70fa38e7,WRF_b7c9f782-233f-4fc5-932b-22023d115431";
-    private static String slurmAppId="stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
-    private static String sgeAppId;
+    private static String localHostAppId = "localhost_692ada33-d4fb-4cdf-861b-a9277d529a27,SimpleEcho0_212a7e71-2d32-4214-97f4-52dac6d07f5d";
+    private static String sshHostAppId = "SimpleEcho2_00e67736-75c7-43b6-844b-3c1c51527dfe";
+    private static String pbsEchoAppId="SimpleEcho2_00e67736-75c7-43b6-844b-3c1c51527dfe";
+    private static String pbsWRFAppId = "WRF_55462229-63f9-4ade-abda-00470ce38904";
+    private static String slurmAppId = "SimpleEcho3_5517fe0c-343f-4fb2-8c17-7e22a36b7785";
+    private static String sgeAppId = "SimpleEcho4_e4aa7814-f63f-4a2d-99ac-b8aebad55c57";
     public static void main(String[] args) {
         try {
             AiravataUtils.setExecutionAsClient();
@@ -72,11 +72,11 @@ public class CreateLaunchExperiment {
 //            addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createExperimentForTrestles(client);
+            final String expId = createExperimentForTrestles(client);
 //            final String expId = createExperimentForStampede(client);
 //            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
-            final String expId = createExperimentWRFTrestles(client);
+//            final String expId = createExperimentWRFTrestles(client);
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
             launchExperiment(client, expId);
