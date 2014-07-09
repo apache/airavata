@@ -21,6 +21,7 @@
 
 package org.apache.aiaravata.application.catalog.data.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -428,10 +429,18 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public List<String> getAllComputeResourceIdList() throws AppCatalogException {
+    public Map<String, String> getAllComputeResourceIdList() throws AppCatalogException {
         try {
+            Map<String, String> computeResourceMap = new HashMap<String, String>();
             ComputeResourceResource resource = new ComputeResourceResource();
-            return resource.getAllIds();
+            List<Resource> allComputeResources = resource.getAll();
+            if (allComputeResources != null && !allComputeResources.isEmpty()){
+                for (Resource cm : allComputeResources){
+                    ComputeResourceResource cmr = (ComputeResourceResource)cm;
+                    computeResourceMap.put(cmr.getResourceId(), cmr.getHostName());
+                }
+            }
+            return computeResourceMap;
         }catch (Exception e){
             logger.error("Error while retrieving compute resource list...", e);
             throw new AppCatalogException(e);
