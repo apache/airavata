@@ -57,8 +57,9 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         log.info("========================");
         log.info("Adding applications...");
         DocumentCreatorNew documentCreatorNew = new DocumentCreatorNew(getClient());
-        String appId = documentCreatorNew.createLocalHostDocs();
-
+        String hostAndappId = documentCreatorNew.createLocalHostDocs();
+        String appId = hostAndappId.split(",")[1];
+        
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
         input.setKey("echo_input");
