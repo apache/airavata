@@ -61,6 +61,7 @@ public class ServerMain {
 			if (serversString!=null){
 				String[] serversList = serversString.split(",");
 				for (String serverString : serversList) {
+					serverString=serverString.trim();
 					String serverClassName = ServerSettings.getSetting(serverString);
 					Class<?> classInstance;
 					try {

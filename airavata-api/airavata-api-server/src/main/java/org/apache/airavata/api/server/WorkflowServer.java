@@ -17,17 +17,17 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- *//*
+ */
 
 
 package org.apache.airavata.api.server;
 
 import java.net.InetSocketAddress;
 
-import org.apache.airavata.api.appcatalog.ApplicationCatalogAPI;
-import org.apache.airavata.api.server.handler.ApplicationCatalogHandler;
+import org.apache.airavata.api.server.handler.WorkflowServerHandler;
 import org.apache.airavata.api.server.util.AppCatalogInitUtil;
 import org.apache.airavata.api.server.util.Constants;
+import org.apache.airavata.api.workflow.Workflow;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -41,21 +41,21 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ApplicationCatalogServer implements IServer{
+public class WorkflowServer implements IServer{
 
-    private final static Logger logger = LoggerFactory.getLogger(ApplicationCatalogServer.class);
-	private static final String SERVER_NAME = "Airavata Application Catalog Server";
+    private final static Logger logger = LoggerFactory.getLogger(WorkflowServer.class);
+	private static final String SERVER_NAME = "Airavata Workflow API Server";
 	private static final String SERVER_VERSION = "1.0";
 
     private ServerStatus status;
 
 	private TServer server;
 
-	public ApplicationCatalogServer() {
+	public WorkflowServer() {
 		setStatus(ServerStatus.STOPPED);
 	}
 	
-    public void StartAiravataServer(ApplicationCatalogAPI.Processor<ApplicationCatalogAPI.Iface> appCatalogServerHandler) throws AiravataSystemException {
+    public void StartAiravataServer(Workflow.Processor<Workflow.Iface> appCatalogServerHandler) throws AiravataSystemException {
         try {
             AiravataUtils.setExecutionAsServer();
             AppCatalogInitUtil.initializeDB();
@@ -76,7 +76,7 @@ public class ApplicationCatalogServer implements IServer{
 				public void run() {
 					server.serve();
 					setStatus(ServerStatus.STOPPED);
-					logger.info("Airavata API Server Stopped.");
+					logger.info("Airavata Workflow Server Stopped.");
 				}
 			}.start();
 			new Thread() {
@@ -90,8 +90,8 @@ public class ApplicationCatalogServer implements IServer{
 					}
 					if (server.isServing()){
 						setStatus(ServerStatus.STARTED);
-			            logger.info("Starting Airavata Application Catalog Server on Port " + serverPort);
-			            logger.info("Listening to Application Catalog Clients ....");
+			            logger.info("Starting Airavata Workflow Server on Port " + serverPort);
+			            logger.info("Listening to Workflow API Clients ....");
 					}
 				}
 			}.start();
@@ -104,7 +104,7 @@ public class ApplicationCatalogServer implements IServer{
 
     public static void main(String[] args) {
     	try {
-			ApplicationCatalogServer server = new ApplicationCatalogServer();
+			WorkflowServer server = new WorkflowServer();
 			server.start();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -114,8 +114,8 @@ public class ApplicationCatalogServer implements IServer{
 	@Override
 	public void start() throws Exception {
 		setStatus(ServerStatus.STARTING);
-		ApplicationCatalogAPI.Processor<ApplicationCatalogAPI.Iface> server =
-                new ApplicationCatalogAPI.Processor<ApplicationCatalogAPI.Iface>(new ApplicationCatalogHandler());
+		Workflow.Processor<Workflow.Iface> server =
+                new Workflow.Processor<Workflow.Iface>(new WorkflowServerHandler());
     	StartAiravataServer(server);
 	}
 
@@ -161,4 +161,4 @@ public class ApplicationCatalogServer implements IServer{
 	}
 
 }
-*/
+
