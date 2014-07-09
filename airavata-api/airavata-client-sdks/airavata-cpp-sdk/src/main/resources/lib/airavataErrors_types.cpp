@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-namespace airavata { namespace api { namespace error {
+namespace apache { namespace airavata { namespace api { namespace error {
 
 int _kAiravataErrorTypeValues[] = {
   AiravataErrorType::UNKNOWN,
@@ -817,4 +817,4 @@ void swap(AiravataSystemException &a, AiravataSystemException &b) {
   swap(a.__isset, b.__isset);
 }
 
-}}} // namespace
+}}}} // namespace

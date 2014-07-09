@@ -6,12 +6,12 @@
  */
 #include "airavataErrors_constants.h"
 
-namespace airavata { namespace api { namespace error {
+namespace apache { namespace airavata { namespace api { namespace error {
 
 const airavataErrorsConstants g_airavataErrors_constants;
 
 airavataErrorsConstants::airavataErrorsConstants() {
 }
 
-}}} // namespace
+}}}} // namespace
 

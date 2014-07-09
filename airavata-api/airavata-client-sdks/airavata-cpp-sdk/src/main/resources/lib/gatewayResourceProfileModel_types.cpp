@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace gatewayprofile {
 
 const char* ComputeResourcePreference::ascii_fingerprint = "9C98338B7E052CD4DEECB22F243D6DAE";
 const uint8_t ComputeResourcePreference::binary_fingerprint[16] = {0x9C,0x98,0x33,0x8B,0x7E,0x05,0x2C,0xD4,0xDE,0xEC,0xB2,0x2F,0x24,0x3D,0x6D,0xAE};
@@ -290,4 +290,4 @@ void swap(GatewayResourceProfile &a, GatewayResourceProfile &b) {
   swap(a.__isset, b.__isset);
 }
 
-
+}}}}} // namespace

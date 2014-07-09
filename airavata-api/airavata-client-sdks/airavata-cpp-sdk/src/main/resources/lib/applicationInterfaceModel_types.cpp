@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace appinterface {
 
 int _kDataTypeValues[] = {
   DataType::STRING,
@@ -467,4 +467,4 @@ void swap(ApplicationInterfaceDescription &a, ApplicationInterfaceDescription &b
   swap(a.__isset, b.__isset);
 }
 
-
+}}}}} // namespace

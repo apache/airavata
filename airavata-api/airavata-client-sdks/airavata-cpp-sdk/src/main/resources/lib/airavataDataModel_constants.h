@@ -9,7 +9,7 @@
 
 #include "airavataDataModel_types.h"
 
-
+namespace apache { namespace airavata { namespace model {
 
 class airavataDataModelConstants {
  public:
@@ -19,6 +19,6 @@ class airavataDataModelConstants {
 
 extern const airavataDataModelConstants g_airavataDataModel_constants;
 
-
+}}} // namespace
 
 #endif

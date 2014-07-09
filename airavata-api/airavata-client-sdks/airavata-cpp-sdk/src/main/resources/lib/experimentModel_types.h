@@ -16,7 +16,7 @@
 #include "computeResourceModel_types.h"
 
 
-
+namespace apache { namespace airavata { namespace model { namespace workspace { namespace experiment {
 
 struct ExperimentState {
   enum type {
@@ -2072,6 +2072,6 @@ class ExperimentSummary {
 
 void swap(ExperimentSummary &a, ExperimentSummary &b);
 
-
+}}}}} // namespace
 
 #endif

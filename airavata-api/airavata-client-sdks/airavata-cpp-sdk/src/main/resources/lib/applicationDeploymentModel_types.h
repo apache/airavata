@@ -15,7 +15,7 @@
 #include <thrift/cxxfunctional.h>
 
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace appdeployment {
 
 struct ApplicationParallelismType {
   enum type {
@@ -270,6 +270,6 @@ class ApplicationDeploymentDescription {
 
 void swap(ApplicationDeploymentDescription &a, ApplicationDeploymentDescription &b);
 
-
+}}}}} // namespace
 
 #endif

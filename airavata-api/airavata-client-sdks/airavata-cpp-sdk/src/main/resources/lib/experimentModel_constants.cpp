@@ -6,7 +6,7 @@
  */
 #include "experimentModel_constants.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace workspace { namespace experiment {
 
 const experimentModelConstants g_experimentModel_constants;
 
@@ -19,5 +19,5 @@ experimentModelConstants::experimentModelConstants() {
 
 }
 
-
+}}}}} // namespace
 

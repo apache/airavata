@@ -6,7 +6,7 @@
  */
 #include "computeResourceModel_constants.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace computeresource {
 
 const computeResourceModelConstants g_computeResourceModel_constants;
 
@@ -15,5 +15,5 @@ computeResourceModelConstants::computeResourceModelConstants() {
 
 }
 
-
+}}}}} // namespace
 
