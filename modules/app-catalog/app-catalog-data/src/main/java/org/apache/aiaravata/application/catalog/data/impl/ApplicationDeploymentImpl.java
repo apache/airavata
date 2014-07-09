@@ -154,10 +154,12 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, deploymentId);
                     ids.put(AbstractResource.ModuleLoadCmdConstants.CMD, cmd);
-                    ModuleLoadCmdResource existingModuleLoad = (ModuleLoadCmdResource)cmdResource.get(ids);
-                    existingModuleLoad.setCmd(cmd);
-                    existingModuleLoad.setAppDeploymentResource(existingDep);
-                    existingModuleLoad.save();
+                    if (cmdResource.isExists(ids)){
+                        cmdResource = (ModuleLoadCmdResource)cmdResource.get(ids);
+                    }
+                    cmdResource.setCmd(cmd);
+                    cmdResource.setAppDeploymentResource(existingDep);
+                    cmdResource.save();
                 }
             }
             List<SetEnvPaths> libPrependPaths = updatedDeployment.getLibPrependPaths();
@@ -167,12 +169,14 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AbstractResource.LibraryPrepandPathConstants.NAME, path.getName());
-                    LibraryPrepandPathResource existingPrepandPath = (LibraryPrepandPathResource)prepandPathResource.get(ids);
-                    existingPrepandPath.setAppDeploymentResource(existingDep);
-                    existingPrepandPath.setName(path.getName());
-                    existingPrepandPath.setValue(path.getValue());
-                    existingPrepandPath.setDeploymentId(deploymentId);
-                    existingPrepandPath.save();
+                    if (prepandPathResource.isExists(ids)){
+                        prepandPathResource = (LibraryPrepandPathResource)prepandPathResource.get(ids);
+                    }
+                    prepandPathResource.setAppDeploymentResource(existingDep);
+                    prepandPathResource.setName(path.getName());
+                    prepandPathResource.setValue(path.getValue());
+                    prepandPathResource.setDeploymentId(deploymentId);
+                    prepandPathResource.save();
                 }
             }
 
@@ -183,12 +187,14 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AbstractResource.LibraryApendPathConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AbstractResource.LibraryApendPathConstants.NAME, path.getName());
-                    LibraryApendPathResource existingApendPath = (LibraryApendPathResource)apendPathResource.get(ids);
-                    existingApendPath.setAppDeploymentResource(existingDep);
-                    existingApendPath.setName(path.getName());
-                    existingApendPath.setValue(path.getValue());
-                    existingApendPath.setDeploymentId(deploymentId);
-                    existingApendPath.save();
+                    if (apendPathResource.isExists(ids)){
+                        apendPathResource = (LibraryApendPathResource)apendPathResource.get(ids);
+                    }
+                    apendPathResource.setAppDeploymentResource(existingDep);
+                    apendPathResource.setName(path.getName());
+                    apendPathResource.setValue(path.getValue());
+                    apendPathResource.setDeploymentId(deploymentId);
+                    apendPathResource.save();
                 }
             }
 
@@ -199,12 +205,14 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AbstractResource.AppEnvironmentConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AbstractResource.AppEnvironmentConstants.NAME, path.getName());
-                    AppEnvironmentResource existingAppEnv = (AppEnvironmentResource)environmentResource.get(ids);
-                    existingAppEnv.setAppDeploymentResource(existingDep);
-                    existingAppEnv.setName(path.getName());
-                    existingAppEnv.setValue(path.getValue());
-                    existingAppEnv.setDeploymentId(deploymentId);
-                    existingAppEnv.save();
+                    if (environmentResource.isExists(ids)){
+                        environmentResource = (AppEnvironmentResource)environmentResource.get(ids);
+                    }
+                    environmentResource.setAppDeploymentResource(existingDep);
+                    environmentResource.setName(path.getName());
+                    environmentResource.setValue(path.getValue());
+                    environmentResource.setDeploymentId(deploymentId);
+                    environmentResource.save();
                 }
             }
         }catch (Exception e) {
