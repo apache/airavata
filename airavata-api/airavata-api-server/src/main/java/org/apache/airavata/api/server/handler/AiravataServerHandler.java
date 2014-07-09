@@ -610,6 +610,13 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     public String createExperiment(Experiment experiment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
+            if (!validateString(experiment.getName())){
+                logger.error("Cannot create experiments with empty experiment name");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Cannot create experiments with empty experiment name");
+                throw exception;
+            }
             return (String)registry.add(ParentDataType.EXPERIMENT, experiment);
         } catch (Exception e) {
             logger.error("Error while creating the experiment", e);
