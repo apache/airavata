@@ -77,10 +77,9 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class OutputDataObjectType implements org.apache.thrift.TBase<OutputDataObjectType, OutputDataObjectType._Fields>, java.io.Serializable, Cloneable, Comparable<OutputDataObjectType> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("OutputDataObjectType");
 
-  private static final org.apache.thrift.protocol.TField IS_EMPTY_FIELD_DESC = new org.apache.thrift.protocol.TField("isEmpty", org.apache.thrift.protocol.TType.BOOL, (short)1);
-  private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -88,21 +87,19 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new OutputDataObjectTypeTupleSchemeFactory());
   }
 
-  private boolean isEmpty; // required
   private String name; // required
   private String value; // optional
   private DataType type; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    IS_EMPTY((short)1, "isEmpty"),
-    NAME((short)2, "name"),
-    VALUE((short)3, "value"),
+    NAME((short)1, "name"),
+    VALUE((short)2, "value"),
     /**
      * 
      * @see DataType
      */
-    TYPE((short)4, "type");
+    TYPE((short)3, "type");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -117,13 +114,11 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // IS_EMPTY
-          return IS_EMPTY;
-        case 2: // NAME
+        case 1: // NAME
           return NAME;
-        case 3: // VALUE
+        case 2: // VALUE
           return VALUE;
-        case 4: // TYPE
+        case 3: // TYPE
           return TYPE;
         default:
           return null;
@@ -165,14 +160,10 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private static final int __ISEMPTY_ISSET_ID = 0;
-  private byte __isset_bitfield = 0;
   private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.IS_EMPTY, new org.apache.thrift.meta_data.FieldMetaData("isEmpty", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.VALUE, new org.apache.thrift.meta_data.FieldMetaData("value", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -184,17 +175,12 @@ import org.slf4j.LoggerFactory;
   }
 
   public OutputDataObjectType() {
-    this.isEmpty = false;
-
   }
 
   public OutputDataObjectType(
-    boolean isEmpty,
     String name)
   {
     this();
-    this.isEmpty = isEmpty;
-    setIsEmptyIsSet(true);
     this.name = name;
   }
 
@@ -202,8 +188,6 @@ import org.slf4j.LoggerFactory;
    * Performs a deep copy on <i>other</i>.
    */
   public OutputDataObjectType(OutputDataObjectType other) {
-    __isset_bitfield = other.__isset_bitfield;
-    this.isEmpty = other.isEmpty;
     if (other.isSetName()) {
       this.name = other.name;
     }
@@ -221,33 +205,9 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.isEmpty = false;
-
     this.name = null;
     this.value = null;
     this.type = null;
-  }
-
-  public boolean isIsEmpty() {
-    return this.isEmpty;
-  }
-
-  public void setIsEmpty(boolean isEmpty) {
-    this.isEmpty = isEmpty;
-    setIsEmptyIsSet(true);
-  }
-
-  public void unsetIsEmpty() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISEMPTY_ISSET_ID);
-  }
-
-  /** Returns true if field isEmpty is set (has been assigned a value) and false otherwise */
-  public boolean isSetIsEmpty() {
-    return EncodingUtils.testBit(__isset_bitfield, __ISEMPTY_ISSET_ID);
-  }
-
-  public void setIsEmptyIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISEMPTY_ISSET_ID, value);
   }
 
   public String getName() {
@@ -329,14 +289,6 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case IS_EMPTY:
-      if (value == null) {
-        unsetIsEmpty();
-      } else {
-        setIsEmpty((Boolean)value);
-      }
-      break;
-
     case NAME:
       if (value == null) {
         unsetName();
@@ -366,9 +318,6 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case IS_EMPTY:
-      return Boolean.valueOf(isIsEmpty());
-
     case NAME:
       return getName();
 
@@ -389,8 +338,6 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case IS_EMPTY:
-      return isSetIsEmpty();
     case NAME:
       return isSetName();
     case VALUE:
@@ -413,15 +360,6 @@ import org.slf4j.LoggerFactory;
   public boolean equals(OutputDataObjectType that) {
     if (that == null)
       return false;
-
-    boolean this_present_isEmpty = true;
-    boolean that_present_isEmpty = true;
-    if (this_present_isEmpty || that_present_isEmpty) {
-      if (!(this_present_isEmpty && that_present_isEmpty))
-        return false;
-      if (this.isEmpty != that.isEmpty)
-        return false;
-    }
 
     boolean this_present_name = true && this.isSetName();
     boolean that_present_name = true && that.isSetName();
@@ -466,16 +404,6 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetIsEmpty()).compareTo(other.isSetIsEmpty());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetIsEmpty()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isEmpty, other.isEmpty);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetName()).compareTo(other.isSetName());
     if (lastComparison != 0) {
       return lastComparison;
@@ -526,10 +454,6 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("OutputDataObjectType(");
     boolean first = true;
 
-    sb.append("isEmpty:");
-    sb.append(this.isEmpty);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("name:");
     if (this.name == null) {
       sb.append("null");
@@ -563,10 +487,6 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetIsEmpty()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'isEmpty' is unset! Struct:" + toString());
-    }
-
     if (!isSetName()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'name' is unset! Struct:" + toString());
     }
@@ -584,8 +504,6 @@ import org.slf4j.LoggerFactory;
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -610,15 +528,7 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // IS_EMPTY
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.isEmpty = iprot.readBool();
-              struct.setIsEmptyIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // NAME
+          case 1: // NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.name = iprot.readString();
               struct.setNameIsSet(true);
@@ -626,7 +536,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // VALUE
+          case 2: // VALUE
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.value = iprot.readString();
               struct.setValueIsSet(true);
@@ -634,7 +544,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // TYPE
+          case 3: // TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.type = DataType.findByValue(iprot.readI32());
               struct.setTypeIsSet(true);
@@ -655,9 +565,6 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(IS_EMPTY_FIELD_DESC);
-      oprot.writeBool(struct.isEmpty);
-      oprot.writeFieldEnd();
       if (struct.name != null) {
         oprot.writeFieldBegin(NAME_FIELD_DESC);
         oprot.writeString(struct.name);
@@ -694,7 +601,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, OutputDataObjectType struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeBool(struct.isEmpty);
       oprot.writeString(struct.name);
       BitSet optionals = new BitSet();
       if (struct.isSetValue()) {
@@ -715,8 +621,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, OutputDataObjectType struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.isEmpty = iprot.readBool();
-      struct.setIsEmptyIsSet(true);
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
       BitSet incoming = iprot.readBitSet(2);

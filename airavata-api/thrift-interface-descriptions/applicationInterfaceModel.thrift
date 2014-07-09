@@ -104,10 +104,10 @@ struct InputDataObjectType {
  *
 */
 struct OutputDataObjectType {
-    1: required bool isEmpty = 0,
-    2: required string name,
-    3: optional string value,
-    4: optional DataType type
+//    1: required bool isEmpty = 0,
+    1: required string name,
+    2: optional string value,
+    3: optional DataType type
 }
 
 /**
