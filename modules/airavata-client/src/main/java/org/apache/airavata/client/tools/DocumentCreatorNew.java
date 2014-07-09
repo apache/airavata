@@ -20,19 +20,31 @@
 */
 package org.apache.airavata.client.tools;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
@@ -45,6 +57,13 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
+import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.thrift.TException;
 
 public class DocumentCreatorNew {
@@ -55,6 +74,8 @@ public class DocumentCreatorNew {
     private String stampedeHostAddress  = "stampede.tacc.xsede.org";
     private String gridftpAddress = "gsiftp://trestles-dm1.sdsc.edu:2811";
     private String gramAddress = "trestles-login1.sdsc.edu:2119/jobmanager-pbstest2";
+    private String bigRed2HostAddress = "bigred2.uits.iu.edu";
+
     private Airavata.Client client;
 	private GatewayResourceProfile gatewayResourceProfile;
 	
@@ -576,6 +597,51 @@ public class DocumentCreatorNew {
 //
 //	}
     
+    public String createBigRedDocs() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException, AppCatalogException {
+    	ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription("bigred2", null, null);
+    	host.addToHostAliases(bigRed2HostAddress);
+    	host.addToIpAddresses(bigRed2HostAddress);
+    	host.setComputeResourceId(client.registerComputeResource(host));
+
+    	
+    	Map<JobManagerCommand, String> commands = new HashMap<JobManagerCommand, String>();
+    	commands.put(JobManagerCommand.SUBMISSION, "aprun -n 1");
+		ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.UGE, "/opt/torque/torque-4.2.3.1/bin/", commands , null);
+    	SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
+    	sshJobSubmission.setResourceJobManager(resourceJobManager);
+    	sshJobSubmission.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
+    	sshJobSubmission.setSshPort(22);
+
+    	client.addSSHJobSubmissionDetails(host.getComputeResourceId(), 1, sshJobSubmission);
+    	
+    	SCPDataMovement scpDataMovement = new SCPDataMovement();
+    	scpDataMovement.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
+    	scpDataMovement.setSshPort(22);
+    	client.addSCPDataMovementDetails(host.getComputeResourceId(), 1, scpDataMovement);
+    	
+        ApplicationModule module = DocumentCreatorUtils.createApplicationModule("echo", "1.5", null);
+        module.setAppModuleId(client.registerApplicationModule(module));
+        
+        ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
+        application.setApplicationName("SimpleEchoBR");
+        application.addToApplicationModules(module.getAppModuleId());
+    	application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("echo_input", "echo_input", null, null, DataType.STRING));
+    	application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("echo_output", null, DataType.STRING));
+        application.setApplicationInterfaceId(client.registerApplicationInterface(application));
+
+        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module.getAppModuleId(), "/bin/echo", ApplicationParallelismType.SERIAL, "EchoLocal");
+        deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
+        
+        String date = (new Date()).toString();
+        date = date.replaceAll(" ", "_");
+        date = date.replaceAll(":", "_");
+        String tempDir = "/tmp";
+        tempDir = tempDir + File.separator + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();    
+        
+        client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), tempDir, "TG-STA110014S", false, null, null, null));
+        return host.getComputeResourceId()+","+application.getApplicationInterfaceId();
+   }
+
     
     
 }
