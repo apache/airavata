@@ -72,9 +72,9 @@ public class CreateLaunchExperiment {
             addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createExperimentForTrestles(airavata);
+            final String expId = createExperimentForTrestles(client);
 //            final String expId = createExperimentForStampede(airavata);
-            final String expId = createExperimentForLocalHost(client);
+//            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentWRFTrestles(airavata);
             System.out.println("Experiment ID : " + expId);
@@ -228,7 +228,7 @@ public class CreateLaunchExperiment {
             exOut.add(output);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", pbsEchoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");

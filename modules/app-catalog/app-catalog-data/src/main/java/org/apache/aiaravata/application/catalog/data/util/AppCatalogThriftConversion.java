@@ -101,13 +101,13 @@ public class AppCatalogThriftConversion {
         JobSubmissionInterfaceResource jsiResource = new JobSubmissionInterfaceResource();
         List<Resource> hsiList = jsiResource.get(AbstractResource.JobSubmissionInterfaceConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
         if (hsiList != null && !hsiList.isEmpty()){
-            description.setJobSubmissionInterfaces(getJobSubmissionInterfaces(batchQueues));
+            description.setJobSubmissionInterfaces(getJobSubmissionInterfaces(hsiList));
         }
         
         DataMovementInterfaceResource dmiResource = new DataMovementInterfaceResource();
         List<Resource> dmiList = dmiResource.get(AbstractResource.DataMovementInterfaceConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
         if (dmiList != null && !dmiList.isEmpty()){
-            description.setDataMovementInterfaces(getDataMovementInterfaces(batchQueues));
+            description.setDataMovementInterfaces(getDataMovementInterfaces(dmiList));
         }
         return description;
     }
