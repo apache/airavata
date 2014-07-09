@@ -19,7 +19,7 @@ try
 {
     if ($argc != 4)
     {
-        echo 'php registerAppDeployment.php <appModuleId> <computeHostId> <executablePath>';
+        echo 'php registerApplicationDeployment.php <appModuleId> <computeHostId> <executablePath>';
     }
     else
     {

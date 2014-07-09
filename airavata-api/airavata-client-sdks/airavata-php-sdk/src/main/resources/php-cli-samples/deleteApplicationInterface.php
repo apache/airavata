@@ -11,35 +11,25 @@ global $transport;
 use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
 use Airavata\API\Error\InvalidRequestException;
+use Thrift\Exception\TTransportException;
 
-use Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription;
+use Airavata\Model\AppCatalog\AppDeployment\ApplicationModule;
 
 try
 {
-    if ($argc != 4)
-    {
-        echo 'php registerAppInterface.php <appName> <appDescription> <appModuleId>';
-    }
-    else
-    {
-        $appName = $argv[1];
-        $appDescription = $argv[2];
-        $appModuleId = $argv[3];
 
-        $appInterface = new ApplicationInterfaceDescription();
-        $appInterface->applicationName = $appName;
-        $appInterface->applicationDesription = $appDescription;
+    if (count($argv) != 2) {
+        exit("\n Incorrect Arguments \n. Usage: deleteApplicationInterface.php <application interface id>. \n");
+    } else {
 
-        $appInterfaceId = $airavataclient->registerApplicationInterface($appInterface);
+        $appInterfaceId = $argv[1];
 
-        if ($appInterfaceId)
-        {
-            var_dump($appInterface);
-            echo "\n Application Interface $appInterfaceId is registered! \n    ";
-        }
-        else
-        {
-            echo "\n Failed to register application interface. \n";
+        $success = $airavataclient->deleteApplicationInterface($appInterfaceId);
+
+        if ($success) {
+            echo "Application Interface $appInterfaceId successfully deleted";
+        } else {
+            echo "\n Failed to delete application interface $appInterfaceId \n";
         }
     }
 }
@@ -54,6 +44,10 @@ catch (AiravataClientException $ace)
 catch (AiravataSystemException $ase)
 {
     print 'Airavata System Exception: ' . $ase->getMessage()."\n";
+}
+catch (TTransportException $tte)
+{
+    echo 'TTransportException!<br><br>' . $tte->getMessage();
 }
 catch (\Exception $e)
 {
