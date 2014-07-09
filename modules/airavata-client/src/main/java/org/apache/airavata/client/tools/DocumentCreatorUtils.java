@@ -144,7 +144,7 @@ public class DocumentCreatorUtils {
 
     public static OutputDataObjectType createAppOutput (String inputName, String value, org.apache.airavata.model.appcatalog.appinterface.DataType type ){
         OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
-        outputDataObjectType.setIsEmpty(false);
+//        outputDataObjectType.setIsEmpty(false);
         if (inputName!=null) {
 			outputDataObjectType.setName(inputName);
 		}

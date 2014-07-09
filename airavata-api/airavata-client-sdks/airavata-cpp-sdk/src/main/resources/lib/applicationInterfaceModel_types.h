@@ -145,24 +145,19 @@ typedef struct _OutputDataObjectType__isset {
 class OutputDataObjectType {
  public:
 
-  static const char* ascii_fingerprint; // = "FFD96F45C68610A5AC6E843C512B01EC";
-  static const uint8_t binary_fingerprint[16]; // = {0xFF,0xD9,0x6F,0x45,0xC6,0x86,0x10,0xA5,0xAC,0x6E,0x84,0x3C,0x51,0x2B,0x01,0xEC};
+  static const char* ascii_fingerprint; // = "B33AE596EF78C48424CF96BCA5D1DF99";
+  static const uint8_t binary_fingerprint[16]; // = {0xB3,0x3A,0xE5,0x96,0xEF,0x78,0xC4,0x84,0x24,0xCF,0x96,0xBC,0xA5,0xD1,0xDF,0x99};
 
-  OutputDataObjectType() : isEmpty(false), name(), value(), type((DataType::type)0) {
+  OutputDataObjectType() : name(), value(), type((DataType::type)0) {
   }
 
   virtual ~OutputDataObjectType() throw() {}
 
-  bool isEmpty;
   std::string name;
   std::string value;
   DataType::type type;
 
   _OutputDataObjectType__isset __isset;
-
-  void __set_isEmpty(const bool val) {
-    isEmpty = val;
-  }
 
   void __set_name(const std::string& val) {
     name = val;
@@ -180,8 +175,6 @@ class OutputDataObjectType {
 
   bool operator == (const OutputDataObjectType & rhs) const
   {
-    if (!(isEmpty == rhs.isEmpty))
-      return false;
     if (!(name == rhs.name))
       return false;
     if (__isset.value != rhs.__isset.value)
@@ -218,8 +211,8 @@ typedef struct _ApplicationInterfaceDescription__isset {
 class ApplicationInterfaceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "3C4F9F747CEDFDF7A46B0786A7C09268";
-  static const uint8_t binary_fingerprint[16]; // = {0x3C,0x4F,0x9F,0x74,0x7C,0xED,0xFD,0xF7,0xA4,0x6B,0x07,0x86,0xA7,0xC0,0x92,0x68};
+  static const char* ascii_fingerprint; // = "355A0972969341C2A113049339427849";
+  static const uint8_t binary_fingerprint[16]; // = {0x35,0x5A,0x09,0x72,0x96,0x93,0x41,0xC2,0xA1,0x13,0x04,0x93,0x39,0x42,0x78,0x49};
 
   ApplicationInterfaceDescription() : applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDesription() {
   }
