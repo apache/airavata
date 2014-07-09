@@ -30,11 +30,11 @@ try
 
         if ($projId)
         {
-            print "$projId";
+            echo "Project $projId is created!\n";
         }
         else
         {
-            echo 'Failed to create project.';
+            echo "Project creation Failed.\n";
         }
     }
 }
