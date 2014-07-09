@@ -1,14 +1,18 @@
 <?php
+/**
+ * Bundle all thrift and Airavata stubs into a include file. This is simple but not so elegant way.
+ *  Contributions welcome to improve writing PHP Client Samples.
+ *
+ */
+include 'getAiravataClient.php';
+global $airavataclient;
+global $transport;
 
 use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
 use Airavata\API\Error\ExperimentNotFoundException;
 use Airavata\API\Error\InvalidRequestException;
 use Thrift\Exception\TTransportException;
-
-include 'getAiravataClient.php';
-global $airavataclient;
-global $transport;
 
 if ($argc != 2)
 {

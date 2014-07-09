@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace computeresource {
 
 int _kResourceJobManagerTypeValues[] = {
   ResourceJobManagerType::FORK,
@@ -1512,4 +1512,4 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.__isset, b.__isset);
 }
 
-
+}}}}} // namespace

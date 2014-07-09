@@ -15,7 +15,7 @@
 #include <thrift/cxxfunctional.h>
 
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace computeresource {
 
 struct ResourceJobManagerType {
   enum type {
@@ -837,6 +837,6 @@ class ComputeResourceDescription {
 
 void swap(ComputeResourceDescription &a, ComputeResourceDescription &b);
 
-
+}}}}} // namespace
 
 #endif

@@ -9,7 +9,7 @@
 
 #include "airavataErrors_types.h"
 
-namespace airavata { namespace api { namespace error {
+namespace apache { namespace airavata { namespace api { namespace error {
 
 class airavataErrorsConstants {
  public:
@@ -19,6 +19,6 @@ class airavataErrorsConstants {
 
 extern const airavataErrorsConstants g_airavataErrors_constants;
 
-}}} // namespace
+}}}} // namespace
 
 #endif

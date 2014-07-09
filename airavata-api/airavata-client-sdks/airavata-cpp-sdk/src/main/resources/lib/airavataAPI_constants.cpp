@@ -6,7 +6,7 @@
  */
 #include "airavataAPI_constants.h"
 
-namespace airavata { namespace api {
+namespace apache { namespace airavata { namespace api {
 
 const airavataAPIConstants g_airavataAPI_constants;
 
@@ -15,5 +15,5 @@ airavataAPIConstants::airavataAPIConstants() {
 
 }
 
-}} // namespace
+}}} // namespace
 

@@ -6,7 +6,7 @@
  */
 #include "applicationDeploymentModel_constants.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace appdeployment {
 
 const applicationDeploymentModelConstants g_applicationDeploymentModel_constants;
 
@@ -15,5 +15,5 @@ applicationDeploymentModelConstants::applicationDeploymentModelConstants() {
 
 }
 
-
+}}}}} // namespace
 

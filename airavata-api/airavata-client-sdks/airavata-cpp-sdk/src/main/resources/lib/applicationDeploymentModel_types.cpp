@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace appdeployment {
 
 int _kApplicationParallelismTypeValues[] = {
   ApplicationParallelismType::SERIAL,
@@ -494,4 +494,4 @@ void swap(ApplicationDeploymentDescription &a, ApplicationDeploymentDescription 
   swap(a.__isset, b.__isset);
 }
 
-
+}}}}} // namespace

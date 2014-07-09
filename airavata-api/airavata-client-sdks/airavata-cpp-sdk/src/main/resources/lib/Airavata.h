@@ -10,82 +10,82 @@
 #include <thrift/TDispatchProcessor.h>
 #include "airavataAPI_types.h"
 
-namespace airavata { namespace api {
+namespace apache { namespace airavata { namespace api {
 
 class AiravataIf {
  public:
   virtual ~AiravataIf() {}
   virtual void getAPIVersion(std::string& _return) = 0;
-  virtual void createProject(std::string& _return, const  ::Project& project) = 0;
-  virtual void updateProject(const std::string& projectId, const  ::Project& updatedProject) = 0;
-  virtual void getProject( ::Project& _return, const std::string& projectId) = 0;
-  virtual void getAllUserProjects(std::vector< ::Project> & _return, const std::string& userName) = 0;
-  virtual void searchProjectsByProjectName(std::vector< ::Project> & _return, const std::string& userName, const std::string& projectName) = 0;
-  virtual void searchProjectsByProjectDesc(std::vector< ::Project> & _return, const std::string& userName, const std::string& description) = 0;
-  virtual void searchExperimentsByName(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& expName) = 0;
-  virtual void searchExperimentsByDesc(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& description) = 0;
-  virtual void searchExperimentsByApplication(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId) = 0;
-  virtual void getAllExperimentsInProject(std::vector< ::Experiment> & _return, const std::string& projectId) = 0;
-  virtual void getAllUserExperiments(std::vector< ::Experiment> & _return, const std::string& userName) = 0;
-  virtual void createExperiment(std::string& _return, const  ::Experiment& experiment) = 0;
-  virtual void getExperiment( ::Experiment& _return, const std::string& airavataExperimentId) = 0;
-  virtual void updateExperiment(const std::string& airavataExperimentId, const  ::Experiment& experiment) = 0;
-  virtual void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::UserConfigurationData& userConfiguration) = 0;
-  virtual void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::ComputationalResourceScheduling& resourceScheduling) = 0;
+  virtual void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) = 0;
+  virtual void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject) = 0;
+  virtual void getProject( ::apache::airavata::model::workspace::Project& _return, const std::string& projectId) = 0;
+  virtual void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName) = 0;
+  virtual void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& projectName) = 0;
+  virtual void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& description) = 0;
+  virtual void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& expName) = 0;
+  virtual void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& description) = 0;
+  virtual void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId) = 0;
+  virtual void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId) = 0;
+  virtual void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& userName) = 0;
+  virtual void createExperiment(std::string& _return, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) = 0;
+  virtual void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return, const std::string& airavataExperimentId) = 0;
+  virtual void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) = 0;
+  virtual void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration) = 0;
+  virtual void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& resourceScheduling) = 0;
   virtual bool validateExperiment(const std::string& airavataExperimentId) = 0;
   virtual void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) = 0;
-  virtual void getExperimentStatus( ::ExperimentStatus& _return, const std::string& airavataExperimentId) = 0;
-  virtual void getExperimentOutputs(std::vector< ::DataObjectType> & _return, const std::string& airavataExperimentId) = 0;
-  virtual void getJobStatuses(std::map<std::string,  ::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
+  virtual void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId) = 0;
+  virtual void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId) = 0;
+  virtual void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
   virtual void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) = 0;
   virtual void terminateExperiment(const std::string& airavataExperimentId) = 0;
-  virtual void registerApplicationModule(std::string& _return, const  ::ApplicationModule& applicationModule) = 0;
-  virtual void getApplicationModule( ::ApplicationModule& _return, const std::string& appModuleId) = 0;
-  virtual bool updateApplicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule) = 0;
+  virtual void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
+  virtual void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId) = 0;
+  virtual bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
   virtual bool deleteApplicationModule(const std::string& appModuleId) = 0;
-  virtual void registerApplicationDeployment(std::string& _return, const  ::ApplicationDeploymentDescription& applicationDeployment) = 0;
-  virtual void getApplicationDeployment( ::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId) = 0;
-  virtual bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::ApplicationDeploymentDescription& applicationDeployment) = 0;
+  virtual void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) = 0;
+  virtual void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId) = 0;
+  virtual bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) = 0;
   virtual bool deleteApplicationDeployment(const std::string& appDeploymentId) = 0;
   virtual void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId) = 0;
-  virtual void registerApplicationInterface(std::string& _return, const  ::ApplicationInterfaceDescription& applicationInterface) = 0;
-  virtual void getApplicationInterface( ::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId) = 0;
-  virtual bool updateApplicationInterface(const std::string& appInterfaceId, const  ::ApplicationInterfaceDescription& applicationInterface) = 0;
+  virtual void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) = 0;
+  virtual void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId) = 0;
+  virtual bool updateApplicationInterface(const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) = 0;
   virtual bool deleteApplicationInterface(const std::string& appInterfaceId) = 0;
   virtual void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return) = 0;
-  virtual void getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return) = 0;
-  virtual void getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
-  virtual void getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
+  virtual void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return) = 0;
+  virtual void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
+  virtual void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
   virtual void getAvailableAppInterfaceComputeResources(std::vector<std::string> & _return, const std::string& appInterfaceId) = 0;
-  virtual void registerComputeResource(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription) = 0;
-  virtual void getComputeResource( ::ComputeResourceDescription& _return, const std::string& computeResourceId) = 0;
+  virtual void registerComputeResource(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) = 0;
+  virtual void getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return, const std::string& computeResourceId) = 0;
   virtual void getAllComputeResourceNames(std::map<std::string, std::string> & _return) = 0;
-  virtual bool updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription) = 0;
+  virtual bool updateComputeResource(const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) = 0;
   virtual bool deleteComputeResource(const std::string& computeResourceId) = 0;
-  virtual bool addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission) = 0;
-  virtual bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALSubmission& localSubmission) = 0;
-  virtual bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission) = 0;
-  virtual bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::SSHJobSubmission& sshJobSubmission) = 0;
-  virtual bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement) = 0;
-  virtual bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALDataMovement& localDataMovement) = 0;
-  virtual bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement) = 0;
-  virtual bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::SCPDataMovement& scpDataMovement) = 0;
-  virtual bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement) = 0;
-  virtual bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::GridFTPDataMovement& gridFTPDataMovement) = 0;
+  virtual bool addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) = 0;
+  virtual bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) = 0;
+  virtual bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) = 0;
+  virtual bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) = 0;
+  virtual bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) = 0;
+  virtual bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) = 0;
+  virtual bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) = 0;
+  virtual bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) = 0;
+  virtual bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) = 0;
+  virtual bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) = 0;
   virtual bool changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder) = 0;
   virtual bool changeDataMovementPriority(const std::string& dataMovementInterfaceId, const int32_t newPriorityOrder) = 0;
   virtual bool changeJobSubmissionPriorities(const std::map<std::string, int32_t> & jobSubmissionPriorityMap) = 0;
   virtual bool changeDataMovementPriorities(const std::map<std::string, int32_t> & dataMovementPriorityMap) = 0;
   virtual bool deleteJobSubmissionInterface(const std::string& jobSubmissionInterfaceId) = 0;
   virtual bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId) = 0;
-  virtual void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile) = 0;
-  virtual void getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID) = 0;
-  virtual bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile) = 0;
+  virtual void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) = 0;
+  virtual void getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return, const std::string& gatewayID) = 0;
+  virtual bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) = 0;
   virtual bool deleteGatewayResourceProfile(const std::string& gatewayID) = 0;
-  virtual bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference) = 0;
-  virtual void getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId) = 0;
-  virtual void getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return, const std::string& gatewayID) = 0;
-  virtual bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference) = 0;
+  virtual bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) = 0;
+  virtual void getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId) = 0;
+  virtual void getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return, const std::string& gatewayID) = 0;
+  virtual bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) = 0;
   virtual bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId) = 0;
 };
 
@@ -119,52 +119,52 @@ class AiravataNull : virtual public AiravataIf {
   void getAPIVersion(std::string& /* _return */) {
     return;
   }
-  void createProject(std::string& /* _return */, const  ::Project& /* project */) {
+  void createProject(std::string& /* _return */, const  ::apache::airavata::model::workspace::Project& /* project */) {
     return;
   }
-  void updateProject(const std::string& /* projectId */, const  ::Project& /* updatedProject */) {
+  void updateProject(const std::string& /* projectId */, const  ::apache::airavata::model::workspace::Project& /* updatedProject */) {
     return;
   }
-  void getProject( ::Project& /* _return */, const std::string& /* projectId */) {
+  void getProject( ::apache::airavata::model::workspace::Project& /* _return */, const std::string& /* projectId */) {
     return;
   }
-  void getAllUserProjects(std::vector< ::Project> & /* _return */, const std::string& /* userName */) {
+  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* userName */) {
     return;
   }
-  void searchProjectsByProjectName(std::vector< ::Project> & /* _return */, const std::string& /* userName */, const std::string& /* projectName */) {
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* userName */, const std::string& /* projectName */) {
     return;
   }
-  void searchProjectsByProjectDesc(std::vector< ::Project> & /* _return */, const std::string& /* userName */, const std::string& /* description */) {
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* userName */, const std::string& /* description */) {
     return;
   }
-  void searchExperimentsByName(std::vector< ::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* expName */) {
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* expName */) {
     return;
   }
-  void searchExperimentsByDesc(std::vector< ::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* description */) {
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* description */) {
     return;
   }
-  void searchExperimentsByApplication(std::vector< ::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* applicationId */) {
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* applicationId */) {
     return;
   }
-  void getAllExperimentsInProject(std::vector< ::Experiment> & /* _return */, const std::string& /* projectId */) {
+  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & /* _return */, const std::string& /* projectId */) {
     return;
   }
-  void getAllUserExperiments(std::vector< ::Experiment> & /* _return */, const std::string& /* userName */) {
+  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & /* _return */, const std::string& /* userName */) {
     return;
   }
-  void createExperiment(std::string& /* _return */, const  ::Experiment& /* experiment */) {
+  void createExperiment(std::string& /* _return */, const  ::apache::airavata::model::workspace::experiment::Experiment& /* experiment */) {
     return;
   }
-  void getExperiment( ::Experiment& /* _return */, const std::string& /* airavataExperimentId */) {
+  void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void updateExperiment(const std::string& /* airavataExperimentId */, const  ::Experiment& /* experiment */) {
+  void updateExperiment(const std::string& /* airavataExperimentId */, const  ::apache::airavata::model::workspace::experiment::Experiment& /* experiment */) {
     return;
   }
-  void updateExperimentConfiguration(const std::string& /* airavataExperimentId */, const  ::UserConfigurationData& /* userConfiguration */) {
+  void updateExperimentConfiguration(const std::string& /* airavataExperimentId */, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& /* userConfiguration */) {
     return;
   }
-  void updateResourceScheduleing(const std::string& /* airavataExperimentId */, const  ::ComputationalResourceScheduling& /* resourceScheduling */) {
+  void updateResourceScheduleing(const std::string& /* airavataExperimentId */, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& /* resourceScheduling */) {
     return;
   }
   bool validateExperiment(const std::string& /* airavataExperimentId */) {
@@ -174,13 +174,13 @@ class AiravataNull : virtual public AiravataIf {
   void launchExperiment(const std::string& /* airavataExperimentId */, const std::string& /* airavataCredStoreToken */) {
     return;
   }
-  void getExperimentStatus( ::ExperimentStatus& /* _return */, const std::string& /* airavataExperimentId */) {
+  void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void getExperimentOutputs(std::vector< ::DataObjectType> & /* _return */, const std::string& /* airavataExperimentId */) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void getJobStatuses(std::map<std::string,  ::JobStatus> & /* _return */, const std::string& /* airavataExperimentId */) {
+  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
   void cloneExperiment(std::string& /* _return */, const std::string& /* existingExperimentID */, const std::string& /* newExperimentName */) {
@@ -189,13 +189,13 @@ class AiravataNull : virtual public AiravataIf {
   void terminateExperiment(const std::string& /* airavataExperimentId */) {
     return;
   }
-  void registerApplicationModule(std::string& /* _return */, const  ::ApplicationModule& /* applicationModule */) {
+  void registerApplicationModule(std::string& /* _return */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& /* applicationModule */) {
     return;
   }
-  void getApplicationModule( ::ApplicationModule& /* _return */, const std::string& /* appModuleId */) {
+  void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& /* _return */, const std::string& /* appModuleId */) {
     return;
   }
-  bool updateApplicationModule(const std::string& /* appModuleId */, const  ::ApplicationModule& /* applicationModule */) {
+  bool updateApplicationModule(const std::string& /* appModuleId */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& /* applicationModule */) {
     bool _return = false;
     return _return;
   }
@@ -203,13 +203,13 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void registerApplicationDeployment(std::string& /* _return */, const  ::ApplicationDeploymentDescription& /* applicationDeployment */) {
+  void registerApplicationDeployment(std::string& /* _return */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& /* applicationDeployment */) {
     return;
   }
-  void getApplicationDeployment( ::ApplicationDeploymentDescription& /* _return */, const std::string& /* appDeploymentId */) {
+  void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& /* _return */, const std::string& /* appDeploymentId */) {
     return;
   }
-  bool updateApplicationDeployment(const std::string& /* appDeploymentId */, const  ::ApplicationDeploymentDescription& /* applicationDeployment */) {
+  bool updateApplicationDeployment(const std::string& /* appDeploymentId */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& /* applicationDeployment */) {
     bool _return = false;
     return _return;
   }
@@ -220,13 +220,13 @@ class AiravataNull : virtual public AiravataIf {
   void getAppModuleDeployedResources(std::vector<std::string> & /* _return */, const std::string& /* appModuleId */) {
     return;
   }
-  void registerApplicationInterface(std::string& /* _return */, const  ::ApplicationInterfaceDescription& /* applicationInterface */) {
+  void registerApplicationInterface(std::string& /* _return */, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& /* applicationInterface */) {
     return;
   }
-  void getApplicationInterface( ::ApplicationInterfaceDescription& /* _return */, const std::string& /* appInterfaceId */) {
+  void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& /* _return */, const std::string& /* appInterfaceId */) {
     return;
   }
-  bool updateApplicationInterface(const std::string& /* appInterfaceId */, const  ::ApplicationInterfaceDescription& /* applicationInterface */) {
+  bool updateApplicationInterface(const std::string& /* appInterfaceId */, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& /* applicationInterface */) {
     bool _return = false;
     return _return;
   }
@@ -237,28 +237,28 @@ class AiravataNull : virtual public AiravataIf {
   void getAllApplicationInterfaceNames(std::map<std::string, std::string> & /* _return */) {
     return;
   }
-  void getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & /* _return */) {
+  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & /* _return */) {
     return;
   }
-  void getApplicationInputs(std::vector< ::InputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
+  void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
     return;
   }
-  void getApplicationOutputs(std::vector< ::OutputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
+  void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
     return;
   }
   void getAvailableAppInterfaceComputeResources(std::vector<std::string> & /* _return */, const std::string& /* appInterfaceId */) {
     return;
   }
-  void registerComputeResource(std::string& /* _return */, const  ::ComputeResourceDescription& /* computeResourceDescription */) {
+  void registerComputeResource(std::string& /* _return */, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& /* computeResourceDescription */) {
     return;
   }
-  void getComputeResource( ::ComputeResourceDescription& /* _return */, const std::string& /* computeResourceId */) {
+  void getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& /* _return */, const std::string& /* computeResourceId */) {
     return;
   }
   void getAllComputeResourceNames(std::map<std::string, std::string> & /* _return */) {
     return;
   }
-  bool updateComputeResource(const std::string& /* computeResourceId */, const  ::ComputeResourceDescription& /* computeResourceDescription */) {
+  bool updateComputeResource(const std::string& /* computeResourceId */, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& /* computeResourceDescription */) {
     bool _return = false;
     return _return;
   }
@@ -266,43 +266,43 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  bool addLocalSubmissionDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::LOCALSubmission& /* localSubmission */) {
+  bool addLocalSubmissionDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& /* localSubmission */) {
     bool _return = false;
     return _return;
   }
-  bool updateLocalSubmissionDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::LOCALSubmission& /* localSubmission */) {
+  bool updateLocalSubmissionDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& /* localSubmission */) {
     bool _return = false;
     return _return;
   }
-  bool addSSHJobSubmissionDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::SSHJobSubmission& /* sshJobSubmission */) {
+  bool addSSHJobSubmissionDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& /* sshJobSubmission */) {
     bool _return = false;
     return _return;
   }
-  bool updateSSHJobSubmissionDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::SSHJobSubmission& /* sshJobSubmission */) {
+  bool updateSSHJobSubmissionDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& /* sshJobSubmission */) {
     bool _return = false;
     return _return;
   }
-  bool addLocalDataMovementDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::LOCALDataMovement& /* localDataMovement */) {
+  bool addLocalDataMovementDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& /* localDataMovement */) {
     bool _return = false;
     return _return;
   }
-  bool updateLocalDataMovementDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::LOCALDataMovement& /* localDataMovement */) {
+  bool updateLocalDataMovementDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& /* localDataMovement */) {
     bool _return = false;
     return _return;
   }
-  bool addSCPDataMovementDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::SCPDataMovement& /* scpDataMovement */) {
+  bool addSCPDataMovementDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& /* scpDataMovement */) {
     bool _return = false;
     return _return;
   }
-  bool updateSCPDataMovementDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::SCPDataMovement& /* scpDataMovement */) {
+  bool updateSCPDataMovementDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& /* scpDataMovement */) {
     bool _return = false;
     return _return;
   }
-  bool addGridFTPDataMovementDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::GridFTPDataMovement& /* gridFTPDataMovement */) {
+  bool addGridFTPDataMovementDetails(const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& /* gridFTPDataMovement */) {
     bool _return = false;
     return _return;
   }
-  bool updateGridFTPDataMovementDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::GridFTPDataMovement& /* gridFTPDataMovement */) {
+  bool updateGridFTPDataMovementDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& /* gridFTPDataMovement */) {
     bool _return = false;
     return _return;
   }
@@ -330,13 +330,13 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void registerGatewayResourceProfile(std::string& /* _return */, const  ::GatewayResourceProfile& /* gatewayResourceProfile */) {
+  void registerGatewayResourceProfile(std::string& /* _return */, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& /* gatewayResourceProfile */) {
     return;
   }
-  void getGatewayResourceProfile( ::GatewayResourceProfile& /* _return */, const std::string& /* gatewayID */) {
+  void getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& /* _return */, const std::string& /* gatewayID */) {
     return;
   }
-  bool updateGatewayResourceProfile(const std::string& /* gatewayID */, const  ::GatewayResourceProfile& /* gatewayResourceProfile */) {
+  bool updateGatewayResourceProfile(const std::string& /* gatewayID */, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& /* gatewayResourceProfile */) {
     bool _return = false;
     return _return;
   }
@@ -344,17 +344,17 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  bool addGatewayComputeResourcePreference(const std::string& /* gatewayID */, const std::string& /* computeResourceId */, const  ::ComputeResourcePreference& /* computeResourcePreference */) {
+  bool addGatewayComputeResourcePreference(const std::string& /* gatewayID */, const std::string& /* computeResourceId */, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& /* computeResourcePreference */) {
     bool _return = false;
     return _return;
   }
-  void getGatewayComputeResourcePreference( ::ComputeResourcePreference& /* _return */, const std::string& /* gatewayID */, const std::string& /* computeResourceId */) {
+  void getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& /* _return */, const std::string& /* gatewayID */, const std::string& /* computeResourceId */) {
     return;
   }
-  void getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & /* _return */, const std::string& /* gatewayID */) {
+  void getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & /* _return */, const std::string& /* gatewayID */) {
     return;
   }
-  bool updateGatewayComputeResourcePreference(const std::string& /* gatewayID */, const std::string& /* computeResourceId */, const  ::ComputeResourcePreference& /* computeResourcePreference */) {
+  bool updateGatewayComputeResourcePreference(const std::string& /* gatewayID */, const std::string& /* computeResourceId */, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& /* computeResourcePreference */) {
     bool _return = false;
     return _return;
   }
@@ -418,9 +418,9 @@ class Airavata_getAPIVersion_result {
   virtual ~Airavata_getAPIVersion_result() throw() {}
 
   std::string success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAPIVersion_result__isset __isset;
 
@@ -428,15 +428,15 @@ class Airavata_getAPIVersion_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -478,9 +478,9 @@ class Airavata_getAPIVersion_presult {
   virtual ~Airavata_getAPIVersion_presult() throw() {}
 
   std::string* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAPIVersion_presult__isset __isset;
 
@@ -497,9 +497,9 @@ class Airavata_createProject_args {
 
   virtual ~Airavata_createProject_args() throw() {}
 
-   ::Project project;
+   ::apache::airavata::model::workspace::Project project;
 
-  void __set_project(const  ::Project& val) {
+  void __set_project(const  ::apache::airavata::model::workspace::Project& val) {
     project = val;
   }
 
@@ -527,7 +527,7 @@ class Airavata_createProject_pargs {
 
   virtual ~Airavata_createProject_pargs() throw() {}
 
-  const  ::Project* project;
+  const  ::apache::airavata::model::workspace::Project* project;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -550,9 +550,9 @@ class Airavata_createProject_result {
   virtual ~Airavata_createProject_result() throw() {}
 
   std::string success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_createProject_result__isset __isset;
 
@@ -560,15 +560,15 @@ class Airavata_createProject_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -610,9 +610,9 @@ class Airavata_createProject_presult {
   virtual ~Airavata_createProject_presult() throw() {}
 
   std::string* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_createProject_presult__isset __isset;
 
@@ -630,13 +630,13 @@ class Airavata_updateProject_args {
   virtual ~Airavata_updateProject_args() throw() {}
 
   std::string projectId;
-   ::Project updatedProject;
+   ::apache::airavata::model::workspace::Project updatedProject;
 
   void __set_projectId(const std::string& val) {
     projectId = val;
   }
 
-  void __set_updatedProject(const  ::Project& val) {
+  void __set_updatedProject(const  ::apache::airavata::model::workspace::Project& val) {
     updatedProject = val;
   }
 
@@ -667,7 +667,7 @@ class Airavata_updateProject_pargs {
   virtual ~Airavata_updateProject_pargs() throw() {}
 
   const std::string* projectId;
-  const  ::Project* updatedProject;
+  const  ::apache::airavata::model::workspace::Project* updatedProject;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -689,26 +689,26 @@ class Airavata_updateProject_result {
 
   virtual ~Airavata_updateProject_result() throw() {}
 
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
-   ::airavata::api::error::ProjectNotFoundException pnfe;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_updateProject_result__isset __isset;
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
-  void __set_pnfe(const  ::airavata::api::error::ProjectNotFoundException& val) {
+  void __set_pnfe(const  ::apache::airavata::api::error::ProjectNotFoundException& val) {
     pnfe = val;
   }
 
@@ -749,10 +749,10 @@ class Airavata_updateProject_presult {
 
   virtual ~Airavata_updateProject_presult() throw() {}
 
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
-   ::airavata::api::error::ProjectNotFoundException pnfe;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_updateProject_presult__isset __isset;
 
@@ -822,31 +822,31 @@ class Airavata_getProject_result {
 
   virtual ~Airavata_getProject_result() throw() {}
 
-   ::Project success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
-   ::airavata::api::error::ProjectNotFoundException pnfe;
+   ::apache::airavata::model::workspace::Project success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_getProject_result__isset __isset;
 
-  void __set_success(const  ::Project& val) {
+  void __set_success(const  ::apache::airavata::model::workspace::Project& val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
-  void __set_pnfe(const  ::airavata::api::error::ProjectNotFoundException& val) {
+  void __set_pnfe(const  ::apache::airavata::api::error::ProjectNotFoundException& val) {
     pnfe = val;
   }
 
@@ -890,11 +890,11 @@ class Airavata_getProject_presult {
 
   virtual ~Airavata_getProject_presult() throw() {}
 
-   ::Project* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
-   ::airavata::api::error::ProjectNotFoundException pnfe;
+   ::apache::airavata::model::workspace::Project* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_getProject_presult__isset __isset;
 
@@ -963,26 +963,26 @@ class Airavata_getAllUserProjects_result {
 
   virtual ~Airavata_getAllUserProjects_result() throw() {}
 
-  std::vector< ::Project>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::Project>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllUserProjects_result__isset __isset;
 
-  void __set_success(const std::vector< ::Project> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -1023,10 +1023,10 @@ class Airavata_getAllUserProjects_presult {
 
   virtual ~Airavata_getAllUserProjects_presult() throw() {}
 
-  std::vector< ::Project> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::Project> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllUserProjects_presult__isset __isset;
 
@@ -1103,26 +1103,26 @@ class Airavata_searchProjectsByProjectName_result {
 
   virtual ~Airavata_searchProjectsByProjectName_result() throw() {}
 
-  std::vector< ::Project>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::Project>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchProjectsByProjectName_result__isset __isset;
 
-  void __set_success(const std::vector< ::Project> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -1163,10 +1163,10 @@ class Airavata_searchProjectsByProjectName_presult {
 
   virtual ~Airavata_searchProjectsByProjectName_presult() throw() {}
 
-  std::vector< ::Project> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::Project> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchProjectsByProjectName_presult__isset __isset;
 
@@ -1243,26 +1243,26 @@ class Airavata_searchProjectsByProjectDesc_result {
 
   virtual ~Airavata_searchProjectsByProjectDesc_result() throw() {}
 
-  std::vector< ::Project>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::Project>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchProjectsByProjectDesc_result__isset __isset;
 
-  void __set_success(const std::vector< ::Project> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::Project> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -1303,10 +1303,10 @@ class Airavata_searchProjectsByProjectDesc_presult {
 
   virtual ~Airavata_searchProjectsByProjectDesc_presult() throw() {}
 
-  std::vector< ::Project> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::Project> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchProjectsByProjectDesc_presult__isset __isset;
 
@@ -1383,26 +1383,26 @@ class Airavata_searchExperimentsByName_result {
 
   virtual ~Airavata_searchExperimentsByName_result() throw() {}
 
-  std::vector< ::ExperimentSummary>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByName_result__isset __isset;
 
-  void __set_success(const std::vector< ::ExperimentSummary> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -1443,10 +1443,10 @@ class Airavata_searchExperimentsByName_presult {
 
   virtual ~Airavata_searchExperimentsByName_presult() throw() {}
 
-  std::vector< ::ExperimentSummary> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByName_presult__isset __isset;
 
@@ -1523,26 +1523,26 @@ class Airavata_searchExperimentsByDesc_result {
 
   virtual ~Airavata_searchExperimentsByDesc_result() throw() {}
 
-  std::vector< ::ExperimentSummary>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByDesc_result__isset __isset;
 
-  void __set_success(const std::vector< ::ExperimentSummary> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -1583,10 +1583,10 @@ class Airavata_searchExperimentsByDesc_presult {
 
   virtual ~Airavata_searchExperimentsByDesc_presult() throw() {}
 
-  std::vector< ::ExperimentSummary> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByDesc_presult__isset __isset;
 
@@ -1663,26 +1663,26 @@ class Airavata_searchExperimentsByApplication_result {
 
   virtual ~Airavata_searchExperimentsByApplication_result() throw() {}
 
-  std::vector< ::ExperimentSummary>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByApplication_result__isset __isset;
 
-  void __set_success(const std::vector< ::ExperimentSummary> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -1723,10 +1723,10 @@ class Airavata_searchExperimentsByApplication_presult {
 
   virtual ~Airavata_searchExperimentsByApplication_presult() throw() {}
 
-  std::vector< ::ExperimentSummary> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByApplication_presult__isset __isset;
 
@@ -1796,31 +1796,31 @@ class Airavata_getAllExperimentsInProject_result {
 
   virtual ~Airavata_getAllExperimentsInProject_result() throw() {}
 
-  std::vector< ::Experiment>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
-   ::airavata::api::error::ProjectNotFoundException pnfe;
+  std::vector< ::apache::airavata::model::workspace::experiment::Experiment>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_getAllExperimentsInProject_result__isset __isset;
 
-  void __set_success(const std::vector< ::Experiment> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
-  void __set_pnfe(const  ::airavata::api::error::ProjectNotFoundException& val) {
+  void __set_pnfe(const  ::apache::airavata::api::error::ProjectNotFoundException& val) {
     pnfe = val;
   }
 
@@ -1864,11 +1864,11 @@ class Airavata_getAllExperimentsInProject_presult {
 
   virtual ~Airavata_getAllExperimentsInProject_presult() throw() {}
 
-  std::vector< ::Experiment> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
-   ::airavata::api::error::ProjectNotFoundException pnfe;
+  std::vector< ::apache::airavata::model::workspace::experiment::Experiment> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::ProjectNotFoundException pnfe;
 
   _Airavata_getAllExperimentsInProject_presult__isset __isset;
 
@@ -1937,26 +1937,26 @@ class Airavata_getAllUserExperiments_result {
 
   virtual ~Airavata_getAllUserExperiments_result() throw() {}
 
-  std::vector< ::Experiment>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::experiment::Experiment>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllUserExperiments_result__isset __isset;
 
-  void __set_success(const std::vector< ::Experiment> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -1997,10 +1997,10 @@ class Airavata_getAllUserExperiments_presult {
 
   virtual ~Airavata_getAllUserExperiments_presult() throw() {}
 
-  std::vector< ::Experiment> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::workspace::experiment::Experiment> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllUserExperiments_presult__isset __isset;
 
@@ -2017,9 +2017,9 @@ class Airavata_createExperiment_args {
 
   virtual ~Airavata_createExperiment_args() throw() {}
 
-   ::Experiment experiment;
+   ::apache::airavata::model::workspace::experiment::Experiment experiment;
 
-  void __set_experiment(const  ::Experiment& val) {
+  void __set_experiment(const  ::apache::airavata::model::workspace::experiment::Experiment& val) {
     experiment = val;
   }
 
@@ -2047,7 +2047,7 @@ class Airavata_createExperiment_pargs {
 
   virtual ~Airavata_createExperiment_pargs() throw() {}
 
-  const  ::Experiment* experiment;
+  const  ::apache::airavata::model::workspace::experiment::Experiment* experiment;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2070,9 +2070,9 @@ class Airavata_createExperiment_result {
   virtual ~Airavata_createExperiment_result() throw() {}
 
   std::string success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_createExperiment_result__isset __isset;
 
@@ -2080,15 +2080,15 @@ class Airavata_createExperiment_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -2130,9 +2130,9 @@ class Airavata_createExperiment_presult {
   virtual ~Airavata_createExperiment_presult() throw() {}
 
   std::string* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_createExperiment_presult__isset __isset;
 
@@ -2202,31 +2202,31 @@ class Airavata_getExperiment_result {
 
   virtual ~Airavata_getExperiment_result() throw() {}
 
-   ::Experiment success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::workspace::experiment::Experiment success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getExperiment_result__isset __isset;
 
-  void __set_success(const  ::Experiment& val) {
+  void __set_success(const  ::apache::airavata::model::workspace::experiment::Experiment& val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_enf(const  ::airavata::api::error::ExperimentNotFoundException& val) {
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
     enf = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -2270,11 +2270,11 @@ class Airavata_getExperiment_presult {
 
   virtual ~Airavata_getExperiment_presult() throw() {}
 
-   ::Experiment* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::workspace::experiment::Experiment* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getExperiment_presult__isset __isset;
 
@@ -2292,13 +2292,13 @@ class Airavata_updateExperiment_args {
   virtual ~Airavata_updateExperiment_args() throw() {}
 
   std::string airavataExperimentId;
-   ::Experiment experiment;
+   ::apache::airavata::model::workspace::experiment::Experiment experiment;
 
   void __set_airavataExperimentId(const std::string& val) {
     airavataExperimentId = val;
   }
 
-  void __set_experiment(const  ::Experiment& val) {
+  void __set_experiment(const  ::apache::airavata::model::workspace::experiment::Experiment& val) {
     experiment = val;
   }
 
@@ -2329,7 +2329,7 @@ class Airavata_updateExperiment_pargs {
   virtual ~Airavata_updateExperiment_pargs() throw() {}
 
   const std::string* airavataExperimentId;
-  const  ::Experiment* experiment;
+  const  ::apache::airavata::model::workspace::experiment::Experiment* experiment;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2351,26 +2351,26 @@ class Airavata_updateExperiment_result {
 
   virtual ~Airavata_updateExperiment_result() throw() {}
 
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateExperiment_result__isset __isset;
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_enf(const  ::airavata::api::error::ExperimentNotFoundException& val) {
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
     enf = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -2411,10 +2411,10 @@ class Airavata_updateExperiment_presult {
 
   virtual ~Airavata_updateExperiment_presult() throw() {}
 
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateExperiment_presult__isset __isset;
 
@@ -2432,13 +2432,13 @@ class Airavata_updateExperimentConfiguration_args {
   virtual ~Airavata_updateExperimentConfiguration_args() throw() {}
 
   std::string airavataExperimentId;
-   ::UserConfigurationData userConfiguration;
+   ::apache::airavata::model::workspace::experiment::UserConfigurationData userConfiguration;
 
   void __set_airavataExperimentId(const std::string& val) {
     airavataExperimentId = val;
   }
 
-  void __set_userConfiguration(const  ::UserConfigurationData& val) {
+  void __set_userConfiguration(const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& val) {
     userConfiguration = val;
   }
 
@@ -2469,7 +2469,7 @@ class Airavata_updateExperimentConfiguration_pargs {
   virtual ~Airavata_updateExperimentConfiguration_pargs() throw() {}
 
   const std::string* airavataExperimentId;
-  const  ::UserConfigurationData* userConfiguration;
+  const  ::apache::airavata::model::workspace::experiment::UserConfigurationData* userConfiguration;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2522,13 +2522,13 @@ class Airavata_updateResourceScheduleing_args {
   virtual ~Airavata_updateResourceScheduleing_args() throw() {}
 
   std::string airavataExperimentId;
-   ::ComputationalResourceScheduling resourceScheduling;
+   ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling resourceScheduling;
 
   void __set_airavataExperimentId(const std::string& val) {
     airavataExperimentId = val;
   }
 
-  void __set_resourceScheduling(const  ::ComputationalResourceScheduling& val) {
+  void __set_resourceScheduling(const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& val) {
     resourceScheduling = val;
   }
 
@@ -2559,7 +2559,7 @@ class Airavata_updateResourceScheduleing_pargs {
   virtual ~Airavata_updateResourceScheduleing_pargs() throw() {}
 
   const std::string* airavataExperimentId;
-  const  ::ComputationalResourceScheduling* resourceScheduling;
+  const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling* resourceScheduling;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -2665,10 +2665,10 @@ class Airavata_validateExperiment_result {
   virtual ~Airavata_validateExperiment_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_validateExperiment_result__isset __isset;
 
@@ -2676,19 +2676,19 @@ class Airavata_validateExperiment_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_enf(const  ::airavata::api::error::ExperimentNotFoundException& val) {
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
     enf = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -2733,10 +2733,10 @@ class Airavata_validateExperiment_presult {
   virtual ~Airavata_validateExperiment_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_validateExperiment_presult__isset __isset;
 
@@ -2814,31 +2814,31 @@ class Airavata_launchExperiment_result {
 
   virtual ~Airavata_launchExperiment_result() throw() {}
 
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
-   ::airavata::api::error::LaunchValidationException lve;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::LaunchValidationException lve;
 
   _Airavata_launchExperiment_result__isset __isset;
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_enf(const  ::airavata::api::error::ExperimentNotFoundException& val) {
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
     enf = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
-  void __set_lve(const  ::airavata::api::error::LaunchValidationException& val) {
+  void __set_lve(const  ::apache::airavata::api::error::LaunchValidationException& val) {
     lve = val;
   }
 
@@ -2882,11 +2882,11 @@ class Airavata_launchExperiment_presult {
 
   virtual ~Airavata_launchExperiment_presult() throw() {}
 
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
-   ::airavata::api::error::LaunchValidationException lve;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::LaunchValidationException lve;
 
   _Airavata_launchExperiment_presult__isset __isset;
 
@@ -2956,31 +2956,31 @@ class Airavata_getExperimentStatus_result {
 
   virtual ~Airavata_getExperimentStatus_result() throw() {}
 
-   ::ExperimentStatus success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::workspace::experiment::ExperimentStatus success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getExperimentStatus_result__isset __isset;
 
-  void __set_success(const  ::ExperimentStatus& val) {
+  void __set_success(const  ::apache::airavata::model::workspace::experiment::ExperimentStatus& val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_enf(const  ::airavata::api::error::ExperimentNotFoundException& val) {
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
     enf = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -3024,11 +3024,11 @@ class Airavata_getExperimentStatus_presult {
 
   virtual ~Airavata_getExperimentStatus_presult() throw() {}
 
-   ::ExperimentStatus* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::workspace::experiment::ExperimentStatus* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getExperimentStatus_presult__isset __isset;
 
@@ -3094,11 +3094,11 @@ class Airavata_getExperimentOutputs_result {
 
   virtual ~Airavata_getExperimentOutputs_result() throw() {}
 
-  std::vector< ::DataObjectType>  success;
+  std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType>  success;
 
   _Airavata_getExperimentOutputs_result__isset __isset;
 
-  void __set_success(const std::vector< ::DataObjectType> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & val) {
     success = val;
   }
 
@@ -3130,7 +3130,7 @@ class Airavata_getExperimentOutputs_presult {
 
   virtual ~Airavata_getExperimentOutputs_presult() throw() {}
 
-  std::vector< ::DataObjectType> * success;
+  std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> * success;
 
   _Airavata_getExperimentOutputs_presult__isset __isset;
 
@@ -3196,11 +3196,11 @@ class Airavata_getJobStatuses_result {
 
   virtual ~Airavata_getJobStatuses_result() throw() {}
 
-  std::map<std::string,  ::JobStatus>  success;
+  std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus>  success;
 
   _Airavata_getJobStatuses_result__isset __isset;
 
-  void __set_success(const std::map<std::string,  ::JobStatus> & val) {
+  void __set_success(const std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & val) {
     success = val;
   }
 
@@ -3232,7 +3232,7 @@ class Airavata_getJobStatuses_presult {
 
   virtual ~Airavata_getJobStatuses_presult() throw() {}
 
-  std::map<std::string,  ::JobStatus> * success;
+  std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> * success;
 
   _Airavata_getJobStatuses_presult__isset __isset;
 
@@ -3318,10 +3318,10 @@ class Airavata_cloneExperiment_result {
   virtual ~Airavata_cloneExperiment_result() throw() {}
 
   std::string success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_cloneExperiment_result__isset __isset;
 
@@ -3329,19 +3329,19 @@ class Airavata_cloneExperiment_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_enf(const  ::airavata::api::error::ExperimentNotFoundException& val) {
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
     enf = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -3386,10 +3386,10 @@ class Airavata_cloneExperiment_presult {
   virtual ~Airavata_cloneExperiment_presult() throw() {}
 
   std::string* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_cloneExperiment_presult__isset __isset;
 
@@ -3464,26 +3464,26 @@ class Airavata_terminateExperiment_result {
 
   virtual ~Airavata_terminateExperiment_result() throw() {}
 
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_terminateExperiment_result__isset __isset;
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_enf(const  ::airavata::api::error::ExperimentNotFoundException& val) {
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
     enf = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -3524,10 +3524,10 @@ class Airavata_terminateExperiment_presult {
 
   virtual ~Airavata_terminateExperiment_presult() throw() {}
 
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::ExperimentNotFoundException enf;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_terminateExperiment_presult__isset __isset;
 
@@ -3544,9 +3544,9 @@ class Airavata_registerApplicationModule_args {
 
   virtual ~Airavata_registerApplicationModule_args() throw() {}
 
-   ::ApplicationModule applicationModule;
+   ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule applicationModule;
 
-  void __set_applicationModule(const  ::ApplicationModule& val) {
+  void __set_applicationModule(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& val) {
     applicationModule = val;
   }
 
@@ -3574,7 +3574,7 @@ class Airavata_registerApplicationModule_pargs {
 
   virtual ~Airavata_registerApplicationModule_pargs() throw() {}
 
-  const  ::ApplicationModule* applicationModule;
+  const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule* applicationModule;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -3597,9 +3597,9 @@ class Airavata_registerApplicationModule_result {
   virtual ~Airavata_registerApplicationModule_result() throw() {}
 
   std::string success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerApplicationModule_result__isset __isset;
 
@@ -3607,15 +3607,15 @@ class Airavata_registerApplicationModule_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -3657,9 +3657,9 @@ class Airavata_registerApplicationModule_presult {
   virtual ~Airavata_registerApplicationModule_presult() throw() {}
 
   std::string* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerApplicationModule_presult__isset __isset;
 
@@ -3728,26 +3728,26 @@ class Airavata_getApplicationModule_result {
 
   virtual ~Airavata_getApplicationModule_result() throw() {}
 
-   ::ApplicationModule success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationModule_result__isset __isset;
 
-  void __set_success(const  ::ApplicationModule& val) {
+  void __set_success(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -3788,10 +3788,10 @@ class Airavata_getApplicationModule_presult {
 
   virtual ~Airavata_getApplicationModule_presult() throw() {}
 
-   ::ApplicationModule* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationModule_presult__isset __isset;
 
@@ -3809,13 +3809,13 @@ class Airavata_updateApplicationModule_args {
   virtual ~Airavata_updateApplicationModule_args() throw() {}
 
   std::string appModuleId;
-   ::ApplicationModule applicationModule;
+   ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule applicationModule;
 
   void __set_appModuleId(const std::string& val) {
     appModuleId = val;
   }
 
-  void __set_applicationModule(const  ::ApplicationModule& val) {
+  void __set_applicationModule(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& val) {
     applicationModule = val;
   }
 
@@ -3846,7 +3846,7 @@ class Airavata_updateApplicationModule_pargs {
   virtual ~Airavata_updateApplicationModule_pargs() throw() {}
 
   const std::string* appModuleId;
-  const  ::ApplicationModule* applicationModule;
+  const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule* applicationModule;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -3869,9 +3869,9 @@ class Airavata_updateApplicationModule_result {
   virtual ~Airavata_updateApplicationModule_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateApplicationModule_result__isset __isset;
 
@@ -3879,15 +3879,15 @@ class Airavata_updateApplicationModule_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -3929,9 +3929,9 @@ class Airavata_updateApplicationModule_presult {
   virtual ~Airavata_updateApplicationModule_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateApplicationModule_presult__isset __isset;
 
@@ -4001,9 +4001,9 @@ class Airavata_deleteApplicationModule_result {
   virtual ~Airavata_deleteApplicationModule_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteApplicationModule_result__isset __isset;
 
@@ -4011,15 +4011,15 @@ class Airavata_deleteApplicationModule_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -4061,9 +4061,9 @@ class Airavata_deleteApplicationModule_presult {
   virtual ~Airavata_deleteApplicationModule_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteApplicationModule_presult__isset __isset;
 
@@ -4080,9 +4080,9 @@ class Airavata_registerApplicationDeployment_args {
 
   virtual ~Airavata_registerApplicationDeployment_args() throw() {}
 
-   ::ApplicationDeploymentDescription applicationDeployment;
+   ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription applicationDeployment;
 
-  void __set_applicationDeployment(const  ::ApplicationDeploymentDescription& val) {
+  void __set_applicationDeployment(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& val) {
     applicationDeployment = val;
   }
 
@@ -4110,7 +4110,7 @@ class Airavata_registerApplicationDeployment_pargs {
 
   virtual ~Airavata_registerApplicationDeployment_pargs() throw() {}
 
-  const  ::ApplicationDeploymentDescription* applicationDeployment;
+  const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription* applicationDeployment;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -4133,9 +4133,9 @@ class Airavata_registerApplicationDeployment_result {
   virtual ~Airavata_registerApplicationDeployment_result() throw() {}
 
   std::string success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerApplicationDeployment_result__isset __isset;
 
@@ -4143,15 +4143,15 @@ class Airavata_registerApplicationDeployment_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -4193,9 +4193,9 @@ class Airavata_registerApplicationDeployment_presult {
   virtual ~Airavata_registerApplicationDeployment_presult() throw() {}
 
   std::string* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerApplicationDeployment_presult__isset __isset;
 
@@ -4264,26 +4264,26 @@ class Airavata_getApplicationDeployment_result {
 
   virtual ~Airavata_getApplicationDeployment_result() throw() {}
 
-   ::ApplicationDeploymentDescription success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationDeployment_result__isset __isset;
 
-  void __set_success(const  ::ApplicationDeploymentDescription& val) {
+  void __set_success(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -4324,10 +4324,10 @@ class Airavata_getApplicationDeployment_presult {
 
   virtual ~Airavata_getApplicationDeployment_presult() throw() {}
 
-   ::ApplicationDeploymentDescription* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationDeployment_presult__isset __isset;
 
@@ -4345,13 +4345,13 @@ class Airavata_updateApplicationDeployment_args {
   virtual ~Airavata_updateApplicationDeployment_args() throw() {}
 
   std::string appDeploymentId;
-   ::ApplicationDeploymentDescription applicationDeployment;
+   ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription applicationDeployment;
 
   void __set_appDeploymentId(const std::string& val) {
     appDeploymentId = val;
   }
 
-  void __set_applicationDeployment(const  ::ApplicationDeploymentDescription& val) {
+  void __set_applicationDeployment(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& val) {
     applicationDeployment = val;
   }
 
@@ -4382,7 +4382,7 @@ class Airavata_updateApplicationDeployment_pargs {
   virtual ~Airavata_updateApplicationDeployment_pargs() throw() {}
 
   const std::string* appDeploymentId;
-  const  ::ApplicationDeploymentDescription* applicationDeployment;
+  const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription* applicationDeployment;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -4405,9 +4405,9 @@ class Airavata_updateApplicationDeployment_result {
   virtual ~Airavata_updateApplicationDeployment_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateApplicationDeployment_result__isset __isset;
 
@@ -4415,15 +4415,15 @@ class Airavata_updateApplicationDeployment_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -4465,9 +4465,9 @@ class Airavata_updateApplicationDeployment_presult {
   virtual ~Airavata_updateApplicationDeployment_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateApplicationDeployment_presult__isset __isset;
 
@@ -4537,9 +4537,9 @@ class Airavata_deleteApplicationDeployment_result {
   virtual ~Airavata_deleteApplicationDeployment_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteApplicationDeployment_result__isset __isset;
 
@@ -4547,15 +4547,15 @@ class Airavata_deleteApplicationDeployment_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -4597,9 +4597,9 @@ class Airavata_deleteApplicationDeployment_presult {
   virtual ~Airavata_deleteApplicationDeployment_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteApplicationDeployment_presult__isset __isset;
 
@@ -4669,9 +4669,9 @@ class Airavata_getAppModuleDeployedResources_result {
   virtual ~Airavata_getAppModuleDeployedResources_result() throw() {}
 
   std::vector<std::string>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAppModuleDeployedResources_result__isset __isset;
 
@@ -4679,15 +4679,15 @@ class Airavata_getAppModuleDeployedResources_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -4729,9 +4729,9 @@ class Airavata_getAppModuleDeployedResources_presult {
   virtual ~Airavata_getAppModuleDeployedResources_presult() throw() {}
 
   std::vector<std::string> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAppModuleDeployedResources_presult__isset __isset;
 
@@ -4748,9 +4748,9 @@ class Airavata_registerApplicationInterface_args {
 
   virtual ~Airavata_registerApplicationInterface_args() throw() {}
 
-   ::ApplicationInterfaceDescription applicationInterface;
+   ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription applicationInterface;
 
-  void __set_applicationInterface(const  ::ApplicationInterfaceDescription& val) {
+  void __set_applicationInterface(const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& val) {
     applicationInterface = val;
   }
 
@@ -4778,7 +4778,7 @@ class Airavata_registerApplicationInterface_pargs {
 
   virtual ~Airavata_registerApplicationInterface_pargs() throw() {}
 
-  const  ::ApplicationInterfaceDescription* applicationInterface;
+  const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription* applicationInterface;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -4801,9 +4801,9 @@ class Airavata_registerApplicationInterface_result {
   virtual ~Airavata_registerApplicationInterface_result() throw() {}
 
   std::string success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerApplicationInterface_result__isset __isset;
 
@@ -4811,15 +4811,15 @@ class Airavata_registerApplicationInterface_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -4861,9 +4861,9 @@ class Airavata_registerApplicationInterface_presult {
   virtual ~Airavata_registerApplicationInterface_presult() throw() {}
 
   std::string* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerApplicationInterface_presult__isset __isset;
 
@@ -4932,26 +4932,26 @@ class Airavata_getApplicationInterface_result {
 
   virtual ~Airavata_getApplicationInterface_result() throw() {}
 
-   ::ApplicationInterfaceDescription success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationInterface_result__isset __isset;
 
-  void __set_success(const  ::ApplicationInterfaceDescription& val) {
+  void __set_success(const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -4992,10 +4992,10 @@ class Airavata_getApplicationInterface_presult {
 
   virtual ~Airavata_getApplicationInterface_presult() throw() {}
 
-   ::ApplicationInterfaceDescription* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationInterface_presult__isset __isset;
 
@@ -5013,13 +5013,13 @@ class Airavata_updateApplicationInterface_args {
   virtual ~Airavata_updateApplicationInterface_args() throw() {}
 
   std::string appInterfaceId;
-   ::ApplicationInterfaceDescription applicationInterface;
+   ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription applicationInterface;
 
   void __set_appInterfaceId(const std::string& val) {
     appInterfaceId = val;
   }
 
-  void __set_applicationInterface(const  ::ApplicationInterfaceDescription& val) {
+  void __set_applicationInterface(const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& val) {
     applicationInterface = val;
   }
 
@@ -5050,7 +5050,7 @@ class Airavata_updateApplicationInterface_pargs {
   virtual ~Airavata_updateApplicationInterface_pargs() throw() {}
 
   const std::string* appInterfaceId;
-  const  ::ApplicationInterfaceDescription* applicationInterface;
+  const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription* applicationInterface;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -5073,9 +5073,9 @@ class Airavata_updateApplicationInterface_result {
   virtual ~Airavata_updateApplicationInterface_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateApplicationInterface_result__isset __isset;
 
@@ -5083,15 +5083,15 @@ class Airavata_updateApplicationInterface_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -5133,9 +5133,9 @@ class Airavata_updateApplicationInterface_presult {
   virtual ~Airavata_updateApplicationInterface_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateApplicationInterface_presult__isset __isset;
 
@@ -5205,9 +5205,9 @@ class Airavata_deleteApplicationInterface_result {
   virtual ~Airavata_deleteApplicationInterface_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteApplicationInterface_result__isset __isset;
 
@@ -5215,15 +5215,15 @@ class Airavata_deleteApplicationInterface_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -5265,9 +5265,9 @@ class Airavata_deleteApplicationInterface_presult {
   virtual ~Airavata_deleteApplicationInterface_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteApplicationInterface_presult__isset __isset;
 
@@ -5329,9 +5329,9 @@ class Airavata_getAllApplicationInterfaceNames_result {
   virtual ~Airavata_getAllApplicationInterfaceNames_result() throw() {}
 
   std::map<std::string, std::string>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllApplicationInterfaceNames_result__isset __isset;
 
@@ -5339,15 +5339,15 @@ class Airavata_getAllApplicationInterfaceNames_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -5389,9 +5389,9 @@ class Airavata_getAllApplicationInterfaceNames_presult {
   virtual ~Airavata_getAllApplicationInterfaceNames_presult() throw() {}
 
   std::map<std::string, std::string> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllApplicationInterfaceNames_presult__isset __isset;
 
@@ -5452,26 +5452,26 @@ class Airavata_getAllApplicationInterfaces_result {
 
   virtual ~Airavata_getAllApplicationInterfaces_result() throw() {}
 
-  std::vector< ::ApplicationInterfaceDescription>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllApplicationInterfaces_result__isset __isset;
 
-  void __set_success(const std::vector< ::ApplicationInterfaceDescription> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -5512,10 +5512,10 @@ class Airavata_getAllApplicationInterfaces_presult {
 
   virtual ~Airavata_getAllApplicationInterfaces_presult() throw() {}
 
-  std::vector< ::ApplicationInterfaceDescription> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllApplicationInterfaces_presult__isset __isset;
 
@@ -5584,26 +5584,26 @@ class Airavata_getApplicationInputs_result {
 
   virtual ~Airavata_getApplicationInputs_result() throw() {}
 
-  std::vector< ::InputDataObjectType>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationInputs_result__isset __isset;
 
-  void __set_success(const std::vector< ::InputDataObjectType> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -5644,10 +5644,10 @@ class Airavata_getApplicationInputs_presult {
 
   virtual ~Airavata_getApplicationInputs_presult() throw() {}
 
-  std::vector< ::InputDataObjectType> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationInputs_presult__isset __isset;
 
@@ -5716,26 +5716,26 @@ class Airavata_getApplicationOutputs_result {
 
   virtual ~Airavata_getApplicationOutputs_result() throw() {}
 
-  std::vector< ::OutputDataObjectType>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationOutputs_result__isset __isset;
 
-  void __set_success(const std::vector< ::OutputDataObjectType> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -5776,10 +5776,10 @@ class Airavata_getApplicationOutputs_presult {
 
   virtual ~Airavata_getApplicationOutputs_presult() throw() {}
 
-  std::vector< ::OutputDataObjectType> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationOutputs_presult__isset __isset;
 
@@ -5849,9 +5849,9 @@ class Airavata_getAvailableAppInterfaceComputeResources_result {
   virtual ~Airavata_getAvailableAppInterfaceComputeResources_result() throw() {}
 
   std::vector<std::string>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAvailableAppInterfaceComputeResources_result__isset __isset;
 
@@ -5859,15 +5859,15 @@ class Airavata_getAvailableAppInterfaceComputeResources_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -5909,9 +5909,9 @@ class Airavata_getAvailableAppInterfaceComputeResources_presult {
   virtual ~Airavata_getAvailableAppInterfaceComputeResources_presult() throw() {}
 
   std::vector<std::string> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAvailableAppInterfaceComputeResources_presult__isset __isset;
 
@@ -5928,9 +5928,9 @@ class Airavata_registerComputeResource_args {
 
   virtual ~Airavata_registerComputeResource_args() throw() {}
 
-   ::ComputeResourceDescription computeResourceDescription;
+   ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription computeResourceDescription;
 
-  void __set_computeResourceDescription(const  ::ComputeResourceDescription& val) {
+  void __set_computeResourceDescription(const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& val) {
     computeResourceDescription = val;
   }
 
@@ -5958,7 +5958,7 @@ class Airavata_registerComputeResource_pargs {
 
   virtual ~Airavata_registerComputeResource_pargs() throw() {}
 
-  const  ::ComputeResourceDescription* computeResourceDescription;
+  const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription* computeResourceDescription;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -5981,9 +5981,9 @@ class Airavata_registerComputeResource_result {
   virtual ~Airavata_registerComputeResource_result() throw() {}
 
   std::string success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerComputeResource_result__isset __isset;
 
@@ -5991,15 +5991,15 @@ class Airavata_registerComputeResource_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -6041,9 +6041,9 @@ class Airavata_registerComputeResource_presult {
   virtual ~Airavata_registerComputeResource_presult() throw() {}
 
   std::string* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerComputeResource_presult__isset __isset;
 
@@ -6112,26 +6112,26 @@ class Airavata_getComputeResource_result {
 
   virtual ~Airavata_getComputeResource_result() throw() {}
 
-   ::ComputeResourceDescription success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getComputeResource_result__isset __isset;
 
-  void __set_success(const  ::ComputeResourceDescription& val) {
+  void __set_success(const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -6172,10 +6172,10 @@ class Airavata_getComputeResource_presult {
 
   virtual ~Airavata_getComputeResource_presult() throw() {}
 
-   ::ComputeResourceDescription* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getComputeResource_presult__isset __isset;
 
@@ -6237,9 +6237,9 @@ class Airavata_getAllComputeResourceNames_result {
   virtual ~Airavata_getAllComputeResourceNames_result() throw() {}
 
   std::map<std::string, std::string>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllComputeResourceNames_result__isset __isset;
 
@@ -6247,15 +6247,15 @@ class Airavata_getAllComputeResourceNames_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -6297,9 +6297,9 @@ class Airavata_getAllComputeResourceNames_presult {
   virtual ~Airavata_getAllComputeResourceNames_presult() throw() {}
 
   std::map<std::string, std::string> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllComputeResourceNames_presult__isset __isset;
 
@@ -6317,13 +6317,13 @@ class Airavata_updateComputeResource_args {
   virtual ~Airavata_updateComputeResource_args() throw() {}
 
   std::string computeResourceId;
-   ::ComputeResourceDescription computeResourceDescription;
+   ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription computeResourceDescription;
 
   void __set_computeResourceId(const std::string& val) {
     computeResourceId = val;
   }
 
-  void __set_computeResourceDescription(const  ::ComputeResourceDescription& val) {
+  void __set_computeResourceDescription(const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& val) {
     computeResourceDescription = val;
   }
 
@@ -6354,7 +6354,7 @@ class Airavata_updateComputeResource_pargs {
   virtual ~Airavata_updateComputeResource_pargs() throw() {}
 
   const std::string* computeResourceId;
-  const  ::ComputeResourceDescription* computeResourceDescription;
+  const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription* computeResourceDescription;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -6377,9 +6377,9 @@ class Airavata_updateComputeResource_result {
   virtual ~Airavata_updateComputeResource_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateComputeResource_result__isset __isset;
 
@@ -6387,15 +6387,15 @@ class Airavata_updateComputeResource_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -6437,9 +6437,9 @@ class Airavata_updateComputeResource_presult {
   virtual ~Airavata_updateComputeResource_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateComputeResource_presult__isset __isset;
 
@@ -6509,9 +6509,9 @@ class Airavata_deleteComputeResource_result {
   virtual ~Airavata_deleteComputeResource_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteComputeResource_result__isset __isset;
 
@@ -6519,15 +6519,15 @@ class Airavata_deleteComputeResource_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -6569,9 +6569,9 @@ class Airavata_deleteComputeResource_presult {
   virtual ~Airavata_deleteComputeResource_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteComputeResource_presult__isset __isset;
 
@@ -6590,7 +6590,7 @@ class Airavata_addLocalSubmissionDetails_args {
 
   std::string computeResourceId;
   int32_t priorityOrder;
-   ::LOCALSubmission localSubmission;
+   ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission localSubmission;
 
   void __set_computeResourceId(const std::string& val) {
     computeResourceId = val;
@@ -6600,7 +6600,7 @@ class Airavata_addLocalSubmissionDetails_args {
     priorityOrder = val;
   }
 
-  void __set_localSubmission(const  ::LOCALSubmission& val) {
+  void __set_localSubmission(const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& val) {
     localSubmission = val;
   }
 
@@ -6634,7 +6634,7 @@ class Airavata_addLocalSubmissionDetails_pargs {
 
   const std::string* computeResourceId;
   const int32_t* priorityOrder;
-  const  ::LOCALSubmission* localSubmission;
+  const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission* localSubmission;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -6657,9 +6657,9 @@ class Airavata_addLocalSubmissionDetails_result {
   virtual ~Airavata_addLocalSubmissionDetails_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addLocalSubmissionDetails_result__isset __isset;
 
@@ -6667,15 +6667,15 @@ class Airavata_addLocalSubmissionDetails_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -6717,9 +6717,9 @@ class Airavata_addLocalSubmissionDetails_presult {
   virtual ~Airavata_addLocalSubmissionDetails_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addLocalSubmissionDetails_presult__isset __isset;
 
@@ -6737,13 +6737,13 @@ class Airavata_updateLocalSubmissionDetails_args {
   virtual ~Airavata_updateLocalSubmissionDetails_args() throw() {}
 
   std::string jobSubmissionInterfaceId;
-   ::LOCALSubmission localSubmission;
+   ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission localSubmission;
 
   void __set_jobSubmissionInterfaceId(const std::string& val) {
     jobSubmissionInterfaceId = val;
   }
 
-  void __set_localSubmission(const  ::LOCALSubmission& val) {
+  void __set_localSubmission(const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& val) {
     localSubmission = val;
   }
 
@@ -6774,7 +6774,7 @@ class Airavata_updateLocalSubmissionDetails_pargs {
   virtual ~Airavata_updateLocalSubmissionDetails_pargs() throw() {}
 
   const std::string* jobSubmissionInterfaceId;
-  const  ::LOCALSubmission* localSubmission;
+  const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission* localSubmission;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -6797,9 +6797,9 @@ class Airavata_updateLocalSubmissionDetails_result {
   virtual ~Airavata_updateLocalSubmissionDetails_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateLocalSubmissionDetails_result__isset __isset;
 
@@ -6807,15 +6807,15 @@ class Airavata_updateLocalSubmissionDetails_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -6857,9 +6857,9 @@ class Airavata_updateLocalSubmissionDetails_presult {
   virtual ~Airavata_updateLocalSubmissionDetails_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateLocalSubmissionDetails_presult__isset __isset;
 
@@ -6878,7 +6878,7 @@ class Airavata_addSSHJobSubmissionDetails_args {
 
   std::string computeResourceId;
   int32_t priorityOrder;
-   ::SSHJobSubmission sshJobSubmission;
+   ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission sshJobSubmission;
 
   void __set_computeResourceId(const std::string& val) {
     computeResourceId = val;
@@ -6888,7 +6888,7 @@ class Airavata_addSSHJobSubmissionDetails_args {
     priorityOrder = val;
   }
 
-  void __set_sshJobSubmission(const  ::SSHJobSubmission& val) {
+  void __set_sshJobSubmission(const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& val) {
     sshJobSubmission = val;
   }
 
@@ -6922,7 +6922,7 @@ class Airavata_addSSHJobSubmissionDetails_pargs {
 
   const std::string* computeResourceId;
   const int32_t* priorityOrder;
-  const  ::SSHJobSubmission* sshJobSubmission;
+  const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission* sshJobSubmission;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -6945,9 +6945,9 @@ class Airavata_addSSHJobSubmissionDetails_result {
   virtual ~Airavata_addSSHJobSubmissionDetails_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addSSHJobSubmissionDetails_result__isset __isset;
 
@@ -6955,15 +6955,15 @@ class Airavata_addSSHJobSubmissionDetails_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -7005,9 +7005,9 @@ class Airavata_addSSHJobSubmissionDetails_presult {
   virtual ~Airavata_addSSHJobSubmissionDetails_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addSSHJobSubmissionDetails_presult__isset __isset;
 
@@ -7025,13 +7025,13 @@ class Airavata_updateSSHJobSubmissionDetails_args {
   virtual ~Airavata_updateSSHJobSubmissionDetails_args() throw() {}
 
   std::string jobSubmissionInterfaceId;
-   ::SSHJobSubmission sshJobSubmission;
+   ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission sshJobSubmission;
 
   void __set_jobSubmissionInterfaceId(const std::string& val) {
     jobSubmissionInterfaceId = val;
   }
 
-  void __set_sshJobSubmission(const  ::SSHJobSubmission& val) {
+  void __set_sshJobSubmission(const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& val) {
     sshJobSubmission = val;
   }
 
@@ -7062,7 +7062,7 @@ class Airavata_updateSSHJobSubmissionDetails_pargs {
   virtual ~Airavata_updateSSHJobSubmissionDetails_pargs() throw() {}
 
   const std::string* jobSubmissionInterfaceId;
-  const  ::SSHJobSubmission* sshJobSubmission;
+  const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission* sshJobSubmission;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -7085,9 +7085,9 @@ class Airavata_updateSSHJobSubmissionDetails_result {
   virtual ~Airavata_updateSSHJobSubmissionDetails_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateSSHJobSubmissionDetails_result__isset __isset;
 
@@ -7095,15 +7095,15 @@ class Airavata_updateSSHJobSubmissionDetails_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -7145,9 +7145,9 @@ class Airavata_updateSSHJobSubmissionDetails_presult {
   virtual ~Airavata_updateSSHJobSubmissionDetails_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateSSHJobSubmissionDetails_presult__isset __isset;
 
@@ -7166,7 +7166,7 @@ class Airavata_addLocalDataMovementDetails_args {
 
   std::string computeResourceId;
   int32_t priorityOrder;
-   ::LOCALDataMovement localDataMovement;
+   ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement localDataMovement;
 
   void __set_computeResourceId(const std::string& val) {
     computeResourceId = val;
@@ -7176,7 +7176,7 @@ class Airavata_addLocalDataMovementDetails_args {
     priorityOrder = val;
   }
 
-  void __set_localDataMovement(const  ::LOCALDataMovement& val) {
+  void __set_localDataMovement(const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& val) {
     localDataMovement = val;
   }
 
@@ -7210,7 +7210,7 @@ class Airavata_addLocalDataMovementDetails_pargs {
 
   const std::string* computeResourceId;
   const int32_t* priorityOrder;
-  const  ::LOCALDataMovement* localDataMovement;
+  const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement* localDataMovement;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -7233,9 +7233,9 @@ class Airavata_addLocalDataMovementDetails_result {
   virtual ~Airavata_addLocalDataMovementDetails_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addLocalDataMovementDetails_result__isset __isset;
 
@@ -7243,15 +7243,15 @@ class Airavata_addLocalDataMovementDetails_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -7293,9 +7293,9 @@ class Airavata_addLocalDataMovementDetails_presult {
   virtual ~Airavata_addLocalDataMovementDetails_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addLocalDataMovementDetails_presult__isset __isset;
 
@@ -7313,13 +7313,13 @@ class Airavata_updateLocalDataMovementDetails_args {
   virtual ~Airavata_updateLocalDataMovementDetails_args() throw() {}
 
   std::string jobSubmissionInterfaceId;
-   ::LOCALDataMovement localDataMovement;
+   ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement localDataMovement;
 
   void __set_jobSubmissionInterfaceId(const std::string& val) {
     jobSubmissionInterfaceId = val;
   }
 
-  void __set_localDataMovement(const  ::LOCALDataMovement& val) {
+  void __set_localDataMovement(const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& val) {
     localDataMovement = val;
   }
 
@@ -7350,7 +7350,7 @@ class Airavata_updateLocalDataMovementDetails_pargs {
   virtual ~Airavata_updateLocalDataMovementDetails_pargs() throw() {}
 
   const std::string* jobSubmissionInterfaceId;
-  const  ::LOCALDataMovement* localDataMovement;
+  const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement* localDataMovement;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -7373,9 +7373,9 @@ class Airavata_updateLocalDataMovementDetails_result {
   virtual ~Airavata_updateLocalDataMovementDetails_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateLocalDataMovementDetails_result__isset __isset;
 
@@ -7383,15 +7383,15 @@ class Airavata_updateLocalDataMovementDetails_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -7433,9 +7433,9 @@ class Airavata_updateLocalDataMovementDetails_presult {
   virtual ~Airavata_updateLocalDataMovementDetails_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateLocalDataMovementDetails_presult__isset __isset;
 
@@ -7454,7 +7454,7 @@ class Airavata_addSCPDataMovementDetails_args {
 
   std::string computeResourceId;
   int32_t priorityOrder;
-   ::SCPDataMovement scpDataMovement;
+   ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement scpDataMovement;
 
   void __set_computeResourceId(const std::string& val) {
     computeResourceId = val;
@@ -7464,7 +7464,7 @@ class Airavata_addSCPDataMovementDetails_args {
     priorityOrder = val;
   }
 
-  void __set_scpDataMovement(const  ::SCPDataMovement& val) {
+  void __set_scpDataMovement(const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& val) {
     scpDataMovement = val;
   }
 
@@ -7498,7 +7498,7 @@ class Airavata_addSCPDataMovementDetails_pargs {
 
   const std::string* computeResourceId;
   const int32_t* priorityOrder;
-  const  ::SCPDataMovement* scpDataMovement;
+  const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement* scpDataMovement;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -7521,9 +7521,9 @@ class Airavata_addSCPDataMovementDetails_result {
   virtual ~Airavata_addSCPDataMovementDetails_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addSCPDataMovementDetails_result__isset __isset;
 
@@ -7531,15 +7531,15 @@ class Airavata_addSCPDataMovementDetails_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -7581,9 +7581,9 @@ class Airavata_addSCPDataMovementDetails_presult {
   virtual ~Airavata_addSCPDataMovementDetails_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addSCPDataMovementDetails_presult__isset __isset;
 
@@ -7601,13 +7601,13 @@ class Airavata_updateSCPDataMovementDetails_args {
   virtual ~Airavata_updateSCPDataMovementDetails_args() throw() {}
 
   std::string jobSubmissionInterfaceId;
-   ::SCPDataMovement scpDataMovement;
+   ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement scpDataMovement;
 
   void __set_jobSubmissionInterfaceId(const std::string& val) {
     jobSubmissionInterfaceId = val;
   }
 
-  void __set_scpDataMovement(const  ::SCPDataMovement& val) {
+  void __set_scpDataMovement(const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& val) {
     scpDataMovement = val;
   }
 
@@ -7638,7 +7638,7 @@ class Airavata_updateSCPDataMovementDetails_pargs {
   virtual ~Airavata_updateSCPDataMovementDetails_pargs() throw() {}
 
   const std::string* jobSubmissionInterfaceId;
-  const  ::SCPDataMovement* scpDataMovement;
+  const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement* scpDataMovement;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -7661,9 +7661,9 @@ class Airavata_updateSCPDataMovementDetails_result {
   virtual ~Airavata_updateSCPDataMovementDetails_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateSCPDataMovementDetails_result__isset __isset;
 
@@ -7671,15 +7671,15 @@ class Airavata_updateSCPDataMovementDetails_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -7721,9 +7721,9 @@ class Airavata_updateSCPDataMovementDetails_presult {
   virtual ~Airavata_updateSCPDataMovementDetails_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateSCPDataMovementDetails_presult__isset __isset;
 
@@ -7742,7 +7742,7 @@ class Airavata_addGridFTPDataMovementDetails_args {
 
   std::string computeResourceId;
   int32_t priorityOrder;
-   ::GridFTPDataMovement gridFTPDataMovement;
+   ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement gridFTPDataMovement;
 
   void __set_computeResourceId(const std::string& val) {
     computeResourceId = val;
@@ -7752,7 +7752,7 @@ class Airavata_addGridFTPDataMovementDetails_args {
     priorityOrder = val;
   }
 
-  void __set_gridFTPDataMovement(const  ::GridFTPDataMovement& val) {
+  void __set_gridFTPDataMovement(const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& val) {
     gridFTPDataMovement = val;
   }
 
@@ -7786,7 +7786,7 @@ class Airavata_addGridFTPDataMovementDetails_pargs {
 
   const std::string* computeResourceId;
   const int32_t* priorityOrder;
-  const  ::GridFTPDataMovement* gridFTPDataMovement;
+  const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement* gridFTPDataMovement;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -7809,9 +7809,9 @@ class Airavata_addGridFTPDataMovementDetails_result {
   virtual ~Airavata_addGridFTPDataMovementDetails_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addGridFTPDataMovementDetails_result__isset __isset;
 
@@ -7819,15 +7819,15 @@ class Airavata_addGridFTPDataMovementDetails_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -7869,9 +7869,9 @@ class Airavata_addGridFTPDataMovementDetails_presult {
   virtual ~Airavata_addGridFTPDataMovementDetails_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addGridFTPDataMovementDetails_presult__isset __isset;
 
@@ -7889,13 +7889,13 @@ class Airavata_updateGridFTPDataMovementDetails_args {
   virtual ~Airavata_updateGridFTPDataMovementDetails_args() throw() {}
 
   std::string jobSubmissionInterfaceId;
-   ::GridFTPDataMovement gridFTPDataMovement;
+   ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement gridFTPDataMovement;
 
   void __set_jobSubmissionInterfaceId(const std::string& val) {
     jobSubmissionInterfaceId = val;
   }
 
-  void __set_gridFTPDataMovement(const  ::GridFTPDataMovement& val) {
+  void __set_gridFTPDataMovement(const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& val) {
     gridFTPDataMovement = val;
   }
 
@@ -7926,7 +7926,7 @@ class Airavata_updateGridFTPDataMovementDetails_pargs {
   virtual ~Airavata_updateGridFTPDataMovementDetails_pargs() throw() {}
 
   const std::string* jobSubmissionInterfaceId;
-  const  ::GridFTPDataMovement* gridFTPDataMovement;
+  const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement* gridFTPDataMovement;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -7949,9 +7949,9 @@ class Airavata_updateGridFTPDataMovementDetails_result {
   virtual ~Airavata_updateGridFTPDataMovementDetails_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateGridFTPDataMovementDetails_result__isset __isset;
 
@@ -7959,15 +7959,15 @@ class Airavata_updateGridFTPDataMovementDetails_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -8009,9 +8009,9 @@ class Airavata_updateGridFTPDataMovementDetails_presult {
   virtual ~Airavata_updateGridFTPDataMovementDetails_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateGridFTPDataMovementDetails_presult__isset __isset;
 
@@ -8089,9 +8089,9 @@ class Airavata_changeJobSubmissionPriority_result {
   virtual ~Airavata_changeJobSubmissionPriority_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_changeJobSubmissionPriority_result__isset __isset;
 
@@ -8099,15 +8099,15 @@ class Airavata_changeJobSubmissionPriority_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -8149,9 +8149,9 @@ class Airavata_changeJobSubmissionPriority_presult {
   virtual ~Airavata_changeJobSubmissionPriority_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_changeJobSubmissionPriority_presult__isset __isset;
 
@@ -8229,9 +8229,9 @@ class Airavata_changeDataMovementPriority_result {
   virtual ~Airavata_changeDataMovementPriority_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_changeDataMovementPriority_result__isset __isset;
 
@@ -8239,15 +8239,15 @@ class Airavata_changeDataMovementPriority_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -8289,9 +8289,9 @@ class Airavata_changeDataMovementPriority_presult {
   virtual ~Airavata_changeDataMovementPriority_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_changeDataMovementPriority_presult__isset __isset;
 
@@ -8361,9 +8361,9 @@ class Airavata_changeJobSubmissionPriorities_result {
   virtual ~Airavata_changeJobSubmissionPriorities_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_changeJobSubmissionPriorities_result__isset __isset;
 
@@ -8371,15 +8371,15 @@ class Airavata_changeJobSubmissionPriorities_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -8421,9 +8421,9 @@ class Airavata_changeJobSubmissionPriorities_presult {
   virtual ~Airavata_changeJobSubmissionPriorities_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_changeJobSubmissionPriorities_presult__isset __isset;
 
@@ -8493,9 +8493,9 @@ class Airavata_changeDataMovementPriorities_result {
   virtual ~Airavata_changeDataMovementPriorities_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_changeDataMovementPriorities_result__isset __isset;
 
@@ -8503,15 +8503,15 @@ class Airavata_changeDataMovementPriorities_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -8553,9 +8553,9 @@ class Airavata_changeDataMovementPriorities_presult {
   virtual ~Airavata_changeDataMovementPriorities_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_changeDataMovementPriorities_presult__isset __isset;
 
@@ -8625,9 +8625,9 @@ class Airavata_deleteJobSubmissionInterface_result {
   virtual ~Airavata_deleteJobSubmissionInterface_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteJobSubmissionInterface_result__isset __isset;
 
@@ -8635,15 +8635,15 @@ class Airavata_deleteJobSubmissionInterface_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -8685,9 +8685,9 @@ class Airavata_deleteJobSubmissionInterface_presult {
   virtual ~Airavata_deleteJobSubmissionInterface_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteJobSubmissionInterface_presult__isset __isset;
 
@@ -8757,9 +8757,9 @@ class Airavata_deleteDataMovementInterface_result {
   virtual ~Airavata_deleteDataMovementInterface_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteDataMovementInterface_result__isset __isset;
 
@@ -8767,15 +8767,15 @@ class Airavata_deleteDataMovementInterface_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -8817,9 +8817,9 @@ class Airavata_deleteDataMovementInterface_presult {
   virtual ~Airavata_deleteDataMovementInterface_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteDataMovementInterface_presult__isset __isset;
 
@@ -8836,9 +8836,9 @@ class Airavata_registerGatewayResourceProfile_args {
 
   virtual ~Airavata_registerGatewayResourceProfile_args() throw() {}
 
-   ::GatewayResourceProfile gatewayResourceProfile;
+   ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile gatewayResourceProfile;
 
-  void __set_gatewayResourceProfile(const  ::GatewayResourceProfile& val) {
+  void __set_gatewayResourceProfile(const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& val) {
     gatewayResourceProfile = val;
   }
 
@@ -8866,7 +8866,7 @@ class Airavata_registerGatewayResourceProfile_pargs {
 
   virtual ~Airavata_registerGatewayResourceProfile_pargs() throw() {}
 
-  const  ::GatewayResourceProfile* gatewayResourceProfile;
+  const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile* gatewayResourceProfile;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -8889,9 +8889,9 @@ class Airavata_registerGatewayResourceProfile_result {
   virtual ~Airavata_registerGatewayResourceProfile_result() throw() {}
 
   std::string success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerGatewayResourceProfile_result__isset __isset;
 
@@ -8899,15 +8899,15 @@ class Airavata_registerGatewayResourceProfile_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -8949,9 +8949,9 @@ class Airavata_registerGatewayResourceProfile_presult {
   virtual ~Airavata_registerGatewayResourceProfile_presult() throw() {}
 
   std::string* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_registerGatewayResourceProfile_presult__isset __isset;
 
@@ -9020,26 +9020,26 @@ class Airavata_getGatewayResourceProfile_result {
 
   virtual ~Airavata_getGatewayResourceProfile_result() throw() {}
 
-   ::GatewayResourceProfile success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getGatewayResourceProfile_result__isset __isset;
 
-  void __set_success(const  ::GatewayResourceProfile& val) {
+  void __set_success(const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -9080,10 +9080,10 @@ class Airavata_getGatewayResourceProfile_presult {
 
   virtual ~Airavata_getGatewayResourceProfile_presult() throw() {}
 
-   ::GatewayResourceProfile* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getGatewayResourceProfile_presult__isset __isset;
 
@@ -9101,13 +9101,13 @@ class Airavata_updateGatewayResourceProfile_args {
   virtual ~Airavata_updateGatewayResourceProfile_args() throw() {}
 
   std::string gatewayID;
-   ::GatewayResourceProfile gatewayResourceProfile;
+   ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile gatewayResourceProfile;
 
   void __set_gatewayID(const std::string& val) {
     gatewayID = val;
   }
 
-  void __set_gatewayResourceProfile(const  ::GatewayResourceProfile& val) {
+  void __set_gatewayResourceProfile(const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& val) {
     gatewayResourceProfile = val;
   }
 
@@ -9138,7 +9138,7 @@ class Airavata_updateGatewayResourceProfile_pargs {
   virtual ~Airavata_updateGatewayResourceProfile_pargs() throw() {}
 
   const std::string* gatewayID;
-  const  ::GatewayResourceProfile* gatewayResourceProfile;
+  const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile* gatewayResourceProfile;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -9161,9 +9161,9 @@ class Airavata_updateGatewayResourceProfile_result {
   virtual ~Airavata_updateGatewayResourceProfile_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateGatewayResourceProfile_result__isset __isset;
 
@@ -9171,15 +9171,15 @@ class Airavata_updateGatewayResourceProfile_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -9221,9 +9221,9 @@ class Airavata_updateGatewayResourceProfile_presult {
   virtual ~Airavata_updateGatewayResourceProfile_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateGatewayResourceProfile_presult__isset __isset;
 
@@ -9293,9 +9293,9 @@ class Airavata_deleteGatewayResourceProfile_result {
   virtual ~Airavata_deleteGatewayResourceProfile_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteGatewayResourceProfile_result__isset __isset;
 
@@ -9303,15 +9303,15 @@ class Airavata_deleteGatewayResourceProfile_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -9353,9 +9353,9 @@ class Airavata_deleteGatewayResourceProfile_presult {
   virtual ~Airavata_deleteGatewayResourceProfile_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteGatewayResourceProfile_presult__isset __isset;
 
@@ -9374,7 +9374,7 @@ class Airavata_addGatewayComputeResourcePreference_args {
 
   std::string gatewayID;
   std::string computeResourceId;
-   ::ComputeResourcePreference computeResourcePreference;
+   ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference computeResourcePreference;
 
   void __set_gatewayID(const std::string& val) {
     gatewayID = val;
@@ -9384,7 +9384,7 @@ class Airavata_addGatewayComputeResourcePreference_args {
     computeResourceId = val;
   }
 
-  void __set_computeResourcePreference(const  ::ComputeResourcePreference& val) {
+  void __set_computeResourcePreference(const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& val) {
     computeResourcePreference = val;
   }
 
@@ -9418,7 +9418,7 @@ class Airavata_addGatewayComputeResourcePreference_pargs {
 
   const std::string* gatewayID;
   const std::string* computeResourceId;
-  const  ::ComputeResourcePreference* computeResourcePreference;
+  const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference* computeResourcePreference;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -9441,9 +9441,9 @@ class Airavata_addGatewayComputeResourcePreference_result {
   virtual ~Airavata_addGatewayComputeResourcePreference_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addGatewayComputeResourcePreference_result__isset __isset;
 
@@ -9451,15 +9451,15 @@ class Airavata_addGatewayComputeResourcePreference_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -9501,9 +9501,9 @@ class Airavata_addGatewayComputeResourcePreference_presult {
   virtual ~Airavata_addGatewayComputeResourcePreference_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addGatewayComputeResourcePreference_presult__isset __isset;
 
@@ -9580,26 +9580,26 @@ class Airavata_getGatewayComputeResourcePreference_result {
 
   virtual ~Airavata_getGatewayComputeResourcePreference_result() throw() {}
 
-   ::ComputeResourcePreference success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getGatewayComputeResourcePreference_result__isset __isset;
 
-  void __set_success(const  ::ComputeResourcePreference& val) {
+  void __set_success(const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -9640,10 +9640,10 @@ class Airavata_getGatewayComputeResourcePreference_presult {
 
   virtual ~Airavata_getGatewayComputeResourcePreference_presult() throw() {}
 
-   ::ComputeResourcePreference* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getGatewayComputeResourcePreference_presult__isset __isset;
 
@@ -9712,26 +9712,26 @@ class Airavata_getAllGatewayComputeResourcePreferences_result {
 
   virtual ~Airavata_getAllGatewayComputeResourcePreferences_result() throw() {}
 
-  std::vector< ::ComputeResourcePreference>  success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllGatewayComputeResourcePreferences_result__isset __isset;
 
-  void __set_success(const std::vector< ::ComputeResourcePreference> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & val) {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -9772,10 +9772,10 @@ class Airavata_getAllGatewayComputeResourcePreferences_presult {
 
   virtual ~Airavata_getAllGatewayComputeResourcePreferences_presult() throw() {}
 
-  std::vector< ::ComputeResourcePreference> * success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+  std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllGatewayComputeResourcePreferences_presult__isset __isset;
 
@@ -9794,7 +9794,7 @@ class Airavata_updateGatewayComputeResourcePreference_args {
 
   std::string gatewayID;
   std::string computeResourceId;
-   ::ComputeResourcePreference computeResourcePreference;
+   ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference computeResourcePreference;
 
   void __set_gatewayID(const std::string& val) {
     gatewayID = val;
@@ -9804,7 +9804,7 @@ class Airavata_updateGatewayComputeResourcePreference_args {
     computeResourceId = val;
   }
 
-  void __set_computeResourcePreference(const  ::ComputeResourcePreference& val) {
+  void __set_computeResourcePreference(const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& val) {
     computeResourcePreference = val;
   }
 
@@ -9838,7 +9838,7 @@ class Airavata_updateGatewayComputeResourcePreference_pargs {
 
   const std::string* gatewayID;
   const std::string* computeResourceId;
-  const  ::ComputeResourcePreference* computeResourcePreference;
+  const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference* computeResourcePreference;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -9861,9 +9861,9 @@ class Airavata_updateGatewayComputeResourcePreference_result {
   virtual ~Airavata_updateGatewayComputeResourcePreference_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateGatewayComputeResourcePreference_result__isset __isset;
 
@@ -9871,15 +9871,15 @@ class Airavata_updateGatewayComputeResourcePreference_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -9921,9 +9921,9 @@ class Airavata_updateGatewayComputeResourcePreference_presult {
   virtual ~Airavata_updateGatewayComputeResourcePreference_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateGatewayComputeResourcePreference_presult__isset __isset;
 
@@ -10001,9 +10001,9 @@ class Airavata_deleteGatewayComputeResourcePreference_result {
   virtual ~Airavata_deleteGatewayComputeResourcePreference_result() throw() {}
 
   bool success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteGatewayComputeResourcePreference_result__isset __isset;
 
@@ -10011,15 +10011,15 @@ class Airavata_deleteGatewayComputeResourcePreference_result {
     success = val;
   }
 
-  void __set_ire(const  ::airavata::api::error::InvalidRequestException& val) {
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
     ire = val;
   }
 
-  void __set_ace(const  ::airavata::api::error::AiravataClientException& val) {
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
     ace = val;
   }
 
-  void __set_ase(const  ::airavata::api::error::AiravataSystemException& val) {
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
     ase = val;
   }
 
@@ -10061,9 +10061,9 @@ class Airavata_deleteGatewayComputeResourcePreference_presult {
   virtual ~Airavata_deleteGatewayComputeResourcePreference_presult() throw() {}
 
   bool* success;
-   ::airavata::api::error::InvalidRequestException ire;
-   ::airavata::api::error::AiravataClientException ace;
-   ::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteGatewayComputeResourcePreference_presult__isset __isset;
 
@@ -10094,53 +10094,53 @@ class AiravataClient : virtual public AiravataIf {
   void getAPIVersion(std::string& _return);
   void send_getAPIVersion();
   void recv_getAPIVersion(std::string& _return);
-  void createProject(std::string& _return, const  ::Project& project);
-  void send_createProject(const  ::Project& project);
+  void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project);
+  void send_createProject(const  ::apache::airavata::model::workspace::Project& project);
   void recv_createProject(std::string& _return);
-  void updateProject(const std::string& projectId, const  ::Project& updatedProject);
-  void send_updateProject(const std::string& projectId, const  ::Project& updatedProject);
+  void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject);
+  void send_updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject);
   void recv_updateProject();
-  void getProject( ::Project& _return, const std::string& projectId);
+  void getProject( ::apache::airavata::model::workspace::Project& _return, const std::string& projectId);
   void send_getProject(const std::string& projectId);
-  void recv_getProject( ::Project& _return);
-  void getAllUserProjects(std::vector< ::Project> & _return, const std::string& userName);
+  void recv_getProject( ::apache::airavata::model::workspace::Project& _return);
+  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName);
   void send_getAllUserProjects(const std::string& userName);
-  void recv_getAllUserProjects(std::vector< ::Project> & _return);
-  void searchProjectsByProjectName(std::vector< ::Project> & _return, const std::string& userName, const std::string& projectName);
+  void recv_getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return);
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& projectName);
   void send_searchProjectsByProjectName(const std::string& userName, const std::string& projectName);
-  void recv_searchProjectsByProjectName(std::vector< ::Project> & _return);
-  void searchProjectsByProjectDesc(std::vector< ::Project> & _return, const std::string& userName, const std::string& description);
+  void recv_searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return);
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& description);
   void send_searchProjectsByProjectDesc(const std::string& userName, const std::string& description);
-  void recv_searchProjectsByProjectDesc(std::vector< ::Project> & _return);
-  void searchExperimentsByName(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& expName);
+  void recv_searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return);
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& expName);
   void send_searchExperimentsByName(const std::string& userName, const std::string& expName);
-  void recv_searchExperimentsByName(std::vector< ::ExperimentSummary> & _return);
-  void searchExperimentsByDesc(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& description);
+  void recv_searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& description);
   void send_searchExperimentsByDesc(const std::string& userName, const std::string& description);
-  void recv_searchExperimentsByDesc(std::vector< ::ExperimentSummary> & _return);
-  void searchExperimentsByApplication(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId);
+  void recv_searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId);
   void send_searchExperimentsByApplication(const std::string& userName, const std::string& applicationId);
-  void recv_searchExperimentsByApplication(std::vector< ::ExperimentSummary> & _return);
-  void getAllExperimentsInProject(std::vector< ::Experiment> & _return, const std::string& projectId);
+  void recv_searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
+  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId);
   void send_getAllExperimentsInProject(const std::string& projectId);
-  void recv_getAllExperimentsInProject(std::vector< ::Experiment> & _return);
-  void getAllUserExperiments(std::vector< ::Experiment> & _return, const std::string& userName);
+  void recv_getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return);
+  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& userName);
   void send_getAllUserExperiments(const std::string& userName);
-  void recv_getAllUserExperiments(std::vector< ::Experiment> & _return);
-  void createExperiment(std::string& _return, const  ::Experiment& experiment);
-  void send_createExperiment(const  ::Experiment& experiment);
+  void recv_getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return);
+  void createExperiment(std::string& _return, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
+  void send_createExperiment(const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
   void recv_createExperiment(std::string& _return);
-  void getExperiment( ::Experiment& _return, const std::string& airavataExperimentId);
+  void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return, const std::string& airavataExperimentId);
   void send_getExperiment(const std::string& airavataExperimentId);
-  void recv_getExperiment( ::Experiment& _return);
-  void updateExperiment(const std::string& airavataExperimentId, const  ::Experiment& experiment);
-  void send_updateExperiment(const std::string& airavataExperimentId, const  ::Experiment& experiment);
+  void recv_getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return);
+  void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
+  void send_updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
   void recv_updateExperiment();
-  void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::UserConfigurationData& userConfiguration);
-  void send_updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::UserConfigurationData& userConfiguration);
+  void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration);
+  void send_updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration);
   void recv_updateExperimentConfiguration();
-  void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::ComputationalResourceScheduling& resourceScheduling);
-  void send_updateResourceScheduleing(const std::string& airavataExperimentId, const  ::ComputationalResourceScheduling& resourceScheduling);
+  void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& resourceScheduling);
+  void send_updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& resourceScheduling);
   void recv_updateResourceScheduleing();
   bool validateExperiment(const std::string& airavataExperimentId);
   void send_validateExperiment(const std::string& airavataExperimentId);
@@ -10148,41 +10148,41 @@ class AiravataClient : virtual public AiravataIf {
   void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken);
   void send_launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken);
   void recv_launchExperiment();
-  void getExperimentStatus( ::ExperimentStatus& _return, const std::string& airavataExperimentId);
+  void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId);
   void send_getExperimentStatus(const std::string& airavataExperimentId);
-  void recv_getExperimentStatus( ::ExperimentStatus& _return);
-  void getExperimentOutputs(std::vector< ::DataObjectType> & _return, const std::string& airavataExperimentId);
+  void recv_getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return);
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId);
   void send_getExperimentOutputs(const std::string& airavataExperimentId);
-  void recv_getExperimentOutputs(std::vector< ::DataObjectType> & _return);
-  void getJobStatuses(std::map<std::string,  ::JobStatus> & _return, const std::string& airavataExperimentId);
+  void recv_getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return);
+  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId);
   void send_getJobStatuses(const std::string& airavataExperimentId);
-  void recv_getJobStatuses(std::map<std::string,  ::JobStatus> & _return);
+  void recv_getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return);
   void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName);
   void send_cloneExperiment(const std::string& existingExperimentID, const std::string& newExperimentName);
   void recv_cloneExperiment(std::string& _return);
   void terminateExperiment(const std::string& airavataExperimentId);
   void send_terminateExperiment(const std::string& airavataExperimentId);
   void recv_terminateExperiment();
-  void registerApplicationModule(std::string& _return, const  ::ApplicationModule& applicationModule);
-  void send_registerApplicationModule(const  ::ApplicationModule& applicationModule);
+  void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
+  void send_registerApplicationModule(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   void recv_registerApplicationModule(std::string& _return);
-  void getApplicationModule( ::ApplicationModule& _return, const std::string& appModuleId);
+  void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId);
   void send_getApplicationModule(const std::string& appModuleId);
-  void recv_getApplicationModule( ::ApplicationModule& _return);
-  bool updateApplicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule);
-  void send_updateApplicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule);
+  void recv_getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return);
+  bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
+  void send_updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   bool recv_updateApplicationModule();
   bool deleteApplicationModule(const std::string& appModuleId);
   void send_deleteApplicationModule(const std::string& appModuleId);
   bool recv_deleteApplicationModule();
-  void registerApplicationDeployment(std::string& _return, const  ::ApplicationDeploymentDescription& applicationDeployment);
-  void send_registerApplicationDeployment(const  ::ApplicationDeploymentDescription& applicationDeployment);
+  void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment);
+  void send_registerApplicationDeployment(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment);
   void recv_registerApplicationDeployment(std::string& _return);
-  void getApplicationDeployment( ::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId);
+  void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId);
   void send_getApplicationDeployment(const std::string& appDeploymentId);
-  void recv_getApplicationDeployment( ::ApplicationDeploymentDescription& _return);
-  bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::ApplicationDeploymentDescription& applicationDeployment);
-  void send_updateApplicationDeployment(const std::string& appDeploymentId, const  ::ApplicationDeploymentDescription& applicationDeployment);
+  void recv_getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return);
+  bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment);
+  void send_updateApplicationDeployment(const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment);
   bool recv_updateApplicationDeployment();
   bool deleteApplicationDeployment(const std::string& appDeploymentId);
   void send_deleteApplicationDeployment(const std::string& appDeploymentId);
@@ -10190,14 +10190,14 @@ class AiravataClient : virtual public AiravataIf {
   void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId);
   void send_getAppModuleDeployedResources(const std::string& appModuleId);
   void recv_getAppModuleDeployedResources(std::vector<std::string> & _return);
-  void registerApplicationInterface(std::string& _return, const  ::ApplicationInterfaceDescription& applicationInterface);
-  void send_registerApplicationInterface(const  ::ApplicationInterfaceDescription& applicationInterface);
+  void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
+  void send_registerApplicationInterface(const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
   void recv_registerApplicationInterface(std::string& _return);
-  void getApplicationInterface( ::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId);
+  void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId);
   void send_getApplicationInterface(const std::string& appInterfaceId);
-  void recv_getApplicationInterface( ::ApplicationInterfaceDescription& _return);
-  bool updateApplicationInterface(const std::string& appInterfaceId, const  ::ApplicationInterfaceDescription& applicationInterface);
-  void send_updateApplicationInterface(const std::string& appInterfaceId, const  ::ApplicationInterfaceDescription& applicationInterface);
+  void recv_getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return);
+  bool updateApplicationInterface(const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
+  void send_updateApplicationInterface(const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
   bool recv_updateApplicationInterface();
   bool deleteApplicationInterface(const std::string& appInterfaceId);
   void send_deleteApplicationInterface(const std::string& appInterfaceId);
@@ -10205,62 +10205,62 @@ class AiravataClient : virtual public AiravataIf {
   void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return);
   void send_getAllApplicationInterfaceNames();
   void recv_getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return);
-  void getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return);
+  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return);
   void send_getAllApplicationInterfaces();
-  void recv_getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return);
-  void getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId);
+  void recv_getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return);
+  void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId);
   void send_getApplicationInputs(const std::string& appInterfaceId);
-  void recv_getApplicationInputs(std::vector< ::InputDataObjectType> & _return);
-  void getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return, const std::string& appInterfaceId);
+  void recv_getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return);
+  void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId);
   void send_getApplicationOutputs(const std::string& appInterfaceId);
-  void recv_getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return);
+  void recv_getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return);
   void getAvailableAppInterfaceComputeResources(std::vector<std::string> & _return, const std::string& appInterfaceId);
   void send_getAvailableAppInterfaceComputeResources(const std::string& appInterfaceId);
   void recv_getAvailableAppInterfaceComputeResources(std::vector<std::string> & _return);
-  void registerComputeResource(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription);
-  void send_registerComputeResource(const  ::ComputeResourceDescription& computeResourceDescription);
+  void registerComputeResource(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription);
+  void send_registerComputeResource(const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription);
   void recv_registerComputeResource(std::string& _return);
-  void getComputeResource( ::ComputeResourceDescription& _return, const std::string& computeResourceId);
+  void getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return, const std::string& computeResourceId);
   void send_getComputeResource(const std::string& computeResourceId);
-  void recv_getComputeResource( ::ComputeResourceDescription& _return);
+  void recv_getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return);
   void getAllComputeResourceNames(std::map<std::string, std::string> & _return);
   void send_getAllComputeResourceNames();
   void recv_getAllComputeResourceNames(std::map<std::string, std::string> & _return);
-  bool updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription);
-  void send_updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription);
+  bool updateComputeResource(const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription);
+  void send_updateComputeResource(const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription);
   bool recv_updateComputeResource();
   bool deleteComputeResource(const std::string& computeResourceId);
   void send_deleteComputeResource(const std::string& computeResourceId);
   bool recv_deleteComputeResource();
-  bool addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission);
-  void send_addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission);
+  bool addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission);
+  void send_addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission);
   bool recv_addLocalSubmissionDetails();
-  bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALSubmission& localSubmission);
-  void send_updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALSubmission& localSubmission);
+  bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission);
+  void send_updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission);
   bool recv_updateLocalSubmissionDetails();
-  bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission);
-  void send_addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission);
+  bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
+  void send_addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
   bool recv_addSSHJobSubmissionDetails();
-  bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::SSHJobSubmission& sshJobSubmission);
-  void send_updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::SSHJobSubmission& sshJobSubmission);
+  bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
+  void send_updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
   bool recv_updateSSHJobSubmissionDetails();
-  bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement);
-  void send_addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement);
+  bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement);
+  void send_addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement);
   bool recv_addLocalDataMovementDetails();
-  bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALDataMovement& localDataMovement);
-  void send_updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALDataMovement& localDataMovement);
+  bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement);
+  void send_updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement);
   bool recv_updateLocalDataMovementDetails();
-  bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement);
-  void send_addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement);
+  bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement);
+  void send_addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement);
   bool recv_addSCPDataMovementDetails();
-  bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::SCPDataMovement& scpDataMovement);
-  void send_updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::SCPDataMovement& scpDataMovement);
+  bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement);
+  void send_updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement);
   bool recv_updateSCPDataMovementDetails();
-  bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement);
-  void send_addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement);
+  bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement);
+  void send_addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement);
   bool recv_addGridFTPDataMovementDetails();
-  bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::GridFTPDataMovement& gridFTPDataMovement);
-  void send_updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::GridFTPDataMovement& gridFTPDataMovement);
+  bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement);
+  void send_updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement);
   bool recv_updateGridFTPDataMovementDetails();
   bool changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder);
   void send_changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder);
@@ -10280,29 +10280,29 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId);
   void send_deleteDataMovementInterface(const std::string& dataMovementInterfaceId);
   bool recv_deleteDataMovementInterface();
-  void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile);
-  void send_registerGatewayResourceProfile(const  ::GatewayResourceProfile& gatewayResourceProfile);
+  void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile);
+  void send_registerGatewayResourceProfile(const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile);
   void recv_registerGatewayResourceProfile(std::string& _return);
-  void getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID);
+  void getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return, const std::string& gatewayID);
   void send_getGatewayResourceProfile(const std::string& gatewayID);
-  void recv_getGatewayResourceProfile( ::GatewayResourceProfile& _return);
-  bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile);
-  void send_updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile);
+  void recv_getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return);
+  bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile);
+  void send_updateGatewayResourceProfile(const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile);
   bool recv_updateGatewayResourceProfile();
   bool deleteGatewayResourceProfile(const std::string& gatewayID);
   void send_deleteGatewayResourceProfile(const std::string& gatewayID);
   bool recv_deleteGatewayResourceProfile();
-  bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference);
-  void send_addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference);
+  bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference);
+  void send_addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference);
   bool recv_addGatewayComputeResourcePreference();
-  void getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId);
+  void getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId);
   void send_getGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId);
-  void recv_getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return);
-  void getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return, const std::string& gatewayID);
+  void recv_getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& _return);
+  void getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return, const std::string& gatewayID);
   void send_getAllGatewayComputeResourcePreferences(const std::string& gatewayID);
-  void recv_getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return);
-  bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference);
-  void send_updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference);
+  void recv_getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return);
+  bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference);
+  void send_updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference);
   bool recv_updateGatewayComputeResourcePreference();
   bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId);
   void send_deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId);
@@ -10507,7 +10507,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void createProject(std::string& _return, const  ::Project& project) {
+  void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10517,7 +10517,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void updateProject(const std::string& projectId, const  ::Project& updatedProject) {
+  void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10526,7 +10526,7 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->updateProject(projectId, updatedProject);
   }
 
-  void getProject( ::Project& _return, const std::string& projectId) {
+  void getProject( ::apache::airavata::model::workspace::Project& _return, const std::string& projectId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10536,7 +10536,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllUserProjects(std::vector< ::Project> & _return, const std::string& userName) {
+  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10546,7 +10546,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchProjectsByProjectName(std::vector< ::Project> & _return, const std::string& userName, const std::string& projectName) {
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& projectName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10556,7 +10556,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchProjectsByProjectDesc(std::vector< ::Project> & _return, const std::string& userName, const std::string& description) {
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& description) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10566,7 +10566,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByName(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& expName) {
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& expName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10576,7 +10576,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByDesc(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& description) {
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& description) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10586,7 +10586,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByApplication(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId) {
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10596,7 +10596,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllExperimentsInProject(std::vector< ::Experiment> & _return, const std::string& projectId) {
+  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10606,7 +10606,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllUserExperiments(std::vector< ::Experiment> & _return, const std::string& userName) {
+  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& userName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10616,7 +10616,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void createExperiment(std::string& _return, const  ::Experiment& experiment) {
+  void createExperiment(std::string& _return, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10626,7 +10626,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getExperiment( ::Experiment& _return, const std::string& airavataExperimentId) {
+  void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10636,7 +10636,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void updateExperiment(const std::string& airavataExperimentId, const  ::Experiment& experiment) {
+  void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10645,7 +10645,7 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->updateExperiment(airavataExperimentId, experiment);
   }
 
-  void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::UserConfigurationData& userConfiguration) {
+  void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10654,7 +10654,7 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->updateExperimentConfiguration(airavataExperimentId, userConfiguration);
   }
 
-  void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::ComputationalResourceScheduling& resourceScheduling) {
+  void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& resourceScheduling) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10681,7 +10681,7 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->launchExperiment(airavataExperimentId, airavataCredStoreToken);
   }
 
-  void getExperimentStatus( ::ExperimentStatus& _return, const std::string& airavataExperimentId) {
+  void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10691,7 +10691,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getExperimentOutputs(std::vector< ::DataObjectType> & _return, const std::string& airavataExperimentId) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10701,7 +10701,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getJobStatuses(std::map<std::string,  ::JobStatus> & _return, const std::string& airavataExperimentId) {
+  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10730,7 +10730,7 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->terminateExperiment(airavataExperimentId);
   }
 
-  void registerApplicationModule(std::string& _return, const  ::ApplicationModule& applicationModule) {
+  void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10740,7 +10740,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getApplicationModule( ::ApplicationModule& _return, const std::string& appModuleId) {
+  void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10750,7 +10750,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  bool updateApplicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule) {
+  bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10768,7 +10768,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteApplicationModule(appModuleId);
   }
 
-  void registerApplicationDeployment(std::string& _return, const  ::ApplicationDeploymentDescription& applicationDeployment) {
+  void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10778,7 +10778,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getApplicationDeployment( ::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId) {
+  void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10788,7 +10788,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::ApplicationDeploymentDescription& applicationDeployment) {
+  bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10816,7 +10816,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void registerApplicationInterface(std::string& _return, const  ::ApplicationInterfaceDescription& applicationInterface) {
+  void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10826,7 +10826,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getApplicationInterface( ::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId) {
+  void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10836,7 +10836,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  bool updateApplicationInterface(const std::string& appInterfaceId, const  ::ApplicationInterfaceDescription& applicationInterface) {
+  bool updateApplicationInterface(const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10864,7 +10864,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return) {
+  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10874,7 +10874,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId) {
+  void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10884,7 +10884,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return, const std::string& appInterfaceId) {
+  void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10904,7 +10904,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void registerComputeResource(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription) {
+  void registerComputeResource(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10914,7 +10914,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getComputeResource( ::ComputeResourceDescription& _return, const std::string& computeResourceId) {
+  void getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return, const std::string& computeResourceId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10934,7 +10934,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  bool updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription) {
+  bool updateComputeResource(const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10952,7 +10952,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteComputeResource(computeResourceId);
   }
 
-  bool addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission) {
+  bool addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10961,7 +10961,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
   }
 
-  bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALSubmission& localSubmission) {
+  bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10970,7 +10970,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
   }
 
-  bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission) {
+  bool addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10979,7 +10979,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
   }
 
-  bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::SSHJobSubmission& sshJobSubmission) {
+  bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10988,7 +10988,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
   }
 
-  bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement) {
+  bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -10997,7 +10997,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->addLocalDataMovementDetails(computeResourceId, priorityOrder, localDataMovement);
   }
 
-  bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALDataMovement& localDataMovement) {
+  bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11006,7 +11006,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateLocalDataMovementDetails(jobSubmissionInterfaceId, localDataMovement);
   }
 
-  bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement) {
+  bool addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11015,7 +11015,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->addSCPDataMovementDetails(computeResourceId, priorityOrder, scpDataMovement);
   }
 
-  bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::SCPDataMovement& scpDataMovement) {
+  bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11024,7 +11024,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateSCPDataMovementDetails(jobSubmissionInterfaceId, scpDataMovement);
   }
 
-  bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement) {
+  bool addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11033,7 +11033,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->addGridFTPDataMovementDetails(computeResourceId, priorityOrder, gridFTPDataMovement);
   }
 
-  bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::GridFTPDataMovement& gridFTPDataMovement) {
+  bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11096,7 +11096,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteDataMovementInterface(dataMovementInterfaceId);
   }
 
-  void registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile) {
+  void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11106,7 +11106,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID) {
+  void getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return, const std::string& gatewayID) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11116,7 +11116,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile) {
+  bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11134,7 +11134,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteGatewayResourceProfile(gatewayID);
   }
 
-  bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference) {
+  bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11143,7 +11143,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->addGatewayComputeResourcePreference(gatewayID, computeResourceId, computeResourcePreference);
   }
 
-  void getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId) {
+  void getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11153,7 +11153,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return, const std::string& gatewayID) {
+  void getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return, const std::string& gatewayID) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11163,7 +11163,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference) {
+  bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -11183,6 +11183,6 @@ class AiravataMultiface : virtual public AiravataIf {
 
 };
 
-}} // namespace
+}}} // namespace
 
 #endif

@@ -35,10 +35,10 @@ include "gatewayResourceProfileModel.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
-namespace cpp airavata.api
-namespace perl AiravataAPI
-namespace py airavata.api
-namespace js AiravataAPI
+namespace cpp apache.airavata.api
+namespace perl ApacheAiravataAPI
+namespace py apache.airavata.api
+namespace js ApacheAiravataAPI
 
 /**
  * Airavata Interface Versions depend upon this Thrift Interface File. When Making changes, please edit the

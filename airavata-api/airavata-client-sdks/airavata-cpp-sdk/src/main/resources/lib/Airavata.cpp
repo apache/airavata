@@ -6,7 +6,7 @@
  */
 #include "Airavata.h"
 
-namespace airavata { namespace api {
+namespace apache { namespace airavata { namespace api {
 
 uint32_t Airavata_getAPIVersion_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -1078,7 +1078,7 @@ uint32_t Airavata_getAllUserProjects_result::write(::apache::thrift::protocol::T
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::Project> ::const_iterator _iter5;
+      std::vector< ::apache::airavata::model::workspace::Project> ::const_iterator _iter5;
       for (_iter5 = this->success.begin(); _iter5 != this->success.end(); ++_iter5)
       {
         xfer += (*_iter5).write(oprot);
@@ -1354,7 +1354,7 @@ uint32_t Airavata_searchProjectsByProjectName_result::write(::apache::thrift::pr
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::Project> ::const_iterator _iter16;
+      std::vector< ::apache::airavata::model::workspace::Project> ::const_iterator _iter16;
       for (_iter16 = this->success.begin(); _iter16 != this->success.end(); ++_iter16)
       {
         xfer += (*_iter16).write(oprot);
@@ -1630,7 +1630,7 @@ uint32_t Airavata_searchProjectsByProjectDesc_result::write(::apache::thrift::pr
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::Project> ::const_iterator _iter27;
+      std::vector< ::apache::airavata::model::workspace::Project> ::const_iterator _iter27;
       for (_iter27 = this->success.begin(); _iter27 != this->success.end(); ++_iter27)
       {
         xfer += (*_iter27).write(oprot);
@@ -1906,7 +1906,7 @@ uint32_t Airavata_searchExperimentsByName_result::write(::apache::thrift::protoc
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::ExperimentSummary> ::const_iterator _iter38;
+      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter38;
       for (_iter38 = this->success.begin(); _iter38 != this->success.end(); ++_iter38)
       {
         xfer += (*_iter38).write(oprot);
@@ -2182,7 +2182,7 @@ uint32_t Airavata_searchExperimentsByDesc_result::write(::apache::thrift::protoc
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::ExperimentSummary> ::const_iterator _iter49;
+      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter49;
       for (_iter49 = this->success.begin(); _iter49 != this->success.end(); ++_iter49)
       {
         xfer += (*_iter49).write(oprot);
@@ -2458,7 +2458,7 @@ uint32_t Airavata_searchExperimentsByApplication_result::write(::apache::thrift:
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::ExperimentSummary> ::const_iterator _iter60;
+      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter60;
       for (_iter60 = this->success.begin(); _iter60 != this->success.end(); ++_iter60)
       {
         xfer += (*_iter60).write(oprot);
@@ -2723,7 +2723,7 @@ uint32_t Airavata_getAllExperimentsInProject_result::write(::apache::thrift::pro
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::Experiment> ::const_iterator _iter71;
+      std::vector< ::apache::airavata::model::workspace::experiment::Experiment> ::const_iterator _iter71;
       for (_iter71 = this->success.begin(); _iter71 != this->success.end(); ++_iter71)
       {
         xfer += (*_iter71).write(oprot);
@@ -2992,7 +2992,7 @@ uint32_t Airavata_getAllUserExperiments_result::write(::apache::thrift::protocol
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::Experiment> ::const_iterator _iter82;
+      std::vector< ::apache::airavata::model::workspace::experiment::Experiment> ::const_iterator _iter82;
       for (_iter82 = this->success.begin(); _iter82 != this->success.end(); ++_iter82)
       {
         xfer += (*_iter82).write(oprot);
@@ -4999,7 +4999,7 @@ uint32_t Airavata_getExperimentOutputs_result::write(::apache::thrift::protocol:
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::DataObjectType> ::const_iterator _iter93;
+      std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> ::const_iterator _iter93;
       for (_iter93 = this->success.begin(); _iter93 != this->success.end(); ++_iter93)
       {
         xfer += (*_iter93).write(oprot);
@@ -5167,7 +5167,7 @@ uint32_t Airavata_getJobStatuses_result::read(::apache::thrift::protocol::TProto
             {
               std::string _key104;
               xfer += iprot->readString(_key104);
-               ::JobStatus& _val105 = this->success[_key104];
+               ::apache::airavata::model::workspace::experiment::JobStatus& _val105 = this->success[_key104];
               xfer += _val105.read(iprot);
             }
             xfer += iprot->readMapEnd();
@@ -5199,7 +5199,7 @@ uint32_t Airavata_getJobStatuses_result::write(::apache::thrift::protocol::TProt
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::map<std::string,  ::JobStatus> ::const_iterator _iter106;
+      std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> ::const_iterator _iter106;
       for (_iter106 = this->success.begin(); _iter106 != this->success.end(); ++_iter106)
       {
         xfer += oprot->writeString(_iter106->first);
@@ -5247,7 +5247,7 @@ uint32_t Airavata_getJobStatuses_presult::read(::apache::thrift::protocol::TProt
             {
               std::string _key112;
               xfer += iprot->readString(_key112);
-               ::JobStatus& _val113 = (*(this->success))[_key112];
+               ::apache::airavata::model::workspace::experiment::JobStatus& _val113 = (*(this->success))[_key112];
               xfer += _val113.read(iprot);
             }
             xfer += iprot->readMapEnd();
@@ -9134,7 +9134,7 @@ uint32_t Airavata_getAllApplicationInterfaces_result::write(::apache::thrift::pr
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::ApplicationInterfaceDescription> ::const_iterator _iter145;
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> ::const_iterator _iter145;
       for (_iter145 = this->success.begin(); _iter145 != this->success.end(); ++_iter145)
       {
         xfer += (*_iter145).write(oprot);
@@ -9391,7 +9391,7 @@ uint32_t Airavata_getApplicationInputs_result::write(::apache::thrift::protocol:
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::InputDataObjectType> ::const_iterator _iter156;
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> ::const_iterator _iter156;
       for (_iter156 = this->success.begin(); _iter156 != this->success.end(); ++_iter156)
       {
         xfer += (*_iter156).write(oprot);
@@ -9648,7 +9648,7 @@ uint32_t Airavata_getApplicationOutputs_result::write(::apache::thrift::protocol
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::OutputDataObjectType> ::const_iterator _iter167;
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter167;
       for (_iter167 = this->success.begin(); _iter167 != this->success.end(); ++_iter167)
       {
         xfer += (*_iter167).write(oprot);
@@ -16736,7 +16736,7 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_result::write(::apache
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::ComputeResourcePreference> ::const_iterator _iter222;
+      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> ::const_iterator _iter222;
       for (_iter222 = this->success.begin(); _iter222 != this->success.end(); ++_iter222)
       {
         xfer += (*_iter222).write(oprot);
@@ -17411,13 +17411,13 @@ void AiravataClient::recv_getAPIVersion(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAPIVersion failed: unknown result");
 }
 
-void AiravataClient::createProject(std::string& _return, const  ::Project& project)
+void AiravataClient::createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project)
 {
   send_createProject(project);
   recv_createProject(_return);
 }
 
-void AiravataClient::send_createProject(const  ::Project& project)
+void AiravataClient::send_createProject(const  ::apache::airavata::model::workspace::Project& project)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("createProject", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -17478,13 +17478,13 @@ void AiravataClient::recv_createProject(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "createProject failed: unknown result");
 }
 
-void AiravataClient::updateProject(const std::string& projectId, const  ::Project& updatedProject)
+void AiravataClient::updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject)
 {
   send_updateProject(projectId, updatedProject);
   recv_updateProject();
 }
 
-void AiravataClient::send_updateProject(const std::string& projectId, const  ::Project& updatedProject)
+void AiravataClient::send_updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateProject", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -17544,7 +17544,7 @@ void AiravataClient::recv_updateProject()
   return;
 }
 
-void AiravataClient::getProject( ::Project& _return, const std::string& projectId)
+void AiravataClient::getProject( ::apache::airavata::model::workspace::Project& _return, const std::string& projectId)
 {
   send_getProject(projectId);
   recv_getProject(_return);
@@ -17564,7 +17564,7 @@ void AiravataClient::send_getProject(const std::string& projectId)
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getProject( ::Project& _return)
+void AiravataClient::recv_getProject( ::apache::airavata::model::workspace::Project& _return)
 {
 
   int32_t rseqid = 0;
@@ -17614,7 +17614,7 @@ void AiravataClient::recv_getProject( ::Project& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getProject failed: unknown result");
 }
 
-void AiravataClient::getAllUserProjects(std::vector< ::Project> & _return, const std::string& userName)
+void AiravataClient::getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName)
 {
   send_getAllUserProjects(userName);
   recv_getAllUserProjects(_return);
@@ -17634,7 +17634,7 @@ void AiravataClient::send_getAllUserProjects(const std::string& userName)
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getAllUserProjects(std::vector< ::Project> & _return)
+void AiravataClient::recv_getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return)
 {
 
   int32_t rseqid = 0;
@@ -17681,7 +17681,7 @@ void AiravataClient::recv_getAllUserProjects(std::vector< ::Project> & _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllUserProjects failed: unknown result");
 }
 
-void AiravataClient::searchProjectsByProjectName(std::vector< ::Project> & _return, const std::string& userName, const std::string& projectName)
+void AiravataClient::searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& projectName)
 {
   send_searchProjectsByProjectName(userName, projectName);
   recv_searchProjectsByProjectName(_return);
@@ -17702,7 +17702,7 @@ void AiravataClient::send_searchProjectsByProjectName(const std::string& userNam
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_searchProjectsByProjectName(std::vector< ::Project> & _return)
+void AiravataClient::recv_searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return)
 {
 
   int32_t rseqid = 0;
@@ -17749,7 +17749,7 @@ void AiravataClient::recv_searchProjectsByProjectName(std::vector< ::Project> & 
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchProjectsByProjectName failed: unknown result");
 }
 
-void AiravataClient::searchProjectsByProjectDesc(std::vector< ::Project> & _return, const std::string& userName, const std::string& description)
+void AiravataClient::searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& description)
 {
   send_searchProjectsByProjectDesc(userName, description);
   recv_searchProjectsByProjectDesc(_return);
@@ -17770,7 +17770,7 @@ void AiravataClient::send_searchProjectsByProjectDesc(const std::string& userNam
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_searchProjectsByProjectDesc(std::vector< ::Project> & _return)
+void AiravataClient::recv_searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return)
 {
 
   int32_t rseqid = 0;
@@ -17817,7 +17817,7 @@ void AiravataClient::recv_searchProjectsByProjectDesc(std::vector< ::Project> & 
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchProjectsByProjectDesc failed: unknown result");
 }
 
-void AiravataClient::searchExperimentsByName(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& expName)
+void AiravataClient::searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& expName)
 {
   send_searchExperimentsByName(userName, expName);
   recv_searchExperimentsByName(_return);
@@ -17838,7 +17838,7 @@ void AiravataClient::send_searchExperimentsByName(const std::string& userName, c
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_searchExperimentsByName(std::vector< ::ExperimentSummary> & _return)
+void AiravataClient::recv_searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return)
 {
 
   int32_t rseqid = 0;
@@ -17885,7 +17885,7 @@ void AiravataClient::recv_searchExperimentsByName(std::vector< ::ExperimentSumma
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchExperimentsByName failed: unknown result");
 }
 
-void AiravataClient::searchExperimentsByDesc(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& description)
+void AiravataClient::searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& description)
 {
   send_searchExperimentsByDesc(userName, description);
   recv_searchExperimentsByDesc(_return);
@@ -17906,7 +17906,7 @@ void AiravataClient::send_searchExperimentsByDesc(const std::string& userName, c
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_searchExperimentsByDesc(std::vector< ::ExperimentSummary> & _return)
+void AiravataClient::recv_searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return)
 {
 
   int32_t rseqid = 0;
@@ -17953,7 +17953,7 @@ void AiravataClient::recv_searchExperimentsByDesc(std::vector< ::ExperimentSumma
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchExperimentsByDesc failed: unknown result");
 }
 
-void AiravataClient::searchExperimentsByApplication(std::vector< ::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId)
+void AiravataClient::searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId)
 {
   send_searchExperimentsByApplication(userName, applicationId);
   recv_searchExperimentsByApplication(_return);
@@ -17974,7 +17974,7 @@ void AiravataClient::send_searchExperimentsByApplication(const std::string& user
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_searchExperimentsByApplication(std::vector< ::ExperimentSummary> & _return)
+void AiravataClient::recv_searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return)
 {
 
   int32_t rseqid = 0;
@@ -18021,7 +18021,7 @@ void AiravataClient::recv_searchExperimentsByApplication(std::vector< ::Experime
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchExperimentsByApplication failed: unknown result");
 }
 
-void AiravataClient::getAllExperimentsInProject(std::vector< ::Experiment> & _return, const std::string& projectId)
+void AiravataClient::getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId)
 {
   send_getAllExperimentsInProject(projectId);
   recv_getAllExperimentsInProject(_return);
@@ -18041,7 +18041,7 @@ void AiravataClient::send_getAllExperimentsInProject(const std::string& projectI
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getAllExperimentsInProject(std::vector< ::Experiment> & _return)
+void AiravataClient::recv_getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return)
 {
 
   int32_t rseqid = 0;
@@ -18091,7 +18091,7 @@ void AiravataClient::recv_getAllExperimentsInProject(std::vector< ::Experiment> 
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllExperimentsInProject failed: unknown result");
 }
 
-void AiravataClient::getAllUserExperiments(std::vector< ::Experiment> & _return, const std::string& userName)
+void AiravataClient::getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& userName)
 {
   send_getAllUserExperiments(userName);
   recv_getAllUserExperiments(_return);
@@ -18111,7 +18111,7 @@ void AiravataClient::send_getAllUserExperiments(const std::string& userName)
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getAllUserExperiments(std::vector< ::Experiment> & _return)
+void AiravataClient::recv_getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return)
 {
 
   int32_t rseqid = 0;
@@ -18158,13 +18158,13 @@ void AiravataClient::recv_getAllUserExperiments(std::vector< ::Experiment> & _re
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllUserExperiments failed: unknown result");
 }
 
-void AiravataClient::createExperiment(std::string& _return, const  ::Experiment& experiment)
+void AiravataClient::createExperiment(std::string& _return, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment)
 {
   send_createExperiment(experiment);
   recv_createExperiment(_return);
 }
 
-void AiravataClient::send_createExperiment(const  ::Experiment& experiment)
+void AiravataClient::send_createExperiment(const  ::apache::airavata::model::workspace::experiment::Experiment& experiment)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("createExperiment", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -18225,7 +18225,7 @@ void AiravataClient::recv_createExperiment(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "createExperiment failed: unknown result");
 }
 
-void AiravataClient::getExperiment( ::Experiment& _return, const std::string& airavataExperimentId)
+void AiravataClient::getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return, const std::string& airavataExperimentId)
 {
   send_getExperiment(airavataExperimentId);
   recv_getExperiment(_return);
@@ -18245,7 +18245,7 @@ void AiravataClient::send_getExperiment(const std::string& airavataExperimentId)
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getExperiment( ::Experiment& _return)
+void AiravataClient::recv_getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return)
 {
 
   int32_t rseqid = 0;
@@ -18295,13 +18295,13 @@ void AiravataClient::recv_getExperiment( ::Experiment& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getExperiment failed: unknown result");
 }
 
-void AiravataClient::updateExperiment(const std::string& airavataExperimentId, const  ::Experiment& experiment)
+void AiravataClient::updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment)
 {
   send_updateExperiment(airavataExperimentId, experiment);
   recv_updateExperiment();
 }
 
-void AiravataClient::send_updateExperiment(const std::string& airavataExperimentId, const  ::Experiment& experiment)
+void AiravataClient::send_updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateExperiment", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -18361,13 +18361,13 @@ void AiravataClient::recv_updateExperiment()
   return;
 }
 
-void AiravataClient::updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::UserConfigurationData& userConfiguration)
+void AiravataClient::updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration)
 {
   send_updateExperimentConfiguration(airavataExperimentId, userConfiguration);
   recv_updateExperimentConfiguration();
 }
 
-void AiravataClient::send_updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::UserConfigurationData& userConfiguration)
+void AiravataClient::send_updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateExperimentConfiguration", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -18415,13 +18415,13 @@ void AiravataClient::recv_updateExperimentConfiguration()
   return;
 }
 
-void AiravataClient::updateResourceScheduleing(const std::string& airavataExperimentId, const  ::ComputationalResourceScheduling& resourceScheduling)
+void AiravataClient::updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& resourceScheduling)
 {
   send_updateResourceScheduleing(airavataExperimentId, resourceScheduling);
   recv_updateResourceScheduleing();
 }
 
-void AiravataClient::send_updateResourceScheduleing(const std::string& airavataExperimentId, const  ::ComputationalResourceScheduling& resourceScheduling)
+void AiravataClient::send_updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& resourceScheduling)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateResourceScheduleing", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -18608,7 +18608,7 @@ void AiravataClient::recv_launchExperiment()
   return;
 }
 
-void AiravataClient::getExperimentStatus( ::ExperimentStatus& _return, const std::string& airavataExperimentId)
+void AiravataClient::getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId)
 {
   send_getExperimentStatus(airavataExperimentId);
   recv_getExperimentStatus(_return);
@@ -18628,7 +18628,7 @@ void AiravataClient::send_getExperimentStatus(const std::string& airavataExperim
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getExperimentStatus( ::ExperimentStatus& _return)
+void AiravataClient::recv_getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return)
 {
 
   int32_t rseqid = 0;
@@ -18678,7 +18678,7 @@ void AiravataClient::recv_getExperimentStatus( ::ExperimentStatus& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getExperimentStatus failed: unknown result");
 }
 
-void AiravataClient::getExperimentOutputs(std::vector< ::DataObjectType> & _return, const std::string& airavataExperimentId)
+void AiravataClient::getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId)
 {
   send_getExperimentOutputs(airavataExperimentId);
   recv_getExperimentOutputs(_return);
@@ -18698,7 +18698,7 @@ void AiravataClient::send_getExperimentOutputs(const std::string& airavataExperi
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getExperimentOutputs(std::vector< ::DataObjectType> & _return)
+void AiravataClient::recv_getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return)
 {
 
   int32_t rseqid = 0;
@@ -18736,7 +18736,7 @@ void AiravataClient::recv_getExperimentOutputs(std::vector< ::DataObjectType> & 
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getExperimentOutputs failed: unknown result");
 }
 
-void AiravataClient::getJobStatuses(std::map<std::string,  ::JobStatus> & _return, const std::string& airavataExperimentId)
+void AiravataClient::getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId)
 {
   send_getJobStatuses(airavataExperimentId);
   recv_getJobStatuses(_return);
@@ -18756,7 +18756,7 @@ void AiravataClient::send_getJobStatuses(const std::string& airavataExperimentId
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getJobStatuses(std::map<std::string,  ::JobStatus> & _return)
+void AiravataClient::recv_getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return)
 {
 
   int32_t rseqid = 0;
@@ -18930,13 +18930,13 @@ void AiravataClient::recv_terminateExperiment()
   return;
 }
 
-void AiravataClient::registerApplicationModule(std::string& _return, const  ::ApplicationModule& applicationModule)
+void AiravataClient::registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule)
 {
   send_registerApplicationModule(applicationModule);
   recv_registerApplicationModule(_return);
 }
 
-void AiravataClient::send_registerApplicationModule(const  ::ApplicationModule& applicationModule)
+void AiravataClient::send_registerApplicationModule(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerApplicationModule", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -18997,7 +18997,7 @@ void AiravataClient::recv_registerApplicationModule(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "registerApplicationModule failed: unknown result");
 }
 
-void AiravataClient::getApplicationModule( ::ApplicationModule& _return, const std::string& appModuleId)
+void AiravataClient::getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId)
 {
   send_getApplicationModule(appModuleId);
   recv_getApplicationModule(_return);
@@ -19017,7 +19017,7 @@ void AiravataClient::send_getApplicationModule(const std::string& appModuleId)
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getApplicationModule( ::ApplicationModule& _return)
+void AiravataClient::recv_getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return)
 {
 
   int32_t rseqid = 0;
@@ -19064,13 +19064,13 @@ void AiravataClient::recv_getApplicationModule( ::ApplicationModule& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getApplicationModule failed: unknown result");
 }
 
-bool AiravataClient::updateApplicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule)
+bool AiravataClient::updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule)
 {
   send_updateApplicationModule(appModuleId, applicationModule);
   return recv_updateApplicationModule();
 }
 
-void AiravataClient::send_updateApplicationModule(const std::string& appModuleId, const  ::ApplicationModule& applicationModule)
+void AiravataClient::send_updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateApplicationModule", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -19199,13 +19199,13 @@ bool AiravataClient::recv_deleteApplicationModule()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteApplicationModule failed: unknown result");
 }
 
-void AiravataClient::registerApplicationDeployment(std::string& _return, const  ::ApplicationDeploymentDescription& applicationDeployment)
+void AiravataClient::registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment)
 {
   send_registerApplicationDeployment(applicationDeployment);
   recv_registerApplicationDeployment(_return);
 }
 
-void AiravataClient::send_registerApplicationDeployment(const  ::ApplicationDeploymentDescription& applicationDeployment)
+void AiravataClient::send_registerApplicationDeployment(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerApplicationDeployment", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -19266,7 +19266,7 @@ void AiravataClient::recv_registerApplicationDeployment(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "registerApplicationDeployment failed: unknown result");
 }
 
-void AiravataClient::getApplicationDeployment( ::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId)
+void AiravataClient::getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId)
 {
   send_getApplicationDeployment(appDeploymentId);
   recv_getApplicationDeployment(_return);
@@ -19286,7 +19286,7 @@ void AiravataClient::send_getApplicationDeployment(const std::string& appDeploym
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getApplicationDeployment( ::ApplicationDeploymentDescription& _return)
+void AiravataClient::recv_getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return)
 {
 
   int32_t rseqid = 0;
@@ -19333,13 +19333,13 @@ void AiravataClient::recv_getApplicationDeployment( ::ApplicationDeploymentDescr
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getApplicationDeployment failed: unknown result");
 }
 
-bool AiravataClient::updateApplicationDeployment(const std::string& appDeploymentId, const  ::ApplicationDeploymentDescription& applicationDeployment)
+bool AiravataClient::updateApplicationDeployment(const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment)
 {
   send_updateApplicationDeployment(appDeploymentId, applicationDeployment);
   return recv_updateApplicationDeployment();
 }
 
-void AiravataClient::send_updateApplicationDeployment(const std::string& appDeploymentId, const  ::ApplicationDeploymentDescription& applicationDeployment)
+void AiravataClient::send_updateApplicationDeployment(const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateApplicationDeployment", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -19535,13 +19535,13 @@ void AiravataClient::recv_getAppModuleDeployedResources(std::vector<std::string>
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAppModuleDeployedResources failed: unknown result");
 }
 
-void AiravataClient::registerApplicationInterface(std::string& _return, const  ::ApplicationInterfaceDescription& applicationInterface)
+void AiravataClient::registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface)
 {
   send_registerApplicationInterface(applicationInterface);
   recv_registerApplicationInterface(_return);
 }
 
-void AiravataClient::send_registerApplicationInterface(const  ::ApplicationInterfaceDescription& applicationInterface)
+void AiravataClient::send_registerApplicationInterface(const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerApplicationInterface", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -19602,7 +19602,7 @@ void AiravataClient::recv_registerApplicationInterface(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "registerApplicationInterface failed: unknown result");
 }
 
-void AiravataClient::getApplicationInterface( ::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId)
+void AiravataClient::getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId)
 {
   send_getApplicationInterface(appInterfaceId);
   recv_getApplicationInterface(_return);
@@ -19622,7 +19622,7 @@ void AiravataClient::send_getApplicationInterface(const std::string& appInterfac
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getApplicationInterface( ::ApplicationInterfaceDescription& _return)
+void AiravataClient::recv_getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return)
 {
 
   int32_t rseqid = 0;
@@ -19669,13 +19669,13 @@ void AiravataClient::recv_getApplicationInterface( ::ApplicationInterfaceDescrip
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getApplicationInterface failed: unknown result");
 }
 
-bool AiravataClient::updateApplicationInterface(const std::string& appInterfaceId, const  ::ApplicationInterfaceDescription& applicationInterface)
+bool AiravataClient::updateApplicationInterface(const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface)
 {
   send_updateApplicationInterface(appInterfaceId, applicationInterface);
   return recv_updateApplicationInterface();
 }
 
-void AiravataClient::send_updateApplicationInterface(const std::string& appInterfaceId, const  ::ApplicationInterfaceDescription& applicationInterface)
+void AiravataClient::send_updateApplicationInterface(const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateApplicationInterface", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -19870,7 +19870,7 @@ void AiravataClient::recv_getAllApplicationInterfaceNames(std::map<std::string, 
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllApplicationInterfaceNames failed: unknown result");
 }
 
-void AiravataClient::getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return)
+void AiravataClient::getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return)
 {
   send_getAllApplicationInterfaces();
   recv_getAllApplicationInterfaces(_return);
@@ -19889,7 +19889,7 @@ void AiravataClient::send_getAllApplicationInterfaces()
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getAllApplicationInterfaces(std::vector< ::ApplicationInterfaceDescription> & _return)
+void AiravataClient::recv_getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return)
 {
 
   int32_t rseqid = 0;
@@ -19936,7 +19936,7 @@ void AiravataClient::recv_getAllApplicationInterfaces(std::vector< ::Application
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllApplicationInterfaces failed: unknown result");
 }
 
-void AiravataClient::getApplicationInputs(std::vector< ::InputDataObjectType> & _return, const std::string& appInterfaceId)
+void AiravataClient::getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId)
 {
   send_getApplicationInputs(appInterfaceId);
   recv_getApplicationInputs(_return);
@@ -19956,7 +19956,7 @@ void AiravataClient::send_getApplicationInputs(const std::string& appInterfaceId
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getApplicationInputs(std::vector< ::InputDataObjectType> & _return)
+void AiravataClient::recv_getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return)
 {
 
   int32_t rseqid = 0;
@@ -20003,7 +20003,7 @@ void AiravataClient::recv_getApplicationInputs(std::vector< ::InputDataObjectTyp
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getApplicationInputs failed: unknown result");
 }
 
-void AiravataClient::getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return, const std::string& appInterfaceId)
+void AiravataClient::getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId)
 {
   send_getApplicationOutputs(appInterfaceId);
   recv_getApplicationOutputs(_return);
@@ -20023,7 +20023,7 @@ void AiravataClient::send_getApplicationOutputs(const std::string& appInterfaceI
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getApplicationOutputs(std::vector< ::OutputDataObjectType> & _return)
+void AiravataClient::recv_getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return)
 {
 
   int32_t rseqid = 0;
@@ -20137,13 +20137,13 @@ void AiravataClient::recv_getAvailableAppInterfaceComputeResources(std::vector<s
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAvailableAppInterfaceComputeResources failed: unknown result");
 }
 
-void AiravataClient::registerComputeResource(std::string& _return, const  ::ComputeResourceDescription& computeResourceDescription)
+void AiravataClient::registerComputeResource(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription)
 {
   send_registerComputeResource(computeResourceDescription);
   recv_registerComputeResource(_return);
 }
 
-void AiravataClient::send_registerComputeResource(const  ::ComputeResourceDescription& computeResourceDescription)
+void AiravataClient::send_registerComputeResource(const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerComputeResource", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -20204,7 +20204,7 @@ void AiravataClient::recv_registerComputeResource(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "registerComputeResource failed: unknown result");
 }
 
-void AiravataClient::getComputeResource( ::ComputeResourceDescription& _return, const std::string& computeResourceId)
+void AiravataClient::getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return, const std::string& computeResourceId)
 {
   send_getComputeResource(computeResourceId);
   recv_getComputeResource(_return);
@@ -20224,7 +20224,7 @@ void AiravataClient::send_getComputeResource(const std::string& computeResourceI
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getComputeResource( ::ComputeResourceDescription& _return)
+void AiravataClient::recv_getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return)
 {
 
   int32_t rseqid = 0;
@@ -20337,13 +20337,13 @@ void AiravataClient::recv_getAllComputeResourceNames(std::map<std::string, std::
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllComputeResourceNames failed: unknown result");
 }
 
-bool AiravataClient::updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription)
+bool AiravataClient::updateComputeResource(const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription)
 {
   send_updateComputeResource(computeResourceId, computeResourceDescription);
   return recv_updateComputeResource();
 }
 
-void AiravataClient::send_updateComputeResource(const std::string& computeResourceId, const  ::ComputeResourceDescription& computeResourceDescription)
+void AiravataClient::send_updateComputeResource(const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateComputeResource", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -20472,13 +20472,13 @@ bool AiravataClient::recv_deleteComputeResource()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteComputeResource failed: unknown result");
 }
 
-bool AiravataClient::addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission)
+bool AiravataClient::addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission)
 {
   send_addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
   return recv_addLocalSubmissionDetails();
 }
 
-void AiravataClient::send_addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALSubmission& localSubmission)
+void AiravataClient::send_addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addLocalSubmissionDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -20541,13 +20541,13 @@ bool AiravataClient::recv_addLocalSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addLocalSubmissionDetails failed: unknown result");
 }
 
-bool AiravataClient::updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALSubmission& localSubmission)
+bool AiravataClient::updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission)
 {
   send_updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
   return recv_updateLocalSubmissionDetails();
 }
 
-void AiravataClient::send_updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALSubmission& localSubmission)
+void AiravataClient::send_updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateLocalSubmissionDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -20609,13 +20609,13 @@ bool AiravataClient::recv_updateLocalSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateLocalSubmissionDetails failed: unknown result");
 }
 
-bool AiravataClient::addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission)
+bool AiravataClient::addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission)
 {
   send_addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
   return recv_addSSHJobSubmissionDetails();
 }
 
-void AiravataClient::send_addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SSHJobSubmission& sshJobSubmission)
+void AiravataClient::send_addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addSSHJobSubmissionDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -20678,13 +20678,13 @@ bool AiravataClient::recv_addSSHJobSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addSSHJobSubmissionDetails failed: unknown result");
 }
 
-bool AiravataClient::updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::SSHJobSubmission& sshJobSubmission)
+bool AiravataClient::updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission)
 {
   send_updateSSHJobSubmissionDetails(jobSubmissionInterfaceId, sshJobSubmission);
   return recv_updateSSHJobSubmissionDetails();
 }
 
-void AiravataClient::send_updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::SSHJobSubmission& sshJobSubmission)
+void AiravataClient::send_updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateSSHJobSubmissionDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -20746,13 +20746,13 @@ bool AiravataClient::recv_updateSSHJobSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateSSHJobSubmissionDetails failed: unknown result");
 }
 
-bool AiravataClient::addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement)
+bool AiravataClient::addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
 {
   send_addLocalDataMovementDetails(computeResourceId, priorityOrder, localDataMovement);
   return recv_addLocalDataMovementDetails();
 }
 
-void AiravataClient::send_addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::LOCALDataMovement& localDataMovement)
+void AiravataClient::send_addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addLocalDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -20815,13 +20815,13 @@ bool AiravataClient::recv_addLocalDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addLocalDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALDataMovement& localDataMovement)
+bool AiravataClient::updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
 {
   send_updateLocalDataMovementDetails(jobSubmissionInterfaceId, localDataMovement);
   return recv_updateLocalDataMovementDetails();
 }
 
-void AiravataClient::send_updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::LOCALDataMovement& localDataMovement)
+void AiravataClient::send_updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateLocalDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -20883,13 +20883,13 @@ bool AiravataClient::recv_updateLocalDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateLocalDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement)
+bool AiravataClient::addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
 {
   send_addSCPDataMovementDetails(computeResourceId, priorityOrder, scpDataMovement);
   return recv_addSCPDataMovementDetails();
 }
 
-void AiravataClient::send_addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::SCPDataMovement& scpDataMovement)
+void AiravataClient::send_addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addSCPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -20952,13 +20952,13 @@ bool AiravataClient::recv_addSCPDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addSCPDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::SCPDataMovement& scpDataMovement)
+bool AiravataClient::updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
 {
   send_updateSCPDataMovementDetails(jobSubmissionInterfaceId, scpDataMovement);
   return recv_updateSCPDataMovementDetails();
 }
 
-void AiravataClient::send_updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::SCPDataMovement& scpDataMovement)
+void AiravataClient::send_updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateSCPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -21020,13 +21020,13 @@ bool AiravataClient::recv_updateSCPDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateSCPDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement)
+bool AiravataClient::addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
 {
   send_addGridFTPDataMovementDetails(computeResourceId, priorityOrder, gridFTPDataMovement);
   return recv_addGridFTPDataMovementDetails();
 }
 
-void AiravataClient::send_addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::send_addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addGridFTPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -21089,13 +21089,13 @@ bool AiravataClient::recv_addGridFTPDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addGridFTPDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::GridFTPDataMovement& gridFTPDataMovement)
+bool AiravataClient::updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
 {
   send_updateGridFTPDataMovementDetails(jobSubmissionInterfaceId, gridFTPDataMovement);
   return recv_updateGridFTPDataMovementDetails();
 }
 
-void AiravataClient::send_updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::send_updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateGridFTPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -21561,13 +21561,13 @@ bool AiravataClient::recv_deleteDataMovementInterface()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteDataMovementInterface failed: unknown result");
 }
 
-void AiravataClient::registerGatewayResourceProfile(std::string& _return, const  ::GatewayResourceProfile& gatewayResourceProfile)
+void AiravataClient::registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile)
 {
   send_registerGatewayResourceProfile(gatewayResourceProfile);
   recv_registerGatewayResourceProfile(_return);
 }
 
-void AiravataClient::send_registerGatewayResourceProfile(const  ::GatewayResourceProfile& gatewayResourceProfile)
+void AiravataClient::send_registerGatewayResourceProfile(const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerGatewayResourceProfile", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -21628,7 +21628,7 @@ void AiravataClient::recv_registerGatewayResourceProfile(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "registerGatewayResourceProfile failed: unknown result");
 }
 
-void AiravataClient::getGatewayResourceProfile( ::GatewayResourceProfile& _return, const std::string& gatewayID)
+void AiravataClient::getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return, const std::string& gatewayID)
 {
   send_getGatewayResourceProfile(gatewayID);
   recv_getGatewayResourceProfile(_return);
@@ -21648,7 +21648,7 @@ void AiravataClient::send_getGatewayResourceProfile(const std::string& gatewayID
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getGatewayResourceProfile( ::GatewayResourceProfile& _return)
+void AiravataClient::recv_getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return)
 {
 
   int32_t rseqid = 0;
@@ -21695,13 +21695,13 @@ void AiravataClient::recv_getGatewayResourceProfile( ::GatewayResourceProfile& _
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getGatewayResourceProfile failed: unknown result");
 }
 
-bool AiravataClient::updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile)
+bool AiravataClient::updateGatewayResourceProfile(const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile)
 {
   send_updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
   return recv_updateGatewayResourceProfile();
 }
 
-void AiravataClient::send_updateGatewayResourceProfile(const std::string& gatewayID, const  ::GatewayResourceProfile& gatewayResourceProfile)
+void AiravataClient::send_updateGatewayResourceProfile(const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateGatewayResourceProfile", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -21830,13 +21830,13 @@ bool AiravataClient::recv_deleteGatewayResourceProfile()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteGatewayResourceProfile failed: unknown result");
 }
 
-bool AiravataClient::addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference)
+bool AiravataClient::addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference)
 {
   send_addGatewayComputeResourcePreference(gatewayID, computeResourceId, computeResourcePreference);
   return recv_addGatewayComputeResourcePreference();
 }
 
-void AiravataClient::send_addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference)
+void AiravataClient::send_addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("addGatewayComputeResourcePreference", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -21899,7 +21899,7 @@ bool AiravataClient::recv_addGatewayComputeResourcePreference()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addGatewayComputeResourcePreference failed: unknown result");
 }
 
-void AiravataClient::getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId)
+void AiravataClient::getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId)
 {
   send_getGatewayComputeResourcePreference(gatewayID, computeResourceId);
   recv_getGatewayComputeResourcePreference(_return);
@@ -21920,7 +21920,7 @@ void AiravataClient::send_getGatewayComputeResourcePreference(const std::string&
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getGatewayComputeResourcePreference( ::ComputeResourcePreference& _return)
+void AiravataClient::recv_getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& _return)
 {
 
   int32_t rseqid = 0;
@@ -21967,7 +21967,7 @@ void AiravataClient::recv_getGatewayComputeResourcePreference( ::ComputeResource
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getGatewayComputeResourcePreference failed: unknown result");
 }
 
-void AiravataClient::getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return, const std::string& gatewayID)
+void AiravataClient::getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return, const std::string& gatewayID)
 {
   send_getAllGatewayComputeResourcePreferences(gatewayID);
   recv_getAllGatewayComputeResourcePreferences(_return);
@@ -21987,7 +21987,7 @@ void AiravataClient::send_getAllGatewayComputeResourcePreferences(const std::str
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getAllGatewayComputeResourcePreferences(std::vector< ::ComputeResourcePreference> & _return)
+void AiravataClient::recv_getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return)
 {
 
   int32_t rseqid = 0;
@@ -22034,13 +22034,13 @@ void AiravataClient::recv_getAllGatewayComputeResourcePreferences(std::vector< :
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllGatewayComputeResourcePreferences failed: unknown result");
 }
 
-bool AiravataClient::updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference)
+bool AiravataClient::updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference)
 {
   send_updateGatewayComputeResourcePreference(gatewayID, computeResourceId, computeResourcePreference);
   return recv_updateGatewayComputeResourcePreference();
 }
 
-void AiravataClient::send_updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::ComputeResourcePreference& computeResourcePreference)
+void AiravataClient::send_updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateGatewayComputeResourcePreference", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -22215,13 +22215,13 @@ void AiravataProcessor::process_getAPIVersion(int32_t seqid, ::apache::thrift::p
   try {
     iface_->getAPIVersion(result.success);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -22278,13 +22278,13 @@ void AiravataProcessor::process_createProject(int32_t seqid, ::apache::thrift::p
   try {
     iface_->createProject(result.success, args.project);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -22340,16 +22340,16 @@ void AiravataProcessor::process_updateProject(int32_t seqid, ::apache::thrift::p
   Airavata_updateProject_result result;
   try {
     iface_->updateProject(args.projectId, args.updatedProject);
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
-  } catch ( ::airavata::api::error::ProjectNotFoundException &pnfe) {
+  } catch ( ::apache::airavata::api::error::ProjectNotFoundException &pnfe) {
     result.pnfe = pnfe;
     result.__isset.pnfe = true;
   } catch (const std::exception& e) {
@@ -22406,16 +22406,16 @@ void AiravataProcessor::process_getProject(int32_t seqid, ::apache::thrift::prot
   try {
     iface_->getProject(result.success, args.projectId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
-  } catch ( ::airavata::api::error::ProjectNotFoundException &pnfe) {
+  } catch ( ::apache::airavata::api::error::ProjectNotFoundException &pnfe) {
     result.pnfe = pnfe;
     result.__isset.pnfe = true;
   } catch (const std::exception& e) {
@@ -22472,13 +22472,13 @@ void AiravataProcessor::process_getAllUserProjects(int32_t seqid, ::apache::thri
   try {
     iface_->getAllUserProjects(result.success, args.userName);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -22535,13 +22535,13 @@ void AiravataProcessor::process_searchProjectsByProjectName(int32_t seqid, ::apa
   try {
     iface_->searchProjectsByProjectName(result.success, args.userName, args.projectName);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -22598,13 +22598,13 @@ void AiravataProcessor::process_searchProjectsByProjectDesc(int32_t seqid, ::apa
   try {
     iface_->searchProjectsByProjectDesc(result.success, args.userName, args.description);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -22661,13 +22661,13 @@ void AiravataProcessor::process_searchExperimentsByName(int32_t seqid, ::apache:
   try {
     iface_->searchExperimentsByName(result.success, args.userName, args.expName);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -22724,13 +22724,13 @@ void AiravataProcessor::process_searchExperimentsByDesc(int32_t seqid, ::apache:
   try {
     iface_->searchExperimentsByDesc(result.success, args.userName, args.description);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -22787,13 +22787,13 @@ void AiravataProcessor::process_searchExperimentsByApplication(int32_t seqid, ::
   try {
     iface_->searchExperimentsByApplication(result.success, args.userName, args.applicationId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -22850,16 +22850,16 @@ void AiravataProcessor::process_getAllExperimentsInProject(int32_t seqid, ::apac
   try {
     iface_->getAllExperimentsInProject(result.success, args.projectId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
-  } catch ( ::airavata::api::error::ProjectNotFoundException &pnfe) {
+  } catch ( ::apache::airavata::api::error::ProjectNotFoundException &pnfe) {
     result.pnfe = pnfe;
     result.__isset.pnfe = true;
   } catch (const std::exception& e) {
@@ -22916,13 +22916,13 @@ void AiravataProcessor::process_getAllUserExperiments(int32_t seqid, ::apache::t
   try {
     iface_->getAllUserExperiments(result.success, args.userName);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -22979,13 +22979,13 @@ void AiravataProcessor::process_createExperiment(int32_t seqid, ::apache::thrift
   try {
     iface_->createExperiment(result.success, args.experiment);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23042,16 +23042,16 @@ void AiravataProcessor::process_getExperiment(int32_t seqid, ::apache::thrift::p
   try {
     iface_->getExperiment(result.success, args.airavataExperimentId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::ExperimentNotFoundException &enf) {
+  } catch ( ::apache::airavata::api::error::ExperimentNotFoundException &enf) {
     result.enf = enf;
     result.__isset.enf = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23107,16 +23107,16 @@ void AiravataProcessor::process_updateExperiment(int32_t seqid, ::apache::thrift
   Airavata_updateExperiment_result result;
   try {
     iface_->updateExperiment(args.airavataExperimentId, args.experiment);
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::ExperimentNotFoundException &enf) {
+  } catch ( ::apache::airavata::api::error::ExperimentNotFoundException &enf) {
     result.enf = enf;
     result.__isset.enf = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23279,16 +23279,16 @@ void AiravataProcessor::process_validateExperiment(int32_t seqid, ::apache::thri
   try {
     result.success = iface_->validateExperiment(args.airavataExperimentId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::ExperimentNotFoundException &enf) {
+  } catch ( ::apache::airavata::api::error::ExperimentNotFoundException &enf) {
     result.enf = enf;
     result.__isset.enf = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23344,19 +23344,19 @@ void AiravataProcessor::process_launchExperiment(int32_t seqid, ::apache::thrift
   Airavata_launchExperiment_result result;
   try {
     iface_->launchExperiment(args.airavataExperimentId, args.airavataCredStoreToken);
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::ExperimentNotFoundException &enf) {
+  } catch ( ::apache::airavata::api::error::ExperimentNotFoundException &enf) {
     result.enf = enf;
     result.__isset.enf = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
-  } catch ( ::airavata::api::error::LaunchValidationException &lve) {
+  } catch ( ::apache::airavata::api::error::LaunchValidationException &lve) {
     result.lve = lve;
     result.__isset.lve = true;
   } catch (const std::exception& e) {
@@ -23413,16 +23413,16 @@ void AiravataProcessor::process_getExperimentStatus(int32_t seqid, ::apache::thr
   try {
     iface_->getExperimentStatus(result.success, args.airavataExperimentId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::ExperimentNotFoundException &enf) {
+  } catch ( ::apache::airavata::api::error::ExperimentNotFoundException &enf) {
     result.enf = enf;
     result.__isset.enf = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23587,16 +23587,16 @@ void AiravataProcessor::process_cloneExperiment(int32_t seqid, ::apache::thrift:
   try {
     iface_->cloneExperiment(result.success, args.existingExperimentID, args.newExperimentName);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::ExperimentNotFoundException &enf) {
+  } catch ( ::apache::airavata::api::error::ExperimentNotFoundException &enf) {
     result.enf = enf;
     result.__isset.enf = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23652,16 +23652,16 @@ void AiravataProcessor::process_terminateExperiment(int32_t seqid, ::apache::thr
   Airavata_terminateExperiment_result result;
   try {
     iface_->terminateExperiment(args.airavataExperimentId);
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::ExperimentNotFoundException &enf) {
+  } catch ( ::apache::airavata::api::error::ExperimentNotFoundException &enf) {
     result.enf = enf;
     result.__isset.enf = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23718,13 +23718,13 @@ void AiravataProcessor::process_registerApplicationModule(int32_t seqid, ::apach
   try {
     iface_->registerApplicationModule(result.success, args.applicationModule);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23781,13 +23781,13 @@ void AiravataProcessor::process_getApplicationModule(int32_t seqid, ::apache::th
   try {
     iface_->getApplicationModule(result.success, args.appModuleId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23844,13 +23844,13 @@ void AiravataProcessor::process_updateApplicationModule(int32_t seqid, ::apache:
   try {
     result.success = iface_->updateApplicationModule(args.appModuleId, args.applicationModule);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23907,13 +23907,13 @@ void AiravataProcessor::process_deleteApplicationModule(int32_t seqid, ::apache:
   try {
     result.success = iface_->deleteApplicationModule(args.appModuleId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -23970,13 +23970,13 @@ void AiravataProcessor::process_registerApplicationDeployment(int32_t seqid, ::a
   try {
     iface_->registerApplicationDeployment(result.success, args.applicationDeployment);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24033,13 +24033,13 @@ void AiravataProcessor::process_getApplicationDeployment(int32_t seqid, ::apache
   try {
     iface_->getApplicationDeployment(result.success, args.appDeploymentId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24096,13 +24096,13 @@ void AiravataProcessor::process_updateApplicationDeployment(int32_t seqid, ::apa
   try {
     result.success = iface_->updateApplicationDeployment(args.appDeploymentId, args.applicationDeployment);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24159,13 +24159,13 @@ void AiravataProcessor::process_deleteApplicationDeployment(int32_t seqid, ::apa
   try {
     result.success = iface_->deleteApplicationDeployment(args.appDeploymentId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24222,13 +24222,13 @@ void AiravataProcessor::process_getAppModuleDeployedResources(int32_t seqid, ::a
   try {
     iface_->getAppModuleDeployedResources(result.success, args.appModuleId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24285,13 +24285,13 @@ void AiravataProcessor::process_registerApplicationInterface(int32_t seqid, ::ap
   try {
     iface_->registerApplicationInterface(result.success, args.applicationInterface);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24348,13 +24348,13 @@ void AiravataProcessor::process_getApplicationInterface(int32_t seqid, ::apache:
   try {
     iface_->getApplicationInterface(result.success, args.appInterfaceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24411,13 +24411,13 @@ void AiravataProcessor::process_updateApplicationInterface(int32_t seqid, ::apac
   try {
     result.success = iface_->updateApplicationInterface(args.appInterfaceId, args.applicationInterface);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24474,13 +24474,13 @@ void AiravataProcessor::process_deleteApplicationInterface(int32_t seqid, ::apac
   try {
     result.success = iface_->deleteApplicationInterface(args.appInterfaceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24537,13 +24537,13 @@ void AiravataProcessor::process_getAllApplicationInterfaceNames(int32_t seqid, :
   try {
     iface_->getAllApplicationInterfaceNames(result.success);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24600,13 +24600,13 @@ void AiravataProcessor::process_getAllApplicationInterfaces(int32_t seqid, ::apa
   try {
     iface_->getAllApplicationInterfaces(result.success);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24663,13 +24663,13 @@ void AiravataProcessor::process_getApplicationInputs(int32_t seqid, ::apache::th
   try {
     iface_->getApplicationInputs(result.success, args.appInterfaceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24726,13 +24726,13 @@ void AiravataProcessor::process_getApplicationOutputs(int32_t seqid, ::apache::t
   try {
     iface_->getApplicationOutputs(result.success, args.appInterfaceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24789,13 +24789,13 @@ void AiravataProcessor::process_getAvailableAppInterfaceComputeResources(int32_t
   try {
     iface_->getAvailableAppInterfaceComputeResources(result.success, args.appInterfaceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24852,13 +24852,13 @@ void AiravataProcessor::process_registerComputeResource(int32_t seqid, ::apache:
   try {
     iface_->registerComputeResource(result.success, args.computeResourceDescription);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24915,13 +24915,13 @@ void AiravataProcessor::process_getComputeResource(int32_t seqid, ::apache::thri
   try {
     iface_->getComputeResource(result.success, args.computeResourceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -24978,13 +24978,13 @@ void AiravataProcessor::process_getAllComputeResourceNames(int32_t seqid, ::apac
   try {
     iface_->getAllComputeResourceNames(result.success);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25041,13 +25041,13 @@ void AiravataProcessor::process_updateComputeResource(int32_t seqid, ::apache::t
   try {
     result.success = iface_->updateComputeResource(args.computeResourceId, args.computeResourceDescription);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25104,13 +25104,13 @@ void AiravataProcessor::process_deleteComputeResource(int32_t seqid, ::apache::t
   try {
     result.success = iface_->deleteComputeResource(args.computeResourceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25167,13 +25167,13 @@ void AiravataProcessor::process_addLocalSubmissionDetails(int32_t seqid, ::apach
   try {
     result.success = iface_->addLocalSubmissionDetails(args.computeResourceId, args.priorityOrder, args.localSubmission);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25230,13 +25230,13 @@ void AiravataProcessor::process_updateLocalSubmissionDetails(int32_t seqid, ::ap
   try {
     result.success = iface_->updateLocalSubmissionDetails(args.jobSubmissionInterfaceId, args.localSubmission);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25293,13 +25293,13 @@ void AiravataProcessor::process_addSSHJobSubmissionDetails(int32_t seqid, ::apac
   try {
     result.success = iface_->addSSHJobSubmissionDetails(args.computeResourceId, args.priorityOrder, args.sshJobSubmission);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25356,13 +25356,13 @@ void AiravataProcessor::process_updateSSHJobSubmissionDetails(int32_t seqid, ::a
   try {
     result.success = iface_->updateSSHJobSubmissionDetails(args.jobSubmissionInterfaceId, args.sshJobSubmission);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25419,13 +25419,13 @@ void AiravataProcessor::process_addLocalDataMovementDetails(int32_t seqid, ::apa
   try {
     result.success = iface_->addLocalDataMovementDetails(args.computeResourceId, args.priorityOrder, args.localDataMovement);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25482,13 +25482,13 @@ void AiravataProcessor::process_updateLocalDataMovementDetails(int32_t seqid, ::
   try {
     result.success = iface_->updateLocalDataMovementDetails(args.jobSubmissionInterfaceId, args.localDataMovement);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25545,13 +25545,13 @@ void AiravataProcessor::process_addSCPDataMovementDetails(int32_t seqid, ::apach
   try {
     result.success = iface_->addSCPDataMovementDetails(args.computeResourceId, args.priorityOrder, args.scpDataMovement);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25608,13 +25608,13 @@ void AiravataProcessor::process_updateSCPDataMovementDetails(int32_t seqid, ::ap
   try {
     result.success = iface_->updateSCPDataMovementDetails(args.jobSubmissionInterfaceId, args.scpDataMovement);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25671,13 +25671,13 @@ void AiravataProcessor::process_addGridFTPDataMovementDetails(int32_t seqid, ::a
   try {
     result.success = iface_->addGridFTPDataMovementDetails(args.computeResourceId, args.priorityOrder, args.gridFTPDataMovement);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25734,13 +25734,13 @@ void AiravataProcessor::process_updateGridFTPDataMovementDetails(int32_t seqid, 
   try {
     result.success = iface_->updateGridFTPDataMovementDetails(args.jobSubmissionInterfaceId, args.gridFTPDataMovement);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25797,13 +25797,13 @@ void AiravataProcessor::process_changeJobSubmissionPriority(int32_t seqid, ::apa
   try {
     result.success = iface_->changeJobSubmissionPriority(args.jobSubmissionInterfaceId, args.newPriorityOrder);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25860,13 +25860,13 @@ void AiravataProcessor::process_changeDataMovementPriority(int32_t seqid, ::apac
   try {
     result.success = iface_->changeDataMovementPriority(args.dataMovementInterfaceId, args.newPriorityOrder);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25923,13 +25923,13 @@ void AiravataProcessor::process_changeJobSubmissionPriorities(int32_t seqid, ::a
   try {
     result.success = iface_->changeJobSubmissionPriorities(args.jobSubmissionPriorityMap);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -25986,13 +25986,13 @@ void AiravataProcessor::process_changeDataMovementPriorities(int32_t seqid, ::ap
   try {
     result.success = iface_->changeDataMovementPriorities(args.dataMovementPriorityMap);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26049,13 +26049,13 @@ void AiravataProcessor::process_deleteJobSubmissionInterface(int32_t seqid, ::ap
   try {
     result.success = iface_->deleteJobSubmissionInterface(args.jobSubmissionInterfaceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26112,13 +26112,13 @@ void AiravataProcessor::process_deleteDataMovementInterface(int32_t seqid, ::apa
   try {
     result.success = iface_->deleteDataMovementInterface(args.dataMovementInterfaceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26175,13 +26175,13 @@ void AiravataProcessor::process_registerGatewayResourceProfile(int32_t seqid, ::
   try {
     iface_->registerGatewayResourceProfile(result.success, args.gatewayResourceProfile);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26238,13 +26238,13 @@ void AiravataProcessor::process_getGatewayResourceProfile(int32_t seqid, ::apach
   try {
     iface_->getGatewayResourceProfile(result.success, args.gatewayID);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26301,13 +26301,13 @@ void AiravataProcessor::process_updateGatewayResourceProfile(int32_t seqid, ::ap
   try {
     result.success = iface_->updateGatewayResourceProfile(args.gatewayID, args.gatewayResourceProfile);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26364,13 +26364,13 @@ void AiravataProcessor::process_deleteGatewayResourceProfile(int32_t seqid, ::ap
   try {
     result.success = iface_->deleteGatewayResourceProfile(args.gatewayID);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26427,13 +26427,13 @@ void AiravataProcessor::process_addGatewayComputeResourcePreference(int32_t seqi
   try {
     result.success = iface_->addGatewayComputeResourcePreference(args.gatewayID, args.computeResourceId, args.computeResourcePreference);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26490,13 +26490,13 @@ void AiravataProcessor::process_getGatewayComputeResourcePreference(int32_t seqi
   try {
     iface_->getGatewayComputeResourcePreference(result.success, args.gatewayID, args.computeResourceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26553,13 +26553,13 @@ void AiravataProcessor::process_getAllGatewayComputeResourcePreferences(int32_t 
   try {
     iface_->getAllGatewayComputeResourcePreferences(result.success, args.gatewayID);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26616,13 +26616,13 @@ void AiravataProcessor::process_updateGatewayComputeResourcePreference(int32_t s
   try {
     result.success = iface_->updateGatewayComputeResourcePreference(args.gatewayID, args.computeResourceId, args.computeResourcePreference);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26679,13 +26679,13 @@ void AiravataProcessor::process_deleteGatewayComputeResourcePreference(int32_t s
   try {
     result.success = iface_->deleteGatewayComputeResourcePreference(args.gatewayID, args.computeResourceId);
     result.__isset.success = true;
-  } catch ( ::airavata::api::error::InvalidRequestException &ire) {
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;
-  } catch ( ::airavata::api::error::AiravataClientException &ace) {
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
     result.ace = ace;
     result.__isset.ace = true;
-  } catch ( ::airavata::api::error::AiravataSystemException &ase) {
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
   } catch (const std::exception& e) {
@@ -26723,5 +26723,5 @@ void AiravataProcessor::process_deleteGatewayComputeResourcePreference(int32_t s
   ::boost::shared_ptr< ::apache::thrift::TProcessor > processor(new AiravataProcessor(handler));
   return processor;
 }
-}} // namespace
+}}} // namespace
 

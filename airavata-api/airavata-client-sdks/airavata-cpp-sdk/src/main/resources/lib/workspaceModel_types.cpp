@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-
+namespace apache { namespace airavata { namespace model { namespace workspace {
 
 const char* Group::ascii_fingerprint = "5B708A954C550ECA9C1A49D3C5CAFAB9";
 const uint8_t Group::binary_fingerprint[16] = {0x5B,0x70,0x8A,0x95,0x4C,0x55,0x0E,0xCA,0x9C,0x1A,0x49,0xD3,0xC5,0xCA,0xFA,0xB9};
@@ -461,4 +461,4 @@ void swap(Gateway &a, Gateway &b) {
   swap(a.name, b.name);
 }
 
-
+}}}} // namespace

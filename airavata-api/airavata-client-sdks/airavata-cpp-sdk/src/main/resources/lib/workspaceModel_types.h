@@ -16,7 +16,7 @@
 #include "experimentModel_types.h"
 
 
-
+namespace apache { namespace airavata { namespace model { namespace workspace {
 
 typedef struct _Group__isset {
   _Group__isset() : description(false) {}
@@ -268,6 +268,6 @@ class Gateway {
 
 void swap(Gateway &a, Gateway &b);
 
-
+}}}} // namespace
 
 #endif
