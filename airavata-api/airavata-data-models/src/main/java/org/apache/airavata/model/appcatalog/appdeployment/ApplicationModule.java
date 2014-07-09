@@ -66,11 +66,10 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class ApplicationModule implements org.apache.thrift.TBase<ApplicationModule, ApplicationModule._Fields>, java.io.Serializable, Cloneable, Comparable<ApplicationModule> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ApplicationModule");
 
-  private static final org.apache.thrift.protocol.TField IS_EMPTY_FIELD_DESC = new org.apache.thrift.protocol.TField("isEmpty", org.apache.thrift.protocol.TType.BOOL, (short)1);
-  private static final org.apache.thrift.protocol.TField APP_MODULE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField APP_MODULE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleName", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField APP_MODULE_VERSION_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleVersion", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField APP_MODULE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleDescription", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField APP_MODULE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField APP_MODULE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleName", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField APP_MODULE_VERSION_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleVersion", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField APP_MODULE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("appModuleDescription", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -78,7 +77,6 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ApplicationModuleTupleSchemeFactory());
   }
 
-  private boolean isEmpty; // required
   private String appModuleId; // required
   private String appModuleName; // required
   private String appModuleVersion; // optional
@@ -86,11 +84,10 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    IS_EMPTY((short)1, "isEmpty"),
-    APP_MODULE_ID((short)2, "appModuleId"),
-    APP_MODULE_NAME((short)3, "appModuleName"),
-    APP_MODULE_VERSION((short)4, "appModuleVersion"),
-    APP_MODULE_DESCRIPTION((short)5, "appModuleDescription");
+    APP_MODULE_ID((short)1, "appModuleId"),
+    APP_MODULE_NAME((short)2, "appModuleName"),
+    APP_MODULE_VERSION((short)3, "appModuleVersion"),
+    APP_MODULE_DESCRIPTION((short)4, "appModuleDescription");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -105,15 +102,13 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // IS_EMPTY
-          return IS_EMPTY;
-        case 2: // APP_MODULE_ID
+        case 1: // APP_MODULE_ID
           return APP_MODULE_ID;
-        case 3: // APP_MODULE_NAME
+        case 2: // APP_MODULE_NAME
           return APP_MODULE_NAME;
-        case 4: // APP_MODULE_VERSION
+        case 3: // APP_MODULE_VERSION
           return APP_MODULE_VERSION;
-        case 5: // APP_MODULE_DESCRIPTION
+        case 4: // APP_MODULE_DESCRIPTION
           return APP_MODULE_DESCRIPTION;
         default:
           return null;
@@ -155,14 +150,10 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private static final int __ISEMPTY_ISSET_ID = 0;
-  private byte __isset_bitfield = 0;
   private _Fields optionals[] = {_Fields.APP_MODULE_VERSION,_Fields.APP_MODULE_DESCRIPTION};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.IS_EMPTY, new org.apache.thrift.meta_data.FieldMetaData("isEmpty", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.APP_MODULE_ID, new org.apache.thrift.meta_data.FieldMetaData("appModuleId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.APP_MODULE_NAME, new org.apache.thrift.meta_data.FieldMetaData("appModuleName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -176,20 +167,15 @@ import org.slf4j.LoggerFactory;
   }
 
   public ApplicationModule() {
-    this.isEmpty = false;
-
     this.appModuleId = "DO_NOT_SET_AT_CLIENTS";
 
   }
 
   public ApplicationModule(
-    boolean isEmpty,
     String appModuleId,
     String appModuleName)
   {
     this();
-    this.isEmpty = isEmpty;
-    setIsEmptyIsSet(true);
     this.appModuleId = appModuleId;
     this.appModuleName = appModuleName;
   }
@@ -198,8 +184,6 @@ import org.slf4j.LoggerFactory;
    * Performs a deep copy on <i>other</i>.
    */
   public ApplicationModule(ApplicationModule other) {
-    __isset_bitfield = other.__isset_bitfield;
-    this.isEmpty = other.isEmpty;
     if (other.isSetAppModuleId()) {
       this.appModuleId = other.appModuleId;
     }
@@ -220,35 +204,11 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.isEmpty = false;
-
     this.appModuleId = "DO_NOT_SET_AT_CLIENTS";
 
     this.appModuleName = null;
     this.appModuleVersion = null;
     this.appModuleDescription = null;
-  }
-
-  public boolean isIsEmpty() {
-    return this.isEmpty;
-  }
-
-  public void setIsEmpty(boolean isEmpty) {
-    this.isEmpty = isEmpty;
-    setIsEmptyIsSet(true);
-  }
-
-  public void unsetIsEmpty() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISEMPTY_ISSET_ID);
-  }
-
-  /** Returns true if field isEmpty is set (has been assigned a value) and false otherwise */
-  public boolean isSetIsEmpty() {
-    return EncodingUtils.testBit(__isset_bitfield, __ISEMPTY_ISSET_ID);
-  }
-
-  public void setIsEmptyIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISEMPTY_ISSET_ID, value);
   }
 
   public String getAppModuleId() {
@@ -345,14 +305,6 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case IS_EMPTY:
-      if (value == null) {
-        unsetIsEmpty();
-      } else {
-        setIsEmpty((Boolean)value);
-      }
-      break;
-
     case APP_MODULE_ID:
       if (value == null) {
         unsetAppModuleId();
@@ -390,9 +342,6 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case IS_EMPTY:
-      return Boolean.valueOf(isIsEmpty());
-
     case APP_MODULE_ID:
       return getAppModuleId();
 
@@ -416,8 +365,6 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case IS_EMPTY:
-      return isSetIsEmpty();
     case APP_MODULE_ID:
       return isSetAppModuleId();
     case APP_MODULE_NAME:
@@ -442,15 +389,6 @@ import org.slf4j.LoggerFactory;
   public boolean equals(ApplicationModule that) {
     if (that == null)
       return false;
-
-    boolean this_present_isEmpty = true;
-    boolean that_present_isEmpty = true;
-    if (this_present_isEmpty || that_present_isEmpty) {
-      if (!(this_present_isEmpty && that_present_isEmpty))
-        return false;
-      if (this.isEmpty != that.isEmpty)
-        return false;
-    }
 
     boolean this_present_appModuleId = true && this.isSetAppModuleId();
     boolean that_present_appModuleId = true && that.isSetAppModuleId();
@@ -504,16 +442,6 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetIsEmpty()).compareTo(other.isSetIsEmpty());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetIsEmpty()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isEmpty, other.isEmpty);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetAppModuleId()).compareTo(other.isSetAppModuleId());
     if (lastComparison != 0) {
       return lastComparison;
@@ -574,10 +502,6 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("ApplicationModule(");
     boolean first = true;
 
-    sb.append("isEmpty:");
-    sb.append(this.isEmpty);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("appModuleId:");
     if (this.appModuleId == null) {
       sb.append("null");
@@ -619,10 +543,6 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetIsEmpty()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'isEmpty' is unset! Struct:" + toString());
-    }
-
     if (!isSetAppModuleId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'appModuleId' is unset! Struct:" + toString());
     }
@@ -644,8 +564,6 @@ import org.slf4j.LoggerFactory;
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
-      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
-      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -670,15 +588,7 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // IS_EMPTY
-            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
-              struct.isEmpty = iprot.readBool();
-              struct.setIsEmptyIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // APP_MODULE_ID
+          case 1: // APP_MODULE_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.appModuleId = iprot.readString();
               struct.setAppModuleIdIsSet(true);
@@ -686,7 +596,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // APP_MODULE_NAME
+          case 2: // APP_MODULE_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.appModuleName = iprot.readString();
               struct.setAppModuleNameIsSet(true);
@@ -694,7 +604,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // APP_MODULE_VERSION
+          case 3: // APP_MODULE_VERSION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.appModuleVersion = iprot.readString();
               struct.setAppModuleVersionIsSet(true);
@@ -702,7 +612,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // APP_MODULE_DESCRIPTION
+          case 4: // APP_MODULE_DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.appModuleDescription = iprot.readString();
               struct.setAppModuleDescriptionIsSet(true);
@@ -723,9 +633,6 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      oprot.writeFieldBegin(IS_EMPTY_FIELD_DESC);
-      oprot.writeBool(struct.isEmpty);
-      oprot.writeFieldEnd();
       if (struct.appModuleId != null) {
         oprot.writeFieldBegin(APP_MODULE_ID_FIELD_DESC);
         oprot.writeString(struct.appModuleId);
@@ -767,7 +674,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ApplicationModule struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeBool(struct.isEmpty);
       oprot.writeString(struct.appModuleId);
       oprot.writeString(struct.appModuleName);
       BitSet optionals = new BitSet();
@@ -789,8 +695,6 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ApplicationModule struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.isEmpty = iprot.readBool();
-      struct.setIsEmptyIsSet(true);
       struct.appModuleId = iprot.readString();
       struct.setAppModuleIdIsSet(true);
       struct.appModuleName = iprot.readString();
