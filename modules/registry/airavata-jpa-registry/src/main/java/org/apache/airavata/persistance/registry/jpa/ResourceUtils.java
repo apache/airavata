@@ -60,6 +60,7 @@ public class ResourceUtils {
             properties.put("openjpa.QueryCache","true(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
+            properties.put("openjpa.jdbc.DBDictionary","SupportsMultipleNontransactionalResultSets=false");
 //            properties.put("openjpa.ReadLockLevel", "none");
 //            properties.put("openjpa.WriteLockLevel", "none");
 //            properties.put("openjpa.LockTimeout", "30000");
