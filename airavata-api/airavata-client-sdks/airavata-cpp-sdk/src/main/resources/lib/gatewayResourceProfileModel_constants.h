@@ -9,7 +9,7 @@
 
 #include "gatewayResourceProfileModel_types.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace gatewayprofile {
 
 class gatewayResourceProfileModelConstants {
  public:
@@ -20,6 +20,6 @@ class gatewayResourceProfileModelConstants {
 
 extern const gatewayResourceProfileModelConstants g_gatewayResourceProfileModel_constants;
 
-
+}}}}} // namespace
 
 #endif

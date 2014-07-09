@@ -6,7 +6,7 @@
  */
 #include "gatewayResourceProfileModel_constants.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace gatewayprofile {
 
 const gatewayResourceProfileModelConstants g_gatewayResourceProfileModel_constants;
 
@@ -15,5 +15,5 @@ gatewayResourceProfileModelConstants::gatewayResourceProfileModelConstants() {
 
 }
 
-
+}}}}} // namespace
 

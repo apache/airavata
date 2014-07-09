@@ -15,7 +15,7 @@
 #include <thrift/cxxfunctional.h>
 
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace gatewayprofile {
 
 typedef struct _ComputeResourcePreference__isset {
   _ComputeResourcePreference__isset() : preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false) {}
@@ -192,6 +192,6 @@ class GatewayResourceProfile {
 
 void swap(GatewayResourceProfile &a, GatewayResourceProfile &b);
 
-
+}}}}} // namespace
 
 #endif

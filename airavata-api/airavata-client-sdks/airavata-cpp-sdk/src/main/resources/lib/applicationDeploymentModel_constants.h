@@ -9,7 +9,7 @@
 
 #include "applicationDeploymentModel_types.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace appdeployment {
 
 class applicationDeploymentModelConstants {
  public:
@@ -20,6 +20,6 @@ class applicationDeploymentModelConstants {
 
 extern const applicationDeploymentModelConstants g_applicationDeploymentModel_constants;
 
-
+}}}}} // namespace
 
 #endif

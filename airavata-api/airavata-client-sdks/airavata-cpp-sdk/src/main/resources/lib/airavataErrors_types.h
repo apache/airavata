@@ -16,7 +16,7 @@
 #include "experimentModel_types.h"
 
 
-namespace airavata { namespace api { namespace error {
+namespace apache { namespace airavata { namespace api { namespace error {
 
 struct AiravataErrorType {
   enum type {
@@ -504,6 +504,6 @@ class AiravataSystemException : public ::apache::thrift::TException {
 
 void swap(AiravataSystemException &a, AiravataSystemException &b);
 
-}}} // namespace
+}}}} // namespace
 
 #endif

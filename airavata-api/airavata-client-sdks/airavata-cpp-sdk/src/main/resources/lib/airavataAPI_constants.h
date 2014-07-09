@@ -9,7 +9,7 @@
 
 #include "airavataAPI_types.h"
 
-namespace airavata { namespace api {
+namespace apache { namespace airavata { namespace api {
 
 class airavataAPIConstants {
  public:
@@ -20,6 +20,6 @@ class airavataAPIConstants {
 
 extern const airavataAPIConstants g_airavataAPI_constants;
 
-}} // namespace
+}}} // namespace
 
 #endif

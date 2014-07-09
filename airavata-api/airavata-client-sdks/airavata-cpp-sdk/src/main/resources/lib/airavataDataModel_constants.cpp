@@ -6,12 +6,12 @@
  */
 #include "airavataDataModel_constants.h"
 
-
+namespace apache { namespace airavata { namespace model {
 
 const airavataDataModelConstants g_airavataDataModel_constants;
 
 airavataDataModelConstants::airavataDataModelConstants() {
 }
 
-
+}}} // namespace
 

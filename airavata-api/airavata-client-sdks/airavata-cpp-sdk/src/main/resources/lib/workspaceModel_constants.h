@@ -9,7 +9,7 @@
 
 #include "workspaceModel_types.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace workspace {
 
 class workspaceModelConstants {
  public:
@@ -19,6 +19,6 @@ class workspaceModelConstants {
 
 extern const workspaceModelConstants g_workspaceModel_constants;
 
-
+}}}} // namespace
 
 #endif

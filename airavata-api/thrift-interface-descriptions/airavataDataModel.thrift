@@ -23,6 +23,7 @@ include "airavataErrors.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
+namespace cpp apache.airavata.model
 
 /*
  * This file describes the definitions of the Airavata Execution Data Structures. Each of the

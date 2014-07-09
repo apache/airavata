@@ -20,6 +20,7 @@
 
 namespace java org.apache.airavata.model.appcatalog.gatewayprofile
 namespace php Airavata.Model.AppCatalog.GatewayProfile
+namespace cpp apache.airavata.model.appcatalog.gatewayprofile
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 

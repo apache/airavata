@@ -23,8 +23,8 @@
 #include "gatewayResourceProfileModel_types.h"
 
 
-namespace airavata { namespace api {
+namespace apache { namespace airavata { namespace api {
 
-}} // namespace
+}}} // namespace
 
 #endif

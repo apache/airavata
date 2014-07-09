@@ -17,8 +17,8 @@
 #include "airavataErrors_types.h"
 
 
+namespace apache { namespace airavata { namespace model {
 
-
-
+}}} // namespace
 
 #endif

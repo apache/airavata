@@ -15,7 +15,7 @@
 #include <thrift/cxxfunctional.h>
 
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace appinterface {
 
 struct DataType {
   enum type {
@@ -293,6 +293,6 @@ class ApplicationInterfaceDescription {
 
 void swap(ApplicationInterfaceDescription &a, ApplicationInterfaceDescription &b);
 
-
+}}}}} // namespace
 
 #endif
