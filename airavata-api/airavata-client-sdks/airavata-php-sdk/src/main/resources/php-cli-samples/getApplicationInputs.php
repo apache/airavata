@@ -12,6 +12,7 @@ use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
 use Airavata\API\Error\InvalidRequestException;
 use Thrift\Exception\TTransportException;
+use Airavata\Model\AppCatalog\AppInterface\DataType;
 
 try
 {
@@ -27,7 +28,11 @@ try
         $appInputs = $airavataclient->getApplicationInputs($appInterfaceId);
 
         if ($appInputs) {
-            var_dump($appInputs);
+            foreach ($appInputs as $appInput) {
+                var_dump($appInput);
+                $inputType = DataType::$__names[$appInput->type];
+                echo "\n Application Input Name: $appInput->name \t Input Type $inputType \n";
+            }
         } else {
             echo "\n Failed to fetch application interface Inputs. \n";
         }
