@@ -28,7 +28,7 @@ import java.io.Serializable;
 
 @DataCache
 @Entity
-@Table(name ="")
+@Table(name ="EXPERIMENT_OUTPUT")
 @IdClass(Experiment_Output_PK.class)
 public class Experiment_Output  implements Serializable {
     @Id

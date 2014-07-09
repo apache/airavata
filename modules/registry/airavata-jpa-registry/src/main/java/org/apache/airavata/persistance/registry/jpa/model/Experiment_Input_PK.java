@@ -33,6 +33,7 @@ public class Experiment_Input_PK implements Serializable {
     }
 
     public Experiment_Input_PK() {
+        ;
     }
 
     @Override
