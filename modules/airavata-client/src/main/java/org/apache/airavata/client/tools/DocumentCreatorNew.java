@@ -68,8 +68,8 @@ public class DocumentCreatorNew {
     			"localhost", new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})), new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})));
 //    	host.setIsEmpty(true);
     	host.setComputeResourceId(client.registerComputeResource(host));
-    	
-    	LOCALSubmission localSubmission = new LOCALSubmission();
+
+        LOCALSubmission localSubmission = new LOCALSubmission();
     	ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.FORK, null, null,null);
 		localSubmission.setResourceJobManager(resourceJobManager);
 		client.addLocalSubmissionDetails(host.getComputeResourceId(), 1, localSubmission);
@@ -106,7 +106,7 @@ public class DocumentCreatorNew {
         String gatewayId = client.registerGatewayResourceProfile(gatewayResourceProfile);
         gatewayResourceProfile.setGatewayID(gatewayId);
         client.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), host.getComputeResourceId(), computeResourcePreference);
-        return application.getApplicationInterfaceId();
+        return host.getComputeResourceId()+","+application.getApplicationInterfaceId();
     }
 
     private GatewayResourceProfile getGatewayResourceProfile() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
@@ -132,6 +132,7 @@ public class DocumentCreatorNew {
         host.addToHostAliases("gw111.iu.xsede.org");
         host.setResourceDescription("gw111 ssh access");
         host.setComputeResourceId(client.registerComputeResource(host));
+
         
         SSHJobSubmission jobSubmission = new SSHJobSubmission();
         jobSubmission.setSshPort(22);
@@ -159,7 +160,7 @@ public class DocumentCreatorNew {
         application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("echo_output", null, DataType.STRING));
         client.registerApplicationInterface(application);
         client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/tmp", null, false, null, null, null));
-        return application.getApplicationInterfaceId();
+        return host.getComputeResourceId()+","+application.getApplicationInterfaceId();
     }
     
 //
@@ -260,7 +261,7 @@ public class DocumentCreatorNew {
     	host.addToIpAddresses(trestleshpcHostAddress);
     	host.addToHostAliases(trestleshpcHostAddress);
     	host.setComputeResourceId(client.registerComputeResource(host));
-    	
+
     	SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
     	ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.PBS, "/opt/torque/bin/", null, null);
     	sshJobSubmission.setResourceJobManager(resourceJobManager);
@@ -290,7 +291,7 @@ public class DocumentCreatorNew {
         deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
         
         client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/oasis/scratch/trestles/ogce/temp_project/", "sds128", false, null, null, null));
-        return application.getApplicationInterfaceId();
+        return host.getComputeResourceId()+","+application.getApplicationInterfaceId();
     }
 
     public String createPBSDocsForOGCE_WRF() throws AppCatalogException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
@@ -331,7 +332,7 @@ public class DocumentCreatorNew {
 
         ApplicationDeploymentDescription deployment2 = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module2.getAppModuleId(), "/home/ogce/apps/wrf_wrapper.sh", ApplicationParallelismType.MPI,"WRF");
         deployment2.setAppDeploymentId(client.registerApplicationDeployment(deployment2));
-        return application2.getApplicationInterfaceId();
+        return host.getComputeResourceId()+","+application2.getApplicationInterfaceId();
     }
 
     public String createSlurmDocs() throws AppCatalogException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
@@ -367,7 +368,7 @@ public class DocumentCreatorNew {
         deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
         
         client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/home1/01437/ogce", "TG-STA110014S", false, null, null, null));
-        return application.getApplicationInterfaceId();
+        return host.getComputeResourceId()+","+application.getApplicationInterfaceId();
     }
 
     public String createSGEDocs() throws AppCatalogException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
@@ -375,7 +376,7 @@ public class DocumentCreatorNew {
     	host.addToHostAliases(lonestarHostAddress);
     	host.addToIpAddresses(lonestarHostAddress);
     	host.setComputeResourceId(client.registerComputeResource(host));
-    	
+
     	ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.UGE, "/opt/sge6.2/bin/lx24-amd64/", null, null);
     	SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
     	sshJobSubmission.setResourceJobManager(resourceJobManager);
@@ -404,7 +405,7 @@ public class DocumentCreatorNew {
         deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
         
         client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/home1/01437/ogce", "TG-STA110014S", false, null, null, null));
-        return application.getApplicationInterfaceId();
+        return host.getComputeResourceId()+","+application.getApplicationInterfaceId();
     }
 
 //	public void createEchoHostDocs() {

@@ -60,7 +60,7 @@ public class CreateLaunchExperiment {
     private static Airavata.Client client;
     private static String localHostAppId;
     private static String sshHostAppId;
-    private static String pbsEchoAppId;
+    private static String pbsEchoAppId="trestles.sdsc.edu_9fcdcdc7-119a-434b-a5ef-8ed67544e855,SimpleEcho2_141c96db-46de-446e-9c39-8234a8bf9d5c";
     private static String pbsWRFAppId;
     private static String slurmAppId;
     private static String sgeAppId;
@@ -72,9 +72,9 @@ public class CreateLaunchExperiment {
             addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
-            final String expId = createExperimentForTrestles(client);
+//            final String expId = createExperimentForTrestles(client);
 //            final String expId = createExperimentForStampede(airavata);
-//            final String expId = createExperimentForLocalHost(client);
+            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentWRFTrestles(airavata);
             System.out.println("Experiment ID : " + expId);
@@ -205,6 +205,12 @@ public class CreateLaunchExperiment {
             sgeAppId = documentCreator.createSGEDocs();
 //            documentCreator.createEchoHostDocs();
 //            documentCreator.createBigRedDocs();
+            System.out.printf(localHostAppId);
+            System.out.println(sshHostAppId);
+            System.out.println(pbsEchoAppId);
+            System.out.println(pbsWRFAppId);
+            System.out.println(slurmAppId);
+            System.out.println(sgeAppId);
         } catch (Exception e) {
             logger.error("Unable to create documents", e.getMessage());
             throw new ApplicationSettingsException(e.getMessage());
@@ -228,10 +234,10 @@ public class CreateLaunchExperiment {
             exOut.add(output);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", pbsEchoAppId, exInputs);
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", pbsEchoAppId.split(",")[1], exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(pbsEchoAppId.split(",")[0], 1, 1, 1, "normal", 1, 0, 1, "sds128");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -293,10 +299,10 @@ public class CreateLaunchExperiment {
 
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", pbsWRFAppId, exInputs);
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", pbsWRFAppId.split(",")[1], exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 32, 2, 1, "normal", 0, 0, 1, "sds128");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(pbsWRFAppId.split(",")[0], 32, 2, 1, "normal", 0, 0, 1, "sds128");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -359,10 +365,10 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "Echo Test", localHostAppId, exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "Echo Test", localHostAppId.split(",")[1], exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(localHostAppId.split(",")[0], 1, 1, 1, "normal", 0, 0, 1, "");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -404,10 +410,10 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SSHEcho1", sshHostAppId, exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SSHEcho1", sshHostAppId.split(",")[1], exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("gw111.iu.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(sshHostAppId.split(",")[0], 1, 1, 1, "normal", 0, 0, 1, "sds128");
             scheduling.setResourceHostId("gw111.iu.xsede.org");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
@@ -450,11 +456,11 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", slurmAppId, exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", slurmAppId.split(",")[1], exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =
-                    ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
+                    ExperimentModelUtil.createComputationResourceScheduling(slurmAppId.split(",")[0], 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -496,11 +502,11 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho4", sgeAppId, exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho4", sgeAppId.split(",")[1], exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling =
-                    ExperimentModelUtil.createComputationResourceScheduling("lonestar.tacc.utexas.edu", 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
+                    ExperimentModelUtil.createComputationResourceScheduling(sgeAppId.split(",")[0], 1, 1, 1, "normal", 0, 0, 1, "TG-STA110014S");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
