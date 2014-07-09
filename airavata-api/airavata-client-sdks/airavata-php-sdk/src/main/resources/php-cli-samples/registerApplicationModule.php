@@ -18,7 +18,7 @@ try
 {
     if ($argc != 4)
     {
-        echo 'php registerAppModule.php <appModuleName> <appModuleVersion> <appModuleDescription>';
+        echo 'php registerApplicationModule.php <appModuleName> <appModuleVersion> <appModuleDescription>';
     }
     else
     {
