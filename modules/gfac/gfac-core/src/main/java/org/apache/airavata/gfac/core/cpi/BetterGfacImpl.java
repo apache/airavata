@@ -350,9 +350,11 @@ public class BetterGfacImpl implements GFac {
 		                    break;
 		            	case SSH_KEYS:
 		            		legacyHostDescription= new HostDescription(SSHHostType.type);
+                            ((SSHHostType)legacyHostDescription.getType()).setHpcResource(true);
 		                    break;
 					default:
 	            		legacyHostDescription= new HostDescription(SSHHostType.type);
+                        ((SSHHostType)legacyHostDescription.getType()).setHpcResource(true);
 						break;
 		            }
 		            break;
@@ -396,7 +398,9 @@ public class BetterGfacImpl implements GFac {
 				 legacyHPCAppDescType.setInstalledParentPath(resourceJobManager.getJobManagerBinPath());
 			 }
 			 ProjectAccountType projectAccountType = legacyHPCAppDescType.addNewProjectAccount();
-			projectAccountType.setProjectAccountNumber(gatewayResourcePreferences.getAllocationProjectNumber());
+            if (gatewayResourcePreferences!=null) {
+                projectAccountType.setProjectAccountNumber(gatewayResourcePreferences.getAllocationProjectNumber());
+            }
         }else{
         	legacyAppDescription = new ApplicationDescription();
         }

@@ -28,6 +28,7 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.authentication.SSHPublicKeyFileAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,10 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
 
     public TokenizedSSHAuthInfo(CredentialReader credentialReader, RequestData requestData) {
         this.credentialReader = credentialReader;
+        this.requestData = requestData;
+    }
+
+    public TokenizedSSHAuthInfo(RequestData requestData) {
         this.requestData = requestData;
     }
 
@@ -109,7 +114,7 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
     public SSHCredential getCredentialsFromStore() throws Exception {
 
         if (getCredentialReader() == null) {
-            return null;
+            credentialReader = GFacUtils.getCredentialReader();
         }
 
         Credential credential = getCredentialReader().getCredential(getRequestData().getGatewayId(),
@@ -123,6 +128,7 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
             System.out.println(this.publicKeyFile);
             System.out.println(this.privateKeyFile);
             System.out.println(this.passPhrase);
+            this.getRequestData().setRequestUser(credential1.getPortalUserName());
             return credential1;
         } else {
             log.info("Could not find SSH credentials for token - " + getRequestData().getTokenId() + " and "
@@ -146,6 +152,7 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
         String sshPrivateKeyPass = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
         String sshPassword = configurationProperties.getProperty(Constants.SSH_PASSWORD);
         String sshPublicKey = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
+        this.getRequestData().setRequestUser(sshUserName);
         return new SSHCredential(sshPrivateKey.getBytes(), sshPublicKey.getBytes(), sshPrivateKeyPass, requestData.getGatewayId(), sshUserName);
     }
 

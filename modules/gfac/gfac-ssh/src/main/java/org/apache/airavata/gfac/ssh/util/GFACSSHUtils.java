@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
+import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
@@ -69,12 +70,16 @@ public class GFACSSHUtils {
 
             Cluster pbsCluster = null;
             try {
-                TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(GFacUtils.getCredentialReader(), requestData);
+                TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
                 String installedParentPath = "/";
                 if (((SSHHostType) registeredHost.getType()).getHpcResource()) {
                     installedParentPath = ((HpcApplicationDeploymentType)
                             jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
                 }
+                SSHCredential credentials = tokenizedSSHAuthInfo.getCredentials();// this is just a call to get and set credentials in to this object,data will be used
+                serverInfo.setUserName(credentials.getPortalUserName());
+
+                // inside the pbsCluser object
                 pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
                         CommonUtils.getPBSJobManager(installedParentPath));
             } catch (Exception e) {

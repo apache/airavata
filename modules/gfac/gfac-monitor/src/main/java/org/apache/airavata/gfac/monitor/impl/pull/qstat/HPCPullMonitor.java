@@ -38,6 +38,7 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.openjpa.lib.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,10 +140,10 @@ public class HPCPullMonitor extends PullMonitor {
             List<MonitorID> completedJobs = new ArrayList<MonitorID>();
             List<HostMonitorData> hostMonitorData = take.getHostMonitorData();
             for (HostMonitorData iHostMonitorData : hostMonitorData) {
-                if (iHostMonitorData.getHost().getType() instanceof GsisshHostType) {
+                if (iHostMonitorData.getHost().getType() instanceof GsisshHostType
+                        || iHostMonitorData.getHost().getType() instanceof SSHHostType) {
                     currentHostDescription = iHostMonitorData.getHost();
-                    GsisshHostType gsisshHostType = (GsisshHostType) iHostMonitorData.getHost().getType();
-                    String hostName = gsisshHostType.getHostAddress();
+                    String hostName =  iHostMonitorData.getHost().getType().getHostAddress();
                     ResourceConnection connection = null;
                     if (connections.containsKey(hostName)) {
                         logger.debug("We already have this connection so not going to create one");
