@@ -8,6 +8,6 @@
 
 #include <algorithm>
 
+namespace apache { namespace airavata { namespace model {
 
-
-
+}}} // namespace

@@ -9,7 +9,7 @@
 
 #include "applicationInterfaceModel_types.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace appinterface {
 
 class applicationInterfaceModelConstants {
  public:
@@ -20,6 +20,6 @@ class applicationInterfaceModelConstants {
 
 extern const applicationInterfaceModelConstants g_applicationInterfaceModel_constants;
 
-
+}}}}} // namespace
 
 #endif

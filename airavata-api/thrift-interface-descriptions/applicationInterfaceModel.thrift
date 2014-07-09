@@ -26,6 +26,7 @@
 
 namespace java org.apache.airavata.model.appcatalog.appinterface
 namespace php Airavata.Model.AppCatalog.AppInterface
+namespace cpp apache.airavata.model.appcatalog.appinterface
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 

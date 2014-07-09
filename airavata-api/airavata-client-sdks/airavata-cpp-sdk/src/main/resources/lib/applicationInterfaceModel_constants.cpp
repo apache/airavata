@@ -6,7 +6,7 @@
  */
 #include "applicationInterfaceModel_constants.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace appinterface {
 
 const applicationInterfaceModelConstants g_applicationInterfaceModel_constants;
 
@@ -15,5 +15,5 @@ applicationInterfaceModelConstants::applicationInterfaceModelConstants() {
 
 }
 
-
+}}}}} // namespace
 

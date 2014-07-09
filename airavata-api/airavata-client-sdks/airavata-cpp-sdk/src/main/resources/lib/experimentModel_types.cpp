@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-
+namespace apache { namespace airavata { namespace model { namespace workspace { namespace experiment {
 
 int _kExperimentStateValues[] = {
   ExperimentState::CREATED,
@@ -3336,4 +3336,4 @@ void swap(ExperimentSummary &a, ExperimentSummary &b) {
   swap(a.__isset, b.__isset);
 }
 
-
+}}}}} // namespace

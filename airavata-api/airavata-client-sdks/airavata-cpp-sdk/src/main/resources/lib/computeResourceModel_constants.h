@@ -9,7 +9,7 @@
 
 #include "computeResourceModel_types.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace computeresource {
 
 class computeResourceModelConstants {
  public:
@@ -20,6 +20,6 @@ class computeResourceModelConstants {
 
 extern const computeResourceModelConstants g_computeResourceModel_constants;
 
-
+}}}}} // namespace
 
 #endif

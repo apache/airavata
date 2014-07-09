@@ -6,12 +6,12 @@
  */
 #include "workspaceModel_constants.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace workspace {
 
 const workspaceModelConstants g_workspaceModel_constants;
 
 workspaceModelConstants::workspaceModelConstants() {
 }
 
-
+}}}} // namespace
 

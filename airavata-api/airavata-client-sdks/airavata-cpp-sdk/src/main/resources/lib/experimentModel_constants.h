@@ -9,7 +9,7 @@
 
 #include "experimentModel_types.h"
 
-
+namespace apache { namespace airavata { namespace model { namespace workspace { namespace experiment {
 
 class experimentModelConstants {
  public:
@@ -22,6 +22,6 @@ class experimentModelConstants {
 
 extern const experimentModelConstants g_experimentModel_constants;
 
-
+}}}}} // namespace
 
 #endif
