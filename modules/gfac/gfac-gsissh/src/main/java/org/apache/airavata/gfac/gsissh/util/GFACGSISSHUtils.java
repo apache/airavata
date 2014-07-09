@@ -26,6 +26,7 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
+import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
@@ -71,7 +72,7 @@ public class GFACGSISSHUtils {
             PBSCluster pbsCluster = null;
             GSISecurityContext context = null;
             try {
-                TokenizedMyProxyAuthInfo tokenizedMyProxyAuthInfo = new TokenizedMyProxyAuthInfo(GFacUtils.getCredentialReader(), requestData);
+                TokenizedMyProxyAuthInfo tokenizedMyProxyAuthInfo = new TokenizedMyProxyAuthInfo(requestData);
                 GsisshHostType gsisshHostType = (GsisshHostType) registeredHost.getType();
                 ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress(),
                         gsisshHostType.getPort());
@@ -93,7 +94,7 @@ public class GFACGSISSHUtils {
                     }
                 }
                 pbsCluster = new PBSCluster(serverInfo, tokenizedMyProxyAuthInfo, jConfig);
-                context = new GSISecurityContext(GFacUtils.getCredentialReader(), requestData,pbsCluster);
+                context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData,pbsCluster);
             } catch (Exception e) {
                 throw new GFacException("An error occurred while creating GSI security context", e);
             }

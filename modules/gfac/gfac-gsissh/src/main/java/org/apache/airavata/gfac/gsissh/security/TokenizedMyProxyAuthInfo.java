@@ -28,6 +28,7 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.globus.gsi.X509Credential;
@@ -100,6 +101,15 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
         };
     }
 
+    public TokenizedMyProxyAuthInfo(RequestData requestData) {
+           this.requestData = requestData;
+           try {
+               properties.setProperty(X509_CERT_DIR, ServerSettings.getSetting(Constants.TRUSTED_CERT_LOCATION));
+           } catch (ApplicationSettingsException e) {
+               e.printStackTrace();
+           };
+       }
+
     public GSSCredential getCredentials() throws SecurityException {
 
         if (gssCredentials == null) {
@@ -150,7 +160,7 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
     public GSSCredential getCredentialsFromStore() throws Exception {
 
         if (getCredentialReader() == null) {
-            return null;
+            setCredentialReader(GFacUtils.getCredentialReader());
         }
 
         Credential credential = getCredentialReader().getCredential(getRequestData().getGatewayId(),

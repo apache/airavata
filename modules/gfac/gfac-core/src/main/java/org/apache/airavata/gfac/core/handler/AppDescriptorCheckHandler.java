@@ -88,11 +88,11 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
         */
         if (appDesc.getStandardOutput() == null || "".equals(appDesc.getStandardOutput())) {
             appDesc.setStandardOutput(appDesc.getStaticWorkingDirectory() + File.separator
-                    + appDesc.getApplicationName().getStringValue() + ".stdout");
+                    + appDesc.getApplicationName().getStringValue().replaceAll("\\s+","") + ".stdout");
         }
         if (appDesc.getStandardError() == null || "".equals(appDesc.getStandardError())) {
             appDesc.setStandardError(appDesc.getStaticWorkingDirectory() + File.separator
-                    + appDesc.getApplicationName().getStringValue() + ".stderr");
+                    + appDesc.getApplicationName().getStringValue().replaceAll("\\s+","") + ".stderr");
         }
         data.append(",").append(appDesc.getStandardOutput()).append(",").append(appDesc.getStandardError());
 

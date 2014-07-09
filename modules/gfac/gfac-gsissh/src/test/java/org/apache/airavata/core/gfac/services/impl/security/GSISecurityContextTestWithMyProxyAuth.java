@@ -116,7 +116,7 @@ public class GSISecurityContextTestWithMyProxyAuth extends DatabaseTestCases {
         requestData.setMyProxyLifeTime(ServerSettings.getMyProxyLifetime());
         CredentialReader credentialReader = CredentialReaderFactory.createCredentialStoreReader(getDbUtil());
 
-        return new TokenizedMyProxyAuthInfo(credentialReader, requestData);
+        return new TokenizedMyProxyAuthInfo(requestData);
     }
 
     @Test
