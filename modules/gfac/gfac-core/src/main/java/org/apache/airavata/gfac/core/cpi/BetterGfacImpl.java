@@ -85,6 +85,7 @@ import org.apache.airavata.schemas.gfac.DataType;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZKUtil;
 import org.apache.zookeeper.ZooKeeper;
+import org.ogf.schemas.jsdl.hpcpa.HPCProfileApplicationDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -258,19 +259,20 @@ public class BetterGfacImpl implements GFac {
 		if (gatewayResourcePreferences==null) {
 			List<String> gatewayProfileIds = appCatalog.getGatewayProfile()
 					.getGatewayProfileIds(gatewayID);
-			if (gatewayProfileIds.size()>0){
-				gatewayID=gatewayProfileIds.get(0);
+			for (String profileId : gatewayProfileIds) {
+				gatewayID = profileId;
 				gatewayResourcePreferences = appCatalog.getGatewayProfile().
 		                getComputeResourcePreference(gatewayID, applicationDeployment.getComputeHostId());
+				if (gatewayResourcePreferences!=null){
+					break;
+				}
 			}
 		}
 		//Create the legacy schema docs to fill-in
         ServiceDescription legacyServiceDescription = new ServiceDescription();
         ServiceDescriptionType legacyServiceDescType = legacyServiceDescription.getType();
-        ApplicationDescription legacyAppDescription = new ApplicationDescription();
-        ApplicationDeploymentDescriptionType legacyAppDescType = legacyAppDescription.getType();
-        HostDescription legacyHostDescription= new HostDescription();
-        HostDescriptionType legacyHostDescType = legacyHostDescription.getType();
+        ApplicationDescription legacyAppDescription = null;
+        HostDescription legacyHostDescription = null;
 
         ///////////////SERVICE DESCRIPTOR///////////////////////////////
         //Fetch the application inputs and outputs from the app interface and create the legacy service description.
@@ -324,13 +326,11 @@ public class BetterGfacImpl implements GFac {
 
         ////////////////////-----------  HOST DESCRIPTOR  -----------------//////////////////////
         //Fetch the host description details and fill-in legacy doc
-        legacyHostDescType.setHostName(computeResource.getHostName());
-        legacyHostDescType.setHostAddress(computeResource.getHostName());
-
         ResourceJobManager resourceJobManager = null;
         for (JobSubmissionInterface jobSubmissionInterface : computeResource.getJobSubmissionInterfaces()){
         	switch(jobSubmissionInterface.getJobSubmissionProtocol()){
         		case LOCAL:
+        			legacyHostDescription= new HostDescription();
         			LOCALSubmission localSubmission =
                     appCatalog.getComputeResource().getLocalJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
         			resourceJobManager = localSubmission.getResourceJobManager();
@@ -341,17 +341,18 @@ public class BetterGfacImpl implements GFac {
 		            resourceJobManager = sshJobSubmission.getResourceJobManager();
 		            switch (sshJobSubmission.getSecurityProtocol()){
 		            	case GSI:
-                            legacyHostDescType.changeType(GsisshHostType.type);
-		                    ((GsisshHostType) legacyHostDescType).setJobManager
+		            		legacyHostDescription= new HostDescription(GsisshHostType.type);
+		                    ((GsisshHostType) legacyHostDescription.getType()).setJobManager
 		                            (resourceJobManager.getResourceJobManagerType().name());
-		                    ((GsisshHostType) legacyHostDescType).setInstalledPath(resourceJobManager.getJobManagerBinPath());
+		                    ((GsisshHostType) legacyHostDescription.getType()).setInstalledPath(resourceJobManager.getJobManagerBinPath());
 		                    // applicationDescription.setInstalledParentPath(resourceJobManager.getJobManagerBinPath());
-		                    ((GsisshHostType) legacyHostDescType).setPort(sshJobSubmission.getSshPort());
+		                    ((GsisshHostType) legacyHostDescription.getType()).setPort(sshJobSubmission.getSshPort());
 		                    break;
 		            	case SSH_KEYS:
-		            		legacyHostDescType.changeType(SSHHostType.type);
+		            		legacyHostDescription= new HostDescription(SSHHostType.type);
 		                    break;
 					default:
+	            		legacyHostDescription= new HostDescription(SSHHostType.type);
 						break;
 		            }
 		            break;
@@ -359,21 +360,28 @@ public class BetterGfacImpl implements GFac {
 					break;
         	}
         }
-        
+        HostDescriptionType legacyHostDescType = legacyHostDescription.getType();
+        legacyHostDescType.setHostName(computeResource.getHostName());
+        String ipAddress = computeResource.getHostName();
+        if (computeResource.getIpAddresses()!=null && computeResource.getIpAddresses().size()>0){
+        	ipAddress=computeResource.getIpAddresses().iterator().next();
+        } else if (computeResource.getHostAliases()!=null && computeResource.getHostAliases().size()>0){
+        	ipAddress=computeResource.getHostAliases().iterator().next();
+        }  
+        legacyHostDescType.setHostAddress(ipAddress);
+
         /////////////////////---------------- APPLICATION DESCRIPTOR ---------------------/////////////////////////
         //Fetch deployment information and fill-in legacy doc
-        legacyAppDescType.addNewApplicationName().setStringValue(applicationDeployment.getAppDeploymentDescription());
-        legacyAppDescType.setExecutableLocation(applicationDeployment.getExecutablePath());
 		if ((legacyHostDescType instanceof GsisshHostType) || (legacyHostDescType instanceof SSHHostType)){
-            legacyAppDescType.changeType(HpcApplicationDeploymentType.type);
-        	HpcApplicationDeploymentType legacyHPCAppDescType = (HpcApplicationDeploymentType) legacyAppDescType;
+			legacyAppDescription=new ApplicationDescription(HpcApplicationDeploymentType.type);
+        	HpcApplicationDeploymentType legacyHPCAppDescType = (HpcApplicationDeploymentType) legacyAppDescription.getType();
 			 switch (applicationDeployment.getParallelism()) {
 			     case SERIAL:
-			         legacyHPCAppDescType.setJobType(JobTypeType.SERIAL);
+			         legacyHPCAppDescType.setJobType(JobTypeType.SERIAL); break;
 			     case MPI:
-			         legacyHPCAppDescType.setJobType(JobTypeType.MPI);
+			         legacyHPCAppDescType.setJobType(JobTypeType.MPI); break;
 			     case OPENMP:
-			         legacyHPCAppDescType.setJobType(JobTypeType.OPEN_MP);
+			         legacyHPCAppDescType.setJobType(JobTypeType.OPEN_MP); break;
 			     default:
 					break;
 			 }
@@ -389,7 +397,12 @@ public class BetterGfacImpl implements GFac {
 			 }
 			 ProjectAccountType projectAccountType = legacyHPCAppDescType.addNewProjectAccount();
 			projectAccountType.setProjectAccountNumber(gatewayResourcePreferences.getAllocationProjectNumber());
+        }else{
+        	legacyAppDescription = new ApplicationDescription();
         }
+		ApplicationDeploymentDescriptionType legacyAppDescType = legacyAppDescription.getType();
+		legacyAppDescType.addNewApplicationName().setStringValue(applicationDeployment.getAppDeploymentDescription());
+        legacyAppDescType.setExecutableLocation(applicationDeployment.getExecutablePath());
 		if (gatewayResourcePreferences!=null){
 			legacyAppDescType.setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
 		}else{
