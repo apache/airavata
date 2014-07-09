@@ -97,11 +97,11 @@ public interface ComputeResource {
     List<ComputeResourceDescription> getAllComputeResourceList () throws AppCatalogException;
 
     /**
-     * This method will retrieve all the compute resource ids
-     * @return list of compute resource ids
+     * This method will retrieve all the compute resource id with it's name
+     * @return map of compute resource ids + name
      * @throws AppCatalogException
      */
-    List<String> getAllComputeResourceIdList () throws AppCatalogException;
+    Map<String, String> getAllComputeResourceIdList () throws AppCatalogException;
 
 
 
