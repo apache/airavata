@@ -28,6 +28,7 @@ namespace php Airavata.Model
  *   appropriate form for passing to the Airavata Server Execution API Calls.
 */
 
+const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
 struct Workflow {
     1: required string templateId = DEFAULT_ID,
