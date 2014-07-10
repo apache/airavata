@@ -1365,8 +1365,8 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             appCatalog = AppCatalogFactory.getAppCatalog();
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, appModuleId);
-            List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(filters);
-            for (ApplicationDeploymentDescription description : applicationDeployements){
+            List<ApplicationDeploymentDescription> applicationDeployments = appCatalog.getApplicationDeployment().getApplicationDeployements(filters);
+            for (ApplicationDeploymentDescription description : applicationDeployments){
                 appDeployments.add(description.getAppDeploymentId());
             }
             return appDeployments;
@@ -1572,8 +1572,8 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             if (applicationModules != null && !applicationModules.isEmpty()){
                 for (String moduleId : applicationModules) {
                     filters.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, moduleId);
-                    List<ApplicationDeploymentDescription> applicationDeployements = applicationDeployment.getApplicationDeployements(filters);
-                    for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
+                    List<ApplicationDeploymentDescription> applicationDeployments = applicationDeployment.getApplicationDeployements(filters);
+                    for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
                         if (!computeResourceIdList.contains(deploymentDescription.getComputeHostId())){
                             computeResourceIdList.add(deploymentDescription.getComputeHostId());
                         }
@@ -1643,14 +1643,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     public Map<String, String> getAllComputeResourceNames() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
-            List<ComputeResourceDescription> allComputeResourceList = appCatalog.getComputeResource().getAllComputeResourceList();
-            Map<String, String> allComputeResources = new HashMap<String, String>();
-            if (allComputeResourceList != null && !allComputeResourceList.isEmpty()){
-                for (ComputeResourceDescription resourceDescription : allComputeResourceList){
-                    allComputeResources.put(resourceDescription.getComputeResourceId(), resourceDescription.getHostName());
-                }
-            }
-            return allComputeResources;
+            return appCatalog.getComputeResource().getAllComputeResourceIdList();
         } catch (AppCatalogException e) {
             logger.error("Error while retrieving compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
