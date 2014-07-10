@@ -96,7 +96,8 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
 
         launchExperiment(expId);
 
-        log.info("Experiment launched successfully\n");
+        Thread.sleep(3000);
+	log.info("Experiment launched successfully\n");
         log.info("Monitoring job in localhost");
         log.info("===========================");
         monitorJob(expId);

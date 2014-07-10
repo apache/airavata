@@ -21,9 +21,7 @@
 
 package org.apache.aiaravata.application.catalog.data.impl;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ComputeResource;
@@ -391,6 +389,7 @@ public class ComputeResourceImpl implements ComputeResource {
 
     @Override
     public List<ComputeResourceDescription> getComputeResourceList(Map<String, String> filters) throws AppCatalogException {
+        List<ComputeResourceDescription> computeResourceDescriptions = new ArrayList<ComputeResourceDescription>();
         try {
         	//TODO check if this is correct way to do this
             ComputeResourceResource resource = new ComputeResourceResource();
@@ -398,7 +397,7 @@ public class ComputeResourceImpl implements ComputeResource {
                 if (fieldName.equals(AbstractResource.ComputeResourceConstants.HOST_NAME)){
                     List<Resource> resources = resource.get(AbstractResource.ComputeResourceConstants.HOST_NAME, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getComputeDescriptionList(resources);
+                        computeResourceDescriptions = AppCatalogThriftConversion.getComputeDescriptionList(resources);
                     }
                 }else {
                     logger.error("Unsupported field name for compute resource.", new IllegalArgumentException());
@@ -409,29 +408,38 @@ public class ComputeResourceImpl implements ComputeResource {
             logger.error("Error while retrieving compute resource list...", e);
             throw new AppCatalogException(e);
         }
-        return null;
+        return computeResourceDescriptions;
     }
 
     @Override
     public List<ComputeResourceDescription> getAllComputeResourceList() throws AppCatalogException {
+        List<ComputeResourceDescription> computeResourceDescriptions = new ArrayList<ComputeResourceDescription>();
         try {
             ComputeResourceResource resource = new ComputeResourceResource();
             List<Resource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
-                return AppCatalogThriftConversion.getComputeDescriptionList(resources);
+                computeResourceDescriptions = AppCatalogThriftConversion.getComputeDescriptionList(resources);
             }
         }catch (Exception e){
             logger.error("Error while retrieving compute resource list...", e);
             throw new AppCatalogException(e);
         }
-        return null;
+        return computeResourceDescriptions;
     }
 
     @Override
-    public List<String> getAllComputeResourceIdList() throws AppCatalogException {
+    public Map<String, String> getAllComputeResourceIdList() throws AppCatalogException {
         try {
+            Map<String, String> computeResourceMap = new HashMap<String, String>();
             ComputeResourceResource resource = new ComputeResourceResource();
-            return resource.getAllIds();
+            List<Resource> allComputeResources = resource.getAll();
+            if (allComputeResources != null && !allComputeResources.isEmpty()){
+                for (Resource cm : allComputeResources){
+                    ComputeResourceResource cmr = (ComputeResourceResource)cm;
+                    computeResourceMap.put(cmr.getResourceId(), cmr.getHostName());
+                }
+            }
+            return computeResourceMap;
         }catch (Exception e){
             logger.error("Error while retrieving compute resource list...", e);
             throw new AppCatalogException(e);
