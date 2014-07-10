@@ -1,0 +1,55 @@
+#include <glib.h>
+#include <iostream>
+#include <stdint.h>
+#include <sys/time.h>
+
+#define _WIN32_WINNT 0x501
+
+
+#include <thrift/transport/TSocket.h>
+#include <thrift/transport/TBufferTransports.h>
+#include <thrift/protocol/TBinaryProtocol.h>
+
+#include "../lib/airavata/Airavata.h"
+#include "../lib/airavata/Airavata.cpp"
+#include "../lib/airavata/airavataDataModel_types.h"
+#include "../lib/airavata/airavataDataModel_types.cpp"
+#include "../lib/airavata/airavataErrors_types.h"
+#include "../lib/airavata/airavataErrors_types.cpp"
+#include "../lib/airavata/experimentModel_types.h"
+#include "../lib/airavata/experimentModel_types.cpp"
+#include "../lib/airavata/workspaceModel_types.h"
+#include "../lib/airavata/workspaceModel_types.cpp"
+#include "../lib/airavata/airavataAPI_types.h"
+#include "../lib/airavata/airavataAPI_types.cpp"
+#include "../lib/airavata/applicationDeploymentModel_types.h"
+#include "../lib/airavata/applicationDeploymentModel_types.cpp"
+#include "../lib/airavata/applicationInterfaceModel_types.h"
+#include "../lib/airavata/applicationInterfaceModel_types.cpp"
+#include "../lib/airavata/gatewayResourceProfileModel_types.h"
+#include "../lib/airavata/gatewayResourceProfileModel_types.cpp"
+#include "../lib/airavata/computeResourceModel_types.h"
+#include "../lib/airavata/computeResourceModel_types.cpp"
+
+using namespace std;
+using namespace apache::thrift;
+using namespace apache::thrift::protocol;
+using namespace apache::thrift::transport;
+using namespace apache::airavata::api;
+
+
+ 
+int main(int argc, char **argv) {
+	boost::shared_ptr<TSocket> socket(new TSocket("localhost", 8930));
+  			boost::shared_ptr<TTransport> transport(new TBufferedTransport(socket));
+  			boost::shared_ptr<TProtocol> protocol(new TBinaryProtocol(transport));
+				AiravataClient airavataclient(protocol);
+				transport-open();
+				
+				apache::airavata::model::workspace::Project project;
+				project.owner=argv[1];
+				project.name=argv[2];
+				std::string _return;
+				airavataclient.createProject(_return,project);
+				cout << _return;
+}
