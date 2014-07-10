@@ -56,7 +56,7 @@ class AiravataIf {
   virtual void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return) = 0;
   virtual void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
   virtual void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
-  virtual void getAvailableAppInterfaceComputeResources(std::vector<std::string> & _return, const std::string& appInterfaceId) = 0;
+  virtual void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return, const std::string& appInterfaceId) = 0;
   virtual void registerComputeResource(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) = 0;
   virtual void getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return, const std::string& computeResourceId) = 0;
   virtual void getAllComputeResourceNames(std::map<std::string, std::string> & _return) = 0;
@@ -246,7 +246,7 @@ class AiravataNull : virtual public AiravataIf {
   void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
     return;
   }
-  void getAvailableAppInterfaceComputeResources(std::vector<std::string> & /* _return */, const std::string& /* appInterfaceId */) {
+  void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & /* _return */, const std::string& /* appInterfaceId */) {
     return;
   }
   void registerComputeResource(std::string& /* _return */, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& /* computeResourceDescription */) {
@@ -5848,14 +5848,14 @@ class Airavata_getAvailableAppInterfaceComputeResources_result {
 
   virtual ~Airavata_getAvailableAppInterfaceComputeResources_result() throw() {}
 
-  std::vector<std::string>  success;
+  std::map<std::string, std::string>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAvailableAppInterfaceComputeResources_result__isset __isset;
 
-  void __set_success(const std::vector<std::string> & val) {
+  void __set_success(const std::map<std::string, std::string> & val) {
     success = val;
   }
 
@@ -5908,7 +5908,7 @@ class Airavata_getAvailableAppInterfaceComputeResources_presult {
 
   virtual ~Airavata_getAvailableAppInterfaceComputeResources_presult() throw() {}
 
-  std::vector<std::string> * success;
+  std::map<std::string, std::string> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -10214,9 +10214,9 @@ class AiravataClient : virtual public AiravataIf {
   void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId);
   void send_getApplicationOutputs(const std::string& appInterfaceId);
   void recv_getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return);
-  void getAvailableAppInterfaceComputeResources(std::vector<std::string> & _return, const std::string& appInterfaceId);
+  void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return, const std::string& appInterfaceId);
   void send_getAvailableAppInterfaceComputeResources(const std::string& appInterfaceId);
-  void recv_getAvailableAppInterfaceComputeResources(std::vector<std::string> & _return);
+  void recv_getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return);
   void registerComputeResource(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription);
   void send_registerComputeResource(const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription);
   void recv_registerComputeResource(std::string& _return);
@@ -10894,7 +10894,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAvailableAppInterfaceComputeResources(std::vector<std::string> & _return, const std::string& appInterfaceId) {
+  void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return, const std::string& appInterfaceId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {

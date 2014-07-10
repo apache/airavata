@@ -227,7 +227,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getApplicationOutputs\n");
   }
 
-  void getAvailableAppInterfaceComputeResources(std::vector<std::string> & _return, const std::string& appInterfaceId) {
+  void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("getAvailableAppInterfaceComputeResources\n");
   }
