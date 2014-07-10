@@ -30,18 +30,32 @@ try
         //$appModuleId = $argv[3];
 
 
-        $appInputs = new InputDataObjectType();
-        $appInputs->name = "Input_to_Echo";
-        $appInputs->userFriendlyDescription = "A string to test echo application";
-        $appInputs->type = DataType::STRING;
+        $appInput1 = new InputDataObjectType();
+        $appInput1->name = "Namelist_File";
+        $appInput1->userFriendlyDescription = "Namelist file";
+        $appInput1->type = DataType::URI;
 
-        $appOutputs = new OutputDataObjectType();
-        $appOutputs->name = "Echoed_Output";
-        $appOutputs->type = DataType::STRING;
+        $appInput2 = new InputDataObjectType();
+        $appInput2->name = "WRF Boundary File";
+        $appInput2->userFriendlyDescription = "Boundary file";
+        $appInput2->type = DataType::URI;
+
+        $appInput3 = new InputDataObjectType();
+        $appInput3->name = "WRF_Initial_Condition";
+        $appInput3->userFriendlyDescription = "Input Data file";
+        $appInput3->type = DataType::URI;
+
+        $appOutput1 = new OutputDataObjectType();
+        $appOutput1->name = "WRF Standard Out";
+        $appOutput1->type = DataType::STRING;
+
+        $appOutput2 = new OutputDataObjectType();
+        $appOutput2->name = "WRF RSL Out";
+        $appOutput2->type = DataType::STRING;
 
         $appInterface = $airavataclient->getApplicationInterface($appInterfaceId);
-        $appInterface->applicationInputs = array($appInputs);
-        $appInterface->applicationOutputs = array($appOutputs);
+        $appInterface->applicationInputs = array($appInput1, $appInput2, $appInput3);
+        $appInterface->applicationOutputs = array($appOutput1, $appOutput2);
         var_dump($appInterface);
 
         $status = $airavataclient->updateApplicationInterface($appInterfaceId, $appInterface);

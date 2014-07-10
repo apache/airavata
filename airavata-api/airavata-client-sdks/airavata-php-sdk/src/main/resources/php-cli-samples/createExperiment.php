@@ -28,6 +28,8 @@ include 'getAiravataClient.php';
 global $airavataclient;
 global $transport;
 
+$appId = 'SimpleEcho3_ca40f7c6-69ba-4f89-918d-9937cea0ca8f';
+$hostID = 'stampede.tacc.xsede.org_8f20b832-c11a-444b-8e73-bf15f4760b9a';
 try
 {
     if ($argc != 4)
@@ -38,7 +40,7 @@ try
     {
         /* ComputationalResourceScheduling data for Trestles*/
         $cmRST = new ComputationalResourceScheduling();
-        $cmRST->resourceHostId = "trestles.sdsc.edu";
+        $cmRST->resourceHostId = $hostID;
         $cmRST->ComputationalProjectAccount = "sds128";
         $cmRST->totalCPUCount = 1;
         $cmRST->nodeCount = 1;
@@ -50,7 +52,7 @@ try
 
         /* ComputationalResourceScheduling data for Stampede */
         $cmRSS = new ComputationalResourceScheduling();
-        $cmRSS->resourceHostId = "stampede.tacc.xsede.org";
+        $cmRSS->resourceHostId = $hostID;
         $cmRSS->ComputationalProjectAccount = "TG-STA110014S";
         $cmRSS->totalCPUCount = 1;
         $cmRSS->nodeCount = 1;
@@ -61,8 +63,8 @@ try
         $cmRSS->totalPhysicalMemory = 0;
 
         /* UserConfigurationData using either Trestles or Stampede*/
-        //$cmRS = $cmRSS;
-        $cmRS = $cmRST;
+        $cmRS = $cmRSS;
+	// $cmRS = $cmRST;
         $userConfigurationData = new UserConfigurationData();
         $userConfigurationData->airavataAutoSchedule = 0;
         $userConfigurationData->overrideManualScheduledParams = 0;
@@ -71,10 +73,10 @@ try
         //var_dump($userConfigurationData);
 
         /*Application ID for Trestles or Stamepede */
-        $appId_trestles = "SimpleEcho2";
-        $appId_stampede = "SimpleEcho3";
+        //$appId_trestles = "SimpleEcho2";
+        //$appId_stampede = "SimpleEcho3";
         //$appId = $appId_stampede;
-        $appId = $appId_trestles;
+        //$appId = $appId_trestles;
 
         /* Experiment input and output data. */
         $input = new DataObjectType();

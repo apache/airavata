@@ -28,7 +28,7 @@ try
    }
 
    $expId = $argv[1];	
-   $airavataclient->launchExperiment($expId, 'airavataToken');
+   $airavataclient->launchExperiment($expId, '7a8b801f-23e7-465f-b5e4-3cf1e8bee2ab');
    echo "Experiment $expId is launched.";
 }
 catch (InvalidRequestException $ire)
