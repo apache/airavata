@@ -2211,6 +2211,21 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+                logger.error("Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                throw exception;
+            }
+            if (!computeResource.isComputeResourceExists(computeResourceId)){
+                logger.error("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                throw exception;
+            }
             return gatewayProfile.getComputeResourcePreference(gatewayID, computeResourceId);
         } catch (AppCatalogException e) {
             logger.error("Error while reading gateway compute resource preference...", e);
