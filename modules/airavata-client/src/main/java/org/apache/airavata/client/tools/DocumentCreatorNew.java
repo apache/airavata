@@ -393,7 +393,7 @@ public class DocumentCreatorNew {
         application2.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("WRF_Execution_Log", null, DataType.URI));
         application2.setApplicationInterfaceId(client.registerApplicationInterface(application2));
 
-        ApplicationDeploymentDescription deployment2 = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module2.getAppModuleId(), "/home1/01437/ogce/case_studies/wrf_wrapper.sh", ApplicationParallelismType.MPI, "WRF");
+        ApplicationDeploymentDescription deployment2 = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module2.getAppModuleId(), "/home1/01437/ogce/apps/wrf_wrapper.sh", ApplicationParallelismType.MPI, "WRF");
         deployment2.setAppDeploymentId(client.registerApplicationDeployment(deployment2));
         return host.getComputeResourceId() + "," + application2.getApplicationInterfaceId();
 
