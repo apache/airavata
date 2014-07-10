@@ -540,7 +540,7 @@ public class WorkerResource extends AbstractResource {
             String query = "SELECT p from Project p WHERE ";
             if (filters != null && filters.size() != 0) {
                 for (String field : filters.keySet()) {
-                    query += "p." + field + " LIKE '" + filters.get(field) + "%' AND ";
+                    query += "p." + field + " LIKE '%" + filters.get(field) + "%' AND ";
                 }
             }
             query = query.substring(0, query.length() - 5);
