@@ -64,7 +64,7 @@ public class CreateLaunchExperiment {
     private static String pbsWRFAppId="trestles.sdsc.edu_39b00c1f-074d-4980-8796-69ab70fa38e7,WRF_b7c9f782-233f-4fc5-932b-22023d115431";
     private static String slurmAppId="stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
     private static String sgeAppId;
-    private static String br2EchoAppId="bigred2_75f16065-51ff-4965-80b4-dedaa4955095,SimpleEchoBR_be7ff5b9-e8fb-4379-8a1d-9048683260cc";
+    private static String br2EchoAppId="bigred2_25dc283a-4650-4341-8d79-1c99a29eca9c,SimpleEchoBR_c097522b-5401-4935-90c9-90987434d028";
     public static void main(String[] args) {
         try {
             AiravataUtils.setExecutionAsClient();
@@ -97,8 +97,8 @@ public class CreateLaunchExperiment {
 //            localHostAppId = documentCreator.createLocalHostDocs();
 //            sshHostAppId = documentCreator.createSSHHostDocs();
 //            documentCreator.createGramDocs();
-//            pbsEchoAppId =documentCreator.createPBSDocsForOGCE_Echo();
-//            pbsWRFAppId =documentCreator.createPBSDocsForOGCE_WRF();
+            pbsEchoAppId =documentCreator.createPBSDocsForOGCE_Echo();
+            pbsWRFAppId =documentCreator.createPBSDocsForOGCE_WRF();
 //            slurmAppId = documentCreator.createSlurmDocs();
 //            sgeAppId = documentCreator.createSGEDocs();
 //            documentCreator.createEchoHostDocs();
