@@ -207,7 +207,7 @@ public class CreateLaunchExperiment {
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", slurmWRFAppId.split(",")[1], exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(slurmWRFAppId.split(",")[0], 32, 2, 1, "development", 90, 0, 1, "TG-STA110014S");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(slurmWRFAppId.split(",")[0], 2, 32, 1, "development", 90, 0, 1, "TG-STA110014S");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
