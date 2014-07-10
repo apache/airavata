@@ -33,6 +33,7 @@ import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -244,13 +245,14 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
 
     @Override
     public List<ApplicationModule> getApplicationModules(Map<String, String> filters) throws AppCatalogException {
+        List<ApplicationModule> modules = new ArrayList<ApplicationModule>();
         try {
             AppModuleResource resource = new AppModuleResource();
             for (String fieldName : filters.keySet() ){
                 if (fieldName.equals(AbstractResource.ApplicationModuleConstants.MODULE_NAME)){
                     List<Resource> resources = resource.get(AbstractResource.ApplicationModuleConstants.MODULE_NAME, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getAppModules(resources);
+                        modules = AppCatalogThriftConversion.getAppModules(resources);
                     }
                 }else {
                     logger.error("Unsupported field name for app module.", new IllegalArgumentException());
@@ -261,19 +263,18 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             logger.error("Error while retrieving app module list...", e);
             throw new AppCatalogException(e);
         }
-        return null;
+        return modules;
     }
 
     @Override
     public List<ApplicationInterfaceDescription> getApplicationInterfaces(Map<String, String> filters) throws AppCatalogException {
+        List<ApplicationInterfaceDescription> appInterfaces = new ArrayList<ApplicationInterfaceDescription>();
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
             for (String fieldName : filters.keySet() ){
                 if (fieldName.equals(AbstractResource.ApplicationInterfaceConstants.APPLICATION_NAME)){
                     List<Resource> resources = resource.get(AbstractResource.ApplicationInterfaceConstants.APPLICATION_NAME, filters.get(fieldName));
-                    if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getAppInterfaceDescList(resources);
-                    }
+                    appInterfaces = AppCatalogThriftConversion.getAppInterfaceDescList(resources);
                 }else {
                     logger.error("Unsupported field name for app interface.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Unsupported field name for app interface.");
@@ -283,7 +284,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             logger.error("Error while retrieving app interface list...", e);
             throw new AppCatalogException(e);
         }
-        return null;
+        return appInterfaces;
     }
 
     @Override
@@ -291,15 +292,11 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
             List<Resource> resources = resource.getAll();
-            if (resources != null && !resources.isEmpty()){
-                return AppCatalogThriftConversion.getAppInterfaceDescList(resources);
-            }
-
+            return AppCatalogThriftConversion.getAppInterfaceDescList(resources);
         }catch (Exception e){
             logger.error("Error while retrieving app interface list...", e);
             throw new AppCatalogException(e);
         }
-        return null;
     }
 
     @Override

@@ -32,6 +32,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -235,18 +236,19 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
 
     @Override
     public List<ApplicationDeploymentDescription> getApplicationDeployements(Map<String, String> filters) throws AppCatalogException {
+        List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
             AppDeploymentResource resource = new AppDeploymentResource();
             for (String fieldName : filters.keySet() ){
                 if (fieldName.equals(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID)){
                     List<Resource> resources = resource.get(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getAppDepDescList(resources);
+                        deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);
                     }
                 }else if (fieldName.equals(AbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID)){
                     List<Resource> resources = resource.get(AbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getAppDepDescList(resources);
+                        deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);
                     }
                 } else {
                     logger.error("Unsupported field name for app deployment.", new IllegalArgumentException());
@@ -257,23 +259,24 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             logger.error("Error while retrieving app deployment list...", e);
             throw new AppCatalogException(e);
         }
-        return null;
+        return deploymentDescriptions;
     }
 
     @Override
     public List<ApplicationDeploymentDescription> getAllApplicationDeployements() throws AppCatalogException {
+        List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
             AppDeploymentResource resource = new AppDeploymentResource();
             List<Resource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
-                return AppCatalogThriftConversion.getAppDepDescList(resources);
+                deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);
             }
 
         }catch (Exception e){
             logger.error("Error while retrieving app deployment list...", e);
             throw new AppCatalogException(e);
         }
-        return null;
+        return deploymentDescriptions;
     }
 
     @Override
