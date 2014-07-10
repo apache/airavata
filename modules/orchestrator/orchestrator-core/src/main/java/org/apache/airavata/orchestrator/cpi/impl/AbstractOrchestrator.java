@@ -34,6 +34,7 @@ import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
@@ -142,16 +143,13 @@ public abstract class AbstractOrchestrator implements Orchestrator {
 	
 	//get the registry URL and the credentials from the property file
     protected void setGatewayProperties() {
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(OrchestratorConstants.AIRAVATA_PROPERTIES);
-        Properties properties = new Properties();
         try {
-            properties.load(inputStream);
-        } catch (IOException e) {
+            setAiravataUserName(ServerSettings.getSetting("system.user"));
+            setGatewayName(ServerSettings.getSetting("system.gateway"));
+            setRegistryURL(ServerSettings.getSetting("airavata.server.url"));
+        }  catch (ApplicationSettingsException e) {
             e.printStackTrace();
         }
-        setAiravataUserName(properties.getProperty("system.user"));
-        setGatewayName(properties.getProperty("system.gateway"));
-        setRegistryURL(properties.getProperty("airavata.server.url"));
     }
 
    private AiravataAPI getAiravataAPI() {
