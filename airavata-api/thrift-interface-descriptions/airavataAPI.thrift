@@ -764,11 +764,12 @@ service Airavata {
    * @param appInterfaceId
    *   The identifier for the requested application interface
    *
-   * @return list<string>
-   *   Returns a list of available Resources. Deployments of each modules listed within the interfaces will be listed.
+   * @return map<computeResourceId, computeResourceName>
+   *   A map of registered compute resource id's and their corresponding hostnames.
+   *    Deployments of each modules listed within the interfaces will be listed.
    *
   */
-  list<string> getAvailableAppInterfaceComputeResources(1: required string appInterfaceId)
+  map<string, string> getAvailableAppInterfaceComputeResources(1: required string appInterfaceId)
       	throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
