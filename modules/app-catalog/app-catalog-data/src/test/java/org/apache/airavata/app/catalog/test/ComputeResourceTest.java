@@ -173,7 +173,7 @@ public class ComputeResourceTest {
             List<ComputeResourceDescription> allComputeResourceList = computeResource.getAllComputeResourceList();
             System.out.println("**********Size of all compute resources ************* : " +  allComputeResourceList.size());
 
-            List<String> allComputeResourceIdList = computeResource.getAllComputeResourceIdList();
+            Map<String, String> allComputeResourceIdList = computeResource.getAllComputeResourceIdList();
             System.out.println("**********Size of all compute resources ids ************* : " +  allComputeResourceIdList.size());
 
 //            Map<String, String> globusfilters = new HashMap<String, String>();

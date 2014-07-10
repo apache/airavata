@@ -1365,8 +1365,8 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             appCatalog = AppCatalogFactory.getAppCatalog();
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, appModuleId);
-            List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(filters);
-            for (ApplicationDeploymentDescription description : applicationDeployements){
+            List<ApplicationDeploymentDescription> applicationDeployments = appCatalog.getApplicationDeployment().getApplicationDeployements(filters);
+            for (ApplicationDeploymentDescription description : applicationDeployments){
                 appDeployments.add(description.getAppDeploymentId());
             }
             return appDeployments;
@@ -1557,31 +1557,33 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
      * Fetch a list of all deployed Compute Hosts for a given application interfaces.
      *
      * @param appInterfaceId The identifier for the requested application interface
-     * @return list<string>
-     * Returns a list of available Resources. Deployments of each modules listed within the interfaces will be listed.
+     * @return map<computeResourceId, computeResourceName>
+     * A map of registered compute resource id's and their corresponding hostnames.
+     * Deployments of each modules listed within the interfaces will be listed.
      */
     @Override
-    public List<String> getAvailableAppInterfaceComputeResources(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-    	try {
+    public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             ApplicationDeployment applicationDeployment = appCatalog.getApplicationDeployment();
-            List<String> computeResourceIdList = new ArrayList<String>();
-            ApplicationInterfaceDescription applicationInterface = appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
+            Map<String, String> allComputeResources = appCatalog.getComputeResource().getAllComputeResourceIdList();
+            Map<String, String> availableComputeResources = new HashMap<String, String>();
+            ApplicationInterfaceDescription applicationInterface =
+                    appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
+            HashMap<String, String> filters = new HashMap<String,String>();
             List<String> applicationModules = applicationInterface.getApplicationModules();
-        	HashMap<String, String> filters = new HashMap<String,String>();
             if (applicationModules != null && !applicationModules.isEmpty()){
                 for (String moduleId : applicationModules) {
                     filters.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, moduleId);
-                    List<ApplicationDeploymentDescription> applicationDeployements = applicationDeployment.getApplicationDeployements(filters);
-                    for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
-                        if (!computeResourceIdList.contains(deploymentDescription.getComputeHostId())){
-                            computeResourceIdList.add(deploymentDescription.getComputeHostId());
-                        }
+                    List<ApplicationDeploymentDescription> applicationDeployments =
+                            applicationDeployment.getApplicationDeployements(filters);
+                    for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
+                        availableComputeResources.put(deploymentDescription.getComputeHostId(),
+                                allComputeResources.get(deploymentDescription.getComputeHostId()));
                     }
                 }
             }
-
-            return computeResourceIdList;
+            return availableComputeResources;
         } catch (AppCatalogException e) {
             logger.error("Error while saving compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1643,14 +1645,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     public Map<String, String> getAllComputeResourceNames() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
-            List<ComputeResourceDescription> allComputeResourceList = appCatalog.getComputeResource().getAllComputeResourceList();
-            Map<String, String> allComputeResources = new HashMap<String, String>();
-            if (allComputeResourceList != null && !allComputeResourceList.isEmpty()){
-                for (ComputeResourceDescription resourceDescription : allComputeResourceList){
-                    allComputeResources.put(resourceDescription.getComputeResourceId(), resourceDescription.getHostName());
-                }
-            }
-            return allComputeResources;
+            return appCatalog.getComputeResource().getAllComputeResourceIdList();
         } catch (AppCatalogException e) {
             logger.error("Error while retrieving compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2216,6 +2211,21 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
+                logger.error("Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                throw exception;
+            }
+            if (!computeResource.isComputeResourceExists(computeResourceId)){
+                logger.error("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                throw exception;
+            }
             return gatewayProfile.getComputeResourcePreference(gatewayID, computeResourceId);
         } catch (AppCatalogException e) {
             logger.error("Error while reading gateway compute resource preference...", e);

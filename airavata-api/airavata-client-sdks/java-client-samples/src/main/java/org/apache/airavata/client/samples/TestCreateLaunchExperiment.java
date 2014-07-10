@@ -170,9 +170,9 @@ public class TestCreateLaunchExperiment {
 
     public static void getAVailableComputeResourcesForApp (Airavata.Client client, String applicationName){
         try {
-            List<String> resources = client.getAvailableAppInterfaceComputeResources(applicationName);
-            for (String id : resources){
-                System.out.println("resource id : " + id);
+            Map<String, String> resources = client.getAvailableAppInterfaceComputeResources(applicationName);
+            for (Map.Entry<String, String> entry : resources.entrySet()) {
+                System.out.println("resource id : = " + entry.getKey() + ", resource name : = " + entry.getValue());
             }
         } catch (AiravataSystemException e) {
             e.printStackTrace();

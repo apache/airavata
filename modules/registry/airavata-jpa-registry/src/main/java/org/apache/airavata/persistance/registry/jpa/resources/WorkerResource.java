@@ -540,7 +540,15 @@ public class WorkerResource extends AbstractResource {
             String query = "SELECT p from Project p WHERE ";
             if (filters != null && filters.size() != 0) {
                 for (String field : filters.keySet()) {
-                    query += "p." + field + " LIKE '" + filters.get(field) + "%' AND ";
+                    String filterVal = filters.get(field);
+                    if (field.equals(ProjectConstants.USERNAME)) {
+                        query += "p." + field + "= '" + filterVal + "' AND ";
+                    } else {
+                        if (filterVal.contains("*")){
+                            filterVal = filterVal.replaceAll("\\*", "");
+                        }
+                        query += "p." + field + " LIKE '%" + filterVal + "%' AND ";
+                    }
                 }
             }
             query = query.substring(0, query.length() - 5);
@@ -576,10 +584,14 @@ public class WorkerResource extends AbstractResource {
             String query = "SELECT e from Experiment e WHERE ";
             if (filters != null && filters.size() != 0) {
                 for (String field : filters.keySet()) {
+                    String filterVal = filters.get(field);
                     if (field.equals(ExperimentConstants.EXECUTION_USER)) {
-                        query += "e." + field + "= '" + filters.get(field) + "' AND ";
+                        query += "e." + field + "= '" + filterVal + "' AND ";
                     } else {
-                        query += "e." + field + " LIKE '%" + filters.get(field) + "%' AND ";
+                        if (filterVal.contains("*")){
+                            filterVal = filterVal.replaceAll("\\*", "");
+                        }
+                        query += "e." + field + " LIKE '%" + filterVal + "%' AND ";
                     }
                 }
             }
