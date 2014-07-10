@@ -116,7 +116,6 @@ public class GFACGSISSHUtils {
         jobDescriptor.setJobName(app.getApplicationName().getStringValue() + String.valueOf(i));
         jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
 
-
         List<String> inputValues = new ArrayList<String>();
         MessageContext input = jobExecutionContext.getInMessageContext();
         Map<String, Object> inputs = input.getParameters();
@@ -153,6 +152,7 @@ public class GFACGSISSHUtils {
             jobDescriptor.setProcessesPerNode(applicationDeploymentType.getProcessorsPerNode());
             jobDescriptor.setMaxWallTime(String.valueOf(applicationDeploymentType.getMaxWallTime()));
             jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
+            jobDescriptor.setCPUCount(applicationDeploymentType.getCpuCount());
             if (applicationDeploymentType.getProjectAccount() != null) {
                 if (applicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null) {
                     jobDescriptor.setAcountString(applicationDeploymentType.getProjectAccount().getProjectAccountNumber());
