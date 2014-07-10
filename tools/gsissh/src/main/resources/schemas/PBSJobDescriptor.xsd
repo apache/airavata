@@ -32,6 +32,7 @@
             <element name="inputDirectory" type="xsd:string" minOccurs="0" maxOccurs="1" />
             <element name="nodes" type="xsd:int" minOccurs="0" maxOccurs="1" default="1"/>
             <element name="processesPerNode" type="xsd:int" minOccurs="0" maxOccurs="1" default="1" />
+            <element name="cpuCount" type="xsd:int" minOccurs="0" maxOccurs="1" default="1" />
             <element name="nodeList" type="xsd:string" minOccurs="0" maxOccurs="1" default="1" />
             <element name="workingDirectory" type="xsd:string" minOccurs="0" maxOccurs="1" />
             <element name="executablePath" type="xsd:string" minOccurs="0" maxOccurs="1" />

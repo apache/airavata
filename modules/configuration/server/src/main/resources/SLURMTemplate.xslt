@@ -24,6 +24,11 @@
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
+    <xsl:when test="ns:cpuCount">
+#SBATCH -N <xsl:value-of select="ns:cpuCount"/>
+        </xsl:when>
+        </xsl:choose>
+    <xsl:choose>
     <xsl:when test="ns:mailAddress">
 #SBATCH -mail-user=<xsl:value-of select="ns:mailAddress"/>
     </xsl:when>

@@ -197,6 +197,9 @@ public class JobDescriptor {
     public void setUsedCPUTime(String usedCPUTime) {
         this.getJobDescriptorDocument().getJobDescriptor().setUsedCPUTime(usedCPUTime);
     }
+    public void setCPUCount(int usedCPUTime) {
+            this.getJobDescriptorDocument().getJobDescriptor().setCpuCount(usedCPUTime);
+        }
     public void setUsedMemory(String usedMemory) {
         this.getJobDescriptorDocument().getJobDescriptor().setUsedMem(usedMemory);
     }
@@ -275,6 +278,10 @@ public class JobDescriptor {
         return this.getJobDescriptorDocument().getJobDescriptor().getNodes();
     }
 
+    public int getCPUCount(int name) {
+        return this.getJobDescriptorDocument().getJobDescriptor().getCpuCount();
+    }
+
     public int getProcessesPerNode() {
         return this.getJobDescriptorDocument().getJobDescriptor().getProcessesPerNode();
     }
@@ -338,6 +345,7 @@ public class JobDescriptor {
     public String getUsedCPUTime() {
         return this.getJobDescriptorDocument().getJobDescriptor().getUsedCPUTime();
     }
+
     public String getUsedMemory() {
         return this.getJobDescriptorDocument().getJobDescriptor().getUsedMem();
     }
