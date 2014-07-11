@@ -753,7 +753,92 @@ public class DocumentCreatorNew {
         return host.getComputeResourceId() + "," + application.getApplicationInterfaceId();
     }
 
+    public String createStampedeAmberDocs() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException, AppCatalogException {
+        ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription(stampedeHostAddress, null, null);
+        host.addToHostAliases(stampedeHostAddress);
+        host.addToIpAddresses(stampedeHostAddress);
+        host.setComputeResourceId(client.registerComputeResource(host));
 
+        ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.SLURM, "/usr/bin/", null, "push");
+        SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
+        sshJobSubmission.setResourceJobManager(resourceJobManager);
+        sshJobSubmission.setSecurityProtocol(SecurityProtocol.GSI);
+        sshJobSubmission.setSshPort(2222);
+        client.addSSHJobSubmissionDetails(host.getComputeResourceId(), 1, sshJobSubmission);
+
+        SCPDataMovement scpDataMovement = new SCPDataMovement();
+        scpDataMovement.setSecurityProtocol(SecurityProtocol.GSI);
+        scpDataMovement.setSshPort(22);
+        client.addSCPDataMovementDetails(host.getComputeResourceId(), 1, scpDataMovement);
+        ApplicationModule amodule = DocumentCreatorUtils.createApplicationModule("Amber", "12.0", null);
+        amodule.setAppModuleId(client.registerApplicationModule(amodule));
+
+
+        ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
+        application.setApplicationName("AmberBR2");
+        application.addToApplicationModules(amodule.getAppModuleId());
+        application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("AMBER_HEAT_RST", "AMBER_HEAT_RST", null, null, DataType.URI));
+        application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("AMBER_PROD_IN", "AMBER_PROD_IN", null, null, DataType.URI));
+        application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("AMBER_PRMTOP", "AMBER_PRMTOP", null, null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.info", null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.mdcrd", null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.out", null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.rst", null, DataType.URI));
+        application.setApplicationInterfaceId(client.registerApplicationInterface(application));
+
+        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), amodule.getAppModuleId(), "/home1/01437/ogce/apps/amber_wrapper.sh", ApplicationParallelismType.SERIAL, "AmberStampede");
+        deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
+
+        client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/home1/01437/ogce", "TG-STA110014S", false, null, null, null));
+
+
+        return host.getComputeResourceId() + "," + application.getApplicationInterfaceId();
+
+    }
+
+    public String createTrestlesAmberDocs() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException, AppCatalogException {
+        ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription(trestleshpcHostAddress, null, null);
+        host.addToIpAddresses(trestleshpcHostAddress);
+        host.addToHostAliases(trestleshpcHostAddress);
+        host.setComputeResourceId(client.registerComputeResource(host));
+
+        SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
+        ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.PBS, "/opt/torque/bin/", null, null);
+        sshJobSubmission.setResourceJobManager(resourceJobManager);
+        sshJobSubmission.setSecurityProtocol(SecurityProtocol.GSI);
+        sshJobSubmission.setSshPort(22);
+        client.addSSHJobSubmissionDetails(host.getComputeResourceId(), 1, sshJobSubmission);
+
+        SCPDataMovement scpDataMovement = new SCPDataMovement();
+        scpDataMovement.setSecurityProtocol(SecurityProtocol.GSI);
+        scpDataMovement.setSshPort(22);
+        client.addSCPDataMovementDetails(host.getComputeResourceId(), 1, scpDataMovement);
+
+        ApplicationModule amodule = DocumentCreatorUtils.createApplicationModule("Amber", "12.0", null);
+        amodule.setAppModuleId(client.registerApplicationModule(amodule));
+
+
+        ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
+        application.setApplicationName("AmberTrestles");
+        application.addToApplicationModules(amodule.getAppModuleId());
+        application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("AMBER_HEAT_RST", "AMBER_HEAT_RST", null, null, DataType.URI));
+        application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("AMBER_PROD_IN", "AMBER_PROD_IN", null, null, DataType.URI));
+        application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("AMBER_PRMTOP", "AMBER_PRMTOP", null, null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.info", null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.mdcrd", null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.out", null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.rst", null, DataType.URI));
+        application.setApplicationInterfaceId(client.registerApplicationInterface(application));
+
+        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), amodule.getAppModuleId(), "/home/ogce/apps/amber_wrapper.sh", ApplicationParallelismType.SERIAL, "AmberStampede");
+        deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
+
+        client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/oasis/scratch/trestles/ogce/temp_project/", "sds128", false, null, null, null));
+
+
+        return host.getComputeResourceId() + "," + application.getApplicationInterfaceId();
+
+    }
 
 
 }
