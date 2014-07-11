@@ -21,11 +21,11 @@
 
 package org.apache.airavata.client.tools;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -42,7 +42,7 @@ public class RegisterSampleApplicationsUtils {
         createComputeResourcePreference(String computeResourceId, String allocationProjectNumber,
                                         boolean overridebyAiravata, String preferredBatchQueue,
                                         String preferredJobSubmissionProtocol,String preferredDataMovementProtocol,
-                                        String scratchLocation) throws AppCatalogException {
+                                        String scratchLocation) {
         ComputeResourcePreference computeResourcePreference = new ComputeResourcePreference();
         computeResourcePreference.setComputeResourceId(computeResourceId);
         computeResourcePreference.setOverridebyAiravata(overridebyAiravata);
@@ -118,40 +118,26 @@ public class RegisterSampleApplicationsUtils {
     }
 
     public static InputDataObjectType createAppInput
-            (String inputName, String value, org.apache.airavata.model.appcatalog.appinterface.DataType type,
+            (String inputName, String value, DataType type,
              String applicationArgument, boolean stdIn, String description, String metadata) {
         InputDataObjectType input = new InputDataObjectType();
 //        input.setIsEmpty(false);
-        if (inputName != null) {
-            input.setName(inputName);
-        }
-        if (value != null) {
-            input.setValue(value);
-        }
-        if (type != null) {
-            input.setType(type);
-        }
-        if (applicationArgument != null) {
-            input.setApplicationArgument(applicationArgument);
-        }
-        if (description != null) {
-            input.setUserFriendlyDescription(description);
-        }
+        if (inputName != null) input.setName(inputName);
+        if (value != null) input.setValue(value);
+        if (type != null) input.setType(type);
+        if (applicationArgument != null) input.setApplicationArgument(applicationArgument);
+        if (description != null) input.setUserFriendlyDescription(description);
+        input.setStandardInput(stdIn);
+        if (metadata != null) input.setMetaData(metadata);
         return input;
     }
 
-    public static OutputDataObjectType createAppOutput(String inputName, String value, org.apache.airavata.model.appcatalog.appinterface.DataType type) {
+    public static OutputDataObjectType createAppOutput(String inputName, String value, DataType type) {
         OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
 //        outputDataObjectType.setIsEmpty(false);
-        if (inputName != null) {
-            outputDataObjectType.setName(inputName);
-        }
-        if (value != null) {
-            outputDataObjectType.setValue(value);
-        }
-        if (type != null) {
-            outputDataObjectType.setType(type);
-        }
+        if (inputName != null) outputDataObjectType.setName(inputName);
+        if (value != null) outputDataObjectType.setValue(value);
+        if (type != null) outputDataObjectType.setType(type);
         return outputDataObjectType;
     }
 

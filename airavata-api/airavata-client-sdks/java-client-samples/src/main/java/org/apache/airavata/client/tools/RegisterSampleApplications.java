@@ -54,17 +54,18 @@ import org.apache.thrift.TException;
 
 public class RegisterSampleApplications {
 
-    public static final String THRIFT_SERVER_HOST = "localhost";
-    public static final int THRIFT_SERVER_PORT = 8930;
+    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+//    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final int THRIFT_SERVER_PORT = 9930;
+//    public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(RegisterSampleApplications.class);
-    private static final String DEFAULT_USER = "default.registry.user";
-    private static final String DEFAULT_GATEWAY = "default.registry.gateway";
+    private static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client airavataClient;
 
     //Host Id's
-    private static String stampedeResourceId;
-    private static String trestlesResourceId;
-    private static String bigredResourceId;
+    private static String stampedeResourceId = "stampede.tacc.xsede.org_cd0aed54-7d66-4d90-94cc-dd69ea86351f";
+    private static String trestlesResourceId = "trestles.sdsc.xsede.org_a94e6620-e3b3-47bf-ba4b-e1ac06f9abe6";
+    private static String bigredResourceId = "bigred2.uits.iu.edu_9e54dc94-fad6-4bc3-ba14-b3b874457933";
 
     //Appplication Names
     private static final String echoName = "Echo";
@@ -79,7 +80,7 @@ public class RegisterSampleApplications {
 
     //Appplication Descriptions
     private static final String echoDescription = "A Simple Echo Application";
-    private static final String amberDescription = "Amber Molecular Dynamics Package";
+    private static final String amberDescription = "Assisted Model Building with Energy Refinement MD Package";
     private static final String autoDockDescription = "AutoDock suite of automated docking tools";
     private static final String espressoDescription = "Nanoscale electronic-structure calculations and materials modeling";
     private static final String gromacsDescription = "GROMACS Molecular Dynamics Package";
@@ -116,16 +117,19 @@ public class RegisterSampleApplications {
             System.out.println("API version is " + airavataClient.getAPIVersion());
 
             //Register all compute hosts
-            registerXSEDEHosts();
+//            registerXSEDEHosts();
 
-            //Register all application modules
-            registerAppModules();
-
-            //Register all application deployments
-            registerAppDeployments();
-
-            //Register all application interfaces
-            registerAppInterfaces();
+            //Register Gateway Resource Preferences
+            registerGatewayResourceProfile();
+//
+//            //Register all application modules
+//            registerAppModules();
+//
+//            //Register all application deployments
+//            registerAppDeployments();
+//
+//            //Register all application interfaces
+//            registerAppInterfaces();
 
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
@@ -242,28 +246,28 @@ public class RegisterSampleApplications {
         registerEchoInterface();
 
         //Registering Amber
-//        registerAmberInterface();
+        registerAmberInterface();
 
         //Registering AutoDock
 //        registerAutoDockInterface();
 
         //Registering Espresso
-//        registerEspressoInterface();
+        registerEspressoInterface();
 
         //Registering Gromacs
-//        registerGromacsInterface();
+        registerGromacsInterface();
 
         //Registering Lammps
-//        registerLammpsInterface();
+        registerLammpsInterface();
 
         //Registering NWChem
-//        registerNWChemInterface();
+        registerNWChemInterface();
 
         //Registering Trinity
-//        registerTrinityInterface();
+        registerTrinityInterface();
 
         //Registering WRF
-//        registerWRFInterface();
+        registerWRFInterface();
 
     }
 
@@ -271,11 +275,11 @@ public class RegisterSampleApplications {
         try {
             System.out.println("#### Registering Echo Interface #### \n");
 
-            List<String> echoModules = new ArrayList<String>();
-            echoModules.add(echoModuleId);
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "Hello World",
-                    DataType.STRING, null, false, null, null);
+                    DataType.STRING, null, false, "A test string to Echo", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -287,8 +291,8 @@ public class RegisterSampleApplications {
             applicationOutputs.add(output1);
 
             echoInterfaceId = airavataClient.registerApplicationInterface(
-                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(echoName,echoDescription,
-                            echoModules,applicationInputs,applicationOutputs));
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(echoName, echoDescription,
+                            appModules, applicationInputs, applicationOutputs));
             System.out.println("Echo Application Interface Id " + echoInterfaceId);
 
         } catch (TException e) {
@@ -296,7 +300,277 @@ public class RegisterSampleApplications {
         }
     }
 
-        public static void registerStampedeApps() {
+    public static void registerAmberInterface() {
+        try {
+            System.out.println("#### Registering Amber Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Heat_Restart_File", null,
+                    DataType.URI, null, false, "Heating up the system equilibration stage", null);
+
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Production_Control_File", null,
+                    DataType.URI, null, false, "Constant pressure and temperature for production stage", null);
+
+            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Parameter_Topology_File", null,
+                    DataType.URI, null, false, "Parameter and Topology coordinates", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+            applicationInputs.add(input2);
+            applicationInputs.add(input3);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
+                    "", DataType.STRING);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            amberInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(amberName, amberDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("Amber Application Interface Id " + amberInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void registerAutoDockInterface() {
+        try {
+            System.out.println("#### Registering AutoDock Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Heat_Restart_File", null,
+                    DataType.URI, null, false, "Heating up the system equilibration stage", null);
+
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Production_Control_File", null,
+                    DataType.URI, null, false, "Constant pressure and temperature for production stage", null);
+
+            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Parameter_Topology_File", null,
+                    DataType.URI, null, false, "Parameter and Topology coordinates", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+            applicationInputs.add(input2);
+            applicationInputs.add(input3);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
+                    "", DataType.STRING);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            autoDockInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(autoDockName, autoDockDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("AutoDock Application Interface Id " + autoDockInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void registerEspressoInterface() {
+        try {
+            System.out.println("#### Registering Espresso Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("AI_Primitive_Cell", null,
+                    DataType.URI, null, false, "AI_Metal_Input_File", null);
+
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("AI_Pseudopotential_File", null,
+                    DataType.URI, null, false, "Constant pressure and temperature for production stage", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+            applicationInputs.add(input2);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
+                    "", DataType.STRING);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            espressoInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(espressoName, espressoDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("Espresso Application Interface Id " + espressoInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void registerGromacsInterface() {
+        try {
+            System.out.println("#### Registering Gromacs Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Portable_Input_Binary_File", null,
+                    DataType.URI, null, false, "Coordinates velocities, molecular topology and simulation parameters", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
+                    "", DataType.STRING);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            gromacsInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(gromacsName, gromacsDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("Gromacs Application Interface Id " + gromacsInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void registerLammpsInterface() {
+        try {
+            System.out.println("#### Registering LAMMPS Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Friction_Simulation_Input", null,
+                    DataType.URI, null, false, "Friction Simulation Input", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
+                    "", DataType.STRING);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            lammpsInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(lammpsName, lammpsDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("LAMMPS Application Interface Id " + lammpsInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void registerNWChemInterface() {
+        try {
+            System.out.println("#### Registering NWChem Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Water_Molecule_Input", null,
+                    DataType.URI, null, false, "Water Molecule Input File", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
+                    "", DataType.STRING);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            nwChemInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(nwChemName, nwChemDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("NWChem Application Interface Id " + nwChemInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void registerTrinityInterface() {
+        try {
+            System.out.println("#### Registering Trinity Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("RNA_Seq_Left_Input", null,
+                    DataType.URI, null, false, "RNA-Seq Left Library", null);
+
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("RNA_Seq_Left_Input", null,
+                    DataType.URI, null, false, "RNA-Seq Right Library", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+            applicationInputs.add(input2);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
+                    "", DataType.STRING);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            trinityInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(trinityName, trinityDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("Trinity Application Interface Id " + trinityInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public static void registerWRFInterface() {
+        try {
+            System.out.println("#### Registering WRF Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Config_Namelist_File", null,
+                    DataType.URI, null, false, "Namelist Configuration File", null);
+
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("WRF_Initial_Conditions", null,
+                    DataType.URI, null, false, "Inputial Conditions File", null);
+
+            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("WRF_Boundary_File", null,
+                    DataType.URI, null, false, "Boundary Conditions File", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+            applicationInputs.add(input2);
+            applicationInputs.add(input3);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("WRF_Output",
+                    "", DataType.URI);
+
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("WRF_Execution_Log",
+                    "", DataType.URI);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+            applicationOutputs.add(output2);
+
+            wrfInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(wrfName, wrfDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("WRF Application Interface Id " + wrfInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void registerStampedeApps() {
         try {
             System.out.println("#### Registering Application Deployments on Stampede #### \n");
 
@@ -471,5 +745,39 @@ public class RegisterSampleApplications {
 
         return computeResourceId;
     }
+
+    public static void registerGatewayResourceProfile() {
+
+        try {
+            System.out.println("#### Registering Application Deployments on BigRed II #### \n");
+
+
+            ComputeResourcePreference stampedeResourcePreferences = RegisterSampleApplicationsUtils.
+                    createComputeResourcePreference(stampedeResourceId, "TG-STA110014S", false, null, null, null,
+                            "/scratch/01437/ogce/gta-work-dirs");
+
+            ComputeResourcePreference trestlesResourcePreferences = RegisterSampleApplicationsUtils.
+                    createComputeResourcePreference(trestlesResourceId, "TG-STA110014S", false, null, null, null,
+                            "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs");
+
+            ComputeResourcePreference bigRedResourcePreferences = RegisterSampleApplicationsUtils.
+                    createComputeResourcePreference(bigredResourceId, "TG-STA110014S", false, null, null, null,
+                            "/N/dc2/scratch/cgateway/gta-work-dirs");
+
+            GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
+            gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
+            gatewayResourceProfile.setGatewayName(DEFAULT_GATEWAY);
+            gatewayResourceProfile.addToComputeResourcePreferences(stampedeResourcePreferences);
+            gatewayResourceProfile.addToComputeResourcePreferences(trestlesResourcePreferences);
+            gatewayResourceProfile.addToComputeResourcePreferences(bigRedResourcePreferences);
+
+            String gatewayProfile = airavataClient.registerGatewayResourceProfile(gatewayResourceProfile);
+            System.out.println("Gateway Profile is registered with Id " + gatewayProfile);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
 
