@@ -185,42 +185,54 @@ public class ThriftDataModelConversion {
                 ExperimentInputResource expInput = (ExperimentInputResource) object;
                 dataObjectType.setKey(expInput.getExperimentKey());
                 dataObjectType.setValue(expInput.getValue());
-                dataObjectType.setType(DataType.valueOf(expInput.getInputType()));
+                if (expInput.getInputType() != null){
+                    dataObjectType.setType(DataType.valueOf(expInput.getInputType()));
+                }
                 dataObjectType.setMetaData(expInput.getMetadata());
                 return dataObjectType;
             }else if (object instanceof ExperimentOutputResource){
                 ExperimentOutputResource expOutput = (ExperimentOutputResource)object;
                 dataObjectType.setKey(expOutput.getExperimentKey());
                 dataObjectType.setValue(expOutput.getValue());
-                dataObjectType.setType(DataType.valueOf(expOutput.getOutputType()));
+                if (expOutput.getOutputType() != null){
+                    dataObjectType.setType(DataType.valueOf(expOutput.getOutputType()));
+                }
                 dataObjectType.setMetaData(expOutput.getMetadata());
                 return dataObjectType;
             }else if (object instanceof NodeInputResource){
                 NodeInputResource nodeInputResource = (NodeInputResource)object;
                 dataObjectType.setKey(nodeInputResource.getInputKey());
                 dataObjectType.setValue(nodeInputResource.getValue());
-                dataObjectType.setType(DataType.valueOf(nodeInputResource.getInputType()));
+                if (nodeInputResource.getInputType() != null){
+                    dataObjectType.setType(DataType.valueOf(nodeInputResource.getInputType()));
+                }
                 dataObjectType.setMetaData(nodeInputResource.getMetadata());
                 return dataObjectType;
             }else if (object instanceof NodeOutputResource){
                 NodeOutputResource nodeOutputResource = (NodeOutputResource)object;
                 dataObjectType.setKey(nodeOutputResource.getOutputKey());
                 dataObjectType.setValue(nodeOutputResource.getValue());
-                dataObjectType.setType(DataType.valueOf(nodeOutputResource.getOutputType()));
+                if (nodeOutputResource.getOutputType() != null){
+                    dataObjectType.setType(DataType.valueOf(nodeOutputResource.getOutputType()));
+                }
                 dataObjectType.setMetaData(nodeOutputResource.getMetadata());
                 return dataObjectType;
             }else if (object instanceof ApplicationInputResource){
                 ApplicationInputResource inputResource = (ApplicationInputResource)object;
                 dataObjectType.setKey(inputResource.getInputKey());
                 dataObjectType.setValue(inputResource.getValue());
-                dataObjectType.setType(DataType.valueOf(inputResource.getInputType()));
+                if (inputResource.getInputType() != null){
+                    dataObjectType.setType(DataType.valueOf(inputResource.getInputType()));
+                }
                 dataObjectType.setMetaData(inputResource.getMetadata());
                 return dataObjectType;
             }else if (object instanceof ApplicationOutputResource){
                 ApplicationOutputResource outputResource = (ApplicationOutputResource)object;
                 dataObjectType.setKey(outputResource.getOutputKey());
                 dataObjectType.setValue(outputResource.getValue());
-                dataObjectType.setType(DataType.valueOf(outputResource.getOutputType()));
+                if (outputResource.getOutputType() != null){
+                    dataObjectType.setType(DataType.valueOf(outputResource.getOutputType()));
+                }
                 dataObjectType.setMetaData(outputResource.getMetadata());
                 return dataObjectType;
             }else {

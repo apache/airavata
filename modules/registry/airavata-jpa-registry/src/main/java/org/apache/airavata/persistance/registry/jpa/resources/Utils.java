@@ -597,7 +597,10 @@ public class Utils {
             eInputResource.setInputType(o.getInputType());
             eInputResource.setMetadata(o.getMetadata());
             eInputResource.setExperimentKey(o.getEx_key());
-            eInputResource.setValue(new String(o.getValue()));
+            if (o.getValue() != null){
+                eInputResource.setValue(new String(o.getValue()));
+            }
+
         }
         return eInputResource;
     }
@@ -608,7 +611,9 @@ public class Utils {
             ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
             eOutputResource.setExperimentResource(experimentResource);
             eOutputResource.setExperimentKey(o.getEx_key());
-            eOutputResource.setValue(new String(o.getValue()));
+            if (o.getValue() != null){
+                eOutputResource.setValue(new String(o.getValue()));
+            }
             eOutputResource.setOutputType(o.getOutputKeyType());
             eOutputResource.setMetadata(o.getMetadata());
         }
@@ -678,7 +683,9 @@ public class Utils {
             inputResource.setTaskDetailResource(taskDetailResource);
             inputResource.setInputKey(o.getInputKey());
             inputResource.setInputType(o.getInputKeyType());
-            inputResource.setValue(new String(o.getValue()));
+            if (o.getValue() != null){
+                inputResource.setValue(new String(o.getValue()));
+            }
             inputResource.setMetadata(o.getMetadata());
         }
         return inputResource;
@@ -691,7 +698,9 @@ public class Utils {
             outputResource.setTaskDetailResource(taskDetailResource);
             outputResource.setOutputType(o.getOutputKeyType());
             outputResource.setOutputKey(o.getOutputKey());
-            outputResource.setValue(new String(o.getValue()));
+            if (o.getValue() != null){
+                outputResource.setValue(new String(o.getValue()));
+            }
             outputResource.setMetadata(o.getMetadata());
         }
         return outputResource;
