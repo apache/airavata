@@ -239,20 +239,39 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
         List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
             AppDeploymentResource resource = new AppDeploymentResource();
+            boolean firstTry=true;
             for (String fieldName : filters.keySet() ){
+                List<ApplicationDeploymentDescription> tmpDescriptions = new ArrayList<ApplicationDeploymentDescription>();
                 if (fieldName.equals(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID)){
                     List<Resource> resources = resource.get(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
-                        deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);
+                    	tmpDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);
                     }
                 }else if (fieldName.equals(AbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID)){
                     List<Resource> resources = resource.get(AbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
-                        deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);
+                    	tmpDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);
                     }
                 } else {
                     logger.error("Unsupported field name for app deployment.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Unsupported field name for app deployment.");
+                }
+                if (firstTry){
+                	deploymentDescriptions.addAll(tmpDescriptions);
+                    firstTry=false;
+                }else{
+                    List<String> ids=new ArrayList<String>();
+                	for (ApplicationDeploymentDescription applicationDeploymentDescription : deploymentDescriptions) {
+						ids.add(applicationDeploymentDescription.getAppDeploymentId());
+					}
+                    List<ApplicationDeploymentDescription> tmp2Descriptions = new ArrayList<ApplicationDeploymentDescription>();
+                	for (ApplicationDeploymentDescription applicationDeploymentDescription : tmpDescriptions) {
+						if (ids.contains(applicationDeploymentDescription.getAppDeploymentId())){
+							tmp2Descriptions.add(applicationDeploymentDescription);
+						}
+					}
+                	deploymentDescriptions.clear();
+                	deploymentDescriptions.addAll(tmp2Descriptions);
                 }
             }
         }catch (Exception e){
