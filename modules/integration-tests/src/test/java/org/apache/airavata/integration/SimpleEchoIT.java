@@ -59,6 +59,7 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         DocumentCreatorNew documentCreatorNew = new DocumentCreatorNew(getClient());
         String hostAndappId = documentCreatorNew.createLocalHostDocs();
         String appId = hostAndappId.split(",")[1];
+        String hostId = hostAndappId.split(",")[0];
         
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
@@ -81,8 +82,8 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
                 ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", appId, appId, exInputs);
         simpleExperiment.setExperimentOutputs(exOut);
 
-        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("localhost", 1, 1, 1, "normal", 0, 0, 1, "sds128");
-        scheduling.setResourceHostId("localhost");
+        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(hostId, 1, 1, 1, "normal", 1, 0, 1, "sds128");
+        scheduling.setResourceHostId(hostId);
         UserConfigurationData userConfigurationData = new UserConfigurationData();
         userConfigurationData.setAiravataAutoSchedule(false);
         userConfigurationData.setOverrideManualScheduledParams(false);
