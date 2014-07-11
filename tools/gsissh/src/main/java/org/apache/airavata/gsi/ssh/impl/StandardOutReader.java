@@ -22,6 +22,7 @@ package org.apache.airavata.gsi.ssh.impl;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
+
 import org.apache.airavata.gsi.ssh.api.CommandOutput;
 
 import java.io.ByteArrayOutputStream;
@@ -36,6 +37,11 @@ public class StandardOutReader implements CommandOutput {
     public void onOutput(Channel channel) {
         try {
             StringBuffer pbsOutput = new StringBuffer("");
+            try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
             InputStream inputStream =  channel.getInputStream();
             byte[] tmp = new byte[1024];
             while (true) {

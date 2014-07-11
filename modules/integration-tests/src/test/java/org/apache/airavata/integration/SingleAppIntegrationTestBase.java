@@ -52,7 +52,6 @@ public class SingleAppIntegrationTestBase extends AbstractIntegrationTest {
                 ExperimentStatus experimentStatus = null;
                 do {
                     try {
-                        Thread.sleep(2000);
                     	experimentStatus = client.getExperimentStatus(expId);
 						if (previousUpdateTime!=experimentStatus.getTimeOfStateChange()) {
 							previousUpdateTime=experimentStatus.getTimeOfStateChange();
@@ -61,6 +60,7 @@ public class SingleAppIntegrationTestBase extends AbstractIntegrationTest {
 									+ " ["+new Date(previousUpdateTime).toString()+"]");
 							
 						}
+                        Thread.sleep(2000);
                     } catch (Exception e) {
                         log.error("Thread interrupted", e);
                     }
