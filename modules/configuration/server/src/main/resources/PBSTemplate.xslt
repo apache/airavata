@@ -61,8 +61,8 @@ export<xsl:text>   </xsl:text><xsl:value-of select="."/>
 cd <xsl:text>   </xsl:text><xsl:value-of select="ns:workingDirectory"/><xsl:text>&#xa;</xsl:text>
     <xsl:choose><xsl:when test="ns:jobSubmitterCommand">
 <xsl:value-of select="ns:jobSubmitterCommand"/><xsl:text>   </xsl:text> <xsl:choose>
-    <xsl:when test="(ns:nodes)">
-<xsl:value-of select="ns:nodes"/><xsl:text>   </xsl:text>
+    <xsl:when test="(ns:cpuCount)">
+<xsl:value-of select="ns:cpuCount"/><xsl:text>   </xsl:text>
     </xsl:when>
     </xsl:choose></xsl:when></xsl:choose><xsl:value-of select="ns:executablePath"/><xsl:text>   </xsl:text>
 <xsl:for-each select="ns:inputs/ns:input">
