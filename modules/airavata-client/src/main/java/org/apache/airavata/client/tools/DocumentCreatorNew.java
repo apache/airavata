@@ -76,6 +76,16 @@ public class DocumentCreatorNew {
     private String gramAddress = "trestles-login1.sdsc.edu:2119/jobmanager-pbstest2";
     private String bigRed2HostAddress = "bigred2.uits.iu.edu";
 
+    //App Module Id's
+    private static String echoModuleId;
+    private static String amberModuleId;
+    private static String autoDockModuleId;
+    private static String espressoModuleId;
+    private static String gromacsModuleId;
+    private static String lammpsModuleId;
+    private static String nwChemModuleId;
+    private static String trinityModuleId;
+    private static String wrfModuleId;
     private Airavata.Client client;
     private GatewayResourceProfile gatewayResourceProfile;
 
@@ -682,8 +692,68 @@ public class DocumentCreatorNew {
         tempDir = tempDir + File.separator + "SimpleEcho" + "_" + date + "_" + UUID.randomUUID();
 
         client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), tempDir, "TG-STA110014S", false, null, null, null));
+
+
         return host.getComputeResourceId() + "," + application.getApplicationInterfaceId();
     }
+
+    public String createBigRedAmberDocs() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException, AppCatalogException {
+        ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription("bigred2", null, null);
+        host.addToHostAliases(bigRed2HostAddress);
+        host.addToIpAddresses(bigRed2HostAddress);
+        host.setComputeResourceId(client.registerComputeResource(host));
+
+
+        Map<JobManagerCommand, String> commands = new HashMap<JobManagerCommand, String>();
+        commands.put(JobManagerCommand.SUBMISSION, "aprun -n 4");
+        ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.UGE, "/opt/torque/torque-4.2.3.1/bin/", commands, null);
+        SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
+        sshJobSubmission.setResourceJobManager(resourceJobManager);
+        sshJobSubmission.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
+        sshJobSubmission.setSshPort(22);
+
+        client.addSSHJobSubmissionDetails(host.getComputeResourceId(), 1, sshJobSubmission);
+
+        SCPDataMovement scpDataMovement = new SCPDataMovement();
+        scpDataMovement.setSecurityProtocol(SecurityProtocol.SSH_KEYS);
+        scpDataMovement.setSshPort(22);
+        client.addSCPDataMovementDetails(host.getComputeResourceId(), 1, scpDataMovement);
+
+
+        ApplicationModule amodule = DocumentCreatorUtils.createApplicationModule("Amber", "12.0", null);
+        amodule.setAppModuleId(client.registerApplicationModule(amodule));
+
+
+        ApplicationInterfaceDescription application = new ApplicationInterfaceDescription();
+        application.setApplicationName("AmberBR2");
+        application.addToApplicationModules(amodule.getAppModuleId());
+        application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("AMBER_HEAT_RST", "AMBER_HEAT_RST", null, null, DataType.URI));
+        application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("AMBER_PROD_IN", "AMBER_PROD_IN", null, null, DataType.URI));
+        application.addToApplicationInputs(DocumentCreatorUtils.createAppInput("AMBER_PRMTOP", "AMBER_PRMTOP", null, null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.info", null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.mdcrd", null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.out", null, DataType.URI));
+        application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.rst", null, DataType.URI));
+        application.setApplicationInterfaceId(client.registerApplicationInterface(application));
+
+        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), amodule.getAppModuleId(), "/N/u/cgateway/BigRed2/sandbox/amber_wrapper.sh", ApplicationParallelismType.SERIAL, "AmberBR2");
+        deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
+
+
+        String date = (new Date()).toString();
+        date = date.replaceAll(" ", "_");
+        date = date.replaceAll(":", "_");
+        String tempDir = "/N/u/cgateway/BigRed2/sandbox/jobs";
+        tempDir = tempDir + File.separator +
+                "Amber";
+
+        client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), tempDir, null, false, null, null, null));
+
+
+        return host.getComputeResourceId() + "," + application.getApplicationInterfaceId();
+    }
+
+
 
 
 }
