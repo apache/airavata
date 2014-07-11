@@ -55,7 +55,6 @@ public class DoWhileHandler implements Callable<Boolean> {
 	private Map<Node, Invoker> invokerMap;
 	private ArrayList<Node> waitingNode;
 	private ArrayList<Node> finishedNodes;
-	private WorkflowInterpreter interpreter;
 	private ExecutorService threadExecutor;
 
 	/**
@@ -69,13 +68,11 @@ public class DoWhileHandler implements Callable<Boolean> {
 	 * @param interpreter
 	 */
 
-	public DoWhileHandler(DoWhileNode node, Map<Node, Invoker> invokerMap, ArrayList<Node> waitingNode, ArrayList<Node> finishedNodes,
-			WorkflowInterpreter interpreter, ExecutorService threadExecutor) {
+	public DoWhileHandler(DoWhileNode node, Map<Node, Invoker> invokerMap, ArrayList<Node> waitingNode, ArrayList<Node> finishedNodes, ExecutorService threadExecutor) {
 		this.dowhilenode = node;
 		this.invokerMap = invokerMap;
 		this.waitingNode = waitingNode;
 		this.finishedNodes = finishedNodes;
-		this.interpreter = interpreter;
 		this.threadExecutor = threadExecutor;
 	}
 
@@ -175,7 +172,7 @@ public class DoWhileHandler implements Callable<Boolean> {
 			throw new WorkflowRuntimeException("More than one dowhile execution not supported");
 		}
 		Node donode = readyNodes.get(0);
-		this.interpreter.handleWSComponent(donode);
+//		this.interpreter.handleWSComponent(donode);
 		log.debug("Invoked service " + donode.getName());
 
 		List<DataPort> inputPorts = this.dowhilenode.getInputPorts();
@@ -222,7 +219,7 @@ public class DoWhileHandler implements Callable<Boolean> {
 				Node whileNode = readyNodes.get(0);
 				log.debug("Expression evaluation is true so invoking service again " + whileNode.getName());
 
-				this.interpreter.handleWSComponent(whileNode);
+//				this.interpreter.handleWSComponent(whileNode);
 			}
 		}
 		// WS node should be done

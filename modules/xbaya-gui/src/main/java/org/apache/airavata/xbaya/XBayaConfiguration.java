@@ -24,16 +24,20 @@ package org.apache.airavata.xbaya;
 import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.apache.airavata.client.api.AiravataAPI;
+import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.gfac.ec2.AmazonSecurityContext;
+import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
+import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +63,6 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private URI gpelInstanceID = null;
 
-    private AiravataAPI airavataAPI = null;
     // ODE
     private String odeURL = XBayaConstants.DEFAULT_ODE_URL;
 
@@ -69,16 +72,6 @@ public class XBayaConfiguration extends Observable implements Observer {
     // Proxy Service
 
     private URI proxyURI = XBayaConstants.DEFAULT_PROXY_URI;
-
-    private URI gfacURL = XBayaConstants.DEFAULT_GFAC_URL;
-
-    private URI registryURL = XBayaConstants.REGISTRY_URL;
-
-    private String regigstryUserName = XBayaConstants.REGISTRY_USERNAME;
-
-    private String registryPassphrase = XBayaConstants.REGISTRY_PASSPHRASE;
-
-    private String defaultGateway = XBayaConstants.DEFAULT_GATEWAY;
 
     private URI dscURL = XBayaConstants.DEFAULT_DSC_URL;
 
@@ -152,6 +145,8 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private ContextHeaderDocument.ContextHeader contextHeader;
 
+    private Map<ThriftServiceType, ThriftClientData> thriftClientDataList = new HashMap<ThriftServiceType, ThriftClientData>();
+    
     public enum XBayaExecutionMode{
     	IDE,
     	MONITOR
@@ -188,10 +183,6 @@ public class XBayaConfiguration extends Observable implements Observer {
         URI gpel = config.getGpelUrl();
         if (gpel != null) {
             this.gpelEngineURL = config.getGpelUrl();
-        }
-        URI gfac = config.getGfacUrl();
-        if (gfac != null) {
-            this.gfacURL = gfac;
         }
         URI dsc = config.getDscUrl();
         if (dsc != null) {
@@ -352,20 +343,6 @@ public class XBayaConfiguration extends Observable implements Observer {
      */
     public void setAmazonSecurityContext(AmazonSecurityContext amazonSecurityContext) {
         this.amazonSecurityContext = amazonSecurityContext;
-    }
-
-    /**
-     * @return The GFac URL
-     */
-    public URI getGFacURL() {
-        return this.gfacURL;
-    }
-
-    /**
-     * @param gfacURL
-     */
-    public void setGFacURL(URI gfacURL) {
-        this.gfacURL = gfacURL;
     }
 
     /**
@@ -785,48 +762,20 @@ public class XBayaConfiguration extends Observable implements Observer {
         return this.closeOnExit;
     }
 
-    public AiravataAPI getAiravataAPI() {
-        return airavataAPI;
-    }
-
-    public void setAiravataAPI(AiravataAPI airavataAPI) {
-        if (this.airavataAPI != null && this.airavataAPI instanceof Observable) {
-            ((Observable) this.airavataAPI).deleteObserver(this);
-        }
-        this.airavataAPI = airavataAPI;
-        if (airavataAPI != null && airavataAPI instanceof Observable) {
-            ((Observable) airavataAPI).addObserver(this);
-        }
-        if (getJcrComponentRegistry()==null){
-        	setJcrComponentRegistry(new JCRComponentRegistry(airavataAPI));
-        }else{
-        	getJcrComponentRegistry().setAiravataAPI(airavataAPI);
-        }
-        triggerObservers(getJcrComponentRegistry());
-    }
-
-    public URI getRegistryURL() {
-        return registryURL;
-    }
-
-    public void setRegistryURL(URI registryURL) {
-        this.registryURL = registryURL;
-    }
-
-    public void setRegigstryUserName(String regigstryUserName) {
-        this.regigstryUserName = regigstryUserName;
-    }
-
-    public void setRegistryPassphrase(String registryPassphrase) {
-        this.registryPassphrase = registryPassphrase;
-    }
-
-    public String getRegistryUserName() {
-        return regigstryUserName;
-    }
-
-    public String getRegistryPassphrase() {
-        return registryPassphrase;
+    public void servicesChanged(ThriftServiceType type) {
+        if (type==ThriftServiceType.API_SERVICE) {
+        	try {
+				Client airavataClient = XBayaUtil.getAiravataClient(getThriftClientData(ThriftServiceType.API_SERVICE));
+				if (getJcrComponentRegistry() == null) {
+					setJcrComponentRegistry(new JCRComponentRegistry(airavataClient));
+				} else {
+					getJcrComponentRegistry().setClient(airavataClient);
+				}
+				triggerObservers(getJcrComponentRegistry());
+			} catch (AiravataClientConnectException e) {
+				e.printStackTrace();
+			}
+		}
     }
 
     protected void triggerObservers(Object o) {
@@ -914,22 +863,6 @@ public class XBayaConfiguration extends Observable implements Observer {
         this.y = y;
     }
 
-//    public AiravataAPI getAiravataAPI() {
-//        return airavataAPI;
-//    }
-//
-//    public void setAiravataAPI(AiravataAPI airavataAPI) {
-//        this.airavataAPI = airavataAPI;
-//    }
-
-    public String getDefaultGateway() {
-        return defaultGateway;
-    }
-
-    public void setDefaultGateway(String defaultGateway) {
-        this.defaultGateway = defaultGateway;
-    }
-
 	public JCRComponentRegistry getJcrComponentRegistry() {
 		return jcrComponentRegistry;
 	}
@@ -946,24 +879,6 @@ public class XBayaConfiguration extends Observable implements Observer {
         this.regURLSetByCMD = regURLSetByCMD;
     }
 
-    //    public AiravataAPI setAiravataAPI() {
-//        try{
-//            URI baseUri = new URI(ResourcePathConstants.BASE_URL);
-//            PasswordCallbackImpl passwordCallback = new PasswordCallbackImpl(getRegistryUserName(), getRegistryPassphrase());
-//            airavataAPI = AiravataClientUtils.getAPI(baseUri,
-//                    getRegistryUserName(), passwordCallback);
-//        } catch (RepositoryException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        } catch (RegistryException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        } catch (URISyntaxException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
-//        return airavataAPI;
-//    }
-
     public ContextHeaderDocument.ContextHeader getContextHeader() {
         return contextHeader;
     }
@@ -971,4 +886,17 @@ public class XBayaConfiguration extends Observable implements Observer {
     public void setContextHeader(ContextHeaderDocument.ContextHeader contextHeader) {
         this.contextHeader = contextHeader;
     }
+
+	public Map<ThriftServiceType, ThriftClientData> getThriftClientDataList() {
+		return thriftClientDataList;
+	}
+
+	public void addThriftClientData(ThriftClientData data){
+		getThriftClientDataList().put(data.getServiceType(), data);
+		servicesChanged(data.getServiceType());
+	}
+	
+	public ThriftClientData getThriftClientData(ThriftServiceType serviceType){
+		return (getThriftClientDataList().containsKey(serviceType)?getThriftClientDataList().get(serviceType):null);
+	}
 }

@@ -21,24 +21,16 @@
 
 package org.apache.airavata.xbaya;
 
-import java.net.URI;
 import java.util.List;
 
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataManager;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.amazon.AmazonComponentRegistry;
 import org.apache.airavata.workflow.model.component.local.LocalComponentRegistry;
 import org.apache.airavata.workflow.model.component.system.SystemComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
-import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.component.registry.ComponentController;
-import org.apache.airavata.xbaya.interpretor.WorkflowInterpreter;
-import org.apache.airavata.xbaya.registry.PasswordCallbackImpl;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorStarter;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
@@ -67,10 +59,6 @@ public class XBayaEngine {
 
     private SystemComponentRegistry componentRegistry;
 
-    private WorkflowInterpreter workflowInterpreter;
-
-    private AiravataAPI airavataAPI;
-    
     private ComponentSelector componentTreeViewer; 
 
     /**
@@ -87,30 +75,7 @@ public class XBayaEngine {
                 configuration.getTopic(), configuration.isPullMode(), configuration.getMessageBoxURL());
         this.monitor = new Monitor(monitorConfiguration);
 
-        if (configuration.getAiravataAPI() == null && airavataAPI == null) {
-            try {
-                airavataAPI =  AiravataAPIFactory.getAPI(configuration.getRegistryURL(),
-                        configuration.getDefaultGateway(), configuration.getRegistryUserName(),
-                        new PasswordCallbackImpl(configuration.getRegistryUserName(), configuration.getRegistryPassphrase()));
-                configuration.setAiravataAPI(airavataAPI);
-            } catch (AiravataAPIInvocationException e) {
-                logger.error("Unable to instantiate airavata api instance", e);
-            }
-
-        }
-
-        // MyProxy
-        // this.myProxyClient = new MyProxyClient(this.configuration.getMyProxyServer(),
-        // this.configuration.getMyProxyPort(), this.configuration.getMyProxyUsername(),
-        // this.configuration.getMyProxyPassphrase(), this.configuration.getMyProxyLifetime());
-        //
-        // // These have to be before the GUI setup.
-        // this.workflowClient = WorkflowEngineManager.getWorkflowClient();
-        // this.workflowClient.setXBayaEngine(this);
-
-
         // Set up the GUI.
-        updateXBayaConfigurationServiceURLs();
         XBayaEngine.this.gui = new XBayaGUI(XBayaEngine.this);
 
         // Arguments errors.
@@ -180,6 +145,9 @@ public class XBayaEngine {
 
     }
 
+    private void addApplicationRegistry(){
+
+    }
     /**
      * Initializes registris.
      */
@@ -233,67 +201,6 @@ public class XBayaEngine {
         } catch (Error e) {
             getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         }
-    }
-
-    public void resetWorkflowInterpreter() {
-		this.workflowInterpreter = null;
-	}
-    
-    
-	public WorkflowInterpreter getWorkflowInterpreter() {
-		return workflowInterpreter;
-	}
-
-	public void registerWorkflowInterpreter(WorkflowInterpreter workflowInterpreter) {
-		if (getWorkflowInterpreter()!=null){
-			throw new WorkflowRuntimeException("Critical Error!!! Workflow interpretter already running. Cleanup first");
-		}
-		this.workflowInterpreter = workflowInterpreter;
-	}
-
-	
-	public void updateXBayaConfigurationServiceURLs() {
-		try {
-			if (this.getConfiguration().getAiravataAPI()!=null){
-                airavataAPI = getConfiguration().getAiravataAPI();
-                AiravataManager airavataManager = airavataAPI.getAiravataManager();
-//                AiravataRegistry2 registry=this.getConfiguration().getJcrComponentRegistry().getRegistry();
-	        	URI eventingServiceURL = airavataManager.getEventingServiceURL();
-				if (eventingServiceURL!=null) {
-					this.getConfiguration().setBrokerURL(eventingServiceURL);
-					this.getMonitor()
-							.getConfiguration()
-							.setBrokerURL(eventingServiceURL);
-				}
-				URI messageBoxServiceURL = airavataManager.getMessageBoxServiceURL();
-				if (messageBoxServiceURL!=null) {
-					this.getConfiguration()
-					.setMessageBoxURL(messageBoxServiceURL);
-					this.getMonitor()
-							.getConfiguration()
-							.setMessageBoxURL(messageBoxServiceURL);
-				}
-				List<URI> interpreterServiceURLList = airavataManager.getWorkflowInterpreterServiceURLs();
-				if (interpreterServiceURLList.size()>0) {
-					this.getConfiguration()
-							.setWorkflowInterpreterURL(interpreterServiceURLList.get(0));
-				}
-//				List<URI> gfacURLList = airavataManager.getGFaCURLs();
-//				if (gfacURLList.size()>0) {
-//					this.getConfiguration().setGFacURL(gfacURLList.get(0));
-//				}
-			}
-        } catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-    public AiravataAPI getAiravataAPI() {
-        return airavataAPI;
-    }
-
-    public void setAiravataAPI(AiravataAPI airavataAPI) {
-        this.airavataAPI = airavataAPI;
     }
     
     public void reloadRegistry(){

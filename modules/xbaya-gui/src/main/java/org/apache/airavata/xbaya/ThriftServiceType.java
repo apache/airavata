@@ -19,36 +19,9 @@
  *
  */
 
-package org.apache.airavata.xbaya.test.service.approver;
+package org.apache.airavata.xbaya;
 
-import java.io.File;
-
-import org.apache.airavata.xbaya.test.service.Service;
-import org.xmlpull.v1.builder.XmlElement;
-
-import xsul.xwsif_runtime.XmlElementBasedStub;
-
-public interface Approver extends XmlElementBasedStub {
-
-    /**
-     * SERVICE_NAME
-     */
-    public final static String SERVICE_NAME = "ApproverService";
-
-    /**
-     * WSDL_NAME
-     */
-    public final static String WSDL_NAME = "approver.wsdl";
-
-    /**
-     * WSDL_PATH
-     */
-    public final static String WSDL_PATH = Service.LOAN_DIRECTORY_NAME + File.separator + WSDL_NAME;
-
-    /**
-     * @param input
-     *            the input message
-     * @return the output message
-     */
-    public XmlElement approve(XmlElement input);
+public enum ThriftServiceType {
+	API_SERVICE,
+	WORKFLOW_SERVICE
 }

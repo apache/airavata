@@ -48,9 +48,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
@@ -78,7 +76,6 @@ import org.apache.airavata.xbaya.ui.graph.GraphCanvasListener;
 import org.apache.airavata.xbaya.ui.menues.XBayaMenu;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.views.ComponentViewer;
-import org.apache.airavata.xbaya.ui.views.JCRBrowserPanel;
 import org.apache.airavata.xbaya.ui.views.MonitorPanel;
 import org.apache.airavata.xbaya.ui.views.PortViewer;
 import org.apache.airavata.xbaya.ui.widgets.ScrollPanel;
@@ -87,7 +84,6 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaToolBar;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlElement;
 
 public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 
@@ -400,7 +396,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
     
     private List<ChangeListener> tabChangeListeners=new ArrayList<ChangeListener>();
 
-	private JCRBrowserPanel jcrBrowserPanel;
+//	private JCRBrowserPanel jcrBrowserPanel;
     
     public void addWorkflowTabChangeListener(ChangeListener listener){
 		graphTabbedPane.addChangeListener(listener);
@@ -648,27 +644,27 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 
     }
 
-    public void viewJCRBrowserPanel(){
-    	if (jcrBrowserPanel!=null){
-    		jcrBrowserPanel=componentTabbedPane.indexOfComponent(jcrBrowserPanel)==-1? null:jcrBrowserPanel;
-    	}
-    	if (jcrBrowserPanel==null) {
-			jcrBrowserPanel = new JCRBrowserPanel(engine);
-			this.componentTabbedPane.add(jcrBrowserPanel);
-			int index=this.componentTabbedPane.getTabCount()-1;
-			this.componentTabbedPane.setTitleAt(1, "Airavata Registry");
-			TabLabelButton tabLabelButton = new TabLabelButton(componentTabbedPane, "Close JCR Browser");
-			tabLabelButton.setCloseButtonListener(new ActionListener(){
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					componentTabbedPane.remove(jcrBrowserPanel);
-				}
-				
-			});
-			this.componentTabbedPane.setTabComponentAt(index, tabLabelButton);
-		}
-		componentTabbedPane.setSelectedComponent(jcrBrowserPanel);
-    }
+//    public void viewJCRBrowserPanel(){
+//    	if (jcrBrowserPanel!=null){
+//    		jcrBrowserPanel=componentTabbedPane.indexOfComponent(jcrBrowserPanel)==-1? null:jcrBrowserPanel;
+//    	}
+//    	if (jcrBrowserPanel==null) {
+//			jcrBrowserPanel = new JCRBrowserPanel(engine);
+//			this.componentTabbedPane.add(jcrBrowserPanel);
+//			int index=this.componentTabbedPane.getTabCount()-1;
+//			this.componentTabbedPane.setTitleAt(1, "Airavata Registry");
+//			TabLabelButton tabLabelButton = new TabLabelButton(componentTabbedPane, "Close JCR Browser");
+//			tabLabelButton.setCloseButtonListener(new ActionListener(){
+//				@Override
+//				public void actionPerformed(ActionEvent arg0) {
+//					componentTabbedPane.remove(jcrBrowserPanel);
+//				}
+//				
+//			});
+//			this.componentTabbedPane.setTabComponentAt(index, tabLabelButton);
+//		}
+//		componentTabbedPane.setSelectedComponent(jcrBrowserPanel);
+//    }
     
     public void viewComponentTree(){
     	componentTabbedPane.setSelectedComponent(compTreeXBayapanel.getSwingComponent());
@@ -827,19 +823,17 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
     
     private void loadDefaultGraph() {
         if (this.engine.getConfiguration().getWorkflow() != null) {
-            this.newGraphCanvas(true, false);
-            try {
-            	String xml = this.engine.getConfiguration().getAiravataAPI().getWorkflowManager().getWorkflowAsString(this.engine.getConfiguration().getWorkflow());
-                XmlElement xwf = XMLUtil.stringToXmlElement(xml);
-                Workflow workflow = new Workflow(xwf);
-                setWorkflow(workflow);
-            } catch (AiravataAPIInvocationException e) {
-               getErrorWindow().error(ErrorMessages.REPOSITORY_CONFIGURATION_IS_WRONG_FAILED_TO_LOAD_THE_WORKFLOW, e);
-            } catch (GraphException e) {
-                getErrorWindow().error(ErrorMessages.WORKFLOW_IS_WRONG, e);
-            } catch (ComponentException e) {
-                getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
-            }
+//            this.newGraphCanvas(true, false);
+//            try {
+//            	String xml = this.engine.getConfiguration().getAiravataAPI().getWorkflowManager().getWorkflowAsString(this.engine.getConfiguration().getWorkflow());
+//                XmlElement xwf = XMLUtil.stringToXmlElement(xml);
+//                Workflow workflow = new Workflow(xwf);
+//                setWorkflow(workflow);
+//            } catch (GraphException e) {
+//                getErrorWindow().error(ErrorMessages.WORKFLOW_IS_WRONG, e);
+//            } catch (ComponentException e) {
+//                getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
+//            }
         }
 
     }

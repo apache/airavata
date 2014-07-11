@@ -28,18 +28,13 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.exception.RegistryException;
-import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.util.XBayaUtil;
 
 public class ExperimentMenu {
 
     private JMenu experimentMenu;
 
-    protected RegistryAccesser registryAccesser;
 
     private JMenuItem configureRegistryItem;
 
@@ -55,24 +50,22 @@ public class ExperimentMenu {
      */
     public ExperimentMenu(XBayaEngine engine) {
         this.engine = engine;
-        this.registryAccesser = new RegistryAccesser(engine);
-
         createExperimentMenu();
     }
 
     private void createExperimentMenu() {
 
         createConfigureRegistryItem();
-        createDeleteWorkflowtoRegistryItem();
+//        createDeleteWorkflowtoRegistryItem();
 
         this.experimentMenu = new JMenu("Experiment");
         this.experimentMenu.setMnemonic(KeyEvent.VK_F);
 
-        this.experimentMenu.add(this.configureRegistryItem);
-        this.experimentMenu.addSeparator();
-        this.experimentMenu.add(this.deleteWorkflowfromRegistryItem);
-        this.experimentMenu.addSeparator();
-        this.experimentMenu.addSeparator();
+//        this.experimentMenu.add(this.configureRegistryItem);
+//        this.experimentMenu.addSeparator();
+//        this.experimentMenu.add(this.deleteWorkflowfromRegistryItem);
+//        this.experimentMenu.addSeparator();
+//        this.experimentMenu.addSeparator();
     }
 
     /**
@@ -93,18 +86,18 @@ public class ExperimentMenu {
         });
     }
 
-    private void createDeleteWorkflowtoRegistryItem() {
-        this.deleteWorkflowfromRegistryItem = new JMenuItem("Delete Workflows in Registry");
-        this.deleteWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    ExperimentMenu.this.registryAccesser.deleteOGCEWorkflow(ExperimentMenu.this.engine.getGUI().getWorkflow()
-                            .getQname());
-                } catch (AiravataAPIInvocationException e1) {
-                    throw new WorkflowRuntimeException(e1);
-                }
-            }
-        });
-    }
+//    private void createDeleteWorkflowtoRegistryItem() {
+//        this.deleteWorkflowfromRegistryItem = new JMenuItem("Delete Workflows in Registry");
+//        this.deleteWorkflowfromRegistryItem.addActionListener(new AbstractAction() {
+//            public void actionPerformed(ActionEvent e) {
+//                try {
+//                    ExperimentMenu.this.registryAccesser.deleteOGCEWorkflow(ExperimentMenu.this.engine.getGUI().getWorkflow()
+//                            .getQname());
+//                } catch (AiravataAPIInvocationException e1) {
+//                    throw new WorkflowRuntimeException(e1);
+//                }
+//            }
+//        });
+//    }
 
 }
