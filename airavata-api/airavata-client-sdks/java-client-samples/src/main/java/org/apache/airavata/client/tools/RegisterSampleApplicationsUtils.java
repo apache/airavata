@@ -111,9 +111,9 @@ public class RegisterSampleApplicationsUtils {
             Map<JobManagerCommand, String> jobManagerCommands) {
         ResourceJobManager resourceJobManager = new ResourceJobManager();
         resourceJobManager.setResourceJobManagerType(resourceJobManagerType);
+        resourceJobManager.setPushMonitoringEndpoint(pushMonitoringEndpoint);
         resourceJobManager.setJobManagerBinPath(jobManagerBinPath);
         resourceJobManager.setJobManagerCommands(jobManagerCommands);
-        resourceJobManager.setPushMonitoringEndpoint(pushMonitoringEndpoint);
         return resourceJobManager;
     }
 
