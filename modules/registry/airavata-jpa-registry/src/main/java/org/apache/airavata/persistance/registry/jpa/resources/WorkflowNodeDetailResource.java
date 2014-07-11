@@ -423,9 +423,8 @@ public class WorkflowNodeDetailResource extends AbstractResource {
                 if (taskStatus.getState() == null || taskStatus.getState().equals("") ){
                     taskStatus.setState("UNKNOWN");
                 }
-               
+                return taskStatus;
             } 
-            return taskStatus;
         }
         return null;
     }
