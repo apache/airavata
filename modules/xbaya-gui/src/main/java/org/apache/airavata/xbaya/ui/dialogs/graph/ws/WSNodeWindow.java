@@ -73,20 +73,20 @@ public class WSNodeWindow {
      */
     public void show() {
 
-        WsdlDefinitions wsdl = this.node.getComponent().getWSDL();
+//        WsdlDefinitions wsdl = this.node.getComponent().getWSDL();
         String type;
-        if (WSDLUtil.isAWSDL(wsdl)) {
+//        if (WSDLUtil.isAWSDL(wsdl)) {
             type = "Abstract WSDL";
-        } else {
-            type = "Concrete WSDL";
-        }
+//        } else {
+//            type = "Concrete WSDL";
+//        }
 
         this.nameTextField.setText(this.node.getName());
         this.idTextField.setText(this.node.getID());
         this.typeTextField.setText(type);
         // wsdl.toStringPretty uses tab, which doesn't look good in the editor
         // pane.
-        this.wsdlTextArea.setText(XMLUtil.BUILDER.serializeToStringPretty(wsdl.xml()));
+//        this.wsdlTextArea.setText(XMLUtil.BUILDER.serializeToStringPretty(wsdl.xml()));
 
         this.dialog.show();
     }

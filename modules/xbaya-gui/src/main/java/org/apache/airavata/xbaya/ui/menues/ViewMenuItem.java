@@ -72,7 +72,7 @@ public class ViewMenuItem {
 	 * Creates workflow menu.
 	 */
 	private void createWorkflowMenu() {
-		this.jcrRegistryView = createShpwJCRRegistryView();
+//		this.jcrRegistryView = createShpwJCRRegistryView();
 		this.componentsView = createShowComponentsView();
 
 		monitoringView = createShowMonitoringView();
@@ -81,7 +81,7 @@ public class ViewMenuItem {
 		viewMenu = new JMenu("View");
 		viewMenu.setMnemonic(KeyEvent.VK_V);
 
-		viewMenu.add(this.jcrRegistryView);
+//		viewMenu.add(this.jcrRegistryView);
 
 		viewMenu.addSeparator();
 
@@ -93,15 +93,15 @@ public class ViewMenuItem {
 		viewMenu.add(parametersView);
 	}
 
-	private JMenuItem createShpwJCRRegistryView() {
-		JMenuItem menuItem = new JMenuItem("Airavata Registry");
-		menuItem.addActionListener(new AbstractAction() {
-			public void actionPerformed(ActionEvent e) {
-				engine.getGUI().viewJCRBrowserPanel();
-			}
-		});
-		return menuItem;
-	}
+//	private JMenuItem createShpwJCRRegistryView() {
+//		JMenuItem menuItem = new JMenuItem("Airavata Registry");
+//		menuItem.addActionListener(new AbstractAction() {
+//			public void actionPerformed(ActionEvent e) {
+//				engine.getGUI().viewJCRBrowserPanel();
+//			}
+//		});
+//		return menuItem;
+//	}
 
 	private JMenuItem createShowComponentsView() {
 		JMenuItem menuItem = new JMenuItem("Components");

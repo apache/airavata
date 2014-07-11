@@ -31,7 +31,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.ui.views.JCRBrowserPanel;
 
 public class JCRBrowserDialog extends JDialog {
 
@@ -68,7 +67,7 @@ public class JCRBrowserDialog extends JDialog {
         setLocationRelativeTo(null);
         setBounds(100, 100, 450, 300);
         getContentPane().setLayout(new BorderLayout());
-        contentPanel = new JCRBrowserPanel(getEngine());
+//        contentPanel = new JCRBrowserPanel(getEngine());
         getContentPane().add(contentPanel, BorderLayout.CENTER);
         // contentPanel.setLayout(new BorderLayout(0, 0));
         // {

@@ -356,7 +356,6 @@ public class JythonScript {
         writeSetProperty(BROKER_URL_VARIABLE, XBayaConstants.DEFAULT_BROKER_URL, pw);
         writeSetProperty(MESSAGE_BOX_URL_VARIABLE, this.configuration.getMessageBoxURL(), pw);
         writeSetProperty(TOPIC_VARIABLE, XBayaConstants.DEFAULT_TOPIC, pw);
-        writeSetProperty(GFAC_VARIABLE, this.configuration.getGFacURL(), pw);
 
         for (InputNode paramNode : this.inputNodes) {
             writeParameter(paramNode, pw);
