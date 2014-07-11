@@ -419,7 +419,7 @@ public class BetterGfacImpl implements GFac {
             legacyAppDescription = new ApplicationDescription();
         }
         ApplicationDeploymentDescriptionType legacyAppDescType = legacyAppDescription.getType();
-        legacyAppDescType.addNewApplicationName().setStringValue(applicationDeployment.getAppDeploymentDescription());
+        legacyAppDescType.addNewApplicationName().setStringValue(applicationInterface.getApplicationName().replaceAll(" ", "_"));
         legacyAppDescType.setExecutableLocation(applicationDeployment.getExecutablePath());
         if (gatewayResourcePreferences != null) {
             legacyAppDescType.setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
