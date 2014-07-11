@@ -31,6 +31,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -164,6 +165,25 @@ public class SSHOutputHandler extends AbstractHandler {
                     List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
                     if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
                         OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr,outputArray);
+                        Set<String> strings = output.keySet();
+                        outputArray.clear();
+                        for (String key : strings) {
+                            ActualParameter actualParameter1 = (ActualParameter) output.get(key);
+                            if ("URI".equals(actualParameter1.getType().getType().toString())) {
+                              	String downloadFile = MappingFactory.toString(actualParameter1);
+                            	cluster.scpFrom(downloadFile, outputDataDir);
+                            	String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar)+1, downloadFile.length());
+                            	String localFile = outputDataDir +  File.separator +fileName;
+								jobExecutionContext.addOutputFile(localFile);
+								MappingFactory.fromString(actualParameter1, localFile);
+								DataObjectType dataObjectType = new DataObjectType();
+                                dataObjectType.setValue(localFile);
+                                dataObjectType.setKey(key);
+                                dataObjectType.setType(DataType.URI);
+                                outputArray.add(dataObjectType);
+                            }
+                        }
+                    
                         break;
                     } else {
                         String valueList = outputList.get(0);
