@@ -42,11 +42,11 @@ public class BaseOrchestratorTest {
     public void setUp() throws Exception {
         initialize = new Initialize("registry-derby.sql");
         initialize.initializeDB();
-        gatewayResource = (GatewayResource) ResourceUtils.getGateway("default");
-        workerResource = (WorkerResource) ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
+        gatewayResource = (GatewayResource) ResourceUtils.getGateway(ServerSettings.getSystemUserGateway());
+        workerResource = (WorkerResource) ResourceUtils.getWorker(gatewayResource.getGatewayName(), ServerSettings.getDefaultUser());
         userResource = new UserResource();
-        userResource.setUserName("admin");
-        userResource.setPassword("admin");
+        userResource.setUserName(ServerSettings.getDefaultUser());
+        userResource.setPassword(ServerSettings.getDefaultUser());
 
         documentCreator = new DocumentCreator(getAiravataAPI());
         documentCreator.createLocalHostDocs();

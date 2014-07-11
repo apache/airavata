@@ -408,321 +408,391 @@ public class AppCatalogJPAUtils {
 	
 	private static Resource createLocalDataMovement(LocalDataMovement o) {
 		LocalDataMovementResource localDataMovementResource = new LocalDataMovementResource();
-		localDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+        if (o != null){
+            localDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+        }
 		return localDataMovementResource;
 	}
 	
     private static Resource createLocalSubmission(LocalSubmission o) {
 		LocalSubmissionResource localSubmissionResource = new LocalSubmissionResource();
-		localSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
-		localSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
-		localSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
+        if (o != null){
+            localSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
+            localSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
+            localSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
+        }
 		return localSubmissionResource;
 	}
     
     private static Resource createJobManagerCommand(JobManagerCommand o) {
 		JobManagerCommandResource jobManagerCommandResource = new JobManagerCommandResource();
-		jobManagerCommandResource.setResourceJobManagerId(o.getResourceJobManagerId());
-		jobManagerCommandResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
-		jobManagerCommandResource.setCommandType(o.getCommandType());
-		jobManagerCommandResource.setCommand(o.getCommand());
+        if (o != null){
+            jobManagerCommandResource.setResourceJobManagerId(o.getResourceJobManagerId());
+            jobManagerCommandResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
+            jobManagerCommandResource.setCommandType(o.getCommandType());
+            jobManagerCommandResource.setCommand(o.getCommand());
+        }
 		return jobManagerCommandResource;
 	}
     
     private static Resource createResourceJobManager(ResourceJobManager o) {
 		ResourceJobManagerResource resourceJobManagerResource = new ResourceJobManagerResource();
-		resourceJobManagerResource.setResourceJobManagerId(o.getResourceJobManagerId());
-		resourceJobManagerResource.setPushMonitoringEndpoint(o.getPushMonitoringEndpoint());
-		resourceJobManagerResource.setJobManagerBinPath(o.getJobManagerBinPath());
-		resourceJobManagerResource.setResourceJobManagerType(o.getResourceJobManagerType());
+        if (o != null) {
+            resourceJobManagerResource.setResourceJobManagerId(o.getResourceJobManagerId());
+            resourceJobManagerResource.setPushMonitoringEndpoint(o.getPushMonitoringEndpoint());
+            resourceJobManagerResource.setJobManagerBinPath(o.getJobManagerBinPath());
+            resourceJobManagerResource.setResourceJobManagerType(o.getResourceJobManagerType());
+        }
 		return resourceJobManagerResource;
 	}
     
     private static Resource createDataMovementInterface(DataMovementInterface o) {
 		DataMovementInterfaceResource dataMovementInterfaceResource = new DataMovementInterfaceResource();
-		dataMovementInterfaceResource.setComputeResourceId(o.getComputeResourceId());
-		dataMovementInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
-		dataMovementInterfaceResource.setDataMovementProtocol(o.getDataMovementProtocol());
-		dataMovementInterfaceResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
-		dataMovementInterfaceResource.setPriorityOrder(o.getPriorityOrder());
+        if (o != null) {
+            dataMovementInterfaceResource.setComputeResourceId(o.getComputeResourceId());
+            dataMovementInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+            dataMovementInterfaceResource.setDataMovementProtocol(o.getDataMovementProtocol());
+            dataMovementInterfaceResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+            dataMovementInterfaceResource.setPriorityOrder(o.getPriorityOrder());
+        }
 		return dataMovementInterfaceResource;
 	}
     
     private static Resource createJobSubmissionInterface(JobSubmissionInterface o) {
 		JobSubmissionInterfaceResource jobSubmissionInterfaceResource = new JobSubmissionInterfaceResource();
-		jobSubmissionInterfaceResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
-		jobSubmissionInterfaceResource.setComputeResourceId(o.getComputeResourceId());
-		jobSubmissionInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
-		jobSubmissionInterfaceResource.setJobSubmissionProtocol(o.getJobSubmissionProtocol());
-		jobSubmissionInterfaceResource.setPriorityOrder(o.getPriorityOrder());
+        if (o != null) {
+            jobSubmissionInterfaceResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
+            jobSubmissionInterfaceResource.setComputeResourceId(o.getComputeResourceId());
+            jobSubmissionInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+            jobSubmissionInterfaceResource.setJobSubmissionProtocol(o.getJobSubmissionProtocol());
+            jobSubmissionInterfaceResource.setPriorityOrder(o.getPriorityOrder());
+        }
 		return jobSubmissionInterfaceResource;
 	}
     
     private static Resource createComputeResourceFileSystem(ComputeResourceFileSystem o) {
 		ComputeResourceFileSystemResource computeResourceFileSystemResource = new ComputeResourceFileSystemResource();
-		computeResourceFileSystemResource.setComputeResourceId(o.getComputeResourceId());
-		computeResourceFileSystemResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
-		computeResourceFileSystemResource.setPath(o.getPath());
-		computeResourceFileSystemResource.setFileSystem(o.getFileSystem());
+        if (o != null){
+            computeResourceFileSystemResource.setComputeResourceId(o.getComputeResourceId());
+            computeResourceFileSystemResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+            computeResourceFileSystemResource.setPath(o.getPath());
+            computeResourceFileSystemResource.setFileSystem(o.getFileSystem());
+        }
 		return computeResourceFileSystemResource;
 	}
     
     private static Resource createBatchQueue(BatchQueue o) {
 		BatchQueueResource batchQueueResource = new BatchQueueResource();
-		batchQueueResource.setComputeResourceId(o.getComputeResourceId());
-		batchQueueResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
-		batchQueueResource.setMaxRuntime(o.getMaxRuntime());
-		batchQueueResource.setMaxJobInQueue(o.getMaxJobInQueue());
-		batchQueueResource.setQueueDescription(o.getQueueDescription());
-		batchQueueResource.setQueueName(o.getQueueName());
-		batchQueueResource.setMaxProcessors(o.getMaxProcessors());
-		batchQueueResource.setMaxNodes(o.getMaxNodes());
+        if (o != null){
+            batchQueueResource.setComputeResourceId(o.getComputeResourceId());
+            batchQueueResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+            batchQueueResource.setMaxRuntime(o.getMaxRuntime());
+            batchQueueResource.setMaxJobInQueue(o.getMaxJobInQueue());
+            batchQueueResource.setQueueDescription(o.getQueueDescription());
+            batchQueueResource.setQueueName(o.getQueueName());
+            batchQueueResource.setMaxProcessors(o.getMaxProcessors());
+            batchQueueResource.setMaxNodes(o.getMaxNodes());
+        }
 		return batchQueueResource;
 	}
     private static Resource createComputeResource(ComputeResource o) {
 		ComputeResourceResource computeResourceResource = new ComputeResourceResource();
-		computeResourceResource.setResourceDescription(o.getResourceDescription());
-		computeResourceResource.setResourceId(o.getResourceId());
-		computeResourceResource.setHostName(o.getHostName());
+        if (o != null) {
+            computeResourceResource.setResourceDescription(o.getResourceDescription());
+            computeResourceResource.setResourceId(o.getResourceId());
+            computeResourceResource.setHostName(o.getHostName());
+        }
 		return computeResourceResource;
 	}
 
     private static Resource createHostAlias(HostAlias o) {
         HostAliasResource aliasResource = new HostAliasResource();
-        aliasResource.setResourceID(o.getResourceID());
-        aliasResource.setAlias(o.getAlias());
-        aliasResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+        if (o != null){
+            aliasResource.setResourceID(o.getResourceID());
+            aliasResource.setAlias(o.getAlias());
+            aliasResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+        }
         return aliasResource;
     }
 
     private static Resource createHostIPAddress(HostIPAddress o) {
         HostIPAddressResource ipAddressResource = new HostIPAddressResource();
-        ipAddressResource.setResourceID(o.getResourceID());
-        ipAddressResource.setIpaddress(o.getIpaddress());
-        ipAddressResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+        if (o != null){
+            ipAddressResource.setResourceID(o.getResourceID());
+            ipAddressResource.setIpaddress(o.getIpaddress());
+            ipAddressResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+        }
         return ipAddressResource;
     }
 
     private static Resource createGSSISSHSubmission(GSISSHSubmission o) {
         GSISSHSubmissionResource submissionResource = new GSISSHSubmissionResource();
-        submissionResource.setSubmissionID(o.getSubmissionID());
-        submissionResource.setResourceJobManager(o.getResourceJobManager());
-        submissionResource.setSshPort(o.getSshPort());
-        submissionResource.setInstalledPath(o.getInstalledPath());
-        submissionResource.setMonitorMode(o.getMonitorMode());
+        if (o != null) {
+            submissionResource.setSubmissionID(o.getSubmissionID());
+            submissionResource.setResourceJobManager(o.getResourceJobManager());
+            submissionResource.setSshPort(o.getSshPort());
+            submissionResource.setInstalledPath(o.getInstalledPath());
+            submissionResource.setMonitorMode(o.getMonitorMode());
+        }
         return submissionResource;
     }
 
     private static Resource createGSISSHExport(GSISSHExport o){
         GSISSHExportResource resource = new GSISSHExportResource();
-        resource.setSubmissionID(o.getSubmissionID());
-        resource.setExport(o.getExport());
-        resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshJobSubmission()));
+        if (o != null) {
+            resource.setSubmissionID(o.getSubmissionID());
+            resource.setExport(o.getExport());
+            resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshJobSubmission()));
+        }
         return resource;
     }
 
     private static Resource createGSISSHPreJObCommand(GSISSHPreJobCommand o){
         GSISSHPreJobCommandResource resource = new GSISSHPreJobCommandResource();
-        resource.setSubmissionID(o.getSubmissionID());
-        resource.setCommand(o.getCommand());
-        resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshSubmission()));
+        if (o != null) {
+            resource.setSubmissionID(o.getSubmissionID());
+            resource.setCommand(o.getCommand());
+            resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshSubmission()));
+        }
         return resource;
     }
 
     private static Resource createGSISSHPostJObCommand(GSISSHPostJobCommand o){
         GSISSHPostJobCommandResource resource = new GSISSHPostJobCommandResource();
-        resource.setSubmissionID(o.getSubmissionID());
-        resource.setCommand(o.getCommand());
-        resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshSubmission()));
+        if (o != null){
+            resource.setSubmissionID(o.getSubmissionID());
+            resource.setCommand(o.getCommand());
+            resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshSubmission()));
+        }
         return resource;
     }
 
     private static Resource createGlobusJobSubmission(GlobusJobSubmission o) {
         GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
-        resource.setSubmissionID(o.getSubmissionID());
-        resource.setResourceJobManager(o.getResourceJobManager());
-        resource.setSecurityProtocol(o.getSecurityProtocol());
+        if (o != null){
+            resource.setSubmissionID(o.getSubmissionID());
+            resource.setResourceJobManager(o.getResourceJobManager());
+            resource.setSecurityProtocol(o.getSecurityProtocol());
+        }
         return resource;
     }
 
     private static Resource createGlobusEndpoint(GlobusGKEndpoint o) {
         GlobusGKEndpointResource resource = new GlobusGKEndpointResource();
-        resource.setSubmissionID(o.getSubmissionID());
-        resource.setEndpoint(o.getEndpoint());
-        resource.setGlobusJobSubmissionResource((GlobusJobSubmissionResource)createGlobusJobSubmission(o.getGlobusSubmission()));
+        if (o != null){
+            resource.setSubmissionID(o.getSubmissionID());
+            resource.setEndpoint(o.getEndpoint());
+            resource.setGlobusJobSubmissionResource((GlobusJobSubmissionResource)createGlobusJobSubmission(o.getGlobusSubmission()));
+        }
         return resource;
     }
 	
 	private static Resource createSshJobSubmission(SshJobSubmission o) {
-		SshJobSubmissionResource sshJobSubmissionResource = new SshJobSubmissionResource();
-		sshJobSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
-		sshJobSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
-		sshJobSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
-		sshJobSubmissionResource.setAlternativeSshHostname(o.getAlternativeSshHostname());
-		sshJobSubmissionResource.setSecurityProtocol(o.getSecurityProtocol());
-		sshJobSubmissionResource.setSshPort(o.getSshPort());
-		return sshJobSubmissionResource;
-	}
+        SshJobSubmissionResource sshJobSubmissionResource = new SshJobSubmissionResource();
+        if (o != null) {
+            sshJobSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
+            sshJobSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource) createResourceJobManager(o.getResourceJobManager()));
+            sshJobSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
+            sshJobSubmissionResource.setAlternativeSshHostname(o.getAlternativeSshHostname());
+            sshJobSubmissionResource.setSecurityProtocol(o.getSecurityProtocol());
+            sshJobSubmissionResource.setSshPort(o.getSshPort());
+        }
+        return sshJobSubmissionResource;
+    }
 
     private static Resource createScpDataMovement(ScpDataMovement o) {
 		ScpDataMovementResource scpDataMovementResource = new ScpDataMovementResource();
-		scpDataMovementResource.setQueueDescription(o.getQueueDescription());
-		scpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
-		scpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
-		scpDataMovementResource.setAlternativeScpHostname(o.getAlternativeScpHostname());
-		scpDataMovementResource.setSshPort(o.getSshPort());
+        if (o != null){
+            scpDataMovementResource.setQueueDescription(o.getQueueDescription());
+            scpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+            scpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
+            scpDataMovementResource.setAlternativeScpHostname(o.getAlternativeScpHostname());
+            scpDataMovementResource.setSshPort(o.getSshPort());
+        }
 		return scpDataMovementResource;
 	}
 
     private static Resource createGridftpDataMovement(GridftpDataMovement o) {
 		GridftpDataMovementResource gridftpDataMovementResource = new GridftpDataMovementResource();
-		gridftpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
-		gridftpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
+        if (o != null){
+            gridftpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+            gridftpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
+        }
 		return gridftpDataMovementResource;
 	}
 
     private static Resource createGridftpEndpoint(GridftpEndpoint o) {
 		GridftpEndpointResource gridftpEndpointResource = new GridftpEndpointResource();
-		gridftpEndpointResource.setEndpoint(o.getEndpoint());
-		gridftpEndpointResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
-		gridftpEndpointResource.setGridftpDataMovementResource((GridftpDataMovementResource)createGridftpDataMovement(o.getGridftpDataMovement()));
+        if (o != null){
+            gridftpEndpointResource.setEndpoint(o.getEndpoint());
+            gridftpEndpointResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
+            gridftpEndpointResource.setGridftpDataMovementResource((GridftpDataMovementResource)createGridftpDataMovement(o.getGridftpDataMovement()));
+        }
 		return gridftpEndpointResource;
 	}
 
     private static Resource createJobSubmissionProtocol(JobSubmissionProtocol o) {
         JobSubmissionProtocolResource resource = new JobSubmissionProtocolResource();
-        resource.setResourceID(o.getResourceID());
-        resource.setSubmissionID(o.getSubmissionID());
-        resource.setJobType(o.getJobType());
-        resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+        if (o != null){
+            resource.setResourceID(o.getResourceID());
+            resource.setSubmissionID(o.getSubmissionID());
+            resource.setJobType(o.getJobType());
+            resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+        }
         return resource;
     }
 
     private static Resource createDataMovementProtocol(DataMovementProtocol o) {
         DataMovementProtocolResource resource = new DataMovementProtocolResource();
-        resource.setResourceID(o.getResourceID());
-        resource.setDataMoveID(o.getDataMoveID());
-        resource.setDataMoveType(o.getDataMoveType());
-        resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+        if (o != null) {
+            resource.setResourceID(o.getResourceID());
+            resource.setDataMoveID(o.getDataMoveID());
+            resource.setDataMoveType(o.getDataMoveType());
+            resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+        }
         return resource;
     }
 
     private static Resource createApplicationModule(ApplicationModule o) {
         AppModuleResource moduleResource = new AppModuleResource();
-        moduleResource.setModuleId(o.getModuleID());
-        moduleResource.setModuleDesc(o.getModuleDesc());
-        moduleResource.setModuleName(o.getModuleName());
-        moduleResource.setModuleVersion(o.getModuleVersion());
+        if (o != null){
+            moduleResource.setModuleId(o.getModuleID());
+            moduleResource.setModuleDesc(o.getModuleDesc());
+            moduleResource.setModuleName(o.getModuleName());
+            moduleResource.setModuleVersion(o.getModuleVersion());
+        }
         return moduleResource;
     }
 
     private static Resource createApplicationDeployment(ApplicationDeployment o) {
         AppDeploymentResource resource = new AppDeploymentResource();
-        resource.setDeploymentId(o.getDeploymentID());
-        resource.setAppDes(o.getApplicationDesc());
-        resource.setAppModuleId(o.getAppModuleID());
-        resource.setHostId(o.getHostID());
-        resource.setExecutablePath(o.getExecutablePath());
-        resource.setParallelism(o.getParallelism());
-        resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
-        resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
+        if (o != null){
+            resource.setDeploymentId(o.getDeploymentID());
+            resource.setAppDes(o.getApplicationDesc());
+            resource.setAppModuleId(o.getAppModuleID());
+            resource.setHostId(o.getHostID());
+            resource.setExecutablePath(o.getExecutablePath());
+            resource.setParallelism(o.getParallelism());
+            resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
+            resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
+        }
         return resource;
     }
 
     private static Resource createLibraryPrepPathResource(LibraryPrepandPath o) {
         LibraryPrepandPathResource resource = new LibraryPrepandPathResource();
-        resource.setDeploymentId(o.getDeploymentID());
-        resource.setName(o.getName());
-        resource.setValue(o.getValue());
-        resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
+        if (o != null){
+            resource.setDeploymentId(o.getDeploymentID());
+            resource.setName(o.getName());
+            resource.setValue(o.getValue());
+            resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
+        }
         return resource;
     }
 
     private static Resource createLibraryApendPathResource(LibraryApendPath o) {
         LibraryApendPathResource resource = new LibraryApendPathResource();
-        resource.setDeploymentId(o.getDeploymentID());
-        resource.setName(o.getName());
-        resource.setValue(o.getValue());
-        resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        if (o != null){
+            resource.setDeploymentId(o.getDeploymentID());
+            resource.setName(o.getName());
+            resource.setValue(o.getValue());
+            resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        }
         return resource;
     }
 
     private static Resource createAppEnvironmentResource(AppEnvironment o) {
         AppEnvironmentResource resource = new AppEnvironmentResource();
-        resource.setDeploymentId(o.getDeploymentID());
-        resource.setName(o.getName());
-        resource.setValue(o.getValue());
-        resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        if (o != null){
+            resource.setDeploymentId(o.getDeploymentID());
+            resource.setName(o.getName());
+            resource.setValue(o.getValue());
+            resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        }
         return resource;
     }
 
     private static Resource createAppInterfaceResource(ApplicationInterface o) {
         AppInterfaceResource resource = new AppInterfaceResource();
-        resource.setInterfaceId(o.getInterfaceID());
-        resource.setAppName(o.getAppName());
-        resource.setAppDescription(o.getAppDescription());
+        if (o != null){
+            resource.setInterfaceId(o.getInterfaceID());
+            resource.setAppName(o.getAppName());
+            resource.setAppDescription(o.getAppDescription());
+        }
         return resource;
     }
 
     private static Resource createAppModMappingResource(AppModuleMapping o) {
         AppModuleMappingResource resource = new AppModuleMappingResource();
-        resource.setInterfaceId(o.getInterfaceID());
-        resource.setModuleId(o.getModuleID());
+        if (o != null){
+            resource.setInterfaceId(o.getInterfaceID());
+            resource.setModuleId(o.getModuleID());
+        }
         return resource;
     }
 
     private static Resource createApplicationInput(ApplicationInput o) {
         ApplicationInputResource resource = new ApplicationInputResource();
-        resource.setInterfaceID(o.getInterfaceID());
-        resource.setInputKey(o.getInputKey());
-        resource.setInputVal(o.getInputVal());
-        resource.setDataType(o.getDataType());
-        resource.setMetadata(o.getMetadata());
-        resource.setAppArgument(o.getAppArgument());
-        resource.setUserFriendlyDesc(o.getUserFriendlyDesc());
-        resource.setStandareInput(o.isStandardInput());
-        resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
+        if (o != null){
+            resource.setInterfaceID(o.getInterfaceID());
+            resource.setInputKey(o.getInputKey());
+            resource.setInputVal(o.getInputVal());
+            resource.setDataType(o.getDataType());
+            resource.setMetadata(o.getMetadata());
+            resource.setAppArgument(o.getAppArgument());
+            resource.setUserFriendlyDesc(o.getUserFriendlyDesc());
+            resource.setStandareInput(o.isStandardInput());
+            resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
+        }
         return resource;
     }
 
     private static Resource createApplicationOutput(ApplicationOutput o) {
         ApplicationOutputResource resource = new ApplicationOutputResource();
-        resource.setInterfaceID(o.getInterfaceID());
-        resource.setOutputKey(o.getOutputKey());
-        resource.setOutputVal(o.getOutputVal());
-        resource.setDataType(o.getDataType());
-        resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
+        if (o != null){
+            resource.setInterfaceID(o.getInterfaceID());
+            resource.setOutputKey(o.getOutputKey());
+            resource.setOutputVal(o.getOutputVal());
+            resource.setDataType(o.getDataType());
+            resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
+        }
         return resource;
     }
 
     private static Resource createGatewayProfile(GatewayProfile o) {
         GatewayProfileResource resource = new GatewayProfileResource();
-        resource.setGatewayID(o.getGatewayID());
-        resource.setGatewayName(o.getGatewayName());
-        resource.setGatewayDesc(o.getGatewayDesc());
+        if (o != null) {
+            resource.setGatewayID(o.getGatewayID());
+            resource.setGatewayName(o.getGatewayName());
+            resource.setGatewayDesc(o.getGatewayDesc());
+        }
         return resource;
     }
 
     private static Resource createComputeResourcePref(ComputeResourcePreference o) {
         ComputeHostPreferenceResource resource = new ComputeHostPreferenceResource();
-        resource.setGatewayId(o.getGatewayId());
-        resource.setResourceId(o.getResourceId());
-        resource.setOverrideByAiravata(o.isOverrideByAiravata());
-        resource.setPreferredJobProtocol(o.getPreferedJobSubmissionProtocol());
-        resource.setPreferedDMProtocol(o.getPreferedDataMoveProtocol());
-        resource.setBatchQueue(o.getBatchQueue());
-        resource.setScratchLocation(o.getScratchLocation());
-        resource.setProjectNumber(o.getProjectNumber());
-        resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeHostResource()));
-        resource.setGatewayProfile((GatewayProfileResource)createGatewayProfile(o.getGatewayProfile()));
+        if (o != null) {
+            resource.setGatewayId(o.getGatewayId());
+            resource.setResourceId(o.getResourceId());
+            resource.setOverrideByAiravata(o.isOverrideByAiravata());
+            resource.setPreferredJobProtocol(o.getPreferedJobSubmissionProtocol());
+            resource.setPreferedDMProtocol(o.getPreferedDataMoveProtocol());
+            resource.setBatchQueue(o.getBatchQueue());
+            resource.setScratchLocation(o.getScratchLocation());
+            resource.setProjectNumber(o.getProjectNumber());
+            resource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeHostResource()));
+            resource.setGatewayProfile((GatewayProfileResource) createGatewayProfile(o.getGatewayProfile()));
+        }
         return resource;
     }
 
     private static Resource createModuleLoadCmd(ModuleLoadCmd o) {
         ModuleLoadCmdResource moduleLoadCmdResource = new ModuleLoadCmdResource();
-        moduleLoadCmdResource.setCmd(o.getCmd());
-        moduleLoadCmdResource.setAppDeploymentId(o.getAppDeploymentId());
-        moduleLoadCmdResource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        if (o != null){
+            moduleLoadCmdResource.setCmd(o.getCmd());
+            moduleLoadCmdResource.setAppDeploymentId(o.getAppDeploymentId());
+            moduleLoadCmdResource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
+        }
         return moduleLoadCmdResource;
     }
 }
