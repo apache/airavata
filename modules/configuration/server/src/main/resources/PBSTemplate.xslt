@@ -9,6 +9,7 @@
 <xsl:output method="text" />
 <xsl:template match="/ns:JobDescriptor">
 #! /bin/sh
+# PBS batch job script built by Globus job manager
 #   <xsl:choose>
     <xsl:when test="ns:shellName">
 ##PBS -S <xsl:value-of select="ns:shellName"/>
@@ -31,11 +32,6 @@
     <xsl:choose>
     <xsl:when test="ns:maxWallTime">
 #PBS -l walltime=<xsl:value-of select="ns:maxWallTime"/>
-    </xsl:when>
-    </xsl:choose>
-    <xsl:choose>
-    <xsl:when test="ns:jobName">
-#PBS -N <xsl:value-of select="ns:jobName"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
@@ -64,7 +60,11 @@ export<xsl:text>   </xsl:text><xsl:value-of select="."/>
     </xsl:for-each>
 cd <xsl:text>   </xsl:text><xsl:value-of select="ns:workingDirectory"/><xsl:text>&#xa;</xsl:text>
     <xsl:choose><xsl:when test="ns:jobSubmitterCommand">
-<xsl:value-of select="ns:jobSubmitterCommand"/><xsl:text>   </xsl:text></xsl:when></xsl:choose><xsl:value-of select="ns:executablePath"/><xsl:text>   </xsl:text>
+<xsl:value-of select="ns:jobSubmitterCommand"/><xsl:text>   </xsl:text> <xsl:choose>
+    <xsl:when test="(ns:nodes)">
+<xsl:value-of select="ns:nodes"/><xsl:text>   </xsl:text>
+    </xsl:when>
+    </xsl:choose></xsl:when></xsl:choose><xsl:value-of select="ns:executablePath"/><xsl:text>   </xsl:text>
 <xsl:for-each select="ns:inputs/ns:input">
       <xsl:value-of select="."/><xsl:text>   </xsl:text>
     </xsl:for-each>
