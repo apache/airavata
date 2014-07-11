@@ -65,14 +65,15 @@ public class CreateLaunchExperiment {
     private static String slurmAppId = "stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
     private static String sgeAppId;
     private static String br2EchoAppId = "bigred2_f435286c-545b-4b31-8366-3e1c6df66c9a,SimpleEchoBR_223a4aa8-fdb9-4d4f-b3cd-b9253c3c9af";
-    private static String slurmWRFAppId = "stampede.tacc.xsede.org_459dde5e-4a4f-4d37-ac80-464561b103e6,WRF_7967d316-d92b-4be6-9cde-37dfc4b9ecf5";
+    private static String slurmWRFAppId = "stampede.tacc.xsede.org_2840c815-7e61-4579-8194-79fe15cea9a9,WRF_00817e82-7995-4986-8fe2-72da08b63ef0";
+    private static String br2AmberAppId = "bigred2_5dc35993-31c4-499e-97c1-8d934007e135,AmberBR2_f63fd6f9-a93f-43a8-bd41-065740a32f1f";
 
     public static void main(String[] args) {
         try {
             AiravataUtils.setExecutionAsClient();
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + client.getAPIVersion());
-            addDescriptors();
+//            addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForTrestles(client);
@@ -81,7 +82,8 @@ public class CreateLaunchExperiment {
 //            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentWRFTrestles(client);
 //            final String expId = createExperimentForBR2(client);
-            final String expId = createExperimentWRFStampede(client);
+            final String expId = createExperimentForBR2Amber(client);
+//            final String expId = createExperimentWRFStampede(client);
 
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
@@ -107,7 +109,8 @@ public class CreateLaunchExperiment {
 //            sgeAppId = documentCreator.createSGEDocs();
 //            documentCreator.createEchoHostDocs();
 //            br2EchoAppId = documentCreator.createBigRedDocs();
-            slurmWRFAppId = documentCreator.createSlumWRFDocs();
+//            slurmWRFAppId = documentCreator.createSlumWRFDocs();
+            br2AmberAppId = documentCreator.createBigRedAmberDocs();
             System.out.printf(localHostAppId);
             System.out.println(sshHostAppId);
             System.out.println(pbsEchoAppId);
@@ -116,6 +119,7 @@ public class CreateLaunchExperiment {
             System.out.println(sgeAppId);
             System.out.println(br2EchoAppId);
             System.out.println(slurmWRFAppId);
+            System.out.println(br2AmberAppId);
         } catch (Exception e) {
             logger.error("Unable to create documents", e.getMessage());
             throw new ApplicationSettingsException(e.getMessage());
@@ -554,12 +558,86 @@ public class CreateLaunchExperiment {
         }
     }
 
+    public static String createExperimentForBR2Amber(Airavata.Client client) throws TException {
+        try {
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("AMBER_HEAT_RST");
+            input.setType(DataType.URI);
+            input.setValue("/Users/lahirugunathilake/Downloads/02_Heat.rst");
+            exInputs.add(input);
+
+            DataObjectType input1 = new DataObjectType();
+            input1.setKey("AMBER_PROD_IN");
+            input1.setType(DataType.URI);
+            input1.setValue("/Users/lahirugunathilake/Downloads/03_Prod.in");
+            exInputs.add(input1);
+
+            DataObjectType input2 = new DataObjectType();
+            input2.setKey("AMBER_PRMTOP");
+            input2.setType(DataType.URI);
+            input2.setValue("/Users/lahirugunathilake/Downloads/prmtop");
+            exInputs.add(input2);
+
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("AMBER_Prod.info");
+            output.setType(DataType.URI);
+            output.setValue("");
+            exOut.add(output);
+
+            DataObjectType output1 = new DataObjectType();
+            output1.setKey("AMBER_Prod.mdcrd");
+            output1.setType(DataType.URI);
+            output1.setValue("");
+            exOut.add(output1);
+            DataObjectType output2 = new DataObjectType();
+            output2.setKey("AMBER_Prod.out");
+            output2.setType(DataType.URI);
+            output2.setValue("");
+            exOut.add(output2);
+            DataObjectType output3 = new DataObjectType();
+            output3.setKey("AMBER_Prod.rst");
+            output3.setType(DataType.URI);
+            output3.setValue("");
+            exOut.add(output3);
+
+            Project project = ProjectModelUtil.createProject("default", "admin", "test project");
+            String projectId = client.createProject(project);
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", br2AmberAppId.split(",")[1], exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(br2AmberAppId.split(",")[0], 4, 1, 1, "cpu", 20, 0, 1, null);
+            scheduling.setResourceHostId("bigred2.uits.iu.edu");
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            userConfigurationData.setAiravataAutoSchedule(false);
+            userConfigurationData.setOverrideManualScheduledParams(false);
+            userConfigurationData.setComputationalResourceScheduling(scheduling);
+            simpleExperiment.setUserConfigurationData(userConfigurationData);
+            return client.createExperiment(simpleExperiment);
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+    }
+
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            String sshTokenId = "9a269d4b-b2a5-4dc6-b83a-895b9efca56a";
+            String sshTokenId = "f282fa43-7bce-4f23-bddc-02e52a30a3ba";
             String gsisshTokenId = "7a8b801f-23e7-465f-b5e4-3cf1e8bee2ab";
-            client.launchExperiment(expId, gsisshTokenId);
+            client.launchExperiment(expId, sshTokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);
