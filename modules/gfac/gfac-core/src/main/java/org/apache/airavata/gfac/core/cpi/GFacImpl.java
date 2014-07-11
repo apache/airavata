@@ -268,11 +268,11 @@ public class GFacImpl implements GFac {
         jobExecutionContext.setApplicationContext(applicationContext);
 
         List<DataObjectType> experimentInputs = taskData.getApplicationInputs();
-        jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getMessageContext(experimentInputs,
+        jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInMessageContext(experimentInputs,
                 serviceDescription.getType().getInputParametersArray())));
 
         List<DataObjectType> outputData = taskData.getApplicationOutputs();
-        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getMessageContext(outputData,
+        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getInMessageContext(outputData,
                 serviceDescription.getType().getOutputParametersArray())));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
