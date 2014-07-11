@@ -419,7 +419,7 @@ public class BetterGfacImpl implements GFac {
             legacyAppDescription = new ApplicationDescription();
         }
         ApplicationDeploymentDescriptionType legacyAppDescType = legacyAppDescription.getType();
-        legacyAppDescType.addNewApplicationName().setStringValue(applicationDeployment.getAppDeploymentDescription());
+        legacyAppDescType.addNewApplicationName().setStringValue(applicationInterface.getApplicationName().replaceAll(" ", "_"));
         legacyAppDescType.setExecutableLocation(applicationDeployment.getExecutablePath());
         if (gatewayResourcePreferences != null) {
             legacyAppDescType.setScratchWorkingDirectory(gatewayResourcePreferences.getScratchLocation());
@@ -454,11 +454,11 @@ public class BetterGfacImpl implements GFac {
         jobExecutionContext.setApplicationContext(applicationContext);
 
         List<DataObjectType> experimentInputs = taskData.getApplicationInputs();
-        jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getMessageContext(experimentInputs,
+        jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInMessageContext(experimentInputs,
                 legacyServiceDescType.getInputParametersArray())));
 
         List<DataObjectType> outputData = taskData.getApplicationOutputs();
-        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getMessageContext(outputData,
+        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOutMessageContext(outputData,
                 legacyServiceDescType.getOutputParametersArray())));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
