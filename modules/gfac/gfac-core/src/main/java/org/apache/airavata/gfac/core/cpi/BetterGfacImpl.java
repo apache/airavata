@@ -283,7 +283,7 @@ public class BetterGfacImpl implements GFac {
         List<InputDataObjectType> applicationInputs = applicationInterface.getApplicationInputs();
         for (InputDataObjectType dataObjectType : applicationInputs) {
             InputParameterType parameter = InputParameterType.Factory.newInstance();
-            parameter.setParameterName(dataObjectType.getApplicationArgument());
+            parameter.setParameterName(dataObjectType.getName());
             parameter.setParameterDescription(dataObjectType.getUserFriendlyDescription());
             ParameterType parameterType = parameter.addNewParameterType();
             switch (dataObjectType.getType()) {

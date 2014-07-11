@@ -222,9 +222,9 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         this.airavataUserName = airavataUserName;
     }
     protected void setGatewayProperties() throws ApplicationSettingsException {
-         setAiravataUserName(ServerSettings.getProperties().getProperty("system.user"));
-         setGatewayName(ServerSettings.getProperties().getProperty("system.gateway"));
-         setRegistryURL(ServerSettings.getProperties().getProperty("airavata.server.url"));
+         setAiravataUserName(ServerSettings.getSetting("system.user"));
+         setGatewayName(ServerSettings.getSetting("system.gateway"));
+         setRegistryURL(ServerSettings.getSetting("airavata.server.url"));
      }
 
     private GFac getGfac()throws TException{
