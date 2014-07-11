@@ -32,12 +32,12 @@ try
 
         $appInput1 = new InputDataObjectType();
         $appInput1->name = "Namelist_File";
-        $appInput1->userFriendlyDescription = "Namelist file";
+        $appInput1->userFriendlyDescription = "Namelist Configuration File";
         $appInput1->type = DataType::URI;
 
         $appInput2 = new InputDataObjectType();
-        $appInput2->name = "WRF Boundary File";
-        $appInput2->userFriendlyDescription = "Boundary file";
+        $appInput2->name = "WRF_Boundary_File";
+        $appInput2->userFriendlyDescription = "Boundary Conditions File";
         $appInput2->type = DataType::URI;
 
         $appInput3 = new InputDataObjectType();
@@ -46,11 +46,11 @@ try
         $appInput3->type = DataType::URI;
 
         $appOutput1 = new OutputDataObjectType();
-        $appOutput1->name = "WRF Standard Out";
+        $appOutput1->name = "WRF_Standard_Out";
         $appOutput1->type = DataType::STRING;
 
         $appOutput2 = new OutputDataObjectType();
-        $appOutput2->name = "WRF RSL Out";
+        $appOutput2->name = "WRF_RSL_Out";
         $appOutput2->type = DataType::STRING;
 
         $appInterface = $airavataclient->getApplicationInterface($appInterfaceId);
