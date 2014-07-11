@@ -48,7 +48,7 @@ using namespace apache::thrift::transport;
 using namespace apache::airavata::api;
 using namespace apache::airavata::model::workspace::experiment;
 
-void readConfigFile(char* cfgfile, string& airavata_server, string& app_catalog_server, int& airavata_port, int& app_catalog_port, int& airavata_timeout) {
+void readConfigFile(char* cfgfile, string& airavata_server, int& airavata_port, int& airavata_timeout) {
 
         Settings *conf;
         GKeyFile *keyfile;
@@ -57,31 +57,27 @@ void readConfigFile(char* cfgfile, string& airavata_server, string& app_catalog_
         keyfile = g_key_file_new ();        				
         if (!g_key_file_load_from_file (keyfile, cfgfile, flags, &error)) {
                 g_error (error->message);
-        } else {
-                
+        } else {                
                 conf = g_slice_new (Settings);
                 conf->airavata_server    = g_key_file_get_string(keyfile, "airavata", "AIRAVATA_SERVER", NULL);
                 airavata_server = conf->airavata_server;
                 conf->airavata_port      = g_key_file_get_integer(keyfile, "airavata", "AIRAVATA_PORT", NULL);
                 airavata_port = conf->airavata_port;
                 conf->airavata_timeout  = g_key_file_get_integer(keyfile, "airavata", "AIRAVATA_TIMEOUT", NULL);
-                airavata_timeout = conf->airavata_timeout;
-                conf->app_catalog_server  = g_key_file_get_string(keyfile, "airavata", "APP_CATALOG_SERVER", NULL);
-                app_catalog_server = conf->app_catalog_server;
-                conf->app_catalog_port      = g_key_file_get_integer(keyfile, "airavata", "APP_CATALOG_PORT", NULL);
-                app_catalog_port = conf->app_catalog_port;
+                airavata_timeout = conf->airavata_timeout;                
         }				
 
 }
 
+
 int main(int argc, char **argv)
 {
         
-        int airavata_port, app_catalog_port, airavata_timeout;
-        string airavata_server, app_catalog_server;
+        int airavata_port, airavata_timeout;
+        string airavata_server;
 				char* cfgfile;
 				cfgfile = "./airavata-client-properties.ini";
-        readConfigFile(cfgfile, airavata_server, app_catalog_server, airavata_port, app_catalog_port, airavata_timeout);				
+        readConfigFile(cfgfile, airavata_server, airavata_port, airavata_timeout);				
 				airavata_server.erase(0,1);
 				airavata_server.erase(airavata_server.length()-1,1);			
 			  boost::shared_ptr<TSocket> socket(new TSocket(airavata_server, airavata_port));
