@@ -25,11 +25,13 @@ import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -115,7 +117,9 @@ public class RegisterSampleApplicationsUtils {
         return resourceJobManager;
     }
 
-    public static InputDataObjectType createAppInput(String inputName, String argumentName, String description, String value, org.apache.airavata.model.appcatalog.appinterface.DataType type) {
+    public static InputDataObjectType createAppInput
+            (String inputName, String value, org.apache.airavata.model.appcatalog.appinterface.DataType type,
+             String applicationArgument, boolean stdIn, String description, String metadata) {
         InputDataObjectType input = new InputDataObjectType();
 //        input.setIsEmpty(false);
         if (inputName != null) {
@@ -127,8 +131,8 @@ public class RegisterSampleApplicationsUtils {
         if (type != null) {
             input.setType(type);
         }
-        if (argumentName != null) {
-            input.setApplicationArgument(argumentName);
+        if (applicationArgument != null) {
+            input.setApplicationArgument(applicationArgument);
         }
         if (description != null) {
             input.setUserFriendlyDescription(description);
@@ -149,6 +153,20 @@ public class RegisterSampleApplicationsUtils {
             outputDataObjectType.setType(type);
         }
         return outputDataObjectType;
+    }
+
+    public static ApplicationInterfaceDescription createApplicationInterfaceDescription
+            (String applicationName, String applicationDesription, List<String> applicationModules,
+            List<InputDataObjectType> applicationInputs, List<OutputDataObjectType>applicationOutputs) {
+        ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
+
+        applicationInterfaceDescription.setApplicationName(applicationName);
+        if (applicationDesription != null) applicationInterfaceDescription.setApplicationDesription(applicationDesription);
+        if (applicationModules != null) applicationInterfaceDescription.setApplicationModules(applicationModules);
+        if (applicationInputs != null) applicationInterfaceDescription.setApplicationInputs(applicationInputs);
+        if (applicationOutputs != null) applicationInterfaceDescription.setApplicationOutputs(applicationOutputs);
+
+        return applicationInterfaceDescription;
     }
 
 }
