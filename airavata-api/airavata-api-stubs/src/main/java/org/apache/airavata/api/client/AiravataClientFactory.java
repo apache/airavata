@@ -21,13 +21,11 @@
 
 package org.apache.airavata.api.client;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.workflow.Workflow;
 //import org.apache.airavata.api.appcatalog.ApplicationCatalogAPI;
 import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
@@ -51,18 +49,19 @@ public class AiravataClientFactory {
         }
     }
     
-    /*public static ApplicationCatalogAPI.Client createApplicationCatalogClient(String serverHost, int serverPort) throws AiravataClientConnectException{
+    public static Workflow.Client createWorkflowClient(String serverHost, int serverPort) throws AiravataClientConnectException{
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
 //            TMultiplexedProtocol mp = new TMultiplexedProtocol(protocol, "AppCatalog");
-            return new ApplicationCatalogAPI.Client(protocol);
+            return new Workflow.Client(protocol);
         } catch (TTransportException e) {
             throw new AiravataClientConnectException("Unable to connect to the server at "+serverHost+":"+serverPort);
         }
     }
     
+    /*
     public static <T extends org.apache.thrift.TServiceClient> T createApplicationCatalogClient(String serverHost, int serverPort, Class<T> type) throws Exception{
         try {
             TTransport transport = new TSocket(serverHost, serverPort);

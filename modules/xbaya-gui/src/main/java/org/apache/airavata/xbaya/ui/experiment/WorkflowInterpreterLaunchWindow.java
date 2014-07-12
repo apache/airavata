@@ -29,6 +29,11 @@ import java.util.List;
 import java.util.UUID;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 
+
+
+
+
+
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -38,8 +43,18 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.DataType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
+import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.workflow.engine.interpretor.WorkflowInterpreter;
+import org.apache.airavata.workflow.engine.interpretor.WorkflowInterpreterConfiguration;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
@@ -55,7 +70,6 @@ import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
@@ -276,14 +290,26 @@ public class WorkflowInterpreterLaunchWindow {
         final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
         builder.newFragment("inputs");
         new ODEClient();
+        final Experiment experiment = new Experiment();
+        experiment.setApplicationId(workflow.getName());
+        experiment.setExperimentID("some-id");
+        experiment.setProjectID("prj1");
+        experiment.setName("some-exp");
+        experiment.setUserName("me");
         for (int i = 0; i < inputNodes.size(); i++) {
             InputNode inputNode = inputNodes.get(i);
             XBayaTextField parameterTextField = this.parameterTextFields.get(i);
             inputNode.getID();
             String value = parameterTextField.getText();
-            inputNode.setDefaultValue(value);
+//            inputNode.setDefaultValue(value);
+            DataObjectType elem = new DataObjectType();
+            elem.setKey(inputNode.getID());
+            elem.setType(DataType.STRING);
+            elem.setValue(value);
+			experiment.addToExperimentInputs(elem );
         }
-
+        
+        
 //        final String workflowInterpreterUrl = this.workflowInterpreterTextField.getText();
 //        if (null != workflowInterpreterUrl && !"".equals(workflowInterpreterUrl)) {
 //            try {
@@ -306,7 +332,15 @@ public class WorkflowInterpreterLaunchWindow {
         new Thread() {
             @Override
             public void run() {
-
+            	WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(experiment, null, new WorkflowInterpreterConfiguration(workflow),getOrchestratorClient());
+                try {
+        			workflowInterpreter.scheduleDynamically();
+        		} catch (WorkflowException e) {
+        			e.printStackTrace();
+        		} catch (RegistryException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}
 //                try {
 //                    List<WorkflowInput> workflowInputs=new ArrayList<WorkflowInput>();
 //                    for (int i = 0; i < inputNodes.size(); i++) {
@@ -342,4 +376,10 @@ public class WorkflowInterpreterLaunchWindow {
 
         hide();
     }
+    
+	private OrchestratorService.Client getOrchestratorClient() {
+		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
+        final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
+        return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+	}
 }

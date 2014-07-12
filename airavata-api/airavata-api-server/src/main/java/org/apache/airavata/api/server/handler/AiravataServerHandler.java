@@ -33,6 +33,7 @@ import java.util.Random;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ApplicationDeployment;
+import org.airavata.appcatalog.cpi.ApplicationInterface;
 import org.airavata.appcatalog.cpi.ComputeResource;
 import org.airavata.appcatalog.cpi.GwyResourceProfile;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
@@ -87,6 +88,8 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
+import org.apache.airavata.workflow.catalog.WorkflowCatalogException;
+import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -1018,26 +1021,65 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
 	            throw exception;
 		}
 
-    	final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
         final String expID = airavataExperimentId;
         final String token = airavataCredStoreToken;
         synchronized (this) {
-            if (orchestratorClient.validateExperiment(expID)) {
-                (new Thread() {
-                    public void run() {
-                        try {
-                            launchSingleAppExperiment(expID, token, orchestratorClient);
-                        } catch (TException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
-                    }
-                }).start();
-            } else {
-                throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
-            }
+        	try {
+				ApplicationInterface applicationInterface = AppCatalogFactory.getAppCatalog().getApplicationInterface();
+				List<String> allApplicationInterfaceIds = applicationInterface.getAllApplicationInterfaceIds();
+				Experiment experiment = getExperiment(expID);
+				String applicationId = experiment.getApplicationId();
+				Thread thread = null;
+				if (allApplicationInterfaceIds.contains(applicationId)){
+					//its an single application execution experiment
+			    	final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
+					if (orchestratorClient.validateExperiment(expID)) {
+						thread = new Thread() {
+		                    public void run() {
+		                        try {
+	                        		launchSingleAppExperiment(expID, token, orchestratorClient);
+		                        } catch (TException e) {
+		                            e.printStackTrace();  
+								}
+		                    }
+		                };	
+		            } else {
+		                throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
+		            }
+	                
+				} else {
+					List<String> allWorkflows = WorkflowCatalogFactory.getWorkflowCatalog().getAllWorkflows();
+					if (allWorkflows.contains(applicationId)){
+						//its a workflow execution experiment
+						thread = new Thread() {
+		                    public void run() {
+		                        try {
+	                        		launchWorkflowExperiment(expID, token);
+		                        } catch (TException e) {
+		                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+								}
+		                    }
+		                };
+					} else {
+						throw new InvalidRequestException("Experiment '"+expID+"' launch failed. Unable to locate an application or a workflow with the id "+applicationId);
+					}
+				}
+				thread.start();
+			} catch (AppCatalogException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (WorkflowCatalogException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            
         }
     }
 
+    private boolean launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
+    	return true;
+    }
+    
     private boolean launchSingleAppExperiment(String experimentId, String airavataCredStoreToken, OrchestratorService.Client orchestratorClient) throws TException {
         Experiment experiment = null;
         try {
