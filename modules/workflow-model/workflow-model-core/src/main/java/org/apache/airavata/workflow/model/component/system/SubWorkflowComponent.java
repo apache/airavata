@@ -34,7 +34,7 @@ public class SubWorkflowComponent extends WSComponent {
     private Workflow workflow;
 
     private SubWorkflowComponent(Workflow workflow) throws ComponentException {
-        super(workflow.getWorkflowWSDL());
+//        super(workflow.getWorkflowWSDL());
         this.workflow = workflow;
 
     }

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
+	distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under
+	the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to
+	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under
+	the License. -->
+
+<wsdl:definitions targetNamespace="http://xbaya.extreme.indiana.edu" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://xbaya.extreme.indiana.edu" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax21="http://xbaya.extreme.indiana.edu/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/">
+  <wsdl:types>
+    <xs:schema targetNamespace="http://gui.component.xbaya.airavata.apache.org/xsd">
+            <xs:import namespace="http://registry.component.xbaya.airavata.apache.org/xsd"/>
+            <xs:element name="launchWorkflow">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="workflowAsString" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="topic" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="inputs" nillable="true" type="ns:NameValue"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="launchWorkflowResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:complexType name="NameValue">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="launchWorkflowRequest">
+    <wsdl:part name="parameters" element="ns:launchWorkflow">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="launchWorkflowResponse">
+    <wsdl:part name="parameters" element="ns:launchWorkflowResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="WorkflowInterpretorPortType">
+    <wsdl:operation name="launchWorkflow">
+      <wsdl:input message="ns:launchWorkflowRequest" wsaw:Action="urn:launchWorkflow">
+    </wsdl:input>
+      <wsdl:output message="ns:launchWorkflowResponse" wsaw:Action="urn:launchWorkflowResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="WorkflowInterpretorSoap11Binding" type="ns:WorkflowInterpretorPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="launchWorkflow">
+      <soap:operation soapAction="urn:launchWorkflow" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="WorkflowInterpretor">
+    <wsdl:port name="WorkflowInterpretorHttpSoap11Endpoint" binding="ns:WorkflowInterpretorSoap11Binding">
+      <soap:address location="http://ogceportal.iu.teragrid.org:19444/axis2/services/WorkflowInterpretor"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

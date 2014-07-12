@@ -38,7 +38,6 @@ import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.UtilsException;
-import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
@@ -56,6 +55,7 @@ import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.graph.ws.WSGraphFactory;
@@ -398,27 +398,27 @@ public class Workflow implements Cloneable {
     public Map<String, WsdlDefinitions> getWSDLs() {
 
         Map<String, WsdlDefinitions> wsdls = new LinkedHashMap<String, WsdlDefinitions>();
-        Map<WsdlDefinitions, String> ids = new HashMap<WsdlDefinitions, String>();
-        // Use LinkedHashMap to preserve the order of WSDLs, which is useful for
-        // some unit tests.
-
-        for (WSNode node : GraphUtil.getNodes(this.graph, WSNode.class)) {
-            WsdlDefinitions wsdl = node.getComponent().getWSDL();
-            if (wsdls.containsValue(wsdl)) {
-                String id = ids.get(wsdl);
-                node.setWSDLID(id);
-            } else {
-                // Assign unique key
-                String name = WSDLUtil.getWSDLName(wsdl);
-                String id = StringUtil.convertToJavaIdentifier(name);
-                while (wsdls.containsKey(id)) {
-                    id = StringUtil.incrementName(id);
-                }
-                wsdls.put(id, wsdl);
-                ids.put(wsdl, id);
-                node.setWSDLID(id);
-            }
-        }
+//        Map<WsdlDefinitions, String> ids = new HashMap<WsdlDefinitions, String>();
+//        // Use LinkedHashMap to preserve the order of WSDLs, which is useful for
+//        // some unit tests.
+//
+//        for (WSNode node : GraphUtil.getNodes(this.graph, WSNode.class)) {
+//            WsdlDefinitions wsdl = node.getComponent().getWSDL();
+//            if (wsdls.containsValue(wsdl)) {
+//                String id = ids.get(wsdl);
+//                node.setWSDLID(id);
+//            } else {
+//                // Assign unique key
+//                String name = WSDLUtil.getWSDLName(wsdl);
+//                String id = StringUtil.convertToJavaIdentifier(name);
+//                while (wsdls.containsKey(id)) {
+//                    id = StringUtil.incrementName(id);
+//                }
+//                wsdls.put(id, wsdl);
+//                ids.put(wsdl, id);
+//                node.setWSDLID(id);
+//            }
+//        }
         return wsdls;
     }
 
@@ -474,15 +474,12 @@ public class Workflow implements Cloneable {
      * @throws ComponentException
      */
     public List<WSComponentPort> getInputs() throws ComponentException {
-        if (this.workflowWSDL == null) {
-            try {
-                this.createScript();
-            } catch (GraphException e) {
-                throw new IllegalStateException(e.getMessage());
-            }
-        }
-        WSComponent component = WSComponentFactory.createComponent(this.workflowWSDL);
-        return component.getInputPorts();
+        List<InputNode> nodes = GraphUtil.getNodes(this.graph, InputNode.class);
+        List<WSComponentPort> ports = new ArrayList<WSComponentPort>();
+        for (InputNode inputNode : nodes) {
+        	ports.add(new WSComponentPort(inputNode.getName(), inputNode.getOutputPorts().get(0).getType(), null));
+		}
+        return ports;
     }
     
 	public List<WorkflowInput> getWorkflowInputs() throws Exception{
@@ -501,11 +498,12 @@ public class Workflow implements Cloneable {
      * @throws ComponentException
      */
     public List<WSComponentPort> getOutputs() throws ComponentException {
-        if (this.workflowWSDL == null) {
-            throw new IllegalStateException();
-        }
-        WSComponent component = WSComponentFactory.createComponent(this.workflowWSDL);
-        return component.getOutputPorts();
+    	List<OutputNode> nodes = GraphUtil.getNodes(this.graph, OutputNode.class);
+        List<WSComponentPort> ports = new ArrayList<WSComponentPort>();
+        for (OutputNode outputNode : nodes) {
+        	ports.add(new WSComponentPort(outputNode.getName(), outputNode.getOutputPorts().get(0).getType(), null));
+		}
+        return ports;
     }
 
     /**
@@ -529,7 +527,8 @@ public class Workflow implements Cloneable {
      */
     public XmlElement toXML() {
         // This must be before graph.toXML() to set WSDL ID to each node.
-        Map<String, WsdlDefinitions> wsdls = getWSDLs();
+    	//FIXME 
+//        Map<String, WsdlDefinitions> wsdls = getWSDLs();
 
         XmlElement workflowElement = XMLUtil.BUILDER.newFragment(NS_XWF, WORKFLOW_TAG);
 
@@ -547,12 +546,12 @@ public class Workflow implements Cloneable {
 
         // WSDLs
         XmlElement wsdlsElement = workflowElement.addElement(NS_XWF, WSDLS_TAG);
-        for (String id : wsdls.keySet()) {
-            WsdlDefinitions wsdl = wsdls.get(id);
-            XmlElement wsdlElement = wsdlsElement.addElement(NS_XWF, WSDL_TAG);
-            wsdlElement.setAttributeValue(NS_XWF, ID_ATTRIBUTE, id);
-            wsdlElement.setText(XMLUtil.xmlElementToString(wsdl.xml()));
-        }
+//        for (String id : wsdls.keySet()) {
+//            WsdlDefinitions wsdl = wsdls.get(id);
+//            XmlElement wsdlElement = wsdlsElement.addElement(NS_XWF, WSDL_TAG);
+//            wsdlElement.setAttributeValue(NS_XWF, ID_ATTRIBUTE, id);
+//            wsdlElement.setText(XMLUtil.xmlElementToString(wsdl.xml()));
+//        }
 
         // Image
         if (this.image != null) {
@@ -631,11 +630,12 @@ public class Workflow implements Cloneable {
                 }
                 WSComponentKey key = new WSComponentKey(id, portType, operation);
 
-                WSComponent component;
+                WSComponent component = null;
                 if (components.containsKey(key)) {
                     component = components.get(key);
                 } else {
-                    component = WSComponentFactory.createComponent(wsdl, portType, operation);
+                	//FIXME
+//                    component = WSComponentFactory.createComponent(wsdl, portType, operation);
                     components.put(key, component);
                 }
                 node.setComponent(component);
@@ -934,7 +934,6 @@ public class Workflow implements Cloneable {
 	public boolean isEditable() {
 		return editable;
 	}
-
 
 	public void setEditable(boolean editable) {
 		this.editable = editable;

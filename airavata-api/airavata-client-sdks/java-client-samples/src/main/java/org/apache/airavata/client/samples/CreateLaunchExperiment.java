@@ -77,19 +77,19 @@ public class CreateLaunchExperiment {
             AiravataUtils.setExecutionAsClient();
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + client.getAPIVersion());
-//            addDescriptors();
+            addDescriptors();
 
 //            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createExperimentForTrestles(client);
 //            final String expId = createExperimentForStampede(client);
-//            final String expId = createExperimentForLocalHost(client);
+            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentWRFTrestles(client);
 //            final String expId = createExperimentForBR2(client);
 //            final String expId = createExperimentForBR2Amber(client);
 //            final String expId = createExperimentWRFStampede(client);
 //            final String expId = createExperimentForStampedeAmber(client);
-            final String expId = createExperimentForTrestlesAmber(client);
+//            final String expId = createExperimentForTrestlesAmber(client);
 
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
@@ -106,7 +106,7 @@ public class CreateLaunchExperiment {
         try {
             DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
 //            DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
-//            localHostAppId = documentCreator.createLocalHostDocs();
+            localHostAppId = documentCreator.createLocalHostDocs();
 //            sshHostAppId = documentCreator.createSSHHostDocs();
 //            documentCreator.createGramDocs();
 //            pbsEchoAppId =documentCreator.createPBSDocsForOGCE_Echo();
@@ -118,7 +118,7 @@ public class CreateLaunchExperiment {
 //            slurmWRFAppId = documentCreator.createSlumWRFDocs();
 //            br2AmberAppId = documentCreator.createBigRedAmberDocs();
 //            slurmAmberAppId = documentCreator.createStampedeAmberDocs();
-            trestlesAmberAppId = documentCreator.createTrestlesAmberDocs();
+//            trestlesAmberAppId = documentCreator.createTrestlesAmberDocs();
             System.out.printf(localHostAppId);
             System.out.println(sshHostAppId);
             System.out.println(pbsEchoAppId);

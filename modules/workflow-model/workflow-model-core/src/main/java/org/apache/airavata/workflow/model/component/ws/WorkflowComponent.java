@@ -65,15 +65,14 @@ public class WorkflowComponent extends WSComponent {
      * @throws ComponentException
      */
     public WorkflowComponent(Workflow workflow) throws ComponentException {
-        super(workflow.getWorkflowWSDL());
         this.workflow = workflow;
         this.templateID = this.workflow.getGPELTemplateID();
 
-        // Add template ID to WSDL
-        for (WsdlPortType portType : this.wsdl.portTypes()) {
-            XmlElement templateIDElement = portType.xml().addElement(GPEL_NAMESPACE, WORKFLOW_TEMPLATE_ID_TAG);
-            templateIDElement.setText(this.templateID.toString());
-        }
+//        // Add template ID to WSDL
+//        for (WsdlPortType portType : this.wsdl.portTypes()) {
+//            XmlElement templateIDElement = portType.xml().addElement(GPEL_NAMESPACE, WORKFLOW_TEMPLATE_ID_TAG);
+//            templateIDElement.setText(this.templateID.toString());
+//        }
     }
 
     /**
@@ -96,16 +95,16 @@ public class WorkflowComponent extends WSComponent {
      * @throws ComponentException
      */
     public WorkflowComponent(WsdlDefinitions wsdl, QName portTypeQName, String operationName) throws ComponentException {
-        super(wsdl, portTypeQName, operationName);
-        try {
-            // Get template ID from WSDL
-            WsdlPortType portType = this.wsdl.getPortType(portTypeQName.getLocalPart());
-            XmlElement templateIDElement = portType.xml().element(GPEL_NAMESPACE, WORKFLOW_TEMPLATE_ID_TAG);
-            String templateIDString = templateIDElement.requiredText();
-            this.templateID = new URI(templateIDString);
-        } catch (URISyntaxException e) {
-            throw new ComponentException(e);
-        }
+//        super(wsdl, portTypeQName, operationName);
+//        try {
+//            // Get template ID from WSDL
+//            WsdlPortType portType = this.wsdl.getPortType(portTypeQName.getLocalPart());
+//            XmlElement templateIDElement = portType.xml().element(GPEL_NAMESPACE, WORKFLOW_TEMPLATE_ID_TAG);
+//            String templateIDString = templateIDElement.requiredText();
+//            this.templateID = new URI(templateIDString);
+//        } catch (URISyntaxException e) {
+//            throw new ComponentException(e);
+//        }
     }
 
     /**

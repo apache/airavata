@@ -74,7 +74,7 @@ public class RegistryWindow {
 
     private ThriftServiceType serviceType;
     
-    private DefaultComboBoxModel<ThriftServiceType> serviceTypeModel;
+    private DefaultComboBoxModel serviceTypeModel;
     
     /**
      * @param engine
@@ -141,7 +141,7 @@ public class RegistryWindow {
         XBayaLabel serverPortLabel = new XBayaLabel("Server Port", this.portTextField);
         XBayaLabel gatewayNameLabel = new XBayaLabel("Gateway Name", this.gatewayNameTextField);
         XBayaLabel gatewayUserLabel = new XBayaLabel("Gateway TUser", this.usernameTextField);
-        serviceTypeModel = new DefaultComboBoxModel<ThriftServiceType>(ThriftServiceType.values());
+        serviceTypeModel = new DefaultComboBoxModel(ThriftServiceType.values());
         serviceTypeModel.setSelectedItem(ThriftServiceType.API_SERVICE);
 		this.serviceTypeCombo = new XBayaComboBox(serviceTypeModel);
         JLabel serviceTypeLabel = new JLabel("Airavata Service");

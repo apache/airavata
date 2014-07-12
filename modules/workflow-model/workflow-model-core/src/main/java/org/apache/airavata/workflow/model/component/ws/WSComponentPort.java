@@ -74,15 +74,6 @@ public class WSComponentPort extends ComponentDataPort {
         this.schemaUsed = false;
     }
 
-    protected WSComponentPort(XmlElement element, String targetNamespace, WSComponent component)
-            throws ComponentException {
-        this.component = component;
-        this.elementElement = element;
-        this.targetNamespace = targetNamespace;
-        this.schemaUsed = true;
-        parse(element);
-    }
-
     /**
      * @return The component
      */
@@ -189,20 +180,7 @@ public class WSComponentPort extends ComponentDataPort {
             // TODO fix this.
             this.type = WSConstants.XSD_ANY_TYPE;
         } else {
-            String typeName = XMLUtil.getLocalPartOfQName(typeQNameString);
-            String prefix = XMLUtil.getPrefixOfQName(typeQNameString);
-            XmlNamespace namespace = null;
-            if (prefix == null) {
-                if ("string".equals(typeName) || "int".equals(typeName)) {
-                    namespace = XmlConstants.BUILDER.newNamespace("xsd", WSConstants.XSD_NS_URI);
-                    prefix = "xsd";
-                } else {
-                    throw new ComponentException("Namespace prefix, " + prefix + ", is not defined");
-                }
-            } else {
-                namespace = element.lookupNamespaceByPrefix(prefix);
-            }
-            this.type = new QName(namespace.getName(), typeName, prefix);
+            
         }
 
         // annotation
