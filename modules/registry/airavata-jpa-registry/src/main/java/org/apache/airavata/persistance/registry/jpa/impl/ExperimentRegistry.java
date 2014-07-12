@@ -1339,7 +1339,7 @@ public class ExperimentRegistry {
                     errorResource.setNodeDetail(taskDetail.getWorkflowNodeDetailResource());
                     errorResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
                 } else {
-                    logger.error("The id provided is not an experiment id or a workflow id or a task id..");
+//                    logger.error("The id provided is not an experiment id or a workflow id or a task id..");
                 }
             } else if (id instanceof CompositeIdentifier) {
                 CompositeIdentifier cid = (CompositeIdentifier) id;
@@ -1356,8 +1356,8 @@ public class ExperimentRegistry {
                     logger.error("The id provided is not a job in the system..");
                 }
             } else {
-                logger.error("The id provided is not an experiment id or a workflow id or a task id or a composite " +
-                        "identifier for job..");
+//                logger.error("The id provided is not an experiment id or a workflow id or a task id or a composite " +
+//                        "identifier for job..");
             }
             if (errorResource != null) {
                 errorResource.setCreationTime(AiravataUtils.getTime(error.getCreationTime()));
