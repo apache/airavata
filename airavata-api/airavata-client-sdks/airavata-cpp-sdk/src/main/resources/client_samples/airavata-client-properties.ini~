@@ -1,0 +1,4 @@
+[airavata]
+AIRAVATA_SERVER = "localhost"
+AIRAVATA_PORT = 8930
+AIRAVATA_TIMEOUT = 5000
