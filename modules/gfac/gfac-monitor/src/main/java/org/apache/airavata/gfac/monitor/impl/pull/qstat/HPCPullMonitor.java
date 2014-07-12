@@ -189,6 +189,7 @@ public class HPCPullMonitor extends PullMonitor {
                         } else {
                             // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
+                            iMonitorID.setFailedCount(0);
                             // if the job is complete we remove it from the Map, if any of these maps
                             // get empty this userMonitorData will get delete from the queue
                         }
