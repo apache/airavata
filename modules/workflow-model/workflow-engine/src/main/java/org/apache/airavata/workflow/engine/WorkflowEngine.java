@@ -19,15 +19,8 @@
  *
  */
 
-package org.apache.airavata.workflow.catalog;
+package org.apache.airavata.workflow.engine;
 
-public class WorkflowCatalogFactory {
-	private static WorkflowCatalog workflowCatalog;
-	
-	public static WorkflowCatalog getWorkflowCatalog(){
-		if (workflowCatalog==null) {
-			workflowCatalog = new WorkflowCatalogImpl();
-		}
-		return workflowCatalog;
-	}
+public interface WorkflowEngine {
+	public void launchExperiment(String experimentId, String token) throws WorkflowEngineException;
 }
