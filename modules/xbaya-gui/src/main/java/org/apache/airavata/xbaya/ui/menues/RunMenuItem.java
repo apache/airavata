@@ -34,8 +34,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
-import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 import org.apache.airavata.ws.monitor.Monitor;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.ws.monitor.MonitorException;
@@ -46,7 +44,6 @@ import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
-import org.apache.airavata.xbaya.ui.dialogs.graph.dynamic.DynamicWorkflowRunnerWindow;
 import org.apache.airavata.xbaya.ui.dialogs.monitor.MonitorConfigurationWindow;
 import org.apache.airavata.xbaya.ui.experiment.WorkflowInterpreterLaunchWindow;
 import org.apache.airavata.xbaya.ui.monitor.MonitorStarter;
@@ -263,46 +260,6 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         return item;
     }
 
-    private JMenuItem createLaunchDynamicWorkflowItem() {
-        JMenuItem menuItem = new JMenuItem("Run workflow...");
-        menuItem.setMnemonic(KeyEvent.VK_D);
-        AbstractAction action = new AbstractAction() {
-            private DynamicWorkflowRunnerWindow window;
-
-            public void actionPerformed(ActionEvent event) {
-            	if (isWorkflowRunning()){
-            		if (JOptionPane.showConfirmDialog(null, "A previous workflow excution data needs to be cleared before launching another workflow. Do you wish to continue?", "Run Dynamic Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
-            			cleanup();
-                    }else{
-            			return;
-            		}
-            	}
-                if (this.window == null) {
-                    int count = 0;
-                    //there is a possibility the ealier run is not yet cleanedup yet.. so wait until it finishes
-                    // and sets the execution state to NONE as the last task of scheduleDynamically
-                    while(engine.getGUI().getWorkflow().getExecutionState() != WorkflowExecutionState.NONE){
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
-                        count++;
-                        if(count > 20){
-                            throw new WorkflowRuntimeException("Error stopping previous workflow Execution");
-                        }
-                    }
-                    
-                }
-                this.window = new DynamicWorkflowRunnerWindow(engine);
-                this.window.show();
-            }
-        };
-		menuItem.addActionListener(action);
-		menuItem.setEnabled(false);
-        return menuItem;
-    }
-    
     private boolean isRunShouldBeActive() {
 		return engine.getGUI().getGraphCanvas() !=null;
 	}
@@ -368,20 +325,11 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
 	}
 	
 	private void cleanup() {
-		try {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
-            engine.getWorkflowInterpreter().cleanup();
-		} catch (MonitorException e) {
-			this.engine.getGUI().getErrorWindow().error(e);
-		}
+        //TODO
 	}
 
 	private boolean isWorkflowRunning() {
-		return engine.getWorkflowInterpreter()!=null;
+		return true;
 	}
 
 	@Override

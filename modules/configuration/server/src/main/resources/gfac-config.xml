@@ -65,7 +65,7 @@
         </OutHandlers>
     </Application>
 
-     <Provider class="org.apache.airavata.gfac.ssh.provider.impl.SSHProvider" host="org.apache.airavata.schemas.gfac.impl.SSHHostTypeImpl">
+     <Provider class="org.apache.airavata.gfac.ssh.provider.impl.SSHProvider" host="org.apache.airavata.schemas.gfac.impl.SSHHostTypeImpl" executionMode="async">
          <InHandlers>
             <Handler class="org.apache.airavata.gfac.ssh.handler.SSHDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.ssh.handler.SSHInputHandler"/>

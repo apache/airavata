@@ -22,32 +22,26 @@
 package org.apache.airavata.xbaya.ui.dialogs.registry;
 
 import java.awt.event.ActionEvent;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPasswordField;
 
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.xbaya.ThriftClientData;
+import org.apache.airavata.xbaya.ThriftServiceType;
 import org.apache.airavata.xbaya.XBayaConfiguration;
-import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
-import org.apache.airavata.xbaya.registry.PasswordCallbackImpl;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
-import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
+import org.apache.airavata.xbaya.ui.widgets.XBayaComboBox;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
-import org.apache.airavata.xbaya.ui.widgets.XBayaLinkButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.airavata.xbaya.util.RegistryConstants;
 
@@ -57,28 +51,31 @@ public class RegistryWindow {
 
     private XBayaDialog dialog;
 
-    private XBayaTextField urlTextField;
+    private XBayaTextField serverTextField;
 
-    private XBayaTextField gatewayTextField;
+    private XBayaTextField portTextField;
+
+    private XBayaTextField gatewayNameTextField;
 
     private XBayaTextField usernameTextField;
 
-    private JPasswordField passwordTextField;
+    private XBayaComboBox serviceTypeCombo;
 
-    private XBayaLinkButton newUserButton;
 
-    private NewRegistryUserDialog newUserWindow;
+    private String gatewayName;
 
-    private String userName;
+    private String username;
 
-    private String password;
+    private String serverName;
 
-    private String regURL;
+    private String serverPort;
 
-    private String gateway;
+    private static String previousServerName;
 
-    private static String previousRegURL;
-
+    private ThriftServiceType serviceType;
+    
+    private DefaultComboBoxModel<ThriftServiceType> serviceTypeModel;
+    
     /**
      * @param engine
      */
@@ -100,98 +97,39 @@ public class RegistryWindow {
     }
 
     private void ok() {
-        setRegURL(this.urlTextField.getText());
-        setPreviousRegURL(this.urlTextField.getText());
-        setUserName(this.usernameTextField.getText());
-        setPassword(new String(this.passwordTextField.getPassword()));
-        setGateway(this.gatewayTextField.getText());
-
-        if (getRegURL().length() == 0) {
-            this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_EMPTY);
-            return;
-        }
-        URI url;
+        setServerName(this.serverTextField.getText());
+        setPreviousServerName(this.serverTextField.getText());
+        setGatewayName(this.gatewayNameTextField.getText());
+        setUsername(new String(this.usernameTextField.getText()));
+        setServerPort(this.portTextField.getText());
+        setServiceType((ThriftServiceType)serviceTypeModel.getSelectedItem());
         try {
-            url = new URI(regURL);
-        } catch (URISyntaxException e) {
-            this.engine.getGUI().getErrorWindow().error(ErrorMessages.URL_WRONG, e);
-            return;
-        }
-
-        AiravataAPI airavataAPI = getAiravataAPI();
-
-//        JCRComponentRegistry registry = null;
-//        try {
-//            registry = new JCRComponentRegistry(airavataAPI);
-//        } catch (Exception e) {
-//            this.engine.getGUI().getErrorWindow().error(e.getMessage());
-//            return;
-//        }
-        XBayaConfiguration configuration = this.engine.getConfiguration();
-        this.engine.setAiravataAPI(airavataAPI);
-        configuration.setAiravataAPI(airavataAPI);
-        configuration.setRegigstryUserName(userName);
-        configuration.setRegistryPassphrase(password);
-        configuration.setRegistryURL(url);
-        configuration.setDefaultGateway(gateway);
-        engine.updateXBayaConfigurationServiceURLs();
-        hide();
-
-//        this.loader.load(registry);
-    }
-
-    private void createNewUser() {
-        URL specifiedURL = null;
-        try {
-            specifiedURL = new URL(urlTextField.getText());
-        } catch (MalformedURLException e1) {
-            // the text box contains invalid url, we'll just ignore it
-        }
-        if (newUserWindow == null) {
-            newUserWindow = new NewRegistryUserDialog(engine);
-        }
-//        newUserWindow.setUrl(specifiedURL);
-        newUserWindow.setUsername(usernameTextField.getText());
-        newUserWindow.updateControlData();
-        newUserWindow.show();
-        if (newUserWindow.isUserCreated()) {
-//            urlTextField.setText(newUserWindow.getUrl().toString());
-            usernameTextField.setText(newUserWindow.getUsername());
-            passwordTextField.setText(newUserWindow.getPassword());
-        }
+			validateData();
+			XBayaConfiguration configuration = this.engine.getConfiguration();
+	        configuration.addThriftClientData(new ThriftClientData(getServiceType(),serverName, Integer.parseInt(serverPort),gatewayName, username));
+	        hide();
+		} catch (Exception e) {
+            this.engine.getGUI().getErrorWindow().error(e.getMessage());
+		}
     }
 
     /**
      * Initializes the GUI.
      */
     private void initGUI() {
-        this.urlTextField = new XBayaTextField();
-        this.gatewayTextField = new XBayaTextField();
+        this.serverTextField = new XBayaTextField();
+        this.portTextField = new XBayaTextField();
+        this.gatewayNameTextField = new XBayaTextField();
         this.usernameTextField = new XBayaTextField();
-        this.passwordTextField = new JPasswordField();
-        try {
-            if (getPreviousRegURL() != null){
-                this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
-            } else if (engine.getConfiguration().isRegURLSetByCMD()){
-                this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
-            } else if (ClientSettings.isSettingDefined(XBayaConstants.XBAYA_REGISTRY_URL)){
-                this.urlTextField.setText(ClientSettings.getSetting(XBayaConstants.XBAYA_REGISTRY_URL));
-            }  else {
-                this.urlTextField.setText(engine.getConfiguration().getRegistryURL().toASCIIString());
-            }
-            if (ClientSettings.isSettingDefined(XBayaConstants.XBAYA_REGISTRY_USER)){
-                this.usernameTextField.setText(ClientSettings.getSetting(XBayaConstants.XBAYA_REGISTRY_USER));
-            } else {
-                this.usernameTextField.setText(engine.getConfiguration().getRegistryUserName());
-            }
-            if (ClientSettings.isSettingDefined(XBayaConstants.XBAYA_DEFAULT_GATEWAY)){
-                this.gatewayTextField.setText(ClientSettings.getSetting(XBayaConstants.XBAYA_DEFAULT_GATEWAY));
-            } else {
-                this.gatewayTextField.setText(engine.getConfiguration().getDefaultGateway());
-            }
-        } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
-        }
+        this.serverTextField.setText("localhost");
+        this.portTextField.setText("8930");
+        ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE);
+    	if (thriftClientData!=null){
+    		this.serverTextField.setText(thriftClientData.getServerAddress());
+            this.gatewayNameTextField.setText(thriftClientData.getGatewayId());
+            this.portTextField.setText(String.valueOf(thriftClientData.getServerPort()));
+            this.usernameTextField.setText(thriftClientData.getUsername());
+    	}
 
         try {
             ClientSettings.initializeTrustStore();
@@ -199,32 +137,32 @@ public class RegistryWindow {
             throw new RuntimeException("An error occurred while initializing client configurations");
         }
 
-        this.passwordTextField.setText(engine.getConfiguration().getRegistryPassphrase());
-        XBayaLabel urlLabel = new XBayaLabel("Registry URL", this.urlTextField);
-        XBayaLabel gatewayLabel = new XBayaLabel("Gateway", this.gatewayTextField);
-        XBayaLabel nameLabel = new XBayaLabel("Username", this.usernameTextField);
-        XBayaLabel passLabel = new XBayaLabel("Password", this.usernameTextField);
-        this.newUserButton = new XBayaLinkButton("Create new user...");
-        newUserButton.setHorizontalAlignment(XBayaLinkButton.RIGHT);
-        JLabel emptyLabel = new JLabel("");
+        XBayaLabel serverAddressLabel = new XBayaLabel("Server Address", this.serverTextField);
+        XBayaLabel serverPortLabel = new XBayaLabel("Server Port", this.portTextField);
+        XBayaLabel gatewayNameLabel = new XBayaLabel("Gateway Name", this.gatewayNameTextField);
+        XBayaLabel gatewayUserLabel = new XBayaLabel("Gateway TUser", this.usernameTextField);
+        serviceTypeModel = new DefaultComboBoxModel<ThriftServiceType>(ThriftServiceType.values());
+        serviceTypeModel.setSelectedItem(ThriftServiceType.API_SERVICE);
+		this.serviceTypeCombo = new XBayaComboBox(serviceTypeModel);
+        JLabel serviceTypeLabel = new JLabel("Airavata Service");
 
-        newUserButton.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
-                createNewUser();
-            }
-        });
+//        serviceTypeCombo.addActionListener(new AbstractAction() {
+//            public void actionPerformed(ActionEvent e) {
+////                createNewUser();
+//            }
+//        });
 
         GridPanel infoPanel = new GridPanel();
-        infoPanel.add(urlLabel);
-        infoPanel.add(this.urlTextField);
-        infoPanel.add(gatewayLabel);
-        infoPanel.add(this.gatewayTextField);
-        infoPanel.add(nameLabel);
+        infoPanel.add(serviceTypeLabel);
+        infoPanel.add(this.serviceTypeCombo);
+        infoPanel.add(serverAddressLabel);
+        infoPanel.add(this.serverTextField);
+        infoPanel.add(serverPortLabel);
+        infoPanel.add(this.portTextField);
+        infoPanel.add(gatewayNameLabel);
+        infoPanel.add(this.gatewayNameTextField);
+        infoPanel.add(gatewayUserLabel);
         infoPanel.add(this.usernameTextField);
-        infoPanel.add(passLabel);
-        infoPanel.add(this.passwordTextField);
-        infoPanel.add(emptyLabel);
-        infoPanel.add(this.newUserButton);
         infoPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
 //        infoPanel.layout(2, 2, GridPanel.WEIGHT_NONE, 1);
 
@@ -253,61 +191,61 @@ public class RegistryWindow {
         this.dialog.setDefaultButton(okButton);
     }
 
-    public AiravataAPI getAiravataAPI(){
-        try {
-            URI regURI = new URI(getRegURL());
-            PasswordCallbackImpl passwordCallback = new PasswordCallbackImpl(userName, password);
-            AiravataAPI airavataAPI = AiravataAPIFactory.getAPI(regURI, getGateway(), userName, passwordCallback);
-            return airavataAPI;
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();
-            engine.getGUI().getErrorWindow().error("Some error has occurred while initialize. Please check whether you " +
-                    "entered correct credentials...", e);
-
-        }
-        return null;
-
+    private void validateData() throws NumberFormatException, AiravataClientConnectException{
+    	switch(getServiceType()){
+    	case API_SERVICE:
+    		AiravataClientFactory.createAiravataClient(getServerName(), Integer.parseInt(getServerPort())); break;
+    	case WORKFLOW_SERVICE:
+    		AiravataClientFactory.createWorkflowClient(getServerName(), Integer.parseInt(getServerPort())); break;
+    	}
+        
     }
 
     public String getUserName() {
-        return userName;
+        return username;
     }
 
-    public String getPassword() {
-        return password;
+    public String getServerPort() {
+        return serverPort;
     }
 
-    public String getRegURL() {
-        return regURL;
+    public String getServerName() {
+        return serverName;
     }
 
-    public void setRegURL(String regURL) {
-        this.regURL = regURL;
+    public String getGatewayName() {
+        return gatewayName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setGatewayName(String gateway) {
+        this.gatewayName = gateway;
     }
 
-    public String getGateway() {
-        return gateway;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public void setGateway(String gateway) {
-        this.gateway = gateway;
+    public void setServerPort(String serverPort) {
+        this.serverPort = serverPort;
     }
 
-    public static String getPreviousRegURL() {
-        return previousRegURL;
+    public static String getPreviousServerName() {
+        return previousServerName;
     }
 
-    public static void setPreviousRegURL(String previousRegURL) {
-        RegistryWindow.previousRegURL = previousRegURL;
+    public static void setPreviousServerName(String previousServerName) {
+        RegistryWindow.previousServerName = previousServerName;
     }
+
+	public ThriftServiceType getServiceType() {
+		return serviceType;
+	}
+
+	public void setServiceType(ThriftServiceType serviceType) {
+		this.serviceType = serviceType;
+	}
 }

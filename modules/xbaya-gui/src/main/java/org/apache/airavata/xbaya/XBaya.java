@@ -123,26 +123,6 @@ public class XBaya {
                 } else if ("-workflow".equalsIgnoreCase(arg)) {
                     index++;
                     this.config.setWorkflow(args[index]);
-                } else if ("-gfacURL".equalsIgnoreCase(arg)) {
-                    index++;
-                    String url = args[index];
-                    try {
-                        this.config.setGFacURL(parseURL(url));
-                    } catch (URISyntaxException e) {
-                        String message = "The GFac URL is in wrong format: " + url;
-                        logger.warn(message, e);
-                        this.config.addError(new WorkflowException(message, e));
-                    }
-                } else if ("-dscURL".equalsIgnoreCase(arg)) {
-                    index++;
-                    String url = args[index];
-                    try {
-                        this.config.setDSCURL(parseURL(url));
-                    } catch (URISyntaxException e) {
-                        String message = "The DSC URL is in wrong format: " + url;
-                        logger.warn(message, e);
-                        this.config.addError(new WorkflowException(message, e));
-                    }
                 } else if ("-startMonitor".equalsIgnoreCase(arg)) {
                     this.config.setStartMonitor(true);
                 } else if ("-brokerURL".equalsIgnoreCase(arg)) {
@@ -197,27 +177,6 @@ public class XBaya {
                         logger.warn(message, e);
                         this.config.addError(new WorkflowException(message, e));
                     }
-                } else if ("-registryURL".equalsIgnoreCase(arg)) {
-                    index++;
-                    String registryURL = args[index];
-                    try {
-                        this.config.setRegistryURL(parseURL(registryURL));
-                        // we need to give preference when a user set registry url from the
-                        // command line
-                        this.config.setRegURLSetByCMD(true);
-                    } catch (URISyntaxException e) {
-                        String message = "The message box URL is in wrong format: " + registryURL;
-                        logger.warn(message, e);
-                        this.config.addError(new WorkflowException(message, e));
-                    }
-                    } else if ("-registryUserName".equalsIgnoreCase(arg)) {
-
-                    index++;
-                    this.config.setRegigstryUserName(args[index]);
-                } else if ("-registryPassphrase".equalsIgnoreCase(arg)) {
-
-                    index++;
-                    this.config.setRegistryPassphrase(args[index]);
                 } else if ("-width".equalsIgnoreCase(arg)) {
                     index++;
                     String width = args[index];
@@ -277,7 +236,6 @@ public class XBaya {
                     logger.error(message);
                     this.config.addError(new WorkflowException(message));
                 }
-                this.config.setAiravataAPI(this.config.getAiravataAPI());
                 index++;
             }
         } catch (ArrayIndexOutOfBoundsException e) {

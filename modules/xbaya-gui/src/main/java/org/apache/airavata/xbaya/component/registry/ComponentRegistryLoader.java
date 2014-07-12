@@ -26,11 +26,8 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
-import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
@@ -39,6 +36,7 @@ import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class ComponentRegistryLoader implements Cancelable, Observer {
 
@@ -149,18 +147,7 @@ public class ComponentRegistryLoader implements Cancelable, Observer {
 	public void update(Observable observable, Object o) {
 		if ((observable instanceof XBayaConfiguration) && (o instanceof ComponentRegistry)){
 			ComponentRegistry componentRegistry=(ComponentRegistry)o;
-			if (observableRegistry!=null){
-				observableRegistry.deleteObserver(this);
-			}
-			if (componentRegistry instanceof JCRComponentRegistry){
-				AiravataAPI registry = ((JCRComponentRegistry)componentRegistry).getAiravataAPI();
-				if (registry!=null && registry instanceof Observable){
-					(observableRegistry=(Observable)registry).addObserver(this);
-				}
-			}
 			load(componentRegistry);
-		}else if (observable instanceof AiravataAPI){
-			load(getEngine().getConfiguration().getJcrComponentRegistry());
 		}
 	}
 	

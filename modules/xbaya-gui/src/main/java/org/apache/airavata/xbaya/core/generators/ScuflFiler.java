@@ -22,20 +22,13 @@
 package org.apache.airavata.xbaya.core.generators;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.airavata.common.utils.IOUtil;
-import org.apache.airavata.workflow.model.graph.GraphException;
-import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
-import org.apache.airavata.xbaya.scufl.script.ScuflScript;
-import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,47 +74,47 @@ public class ScuflFiler {
      * Exports a Scufl script to the local file
      */
     public void exportScuflScript() {
-        Workflow workflow = this.engine.getGUI().getWorkflow();
-        ScuflScript script = new ScuflScript(workflow, this.engine.getConfiguration());
-
-        // Check if there is any errors in the workflow first.
-        ArrayList<String> warnings = new ArrayList<String>();
-        if (!script.validate(warnings)) {
-            StringBuilder buf = new StringBuilder();
-            for (String warning : warnings) {
-                buf.append("- ");
-                buf.append(warning);
-                buf.append("\n");
-            }
-            this.engine.getGUI().getErrorWindow().warning(buf.toString());
-            return;
-        }
-        int returnVal = this.scuflFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-            File file = this.scuflFileChooser.getSelectedFile();
-            logger.debug(file.getPath());
-
-            // Put ".py" at the end of the file name
-            String path = file.getPath();
-            if (!path.endsWith(XBayaConstants.SCUFL_SCRIPT_SUFFIX)) {
-                file = new File(path + XBayaConstants.SCUFL_SCRIPT_SUFFIX);
-            }
-
-            try {
-                // Create the script.
-                script.create();
-                // Write to a file
-                IOUtil.writeToFile(script.getScript(), file);
-            } catch (IOException e) {
-                this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
-            } catch (GraphException e) {
-                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
-            } catch (RuntimeException e) {
-                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-            } catch (Error e) {
-                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-            }
-        }
+//        Workflow workflow = this.engine.getGUI().getWorkflow();
+//        ScuflScript script = new ScuflScript(workflow, this.engine.getConfiguration());
+//
+//        // Check if there is any errors in the workflow first.
+//        ArrayList<String> warnings = new ArrayList<String>();
+//        if (!script.validate(warnings)) {
+//            StringBuilder buf = new StringBuilder();
+//            for (String warning : warnings) {
+//                buf.append("- ");
+//                buf.append(warning);
+//                buf.append("\n");
+//            }
+//            this.engine.getGUI().getErrorWindow().warning(buf.toString());
+//            return;
+//        }
+//        int returnVal = this.scuflFileChooser.showSaveDialog(this.engine.getGUI().getFrame());
+//        if (returnVal == JFileChooser.APPROVE_OPTION) {
+//            File file = this.scuflFileChooser.getSelectedFile();
+//            logger.debug(file.getPath());
+//
+//            // Put ".py" at the end of the file name
+//            String path = file.getPath();
+//            if (!path.endsWith(XBayaConstants.SCUFL_SCRIPT_SUFFIX)) {
+//                file = new File(path + XBayaConstants.SCUFL_SCRIPT_SUFFIX);
+//            }
+//
+//            try {
+//                // Create the script.
+//                script.create();
+//                // Write to a file
+//                IOUtil.writeToFile(script.getScript(), file);
+//            } catch (IOException e) {
+//                this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
+//            } catch (GraphException e) {
+//                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+//            } catch (RuntimeException e) {
+//                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+//            } catch (Error e) {
+//                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+//            }
+//        }
 
     }
 }

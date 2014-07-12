@@ -39,24 +39,16 @@ import javax.swing.event.MenuListener;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.component.registry.ComponentRegistryLoader;
 import org.apache.airavata.xbaya.core.generators.BPELFiler;
 import org.apache.airavata.xbaya.core.generators.ImageFiler;
 import org.apache.airavata.xbaya.core.generators.JythonFiler;
 import org.apache.airavata.xbaya.core.generators.ODEScriptFiler;
 import org.apache.airavata.xbaya.core.generators.WorkflowFiler;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
-import org.apache.airavata.xbaya.registry.RegistryAccesser;
 import org.apache.airavata.xbaya.ui.dialogs.component.URLRegistryWindow;
-import org.apache.airavata.xbaya.ui.dialogs.descriptors.ApplicationDescriptionDialog;
-import org.apache.airavata.xbaya.ui.dialogs.descriptors.DeploymentDescriptionDialog;
-import org.apache.airavata.xbaya.ui.dialogs.descriptors.HostDescriptionDialog;
-import org.apache.airavata.xbaya.ui.experiment.RegistryLoaderWindow;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.widgets.ToolbarButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaToolBar;
-import org.apache.airavata.xbaya.util.RegistryConstants;
-import org.apache.airavata.xbaya.util.XBayaUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,8 +114,6 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 
 	private JMenuItem importWorkflowItemFromRegistry;
 
-	private RegistryAccesser registryAccesser;
-
 	private XBayaToolBar toolBar;
 
 	private ToolbarButton toolbarButtonSave;
@@ -143,7 +133,6 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
     public XBayaMenuItem(XBayaEngine engine, XBayaToolBar toolBar) {
         this.engine = engine;
         this.toolBar=toolBar;
-        this.registryAccesser = new RegistryAccesser(engine);
 
         this.graphFiler = new WorkflowFiler(engine);
         this.jythonFiler = new JythonFiler(engine);
@@ -181,9 +170,9 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
         nextWorkflowTabItem = createNextWorkflowTabItem();
         urlItem = createURLRegistryItem();
         
-        createRegisterHostDesc();
-        createRegisterServiceDesc();
-        createRegisterApplicationDesc();
+//        createRegisterHostDesc();
+//        createRegisterServiceDesc();
+//        createRegisterApplicationDesc();
         
         xbayaMenuItem = new JMenu("XBaya");
         xbayaMenuItem.setMnemonic(KeyEvent.VK_X);
@@ -200,8 +189,8 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 //	        
 //        xbayaMenuItem.add(newMenu);
         xbayaMenuItem.add(newWorkflowTabItem);
-        xbayaMenuItem.add(registerHostDesc);
-        xbayaMenuItem.add(this.registerServiceDesc);
+//        xbayaMenuItem.add(registerHostDesc);
+//        xbayaMenuItem.add(this.registerServiceDesc);
 //        xbayaMenuItem.add(registerApplicationDesc);
         xbayaMenuItem.add(this.openWorkflowItem);
 
@@ -279,11 +268,12 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
         this.saveWorkflowtoRegistryItem.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
-                if (registryAccesser.saveWorkflow()){
-                	if (engine.getGUI().getGraphCanvas().getWorkflowFile()==null){
-                		engine.getGUI().getGraphCanvas().workflowSaved();
-                	}
-                }
+            	//FIXME
+//                if (registryAccesser.saveWorkflow()){
+//                	if (engine.getGUI().getGraphCanvas().getWorkflowFile()==null){
+//                		engine.getGUI().getGraphCanvas().workflowSaved();
+//                	}
+//                }
             }
         });
     }
@@ -304,78 +294,78 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
         return item;
     }
     
-    private void createRegisterServiceDesc() {
-        this.registerServiceDesc = new JMenuItem("Register Application...");
+//    private void createRegisterServiceDesc() {
+//        this.registerServiceDesc = new JMenuItem("Register Application...");
+//
+//        this.registerServiceDesc.addActionListener(new AbstractAction() {
+//			private static final long serialVersionUID = 1L;
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (XBayaUtil.acquireJCRRegistry(engine)) {
+//                    try {
+//                        DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(XBayaMenuItem.this.engine.getGUI().getFrame(), engine.getConfiguration()
+//                                        .getAiravataAPI());
+//                    	serviceDescriptionDialog.open();
+////                        ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
+////                                engine.getConfiguration().getJcrComponentRegistry()
+////                                        .getRegistry());
+////                        serviceDescriptionDialog.open();
+//                    	if (serviceDescriptionDialog.isServiceCreated()){
+////                    		engine.reloadRegistry();
+//                    		ComponentRegistryLoader loader = ComponentRegistryLoader.getLoader(engine, RegistryConstants.REGISTRY_TYPE_JCR);
+//                    		loader.load(engine.getConfiguration().getJcrComponentRegistry());
+//                    	}
+//                    } catch (Exception e1) {
+//                        engine.getGUI().getErrorWindow().error(e1);
+//                    }
+//                }
+//            }
+//        });
+//
+//    }
 
-        this.registerServiceDesc.addActionListener(new AbstractAction() {
-			private static final long serialVersionUID = 1L;
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (XBayaUtil.acquireJCRRegistry(engine)) {
-                    try {
-                        DeploymentDescriptionDialog serviceDescriptionDialog = new DeploymentDescriptionDialog(XBayaMenuItem.this.engine.getGUI().getFrame(), engine.getConfiguration()
-                                        .getAiravataAPI());
-                    	serviceDescriptionDialog.open();
-//                        ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
-//                                engine.getConfiguration().getJcrComponentRegistry()
-//                                        .getRegistry());
-//                        serviceDescriptionDialog.open();
-                    	if (serviceDescriptionDialog.isServiceCreated()){
-//                    		engine.reloadRegistry();
-                    		ComponentRegistryLoader loader = ComponentRegistryLoader.getLoader(engine, RegistryConstants.REGISTRY_TYPE_JCR);
-                    		loader.load(engine.getConfiguration().getJcrComponentRegistry());
-                    	}
-                    } catch (Exception e1) {
-                        engine.getGUI().getErrorWindow().error(e1);
-                    }
-                }
-            }
-        });
+//    private void createRegisterApplicationDesc() {
+//        this.registerApplicationDesc = new JMenuItem("Register Application...");
+//
+//        this.registerApplicationDesc.addActionListener(new AbstractAction() {
+//			private static final long serialVersionUID = 1L;
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (XBayaUtil.acquireJCRRegistry(engine)) {
+//                    try {
+//                        ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
+//                                engine);
+//        	    		applicationDescriptionDialog.setLocationRelativeTo(engine.getGUI().getFrame());
+//                        applicationDescriptionDialog.open();
+//                    } catch (Exception e1) {
+//                        engine.getGUI().getErrorWindow().error(e1);
+//                    }
+//                }
+//            }
+//        });
+//
+//    }
 
-    }
-
-    private void createRegisterApplicationDesc() {
-        this.registerApplicationDesc = new JMenuItem("Register Application...");
-
-        this.registerApplicationDesc.addActionListener(new AbstractAction() {
-			private static final long serialVersionUID = 1L;
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (XBayaUtil.acquireJCRRegistry(engine)) {
-                    try {
-                        ApplicationDescriptionDialog applicationDescriptionDialog = new ApplicationDescriptionDialog(
-                                engine);
-        	    		applicationDescriptionDialog.setLocationRelativeTo(engine.getGUI().getFrame());
-                        applicationDescriptionDialog.open();
-                    } catch (Exception e1) {
-                        engine.getGUI().getErrorWindow().error(e1);
-                    }
-                }
-            }
-        });
-
-    }
-
-    private void createRegisterHostDesc() {
-        this.registerHostDesc = new JMenuItem("Add Host...");
-
-        this.registerHostDesc.addActionListener(new AbstractAction() {
-			private static final long serialVersionUID = 1L;
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (XBayaUtil.acquireJCRRegistry(engine)) {
-                    try {
-                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
-                        		engine.getConfiguration().getAiravataAPI(),XBayaMenuItem.this.engine.getGUI().getFrame() );
-                        hostDescriptionDialog.open();
-                    } catch (Exception e1) {
-                        engine.getGUI().getErrorWindow().error(e1);
-                    }
-                }
-            }
-        });
-
-    }
+//    private void createRegisterHostDesc() {
+//        this.registerHostDesc = new JMenuItem("Add Host...");
+//
+//        this.registerHostDesc.addActionListener(new AbstractAction() {
+//			private static final long serialVersionUID = 1L;
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (XBayaUtil.acquireJCRRegistry(engine)) {
+//                    try {
+//                        HostDescriptionDialog hostDescriptionDialog = new HostDescriptionDialog(
+//                        		engine.getConfiguration().getAiravataAPI(),XBayaMenuItem.this.engine.getGUI().getFrame() );
+//                        hostDescriptionDialog.open();
+//                    } catch (Exception e1) {
+//                        engine.getGUI().getErrorWindow().error(e1);
+//                    }
+//                }
+//            }
+//        });
+//
+//    }
     private JMenuItem createClearWorkflowItem() {
         JMenuItem menuItem = new JMenuItem("Clear Workflow");
         menuItem.addActionListener(new AbstractAction() {
@@ -521,7 +511,6 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
         importWorkflowItemFromRegistry.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
-                new RegistryLoaderWindow(engine).show();
             }
         });
     }

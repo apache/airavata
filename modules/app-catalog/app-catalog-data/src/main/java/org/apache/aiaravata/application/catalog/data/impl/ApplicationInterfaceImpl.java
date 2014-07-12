@@ -33,6 +33,7 @@ import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             applicationModule.setAppModuleId(moduleResource.getModuleId());
             return moduleResource.getModuleId();
         }catch (Exception e) {
-            logger.error("Error while saving application module...", e);
+            logger.error("Error while adding application module "+applicationModule.getAppModuleName()+" ["+applicationModule.getAppModuleVersion()+"]", e);
             throw new AppCatalogException(e);
         }
     }
@@ -111,7 +112,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             }
             return resource.getInterfaceId();
         }catch (Exception e) {
-            logger.error("Error while saving application interface...", e);
+            logger.error("Error while adding application interface "+applicationInterfaceDescription.getApplicationName(), e);
             throw new AppCatalogException(e);
         }
     }
@@ -128,7 +129,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             moduleMappingResource.setAppInterfaceResource((AppInterfaceResource)interfaceResource.get(interfaceId));
             moduleMappingResource.save();
         }catch (Exception e) {
-            logger.error("Error while saving application module mapping...", e);
+            logger.error("Error while saving application module mapping "+moduleId, e);
             throw new AppCatalogException(e);
         }
     }
@@ -143,7 +144,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             existingModule.setModuleVersion(updatedModule.getAppModuleVersion());
             existingModule.save();
         }catch (Exception e) {
-            logger.error("Error while updating application module...", e);
+            logger.error("Error while updating application module "+moduleId, e);
             throw new AppCatalogException(e);
         }
     }
@@ -215,7 +216,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                 }
             }
         }catch (Exception e) {
-            logger.error("Error while updating application interface...", e);
+            logger.error("Error while updating application interface "+interfaceId, e);
             throw new AppCatalogException(e);
         }
     }
@@ -226,7 +227,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             AppModuleResource appModuleResource = new AppModuleResource();
             return AppCatalogThriftConversion.getApplicationModuleDesc((AppModuleResource) appModuleResource.get(moduleId));
         }catch (Exception e) {
-            logger.error("Error while retrieving application module...", e);
+            logger.error("Error while retrieving application module "+moduleId, e);
             throw new AppCatalogException(e);
         }
     }
@@ -237,20 +238,21 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             AppInterfaceResource interfaceResource = new AppInterfaceResource();
             return AppCatalogThriftConversion.getApplicationInterfaceDescription((AppInterfaceResource)interfaceResource.get(interfaceId));
         }catch (Exception e) {
-            logger.error("Error while retrieving application interface...", e);
+            logger.error("Error while retrieving application interface '"+interfaceId, e);
             throw new AppCatalogException(e);
         }
     }
 
     @Override
     public List<ApplicationModule> getApplicationModules(Map<String, String> filters) throws AppCatalogException {
+        List<ApplicationModule> modules = new ArrayList<ApplicationModule>();
         try {
             AppModuleResource resource = new AppModuleResource();
             for (String fieldName : filters.keySet() ){
                 if (fieldName.equals(AbstractResource.ApplicationModuleConstants.MODULE_NAME)){
                     List<Resource> resources = resource.get(AbstractResource.ApplicationModuleConstants.MODULE_NAME, filters.get(fieldName));
                     if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getAppModules(resources);
+                        modules = AppCatalogThriftConversion.getAppModules(resources);
                     }
                 }else {
                     logger.error("Unsupported field name for app module.", new IllegalArgumentException());
@@ -261,29 +263,28 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             logger.error("Error while retrieving app module list...", e);
             throw new AppCatalogException(e);
         }
-        return null;
+        return modules;
     }
 
     @Override
     public List<ApplicationInterfaceDescription> getApplicationInterfaces(Map<String, String> filters) throws AppCatalogException {
+        List<ApplicationInterfaceDescription> appInterfaces = new ArrayList<ApplicationInterfaceDescription>();
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
             for (String fieldName : filters.keySet() ){
                 if (fieldName.equals(AbstractResource.ApplicationInterfaceConstants.APPLICATION_NAME)){
                     List<Resource> resources = resource.get(AbstractResource.ApplicationInterfaceConstants.APPLICATION_NAME, filters.get(fieldName));
-                    if (resources != null && !resources.isEmpty()){
-                        return AppCatalogThriftConversion.getAppInterfaceDescList(resources);
-                    }
+                    appInterfaces = AppCatalogThriftConversion.getAppInterfaceDescList(resources);
                 }else {
                     logger.error("Unsupported field name for app interface.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Unsupported field name for app interface.");
+                    throw new IllegalArgumentException("Unsupported field name '"+fieldName+"' for app interface.");
                 }
             }
         }catch (Exception e){
             logger.error("Error while retrieving app interface list...", e);
             throw new AppCatalogException(e);
         }
-        return null;
+        return appInterfaces;
     }
 
     @Override
@@ -291,15 +292,11 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
             List<Resource> resources = resource.getAll();
-            if (resources != null && !resources.isEmpty()){
-                return AppCatalogThriftConversion.getAppInterfaceDescList(resources);
-            }
-
+            return AppCatalogThriftConversion.getAppInterfaceDescList(resources);
         }catch (Exception e){
             logger.error("Error while retrieving app interface list...", e);
             throw new AppCatalogException(e);
         }
-        return null;
     }
 
     @Override
@@ -320,7 +317,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             resource.remove(interfaceId);
             return true;
         }catch (Exception e){
-            logger.error("Error while removing app interface...", e);
+            logger.error("Error while removing app interface "+interfaceId, e);
             throw new AppCatalogException(e);
         }
     }
@@ -332,7 +329,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             resource.remove(moduleId);
             return true;
         }catch (Exception e){
-            logger.error("Error while removing app module...", e);
+            logger.error("Error while removing app module "+moduleId, e);
             throw new AppCatalogException(e);
         }
     }
@@ -343,7 +340,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             AppInterfaceResource resource = new AppInterfaceResource();
             return resource.isExists(interfaceId);
         }catch (Exception e){
-            logger.error("Error while retrieving app interface...", e);
+            logger.error("Error while checking app interface existence "+interfaceId, e);
             throw new AppCatalogException(e);
         }
     }
@@ -354,7 +351,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             AppModuleResource resource = new AppModuleResource();
             return resource.isExists(moduleId);
         }catch (Exception e){
-            logger.error("Error while retrieving app module...", e);
+            logger.error("Error while checking app module existence "+moduleId, e);
             throw new AppCatalogException(e);
         }
     }
@@ -366,7 +363,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             List<Resource> resources = resource.get(AbstractResource.AppInputConstants.INTERFACE_ID, interfaceId);
             return AppCatalogThriftConversion.getAppInputs(resources);
         }catch (Exception e){
-            logger.error("Error while retrieving app inputs...", e);
+            logger.error("Error while retrieving app inputs for application "+interfaceId, e);
             throw new AppCatalogException(e);
         }
     }
@@ -378,7 +375,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             List<Resource> resources = resource.get(AbstractResource.AppOutputConstants.INTERFACE_ID, interfaceId);
             return AppCatalogThriftConversion.getAppOutputs(resources);
         }catch (Exception e){
-            logger.error("Error while retrieving app outputs...", e);
+            logger.error("Error while retrieving app outputs for application "+interfaceId, e);
             throw new AppCatalogException(e);
         }
     }
