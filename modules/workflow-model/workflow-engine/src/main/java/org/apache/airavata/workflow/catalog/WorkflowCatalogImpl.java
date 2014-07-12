@@ -21,28 +21,29 @@
 
 package org.apache.airavata.workflow.catalog;
 
+import java.util.Arrays;
 import java.util.List;
 
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.Workflow;
+import org.apache.airavata.registry.api.AiravataRegistry2;
+import org.apache.airavata.registry.api.AiravataRegistryFactory;
+import org.apache.airavata.registry.api.AiravataUser;
+import org.apache.airavata.registry.api.Gateway;
+import org.apache.airavata.registry.api.exception.RegException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class WorkflowCatalogImpl implements WorkflowCatalog {
     private static final Logger log = LoggerFactory.getLogger(WorkflowCatalogImpl.class);
 
-	private AiravataAPI airavataAPI;
+	private AiravataRegistry2 registry;
 	
 	public List<String> getAllWorkflows() throws WorkflowCatalogException{
 		try {
-			return getAiravataAPI().getWorkflowManager()
-					.getWorkflowTemplateIds();
-		} catch (AiravataAPIInvocationException e) {
+			return Arrays.asList(getRegistry().getWorkflows().keySet().toArray(new String[]{}));
+		} catch (RegException e) {
 			String msg = "Error in retrieving all workflow template Ids.";
 			log.error(msg, e);
 			WorkflowCatalogException exception = new WorkflowCatalogException(msg + " More info : " + e.getMessage());
@@ -54,14 +55,12 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
 	public Workflow getWorkflow(String workflowTemplateId)
 			throws WorkflowCatalogException{
 		try {
-			org.apache.airavata.workflow.model.wf.Workflow w = getAiravataAPI()
-					.getWorkflowManager().getWorkflow(workflowTemplateId);
 			Workflow workflow = new Workflow();
 			workflow.setTemplateId(workflowTemplateId);
-			workflow.setGraph(XMLUtil.xmlElementToString(w.toXML()));
-			workflow.setName(w.getName());
+			workflow.setGraph(getRegistry().getWorkflowGraphXML(workflowTemplateId));
+			workflow.setName(workflowTemplateId);
 			return workflow;
-		} catch (AiravataAPIInvocationException e) {
+		} catch (RegException e) {
 			String msg = "Error in retrieving the workflow "
 					+ workflowTemplateId + ".";
 			log.error(msg, e);
@@ -74,9 +73,8 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
 	public void deleteWorkflow(String workflowTemplateId)
 			throws WorkflowCatalogException{
 		try {
-			getAiravataAPI().getWorkflowManager().deleteWorkflow(
-					workflowTemplateId);
-		} catch (AiravataAPIInvocationException e) {
+			getRegistry().removeWorkflow(workflowTemplateId);
+		} catch (RegException e) {
 			String msg = "Error in deleting the workflow " + workflowTemplateId
 					+ ".";
 			log.error(msg, e);
@@ -89,10 +87,9 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
 	public String registerWorkflow(Workflow workflow)
 			throws WorkflowCatalogException {
 		try {
-			getAiravataAPI().getWorkflowManager().addWorkflow(
-					workflow.getGraph());
+			getRegistry().addWorkflow(workflow.getName(),workflow.getGraph());
 			return workflow.getName();
-		} catch (AiravataAPIInvocationException e) {
+		} catch (RegException e) {
 			String msg = "Error in registering the workflow "
 					+ workflow.getName() + ".";
 			log.error(msg, e);
@@ -105,9 +102,8 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
 	public void updateWorkflow(String workflowTemplateId, Workflow workflow)
 			throws WorkflowCatalogException {
 		try {
-			getAiravataAPI().getWorkflowManager().updateWorkflow(
-					workflowTemplateId, workflow.getGraph());
-		} catch (AiravataAPIInvocationException e) {
+			getRegistry().updateWorkflow(workflowTemplateId, workflow.getGraph());
+		} catch (RegException e) {
 			String msg = "Error in updating the workflow " + workflow.getName()
 					+ ".";
 			log.error(msg, e);
@@ -120,14 +116,13 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
 	public String getWorkflowTemplateId(String workflowName)
 			throws WorkflowCatalogException {
 		try {
-			if (getAiravataAPI().getWorkflowManager().isWorkflowExists(
-					workflowName)) {
+			if (getRegistry().isWorkflowExists(workflowName)) {
 				return workflowName;
 			}
 			WorkflowCatalogException airavataClientException = new WorkflowCatalogException("No worklfow exists with the name "
 							+ workflowName);
 			throw airavataClientException;
-		} catch (AiravataAPIInvocationException e) {
+		} catch (RegException e) {
 			String msg = "Error in retrieving the workflow template id for "
 					+ workflowName + ".";
 			log.error(msg, e);
@@ -140,9 +135,8 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
 	public boolean isWorkflowExistWithName(String workflowName)
 			throws WorkflowCatalogException {
 		try {
-			return getAiravataAPI().getWorkflowManager().isWorkflowExists(
-					workflowName);
-		} catch (AiravataAPIInvocationException e) {
+			return getRegistry().isWorkflowExists(workflowName);
+		} catch (RegException e) {
 			String msg = "Error in veriying the workflow for workflow name "
 					+ workflowName + ".";
 			log.error(msg, e);
@@ -152,22 +146,22 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
 	}
 
 	private String getAiravataUserName() throws ApplicationSettingsException {
-		return ServerSettings.getDefaultUserGateway();
-	}
-
-	private String getGatewayName() throws ApplicationSettingsException {
 		return ServerSettings.getDefaultUser();
 	}
 
-	private AiravataAPI getAiravataAPI() {
-		if (airavataAPI == null) {
+	private String getGatewayName() throws ApplicationSettingsException {
+		return ServerSettings.getDefaultUserGateway();
+	}
+
+	private AiravataRegistry2 getRegistry() {
+		if (registry == null) {
 			try {
-				airavataAPI = AiravataAPIFactory.getAPI(getGatewayName(),
-						getAiravataUserName());
+				registry = AiravataRegistryFactory.getRegistry(new Gateway(getGatewayName()),
+						new AiravataUser(getAiravataUserName()));
 			} catch (Exception e) {
 				log.error("Unable to create Airavata API", e);
 			}
 		}
-		return airavataAPI;
+		return registry;
 	}
 }

@@ -46,7 +46,10 @@ import org.apache.airavata.xbaya.core.generators.ODEScriptFiler;
 import org.apache.airavata.xbaya.core.generators.WorkflowFiler;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.ui.dialogs.component.URLRegistryWindow;
+import org.apache.airavata.xbaya.ui.dialogs.workflow.WorkflowImportWindow;
+import org.apache.airavata.xbaya.ui.experiment.RegistryWorkflowPublisherWindow;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
+import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.ToolbarButton;
 import org.apache.airavata.xbaya.ui.widgets.XBayaToolBar;
 import org.slf4j.Logger;
@@ -192,6 +195,12 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 //        xbayaMenuItem.add(registerHostDesc);
 //        xbayaMenuItem.add(this.registerServiceDesc);
 //        xbayaMenuItem.add(registerApplicationDesc);
+        
+        xbayaMenuItem.add(importWorkflowItemFromRegistry);
+        xbayaMenuItem.add(saveWorkflowtoRegistryItem);
+
+        xbayaMenuItem.addSeparator();
+        
         xbayaMenuItem.add(this.openWorkflowItem);
 
         xbayaMenuItem.addSeparator();
@@ -210,24 +219,23 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
         xbayaMenuItem.add(this.saveAsWorkflowItem);
         xbayaMenuItem.add(this.saveAllWorkflowItem);
         
-        xbayaMenuItem.addSeparator();
-        JMenu importMenu = new JMenu("Import");
-        	importMenu.add(importWorkflowItemFromFileSystem);
-        	importMenu.add(importWorkflowItemFromRegistry);
-        	importMenu.addSeparator();
-        	importMenu.add(urlItem);	
+//        JMenu importMenu = new JMenu("Import");
+//        	importMenu.add(importWorkflowItemFromFileSystem);
+//        	importMenu.add(importWorkflowItemFromRegistry);
+//        	importMenu.addSeparator();
+//        	importMenu.add(urlItem);	
         	
-        JMenu exportMenu = new JMenu("Export");
-        	exportMenu.add(saveWorkflowtoRegistryItem);
-        	exportMenu.addSeparator();
-	        exportMenu.add(exportJythonItem);
-	        exportMenu.add(exportBpelItem);
-	        exportMenu.add(exportODEScriptsItem);
-	        exportMenu.addSeparator();
-	        exportMenu.add(saveImageItem);
-        
-        xbayaMenuItem.add(importMenu);
-        xbayaMenuItem.add(exportMenu);
+//        JMenu exportMenu = new JMenu("Export");
+//        	exportMenu.add(saveWorkflowtoRegistryItem);
+//        	exportMenu.addSeparator();
+//	        exportMenu.add(exportJythonItem);
+//	        exportMenu.add(exportBpelItem);
+//	        exportMenu.add(exportODEScriptsItem);
+//	        exportMenu.addSeparator();
+//	        exportMenu.add(saveImageItem);
+//        
+//        xbayaMenuItem.add(importMenu);
+//        xbayaMenuItem.add(exportMenu);
         
         xbayaMenuItem.addSeparator();
         
@@ -263,12 +271,14 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
     }
 
     private void createSaveWorkflowtoRegistryItem() {
-        this.saveWorkflowtoRegistryItem = new JMenuItem("Workflow To Registry...");
+        this.saveWorkflowtoRegistryItem = new JMenuItem("Register workflow...");
         this.saveWorkflowtoRegistryItem.setMnemonic(KeyEvent.VK_C);
         this.saveWorkflowtoRegistryItem.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
             	//FIXME
+            	RegistryWorkflowPublisherWindow window = new RegistryWorkflowPublisherWindow(engine);
+            	window.show();
 //                if (registryAccesser.saveWorkflow()){
 //                	if (engine.getGUI().getGraphCanvas().getWorkflowFile()==null){
 //                		engine.getGUI().getGraphCanvas().workflowSaved();
@@ -507,10 +517,16 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
     }
     
     private void createImportWorkflowItemFromRegistry() {
-        importWorkflowItemFromRegistry = new JMenuItem("Workflow From Registry...");
+        importWorkflowItemFromRegistry = new JMenuItem("Import workflow...");
         importWorkflowItemFromRegistry.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
             public void actionPerformed(ActionEvent e) {
+            	try {
+					WorkflowImportWindow window = new WorkflowImportWindow(engine);
+					window.show();
+				} catch (Exception e1) {
+                	engine.getGUI().getErrorWindow().error(e1);
+				}
             }
         });
     }
