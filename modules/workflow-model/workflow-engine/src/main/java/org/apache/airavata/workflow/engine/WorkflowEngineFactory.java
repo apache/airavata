@@ -19,14 +19,14 @@
  *
  */
 
-package org.apache.airavata.workflow.catalog;
+package org.apache.airavata.workflow.engine;
 
-public class WorkflowCatalogFactory {
-	private static WorkflowCatalog workflowCatalog;
+public class WorkflowEngineFactory {
+	private static WorkflowEngine workflowCatalog;
 	
-	public static WorkflowCatalog getWorkflowCatalog(){
+	public static WorkflowEngine getWorkflowEngine(){
 		if (workflowCatalog==null) {
-			workflowCatalog = new WorkflowCatalogImpl();
+			workflowCatalog = new WorkflowEngineImpl();
 		}
 		return workflowCatalog;
 	}
