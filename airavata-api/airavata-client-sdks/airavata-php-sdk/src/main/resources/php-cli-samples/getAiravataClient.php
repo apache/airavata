@@ -3,6 +3,8 @@ namespace Airavata\Client\Samples;
 
 $airavataconfig = parse_ini_file("../conf/airavata-client-properties.ini");
 
+$appcatalogdocs = parse_ini_file("../conf/app-catalog-identifiers.ini");
+
 $GLOBALS['THRIFT_ROOT'] = $airavataconfig['THRIFT_LIB_DIR'];
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TTransport.php';
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TSocket.php';
