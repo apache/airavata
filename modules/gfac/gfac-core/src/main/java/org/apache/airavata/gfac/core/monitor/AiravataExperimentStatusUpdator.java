@@ -68,7 +68,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
         status.setExperimentState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setExperimentStatus(status);
-        airavataRegistry.update(RegistryModelType.EXPERIMENT, details, experimentId);
+        airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
 
     }
 

@@ -149,13 +149,13 @@ public class HPCPullMonitor extends PullMonitor {
                 if (iHostMonitorData.getHost().getType() instanceof GsisshHostType
                         || iHostMonitorData.getHost().getType() instanceof SSHHostType) {
                     currentHostDescription = iHostMonitorData.getHost();
-                    String hostName =  iHostMonitorData.getHost().getType().getHostAddress();
+                    String hostName = iHostMonitorData.getHost().getType().getHostAddress();
                     ResourceConnection connection = null;
                     if (connections.containsKey(hostName)) {
                         logger.debug("We already have this connection so not going to create one");
                         connection = connections.get(hostName);
                     } else {
-                        connection = new ResourceConnection(iHostMonitorData,getAuthenticationInfo());
+                        connection = new ResourceConnection(iHostMonitorData, getAuthenticationInfo());
                         connections.put(hostName, connection);
                     }
                     List<MonitorID> monitorID = iHostMonitorData.getMonitorIDs();
@@ -176,10 +176,10 @@ public class HPCPullMonitor extends PullMonitor {
                             try {
                                 gfac.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
                             } catch (GFacException e) {
-                            	publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(iMonitorID.getExperimentID(), iMonitorID.getWorkflowNodeID(),
-										iMonitorID.getTaskID()), TaskState.FAILED));
-                            	publisher.publish(new ExperimentStatusChangeRequest(new ExperimentIdentity(iMonitorID.getExperimentID()),
-										ExperimentState.FAILED));
+                                publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(iMonitorID.getExperimentID(), iMonitorID.getWorkflowNodeID(),
+                                        iMonitorID.getTaskID()), TaskState.FAILED));
+                                publisher.publish(new ExperimentStatusChangeRequest(new ExperimentIdentity(iMonitorID.getExperimentID()),
+                                        ExperimentState.FAILED));
                                 logger.info(e.getLocalizedMessage(), e);
                             }
                         } else if (iMonitorID.getFailedCount() > 2 && iMonitorID.getStatus().equals(JobState.UNKNOWN)) {
