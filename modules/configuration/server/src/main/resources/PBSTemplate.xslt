@@ -16,7 +16,7 @@
     </xsl:when></xsl:choose>
     <xsl:choose>
     <xsl:when test="ns:queueName">
-#PBS -q <xsl:value-of select="queueName"/>
+#PBS -q <xsl:value-of select="ns:queueName"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
