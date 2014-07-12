@@ -186,8 +186,6 @@ public class HPCPullMonitor extends PullMonitor {
                             logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             completedJobs.add(iMonitorID);
-                        } else if (!iMonitorID.getStatus().equals(JobState.UNKNOWN)) {
-                            iMonitorID.setFailedCount(0);
                         } else {
                             // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
