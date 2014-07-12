@@ -105,6 +105,7 @@ public class ProjectRegistry {
         try {
             ProjectResource existingProject = workerResource.getProject(projectId);
             existingProject.setDescription(project.getDescription());
+            existingProject.setName(project.getName());
             existingProject.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
             existingProject.setGateway(gatewayResource);
             UserResource user = (UserResource)ResourceUtils.getUser(project.getOwner());
