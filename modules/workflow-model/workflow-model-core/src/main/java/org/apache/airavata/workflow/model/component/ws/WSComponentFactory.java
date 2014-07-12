@@ -54,7 +54,7 @@ public class WSComponentFactory {
             throws ComponentException {
         try {
             WSComponent component;
-            component = new WSComponent(application, operationName);
+            component = new WSComponent(new WSComponentApplication(application));
             return component;
         } catch (RuntimeException e) {
             throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);

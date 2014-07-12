@@ -23,7 +23,9 @@ package org.apache.airavata.workflow.model.graph.ws;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
+import org.apache.airavata.workflow.model.component.ws.WSComponentApplication;
 import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.ForEachExecutableNode;
 import org.apache.airavata.workflow.model.graph.Graph;
@@ -85,21 +87,6 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode{
     }
 
     /**
-     * @return The name of portType.
-     */
-    public QName getPortTypeQName() {
-        if (this.portTypeQName == null) {
-            if (getComponent() == null) {
-                // XXX This happens while parsing xwf created by the version
-                // 2.2.6_1 or below.
-                return null;
-            }
-            this.portTypeQName = getComponent().getPortTypeQName();
-        }
-        return this.portTypeQName;
-    }
-
-    /**
      * @return The name of the operation.
      */
     public String getOperationName() {
@@ -131,16 +118,20 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode{
         XmlElement nodeElement = super.toXML();
         nodeElement.setAttributeValue(GraphSchema.NS, GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_WS);
 
-        XmlElement wsdlElement = nodeElement.addElement(GraphSchema.NS, GraphSchema.NODE_WSDL_QNAME_TAG);
-        // wsdlElement.setText(getWSDLQName().toString());
-        wsdlElement.setText(getWSDLID());
+//        XmlElement wsdlElement = nodeElement.addElement(GraphSchema.NS, GraphSchema.NODE_WSDL_QNAME_TAG);
+//        // wsdlElement.setText(getWSDLQName().toString());
+//        wsdlElement.setText(getWSDLID());
+//
+//        XmlElement portTypeElement = nodeElement.addElement(GraphSchema.NS, GraphSchema.NODE_WSDL_PORT_TYPE_TAG);
+//        portTypeElement.setText(getPortTypeQName().toString());
+//
+//        XmlElement operationElement = nodeElement.addElement(GraphSchema.NS, GraphSchema.NODE_WSDL_OPERATION_TAG);
+//        operationElement.setText(getOperationName());
 
-        XmlElement portTypeElement = nodeElement.addElement(GraphSchema.NS, GraphSchema.NODE_WSDL_PORT_TYPE_TAG);
-        portTypeElement.setText(getPortTypeQName().toString());
-
-        XmlElement operationElement = nodeElement.addElement(GraphSchema.NS, GraphSchema.NODE_WSDL_OPERATION_TAG);
-        operationElement.setText(getOperationName());
-
+        XmlElement xml = getComponent().toXML();
+        xml.setParent(null);
+		nodeElement.addElement(xml);
+        
         return nodeElement;
     }
 
@@ -150,24 +141,30 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode{
     @Override
     protected void parse(XmlElement nodeElement) throws GraphException {
         super.parse(nodeElement);
-
-        XmlElement wsdlElement = nodeElement.element(null, GraphSchema.NODE_WSDL_QNAME_TAG);
-        if (wsdlElement != null) {
-            this.wsdlID = wsdlElement.requiredText();
-            // String wsdlQNameString = wsdlElement.requiredText();
-            // this.wsdlQName = QName.valueOf(wsdlQNameString);
-        }
-
-        XmlElement portTypeElement = nodeElement.element(null, GraphSchema.NODE_WSDL_PORT_TYPE_TAG);
-        if (portTypeElement != null) {
-            String portTypeString = portTypeElement.requiredText();
-            this.portTypeQName = QName.valueOf(portTypeString);
-        }
-
-        XmlElement operationElement = nodeElement.element(null, GraphSchema.NODE_WSDL_OPERATION_TAG);
-        if (operationElement != null) {
-            this.operationName = operationElement.requiredText();
-        }
+        XmlElement element = nodeElement.element(null, "Application");
+        WSComponentApplication application = WSComponentApplication.parse(element);
+        try {
+			setComponent(new WSComponent(application));
+		} catch (ComponentException e) {
+			e.printStackTrace();
+		}
+//        XmlElement wsdlElement = nodeElement.element(null, GraphSchema.NODE_WSDL_QNAME_TAG);
+//        if (wsdlElement != null) {
+//            this.wsdlID = wsdlElement.requiredText();
+//            // String wsdlQNameString = wsdlElement.requiredText();
+//            // this.wsdlQName = QName.valueOf(wsdlQNameString);
+//        }
+//
+//        XmlElement portTypeElement = nodeElement.element(null, GraphSchema.NODE_WSDL_PORT_TYPE_TAG);
+//        if (portTypeElement != null) {
+//            String portTypeString = portTypeElement.requiredText();
+//            this.portTypeQName = QName.valueOf(portTypeString);
+//        }
+//
+//        XmlElement operationElement = nodeElement.element(null, GraphSchema.NODE_WSDL_OPERATION_TAG);
+//        if (operationElement != null) {
+//            this.operationName = operationElement.requiredText();
+//        }
     }
    
 }
