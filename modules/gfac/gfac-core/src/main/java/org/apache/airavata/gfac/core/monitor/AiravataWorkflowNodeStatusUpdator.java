@@ -20,20 +20,20 @@
 */
 package org.apache.airavata.gfac.core.monitor;
 
-import com.google.common.eventbus.Subscribe;
-import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangeRequest;
-import org.apache.airavata.gfac.core.monitor.state.WorkflowNodeStatusChangeRequest;
+import java.util.Calendar;
+
+import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
+import org.apache.airavata.gfac.core.monitor.state.WorkflowNodeStatusChangedEvent;
 import org.apache.airavata.gfac.core.notification.MonitorPublisher;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
-import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
+import com.google.common.eventbus.Subscribe;
 
 public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataWorkflowNodeStatusUpdator.class);
@@ -51,49 +51,37 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     }
 
     @Subscribe
-    public void updateRegistry(WorkflowNodeStatusChangeRequest workflowNodeStatus) {
-        WorkflowNodeState state = workflowNodeStatus.getState();
-        if (state != null) {
-            try {
-                String workflowNodeID = workflowNodeStatus.getIdentity().getWorkflowNodeID();
-                updateWorkflowNodeStatus(workflowNodeID, state);
-            } catch (Exception e) {
-                logger.error("Error persisting data" + e.getLocalizedMessage(), e);
-            }
-        }
+    public void setupWorkflowNodeStatus(TaskStatusChangedEvent taskStatus){
+    	WorkflowNodeState state=WorkflowNodeState.UNKNOWN;
+    	switch(taskStatus.getState()){
+    	case CANCELED:
+    		state=WorkflowNodeState.CANCELED; break;
+    	case COMPLETED:
+    		state=WorkflowNodeState.COMPLETED; break;
+    	case CONFIGURING_WORKSPACE:
+    		state=WorkflowNodeState.INVOKED; break;
+    	case FAILED:
+    		state=WorkflowNodeState.FAILED; break;
+    	case EXECUTING: case WAITING: case PRE_PROCESSING: case POST_PROCESSING: case OUTPUT_DATA_STAGING: case INPUT_DATA_STAGING:
+    		state=WorkflowNodeState.EXECUTING; break;
+    	case STARTED:
+    		state=WorkflowNodeState.INVOKED; break;
+    	case CANCELING:
+    		state=WorkflowNodeState.CANCELING; break;
+		default:
+			break;
+    	}
+    	try {
+			updateWorkflowNodeStatus(taskStatus.getIdentity().getWorkflowNodeID(), state);
+			logger.debug("Publishing workflow node status for "+taskStatus.getIdentity().getWorkflowNodeID()+":"+state.toString());
+			monitorPublisher.publish(new WorkflowNodeStatusChangedEvent(taskStatus.getIdentity(),state));
+		} catch (Exception e) {
+            logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+		}
     }
-
-    @Subscribe
-    public void setupExperimentStatus(WorkflowNodeStatusChangeRequest nodeStatus) {
-        ExperimentState state = ExperimentState.UNKNOWN;
-        switch (nodeStatus.getState()) {
-            case CANCELED:
-                state = ExperimentState.CANCELED;
-                break;
-            case COMPLETED:
-                state = ExperimentState.COMPLETED;
-                break;
-            case INVOKED:
-                state = ExperimentState.LAUNCHED;
-                break;
-            case FAILED:
-                state = ExperimentState.FAILED;
-                break;
-            case EXECUTING:
-                state = ExperimentState.EXECUTING;
-                break;
-            case CANCELING:
-                state = ExperimentState.CANCELING;
-                break;
-            default:
-                break;
-        }
-        logger.debug("Publishing Experiment Status " + state.toString());
-        monitorPublisher.publish(new ExperimentStatusChangeRequest(nodeStatus.getIdentity(), state));
-    }
-
 
     public  void updateWorkflowNodeStatus(String workflowNodeId, WorkflowNodeState state) throws Exception {
+		logger.debug("Updating workflow node status for "+workflowNodeId+":"+state.toString());
     	WorkflowNodeDetails details = (WorkflowNodeDetails)airavataRegistry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
         if(details == null) {
             details = new WorkflowNodeDetails();
