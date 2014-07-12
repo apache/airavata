@@ -46,6 +46,7 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConver
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -1139,8 +1140,15 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
                 throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
             }
             Experiment existingExperiment = (Experiment)registry.get(RegistryModelType.EXPERIMENT, existingExperimentID);
+            existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
             if (validateString(newExperiementName)){
                 existingExperiment.setName(newExperiementName);
+            }
+            if (existingExperiment.getWorkflowNodeDetailsList() != null){
+                existingExperiment.getWorkflowNodeDetailsList().clear();
+            }
+            if (existingExperiment.getErrors() != null ){
+                existingExperiment.getErrors().clear();
             }
             return (String)registry.add(ParentDataType.EXPERIMENT, existingExperiment);
         } catch (Exception e) {
