@@ -363,7 +363,7 @@ public class DocumentCreatorNew {
         application2.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("WRF_Execution_Log", null, DataType.URI));
         application2.setApplicationInterfaceId(client.registerApplicationInterface(application2));
 
-        ApplicationDeploymentDescription deployment2 = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module2.getAppModuleId(), "/home/ogce/apps/wrf_wrapper.sh", ApplicationParallelismType.MPI, "WRF");
+        ApplicationDeploymentDescription deployment2 = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module2.getAppModuleId(), "/home/ogce/production/app_wrappers/wrf_wrapper.sh", ApplicationParallelismType.MPI, "WRF");
         deployment2.setAppDeploymentId(client.registerApplicationDeployment(deployment2));
         return host.getComputeResourceId() + "," + application2.getApplicationInterfaceId();
     }
@@ -403,7 +403,7 @@ public class DocumentCreatorNew {
         application2.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("WRF_Execution_Log", null, DataType.URI));
         application2.setApplicationInterfaceId(client.registerApplicationInterface(application2));
 
-        ApplicationDeploymentDescription deployment2 = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module2.getAppModuleId(), "/home1/01437/ogce/apps/wrf_wrapper.sh", ApplicationParallelismType.MPI, "WRF");
+        ApplicationDeploymentDescription deployment2 = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module2.getAppModuleId(), "/home1/01437/ogce/production/app_wrappers/wrf_wrapper.sh", ApplicationParallelismType.MPI, "WRF");
         deployment2.setAppDeploymentId(client.registerApplicationDeployment(deployment2));
         return host.getComputeResourceId() + "," + application2.getApplicationInterfaceId();
 
@@ -786,7 +786,7 @@ public class DocumentCreatorNew {
         application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.rst", null, DataType.URI));
         application.setApplicationInterfaceId(client.registerApplicationInterface(application));
 
-        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), amodule.getAppModuleId(), "/home1/01437/ogce/apps/amber_wrapper.sh", ApplicationParallelismType.SERIAL, "AmberStampede");
+        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), amodule.getAppModuleId(), "/home1/01437/ogce/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.SERIAL, "AmberStampede");
         deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
 
         client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/home1/01437/ogce", "TG-STA110014S", false, null, null, null));
@@ -830,7 +830,7 @@ public class DocumentCreatorNew {
         application.addToApplicationOutputs(DocumentCreatorUtils.createAppOutput("AMBER_Prod.rst", null, DataType.URI));
         application.setApplicationInterfaceId(client.registerApplicationInterface(application));
 
-        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), amodule.getAppModuleId(), "/home/ogce/apps/amber_wrapper.sh", ApplicationParallelismType.SERIAL, "AmberStampede");
+        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), amodule.getAppModuleId(), "/home/ogce/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.SERIAL, "AmberStampede");
         deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
 
         client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/oasis/scratch/trestles/ogce/temp_project/", "sds128", false, null, null, null));
