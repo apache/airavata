@@ -186,6 +186,16 @@ public class HPCPullMonitor extends PullMonitor {
                             logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             completedJobs.add(iMonitorID);
+                            try {
+                                logger.error("Launching outflow handlers to check output are genereated or not");
+                                gfac.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
+                            } catch (GFacException e) {
+                                publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(iMonitorID.getExperimentID(), iMonitorID.getWorkflowNodeID(),
+                                        iMonitorID.getTaskID()), TaskState.FAILED));
+                                publisher.publish(new ExperimentStatusChangeRequest(new ExperimentIdentity(iMonitorID.getExperimentID()),
+                                        ExperimentState.FAILED));
+                                logger.info(e.getLocalizedMessage(), e);
+                            }
                         } else {
                             // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
