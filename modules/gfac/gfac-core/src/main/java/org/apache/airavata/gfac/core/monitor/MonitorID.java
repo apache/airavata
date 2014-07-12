@@ -189,7 +189,7 @@ public class MonitorID {
                         break;
                     default:
                         int loginfo = getFailedCount()+1;
-                        logger.info("Increasing the failed count to:"+loginfo);
+                        logger.info("JobId:" + this.getJobID()+" Increasing the failed count to:"+loginfo+"");
                         setFailedCount(getFailedCount() + 1);
                         try {
                             // when state becomes unknown we sleep for a while
@@ -207,7 +207,7 @@ public class MonitorID {
                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
                 int loginfo = getFailedCount()+1;
-                logger.info("Increasing the failed count to:"+loginfo);
+                logger.info("JobId:" + this.getJobID()+" Increasing the failed count to:"+loginfo+"");
                 setFailedCount(getFailedCount() + 1);
             }
         }    else {
