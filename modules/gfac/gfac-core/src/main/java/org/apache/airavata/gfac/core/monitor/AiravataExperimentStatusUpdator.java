@@ -21,7 +21,10 @@
 package org.apache.airavata.gfac.core.monitor;
 
 import com.google.common.eventbus.Subscribe;
-import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangeRequest;
+
+import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangedEvent;
+import org.apache.airavata.gfac.core.monitor.state.WorkflowNodeStatusChangedEvent;
+import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.registry.cpi.RegistryModelType;
@@ -35,6 +38,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
     private final static Logger logger = LoggerFactory.getLogger(AiravataExperimentStatusUpdator.class);
 
     private Registry airavataRegistry;
+    private MonitorPublisher monitorPublisher;
 
     public Registry getAiravataRegistry() {
         return airavataRegistry;
@@ -45,7 +49,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
     }
 
     @Subscribe
-    public void updateRegistry(ExperimentStatusChangeRequest experimentStatus) {
+    public void updateRegistry(ExperimentStatusChangedEvent experimentStatus) {
         ExperimentState state = experimentStatus.getState();
         if (state != null) {
             try {
@@ -57,6 +61,41 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
         }
     }
 
+    
+    @Subscribe
+    public void setupExperimentStatus(WorkflowNodeStatusChangedEvent nodeStatus) {
+        ExperimentState state = ExperimentState.UNKNOWN;
+        switch (nodeStatus.getState()) {
+            case CANCELED:
+                state = ExperimentState.CANCELED;
+                break;
+            case COMPLETED:
+                state = ExperimentState.COMPLETED;
+                break;
+            case INVOKED:
+                state = ExperimentState.LAUNCHED;
+                break;
+            case FAILED:
+                state = ExperimentState.FAILED;
+                break;
+            case EXECUTING:
+                state = ExperimentState.EXECUTING;
+                break;
+            case CANCELING:
+                state = ExperimentState.CANCELING;
+                break;
+            default:
+                break;
+        }
+		try {
+			updateExperimentStatus(nodeStatus.getIdentity().getExperimentID(), state);
+			logger.debug("Publishing experiment status for "+nodeStatus.getIdentity().getExperimentID()+":"+state.toString());
+			monitorPublisher.publish(new ExperimentStatusChangedEvent(nodeStatus.getIdentity(), state));
+		} catch (Exception e) {
+            logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+		}
+    }
+    
     public  void updateExperimentStatus(String experimentId, ExperimentState state) throws Exception {
         logger.info("Updating the experiment status of experiment: " + experimentId + " to " + state.toString());
     	Experiment details = (Experiment)airavataRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
@@ -76,6 +115,8 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 		for (Object configuration : configurations) {
 			if (configuration instanceof Registry){
 				this.airavataRegistry=(Registry)configuration;
+			} else if (configuration instanceof MonitorPublisher){
+				this.monitorPublisher=(MonitorPublisher) configuration;
 			} 
 		}
 	}

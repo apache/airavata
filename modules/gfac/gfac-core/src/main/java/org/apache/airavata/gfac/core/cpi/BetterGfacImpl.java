@@ -56,10 +56,11 @@ import org.apache.airavata.gfac.core.monitor.ExperimentIdentity;
 import org.apache.airavata.gfac.core.monitor.JobIdentity;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.TaskIdentity;
-import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangeRequest;
+import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangedEvent;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
+import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
 import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.gfac.core.notification.events.ExecutionFailEvent;
 import org.apache.airavata.gfac.core.notification.listeners.LoggingListener;
@@ -540,15 +541,15 @@ public class BetterGfacImpl implements GFac {
             try {
                 // we make the experiment as failed due to exception scenario
                 monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
-                monitorPublisher.publish(new
-                        ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
-                        ExperimentState.FAILED));
+//                monitorPublisher.publish(new
+//                        ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+//                        ExperimentState.FAILED));
                 // Updating the task status if there's any task associated
-                monitorPublisher.publish(new TaskStatusChangeRequest(
-                        new TaskIdentity(jobExecutionContext.getExperimentID(),
-                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED
-                ));
+//                monitorPublisher.publish(new TaskStatusChangedEvent(
+//                        new TaskIdentity(jobExecutionContext.getExperimentID(),
+//                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+//                                jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED
+//                ));
                 monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
                         new JobIdentity(jobExecutionContext.getExperimentID(),
                                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
@@ -585,15 +586,15 @@ public class BetterGfacImpl implements GFac {
             try {
                 // we make the experiment as failed due to exception scenario
                 monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
-                monitorPublisher.publish(new
-                        ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
-                        ExperimentState.FAILED));
+//                monitorPublisher.publish(new
+//                        ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+//                        ExperimentState.FAILED));
                 // Updating the task status if there's any task associated
-                monitorPublisher.publish(new TaskStatusChangeRequest(
-                        new TaskIdentity(jobExecutionContext.getExperimentID(),
-                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED
-                ));
+//                monitorPublisher.publish(new TaskStatusChangeRequest(
+//                        new TaskIdentity(jobExecutionContext.getExperimentID(),
+//                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+//                                jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED
+//                ));
                 monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
                         new JobIdentity(jobExecutionContext.getExperimentID(),
                                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
@@ -771,9 +772,9 @@ public class BetterGfacImpl implements GFac {
 
         // At this point all the execution is finished so we update the task and experiment statuses.
         // Handler authors does not have to worry about updating experiment or task statuses.
-        monitorPublisher.publish(new
-                ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
-                ExperimentState.COMPLETED));
+//        monitorPublisher.publish(new
+//                ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+//                ExperimentState.COMPLETED));
         // Updating the task status if there's any task associated
         monitorPublisher.publish(new TaskStatusChangeRequest(
                 new TaskIdentity(jobExecutionContext.getExperimentID(),
@@ -900,11 +901,12 @@ public class BetterGfacImpl implements GFac {
 
         // At this point all the execution is finished so we update the task and experiment statuses.
         // Handler authors does not have to worry about updating experiment or task statuses.
-        monitorPublisher.publish(new
-                ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
-                ExperimentState.COMPLETED));
+//        monitorPublisher.publish(new
+//                ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+//                ExperimentState.COMPLETED));
         // Updating the task status if there's any task associated
-        monitorPublisher.publish(new TaskStatusChangeRequest(
+        
+        monitorPublisher.publish(new TaskStatusChangedEvent(
                 new TaskIdentity(jobExecutionContext.getExperimentID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                         jobExecutionContext.getTaskData().getTaskID()), TaskState.COMPLETED

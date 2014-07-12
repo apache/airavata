@@ -29,9 +29,10 @@ import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.ExperimentIdentity;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.TaskIdentity;
-import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangeRequest;
+import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangedEvent;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
+import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
 import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
@@ -178,8 +179,10 @@ public class HPCPullMonitor extends PullMonitor {
                             } catch (GFacException e) {
                             	publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(iMonitorID.getExperimentID(), iMonitorID.getWorkflowNodeID(),
 										iMonitorID.getTaskID()), TaskState.FAILED));
-                            	publisher.publish(new ExperimentStatusChangeRequest(new ExperimentIdentity(iMonitorID.getExperimentID()),
-										ExperimentState.FAILED));
+                            	//FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status 
+                            	//should be done understanding whole workflow of job submission and data transfer
+//                            	publisher.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(iMonitorID.getExperimentID()),
+//										ExperimentState.FAILED));
                                 logger.info(e.getLocalizedMessage(), e);
                             }
                         } else if (iMonitorID.getFailedCount() > 2 && iMonitorID.getStatus().equals(JobState.UNKNOWN)) {
