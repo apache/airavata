@@ -141,6 +141,7 @@ public class GFACSSHUtils {
             jobDescriptor.setProcessesPerNode(applicationDeploymentType.getProcessorsPerNode());
             jobDescriptor.setMaxWallTime(String.valueOf(applicationDeploymentType.getMaxWallTime()));
             jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
+            jobDescriptor.setCPUCount(applicationDeploymentType.getCpuCount());
             if (applicationDeploymentType.getProjectAccount() != null) {
                 if (applicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null) {
                     jobDescriptor.setAcountString(applicationDeploymentType.getProjectAccount().getProjectAccountNumber());

@@ -366,26 +366,26 @@ public class InterpreterUtil {
         return sum;
     }
 
-    public static String getEPR(WSNode wsNode) {
-        Iterable<WsdlService> services = wsNode.getComponent().getWSDL().services();
-        Iterator<WsdlService> iterator = services.iterator();
-        if (iterator.hasNext()) {
-            Iterable<WsdlPort> ports = iterator.next().ports();
-            Iterator<WsdlPort> portIterator = ports.iterator();
-            if (portIterator.hasNext()) {
-                WsdlPort port = portIterator.next();
-                Iterable children = port.xml().children();
-                Iterator childIterator = children.iterator();
-                while (childIterator.hasNext()) {
-                    Object next = childIterator.next();
-                    if (next instanceof XmlElementWithViewsImpl) {
-                        org.xmlpull.infoset.XmlAttribute epr = ((XmlElementWithViewsImpl) next).attribute("location");
-                        return epr.getValue();
-                    }
-                }
-            }
-        }
-        return null;
-    }
+//    public static String getEPR(WSNode wsNode) {
+//        Iterable<WsdlService> services = wsNode.getComponent().getWSDL().services();
+//        Iterator<WsdlService> iterator = services.iterator();
+//        if (iterator.hasNext()) {
+//            Iterable<WsdlPort> ports = iterator.next().ports();
+//            Iterator<WsdlPort> portIterator = ports.iterator();
+//            if (portIterator.hasNext()) {
+//                WsdlPort port = portIterator.next();
+//                Iterable children = port.xml().children();
+//                Iterator childIterator = children.iterator();
+//                while (childIterator.hasNext()) {
+//                    Object next = childIterator.next();
+//                    if (next instanceof XmlElementWithViewsImpl) {
+//                        org.xmlpull.infoset.XmlAttribute epr = ((XmlElementWithViewsImpl) next).attribute("location");
+//                        return epr.getValue();
+//                    }
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
 }

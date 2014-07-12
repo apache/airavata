@@ -13,7 +13,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.12-SNAPSHOT</version>
+        <version>0.13-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -211,27 +211,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-message-monitor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-client-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-message-broker</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-common-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-tracking</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-api-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

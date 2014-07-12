@@ -38,8 +38,6 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.ExperimentAdvanceOptions;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
@@ -47,11 +45,8 @@ import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.ode.ODEClient;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
-import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -102,9 +97,9 @@ public class WorkflowInterpreterLaunchWindow {
      */
     public WorkflowInterpreterLaunchWindow(XBayaEngine engine) {
         this.engine = engine;
-        if (XBayaUtil.acquireJCRRegistry(engine)) {
+//        if (XBayaUtil.acquireJCRRegistry(engine)) {
             initGUI();
-        }
+//        }
     }
 
     /**
@@ -312,36 +307,36 @@ public class WorkflowInterpreterLaunchWindow {
             @Override
             public void run() {
 
-                try {
-                    List<WorkflowInput> workflowInputs=new ArrayList<WorkflowInput>();
-                    for (int i = 0; i < inputNodes.size(); i++) {
-                    	InputNode inputNode = inputNodes.get(i);
-                    	workflowInputs.add(new WorkflowInput(inputNode.getID(), inputNode.getDefaultValue().toString()));
-                    }
-                    AiravataAPI api = engine.getConfiguration().getAiravataAPI();
-                    
-                    ExperimentAdvanceOptions options = api.getExecutionManager().createExperimentAdvanceOptions(instanceNameFinal, api.getCurrentUser(), null);
-                    if (AmazonCredential.getInstance().getAwsAccessKeyId() != null) {
-                        options.getCustomSecuritySettings().getAmazonWSSettings().setAccessKeyId(AmazonCredential.getInstance().getAwsAccessKeyId());
-                        options.getCustomSecuritySettings().getAmazonWSSettings().setSecretAccessKey(AmazonCredential.getInstance().getAwsSecretAccessKey());
-                    }
-
-                    //TODO get the token id from UI
-                    // For the moment hard code it
-                    // TODO Build UI to get the token id
-                    //options.getCustomSecuritySettings().getCredentialStoreSecuritySettings().setTokenId("1234");
-
-
-                    String experimentId = api.getExecutionManager().runExperiment(api.getWorkflowManager().getWorkflowAsString(workflow), workflowInputs,options);
-                    try {
-                        WorkflowInterpreterLaunchWindow.this.engine.getMonitor().getConfiguration().setTopic(experimentId);
-                        WorkflowInterpreterLaunchWindow.this.engine.getMonitor().start();
-                    } catch (MonitorException e1) {
-                        WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e1);
-                    }
-                } catch (Exception e) {
-                    WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e);
-                }
+//                try {
+//                    List<WorkflowInput> workflowInputs=new ArrayList<WorkflowInput>();
+//                    for (int i = 0; i < inputNodes.size(); i++) {
+//                    	InputNode inputNode = inputNodes.get(i);
+//                    	workflowInputs.add(new WorkflowInput(inputNode.getID(), inputNode.getDefaultValue().toString()));
+//                    }
+//                    AiravataAPI api = engine.getConfiguration().getAiravataAPI();
+//                    
+//                    ExperimentAdvanceOptions options = api.getExecutionManager().createExperimentAdvanceOptions(instanceNameFinal, api.getCurrentUser(), null);
+//                    if (AmazonCredential.getInstance().getAwsAccessKeyId() != null) {
+//                        options.getCustomSecuritySettings().getAmazonWSSettings().setAccessKeyId(AmazonCredential.getInstance().getAwsAccessKeyId());
+//                        options.getCustomSecuritySettings().getAmazonWSSettings().setSecretAccessKey(AmazonCredential.getInstance().getAwsSecretAccessKey());
+//                    }
+//
+//                    //TODO get the token id from UI
+//                    // For the moment hard code it
+//                    // TODO Build UI to get the token id
+//                    //options.getCustomSecuritySettings().getCredentialStoreSecuritySettings().setTokenId("1234");
+//
+//
+//                    String experimentId = api.getExecutionManager().runExperiment(api.getWorkflowManager().getWorkflowAsString(workflow), workflowInputs,options);
+//                    try {
+//                        WorkflowInterpreterLaunchWindow.this.engine.getMonitor().getConfiguration().setTopic(experimentId);
+//                        WorkflowInterpreterLaunchWindow.this.engine.getMonitor().start();
+//                    } catch (MonitorException e1) {
+//                        WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e1);
+//                    }
+//                } catch (Exception e) {
+//                    WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e);
+//                }
             }
         }.start();
 

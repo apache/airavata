@@ -120,7 +120,7 @@ struct ApplicationDeploymentDescription {
     2: required string appModuleId,
     3: required string computeHostId,
     4: required string executablePath,
-    5: required ApplicationParallelismType parallelism = ApplicationParallelismType.SERIAL ,
+    5: required ApplicationParallelismType parallelism = ApplicationParallelismType.SERIAL,
 	6: optional string appDeploymentDescription,
 	7: optional list<string> moduleLoadCmds,
 	8: optional list<SetEnvPaths> libPrependPaths,

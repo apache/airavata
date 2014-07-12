@@ -144,7 +144,6 @@ public class LeadContextHeaderHelper {
      * @param xbayaConfiguration
      */
     public void setXBayaConfiguration(XBayaConfiguration xbayaConfiguration) {
-        setGFacURL(xbayaConfiguration.getGFacURL());
 
         // The followings might overwrite some variables.
         setWorkflowTemplateID(xbayaConfiguration.getGPELTemplateID());
