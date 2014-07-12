@@ -90,6 +90,9 @@ import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetai
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogException;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
+import org.apache.airavata.workflow.engine.WorkflowEngine;
+import org.apache.airavata.workflow.engine.WorkflowEngineException;
+import org.apache.airavata.workflow.engine.WorkflowEngineFactory;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -1076,8 +1079,13 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
         }
     }
 
-    private boolean launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
-    	return true;
+    private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
+    	try {
+			WorkflowEngine workflowEngine = WorkflowEngineFactory.getWorkflowEngine();
+			workflowEngine.launchExperiment(experimentId, airavataCredStoreToken);
+		} catch (WorkflowEngineException e) {
+			e.printStackTrace();
+		}
     }
     
     private boolean launchSingleAppExperiment(String experimentId, String airavataCredStoreToken, OrchestratorService.Client orchestratorClient) throws TException {

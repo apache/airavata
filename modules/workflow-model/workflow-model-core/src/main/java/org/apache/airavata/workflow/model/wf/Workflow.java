@@ -43,7 +43,6 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
-import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
 import org.apache.airavata.workflow.model.component.ws.WSComponentKey;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
@@ -612,36 +611,36 @@ public class Workflow implements Cloneable {
                     }
                 }
             }
-            if (wsdl == null) {
-                continue;
-            }
-            try {
-                QName portType = node.getPortTypeQName();
-                if (portType == null) {
-                    // XXX This happens while parsing xwf created by the version
-                    // 2.2.6_1 or below.
-                    portType = WSDLUtil.getFirstPortTypeQName(wsdl);
-                }
-                String operation = node.getOperationName();
-                if (operation == null) {
-                    // XXX This happens while parsing xwf created by the version
-                    // 2.2.6_1 or below.
-                    operation = WSDLUtil.getFirstOperationName(wsdl, portType);
-                }
-                WSComponentKey key = new WSComponentKey(id, portType, operation);
-
-                WSComponent component = null;
-                if (components.containsKey(key)) {
-                    component = components.get(key);
-                } else {
-                	//FIXME
-//                    component = WSComponentFactory.createComponent(wsdl, portType, operation);
-                    components.put(key, component);
-                }
-                node.setComponent(component);
-            } catch (UtilsException e) {
-                logger.error(e.getMessage(), e);
-            }
+//            if (wsdl == null) {
+//                continue;
+//            }
+//            try {
+//                QName portType = node.getPortTypeQName();
+//                if (portType == null) {
+//                    // XXX This happens while parsing xwf created by the version
+//                    // 2.2.6_1 or below.
+//                    portType = WSDLUtil.getFirstPortTypeQName(wsdl);
+//                }
+//                String operation = node.getOperationName();
+//                if (operation == null) {
+//                    // XXX This happens while parsing xwf created by the version
+//                    // 2.2.6_1 or below.
+//                    operation = WSDLUtil.getFirstOperationName(wsdl, portType);
+//                }
+//                WSComponentKey key = new WSComponentKey(id, portType, operation);
+//
+//                WSComponent component = null;
+//                if (components.containsKey(key)) {
+//                    component = components.get(key);
+//                } else {
+//                	//FIXME
+////                    component = WSComponentFactory.createComponent(wsdl, portType, operation);
+//                    components.put(key, component);
+//                }
+//                node.setComponent(component);
+//            } catch (UtilsException e) {
+//                logger.error(e.getMessage(), e);
+//            }
         }
 
         this.graph.fixParameterNodes();

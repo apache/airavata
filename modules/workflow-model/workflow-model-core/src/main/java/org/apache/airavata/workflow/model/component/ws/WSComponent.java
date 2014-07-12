@@ -26,10 +26,6 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.common.utils.WSConstants;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentControlPort;
 import org.apache.airavata.workflow.model.component.ComponentException;
@@ -39,15 +35,12 @@ import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-import org.xmlpull.infoset.XmlNamespace;
-
-import xsul5.XmlConstants;
 
 public class WSComponent extends Component {
 
     private static final Logger logger = LoggerFactory.getLogger(WSComponent.class);
 
-    private ApplicationInterfaceDescription application;
+    private WSComponentApplication application;
     
     /**
      * The list of output component ports.
@@ -62,8 +55,6 @@ public class WSComponent extends Component {
     private String description;
 
     private String operationName;
-
-    private QName portTypeQName;
 
     private String inputPartName;
 
@@ -85,57 +76,33 @@ public class WSComponent extends Component {
      * @param operationName
      * @throws ComponentException
      */
-    public WSComponent(ApplicationInterfaceDescription application, String operationName) throws ComponentException {
-        this.operationName = operationName;
-        this.description = application.getApplicationDesription();
+    public WSComponent(WSComponentApplication application) throws ComponentException {
         this.setApplication(application);
-        setName(application.getApplicationName());
+        this.operationName = application.getName();
+        this.description = application.getDescription();
+        setName(application.getName());
         
         this.inputs = new ArrayList<WSComponentPort>();
         this.outputs = new ArrayList<WSComponentPort>();
         
-        List<InputDataObjectType> applicationInputs = application.getApplicationInputs();
-        for (InputDataObjectType inputDataObjectType : applicationInputs) {
-        	
-        	String typeName = inputDataObjectType.getType().toString().toLowerCase();
-            XmlNamespace namespace = null;
-            namespace = XmlConstants.BUILDER.newNamespace("xsd", WSConstants.XSD_NS_URI);
-            String prefix = "xsd";
-            QName type = new QName(namespace.getName(), typeName, prefix);
-            
-            WSComponentPort port = new WSComponentPort(inputDataObjectType.getName(),type , this);
-            port.setDescription(inputDataObjectType.getUserFriendlyDescription());
-            port.setDefaultValue(inputDataObjectType.getValue());
+        List<WSComponentApplicationParameter> applicationInputs = application.getInputParameters();
+        for (WSComponentApplicationParameter inputDataObjectType : applicationInputs) {
+            WSComponentPort port = new WSComponentPort(inputDataObjectType.getName(),inputDataObjectType.getType() , this);
+            port.setDescription(inputDataObjectType.getDescription());
+            port.setDefaultValue(inputDataObjectType.getDefaultValue());
 			inputs.add(port);
 		}
 
-        List<OutputDataObjectType> applicationOutputs = application.getApplicationOutputs();
-        for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
-        	
-        	String typeName = outputDataObjectType.getType().toString().toLowerCase();
-            XmlNamespace namespace = null;
-            namespace = XmlConstants.BUILDER.newNamespace("xsd", WSConstants.XSD_NS_URI);
-            String prefix = "xsd";
-            QName type = new QName(namespace.getName(), typeName, prefix);
-            
-            WSComponentPort port = new WSComponentPort(outputDataObjectType.getName(),type , this);
-            port.setDefaultValue(outputDataObjectType.getValue());
-            outputs.add(port);
+        List<WSComponentApplicationParameter> applicationOutputs = application.getOutputParameters();
+        for (WSComponentApplicationParameter outputDataObjectType : applicationOutputs) {
+            WSComponentPort port = new WSComponentPort(outputDataObjectType.getName(),outputDataObjectType.getType() , this);
+            port.setDescription(outputDataObjectType.getDescription());
+            port.setDefaultValue(outputDataObjectType.getDefaultValue());
+			outputs.add(port);
 		}
 
         this.controlInPort = new ComponentControlPort();
         this.controlOutPorts.add(new ComponentControlPort());
-    }
-
-
-
-    /**
-     * Returns the QName of the portType.
-     * 
-     * @return The QName of the portType
-     */
-    public QName getPortTypeQName() {
-        return this.portTypeQName;
     }
 
     /**
@@ -237,9 +204,7 @@ public class WSComponent extends Component {
         buf.append("<h1>Application: " + getName() + "</h1>\n");
 
         buf.append("<h2>Description:</h2>\n");
-        buf.append(this.description);
-
-        buf.append("<h2>Operation: " + this.operationName + "</h2>\n");
+        buf.append(this.description==null?"":this.description);
 
         if (getInputPorts().size()>0) {
 			buf.append("<h3>Input parameter(s)</h3>\n");
@@ -266,15 +231,19 @@ public class WSComponent extends Component {
     }
 
 	public XmlElement toXML() {
-		return null;
+		return getApplication().toXml();
 	}
 
-	public ApplicationInterfaceDescription getApplication() {
+	public WSComponentApplication getApplication() {
 		return application;
 	}
 
-	public void setApplication(ApplicationInterfaceDescription application) {
+	public void setApplication(WSComponentApplication application) {
 		this.application = application;
+	}
+
+	public QName getPortTypeQName() {
+		return null;
 	}
 
 }
