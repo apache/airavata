@@ -24,12 +24,13 @@ use Airavata\Model\Workspace\Experiment\UserConfigurationData;
 use Airavata\Model\Workspace\Experiment\ComputationalResourceScheduling;
 use Airavata\Model\Workspace\Experiment\DataType;
 
-include 'getAiravataClient.php';
-global $airavataclient;
-global $transport;
-
 $appId = 'SimpleEcho3_ca40f7c6-69ba-4f89-918d-9937cea0ca8f';
 $hostID = 'stampede.tacc.xsede.org_8f20b832-c11a-444b-8e73-bf15f4760b9a';
+
+$stampedeResourceId = $appcatalogdocs['stampedeResourceId'];
+
+echo "stampede resource if $stampedeResourceId \n";
+
 try
 {
     if ($argc != 4)
