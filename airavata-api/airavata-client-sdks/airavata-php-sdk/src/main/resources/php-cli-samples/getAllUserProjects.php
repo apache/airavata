@@ -17,37 +17,22 @@ use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
-try
-{
-    if ($argc != 2)
-    {
-        echo 'php getAllUserProjects.php <user>';
-    }
-    else
-    {
+try {
+    if ($argc != 2) {
+        echo "Usage: php getAllUserProjects.php <user> \n";
+    } else {
         $userProjects = $airavataclient->getAllUserProjects($argv[1]);
         echo '# of user projects = ' . sizeof($userProjects) . '       ';
         var_dump($userProjects);
     }
+} catch (InvalidRequestException $ire) {
+    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+} catch (AiravataClientException $ace) {
+    print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
+} catch (AiravataSystemException $ase) {
+    print 'Airavata System Exception: ' . $ase->getMessage() . "\n";
 }
-catch (InvalidRequestException $ire)
-{
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
-}
-catch (AiravataClientException $ace)
-{
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
-}
-catch (AiravataSystemException $ase)
-{
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
-}
-
-
-
-
 
 $transport->close();
 
 ?>
-
