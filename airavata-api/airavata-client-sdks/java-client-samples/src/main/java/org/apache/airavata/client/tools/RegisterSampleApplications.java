@@ -47,7 +47,7 @@ import org.apache.thrift.TException;
 
 public class RegisterSampleApplications {
 
-    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+    public static final String THRIFT_SERVER_HOST = "gw127.iu.xsede.org";
 //    public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 9930;
 //    public static final int THRIFT_SERVER_PORT = 8930;
@@ -87,10 +87,10 @@ public class RegisterSampleApplications {
     private static String amberModuleId;
     private static String autoDockModuleId;
     private static String espressoModuleId;
-    private static String gromacsModuleId;
+    private static String gromacsModuleId = "GROMACS_417271fd-7ac1-4f40-b2a5-ed0908a743eb";
     private static String lammpsModuleId;
     private static String nwChemModuleId;
-    private static String trinityModuleId;
+    private static String trinityModuleId = "Trinity_8af45ca0-b628-4614-9087-c7b73f5f2fb6";
     private static String wrfModuleId;
 
     //App Interface Id's
@@ -245,22 +245,22 @@ public class RegisterSampleApplications {
         registerAmberInterface();
 
         //Registering AutoDock
-//        registerAutoDockInterface();
+        registerAutoDockInterface();
 
         //Registering Espresso
-//        registerEspressoInterface();
+        registerEspressoInterface();
 
         //Registering Gromacs
-//        registerGromacsInterface();
+        registerGromacsInterface();
 
         //Registering Lammps
         registerLammpsInterface();
 
         //Registering NWChem
-//        registerNWChemInterface();
+        registerNWChemInterface();
 
         //Registering Trinity
-//        registerTrinityInterface();
+        registerTrinityInterface();
 
         //Registering WRF
         registerWRFInterface();
@@ -418,14 +418,21 @@ public class RegisterSampleApplications {
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Portable_Input_Binary_File", null,
                     DataType.URI, null, false, "Coordinates velocities, molecular topology and simulation parameters", null);
 
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("GROMOS_Coordinate_File", null,
+                    DataType.URI, null, false, "Trajectory Coordinates Molecular Structure in Gromos87 format", null);
+
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
+            applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("GROMACS_Execution_Log",null,DataType.URI);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Full_Precision_Trajectory_file",null,DataType.URI);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("Portable_Energy_file",null,DataType.URI);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
+            applicationOutputs.add(output2);
+            applicationOutputs.add(output3);
 
             gromacsInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(gromacsName, gromacsDescription,
@@ -505,18 +512,19 @@ public class RegisterSampleApplications {
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("RNA_Seq_Left_Input", null,
                     DataType.URI, null, false, "RNA-Seq Left Library", null);
 
-            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("RNA_Seq_Left_Input", null,
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("RNA_Seq_Right_Input", null,
                     DataType.URI, null, false, "RNA-Seq Right Library", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_Execution_Log",null,DataType.URI);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_FASTA_File",null,DataType.URI);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
+            applicationOutputs.add(output2);
 
             trinityInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(trinityName, trinityDescription,

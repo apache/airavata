@@ -37,28 +37,17 @@ function get_appModule($appModuleId)
 {
     global $airavataclient;
 
-    try
-    {
+    try {
         return $airavataclient->getApplicationModule($appModuleId);
-    }
-    catch (InvalidRequestException $ire)
-    {
+    } catch (InvalidRequestException $ire) {
         echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
-    }
-    catch (AiravataClientException $ace)
-    {
+    } catch (AiravataClientException $ace) {
         echo 'AiravataClientException!<br><br>' . $ace->getMessage();
-    }
-    catch (AiravataSystemException $ase)
-    {
+    } catch (AiravataSystemException $ase) {
         echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
-    }
-    catch (TTransportException $tte)
-    {
+    } catch (TTransportException $tte) {
         echo 'TTransportException!<br><br>' . $tte->getMessage();
-    }
-    catch (\Exception $e)
-    {
+    } catch (\Exception $e) {
         echo 'Exception!<br><br>' . $e->getMessage();
     }
 

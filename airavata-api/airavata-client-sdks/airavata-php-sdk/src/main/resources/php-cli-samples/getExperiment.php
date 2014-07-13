@@ -20,61 +20,29 @@ use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
-
-if (count($argv) < 2) {
-    exit("Please provide an experimentID. \n");
+try {
+    if (count($argv) < 2) {
+        exit("Please provide an experimentID. Usage: \n");
+    } else {
+        $experimentId = $argv[1];
+        $experiment = $airavataclient->getExperiment($experimentId);
+        var_dump($experiment);
+    }
+} catch (InvalidRequestException $ire) {
+    echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+} catch (ExperimentNotFoundException $enf) {
+    echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
+} catch (AiravataClientException $ace) {
+    echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+} catch (AiravataSystemException $ase) {
+    echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
+} catch (TTransportException $tte) {
+    echo 'TTransportException!<br><br>' . $tte->getMessage();
+} catch (\Exception $e) {
+    echo 'Exception!<br><br>' . $e->getMessage();
 }
-
-$expId = $argv[1];
-
-
-$experiment = get_experiment($expId);
-
-var_dump($experiment);
-
 
 $transport->close();
-
-
-/**
- * Get the experiment with the given ID
- * @param $expId
- * @return null
- */
-function get_experiment($expId)
-{
-    global $airavataclient;
-
-    try
-    {
-        return $airavataclient->getExperiment($expId);
-    }
-    catch (InvalidRequestException $ire)
-    {
-        echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
-    }
-    catch (ExperimentNotFoundException $enf)
-    {
-        echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
-    }
-    catch (AiravataClientException $ace)
-    {
-        echo 'AiravataClientException!<br><br>' . $ace->getMessage();
-    }
-    catch (AiravataSystemException $ase)
-    {
-        echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
-    }
-    catch (TTransportException $tte)
-    {
-        echo 'TTransportException!<br><br>' . $tte->getMessage();
-    }
-    catch (\Exception $e)
-    {
-        echo 'Exception!<br><br>' . $e->getMessage();
-    }
-
-}
 
 ?>
 
