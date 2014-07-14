@@ -48,5 +48,9 @@ $protocol = new TBinaryProtocol($transport);
 $transport->open();
 $airavataclient = new AiravataClient($protocol);
 
-
+function sampleDisabled()
+{
+	echo 'Execution of this and few other samples is disabled so that pre-configured data for the XSEDE14 tutorial will remain consistent for the rest of the samples.'."\n\n";
+	exit(0);
+}
 ?>
