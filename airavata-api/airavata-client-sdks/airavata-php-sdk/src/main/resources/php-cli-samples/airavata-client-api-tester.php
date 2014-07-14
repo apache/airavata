@@ -31,9 +31,6 @@ use Airavata\Model\Workspace\Experiment\ExperimentState;
 $transport = new TSocket($airavataconfig['AIRAVATA_SERVER'], $airavataconfig['AIRAVATA_PORT']);
 $transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
 */
-include 'getAiravataClient.php';
-global $airavataclient;
-global $transport;
 
 try
 {
@@ -63,12 +60,12 @@ try
         $scheduling->resourceHostId = $appcatalogdocs['bigredResourceId'];
 
         /* TACC Stampede Cluster */
-        $scheduling->resourceHostId = $appcatalogdocs['stampedeResourceId'];
-        $scheduling->ComputationalProjectAccount = "TG-STA110014S";
+        //$scheduling->resourceHostId = $appcatalogdocs['stampedeResourceId'];
+        //$scheduling->ComputationalProjectAccount = "TG-STA110014S";
 
         /* SDSC Trestles Cluster */
-        $scheduling->resourceHostId = $appcatalogdocs['trestlesResourceId'];
-        $scheduling->ComputationalProjectAccount = "sds128";
+        //$scheduling->resourceHostId = $appcatalogdocs['trestlesResourceId'];
+        //$scheduling->ComputationalProjectAccount = "sds128";
 
         /* Job dimensions and resource queue */
         $scheduling->totalCPUCount = 1;
@@ -88,15 +85,6 @@ try
          * NOTE: Airavata uses a 2 step launch process. The creation just creates the experiment. The launch step
          *   executes the created experiment.
          */
-
-        $experiment = new Experiment();
-        $experiment->projectID = $projectId;
-        $experiment->userName = $userName;
-        $experiment->name = $experimentName;
-        $experiment->applicationId = $applicationId;
-        $experiment->userConfigurationData = $userConfigurationData;
-        $experiment->experimentInputs = $experimentInputs;
-
 
         /* Simple workflow test. */
         $user = $argv[1];
