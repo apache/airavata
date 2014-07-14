@@ -8,6 +8,8 @@ include 'getAiravataClient.php';
 global $airavataclient;
 global $transport;
 
+Airavata\Client\Samples\sampleDisabled();
+
 use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
 use Airavata\API\Error\InvalidRequestException;

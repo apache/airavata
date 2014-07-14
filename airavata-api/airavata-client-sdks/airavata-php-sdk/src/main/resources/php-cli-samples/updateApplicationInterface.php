@@ -12,6 +12,8 @@ use Airavata\API\Error\AiravataClientException;
 use Airavata\API\Error\AiravataSystemException;
 use Airavata\API\Error\InvalidRequestException;
 
+Airavata\Client\Samples\sampleDisabled();
+
 use Airavata\Model\AppCatalog\AppInterface\ApplicationInterfaceDescription;
 use Airavata\Model\AppCatalog\AppInterface\InputDataObjectType;
 use Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType;
