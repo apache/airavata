@@ -22,14 +22,24 @@
 package org.apache.airavata.model.util;
 
 
-import org.apache.airavata.model.workspace.experiment.*;
-
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.airavata.model.workspace.experiment.AdvancedInputDataHandling;
+import org.apache.airavata.model.workspace.experiment.AdvancedOutputDataHandling;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.QualityOfServiceParams;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
+
 
 public class ExperimentModelUtil {
-
+	
 	public static WorkflowNodeStatus createWorkflowNodeStatus(WorkflowNodeState state){
 		WorkflowNodeStatus status = new WorkflowNodeStatus();
         status.setWorkflowNodeState(state);

@@ -141,7 +141,7 @@ public class RegistryWindow {
         XBayaLabel serverAddressLabel = new XBayaLabel("Server Address", this.serverTextField);
         XBayaLabel serverPortLabel = new XBayaLabel("Server Port", this.portTextField);
         XBayaLabel gatewayNameLabel = new XBayaLabel("Gateway Name", this.gatewayNameTextField);
-        XBayaLabel gatewayUserLabel = new XBayaLabel("Gateway TUser", this.usernameTextField);
+        XBayaLabel gatewayUserLabel = new XBayaLabel("Gateway User", this.usernameTextField);
         serviceTypeModel = new DefaultComboBoxModel(ThriftServiceType.values());
         serviceTypeModel.setSelectedItem(getServiceType());
 		this.serviceTypeCombo = new XBayaComboBox(serviceTypeModel);
@@ -188,7 +188,7 @@ public class RegistryWindow {
         buttonPanel.add(cancelButton);
         buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Configure Airavata Registry", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Configure Airavata Thrift Service", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

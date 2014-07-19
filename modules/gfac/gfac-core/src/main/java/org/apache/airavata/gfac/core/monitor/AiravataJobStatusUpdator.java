@@ -22,9 +22,10 @@ package org.apache.airavata.gfac.core.monitor;
 
 import java.util.Calendar;
 
+import org.apache.airavata.common.utils.AbstractActivityListener;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangedEvent;
-import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;

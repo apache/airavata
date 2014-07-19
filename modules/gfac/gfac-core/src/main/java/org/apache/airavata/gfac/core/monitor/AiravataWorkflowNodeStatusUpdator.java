@@ -22,9 +22,10 @@ package org.apache.airavata.gfac.core.monitor;
 
 import java.util.Calendar;
 
+import org.apache.airavata.common.utils.AbstractActivityListener;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
 import org.apache.airavata.gfac.core.monitor.state.WorkflowNodeStatusChangedEvent;
-import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;

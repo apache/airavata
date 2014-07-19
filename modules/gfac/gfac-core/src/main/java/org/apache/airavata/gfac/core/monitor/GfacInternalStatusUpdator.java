@@ -20,22 +20,29 @@
 */
 package org.apache.airavata.gfac.core.monitor;
 
-import com.google.common.eventbus.Subscribe;
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AbstractActivityListener;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import com.google.common.eventbus.Subscribe;
 
 public class GfacInternalStatusUpdator implements AbstractActivityListener, Watcher {
-    private final static Logger logger = LoggerFactory.getLogger(AiravataWorkflowNodeStatusUpdator.class);
+    private final static Logger logger = LoggerFactory.getLogger(GfacInternalStatusUpdator.class);
 
     private ZooKeeper zk;
 

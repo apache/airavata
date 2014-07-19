@@ -18,29 +18,30 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.monitor.core;
+package org.apache.airavata.common.utils;
 
-import org.apache.airavata.common.utils.MonitorPublisher;
+import com.google.common.eventbus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * This is the abstract Monitor which needs to be used by
- * any Monitoring implementation which expect nto consume
- * to store the status to registry. Because they have to
- * use the MonitorPublisher to publish the monitoring statuses
- * to the Event Bus. All the Monitor statuses publish to the eventbus
- * will be saved to the Registry.
- */
-public abstract class AiravataAbstractMonitor implements Monitor {
-    private final static Logger logger = LoggerFactory.getLogger(AiravataAbstractMonitor.class);
-    protected MonitorPublisher publisher;
-
-    public MonitorPublisher getPublisher() {
-        return publisher;
+public class MonitorPublisher{
+    private final static Logger logger = LoggerFactory.getLogger(MonitorPublisher.class);
+    private EventBus eventBus;
+    
+    public MonitorPublisher(EventBus eventBus) {
+        this.eventBus = eventBus;
     }
 
-    public void setPublisher(MonitorPublisher publisher) {
-        this.publisher = publisher;
+    public void registerListener(Object listener) {
+        eventBus.register(listener);
     }
+    
+    public void unregisterListener(Object listener) {
+        eventBus.unregister(listener);
+    }
+
+    public void publish(Object o) {
+        eventBus.post(o);
+    }
+
 }
