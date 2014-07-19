@@ -47,10 +47,10 @@ import org.apache.thrift.TException;
 
 public class RegisterSampleApplications {
 
-    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
-//    public static final String THRIFT_SERVER_HOST = "localhost";
-    public static final int THRIFT_SERVER_PORT = 9930;
-//    public static final int THRIFT_SERVER_PORT = 8930;
+//    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+    public static final String THRIFT_SERVER_HOST = "localhost";
+//    public static final int THRIFT_SERVER_PORT = 9930;
+    public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(RegisterSampleApplications.class);
     private static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client airavataClient;
@@ -110,22 +110,22 @@ public class RegisterSampleApplications {
             System.out.println("API version is " + airavataClient.getAPIVersion());
 
             //Register all compute hosts
-            registerXSEDEHosts();
+//            registerXSEDEHosts();
 
             //Register Gateway Resource Preferences
-            registerGatewayResourceProfile();
+//            registerGatewayResourceProfile();
 
             //Register all application modules
             registerAppModules();
 
             //Register all application deployments
-            registerAppDeployments();
+//            registerAppDeployments();
 
             //Register all application interfaces
             registerAppInterfaces();
 
             //write output into propertiesFile
-            writeIdPropertyFile();
+//            writeIdPropertyFile();
 
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
@@ -237,12 +237,13 @@ public class RegisterSampleApplications {
 
     public static void registerAppInterfaces() {
         System.out.println("\n #### Registering Application Interfaces #### \n");
-
+        registerGromaxWorkflowInterfaces();
+        
         //Registering Echo
-        registerEchoInterface();
+//        registerEchoInterface();
 
         //Registering Amber
-        registerAmberInterface();
+//        registerAmberInterface();
 
         //Registering AutoDock
 //        registerAutoDockInterface();
@@ -263,10 +264,152 @@ public class RegisterSampleApplications {
 //        registerTrinityInterface();
 
         //Registering WRF
-        registerWRFInterface();
+//        registerWRFInterface();
 
     }
 
+    public static void registerGromaxWorkflowInterfaces() {
+        try {
+            System.out.println("#### Registering Echo Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
+
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("s_struct", "",
+                    DataType.URI, null, false, "Starting Structure File", null));
+
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("ffcomplient_struct",
+                    "", DataType.URI));
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("topology",
+                    "", DataType.URI));
+
+            echoInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("pb2gmx", "pb2gmx",
+                            appModules, applicationInputs, applicationOutputs));
+
+            
+            applicationInputs.clear();
+            applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("ffcomplient_struct", "",
+                    DataType.URI, null, false, "FFComplient Structure File", null));
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("topology", "",
+                    DataType.URI, null, false, "Topology File", null));
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("control_param_emv", "",
+                    DataType.URI, null, false, "Controlled parameters array of EM Vacuum", null));
+
+
+            applicationOutputs.clear();
+            applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("energy_min_struct",
+                    "", DataType.URI));
+
+            echoInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("simulation1", "simulation1",
+                            appModules, applicationInputs, applicationOutputs));
+
+            applicationInputs.clear();
+            applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("energy_min_struct", "",
+                    DataType.URI, null, false, "Energy Minimized Structure File", null));
+
+            applicationOutputs.clear();
+            applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("struct_with_pbc",
+                    "", DataType.URI));
+
+            echoInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("editconf", "Edit configuration",
+                            appModules, applicationInputs, applicationOutputs));
+            
+            applicationInputs.clear();
+            applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("struct_with_pbc", "",
+                    DataType.URI, null, false, "Structure with PBC File", null));
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("solvent_struct", "",
+                    DataType.URI, null, false, "Solvent Structure File", null));
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("topology", "",
+                    DataType.URI, null, false, "Topology File", null));
+
+            applicationOutputs.clear();
+            applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("struct_with_water",
+                    "", DataType.URI));
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("topology_with_water",
+                    "", DataType.URI));
+                        
+
+            echoInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("genbox", "genbox",
+                            appModules, applicationInputs, applicationOutputs));
+            
+            applicationInputs.clear();
+            applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("struct_with_water", "",
+                    DataType.URI, null, false, "Structure with water File", null));
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("topology_with_water", "",
+            		DataType.URI, null, false, "Topology including water File", null));
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("control_param_emv", "",
+                    DataType.URI, null, false, "Controlled parameters array of EM Vacuum", null));
+
+            applicationOutputs.clear();
+            applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("struct_topoogy",
+                    "", DataType.URI));
+                        
+
+            echoInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("grompp", "grompp",
+                            appModules, applicationInputs, applicationOutputs));
+            
+            applicationInputs.clear();
+            applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("struct_topoogy", "",
+                    DataType.URI, null, false, "Structure and Topology File", null));
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("topology_with_water", "",
+            		DataType.URI, null, false, "Topology including water File", null));
+
+            applicationOutputs.clear();
+            applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("sys_topoogy",
+                    "", DataType.URI));
+                        
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("sys_config",
+                    "", DataType.URI));
+            
+            echoInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("genion", "grompp",
+                            appModules, applicationInputs, applicationOutputs));
+            
+            applicationInputs.clear();
+            applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("sys_topoogy", "",
+                    DataType.URI, null, false, "Structure and Topology File", null));
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("sys_config", "",
+            		DataType.URI, null, false, "Topology including water File", null));
+            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("control_param_ems", "",
+                    DataType.URI, null, false, "Controlled parameters array of EM Solvent", null));
+
+            applicationOutputs.clear();
+            applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("energymin_sys",
+                    "", DataType.URI));
+            
+            echoInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("simulation2", "simulation2",
+                            appModules, applicationInputs, applicationOutputs));
+            
+            System.out.println("Echo Application Interface Id " + echoInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    
     public static void registerEchoInterface() {
         try {
             System.out.println("#### Registering Echo Interface #### \n");
@@ -787,26 +930,26 @@ public class RegisterSampleApplications {
     }
 
     public static void writeIdPropertyFile() {
-
-        try {
-            Properties properties = new Properties();
-            properties.setProperty("stampedeResourceId", stampedeResourceId);
-            properties.setProperty("trestlesResourceId", trestlesResourceId);
-            properties.setProperty("bigredResourceId", bigredResourceId);
-
-            properties.setProperty("echoInterfaceId", echoInterfaceId);
-            properties.setProperty("amberInterfaceId", amberInterfaceId);
-            properties.setProperty("wrfInterfaceId", wrfInterfaceId);
-
-            File file = new File("airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/conf/app-catalog-identifiers.ini");
-            FileOutputStream fileOut = new FileOutputStream(file);
-            properties.store(fileOut, "Apache Airavata Gateway to Airavata Deployment Identifiers");
-            fileOut.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//
+//        try {
+//            Properties properties = new Properties();
+//            properties.setProperty("stampedeResourceId", stampedeResourceId);
+//            properties.setProperty("trestlesResourceId", trestlesResourceId);
+//            properties.setProperty("bigredResourceId", bigredResourceId);
+//
+//            properties.setProperty("echoInterfaceId", echoInterfaceId);
+//            properties.setProperty("amberInterfaceId", amberInterfaceId);
+//            properties.setProperty("wrfInterfaceId", wrfInterfaceId);
+//
+//            File file = new File("airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/conf/app-catalog-identifiers.ini");
+//            FileOutputStream fileOut = new FileOutputStream(file);
+//            properties.store(fileOut, "Apache Airavata Gateway to Airavata Deployment Identifiers");
+//            fileOut.close();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 }

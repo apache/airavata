@@ -41,10 +41,13 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+import org.apache.airavata.common.utils.AbstractActivityListener;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.ExecutionUnit;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -62,6 +65,7 @@ import org.apache.airavata.workflow.engine.invoker.DynamicInvoker;
 import org.apache.airavata.workflow.engine.invoker.Invoker;
 import org.apache.airavata.workflow.engine.util.AmazonUtil;
 import org.apache.airavata.workflow.engine.util.InterpreterUtil;
+import org.apache.airavata.workflow.engine.util.ProxyMonitorPublisher;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
 import org.apache.airavata.workflow.model.component.amazon.TerminateInstanceComponent;
@@ -112,7 +116,9 @@ import org.xmlpull.infoset.XmlElement;
 
 import xsul5.XmlConstants;
 
-public class WorkflowInterpreter {
+import com.google.common.eventbus.Subscribe;
+
+public class WorkflowInterpreter implements AbstractActivityListener{
     private static final Logger log = LoggerFactory.getLogger(WorkflowInterpreter.class);
 
 	public static final String WORKFLOW_STARTED = "Workflow Running";
@@ -133,6 +139,9 @@ public class WorkflowInterpreter {
 
 	private OrchestratorService.Client orchestratorClient;
 	
+	private Map<String, Node> awaitingTasks;
+	private Map<Node, Map<String,String>> nodeOutputData;
+	
     public static ThreadLocal<WorkflowInterpreterConfiguration> workflowInterpreterConfigurationThreadLocal =
             new ThreadLocal<WorkflowInterpreterConfiguration>();
 
@@ -151,6 +160,9 @@ public class WorkflowInterpreter {
 		//TODO set act of provenance
 		nodeInstanceList=new HashMap<Node, WorkflowNodeDetails>();
         setWorkflowInterpreterConfigurationThreadLocal(config);
+        awaitingTasks = new HashMap<String, Node>();
+        nodeOutputData = new HashMap<Node, Map<String,String>>();
+        ProxyMonitorPublisher.registerListener(this);
 	}
 
 	public WorkflowInterpreterInteractor getInteractor(){
@@ -361,7 +373,16 @@ public class WorkflowInterpreter {
     }
 
 	private WorkflowNodeDetails createWorkflowNodeDetails(Node node) {
-		WorkflowNodeDetails workflowNode = ExperimentModelUtil.createWorkflowNode(node.getName(), null); 
+		WorkflowNodeDetails workflowNode = ExperimentModelUtil.createWorkflowNode(node.getName(), null);
+		ExecutionUnit executionUnit = ExecutionUnit.APPLICATION;
+		if (node instanceof InputNode){
+			executionUnit = ExecutionUnit.INPUT;
+		} else if (node instanceof OutputNode){
+			executionUnit = ExecutionUnit.OUTPUT;
+		} if (node instanceof WSNode){
+			executionUnit = ExecutionUnit.APPLICATION;
+		}  
+		workflowNode.setExecutionUnit(executionUnit);
 		nodeInstanceList.put(node, workflowNode);
 		return workflowNode;
 	}
@@ -401,7 +422,7 @@ public class WorkflowInterpreter {
 				// next run
 				// even if the next run runs before the notification arrives
 				WorkflowNodeDetails workflowNodeDetails = createWorkflowNodeDetails(node);
-				getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, getExperiment().getExperimentID());
+				workflowNodeDetails.setNodeInstanceId((String)getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, getExperiment().getExperimentID()));
 				node.setState(NodeExecutionState.EXECUTING);
 				updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.EXECUTING);
 				// OutputNode node = (OutputNode) outputNode;
@@ -606,11 +627,37 @@ public class WorkflowInterpreter {
 	}
 	
 	protected void handleWSComponent(Node node) throws WorkflowException, TException, RegistryException {
-        TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromWorkflowNodeDetails(experiment, nodeInstanceList.get(node));
-        taskDetails.setTaskID(getRegistry().add(ChildDataType.TASK_DETAIL, taskDetails,nodeInstanceList.get(node).getNodeInstanceId()).toString());
+        TaskDetails taskDetails = createTaskDetails(node);
         getOrchestratorClient().launchTask(taskDetails.getTaskID(), getCredentialStoreToken());
 	}
+	
+	private void addToAwaitingTaskList(String taskId, Node node){
+		synchronized (awaitingTasks) {
+			awaitingTasks.put(taskId, node);
+		}
+	}
+	
+	private boolean isTaskAwaiting(String taskId){
+		boolean result;
+		synchronized (awaitingTasks) {
+			result = awaitingTasks.containsKey(taskId);
+		}
+		return result;
+	}
 
+	private Node getAwaitingNodeForTask(String taskId){
+		Node node;
+		synchronized (awaitingTasks) {
+			node = awaitingTasks.get(taskId);
+		}
+		return node;
+	}
+	
+	private void removeAwaitingTask(String taskId){
+		synchronized (awaitingTasks) {
+			awaitingTasks.remove(taskId);
+		}
+	}
 	private void handleDynamicComponent(Node node) throws WorkflowException {
 		DynamicComponent dynamicComponent = (DynamicComponent) node.getComponent();
 		String className = dynamicComponent.getClassName();
@@ -930,47 +977,55 @@ public class WorkflowInterpreter {
 		node.setState(NodeExecutionState.FINISHED);
 	}
 
+	
 	private String createInvokerForEachSingleWSNode(Node foreachWSNode, WSComponent wsComponent) throws WorkflowException, RegistryException, TException {
-        TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromWorkflowNodeDetails(experiment, nodeInstanceList.get(foreachWSNode));
-        taskDetails.setTaskID(getRegistry().add(ChildDataType.TASK_DETAIL, taskDetails,nodeInstanceList.get(foreachWSNode).getNodeInstanceId()).toString());
+        TaskDetails taskDetails = createTaskDetails(foreachWSNode);
         getOrchestratorClient().launchTask(taskDetails.getTaskID(), getCredentialStoreToken());
-
-//		if (null == wsdlLocation) {
-            // WorkflowInterpreter is no longer using gfac in service mode. we only support embedded mode.
-//			if (gfacURLString.startsWith("https")) {
-//				LeadContextHeader leadCtxHeader = null;
-//				try {
-//					leadCtxHeader = XBayaUtil.buildLeadContextHeader(this.getWorkflow(), this.getConfig().getConfiguration(), new MonitorConfiguration(this
-//							.getConfig().getConfiguration().getBrokerURL(), this.config.getTopic(), true, this.getConfig().getConfiguration()
-//							.getMessageBoxURL()), foreachWSNode.getID(), null);
-//				} catch (URISyntaxException e) {
-//					throw new WorkflowException(e);
-//				}
-//				invoker = new WorkflowInvokerWrapperForGFacInvoker(portTypeQName, gfacURLString, this.getConfig().getConfiguration().getMessageBoxURL()
-//						.toString(), leadCtxHeader, this.config.getNotifier().createServiceNotificationSender(foreachWSNode.getID()));
-//			} else {
-
-//                if (this.config.isGfacEmbeddedMode()) {
-//					invoker = new EmbeddedGFacInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(((WSNode)foreachWSNode).getComponent().getWSDL()), foreachWSNode.getID(),
-//							this.config.getMessageBoxURL().toASCIIString(), this.config.getMessageBrokerURL().toASCIIString(), this.config.getNotifier(),
-//							this.config.getTopic(), this.config.getAiravataAPI(), portTypeQName.getLocalPart(), this.config.getConfiguration());
-//				} else {
-//					invoker = new GenericInvoker(portTypeQName, WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(((WSNode)foreachWSNode).getComponent().getWSDL()), foreachWSNode.getID(),
-//							this.config.getMessageBoxURL().toASCIIString(), gfacURLString, this.config.getNotifier());
-//				}
-//			}
-
-//		} else {
-//			if (wsdlLocation.endsWith("/")) {
-//				wsdlLocation = wsdlLocation.substring(0, wsdlLocation.length() - 1);
-//			}
-//			if (!wsdlLocation.endsWith("?wsdl")) {
-//				wsdlLocation += "?wsdl";
-//			}
-//			invoker = new GenericInvoker(portTypeQName, wsdlLocation, foreachWSNode.getID(), this.getConfig().getConfiguration().getMessageBoxURL().toString(),
-//					gfacURLString, this.config.getNotifier());
-//		}
 		return taskDetails.getTaskID();
+	}
+
+	private void setupNodeDetailsInput(Node node, WorkflowNodeDetails nodeDetails){
+		List<DataPort> inputPorts = node.getInputPorts();
+		for (DataPort dataPort : inputPorts) {
+			Map<String, String> outputData = nodeOutputData.get(dataPort.getFromNode());
+			String portInputValue = outputData.get(dataPort.getName());
+			DataObjectType elem = new DataObjectType();
+			elem.setKey(dataPort.getName());
+			elem.setValue(portInputValue);
+			nodeDetails.addToNodeInputs(elem);
+		}
+		try {
+			getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, nodeDetails, nodeDetails.getNodeInstanceId());
+		} catch (RegistryException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void setupNodeDetailsOutput(Node node){
+		WorkflowNodeDetails nodeDetails = nodeInstanceList.get(node);
+		List<DataPort> outputPorts = node.getOutputPorts();
+		Map<String, String> outputData = nodeOutputData.get(node);
+		for (DataPort dataPort : outputPorts) {
+			String portInputValue = outputData.get(dataPort.getName());
+			DataObjectType elem = new DataObjectType();
+			elem.setKey(dataPort.getName());
+			elem.setValue(portInputValue);
+			nodeDetails.addToNodeOutputs(elem);
+		}
+		try {
+			getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, nodeDetails, nodeDetails.getNodeInstanceId());
+		} catch (RegistryException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private TaskDetails createTaskDetails(Node node)
+			throws RegistryException {
+		setupNodeDetailsInput(node, nodeInstanceList.get(node));
+		TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromWorkflowNodeDetails(experiment, nodeInstanceList.get(node));
+        taskDetails.setTaskID(getRegistry().add(ChildDataType.TASK_DETAIL, taskDetails,nodeInstanceList.get(node).getNodeInstanceId()).toString());
+        addToAwaitingTaskList(taskDetails.getTaskID(), node);
+		return taskDetails;
 	}
 
 	private void runInThread(final LinkedList<String> listOfValues, ForEachNode forEachNode, final Node middleNode, List<Node> endForEachNodes,
@@ -1326,83 +1381,55 @@ public class WorkflowInterpreter {
 		this.credentialStoreToken = credentialStoreToken;
 	}
 	
-	public static class TmpRegistry implements Registry{
-		public TmpRegistry() throws RegistryException {
-		}
-
-		@Override
-		public Object add(ChildDataType dataType, Object newObjectToAdd,
-				Object dependentIdentifier) throws RegistryException {
-			return UUID.randomUUID().toString();
-		}
+	@Override
+	public void setup(Object... configurations) {
+		// TODO Auto-generated method stub
 		
-		@Override
-		public void update(RegistryModelType dataType, Object identifier,
-				String fieldName, Object value) throws RegistryException {
-		}
-
-		@Override
-		public Object add(ParentDataType dataType, Object newObjectToAdd)
-				throws RegistryException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void update(RegistryModelType dataType,
-				Object newObjectToUpdate, Object identifier)
-				throws RegistryException {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public Object get(RegistryModelType dataType, Object identifier)
-				throws RegistryException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public List<Object> get(RegistryModelType dataType, String fieldName,
-				Object value) throws RegistryException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public List<Object> search(RegistryModelType dataType,
-				Map<String, String> filters) throws RegistryException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public Object getValue(RegistryModelType dataType, Object identifier,
-				String field) throws RegistryException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public List<String> getIds(RegistryModelType dataType,
-				String fieldName, Object value) throws RegistryException {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public void remove(RegistryModelType dataType, Object identifier)
-				throws RegistryException {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public boolean isExist(RegistryModelType dataType, Object identifier)
-				throws RegistryException {
-			// TODO Auto-generated method stub
-			return false;
-		}
 	}
+	
+    @Subscribe
+    public void taskStatusChanged(TaskStatusChangedEvent taskStatus){
+    	String taskId = taskStatus.getIdentity().getTaskId();
+		if (isTaskAwaiting(taskId)){
+        	WorkflowNodeState state=WorkflowNodeState.UNKNOWN;
+        	switch(taskStatus.getState()){
+        	case CANCELED:
+        		; break;
+        	case COMPLETED:
+        		//task is completed
+        		try {
+					TaskDetails task = (TaskDetails)getRegistry().get(RegistryModelType.TASK_DETAIL, taskId);
+					List<DataObjectType> applicationOutputs = task.getApplicationOutputs();
+					Map<String, String> outputData = new HashMap<String, String>();
+					Node node = getAwaitingNodeForTask(taskId);
+					for (DataObjectType outputObj : applicationOutputs) {
+						List<DataPort> outputPorts = node.getOutputPorts();
+						for (DataPort dataPort : outputPorts) {
+							if (dataPort.getName().equals(outputObj.getKey())){
+								outputData.put(outputObj.getKey(), outputObj.getValue());
+							}
+						}
+					}
+					nodeOutputData.put(node, outputData);
+					setupNodeDetailsOutput(node);
+				} catch (RegistryException e) {
+					e.printStackTrace();
+				}
+        		break;
+        	case CONFIGURING_WORKSPACE:
+        		break;
+        	case FAILED:
+        		break;
+        	case EXECUTING: case WAITING: case PRE_PROCESSING: case POST_PROCESSING: case OUTPUT_DATA_STAGING: case INPUT_DATA_STAGING:
+        		break;
+        	case STARTED:
+        		break;
+        	case CANCELING:
+        		break;
+    		default:
+    			break;
+        	}    		
+    	}
+
+    }
 }

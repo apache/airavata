@@ -204,7 +204,7 @@ public class WSComponent extends Component {
         buf.append("<h1>Application: " + getName() + "</h1>\n");
 
         buf.append("<h2>Description:</h2>\n");
-        buf.append(this.description==null?"":this.description);
+        buf.append(application.getApplicationId()+"<br />"+(this.description==null?"":this.description));
 
         if (getInputPorts().size()>0) {
 			buf.append("<h3>Input parameter(s)</h3>\n");

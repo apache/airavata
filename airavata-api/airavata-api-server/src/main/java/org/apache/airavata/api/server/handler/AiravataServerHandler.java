@@ -33,7 +33,6 @@ import java.util.Random;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ApplicationDeployment;
-import org.airavata.appcatalog.cpi.ApplicationInterface;
 import org.airavata.appcatalog.cpi.ComputeResource;
 import org.airavata.appcatalog.cpi.GwyResourceProfile;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
@@ -46,6 +45,7 @@ import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionR
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
+import org.apache.airavata.api.server.util.DataModelUtils;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -53,7 +53,16 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
@@ -63,6 +72,7 @@ import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
@@ -88,8 +98,6 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
-import org.apache.airavata.workflow.catalog.WorkflowCatalogException;
-import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.airavata.workflow.engine.WorkflowEngine;
 import org.apache.airavata.workflow.engine.WorkflowEngineException;
 import org.apache.airavata.workflow.engine.WorkflowEngineFactory;
@@ -1027,55 +1035,41 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
         final String expID = airavataExperimentId;
         final String token = airavataCredStoreToken;
         synchronized (this) {
-        	try {
-				ApplicationInterface applicationInterface = AppCatalogFactory.getAppCatalog().getApplicationInterface();
-				List<String> allApplicationInterfaceIds = applicationInterface.getAllApplicationInterfaceIds();
-				Experiment experiment = getExperiment(expID);
-				String applicationId = experiment.getApplicationId();
-				Thread thread = null;
-				if (allApplicationInterfaceIds.contains(applicationId)){
-					//its an single application execution experiment
-			    	final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
-					if (orchestratorClient.validateExperiment(expID)) {
-						thread = new Thread() {
-		                    public void run() {
-		                        try {
-	                        		launchSingleAppExperiment(expID, token, orchestratorClient);
-		                        } catch (TException e) {
-		                            e.printStackTrace();  
-								}
-		                    }
-		                };	
-		            } else {
-		                throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
-		            }
-	                
-				} else {
-					List<String> allWorkflows = WorkflowCatalogFactory.getWorkflowCatalog().getAllWorkflows();
-					if (allWorkflows.contains(applicationId)){
-						//its a workflow execution experiment
-						thread = new Thread() {
-		                    public void run() {
-		                        try {
-	                        		launchWorkflowExperiment(expID, token);
-		                        } catch (TException e) {
-		                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-								}
-		                    }
-		                };
-					} else {
-						throw new InvalidRequestException("Experiment '"+expID+"' launch failed. Unable to locate an application or a workflow with the id "+applicationId);
-					}
-				}
-				thread.start();
-			} catch (AppCatalogException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (WorkflowCatalogException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+    		Experiment experiment = getExperiment(expID);
+			ExecutionType executionType = DataModelUtils.getExecutionType(experiment);
+			Thread thread = null;
+			if (executionType==ExecutionType.SINGLE_APP){
+				//its an single application execution experiment
+		    	final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
+				if (orchestratorClient.validateExperiment(expID)) {
+					thread = new Thread() {
+	                    public void run() {
+	                        try {
+                        		launchSingleAppExperiment(expID, token, orchestratorClient);
+	                        } catch (TException e) {
+	                            e.printStackTrace();  
+							}
+	                    }
+	                };	
+	            } else {
+	                throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
+	            }
+                
+			} else if (executionType == ExecutionType.WORKFLOW){
+					//its a workflow execution experiment
+					thread = new Thread() {
+	                    public void run() {
+	                        try {
+                        		launchWorkflowExperiment(expID, token);
+	                        } catch (TException e) {
+	                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+							}
+	                    }
+	                };
+			} else {
+				throw new InvalidRequestException("Experiment '"+expID+"' launch failed. Unable to figureout execution type for application "+experiment.getApplicationId());
 			}
-            
+			thread.start();
         }
     }
 

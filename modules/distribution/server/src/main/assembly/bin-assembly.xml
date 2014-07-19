@@ -251,6 +251,7 @@
                 <include>org.apache.xmlbeans:xmlbeans</include>
                 <include>org.apache.thrift:libthrift:jar:0.9.1</include>
                 <include>commons-cli:commons-cli</include>
+                <include>commons-codec:commons-codec</include>
                 <include>com.rabbitmq:amqp-client</include>
                 <include>com.fasterxml.jackson.core:jackson-databind</include>
                 <include>com.fasterxml.jackson.core:jackson-core</include>
