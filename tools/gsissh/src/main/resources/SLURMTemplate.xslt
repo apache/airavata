@@ -20,12 +20,12 @@
     </xsl:choose>
 <xsl:choose>
     <xsl:when test="ns:nodes">
-#SBATCH -n <xsl:value-of select="ns:nodes"/>
+#SBATCH -N <xsl:value-of select="ns:nodes"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
     <xsl:when test="ns:cpuCount">
-#SBATCH -N <xsl:value-of select="ns:cpuCount"/>
+#SBATCH -n <xsl:value-of select="ns:cpuCount"/>
         </xsl:when>
         </xsl:choose>
     <xsl:choose>

@@ -21,9 +21,8 @@ use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
-if ($argc != 2)
-{
-    exit("php getApplicationDeployedResources.php <appModuleID> \n");
+if ($argc != 2) {
+    exit("Usage: php getApplicationDeployedResources.php <appModuleID> \n");
 }
 
 $appModuleId = $argv[1];
@@ -52,32 +51,19 @@ function get_application_deployed_resources($appModuleId)
 {
     global $airavataclient;
 
-    try
-    {
+    try {
         return $airavataclient->getAppModuleDeployedResources($appModuleId);
-    }
-    catch (InvalidRequestException $ire)
-    {
+    } catch (InvalidRequestException $ire) {
         echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
-    }
-    catch (ExperimentNotFoundException $enf)
-    {
+    } catch (ExperimentNotFoundException $enf) {
         echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
-    }
-    catch (AiravataClientException $ace)
-    {
+    } catch (AiravataClientException $ace) {
         echo 'AiravataClientException!<br><br>' . $ace->getMessage();
-    }
-    catch (AiravataSystemException $ase)
-    {
+    } catch (AiravataSystemException $ase) {
         echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
-    }
-    catch (TTransportException $tte)
-    {
+    } catch (TTransportException $tte) {
         echo 'TTransportException!<br><br>' . $tte->getMessage();
-    }
-    catch (\Exception $e)
-    {
+    } catch (\Exception $e) {
         echo 'Exception!<br><br>' . $e->getMessage();
     }
 

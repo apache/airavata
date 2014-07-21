@@ -48,5 +48,9 @@ $protocol = new TBinaryProtocol($transport);
 $transport->open();
 $airavataclient = new AiravataClient($protocol);
 
-
+function sampleDisabled()
+{
+	echo "The execution of this script is disabled so the XSEDE 14 tutorial will remain coherent. The code is complete and will illustrate the usage of the API. \n";
+	exit(0);
+}
 ?>

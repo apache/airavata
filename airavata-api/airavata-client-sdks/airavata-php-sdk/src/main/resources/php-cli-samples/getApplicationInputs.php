@@ -14,14 +14,11 @@ use Airavata\API\Error\InvalidRequestException;
 use Thrift\Exception\TTransportException;
 use Airavata\Model\AppCatalog\AppInterface\DataType;
 
-try
-{
+try {
 
-    if ($argc < 1)
-    {
+    if ($argc < 1) {
         echo 'php getApplicationInputs.php <appInterfaceId>';
-    }
-    else {
+    } else {
 
         $appInterfaceId = $argv[1];
 
@@ -36,26 +33,16 @@ try
         } else {
             echo "\n Failed to fetch application interface Inputs. \n";
         }
-}
-}
-catch (InvalidRequestException $ire)
-{
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
-}
-catch (AiravataClientException $ace)
-{
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
-}
-catch (AiravataSystemException $ase)
-{
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
-}
-catch (TTransportException $tte)
-{
+    }
+} catch (InvalidRequestException $ire) {
+    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+} catch (AiravataClientException $ace) {
+    print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
+} catch (AiravataSystemException $ase) {
+    print 'Airavata System Exception: ' . $ase->getMessage() . "\n";
+} catch (TTransportException $tte) {
     echo 'TTransportException!<br><br>' . $tte->getMessage();
-}
-catch (\Exception $e)
-{
+} catch (\Exception $e) {
     echo 'Exception!<br><br>' . $e->getMessage();
 }
 

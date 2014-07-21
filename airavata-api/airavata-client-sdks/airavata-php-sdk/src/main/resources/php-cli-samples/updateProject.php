@@ -17,35 +17,23 @@ use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
-try 
-{
-		  if($argc != 3) 
-		  {
-					 echo 'php updateProject.php <project_id> <project_description>';
-		  }
-		  else
-		  {
-					 $project=$airavataclient->getProject($argv[1]);
-					 $project->description = $argv[2];
-					 $airavataclient->updateProject($argv[1], $project);
-					 echo 'Project '.$argv[1] . ' succesfully modified.';
-		  }
-}
-
-catch (InvalidRequestException $ire)
-{
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
-}
-catch (AiravataClientException $ace)
-{
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
-}
-catch (AiravataSystemException $ase)
-{
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
+try {
+    if ($argc != 3) {
+        echo 'php updateProject.php <project_id> <project_description>';
+    } else {
+        $project = $airavataclient->getProject($argv[1]);
+        $project->description = $argv[2];
+        $airavataclient->updateProject($argv[1], $project);
+        echo 'Project ' . $argv[1] . ' successfully modified.';
+    }
+} catch (InvalidRequestException $ire) {
+    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+} catch (AiravataClientException $ace) {
+    print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
+} catch (AiravataSystemException $ase) {
+    print 'Airavata System Exception: ' . $ase->getMessage() . "\n";
 }
 
 $transport->close();
 
 ?>
-

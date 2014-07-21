@@ -17,37 +17,23 @@ use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
-try
-{
+try {
 
-   if ($argc != 2) {
-		echo 'php getAllExperimentsInProject.php <project_ID>';
-	}
+    if ($argc != 2) {
+        echo 'Usage: php getAllExperimentsInProject.php <project_ID>';
+    } else {
+        $projectExperiments = $airavataclient->getAllExperimentsInProject($argv[1]);
+        echo '# of project experiments = ' . sizeof($projectExperiments);
+        var_dump($projectExperiments);
+    }
 
-	else {
-	    $projectExperiments = $airavataclient->getAllExperimentsInProject($argv[1]);
-   	  echo '# of project experiments = ' . sizeof($projectExperiments) . '         <br><br>';
-    	  var_dump($projectExperiments);
-   }
-
-
+} catch (InvalidRequestException $ire) {
+    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+} catch (AiravataClientException $ace) {
+    print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
+} catch (AiravataSystemException $ase) {
+    print 'Airavata System Exception: ' . $ase->getMessage() . "\n";
 }
-catch (InvalidRequestException $ire)
-{
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
-}
-catch (AiravataClientException $ace)
-{
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
-}
-catch (AiravataSystemException $ase)
-{
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
-}
-
-
-
-
 
 $transport->close();
 

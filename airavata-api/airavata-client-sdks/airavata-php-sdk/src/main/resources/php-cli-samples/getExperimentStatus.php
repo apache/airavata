@@ -19,55 +19,27 @@ use Thrift\Transport\TBufferedTransport;
 use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
-if (count($argv) < 2) {
-    exit("Please provide an experimentID. \n");
+try {
+    if (count($argv) < 2) {
+        exit("Please provide an experimentID. Usage: php getExperimentStatus.php <experimentId> \n");
+    } else {
+
+        $experimentId = $argv[1];
+        $experimentStatus = $airavataclient->getExperimentStatus($experimentId);
+
+        echo "experiment status = " . ExperimentState::$__names[$experimentStatus->experimentState] . "       \n<br>";
+    }
+
+} catch (InvalidRequestException $ire) {
+    echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+} catch (ExperimentNotFoundException $enf) {
+    echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
+} catch (AiravataClientException $ace) {
+    echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+} catch (AiravataSystemException $ase) {
+    echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
+} catch (\Exception $e) {
+    echo 'Exception!<br><br>' . $e->getMessage();
 }
-
-$expId = $argv[1];   
-
-$experimentStatusString = get_experiment_status($expId);
-echo "experiment status = " . $experimentStatusString . "       \n<br>";
-
 
 $transport->close();
-
-
-/**
- * Get a string containing the given experiment's status
- * @param $expId
- * @return mixed
- */
-function get_experiment_status($expId)
-{
-    global $airavataclient;
-
-    try
-    {
-        $experimentStatus = $airavataclient->getExperimentStatus($expId);
-    }
-    catch (InvalidRequestException $ire)
-    {
-        echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
-    }
-    catch (ExperimentNotFoundException $enf)
-    {
-        echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
-    }
-    catch (AiravataClientException $ace)
-    {
-        echo 'AiravataClientException!<br><br>' . $ace->getMessage();
-    }
-    catch (AiravataSystemException $ase)
-    {
-        echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
-    }
-    catch (\Exception $e)
-    {
-        echo 'Exception!<br><br>' . $e->getMessage();
-    }
-
-    return ExperimentState::$__names[$experimentStatus->experimentState];
-}
-
-?>
-
