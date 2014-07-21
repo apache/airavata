@@ -31,12 +31,6 @@ use Airavata\Model\Workspace\Experiment\ExperimentState;
 $transport = new TSocket($airavataconfig['AIRAVATA_SERVER'], $airavataconfig['AIRAVATA_PORT']);
 $transport->setRecvTimeout($airavataconfig['AIRAVATA_TIMEOUT']);
 */
-$transport = new TSocket('gw127.iu.xsede.org', 8930);
-$transport->setRecvTimeout(20000);
-$transport->setSendTimeout(20000);
-$protocol = new TBinaryProtocol($transport);
-$transport->open();
-$airavataclient = new AiravataClient($protocol);
 
 try
 {
@@ -47,79 +41,69 @@ try
     else
     {
 
-        /* ComputationalResourceScheduling data for Trestles*/
-        $cmRST = new ComputationalResourceScheduling();
-        $cmRST->resourceHostId = "trestles.sdsc.edu";
-        $cmRST->ComputationalProjectAccount = "sds128";
-        $cmRST->totalCPUCount = 1;
-        $cmRST->nodeCount = 1;
-        $cmRST->numberOfThreads = 0;
-        $cmRST->queueName = "normal";
-        $cmRST->wallTimeLimit = 15;
-        $cmRST->jobStartTime = 0;
-        $cmRST->totalPhysicalMemory = 0;
+        $applicationId = $appcatalogdocs['echoInterfaceId'];
 
-        /* ComputationalResourceScheduling data for Stampede */
-        $cmRSS = new ComputationalResourceScheduling();
-        $cmRSS->resourceHostId = "stampede.tacc.xsede.org";
-        $cmRSS->ComputationalProjectAccount = "TG-STA110014S";
-        $cmRSS->totalCPUCount = 1;
-        $cmRSS->nodeCount = 1;
-        $cmRSS->numberOfThreads = 0;
-        $cmRSS->queueName = "normal";
-        $cmRSS->wallTimeLimit = 15;
-        $cmRSS->jobStartTime = 0;
-        $cmRSS->totalPhysicalMemory = 0;
+        $applicationInput = new DataObjectType();
+        $applicationInput->key = "Input_to_Echo";
+        $applicationInput->value = "Hello World";
+        $experimentInputs = array($applicationInput);
 
-        /* UserConfigurationData using either Trestles or Stampede*/
-        //$cmRS = $cmRSS;
-        $cmRS = $cmRST;
+        /**
+         *  NOTE: For convenience, all the computational hosts are provided.
+         *        Comment/Uncomment appropriately to schedule on alternative resources
+         *        If all hosts are uncommented, the last one will be picked.
+         */
+
+        $scheduling = new ComputationalResourceScheduling();
+
+        /* IU BigRed II Cluster */
+        $scheduling->resourceHostId = $appcatalogdocs['bigredResourceId'];
+
+        /* TACC Stampede Cluster */
+        //$scheduling->resourceHostId = $appcatalogdocs['stampedeResourceId'];
+        //$scheduling->ComputationalProjectAccount = "TG-STA110014S";
+
+        /* SDSC Trestles Cluster */
+        //$scheduling->resourceHostId = $appcatalogdocs['trestlesResourceId'];
+        //$scheduling->ComputationalProjectAccount = "sds128";
+
+        /* Job dimensions and resource queue */
+        $scheduling->totalCPUCount = 1;
+        $scheduling->nodeCount = 1;
+        $scheduling->wallTimeLimit = 15;
+        $scheduling->queueName = "normal";
+
         $userConfigurationData = new UserConfigurationData();
         $userConfigurationData->airavataAutoSchedule = 0;
         $userConfigurationData->overrideManualScheduledParams = 0;
-        $userConfigurationData->computationalResourceScheduling = $cmRS;
-        //var_dump($cmRS);
-        //var_dump($userConfigurationData);
+        $userConfigurationData->computationalResourceScheduling = $scheduling;
 
-        /*Application ID for Trestles or Stamepede */
-        $appId_trestles = "SimpleEcho2";
-        $appId_stampede = "SimpleEcho3";
-        //$appId = $appId_stampede;
-        $appId = $appId_trestles;
+        /**
+         * An experiment is created within Airavata and all the provided inputs and configurations are persisted
+         *  within the Airavata Registry.
+         *
+         * NOTE: Airavata uses a 2 step launch process. The creation just creates the experiment. The launch step
+         *   executes the created experiment.
+         */
 
-        /* Experiment input and output data. */
-        $input = new DataObjectType();
-        $input->key = "echo_input";
-        $input->value = "echo_output=Hello World";
-        $input->type = DataType::STRING;
-        $exInputs = array($input);
-
-        $output = new DataObjectType();
-        $output->key = "echo_output";
-        $output->value = "";
-        $output->type = DataType::STRING;
-        $exOutputs = array($output);
-
-	
         /* Simple workflow test. */
         $user = $argv[1];
         
         /* Create Project */
         $project = new Project();
-	$project->owner = $user;
-	$project->name = "LoadTesterProject";
-  	$projId = $airavataclient->createProject($project); 
-	echo "$user created project $projId. \n";
+	    $project->owner = $user;
+	    $project->name = "LoadTesterProject";
+  	    $projId = $airavataclient->createProject($project);
+	    echo "$user created project $projId. \n";
 
         /* Create Experiment */
         $experiment = new Experiment();
         $experiment->projectID = $projId;
         $experiment->userName = $user;
         $experiment->name = "LoadTesterExperiment_".time();
-        $experiment->applicationId = $appId;
+        $experiment->applicationId = $applicationId;
         $experiment->userConfigurationData = $userConfigurationData;
         $experiment->experimentInputs = $exInputs;
-        $experiment->experimentOutputs = $exOutputs;
         $expId = $airavataclient->createExperiment($experiment);
 	echo "$user created experiment $expId. \n";
         //var_dump($experiment);
@@ -152,7 +136,7 @@ try
         $update_userConfigurationData = new UserConfigurationData();
         $update_userConfigurationData->airavataAutoSchedule = 0;
         $update_userConfigurationData->overrideManualScheduledParams = 0;
-        $update_userConfigurationData->computationalResourceScheduling = $cmRSS; 
+        $update_userConfigurationData->computationalResourceScheduling = $scheduling;
 	$airavataclient->updateExperimentConfiguration($expId, $update_userConfigurationData);
 	echo "$user updated user configuration data for experiment $expId. \n";
 
