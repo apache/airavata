@@ -155,9 +155,9 @@ public class ExperimentModelUtil {
     public static TaskDetails cloneTaskFromWorkflowNodeDetails(Experiment experiment, WorkflowNodeDetails nodeDetails){
         TaskDetails taskDetails = new TaskDetails();
         taskDetails.setCreationTime(nodeDetails.getCreationTime());
-        String[] split = nodeDetails.getExecutionUnitData().split("/");
-        taskDetails.setApplicationId(split[0]);
-        taskDetails.setApplicationVersion(split[1]);
+//        String[] split = ;
+        taskDetails.setApplicationId(nodeDetails.getExecutionUnitData());
+//        taskDetails.setApplicationVersion(split[1]);
         List<DataObjectType> experimentInputs = nodeDetails.getNodeInputs();
         if (experimentInputs != null){
             taskDetails.setApplicationInputs(experimentInputs);

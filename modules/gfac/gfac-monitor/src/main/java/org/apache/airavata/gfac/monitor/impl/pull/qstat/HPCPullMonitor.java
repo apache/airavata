@@ -195,8 +195,6 @@ public class HPCPullMonitor extends PullMonitor {
                             } catch (GFacException e) {
                                 publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(iMonitorID.getExperimentID(), iMonitorID.getWorkflowNodeID(),
                                         iMonitorID.getTaskID()), TaskState.FAILED));
-                                publisher.publish(new ExperimentStatusChangeRequest(new ExperimentIdentity(iMonitorID.getExperimentID()),
-                                        ExperimentState.FAILED));
                                 logger.info(e.getLocalizedMessage(), e);
                             }
                         } else {

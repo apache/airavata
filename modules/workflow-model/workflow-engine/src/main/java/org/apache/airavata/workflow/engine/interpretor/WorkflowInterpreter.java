@@ -57,7 +57,6 @@ import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
@@ -229,7 +228,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				elem.setKey(portName);
 				elem.setValue(portValue==null?null:portValue.toString());
 				workflowNode.addToNodeInputs(elem);
-				workflowNode.setNodeInstanceId((String) getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNode, getExperiment().getExperimentID()));
+				getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNode, workflowNode.getNodeInstanceId());
 				updateWorkflowNodeStatus(workflowNode, WorkflowNodeState.COMPLETED);
 			}
 			
@@ -372,18 +371,23 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	    }
     }
 
-	private WorkflowNodeDetails createWorkflowNodeDetails(Node node) {
+	private WorkflowNodeDetails createWorkflowNodeDetails(Node node) throws RegistryException {
 		WorkflowNodeDetails workflowNode = ExperimentModelUtil.createWorkflowNode(node.getName(), null);
 		ExecutionUnit executionUnit = ExecutionUnit.APPLICATION;
+		String executionData = null;
 		if (node instanceof InputNode){
 			executionUnit = ExecutionUnit.INPUT;
 		} else if (node instanceof OutputNode){
 			executionUnit = ExecutionUnit.OUTPUT;
 		} if (node instanceof WSNode){
 			executionUnit = ExecutionUnit.APPLICATION;
+			executionData = ((WSNode)node).getComponent().getApplication().getApplicationId();
 		}  
 		workflowNode.setExecutionUnit(executionUnit);
+		workflowNode.setExecutionUnitData(executionData);
+		workflowNode.setNodeInstanceId((String) getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNode, getExperiment().getExperimentID()));
 		nodeInstanceList.put(node, workflowNode);
+		setupNodeDetailsInput(node, workflowNode);
 		return workflowNode;
 	}
 
@@ -422,7 +426,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				// next run
 				// even if the next run runs before the notification arrives
 				WorkflowNodeDetails workflowNodeDetails = createWorkflowNodeDetails(node);
-				workflowNodeDetails.setNodeInstanceId((String)getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, getExperiment().getExperimentID()));
+//				workflowNodeDetails.setNodeInstanceId((String)getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, getExperiment().getExperimentID()));
 				node.setState(NodeExecutionState.EXECUTING);
 				updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.EXECUTING);
 				// OutputNode node = (OutputNode) outputNode;
@@ -987,8 +991,14 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	private void setupNodeDetailsInput(Node node, WorkflowNodeDetails nodeDetails){
 		List<DataPort> inputPorts = node.getInputPorts();
 		for (DataPort dataPort : inputPorts) {
-			Map<String, String> outputData = nodeOutputData.get(dataPort.getFromNode());
-			String portInputValue = outputData.get(dataPort.getName());
+			Node fromNode = dataPort.getFromNode();
+			String portInputValue = null;
+			if (fromNode instanceof InputNode){
+				portInputValue = (String) ((InputNode) fromNode).getDefaultValue();			
+			} else if (fromNode instanceof WSNode){
+				Map<String, String> outputData = nodeOutputData.get(fromNode);
+				portInputValue = outputData.get(dataPort.getName());				
+			}
 			DataObjectType elem = new DataObjectType();
 			elem.setKey(dataPort.getName());
 			elem.setValue(portInputValue);
@@ -1392,16 +1402,17 @@ public class WorkflowInterpreter implements AbstractActivityListener{
     	String taskId = taskStatus.getIdentity().getTaskId();
 		if (isTaskAwaiting(taskId)){
         	WorkflowNodeState state=WorkflowNodeState.UNKNOWN;
+			Node node = getAwaitingNodeForTask(taskId);
         	switch(taskStatus.getState()){
         	case CANCELED:
         		; break;
         	case COMPLETED:
         		//task is completed
+        		state = WorkflowNodeState.COMPLETED;
         		try {
 					TaskDetails task = (TaskDetails)getRegistry().get(RegistryModelType.TASK_DETAIL, taskId);
 					List<DataObjectType> applicationOutputs = task.getApplicationOutputs();
 					Map<String, String> outputData = new HashMap<String, String>();
-					Node node = getAwaitingNodeForTask(taskId);
 					for (DataObjectType outputObj : applicationOutputs) {
 						List<DataPort> outputPorts = node.getOutputPorts();
 						for (DataPort dataPort : outputPorts) {
@@ -1412,6 +1423,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 					}
 					nodeOutputData.put(node, outputData);
 					setupNodeDetailsOutput(node);
+					node.setState(NodeExecutionState.FINISHED);
 				} catch (RegistryException e) {
 					e.printStackTrace();
 				}
@@ -1419,16 +1431,26 @@ public class WorkflowInterpreter implements AbstractActivityListener{
         	case CONFIGURING_WORKSPACE:
         		break;
         	case FAILED:
+        		state = WorkflowNodeState.FAILED;
+        		node.setState(NodeExecutionState.FAILED);
         		break;
         	case EXECUTING: case WAITING: case PRE_PROCESSING: case POST_PROCESSING: case OUTPUT_DATA_STAGING: case INPUT_DATA_STAGING:
+        		state = WorkflowNodeState.EXECUTING;
+        		node.setState(NodeExecutionState.EXECUTING);
         		break;
         	case STARTED:
         		break;
         	case CANCELING:
+        		state = WorkflowNodeState.CANCELING;
         		break;
     		default:
     			break;
-        	}    		
+        	}
+        	try {
+				updateWorkflowNodeStatus(nodeInstanceList.get(node), state);
+			} catch (RegistryException e) {
+				e.printStackTrace();
+			}
     	}
 
     }
