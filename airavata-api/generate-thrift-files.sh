@@ -53,7 +53,7 @@ add_license_header() {
     for file in "${FILE_SUFFIXES[@]}"; do
         for f in $(find ${GENERATED_CODE_DIR} -name "*$file"); do
             cat - ${f} >${f}-with-license <<EOF
-/*
+/**
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
