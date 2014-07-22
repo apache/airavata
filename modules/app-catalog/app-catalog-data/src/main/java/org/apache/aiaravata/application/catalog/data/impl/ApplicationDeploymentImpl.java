@@ -55,7 +55,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                 throw new AppCatalogException("Application module does not exist in the system. Please create an application module first...");
             }
             AppModuleResource module = (AppModuleResource)moduleResource.get(deploymentDescription.getAppModuleId());
-            deploymentResource.setDeploymentId(AppCatalogUtils.getID(module.getModuleName()));
+            deploymentResource.setDeploymentId(deploymentDescription.getComputeHostId() + "_" + module.getModuleName());
             deploymentResource.setAppModuleId(deploymentDescription.getAppModuleId());
             deploymentResource.setModuleResource(module);
             deploymentResource.setHostId(deploymentDescription.getComputeHostId());
