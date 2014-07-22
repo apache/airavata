@@ -47,10 +47,10 @@ import org.apache.thrift.TException;
 
 public class RegisterSampleApplications {
 
-//    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
-    public static final String THRIFT_SERVER_HOST = "localhost";
-//    public static final int THRIFT_SERVER_PORT = 9930;
-    public static final int THRIFT_SERVER_PORT = 8930;
+    public static final String THRIFT_SERVER_HOST = "gw127.iu.xsede.org";
+//    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final int THRIFT_SERVER_PORT = 9930;
+//    public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(RegisterSampleApplications.class);
     private static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client airavataClient;
@@ -86,22 +86,22 @@ public class RegisterSampleApplications {
     private static String echoModuleId;
     private static String amberModuleId;
     private static String autoDockModuleId;
-    private static String espressoModuleId;
-    private static String gromacsModuleId;
+    private static String espressoModuleId = "ESPRESSO_54dc94da-5e2b-4add-b054-41ad88891fdc";
+    private static String gromacsModuleId = "GROMACS_417271fd-7ac1-4f40-b2a5-ed0908a743eb";
     private static String lammpsModuleId;
-    private static String nwChemModuleId;
-    private static String trinityModuleId;
+    private static String nwChemModuleId = "NWChem_edbc318d-4c41-46a7-b216-32bad71eabdd";
+    private static String trinityModuleId = "Trinity_8af45ca0-b628-4614-9087-c7b73f5f2fb6";
     private static String wrfModuleId;
 
     //App Interface Id's
-    private static String echoInterfaceId;
-    private static String amberInterfaceId;
-    private static String autoDockInterfaceId;
-    private static String espressoInterfaceId;
-    private static String gromacsInterfaceId;
-    private static String lammpsInterfaceId;
-    private static String nwChemInterfaceId;
-    private static String trinityInterfaceId;
+    private static String echoInterfaceId = "";
+    private static String amberInterfaceId = "";
+    private static String autoDockInterfaceId = "";
+    private static String espressoInterfaceId = "";
+    private static String gromacsInterfaceId = "";
+    private static String lammpsInterfaceId = "";
+    private static String nwChemInterfaceId = "";
+    private static String trinityInterfaceId = "";
     private static String wrfInterfaceId;
 
     public static void main(String[] args) {
@@ -149,7 +149,7 @@ public class RegisterSampleApplications {
 
             //Register BigRedII
             bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
-                    ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n 4");
+                    ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
             System.out.println("BigredII Resource Id is " + bigredResourceId);
 
         } catch (TException e) {
@@ -249,19 +249,19 @@ public class RegisterSampleApplications {
 //        registerAutoDockInterface();
 
         //Registering Espresso
-//        registerEspressoInterface();
+        registerEspressoInterface();
 
         //Registering Gromacs
-//        registerGromacsInterface();
+        registerGromacsInterface();
 
         //Registering Lammps
-//        registerLammpsInterface();
+        registerLammpsInterface();
 
         //Registering NWChem
-//        registerNWChemInterface();
+        registerNWChemInterface();
 
         //Registering Trinity
-//        registerTrinityInterface();
+        registerTrinityInterface();
 
         //Registering WRF
 //        registerWRFInterface();
@@ -447,23 +447,23 @@ public class RegisterSampleApplications {
             appModules.add(amberModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Heat_Restart_File", null,
-                    DataType.URI, null, false, "Heating up the system equilibration stage", null);
+                    DataType.URI, null, false, "Heating up the system equilibration stage - 02_Heat.rst", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Production_Control_File", null,
-                    DataType.URI, null, false, "Constant pressure and temperature for production stage", null);
+                    DataType.URI, null, false, "Constant pressure and temperature for production stage - 03_Prod.in", null);
 
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Parameter_Topology_File", null,
-                    DataType.URI, null, false, "Parameter and Topology coordinates", null);
+                    DataType.URI, null, false, "Parameter and Topology coordinates - prmtop", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
             applicationInputs.add(input3);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Prod.info",null,DataType.URI);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Prod.info",null,DataType.URI);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Prod.info",null,DataType.URI);
-            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Prod.info",null,DataType.URI);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Execution_Summary",null,DataType.URI);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Execution_log",null,DataType.URI);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Trajectory_file",null,DataType.URI);
+            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Restart_file",null,DataType.URI);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -526,20 +526,21 @@ public class RegisterSampleApplications {
             appModules.add(espressoModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("AI_Primitive_Cell", null,
-                    DataType.URI, null, false, "AI_Metal_Input_File", null);
+                    DataType.URI, null, false, "AI_Metal_Input_File - Al.sample.in", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("AI_Pseudopotential_File", null,
-                    DataType.URI, null, false, "Constant pressure and temperature for production stage", null);
+                    DataType.URI, null, false, "Constant pressure and temperature for production stage - Al.pz-vbc.UPF", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("ESPRESSO_Execution_Log",null,DataType.URI);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("ESPRESSO_WFC_Binary_file",null,DataType.URI);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
+            applicationOutputs.add(output2);
 
             espressoInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(espressoName, espressoDescription,
@@ -559,16 +560,23 @@ public class RegisterSampleApplications {
             appModules.add(gromacsModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Portable_Input_Binary_File", null,
-                    DataType.URI, null, false, "Coordinates velocities, molecular topology and simulation parameters", null);
+                    DataType.URI, null, false, "Coordinates velocities, molecular topology and simulation parameters - pdb1y6l-EM-vacuum.tpr", null);
+
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("GROMOS_Coordinate_File", null,
+                    DataType.URI, null, false, "Trajectory Coordinates Molecular Structure in Gromos87 format - pdb1y6l-EM-vacuum.gro", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
+            applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("GROMACS_Execution_Log",null,DataType.URI);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Full_Precision_Trajectory_file",null,DataType.URI);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("Portable_Energy_file",null,DataType.URI);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
+            applicationOutputs.add(output2);
+            applicationOutputs.add(output3);
 
             gromacsInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(gromacsName, gromacsDescription,
@@ -588,13 +596,12 @@ public class RegisterSampleApplications {
             appModules.add(lammpsModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Friction_Simulation_Input", null,
-                    DataType.URI, null, false, "Friction Simulation Input", null);
+                    DataType.URI, null, false, "Friction Simulation Input - in.friction", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("LAMMPS_Simulation_Log",null,DataType.URI);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -617,13 +624,12 @@ public class RegisterSampleApplications {
             appModules.add(nwChemModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Water_Molecule_Input", null,
-                    DataType.URI, null, false, "Water Molecule Input File", null);
+                    DataType.URI, null, false, "Water Molecule Input File - water.nw", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("NWChem_Execution_Log",null,DataType.URI);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -647,20 +653,21 @@ public class RegisterSampleApplications {
             appModules.add(trinityModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("RNA_Seq_Left_Input", null,
-                    DataType.URI, null, false, "RNA-Seq Left Library", null);
+                    DataType.URI, null, false, "RNA-Seq Left Library - reads.left.fq", null);
 
-            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("RNA_Seq_Left_Input", null,
-                    DataType.URI, null, false, "RNA-Seq Right Library", null);
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("RNA_Seq_Right_Input", null,
+                    DataType.URI, null, false, "RNA-Seq Right Library - reads.right.fq", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_Execution_Log",null,DataType.URI);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_FASTA_File",null,DataType.URI);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
+            applicationOutputs.add(output2);
 
             trinityInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(trinityName, trinityDescription,
@@ -681,13 +688,13 @@ public class RegisterSampleApplications {
             appModules.add(wrfModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Config_Namelist_File", null,
-                    DataType.URI, null, false, "Namelist Configuration File", null);
+                    DataType.URI, null, false, "Namelist Configuration File - namelist.input", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("WRF_Initial_Conditions", null,
-                    DataType.URI, null, false, "Initial Conditions File", null);
+                    DataType.URI, null, false, "Initial Conditions File - wrfinput_d01", null);
 
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("WRF_Boundary_File", null,
-                    DataType.URI, null, false, "Boundary Conditions File", null);
+                    DataType.URI, null, false, "Boundary Conditions File - wrfbdy_d01", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -727,7 +734,7 @@ public class RegisterSampleApplications {
             //Register Amber
             String amberAppDeployId = airavataClient.registerApplicationDeployment(
                     RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, stampedeResourceId,
-                            "/home1/01437/ogce/production/app_wrappers/amber_wrapper_simple.sh", ApplicationParallelismType.MPI,
+                            "/home1/01437/ogce/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.MPI,
                             amberDescription));
             System.out.println("Amber on stampede deployment Id " + amberAppDeployId);
 
@@ -769,7 +776,7 @@ public class RegisterSampleApplications {
             //Register WRF
             String wrfAppDeployId = airavataClient.registerApplicationDeployment(
                     RegisterSampleApplicationsUtils.createApplicationDeployment(wrfModuleId, stampedeResourceId,
-                            "/home1/01437/ogce/production/app_wrappers/wrf_wrapper_3.5.1.sh", ApplicationParallelismType.MPI,
+                            "/home1/01437/ogce/production/app_wrappers/wrf_wrapper.sh", ApplicationParallelismType.MPI,
                             wrfDescription));
             System.out.println("WRF on stampede deployment Id " + wrfAppDeployId);
 
@@ -791,7 +798,7 @@ public class RegisterSampleApplications {
             //Register Amber
             String amberAppDeployId = airavataClient.registerApplicationDeployment(
                     RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, trestlesResourceId,
-                            "/home/ogce/production/app_wrappers/amber_wrapper_simple.sh", ApplicationParallelismType.MPI,
+                            "/home/ogce/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.MPI,
                             amberDescription));
             System.out.println("Amber on trestles deployment Id " + amberAppDeployId);
 
@@ -827,30 +834,30 @@ public class RegisterSampleApplications {
             //Register Amber
             String amberAppDeployId = airavataClient.registerApplicationDeployment(
                     RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, bigredResourceId,
-                            "/N/u/cgateway/BigRed2/production/app_wrappers/amber_wrapper_simple.sh", ApplicationParallelismType.MPI,
+                            "/N/u/cgateway/BigRed2/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.MPI,
                             amberDescription));
             System.out.println("Amber on bigredII deployment Id " + amberAppDeployId);
 
             //Register AutoDock
             String autoDockDeployId = airavataClient.registerApplicationDeployment(
-                    RegisterSampleApplicationsUtils.createApplicationDeployment(nwChemModuleId, bigredResourceId,
+                    RegisterSampleApplicationsUtils.createApplicationDeployment(autoDockModuleId, bigredResourceId,
                             "/N/u/cgateway/BigRed2/production/app_wrappers/auto_dock_wrapper.sh", ApplicationParallelismType.MPI,
                             autoDockDescription));
             System.out.println("AutoDock on bigredII deployment Id " + autoDockDeployId);
 
-            //Register GROMACS
-            String gromacsAppDeployId = airavataClient.registerApplicationDeployment(
-                    RegisterSampleApplicationsUtils.createApplicationDeployment(gromacsModuleId, bigredResourceId,
-                            "/N/u/cgateway/BigRed2/production/app_wrappers/gromacs_wrapper.sh", ApplicationParallelismType.MPI,
-                            gromacsDescription));
-            System.out.println("GROMACS on bigredII deployment Id " + gromacsAppDeployId);
-
-            //Register LAMMPS
-            String lammpsAppDeployId = airavataClient.registerApplicationDeployment(
-                    RegisterSampleApplicationsUtils.createApplicationDeployment(lammpsModuleId, bigredResourceId,
-                            "/N/u/cgateway/BigRed2/production/app_wrappers/lammps_wrapper.sh", ApplicationParallelismType.MPI,
-                            lammpsDescription));
-            System.out.println("LAMMPS on bigredII deployment Id " + lammpsAppDeployId);
+//            //Register GROMACS
+//            String gromacsAppDeployId = airavataClient.registerApplicationDeployment(
+//                    RegisterSampleApplicationsUtils.createApplicationDeployment(gromacsModuleId, bigredResourceId,
+//                            "/N/u/cgateway/BigRed2/production/app_wrappers/gromacs_wrapper.sh", ApplicationParallelismType.MPI,
+//                            gromacsDescription));
+//            System.out.println("GROMACS on bigredII deployment Id " + gromacsAppDeployId);
+//
+//            //Register LAMMPS
+//            String lammpsAppDeployId = airavataClient.registerApplicationDeployment(
+//                    RegisterSampleApplicationsUtils.createApplicationDeployment(lammpsModuleId, bigredResourceId,
+//                            "/N/u/cgateway/BigRed2/production/app_wrappers/lammps_wrapper.sh", ApplicationParallelismType.MPI,
+//                            lammpsDescription));
+//            System.out.println("LAMMPS on bigredII deployment Id " + lammpsAppDeployId);
 
         } catch (TException e) {
             e.printStackTrace();
@@ -930,27 +937,31 @@ public class RegisterSampleApplications {
     }
 
     public static void writeIdPropertyFile() {
-//
-//        try {
-//            Properties properties = new Properties();
-//            properties.setProperty("stampedeResourceId", stampedeResourceId);
-//            properties.setProperty("trestlesResourceId", trestlesResourceId);
-//            properties.setProperty("bigredResourceId", bigredResourceId);
-//
-//            properties.setProperty("echoInterfaceId", echoInterfaceId);
-//            properties.setProperty("amberInterfaceId", amberInterfaceId);
-//            properties.setProperty("wrfInterfaceId", wrfInterfaceId);
-//
-//            File file = new File("airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/conf/app-catalog-identifiers.ini");
-//            FileOutputStream fileOut = new FileOutputStream(file);
-//            properties.store(fileOut, "Apache Airavata Gateway to Airavata Deployment Identifiers");
-//            fileOut.close();
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Properties properties = new Properties();
+            properties.setProperty("stampedeResourceId", stampedeResourceId);
+            properties.setProperty("trestlesResourceId", trestlesResourceId);
+            properties.setProperty("bigredResourceId", bigredResourceId);
 
+            properties.setProperty("echoInterfaceId", echoInterfaceId);
+            properties.setProperty("amberInterfaceId", amberInterfaceId);
+            properties.setProperty("autoDockInterfaceId", autoDockInterfaceId);
+            properties.setProperty("espressoInterfaceId", espressoInterfaceId);
+            properties.setProperty("gromacsInterfaceId", gromacsInterfaceId);
+            properties.setProperty("lammpsInterfaceId", lammpsInterfaceId);
+            properties.setProperty("nwChemInterfaceId", nwChemInterfaceId);
+            properties.setProperty("trinityInterfaceId", trinityInterfaceId);
+            properties.setProperty("wrfInterfaceId", wrfInterfaceId);
+
+            File file = new File("airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/conf/app-catalog-identifiers.ini");
+            FileOutputStream fileOut = new FileOutputStream(file);
+            properties.store(fileOut, "Apache Airavata Gateway to Airavata Deployment Identifiers");
+            fileOut.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

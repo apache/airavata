@@ -1,5 +1,25 @@
 <?php
 /**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * @license http://www.apache.org/licenses/LICENSE-2.0 Apache V2
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+/**
  * Bundle all thrift and Airavata stubs into a include file. This is simple but not so elegant way.
  *  Contributions welcome to improve writing PHP Client Samples.
  *
@@ -24,117 +44,94 @@ use Airavata\Model\Workspace\Experiment\UserConfigurationData;
 use Airavata\Model\Workspace\Experiment\ComputationalResourceScheduling;
 use Airavata\Model\Workspace\Experiment\DataType;
 
-include 'getAiravataClient.php';
-global $airavataclient;
-global $transport;
+try {
+    if ($argc < 4) {
+        echo "Usage: php createExperiment.php <username> <experiment_name> <project_ID> \n";
+    } else {
 
-$appId = 'SimpleEcho3_ca40f7c6-69ba-4f89-918d-9937cea0ca8f';
-$hostID = 'stampede.tacc.xsede.org_8f20b832-c11a-444b-8e73-bf15f4760b9a';
-try
-{
-    if ($argc != 4)
-    {
-        echo 'php createExperiment.php <username> <experiment_name> <project_ID>';
-    }
-    else
-    {
-        /* ComputationalResourceScheduling data for Trestles*/
-        $cmRST = new ComputationalResourceScheduling();
-        $cmRST->resourceHostId = $hostID;
-        $cmRST->ComputationalProjectAccount = "sds128";
-        $cmRST->totalCPUCount = 1;
-        $cmRST->nodeCount = 1;
-        $cmRST->numberOfThreads = 0;
-        $cmRST->queueName = "normal";
-        $cmRST->wallTimeLimit = 15;
-        $cmRST->jobStartTime = 0;
-        $cmRST->totalPhysicalMemory = 0;
+        /* User provides input values */
+        $userName = $argv[1];
+        $experimentName = $argv[2];
+        $projectId = $argv[3];
 
-        /* ComputationalResourceScheduling data for Stampede */
-        $cmRSS = new ComputationalResourceScheduling();
-        $cmRSS->resourceHostId = $hostID;
-        $cmRSS->ComputationalProjectAccount = "TG-STA110014S";
-        $cmRSS->totalCPUCount = 1;
-        $cmRSS->nodeCount = 1;
-        $cmRSS->numberOfThreads = 0;
-        $cmRSS->queueName = "normal";
-        $cmRSS->wallTimeLimit = 15;
-        $cmRSS->jobStartTime = 0;
-        $cmRSS->totalPhysicalMemory = 0;
+        /**
+         * Configure Experiment by selecting application and configuring its input values.
+         *   This sample scripts executes a simple Echo command on one of the remote machines as a illustrations.
+         *   The getAllApplicationInterfaceNames.php scripts will list other available samples applications.
+         *   Examples include Amber, AutoDock, ESPRESSO, GROMACS, LAMMPS, NWChem, Trinity and WRF.
+         */
 
-        /* UserConfigurationData using either Trestles or Stampede*/
-        $cmRS = $cmRSS;
-	// $cmRS = $cmRST;
+        $applicationId = $appcatalogdocs['echoInterfaceId'];
+
+        $applicationInput = new DataObjectType();
+        $applicationInput->key = "Input_to_Echo";
+        $applicationInput->value = "Hello World";
+        $experimentInputs = array($applicationInput);
+
+        /**
+         *  NOTE: For convenience, all the computational hosts are provided.
+         *        Comment/Uncomment appropriately to schedule on alternative resources
+         *        If all hosts are uncommented, the last one will be picked.
+         */
+
+        $scheduling = new ComputationalResourceScheduling();
+
+        /* IU BigRed II Cluster */
+        $scheduling->resourceHostId = $appcatalogdocs['bigredResourceId'];
+
+        /* TACC Stampede Cluster */
+        $scheduling->resourceHostId = $appcatalogdocs['stampedeResourceId'];
+        $scheduling->ComputationalProjectAccount = "TG-STA110014S";
+
+        /* SDSC Trestles Cluster */
+        $scheduling->resourceHostId = $appcatalogdocs['trestlesResourceId'];
+        $scheduling->ComputationalProjectAccount = "sds128";
+
+        /* Job dimensions and resource queue */
+        $scheduling->totalCPUCount = 1;
+        $scheduling->nodeCount = 1;
+        $scheduling->wallTimeLimit = 15;
+        $scheduling->queueName = "normal";
+
         $userConfigurationData = new UserConfigurationData();
         $userConfigurationData->airavataAutoSchedule = 0;
         $userConfigurationData->overrideManualScheduledParams = 0;
-        $userConfigurationData->computationalResourceScheduling = $cmRS;
-        //var_dump($cmRS);
-        //var_dump($userConfigurationData);
+        $userConfigurationData->computationalResourceScheduling = $scheduling;
 
-        /*Application ID for Trestles or Stamepede */
-        //$appId_trestles = "SimpleEcho2";
-        //$appId_stampede = "SimpleEcho3";
-        //$appId = $appId_stampede;
-        //$appId = $appId_trestles;
-
-        /* Experiment input and output data. */
-        $input = new DataObjectType();
-        $input->key = "echo_input";
-        $input->value = "echo_output=Hello World";
-        $input->type = DataType::STRING;
-        $exInputs = array($input);
-
-        $output = new DataObjectType();
-        $output->key = "echo_output";
-        $output->value = "";
-        $output->type = DataType::STRING;
-        $exOutputs = array($output);
-
-        /* Create Experiment: needs to update using unique project ID. */
-        $user = $argv[1];
-        $exp_name = $argv[2];
-        $proj = $argv[3];
+        /**
+         * An experiment is created within Airavata and all the provided inputs and configurations are persisted
+         *  within the Airavata Registry.
+         *
+         * NOTE: Airavata uses a 2 step launch process. The creation just creates the experiment. The launch step
+         *   executes the created experiment.
+         */
 
         $experiment = new Experiment();
-        $experiment->projectID = $proj;
-        $experiment->userName = $user;
-        $experiment->name = $exp_name;
-        $experiment->applicationId = $appId;
+        $experiment->projectID = $projectId;
+        $experiment->userName = $userName;
+        $experiment->name = $experimentName;
+        $experiment->applicationId = $applicationId;
         $experiment->userConfigurationData = $userConfigurationData;
-        $experiment->experimentInputs = $exInputs;
-        $experiment->experimentOutputs = $exOutputs;
+        $experiment->experimentInputs = $experimentInputs;
 
-        $expId = $airavataclient->createExperiment($experiment);
+        $experimentId = $airavataclient->createExperiment($experiment);
 
-        if ($expId)
-        {
+        if ($experimentId) {
             var_dump($experiment);
-            echo "Experiment $expId created! \n    ";
-        }
-        else
-        {
+            echo "Experiment $experimentId is created! \n    ";
+        } else {
             echo "Failed to create experiment. \n";
         }
     }
 
-
+} catch (InvalidRequestException $ire) {
+    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+} catch (AiravataClientException $ace) {
+    print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
+} catch (AiravataSystemException $ase) {
+    print 'Airavata System Exception: ' . $ase->getMessage() . "\n";
 }
-catch (InvalidRequestException $ire)
-{
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
-}
-catch (AiravataClientException $ace)
-{
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
-}
-catch (AiravataSystemException $ase)
-{
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
-}
-
 
 $transport->close();
 
 ?>
-

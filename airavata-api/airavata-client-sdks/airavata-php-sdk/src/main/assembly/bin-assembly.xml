@@ -45,7 +45,8 @@
             <outputDirectory>${archive.name}-${version}</outputDirectory>
             <includes>
                 <include>php-cli-samples/*</include>
-		        <include>lib/*</include>
+		        <include>lib/**</include>
+                <include>conf/*</include>
                 <include>LICENSE</include>
                 <include>NOTICE</include>
                 <include>README</include>
