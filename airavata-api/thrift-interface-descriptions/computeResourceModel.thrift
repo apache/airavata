@@ -157,6 +157,8 @@ struct BatchQueue {
  * SSH_KEYS:
  *  SSH Keys
  *
+ * FIXME: Change GSI to a more precise generic security protocol - X509
+ *
 */
 enum SecurityProtocol {
     USERNAME_PASSWORD,
@@ -242,6 +244,18 @@ struct GridFTPDataMovement {
 }
 
 /**
+ * Data Movement through UnicoreStorage
+ *
+ * unicoreEndPointURL:
+ *  unicoreGateway End Point. The provider will query this service to fetch required service end points.
+*/
+struct UnicoreDataMovement {
+    1: required string dataMovementInterfaceId = DEFAULT_ID,
+    2: required SecurityProtocol securityProtocol,
+    3: required string unicoreEndPointURL
+}
+
+/**
  * Locally Fork Jobs as OS processes
  *
  * alternativeSSHHostName:
@@ -289,6 +303,18 @@ struct GlobusJobSubmission {
     1: required string jobSubmissionInterfaceId = DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: optional list<string> globusGateKeeperEndPoint
+}
+
+/**
+ * Unicore Job Submission
+ *
+ * unicoreEndPointURL:
+ *  unicoreGateway End Point. The provider will query this service to fetch required service end points.
+*/
+struct UnicoreJobSubmission {
+    1: required string jobSubmissionInterfaceId = DEFAULT_ID,
+    2: required SecurityProtocol securityProtocol,
+    3: required string unicoreEndPointURL
 }
 
 /**
