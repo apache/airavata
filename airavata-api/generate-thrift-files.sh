@@ -25,7 +25,7 @@ THRIFT_IDL_DIR='thrift-interface-descriptions'
 BASE_TARGET_DIR='target'
 DATAMODEL_SRC_DIR='airavata-data-models/src/main/java'
 JAVA_API_SDK_DIR='airavata-api-stubs/src/main/java'
-CPP_SDK_DIR='airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib'
+CPP_SDK_DIR='airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
 PHP_SDK_DIR='airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
 
 # The Function fail prints error messages on failure and quits the script.
@@ -48,27 +48,31 @@ add_license_header() {
     find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public class /@SuppressWarnings("all") public class /'
     find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public enum /@SuppressWarnings("all") public enum /'
 
-    # For each java file within the generated directory, add the ASF V2 LICENSE header
-    for f in $(find ${GENERATED_CODE_DIR} -name '*.java'); do
-      cat - ${f} >${f}-with-license <<EOF
-    /*
-     * Licensed to the Apache Software Foundation (ASF) under one or more
-     * contributor license agreements.  See the NOTICE file distributed with
-     * this work for additional information regarding copyright ownership.
-     * The ASF licenses this file to You under the Apache License, Version 2.0
-     * (the "License"); you may not use this file except in compliance with
-     * the License.  You may obtain a copy of the License at
-     *
-     *     http://www.apache.org/licenses/LICENSE-2.0
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
+    # For each source file within the generated directory, add the ASF V2 LICENSE header
+    FILE_SUFFIXES=(.java .h .cpp)
+    for file in "${FILE_SUFFIXES[@]}"; do
+        for f in $(find ${GENERATED_CODE_DIR} -name "*$file"); do
+            cat - ${f} >${f}-with-license <<EOF
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 EOF
-    mv ${f}-with-license ${f}
+        mv ${f}-with-license ${f}
+        done
     done
 }
 
@@ -128,7 +132,7 @@ thrift ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/appCatalogModels.thrift
 thrift ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/workflowDataModel.thrift || fail unable to generate java bean thrift classes on app workflow data models
 
 # For the generated java beans add the ASF V2 License header
-add_license_header ${JAVA_BEAN_GEN_DIR}
+add_license_header $JAVA_BEAN_GEN_DIR
 
 # Compare the newly generated beans with existing sources and replace the changed ones.
 copy_changed_files ${JAVA_BEAN_GEN_DIR} ${DATAMODEL_SRC_DIR}
@@ -172,8 +176,8 @@ rm -rf ${CPP_GEN_DIR}
 thrift ${THRIFT_ARGS} --gen cpp ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate C++ thrift classes
 
 thrift ${THRIFT_ARGS} --gen cpp ${THRIFT_IDL_DIR}/workflowAPI.thrift || fail unable to generate C++ thrift classes for WorkflowAPI
-# For the generated java classes add the ASF V2 License header
-## TODO Write C++ license parser
+# For the generated CPP classes add the ASF V2 License header
+add_license_header $CPP_GEN_DIR
 
 # Compare the newly generated classes with existing java generated skeleton/stub sources and replace the changed ones.
 #  Only copying the API related classes and avoiding copy of any data models which already exist in the data-models.
