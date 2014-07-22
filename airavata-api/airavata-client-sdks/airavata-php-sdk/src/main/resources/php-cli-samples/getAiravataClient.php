@@ -1,7 +1,29 @@
 <?php
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * @license http://www.apache.org/licenses/LICENSE-2.0 Apache V2
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 namespace Airavata\Client\Samples;
 
 $airavataconfig = parse_ini_file("../conf/airavata-client-properties.ini");
+
+$appcatalogdocs = parse_ini_file("../conf/app-catalog-identifiers.ini");
 
 $GLOBALS['THRIFT_ROOT'] = $airavataconfig['THRIFT_LIB_DIR'];
 require_once $GLOBALS['THRIFT_ROOT'] . 'Transport/TTransport.php';
@@ -46,5 +68,9 @@ $protocol = new TBinaryProtocol($transport);
 $transport->open();
 $airavataclient = new AiravataClient($protocol);
 
-
+function sampleDisabled()
+{
+	echo "The execution of this script is disabled so the XSEDE 14 tutorial will remain coherent. The code is complete and will illustrate the usage of the API. \n";
+	exit(0);
+}
 ?>

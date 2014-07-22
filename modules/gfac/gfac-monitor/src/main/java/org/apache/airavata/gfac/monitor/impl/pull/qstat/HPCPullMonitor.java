@@ -163,7 +163,7 @@ public class HPCPullMonitor extends PullMonitor {
                     Map<String, JobState> jobStatuses = connection.getJobStatuses(monitorID);
                     for (MonitorID iMonitorID : monitorID) {
                         currentMonitorID = iMonitorID;
-                        iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()));
+                        iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()));    //IMPORTANT this is not a simple setter we have a logic
                         jobStatus = new JobStatusChangeRequest(iMonitorID);
                         // we have this JobStatus class to handle amqp monitoring
 
@@ -185,14 +185,23 @@ public class HPCPullMonitor extends PullMonitor {
 //										ExperimentState.FAILED));
                                 logger.info(e.getLocalizedMessage(), e);
                             }
-                        } else if (iMonitorID.getFailedCount() > 2 && iMonitorID.getStatus().equals(JobState.UNKNOWN)) {
+                        } else if (iMonitorID.getFailedCount() > 2) {
                             logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             completedJobs.add(iMonitorID);
+                            try {
+                                logger.error("Launching outflow handlers to check output are genereated or not");
+                                gfac.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
+                            } catch (GFacException e) {
+                                publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(iMonitorID.getExperimentID(), iMonitorID.getWorkflowNodeID(),
+                                        iMonitorID.getTaskID()), TaskState.FAILED));
+                                publisher.publish(new ExperimentStatusChangeRequest(new ExperimentIdentity(iMonitorID.getExperimentID()),
+                                        ExperimentState.FAILED));
+                                logger.info(e.getLocalizedMessage(), e);
+                            }
                         } else {
                             // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
-                            iMonitorID.setFailedCount(0);
                             // if the job is complete we remove it from the Map, if any of these maps
                             // get empty this userMonitorData will get delete from the queue
                         }

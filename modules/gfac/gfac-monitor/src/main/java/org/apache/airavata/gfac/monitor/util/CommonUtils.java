@@ -138,6 +138,7 @@ public class CommonUtils {
                             if(iMonitorID.getJobID().equals(monitorID.getJobID())) {
                                 // OK we found the object, we cannot do list.remove(object) states of two objects
                                 // could be different, thats why we check the jobID
+                                logger.info("Removing the job:"+ monitorID.getJobID()+" from monitoring last status:" + monitorID.getStatus().toString());
                                 monitorIDs.remove(iMonitorID);
                                 if(monitorIDs.size()==0) {
                                     hostMonitorData.remove(iHostMonitorID);

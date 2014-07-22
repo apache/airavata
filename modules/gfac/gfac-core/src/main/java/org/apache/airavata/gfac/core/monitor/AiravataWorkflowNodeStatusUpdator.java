@@ -92,7 +92,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
         status.setWorkflowNodeState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setWorkflowNodeStatus(status);
-        airavataRegistry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, details, workflowNodeId);
+        airavataRegistry.update(RegistryModelType.WORKFLOW_NODE_STATUS, status, workflowNodeId);
     }
 
 	public void setup(Object... configurations) {

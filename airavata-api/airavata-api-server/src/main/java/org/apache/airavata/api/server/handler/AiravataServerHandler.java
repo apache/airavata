@@ -47,6 +47,7 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.api.server.util.DataModelUtils;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -1101,7 +1102,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
                     status.setExperimentState(ExperimentState.LAUNCHED);
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
                     experiment.setExperimentStatus(status);
-                    registry.update(RegistryModelType.EXPERIMENT, experiment, experimentId);
+                    registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
                     registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskID());
                     //launching the experiment
                     orchestratorClient.launchTask(taskData.getTaskID(),airavataCredStoreToken);
@@ -1118,7 +1119,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
             experiment.setExperimentStatus(status);
             try {
-                registry.update(RegistryModelType.EXPERIMENT, experiment, experimentId);
+                registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
             } catch (RegistryException e1) {
                 throw new TException(e);
             }
@@ -1183,8 +1184,15 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
                 throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
             }
             Experiment existingExperiment = (Experiment)registry.get(RegistryModelType.EXPERIMENT, existingExperimentID);
-            if (!validateString(newExperiementName)){
+            existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+            if (validateString(newExperiementName)){
                 existingExperiment.setName(newExperiementName);
+            }
+            if (existingExperiment.getWorkflowNodeDetailsList() != null){
+                existingExperiment.getWorkflowNodeDetailsList().clear();
+            }
+            if (existingExperiment.getErrors() != null ){
+                existingExperiment.getErrors().clear();
             }
             return (String)registry.add(ParentDataType.EXPERIMENT, existingExperiment);
         } catch (Exception e) {

@@ -735,6 +735,118 @@ class GridFTPDataMovement {
 
 }
 
+class UnicoreDataMovement {
+  static $_TSPEC;
+
+  public $dataMovementInterfaceId = "DO_NOT_SET_AT_CLIENTS";
+  public $securityProtocol = null;
+  public $unicoreEndPointURL = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'dataMovementInterfaceId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'securityProtocol',
+          'type' => TType::I32,
+          ),
+        3 => array(
+          'var' => 'unicoreEndPointURL',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['dataMovementInterfaceId'])) {
+        $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
+      }
+      if (isset($vals['securityProtocol'])) {
+        $this->securityProtocol = $vals['securityProtocol'];
+      }
+      if (isset($vals['unicoreEndPointURL'])) {
+        $this->unicoreEndPointURL = $vals['unicoreEndPointURL'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'UnicoreDataMovement';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->dataMovementInterfaceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->securityProtocol);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->unicoreEndPointURL);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('UnicoreDataMovement');
+    if ($this->dataMovementInterfaceId !== null) {
+      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->dataMovementInterfaceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->securityProtocol !== null) {
+      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
+      $xfer += $output->writeI32($this->securityProtocol);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->unicoreEndPointURL !== null) {
+      $xfer += $output->writeFieldBegin('unicoreEndPointURL', TType::STRING, 3);
+      $xfer += $output->writeString($this->unicoreEndPointURL);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class LOCALSubmission {
   static $_TSPEC;
 
@@ -1190,6 +1302,118 @@ class GlobusJobSubmission {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class UnicoreJobSubmission {
+  static $_TSPEC;
+
+  public $jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
+  public $securityProtocol = null;
+  public $unicoreEndPointURL = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'jobSubmissionInterfaceId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'securityProtocol',
+          'type' => TType::I32,
+          ),
+        3 => array(
+          'var' => 'unicoreEndPointURL',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['jobSubmissionInterfaceId'])) {
+        $this->jobSubmissionInterfaceId = $vals['jobSubmissionInterfaceId'];
+      }
+      if (isset($vals['securityProtocol'])) {
+        $this->securityProtocol = $vals['securityProtocol'];
+      }
+      if (isset($vals['unicoreEndPointURL'])) {
+        $this->unicoreEndPointURL = $vals['unicoreEndPointURL'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'UnicoreJobSubmission';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->jobSubmissionInterfaceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->securityProtocol);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->unicoreEndPointURL);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('UnicoreJobSubmission');
+    if ($this->jobSubmissionInterfaceId !== null) {
+      $xfer += $output->writeFieldBegin('jobSubmissionInterfaceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->jobSubmissionInterfaceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->securityProtocol !== null) {
+      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
+      $xfer += $output->writeI32($this->securityProtocol);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->unicoreEndPointURL !== null) {
+      $xfer += $output->writeFieldBegin('unicoreEndPointURL', TType::STRING, 3);
+      $xfer += $output->writeString($this->unicoreEndPointURL);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
