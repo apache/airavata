@@ -320,7 +320,8 @@ struct TaskDetails {
 enum ExecutionUnit {
 	INPUT,
 	APPLICATION,
-	OUTPUT
+	OUTPUT,
+	OTHER
 }
 
 

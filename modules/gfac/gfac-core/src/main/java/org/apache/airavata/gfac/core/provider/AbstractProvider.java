@@ -21,12 +21,11 @@
 
 package org.apache.airavata.gfac.core.provider;
 
-import com.google.common.eventbus.EventBus;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFacImpl;
-import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;

@@ -77,11 +77,11 @@ public class CreateLaunchExperiment {
             AiravataUtils.setExecutionAsClient();
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + client.getAPIVersion());
-//            addDescriptors();
+            addDescriptors();
 
-//            final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createExperimentForTrestles(client);
-//            final String expId = createExperimentForStampede(client);
+////            final String expId = createExperimentForSSHHost(airavata);
+////            final String expId = createExperimentForTrestles(client);
+////            final String expId = createExperimentForStampede(client);
 //            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentWRFTrestles(client);

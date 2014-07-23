@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file 
+	distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under 
+	the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may 
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to 
+	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF 
+	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
+	the License. -->
+
+<definitions name="Adder" targetNamespace="http://www.extreme.indiana.edu/math/" xmlns:tns="http://www.extreme.indiana.edu/math/"
+	xmlns:typens="http://www.extreme.indiana.edu/math/adder/xsd/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns="http://schemas.xmlsoap.org/wsdl/">
+
+	<documentation xml:lang="en">A service for adding two numbers</documentation>
+
+	<types>
+		<schema elementFormDefault="unqualified" targetNamespace="http://www.extreme.indiana.edu/math/adder/xsd/"
+			xmlns="http://www.w3.org/2001/XMLSchema">
+			<element name="AddInput" type="typens:AddInputType" />
+			<complexType name="AddInputType">
+				<sequence>
+					<element name="x" type="xsd:int">
+						<annotation>
+							<documentation xml:lang="en">This is the first input</documentation>
+						</annotation>
+					</element>
+					<element name="y" type="xsd:int">
+						<annotation>
+							<documentation xml:lang="en">This is the second input</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</complexType>
+			<element name="AddOutput" type="typens:AddOutputType" />
+			<complexType name="AddOutputType">
+				<sequence>
+					<element name="z" type="xsd:int">
+						<annotation>
+							<documentation xml:lang="en">This is the result</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</complexType>
+		</schema>
+	</types>
+
+	<message name="AddInputMessage">
+		<part name="AddInputMessagePart" element="typens:AddInput" />
+	</message>
+	<message name="AddOutputMessage">
+		<part name="AddOutputMessagePart" element="typens:AddOutput" />
+	</message>
+
+	<portType name="Adder">
+		<documentation xml:lang="en" />
+		<operation name="add">
+			<documentation = en ">Run the adder</documentation>
+			<input name="AddInput" message="tns:AddInputMessage" />
+			<output name="AddOutput" message="tns:AddOutputMessage" />
+		</operation>
+	</portType>
+</definitions>

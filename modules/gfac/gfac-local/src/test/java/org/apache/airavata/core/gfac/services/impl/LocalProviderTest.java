@@ -20,15 +20,21 @@
 */
 package org.apache.airavata.core.gfac.services.impl;
 
-import com.google.common.eventbus.EventBus;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.airavata.commons.gfac.type.*;
+import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.commons.gfac.type.ActualParameter;
+import org.apache.airavata.commons.gfac.type.ApplicationDescription;
+import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.commons.gfac.type.ServiceDescription;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.local.handler.LocalDirectorySetupHandler;
 import org.apache.airavata.gfac.local.provider.impl.LocalProvider;
@@ -45,10 +51,7 @@ import org.apache.commons.lang.SystemUtils;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.eventbus.EventBus;
 
 public class LocalProviderTest {
     private JobExecutionContext jobExecutionContext;

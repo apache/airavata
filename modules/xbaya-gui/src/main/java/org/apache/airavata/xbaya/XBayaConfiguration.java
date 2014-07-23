@@ -897,6 +897,12 @@ public class XBayaConfiguration extends Observable implements Observer {
 	}
 	
 	public ThriftClientData getThriftClientData(ThriftServiceType serviceType){
-		return (getThriftClientDataList().containsKey(serviceType)?getThriftClientDataList().get(serviceType):null);
+		return (isThriftServiceDataExist(serviceType)?getThriftClientDataList().get(serviceType):null);
 	}
+
+	public boolean isThriftServiceDataExist(ThriftServiceType serviceType) {
+		return getThriftClientDataList().containsKey(serviceType);
+	}
+	
+	
 }

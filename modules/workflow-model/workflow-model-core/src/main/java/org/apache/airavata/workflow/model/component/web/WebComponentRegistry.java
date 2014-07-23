@@ -160,9 +160,6 @@ public class WebComponentRegistry extends ComponentRegistry {
         } catch (IOException e) {
             // Ignore
             logger.error(e.getMessage(), e);
-        } catch (ComponentException e) {
-            // Malformed WSDL.
-            logger.error(e.getMessage(), e);
         } catch (RuntimeException e) {
             logger.error(e.getMessage(), e);
         }

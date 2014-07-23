@@ -417,8 +417,9 @@ public class WorkflowWSDL {
         WSComponentPort componentPort = port.getWSComponentPort();
         WsdlDefinitions wsdl = null;
         if (componentPort != null) {
-            wsdl = componentPort.getComponent().getWSDL();
-            type = declareTypeIfNecessary(wsdl, type);
+        	//FIXME
+//            wsdl = componentPort.getComponent().getWSDL();
+//            type = declareTypeIfNecessary(wsdl, type);
         }
         int arrayDimension = port.getArrayDimension();
         if (arrayDimension == 1) {
