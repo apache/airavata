@@ -283,7 +283,8 @@ struct JobDetails {
     4: optional JobStatus jobStatus,
     5: optional ApplicationStatus applicationStatus,
     6: optional list<ErrorDetails> errors,
-    7: optional string computeResourceConsumed
+    7: optional string computeResourceConsumed,
+    8: optional string jobName
 }
 
 struct DataTransferDetails {
