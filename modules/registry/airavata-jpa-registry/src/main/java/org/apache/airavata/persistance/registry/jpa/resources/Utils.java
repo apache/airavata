@@ -184,33 +184,12 @@ public class Utils {
                     logger.error("Object should be a Configuration.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Configuration.");
                 }
-            case APPLICATION_DESCRIPTOR:
-                if (o instanceof Application_Descriptor){
-                    return createApplicationDescriptor((Application_Descriptor) o);
-                } else {
-                    logger.error("Object should be a Application Descriptor.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Application Descriptor.");
-                }
             case USER:
                 if(o instanceof Users) {
                     return createUser((Users) o);
                 }else {
                     logger.error("Object should be a User.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a User.");
-                }
-            case HOST_DESCRIPTOR:
-                if (o instanceof Host_Descriptor){
-                    return createHostDescriptor((Host_Descriptor) o);
-                }else {
-                    logger.error("Object should be a Host Descriptor.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Host Descriptor.");
-                }
-            case SERVICE_DESCRIPTOR:
-                if (o instanceof Service_Descriptor){
-                    return createServiceDescriptor((Service_Descriptor) o);
-                }else {
-                    logger.error("Object should be a Service Descriptor.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Service Descriptor.");
                 }
             case PUBLISHED_WORKFLOW:
                 if (o instanceof Published_Workflow){
@@ -429,26 +408,6 @@ public class Utils {
 
     /**
      *
-     * @param o application descriptor model object
-     * @return  application descriptor resource object
-     */
-    private static Resource createApplicationDescriptor(Application_Descriptor o) {
-        ApplicationDescriptorResource applicationDescriptorResource = new ApplicationDescriptorResource();
-        if (o != null){
-            applicationDescriptorResource.setName(o.getApplication_descriptor_ID());
-            applicationDescriptorResource.setHostDescName(o.getHost_descriptor_ID());
-            applicationDescriptorResource.setServiceDescName(o.getService_descriptor_ID());
-            applicationDescriptorResource.setContent(new String(o.getApplication_descriptor_xml()));
-            applicationDescriptorResource.setUpdatedUser(o.getUser().getUser_name());
-            applicationDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
-        }
-        return applicationDescriptorResource;
-    }
-
-
-
-    /**
-     *
      * @param o Gateway_Worker model object
      * @return  Gateway_Worker resource object
      */
@@ -457,29 +416,6 @@ public class Utils {
             GatewayResource gatewayResource = new GatewayResource(o.getGateway().getGateway_name());
             gatewayResource.setOwner(o.getGateway().getOwner());
             return new WorkerResource(o.getUser_name(), gatewayResource);
-        }
-        return null;
-    }
-
-    /**
-     *
-     * @param o Host_Descriptor model object
-     * @return  HostDescriptor resource object
-     */
-    private static Resource createHostDescriptor(Host_Descriptor o) {
-        if (o != null){
-            try {
-                HostDescriptorResource hostDescriptorResource = new HostDescriptorResource();
-                hostDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
-                hostDescriptorResource.setUserName(o.getUser().getUser_name());
-                hostDescriptorResource.setHostDescName(o.getHost_descriptor_ID());
-                byte[] bytes = o.getHost_descriptor_xml();
-                hostDescriptorResource.setContent(new String(bytes));
-                return hostDescriptorResource;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
         }
         return null;
     }
@@ -503,23 +439,6 @@ public class Utils {
         }
 
         return publishWorkflowResource;
-    }
-
-    /**
-     *
-     * @param o Service_Descriptor model object
-     * @return ServiceDescriptor resource object
-     */
-    private static Resource createServiceDescriptor(Service_Descriptor o) {
-        ServiceDescriptorResource serviceDescriptorResource = new ServiceDescriptorResource();
-        if (o != null){
-            serviceDescriptorResource.setGatewayName(o.getGateway().getGateway_name());
-            serviceDescriptorResource.setUserName(o.getUser().getUser_name());
-            serviceDescriptorResource.setServiceDescName(o.getService_descriptor_ID());
-            serviceDescriptorResource.setContent(new String(o.getService_descriptor_xml()));
-        }
-
-        return serviceDescriptorResource;
     }
 
     /**

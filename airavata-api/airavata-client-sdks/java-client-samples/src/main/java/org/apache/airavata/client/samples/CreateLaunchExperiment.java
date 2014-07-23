@@ -58,13 +58,13 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client client;
-    private static String localHostAppId = "localhost_2342b39f-5870-4704-9a52-e631dc790af7,SimpleEcho0_17c5e56e-beda-42f2-a7ec-5c7654177bc3gw111.iu.xsede.org_d532e952-ca5e-494e-942f-526658bdc13f,DO_NOT_SET_AT_CLIENTS";
+    private static String localHostAppId = "localhost_2342b39f-5870-4704-9a52-e631dc790af7,SimpleEcho0_17c5e56e-beda-42f2-a7ec-5c7654177bc";
     private static String sshHostAppId;
-    private static String pbsEchoAppId = "trestles.sdsc.edu_278c4814-035d-440b-a192-ab5f03e7445c,SimpleEcho2_9b7a09fc-4874-4cbf-af9c-6859c31ddb94";
+    private static String pbsEchoAppId = "trestles.sdsc.edu_341ee4f1-1c49-4499-8dbd-b99188c5632c,SimpleEcho2_752663ba-2cb3-46e9-8e25-34e2fbdfad03";
     private static String pbsWRFAppId = "trestles.sdsc.edu_00482169-8fc4-4633-b779-5ca1f66f27c1,WRF_0f1e90d3-5915-4629-a5a4-73346c1e7535";
     private static String slurmAppId = "stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
     private static String sgeAppId;
-    private static String br2EchoAppId = "bigred2_f435286c-545b-4b31-8366-3e1c6df66c9a,SimpleEchoBR_223a4aa8-fdb9-4d4f-b3cd-b9253c3c9af";
+    private static String br2EchoAppId = "bigred2_9c1e6be8-f7d8-4494-98f2-bf508790e8c6,SimpleEchoBR_149fd613-98e2-46e7-ac7c-4d393349469e";
     private static String slurmWRFAppId = "stampede.tacc.xsede.org_2840c815-7e61-4579-8194-79fe15cea9a9,WRF_00817e82-7995-4986-8fe2-72da08b63ef0";
     private static String br2AmberAppId = "bigred2_5dc35993-31c4-499e-97c1-8d934007e135,AmberBR2_f63fd6f9-a93f-43a8-bd41-065740a32f1f";
     private static String slurmAmberAppId = "bigred2_5dc35993-31c4-499e-97c1-8d934007e135,AmberBR2_f63fd6f9-a93f-43a8-bd41-065740a32f1f";
@@ -85,11 +85,11 @@ public class CreateLaunchExperiment {
 //            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentWRFTrestles(client);
-//            final String expId = createExperimentForBR2(client);
+            final String expId = createExperimentForBR2(client);
 //            final String expId = createExperimentForBR2Amber(client);
 //            final String expId = createExperimentWRFStampede(client);
 //            final String expId = createExperimentForStampedeAmber(client);
-            final String expId = createExperimentForTrestlesAmber(client);
+//            final String expId = createExperimentForTrestlesAmber(client);
 
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
@@ -106,18 +106,18 @@ public class CreateLaunchExperiment {
         try {
             DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
 //            DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
-//            localHostAppId = documentCreator.createLocalHostDocs();
-//            sshHostAppId = documentCreator.createSSHHostDocs();
+            localHostAppId = documentCreator.createLocalHostDocs();
+            sshHostAppId = documentCreator.createSSHHostDocs();
 //            documentCreator.createGramDocs();
-//            pbsEchoAppId =documentCreator.createPBSDocsForOGCE_Echo();
-//            pbsWRFAppId =documentCreator.createPBSDocsForOGCE_WRF();
-//            slurmAppId = documentCreator.createSlurmDocs();
-//            sgeAppId = documentCreator.createSGEDocs();
+            pbsEchoAppId =documentCreator.createPBSDocsForOGCE_Echo();
+            pbsWRFAppId =documentCreator.createPBSDocsForOGCE_WRF();
+            slurmAppId = documentCreator.createSlurmDocs();
+            sgeAppId = documentCreator.createSGEDocs();
 //            documentCreator.createEchoHostDocs();
-//            br2EchoAppId = documentCreator.createBigRedDocs();
-//            slurmWRFAppId = documentCreator.createSlumWRFDocs();
-//            br2AmberAppId = documentCreator.createBigRedAmberDocs();
-//            slurmAmberAppId = documentCreator.createStampedeAmberDocs();
+            br2EchoAppId = documentCreator.createBigRedDocs();
+            slurmWRFAppId = documentCreator.createSlumWRFDocs();
+            br2AmberAppId = documentCreator.createBigRedAmberDocs();
+            slurmAmberAppId = documentCreator.createStampedeAmberDocs();
             trestlesAmberAppId = documentCreator.createTrestlesAmberDocs();
             System.out.printf(localHostAppId);
             System.out.println(sshHostAppId);
@@ -545,7 +545,7 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(br2EchoAppId.split(",")[0], 1, 1, 1, "normal", 1, 0, 1, null);
-            scheduling.setResourceHostId("bigred2.uits.iu.edu");
+//            scheduling.setResourceHostId("bigred2.uits.iu.edu");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
@@ -792,8 +792,8 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            String sshTokenId = "f282fa43-7bce-4f23-bddc-02e52a30a3ba";
-            String gsisshTokenId = "7a8b801f-23e7-465f-b5e4-3cf1e8bee2ab";
+            String sshTokenId = "61abd2ff-f92b-4901-a077-07b51abe2c5d";
+            String gsisshTokenId = "61abd2ff-f92b-4901-a077-07b51abe2c5d";
             client.launchExperiment(expId, sshTokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
