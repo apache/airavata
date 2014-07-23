@@ -24,17 +24,14 @@ package org.apache.airavata.api.server.handler;
 import java.util.List;
 
 import org.apache.airavata.api.workflow.Workflow.Iface;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.Workflow;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.workflow.catalog.WorkflowCatalog;
+import org.apache.airavata.workflow.catalog.WorkflowCatalogException;
+import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,14 +39,14 @@ import org.slf4j.LoggerFactory;
 public class WorkflowServerHandler implements Iface {
     private static final Logger log = LoggerFactory.getLogger(WorkflowServerHandler.class);
 
-	private AiravataAPI airavataAPI;
+	private WorkflowCatalog workflowCatalog;
 
 	@Override
 	public List<String> getAllWorkflows() throws InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
 		try {
-			return getAiravataAPI().getWorkflowManager().getWorkflowTemplateIds();
-		} catch (AiravataAPIInvocationException e) {
+			return getWorkflowCatalog().getAllWorkflows();
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in retrieving all workflow template Ids.";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -63,13 +60,8 @@ public class WorkflowServerHandler implements Iface {
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
 		try {
-			org.apache.airavata.workflow.model.wf.Workflow w = getAiravataAPI().getWorkflowManager().getWorkflow(workflowTemplateId);
-			Workflow workflow = new Workflow();
-			workflow.setTemplateId(workflowTemplateId);
-			workflow.setGraph(XMLUtil.xmlElementToString(w.toXML()));
-			workflow.setName(w.getName());
-			return workflow;
-		} catch (AiravataAPIInvocationException e) {
+			return getWorkflowCatalog().getWorkflow(workflowTemplateId);
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in retrieving the workflow "+workflowTemplateId+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -83,8 +75,8 @@ public class WorkflowServerHandler implements Iface {
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
 		try {
-			getAiravataAPI().getWorkflowManager().deleteWorkflow(workflowTemplateId);
-		} catch (AiravataAPIInvocationException e) {
+			getWorkflowCatalog().deleteWorkflow(workflowTemplateId);
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in deleting the workflow "+workflowTemplateId+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -98,9 +90,8 @@ public class WorkflowServerHandler implements Iface {
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
 		try {
-			getAiravataAPI().getWorkflowManager().addWorkflow(workflow.getGraph());
-			return workflow.getName();
-		} catch (AiravataAPIInvocationException e) {
+			return getWorkflowCatalog().registerWorkflow(workflow);
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in registering the workflow "+workflow.getName()+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -114,8 +105,8 @@ public class WorkflowServerHandler implements Iface {
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
 		try {
-			getAiravataAPI().getWorkflowManager().updateWorkflow(workflowTemplateId, workflow.getGraph());
-		} catch (AiravataAPIInvocationException e) {
+			getWorkflowCatalog().updateWorkflow(workflowTemplateId, workflow);
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in updating the workflow "+workflow.getName()+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -129,13 +120,8 @@ public class WorkflowServerHandler implements Iface {
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
 		try {
-			if (getAiravataAPI().getWorkflowManager().isWorkflowExists(workflowName)){
-				return workflowName;
-			}
-			AiravataClientException airavataClientException = new AiravataClientException(AiravataErrorType.UNKNOWN);
-			airavataClientException.setParameter("No worklfow exists with the name "+workflowName);
-			throw airavataClientException;
-		} catch (AiravataAPIInvocationException e) {
+			return getWorkflowCatalog().getWorkflowTemplateId(workflowName);
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in retrieving the workflow template id for "+workflowName+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -149,8 +135,8 @@ public class WorkflowServerHandler implements Iface {
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
 		try {
-			return getAiravataAPI().getWorkflowManager().isWorkflowExists(workflowName);
-		} catch (AiravataAPIInvocationException e) {
+			return getWorkflowCatalog().isWorkflowExistWithName(workflowName);
+		} catch (WorkflowCatalogException e) {
 			String msg = "Error in veriying the workflow for workflow name "+workflowName+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -158,24 +144,15 @@ public class WorkflowServerHandler implements Iface {
             throw exception;
 		}
 	}
-	
-	private String getAiravataUserName() throws ApplicationSettingsException {
-		return ServerSettings.getDefaultUserGateway();
-	}
 
-	private String getGatewayName() throws ApplicationSettingsException {
-		return ServerSettings.getDefaultUser();
-	}
-
-	private AiravataAPI getAiravataAPI() {
-		if (airavataAPI == null) {
+	private WorkflowCatalog getWorkflowCatalog() {
+		if (workflowCatalog == null) {
 			try {
-				airavataAPI = AiravataAPIFactory.getAPI(getGatewayName(),
-						getAiravataUserName());
+				workflowCatalog = WorkflowCatalogFactory.getWorkflowCatalog();
 			} catch (Exception e) {
-				log.error("Unable to create Airavata API", e);
+				log.error("Unable to create Workflow Catalog", e);
 			}
 		}
-		return airavataAPI;
+		return workflowCatalog;
 	}
 }

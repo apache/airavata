@@ -20,16 +20,17 @@
 */
 package org.apache.airavata.gfac.monitor.impl.push.amqp;
 
-import com.rabbitmq.client.AMQP;
-import com.rabbitmq.client.Consumer;
-import com.rabbitmq.client.Envelope;
-import com.rabbitmq.client.ShutdownSignalException;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.notification.MonitorPublisher;
 import org.apache.airavata.gfac.monitor.core.MessageParser;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Consumer;
+import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownSignalException;
 
 public class BasicConsumer implements Consumer {
     private final static Logger logger = LoggerFactory.getLogger(AMQPMonitor.class);

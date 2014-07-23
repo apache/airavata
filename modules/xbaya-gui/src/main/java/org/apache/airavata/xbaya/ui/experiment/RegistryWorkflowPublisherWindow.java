@@ -21,16 +21,30 @@
 
 package org.apache.airavata.xbaya.ui.experiment;
 
+import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.api.workflow.Workflow.Client;
+import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.workflow.catalog.WorkflowCatalog;
+import org.apache.airavata.workflow.catalog.WorkflowCatalogException;
+import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.xbaya.ThriftClientData;
+import org.apache.airavata.xbaya.ThriftServiceType;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
@@ -38,6 +52,7 @@ import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextArea;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
+import org.apache.thrift.TException;
 
 public class RegistryWorkflowPublisherWindow {
 
@@ -73,7 +88,31 @@ public class RegistryWorkflowPublisherWindow {
 
         GraphCanvas graphCanvas = this.engine.getGUI().getGraphCanvas();
         graphCanvas.setNameAndDescription(name, description);
-        hide();
+        workflow.setName(name);
+        String workflowTemplateName = workflow.getName();
+        try {
+        	if (engine.getGUI().setupThriftClientData(ThriftServiceType.WORKFLOW_SERVICE)){
+        		ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE);
+				Client client = AiravataClientFactory.createWorkflowClient(thriftClientData.getServerAddress(), thriftClientData.getServerPort());
+    			if (client.isWorkflowExistWithName(workflowTemplateName)){
+    				int result = JOptionPane.showConfirmDialog(this.dialog.getDialog(), "A workflow with the name "+workflowTemplateName+" already exists. Do you want to update it?", "Register Workflow", JOptionPane.YES_NO_CANCEL_OPTION);
+    				if (result==JOptionPane.NO_OPTION){
+    					return;
+    				} else if (result==JOptionPane.CANCEL_OPTION){
+    					hide();
+    				}
+    			}
+    			String workflowAsString = XMLUtil.xmlElementToString(engine.getGUI().getGraphCanvas().getWorkflow().toXML());
+    			org.apache.airavata.model.Workflow workflowData = new org.apache.airavata.model.Workflow();
+    			workflowData.setName(workflowTemplateName);
+    			workflowData.setGraph(workflowAsString);
+    			client.registerWorkflow(workflowData);
+    			hide();
+        	}
+		} catch (Exception e) {
+			e.printStackTrace();
+            this.engine.getGUI().getErrorWindow().error(e.getMessage());
+		}
     }
 
     /**

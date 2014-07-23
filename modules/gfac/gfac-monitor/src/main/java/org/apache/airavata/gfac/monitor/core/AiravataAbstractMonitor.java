@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.gfac.monitor.core;
 
-import org.apache.airavata.gfac.core.notification.MonitorPublisher;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

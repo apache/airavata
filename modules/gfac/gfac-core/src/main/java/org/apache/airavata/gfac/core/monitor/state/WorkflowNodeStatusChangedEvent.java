@@ -30,15 +30,15 @@ import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
  * Each monitoring implementation has to return this object with a state and
  * the monitoring ID
  */
-public class WorkflowNodeStatusChangeRequest extends AbstractStateChangeRequest {
+public class WorkflowNodeStatusChangedEvent extends AbstractStateChangeRequest {
     private WorkflowNodeState state;
     private WorkflowNodeIdentity identity;
 
     // this constructor can be used in Qstat monitor to handle errors
-    public WorkflowNodeStatusChangeRequest() {
+    public WorkflowNodeStatusChangedEvent() {
     }
 
-    public WorkflowNodeStatusChangeRequest(WorkflowNodeIdentity identity, WorkflowNodeState state) {
+    public WorkflowNodeStatusChangedEvent(WorkflowNodeIdentity identity, WorkflowNodeState state) {
         this.state = state;
         setIdentity(identity);
     }

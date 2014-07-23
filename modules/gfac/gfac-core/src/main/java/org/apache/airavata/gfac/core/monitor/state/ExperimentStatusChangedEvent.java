@@ -30,15 +30,15 @@ import org.apache.airavata.model.workspace.experiment.ExperimentState;
  * Each monitoring implementation has to return this object with a state and
  * the monitoring ID
  */
-public class ExperimentStatusChangeRequest extends AbstractStateChangeRequest {
+public class ExperimentStatusChangedEvent extends AbstractStateChangeRequest {
     private ExperimentState state;
     private ExperimentIdentity identity;
 
     // this constructor can be used in Qstat monitor to handle errors
-    public ExperimentStatusChangeRequest() {
+    public ExperimentStatusChangedEvent() {
     }
 
-    public ExperimentStatusChangeRequest(ExperimentIdentity experimentIdentity, ExperimentState state) {
+    public ExperimentStatusChangedEvent(ExperimentIdentity experimentIdentity, ExperimentState state) {
         this.state = state;
         setIdentity(experimentIdentity);
     }

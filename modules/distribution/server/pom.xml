@@ -238,6 +238,11 @@
             <version>2.4</version>
         </dependency>
         <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-standalone-server</artifactId>
             <version>${project.version}</version>
@@ -385,6 +390,11 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-model-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+	<dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-workflow-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -48,6 +48,7 @@ import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.ThriftClientData;
+import org.apache.airavata.xbaya.ThriftServiceType;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.invoker.Invoker;
@@ -147,7 +148,7 @@ public class XBayaUtil {
 //    }
     
     public static void updateJCRRegistryInfo(XBayaEngine xbayaEngine) {
-    	RegistryWindow window = new RegistryWindow(xbayaEngine);
+    	RegistryWindow window = new RegistryWindow(xbayaEngine, ThriftServiceType.API_SERVICE);
         window.show();
 	}
    
