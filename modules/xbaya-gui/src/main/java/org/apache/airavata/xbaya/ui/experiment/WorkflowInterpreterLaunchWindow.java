@@ -22,12 +22,12 @@
 package org.apache.airavata.xbaya.ui.experiment;
 
 import java.awt.event.ActionEvent;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
+
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -38,30 +38,40 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.api.Airavata.Client;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.DataType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
+import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.workflow.engine.interpretor.WorkflowInterpreter;
+import org.apache.airavata.workflow.engine.interpretor.WorkflowInterpreterConfiguration;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
-import org.apache.airavata.workflow.model.graph.ws.WSNode;
-import org.apache.airavata.workflow.model.ode.ODEClient;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.ws.monitor.MonitorConfiguration;
+import org.apache.airavata.xbaya.ThriftClientData;
+import org.apache.airavata.xbaya.ThriftServiceType;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.jython.script.JythonScript;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
-import org.apache.airavata.xbaya.ui.graph.ws.WSNodeGUI;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 import org.apache.airavata.xbaya.util.XBayaUtil;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-import org.xmlpull.v1.builder.XmlInfosetBuilder;
-
-import xsul.XmlConstants;
 
 public class WorkflowInterpreterLaunchWindow {
 
@@ -87,7 +97,7 @@ public class WorkflowInterpreterLaunchWindow {
 
 	private XBayaTextField instanceNameTextField;
 
-    protected final static XmlInfosetBuilder builder = XmlConstants.BUILDER;
+//    protected final static XmlInfosetBuilder builder = XmlConstants.BUILDER;
 
     /**
      * Constructs a WorkflowInterpreterLaunchWindow.
@@ -214,7 +224,23 @@ public class WorkflowInterpreterLaunchWindow {
         JButton okButton = new JButton("Run");
         okButton.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
-                execute();
+                try {
+					execute();
+				} catch (AiravataClientConnectException e1) {
+					e1.printStackTrace();
+				} catch (InvalidRequestException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (AiravataClientException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (AiravataSystemException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (TException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             }
         });
 
@@ -233,10 +259,24 @@ public class WorkflowInterpreterLaunchWindow {
         this.dialog.setDefaultButton(okButton);
     }
 
-    private void execute() {
-        final List<String> arguments = new ArrayList<String>();
-
-        String topic = UUID.randomUUID().toString();//this.topicTextField.getText();
+    private void execute() throws AiravataClientConnectException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    	
+    	if (!(engine.getGUI().setupThriftClientData(ThriftServiceType.API_SERVICE) && engine.getGUI().setupThriftClientData(ThriftServiceType.WORKFLOW_SERVICE))){
+    		hide();
+    		return;
+    	}
+    	
+    	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
+		Client airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
+    	
+		org.apache.airavata.api.workflow.Workflow.Client workflowClient = XBayaUtil.getWorkflowClient(engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE));
+		
+		Workflow workflowClone = workflow.clone();
+		workflowClone.setName(workflowClone.getName()+UUID.randomUUID().toString());
+		org.apache.airavata.model.Workflow w = new org.apache.airavata.model.Workflow();
+		w.setName(workflowClone.getName());
+		w.setGraph(XMLUtil.xmlElementToString(workflowClone.toXML()));
+		w.setTemplateId(workflowClient.registerWorkflow(w));
         String instanceName = this.instanceNameTextField.getText();
         if (instanceName.trim().equals("")){
         	JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
@@ -250,40 +290,37 @@ public class WorkflowInterpreterLaunchWindow {
         if (!instanceNameTextField.getText().equals("")){
             this.instanceNameTextField.setText("");
         }
-        final String instanceNameFinal=instanceName;
-        if (topic.length() == 0) {
-            this.engine.getGUI().getErrorWindow().error(ErrorMessages.TOPIC_EMPTY_ERROR);
-            return;
-        }
 
         // Use topic as a base of workflow instance ID so that the monitor can
         // find it.
-        URI workfowInstanceID = URI.create(StringUtil.convertToJavaIdentifier(topic));
-        this.workflow.setGPELInstanceID(workfowInstanceID);
 
-        MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
-        engine.getMonitor().resetEventData();
-        notifConfig.setTopic(topic);
-        arguments.add("-" + JythonScript.TOPIC_VARIABLE);
-        arguments.add(topic);
-        Collection<WSNode> wsNodes = GraphUtil.getWSNodes(this.engine.getGUI().getWorkflow().getGraph());
-        for (WSNode node : wsNodes) {
-            ((WSNodeGUI) NodeController.getGUI(node)).setInteractiveMode(false);
-        }
-
-        // TODO error check for user inputs
-
+        Project project = new Project();
+        project.setName("project1");
+        project.setOwner(thriftClientData.getUsername());
+        project.setProjectID(airavataClient.createProject(project));
         final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
-        builder.newFragment("inputs");
-        new ODEClient();
+//        builder.newFragment("inputs");
+//        new ODEClient();
+        final Experiment experiment = new Experiment();
+        experiment.setApplicationId(w.getTemplateId());
+        experiment.setName(instanceName);
+        experiment.setProjectID(project.getProjectID());
+        experiment.setUserName(thriftClientData.getUsername());
         for (int i = 0; i < inputNodes.size(); i++) {
             InputNode inputNode = inputNodes.get(i);
             XBayaTextField parameterTextField = this.parameterTextFields.get(i);
             inputNode.getID();
             String value = parameterTextField.getText();
-            inputNode.setDefaultValue(value);
+//            inputNode.setDefaultValue(value);
+            DataObjectType elem = new DataObjectType();
+            elem.setKey(inputNode.getID());
+            elem.setType(DataType.STRING);
+            elem.setValue(value);
+			experiment.addToExperimentInputs(elem );
         }
-
+  
+        experiment.setExperimentID(airavataClient.createExperiment(experiment));
+        airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
 //        final String workflowInterpreterUrl = this.workflowInterpreterTextField.getText();
 //        if (null != workflowInterpreterUrl && !"".equals(workflowInterpreterUrl)) {
 //            try {
@@ -301,12 +338,20 @@ public class WorkflowInterpreterLaunchWindow {
 //                this.engine.getGUI().getErrorWindow().error(e);
 //            }
 //        }
-        this.engine.getConfiguration().setTopic(topic);
+//        this.engine.getConfiguration().setTopic(topic);
 
         new Thread() {
             @Override
             public void run() {
-
+//            	WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(experiment, null, new WorkflowInterpreterConfiguration(workflow),getOrchestratorClient());
+//                try {
+//        			workflowInterpreter.scheduleDynamically();
+//        		} catch (WorkflowException e) {
+//        			e.printStackTrace();
+//        		} catch (RegistryException e) {
+//        			// TODO Auto-generated catch block
+//        			e.printStackTrace();
+//        		}
 //                try {
 //                    List<WorkflowInput> workflowInputs=new ArrayList<WorkflowInput>();
 //                    for (int i = 0; i < inputNodes.size(); i++) {
@@ -342,4 +387,10 @@ public class WorkflowInterpreterLaunchWindow {
 
         hide();
     }
+    
+	private OrchestratorService.Client getOrchestratorClient() {
+		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
+        final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
+        return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+	}
 }

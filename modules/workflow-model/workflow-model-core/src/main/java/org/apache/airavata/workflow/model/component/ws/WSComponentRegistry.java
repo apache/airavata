@@ -30,7 +30,6 @@ import java.util.Map;
 
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.component.Component;
-import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
@@ -71,8 +70,8 @@ public class WSComponentRegistry extends ComponentRegistry {
             String name = urlString.substring(urlString.lastIndexOf('/') + 1);
             treeLeaf = new URLComponentReference(name, components);
 
-        } catch (ComponentException e) {
-            e.printStackTrace();
+//        } catch (ComponentException e) {
+//            e.printStackTrace();
         } catch (WsdlException e) {
             e.printStackTrace();
         } catch (URISyntaxException e) {

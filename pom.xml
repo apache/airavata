@@ -507,7 +507,8 @@
                 <module>modules/test-suite</module>
                 <module>modules/distribution</module>
                 <module>modules/ws-messenger</module>
-                <!--<module>modules/integration-tests</module>-->
+                <module>modules/integration-tests</module>
+                <module>modules/xbaya-gui</module>
             </modules>
         </profile>
         <profile>

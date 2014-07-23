@@ -28,10 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import com.google.common.eventbus.EventBus;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AbstractActivityListener;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -43,33 +46,36 @@ import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.monitor.*;
-import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangeRequest;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
-import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
-import org.apache.airavata.gfac.core.notification.MonitorPublisher;
-import org.apache.airavata.gfac.core.notification.events.ExecutionFailEvent;
-import org.apache.airavata.gfac.core.notification.listeners.LoggingListener;
-import org.apache.airavata.gfac.core.notification.listeners.WorkflowTrackingListener;
 import org.apache.airavata.gfac.core.handler.GFacHandler;
-import org.apache.airavata.gfac.core.provider.GFacProvider;
-import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
-import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.core.monitor.JobIdentity;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.core.monitor.TaskIdentity;
+import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
+import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
+import org.apache.airavata.gfac.core.notification.events.ExecutionFailEvent;
+import org.apache.airavata.gfac.core.notification.listeners.LoggingListener;
+import org.apache.airavata.gfac.core.notification.listeners.WorkflowTrackingListener;
+import org.apache.airavata.gfac.core.provider.GFacProvider;
+import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
+import com.google.common.eventbus.EventBus;
 
 /**
  * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
@@ -322,15 +328,15 @@ public class GFacImpl implements GFac {
         } catch (Exception e) {
             try {
                 // we make the experiment as failed due to exception scenario
-                monitorPublisher.publish(new
-                        ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
-                        ExperimentState.FAILED));
+//                monitorPublisher.publish(new
+//                        ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+//                        ExperimentState.FAILED));
                 // Updating the task status if there's any task associated
-                monitorPublisher.publish(new TaskStatusChangeRequest(
-                        new TaskIdentity(jobExecutionContext.getExperimentID(),
-                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED
-                ));
+//                monitorPublisher.publish(new TaskStatusChangedEvent(
+//                        new TaskIdentity(jobExecutionContext.getExperimentID(),
+//                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+//                                jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED
+//                ));
                 monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
                         new JobIdentity(jobExecutionContext.getExperimentID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
@@ -449,9 +455,9 @@ public class GFacImpl implements GFac {
         monitorPublisher.publish(GfacExperimentState.COMPLETED);
         // At this point all the execution is finished so we update the task and experiment statuses.
         // Handler authors does not have to worry about updating experiment or task statuses.
-        monitorPublisher.publish(new
-                ExperimentStatusChangeRequest(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
-                ExperimentState.COMPLETED));
+//        monitorPublisher.publish(new
+//                ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+//                ExperimentState.COMPLETED));
         // Updating the task status if there's any task associated
         monitorPublisher.publish(new TaskStatusChangeRequest(
                 new TaskIdentity(jobExecutionContext.getExperimentID(),

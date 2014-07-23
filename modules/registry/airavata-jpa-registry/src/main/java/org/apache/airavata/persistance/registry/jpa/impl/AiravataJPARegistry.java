@@ -1310,56 +1310,70 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void updateWorkflow(String workflowName, String workflowGraphXml) throws RegException {
-//        if (userWorkflowRegistry != null){
-//            userWorkflowRegistry.updateWorkflow(workflowName, workflowGraphXml);
-//        }else {
-//            WorkerResource worker = jpa.getWorker();
-//            if (!isWorkflowExists(workflowName)){
-//                throw new UserWorkflowDoesNotExistsException(workflowName);
-//            }
-//            UserWorkflowResource workflowResource = worker.getWorkflowTemplate(workflowName);
-//            workflowResource.setContent(workflowGraphXml);
-//            workflowResource.save();
-//        }
+        if (userWorkflowRegistry != null){
+            userWorkflowRegistry.updateWorkflow(workflowName, workflowGraphXml);
+        }else {
+            WorkerResource worker = jpa.getWorker();
+            if (!isWorkflowExists(workflowName)){
+                throw new UserWorkflowDoesNotExistsException(workflowName);
+            }
+            try {
+				UserWorkflowResource workflowResource = worker.getWorkflowTemplate(workflowName);
+				workflowResource.setContent(workflowGraphXml);
+				workflowResource.save();
+			} catch (RegistryException e) {
+				throw new RegException(e);
+			}
+        }
     }
 
     public String getWorkflowGraphXML(String workflowName) throws RegException {
-//        if (userWorkflowRegistry != null){
-//            return userWorkflowRegistry.getWorkflowGraphXML(workflowName);
-//        }
-//        WorkerResource worker = jpa.getWorker();
-//		if (!isWorkflowExists(workflowName)){
-//        	throw new UserWorkflowDoesNotExistsException(workflowName);
-//        }
-//		return worker.getWorkflowTemplate(workflowName).getContent();
-        return null;
+        if (userWorkflowRegistry != null){
+            return userWorkflowRegistry.getWorkflowGraphXML(workflowName);
+        }
+        WorkerResource worker = jpa.getWorker();
+		if (!isWorkflowExists(workflowName)){
+        	throw new UserWorkflowDoesNotExistsException(workflowName);
+        }
+		try {
+			return worker.getWorkflowTemplate(workflowName).getContent();
+		} catch (RegistryException e) {
+			throw new RegException(e);
+		}
     }
 
 	@Override
 	public Map<String, String> getWorkflows() throws RegException {
-//        if (userWorkflowRegistry != null){
-//            return userWorkflowRegistry.getWorkflows();
-//        }
-//        WorkerResource worker = jpa.getWorker();
-//    	Map<String, String> workflows=new HashMap<String, String>();
-//    	List<UserWorkflowResource> workflowTemplates = worker.getWorkflowTemplates();
-//    	for (UserWorkflowResource resource : workflowTemplates) {
-//    		workflows.put(resource.getName(), resource.getContent());
-//		}
-//    	return workflows;
-        return null;
+        try {
+			if (userWorkflowRegistry != null){
+			    return userWorkflowRegistry.getWorkflows();
+			}
+			WorkerResource worker = jpa.getWorker();
+			Map<String, String> workflows=new HashMap<String, String>();
+			List<UserWorkflowResource> workflowTemplates = worker.getWorkflowTemplates();
+			for (UserWorkflowResource resource : workflowTemplates) {
+				workflows.put(resource.getName(), resource.getContent());
+			}
+			return workflows;
+		} catch (RegistryException e) {
+			throw new RegException(e);
+		}
 	}
 
     public void removeWorkflow(String workflowName) throws RegException {
-//        if (userWorkflowRegistry != null){
-//            userWorkflowRegistry.removeWorkflow(workflowName);
-//        }else {
-//            WorkerResource worker = jpa.getWorker();
-//            if (!isWorkflowExists(workflowName)){
-//                throw new UserWorkflowDoesNotExistsException(workflowName);
-//            }
-//            worker.removeWorkflowTemplate(workflowName);
-//        }
+        if (userWorkflowRegistry != null){
+            userWorkflowRegistry.removeWorkflow(workflowName);
+        }else {
+            WorkerResource worker = jpa.getWorker();
+            if (!isWorkflowExists(workflowName)){
+                throw new UserWorkflowDoesNotExistsException(workflowName);
+            }
+            try {
+				worker.removeWorkflowTemplate(workflowName);
+			} catch (RegistryException e) {
+				throw new RegException(e);
+			}
+        }
     }
 
     public ResourceMetadata getWorkflowMetadata(String workflowName) throws RegException {

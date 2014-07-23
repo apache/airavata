@@ -45,20 +45,15 @@ public class RegistrySearchResult implements TableRenderable {
      */
 
     public RegistrySearchResult(Workflow workflow) {
-        //Never user so far during the project lifetime, thus assumption will never need
-//            String property = node.getProperty("Type").getString();
-//            if (property.equals(XBayaConstants.REGISTRY_TYPE_HOST_DESC)) {
-//                // todo
-//            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_APPLICATION_DESC)) {
-//                // todo
-//            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_SERVICE_DESC)) {
-//                // todo
-//            } else if (property.equals(XBayaConstants.REGISTRY_TYPE_WORKFLOW)) {
-		    // this.qname = new ;
 		    this.resourceID = workflow.getQname();
 		    this.description = workflow.getDescription();
 		    this.resourceName = workflow.getName();
-//            }
+    }
+    
+    public RegistrySearchResult(QName resourceID, String resourceName, String description) {
+	    this.resourceID = resourceID;
+	    this.description = description;
+	    this.resourceName = resourceName;
     }
 
     /**

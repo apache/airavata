@@ -22,14 +22,24 @@
 package org.apache.airavata.model.util;
 
 
-import org.apache.airavata.model.workspace.experiment.*;
-
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.airavata.model.workspace.experiment.AdvancedInputDataHandling;
+import org.apache.airavata.model.workspace.experiment.AdvancedOutputDataHandling;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.QualityOfServiceParams;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
+
 
 public class ExperimentModelUtil {
-
+	
 	public static WorkflowNodeStatus createWorkflowNodeStatus(WorkflowNodeState state){
 		WorkflowNodeStatus status = new WorkflowNodeStatus();
         status.setWorkflowNodeState(state);
@@ -145,9 +155,9 @@ public class ExperimentModelUtil {
     public static TaskDetails cloneTaskFromWorkflowNodeDetails(Experiment experiment, WorkflowNodeDetails nodeDetails){
         TaskDetails taskDetails = new TaskDetails();
         taskDetails.setCreationTime(nodeDetails.getCreationTime());
-        String[] split = nodeDetails.getExecutionUnitData().split("/");
-        taskDetails.setApplicationId(split[0]);
-        taskDetails.setApplicationVersion(split[1]);
+//        String[] split = ;
+        taskDetails.setApplicationId(nodeDetails.getExecutionUnitData());
+//        taskDetails.setApplicationVersion(split[1]);
         List<DataObjectType> experimentInputs = nodeDetails.getNodeInputs();
         if (experimentInputs != null){
             taskDetails.setApplicationInputs(experimentInputs);

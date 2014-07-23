@@ -106,7 +106,9 @@ public class GraphUtil {
 		List<N> nodes = new LinkedList<N>();
 		for (Node node : graph.getNodes()) {
 			if (klass.isInstance(node)) {
-				nodes.add((N) node);
+				if (!nodes.contains(node)) {
+					nodes.add((N) node);
+				}
 			}
 		}
 		return nodes;
