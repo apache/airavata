@@ -79,18 +79,18 @@ public class DSCUtil {
     public static Map<String, WsdlDefinitions> createCWSDLs(Workflow workflow, URI dscURL) {
         Map<String, WsdlDefinitions> WSDLMap = new HashMap<String, WsdlDefinitions>();
         Graph graph = workflow.getGraph();
-        for (WSNode node : GraphUtil.getWSNodes(graph)) {
-            String partnerLinkName = BPELScript.createPartnerLinkName(node.getID());
-            WsdlDefinitions wsdl = node.getComponent().getWSDL();
-            if (WSDLUtil.isAWSDL(wsdl)) {
-                try {
-                    wsdl = convertToCWSDL(WSDLUtil.deepClone(wsdl), dscURL);
-                } catch (UtilsException e) {
-                    e.printStackTrace();
-                }
-            }
-            WSDLMap.put(partnerLinkName, wsdl);
-        }
+//        for (WSNode node : GraphUtil.getWSNodes(graph)) {
+//            String partnerLinkName = BPELScript.createPartnerLinkName(node.getID());
+//            WsdlDefinitions wsdl = node.getComponent().getWSDL();
+//            if (WSDLUtil.isAWSDL(wsdl)) {
+//                try {
+//                    wsdl = convertToCWSDL(WSDLUtil.deepClone(wsdl), dscURL);
+//                } catch (UtilsException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//            WSDLMap.put(partnerLinkName, wsdl);
+//        }
         return WSDLMap;
     }
 

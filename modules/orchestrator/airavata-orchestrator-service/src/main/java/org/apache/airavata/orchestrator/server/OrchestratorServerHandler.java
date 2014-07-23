@@ -484,7 +484,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			IllegalAccessException {
 		Map<String, String> moduleIdFilter = new HashMap<String, String>();
 		moduleIdFilter.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, selectedModuleId);
-		if (taskData.getTaskScheduling().getResourceHostId() != null) {
+		if (taskData.getTaskScheduling()!=null && taskData.getTaskScheduling().getResourceHostId() != null) {
 		    moduleIdFilter.put(AbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, taskData.getTaskScheduling().getResourceHostId());
 		}
 		List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(moduleIdFilter);

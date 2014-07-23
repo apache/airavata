@@ -72,15 +72,16 @@ public class RegistryWindow {
 
     private static String previousServerName;
 
-    private ThriftServiceType serviceType;
+    private ThriftServiceType serviceType = ThriftServiceType.API_SERVICE;
     
-    private DefaultComboBoxModel<ThriftServiceType> serviceTypeModel;
+    private DefaultComboBoxModel serviceTypeModel;
     
     /**
      * @param engine
      */
-    public RegistryWindow(XBayaEngine engine) {
+    public RegistryWindow(XBayaEngine engine, ThriftServiceType serviceType) {
         this.engine = engine;
+        this.serviceType = serviceType;
         ComponentRegistryLoader.getLoader(this.engine, RegistryConstants.REGISTRY_TYPE_JCR);
         initGUI();
     }
@@ -140,9 +141,9 @@ public class RegistryWindow {
         XBayaLabel serverAddressLabel = new XBayaLabel("Server Address", this.serverTextField);
         XBayaLabel serverPortLabel = new XBayaLabel("Server Port", this.portTextField);
         XBayaLabel gatewayNameLabel = new XBayaLabel("Gateway Name", this.gatewayNameTextField);
-        XBayaLabel gatewayUserLabel = new XBayaLabel("Gateway TUser", this.usernameTextField);
-        serviceTypeModel = new DefaultComboBoxModel<ThriftServiceType>(ThriftServiceType.values());
-        serviceTypeModel.setSelectedItem(ThriftServiceType.API_SERVICE);
+        XBayaLabel gatewayUserLabel = new XBayaLabel("Gateway User", this.usernameTextField);
+        serviceTypeModel = new DefaultComboBoxModel(ThriftServiceType.values());
+        serviceTypeModel.setSelectedItem(getServiceType());
 		this.serviceTypeCombo = new XBayaComboBox(serviceTypeModel);
         JLabel serviceTypeLabel = new JLabel("Airavata Service");
 
@@ -187,7 +188,7 @@ public class RegistryWindow {
         buttonPanel.add(cancelButton);
         buttonPanel.getSwingComponent().setBorder(BorderFactory.createEtchedBorder());
 
-        this.dialog = new XBayaDialog(this.engine.getGUI(), "Configure Airavata Registry", infoPanel, buttonPanel);
+        this.dialog = new XBayaDialog(this.engine.getGUI(), "Configure Airavata Thrift Service", infoPanel, buttonPanel);
         this.dialog.setDefaultButton(okButton);
     }
 

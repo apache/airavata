@@ -24,18 +24,9 @@ package org.apache.airavata.workflow.model.component.ws;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
-import org.apache.airavata.common.exception.UtilsException;
-import org.apache.airavata.common.utils.WSDLUtil;
-import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.utils.MessageConstants;
-import org.xmlpull.infoset.XmlElement;
-
-import xsul5.wsdl.WsdlDefinitions;
-import xsul5.wsdl.WsdlPortType;
-import xsul5.wsdl.WsdlPortTypeOperation;
 
 public class WSComponentFactory {
 
@@ -44,70 +35,12 @@ public class WSComponentFactory {
      * @return The list of components in the specified WSDL.
      * @throws ComponentException
      */
-    public static List<WSComponent> createComponents(String wsdlString) throws ComponentException {
-        try {
-            return createComponents(XMLUtil.stringToXmlElement(wsdlString));
-        } catch (RuntimeException e) {
-            throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
-        }
-
-    }
-
-    /**
-     * @param componentElement
-     * @return The list of components in the specified WSDL.
-     * @throws ComponentException
-     */
-    public static List<WSComponent> createComponents(XmlElement componentElement) throws ComponentException {
-        try {
-            WsdlDefinitions definitions = new WsdlDefinitions(componentElement);
-            return createComponents(definitions);
-        } catch (RuntimeException e) {
-            throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
-        }
-    }
-
-    /**
-     * @param wsdl
-     * @return The list of components in the specified WSDL.
-     * @throws ComponentException
-     */
-    public static List<WSComponent> createComponents(WsdlDefinitions wsdl) throws ComponentException {
-        List<WSComponent> components = new ArrayList<WSComponent>();
-        try {
-            QName portTypeQName = WSDLUtil.getFirstPortTypeQName(wsdl);
-            WsdlPortType portType = wsdl.getPortType(portTypeQName.getLocalPart());
-            for (WsdlPortTypeOperation operation : portType.operations()) {
-                String operationName = operation.getOperationName();
-                WSComponent component = createComponent(wsdl, portTypeQName, operationName);
-                components.add(component);
-            }
-        } catch (Exception e) {
-            throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
-        }
+    public static List<WSComponent> createComponents(ApplicationInterfaceDescription application) throws ComponentException {
+    	List<WSComponent> components = new ArrayList<WSComponent>();
+        WSComponent component = createComponent(application, application.getApplicationInterfaceId());
+        components.add(component);
         return components;
-    }
 
-    /**
-     * Creates a WSComponent.
-     * 
-     * @param wsdlString
-     *            The string representation of the component
-     * @return The WsdlComponent created
-     * @throws ComponentException
-     */
-    @Deprecated
-    public static WSComponent createComponent(String wsdlString) throws ComponentException {
-        return createComponents(wsdlString).get(0);
-    }
-
-    /**
-     * @param wsdl
-     * @return The Component created
-     * @throws ComponentException
-     */
-    public static WSComponent createComponent(WsdlDefinitions wsdl) throws ComponentException {
-        return createComponent(wsdl, null, null);
     }
 
     /**
@@ -117,31 +50,24 @@ public class WSComponentFactory {
      * @return The component created.
      * @throws ComponentException
      */
-    public static WSComponent createComponent(WsdlDefinitions wsdl, QName portTypeQName, String operationName)
+    public static WSComponent createComponent(ApplicationInterfaceDescription application, String operationName)
             throws ComponentException {
         try {
-            if (portTypeQName == null) {
-                portTypeQName = WSDLUtil.getFirstPortTypeQName(wsdl);
-            }
-            if (operationName == null) {
-                operationName = WSDLUtil.getFirstOperationName(wsdl, portTypeQName);
-            }
-
-            // check if it's WSComponent or WorkflowComponent
-            WsdlPortType portType = wsdl.getPortType(portTypeQName.getLocalPart());
-            XmlElement templateIDElement = portType.xml().element(WorkflowComponent.GPEL_NAMESPACE,
-                    WorkflowComponent.WORKFLOW_TEMPLATE_ID_TAG);
             WSComponent component;
-            if (templateIDElement == null) {
-                component = new WSComponent(wsdl, portTypeQName, operationName);
-            } else {
-                component = new WorkflowComponent(wsdl, portTypeQName, operationName);
-            }
+            component = new WSComponent(new WSComponentApplication(application));
             return component;
         } catch (RuntimeException e) {
             throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
-        } catch (UtilsException e) {
-            throw new ComponentException(MessageConstants.COMPONENT_FORMAT_ERROR, e);
         }
     }
+
+	public static List<WSComponent> createComponents(
+			xsul5.wsdl.WsdlDefinitions wsdlDefinitions3ToWsdlDefintions5) {
+		return null;
+	}
+
+	public static List<WSComponent> createComponents(String compString) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

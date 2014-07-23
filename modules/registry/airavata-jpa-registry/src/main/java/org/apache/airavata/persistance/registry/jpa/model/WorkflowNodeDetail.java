@@ -38,7 +38,7 @@ public class WorkflowNodeDetail implements Serializable {
     private String nodeId;
     @Column(name = "EXECUTION_UNIT")
     private String executionUnit;
-    @Column(name = "EXECUTION_UNIT")
+    @Column(name = "EXECUTION_UNIT_DATA")
     private String executionUnitData;
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;

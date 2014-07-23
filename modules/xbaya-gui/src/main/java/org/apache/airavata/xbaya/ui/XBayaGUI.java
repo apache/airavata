@@ -63,11 +63,13 @@ import org.apache.airavata.ws.monitor.event.Event.Type;
 import org.apache.airavata.ws.monitor.event.EventListener;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
+import org.apache.airavata.xbaya.ThriftServiceType;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.generators.WorkflowFiler;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.ui.dialogs.ErrorWindow;
+import org.apache.airavata.xbaya.ui.dialogs.registry.RegistryWindow;
 import org.apache.airavata.xbaya.ui.dialogs.workflow.WorkflowPropertyWindow;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvasEvent;
@@ -713,7 +715,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
         this.frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent event) {
-            	int result = JOptionPane.showConfirmDialog(frame, "'Are you sure you want to exit?", "Exit XBaya", JOptionPane.YES_NO_OPTION);
+            	int result = JOptionPane.showConfirmDialog(frame, "Are you sure you want to exit?", "Exit XBaya", JOptionPane.YES_NO_OPTION);
 				if (result==JOptionPane.NO_OPTION || (!closeAllGraphCanvas())){
 					return;
 				}
@@ -835,10 +837,21 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 //                getErrorWindow().error(ErrorMessages.COMPONENT_FORMAT_ERROR, e);
 //            }
         }
-
     }
 
 	public XBayaConfiguration getConfiguration() {
 		return engine.getConfiguration();
+	}
+	
+	public boolean setupThriftClientData(ThriftServiceType type){
+		return setupThriftClientData(type, false); 
+	}
+	
+	public boolean setupThriftClientData(ThriftServiceType type, boolean force){
+		if (force || !engine.getConfiguration().isThriftServiceDataExist(type)){
+			RegistryWindow window = new RegistryWindow(engine, type);
+	        window.show();
+		}
+		return engine.getConfiguration().isThriftServiceDataExist(type);
 	}
 }
