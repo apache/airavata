@@ -31,9 +31,6 @@
         <class>org.apache.airavata.persistance.registry.jpa.model.ProjectUser</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Published_Workflow</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.User_Workflow</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Host_Descriptor</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Service_Descriptor</class>
-        <class>org.apache.airavata.persistance.registry.jpa.model.Application_Descriptor</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Input</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Output</class>

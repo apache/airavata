@@ -107,6 +107,7 @@ public class AppDeploymentTest {
         ApplicationDeploymentDescription app = null;
         if (appDep.isAppDeploymentExists(appDepId)){
             app = appDep.getApplicationDeployement(appDepId);
+            System.out.println("*********** application deployment id ********* : " + app.getAppDeploymentId());
             System.out.println("*********** application deployment desc ********* : " + app.getAppDeploymentDescription());
         }
 

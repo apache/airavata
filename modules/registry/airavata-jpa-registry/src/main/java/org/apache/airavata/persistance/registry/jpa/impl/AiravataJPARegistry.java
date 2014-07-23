@@ -461,123 +461,123 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     /**---------------------------------Descriptor Registry----------------------------------**/
 
     public boolean isHostDescriptorExists(String descriptorName)throws RegException {
-        if (descriptorRegistry != null){
-            return descriptorRegistry.isHostDescriptorExists(descriptorName);
-        }
-        try {
-            return jpa.getGateway().isHostDescriptorExists(descriptorName);
-        } catch (RegistryException e) {
-            e.printStackTrace();
-        }
+//        if (descriptorRegistry != null){
+//            return descriptorRegistry.isHostDescriptorExists(descriptorName);
+//        }
+//        try {
+//            return jpa.getGateway().isHostDescriptorExists(descriptorName);
+//        } catch (RegistryException e) {
+//            e.printStackTrace();
+//        }
         return false;
     }
     public void addHostDescriptor(HostDescription descriptor) throws RegException {
-        if (descriptorRegistry != null) {
-            descriptorRegistry.addHostDescriptor(descriptor);
-        } else {
-            try {
-                GatewayResource gateway = jpa.getGateway();
-                WorkerResource workerResource = jpa.getWorker();
-                String hostName = descriptor.getType().getHostName();
-                if (isHostDescriptorExists(hostName)) {
-                    throw new DescriptorAlreadyExistsException(hostName);
-                }
-                HostDescriptorResource hostDescriptorResource = gateway.createHostDescriptorResource(hostName);
-                hostDescriptorResource.setUserName(workerResource.getUser());
-                hostDescriptorResource.setContent(descriptor.toXML());
-                hostDescriptorResource.save();
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            descriptorRegistry.addHostDescriptor(descriptor);
+//        } else {
+//            try {
+//                GatewayResource gateway = jpa.getGateway();
+//                WorkerResource workerResource = jpa.getWorker();
+//                String hostName = descriptor.getType().getHostName();
+//                if (isHostDescriptorExists(hostName)) {
+//                    throw new DescriptorAlreadyExistsException(hostName);
+//                }
+//                HostDescriptorResource hostDescriptorResource = gateway.createHostDescriptorResource(hostName);
+//                hostDescriptorResource.setUserName(workerResource.getUser());
+//                hostDescriptorResource.setContent(descriptor.toXML());
+//                hostDescriptorResource.save();
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     public void updateHostDescriptor(HostDescription descriptor) throws RegException {
-        if (descriptorRegistry != null) {
-            descriptorRegistry.updateHostDescriptor(descriptor);
-        } else {
-            try {
-                GatewayResource gateway = jpa.getGateway();
-                String hostName = descriptor.getType().getHostName();
-                if (!isHostDescriptorExists(hostName)) {
-                    throw new DescriptorDoesNotExistsException(hostName);
-                }
-                HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
-                hostDescriptorResource.setContent(descriptor.toXML());
-                hostDescriptorResource.save();
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            descriptorRegistry.updateHostDescriptor(descriptor);
+//        } else {
+//            try {
+//                GatewayResource gateway = jpa.getGateway();
+//                String hostName = descriptor.getType().getHostName();
+//                if (!isHostDescriptorExists(hostName)) {
+//                    throw new DescriptorDoesNotExistsException(hostName);
+//                }
+//                HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
+//                hostDescriptorResource.setContent(descriptor.toXML());
+//                hostDescriptorResource.save();
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     public HostDescription getHostDescriptor(String hostName) throws RegException {
-        if (descriptorRegistry != null) {
-            return descriptorRegistry.getHostDescriptor(hostName);
-        } else {
-            try {
-
-                GatewayResource gateway = jpa.getGateway();
-                if (!isHostDescriptorExists(hostName)) {
-                    return null;
-                }
-                HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
-                return createHostDescriptor(hostDescriptorResource);
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            return descriptorRegistry.getHostDescriptor(hostName);
+//        } else {
+//            try {
+//
+//                GatewayResource gateway = jpa.getGateway();
+//                if (!isHostDescriptorExists(hostName)) {
+//                    return null;
+//                }
+//                HostDescriptorResource hostDescriptorResource = gateway.getHostDescriptorResource(hostName);
+//                return createHostDescriptor(hostDescriptorResource);
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
         return null;
     }
 
-	private HostDescription createHostDescriptor(
-			HostDescriptorResource hostDescriptorResource)
-			throws MalformedDescriptorException {
-		try {
-            return HostDescription.fromXML(hostDescriptorResource.getContent());
-        } catch (XmlException e) {
-            throw new MalformedDescriptorException(hostDescriptorResource.getHostDescName(),e);
-        }
-	}
+//	private HostDescription createHostDescriptor(
+//			HostDescriptorResource hostDescriptorResource)
+//			throws MalformedDescriptorException {
+//		try {
+//            return HostDescription.fromXML(hostDescriptorResource.getContent());
+//        } catch (XmlException e) {
+//            throw new MalformedDescriptorException(hostDescriptorResource.getHostDescName(),e);
+//        }
+//	}
 
     public void removeHostDescriptor(String hostName) throws RegException {
-        if (descriptorRegistry != null) {
-            descriptorRegistry.removeHostDescriptor(hostName);
-        } else {
-            try {
-                GatewayResource gateway = jpa.getGateway();
-                if (!isHostDescriptorExists(hostName)) {
-                    throw new DescriptorDoesNotExistsException(hostName);
-                }
-                gateway.removeHostDescriptor(hostName);
-                //we need to delete the application descriptors bound to this host
-                Map<String, ApplicationDescription> applicationDescriptors = getApplicationDescriptorsFromHostName(hostName);
-                for (String serviceName : applicationDescriptors.keySet()) {
-                    removeApplicationDescriptor(serviceName, hostName, applicationDescriptors.get(serviceName).getType().getApplicationName().getStringValue());
-                }
-            } catch (RegistryException e) {
-                logger.error("Error while removing application descriptors bound to host " + hostName, e);
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            descriptorRegistry.removeHostDescriptor(hostName);
+//        } else {
+//            try {
+//                GatewayResource gateway = jpa.getGateway();
+//                if (!isHostDescriptorExists(hostName)) {
+//                    throw new DescriptorDoesNotExistsException(hostName);
+//                }
+//                gateway.removeHostDescriptor(hostName);
+//                //we need to delete the application descriptors bound to this host
+//                Map<String, ApplicationDescription> applicationDescriptors = getApplicationDescriptorsFromHostName(hostName);
+//                for (String serviceName : applicationDescriptors.keySet()) {
+//                    removeApplicationDescriptor(serviceName, hostName, applicationDescriptors.get(serviceName).getType().getApplicationName().getStringValue());
+//                }
+//            } catch (RegistryException e) {
+//                logger.error("Error while removing application descriptors bound to host " + hostName, e);
+//            }
+//        }
     }
 
 	@Override
 	public List<HostDescription> getHostDescriptors()
 			throws MalformedDescriptorException, RegException {
-        if (descriptorRegistry != null) {
-            return descriptorRegistry.getHostDescriptors();
-        }
-        try {
-            GatewayResource gateway = jpa.getGateway();
-            List<HostDescription> list = new ArrayList<HostDescription>();
-            List<HostDescriptorResource> hostDescriptorResources = gateway.getHostDescriptorResources();
-            for (HostDescriptorResource resource : hostDescriptorResources) {
-                list.add(createHostDescriptor(resource));
-            }
-            return list;
-        } catch (RegistryException e) {
-            logger.error("Error while getting host descriptors ", e);
-        }
+//        if (descriptorRegistry != null) {
+//            return descriptorRegistry.getHostDescriptors();
+//        }
+//        try {
+//            GatewayResource gateway = jpa.getGateway();
+//            List<HostDescription> list = new ArrayList<HostDescription>();
+//            List<HostDescriptorResource> hostDescriptorResources = gateway.getHostDescriptorResources();
+//            for (HostDescriptorResource resource : hostDescriptorResources) {
+//                list.add(createHostDescriptor(resource));
+//            }
+//            return list;
+//        } catch (RegistryException e) {
+//            logger.error("Error while getting host descriptors ", e);
+//        }
         return null;
     }
 
@@ -590,124 +590,124 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public boolean isServiceDescriptorExists(String descriptorName)throws RegException {
-        if (descriptorRegistry != null) {
-            return descriptorRegistry.isServiceDescriptorExists(descriptorName);
-        }
-        try {
-            return jpa.getGateway().isServiceDescriptorExists(descriptorName);
-        } catch (RegistryException e) {
-            e.printStackTrace();
-        }
+//        if (descriptorRegistry != null) {
+//            return descriptorRegistry.isServiceDescriptorExists(descriptorName);
+//        }
+//        try {
+//            return jpa.getGateway().isServiceDescriptorExists(descriptorName);
+//        } catch (RegistryException e) {
+//            e.printStackTrace();
+//        }
         return false;
     }
 
     public void addServiceDescriptor(ServiceDescription descriptor) throws RegException {
-        if (descriptorRegistry != null) {
-            descriptorRegistry.addServiceDescriptor(descriptor);
-        }else {
-            try {
-            GatewayResource gateway = jpa.getGateway();
-            WorkerResource workerResource = jpa.getWorker();
-            String serviceName = descriptor.getType().getName();
-            if (isServiceDescriptorExists(serviceName)){
-                throw new DescriptorAlreadyExistsException(serviceName);
-            }
-            ServiceDescriptorResource serviceDescriptorResource = gateway.createServiceDescriptorResource(serviceName);
-            serviceDescriptorResource.setUserName(workerResource.getUser());
-            serviceDescriptorResource.setContent(descriptor.toXML());
-            serviceDescriptorResource.save();
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            descriptorRegistry.addServiceDescriptor(descriptor);
+//        }else {
+//            try {
+//            GatewayResource gateway = jpa.getGateway();
+//            WorkerResource workerResource = jpa.getWorker();
+//            String serviceName = descriptor.getType().getName();
+//            if (isServiceDescriptorExists(serviceName)){
+//                throw new DescriptorAlreadyExistsException(serviceName);
+//            }
+//            ServiceDescriptorResource serviceDescriptorResource = gateway.createServiceDescriptorResource(serviceName);
+//            serviceDescriptorResource.setUserName(workerResource.getUser());
+//            serviceDescriptorResource.setContent(descriptor.toXML());
+//            serviceDescriptorResource.save();
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     public void updateServiceDescriptor(ServiceDescription descriptor) throws RegException {
-        if (descriptorRegistry != null) {
-            descriptorRegistry.updateServiceDescriptor(descriptor);
-        }else {
-            try {
-            GatewayResource gateway = jpa.getGateway();
-            String serviceName = descriptor.getType().getName();
-            if (!isServiceDescriptorExists(serviceName)){
-                throw new DescriptorDoesNotExistsException(serviceName);
-            }
-            ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
-            serviceDescriptorResource.setContent(descriptor.toXML());
-            serviceDescriptorResource.save();
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            descriptorRegistry.updateServiceDescriptor(descriptor);
+//        }else {
+//            try {
+//            GatewayResource gateway = jpa.getGateway();
+//            String serviceName = descriptor.getType().getName();
+//            if (!isServiceDescriptorExists(serviceName)){
+//                throw new DescriptorDoesNotExistsException(serviceName);
+//            }
+//            ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
+//            serviceDescriptorResource.setContent(descriptor.toXML());
+//            serviceDescriptorResource.save();
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     public ServiceDescription getServiceDescriptor(String serviceName) throws RegException, MalformedDescriptorException {
-        if (descriptorRegistry != null) {
-            return descriptorRegistry.getServiceDescriptor(serviceName);
-        } else {
-            try {
-                GatewayResource gateway = jpa.getGateway();
-                if (!gateway.isServiceDescriptorExists(serviceName)) {
-                    return null;
-                }
-                ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
-                return createServiceDescriptor(serviceDescriptorResource);
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            return descriptorRegistry.getServiceDescriptor(serviceName);
+//        } else {
+//            try {
+//                GatewayResource gateway = jpa.getGateway();
+//                if (!gateway.isServiceDescriptorExists(serviceName)) {
+//                    return null;
+//                }
+//                ServiceDescriptorResource serviceDescriptorResource = gateway.getServiceDescriptorResource(serviceName);
+//                return createServiceDescriptor(serviceDescriptorResource);
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
         return null;
     }
 
-	private ServiceDescription createServiceDescriptor(
-			ServiceDescriptorResource serviceDescriptorResource)
-			throws MalformedDescriptorException {
-		try {
-            return ServiceDescription.fromXML(serviceDescriptorResource.getContent());
-        } catch (XmlException e) {
-            throw new MalformedDescriptorException(serviceDescriptorResource.getServiceDescName(),e);
-        }
-	}
+//	private ServiceDescription createServiceDescriptor(
+//			ServiceDescriptorResource serviceDescriptorResource)
+//			throws MalformedDescriptorException {
+//		try {
+//            return ServiceDescription.fromXML(serviceDescriptorResource.getContent());
+//        } catch (XmlException e) {
+//            throw new MalformedDescriptorException(serviceDescriptorResource.getServiceDescName(),e);
+//        }
+//	}
 
     public void removeServiceDescriptor(String serviceName) throws RegException {
-        if (descriptorRegistry != null) {
-            descriptorRegistry.removeServiceDescriptor(serviceName);
-        } else {
-            try {
-                GatewayResource gateway = jpa.getGateway();
-                if (!isServiceDescriptorExists(serviceName)) {
-                    throw new DescriptorDoesNotExistsException(serviceName);
-                }
-                gateway.removeServiceDescriptor(serviceName);
-                //we need to delete the application descriptors bound to this service
-                Map<String, ApplicationDescription> applicationDescriptors = getApplicationDescriptors(serviceName);
-                for (String hostName : applicationDescriptors.keySet()) {
-                    removeApplicationDescriptor(serviceName, hostName, applicationDescriptors.get(hostName).getType().getApplicationName().getStringValue());
-                }
-            } catch (Exception e) {
-                logger.error("Error while removing application descriptors bound to service " + serviceName, e);
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            descriptorRegistry.removeServiceDescriptor(serviceName);
+//        } else {
+//            try {
+//                GatewayResource gateway = jpa.getGateway();
+//                if (!isServiceDescriptorExists(serviceName)) {
+//                    throw new DescriptorDoesNotExistsException(serviceName);
+//                }
+//                gateway.removeServiceDescriptor(serviceName);
+//                //we need to delete the application descriptors bound to this service
+//                Map<String, ApplicationDescription> applicationDescriptors = getApplicationDescriptors(serviceName);
+//                for (String hostName : applicationDescriptors.keySet()) {
+//                    removeApplicationDescriptor(serviceName, hostName, applicationDescriptors.get(hostName).getType().getApplicationName().getStringValue());
+//                }
+//            } catch (Exception e) {
+//                logger.error("Error while removing application descriptors bound to service " + serviceName, e);
+//            }
+//        }
     }
 
     @Override
 	public List<ServiceDescription> getServiceDescriptors()
 			throws MalformedDescriptorException, RegException {
         List<ServiceDescription> list=new ArrayList<ServiceDescription>();
-        if (descriptorRegistry != null) {
-            return descriptorRegistry.getServiceDescriptors();
-        }else {
-            try {
-            GatewayResource gateway = jpa.getGateway();
-            List<ServiceDescriptorResource> serviceDescriptorResources = gateway.getServiceDescriptorResources();
-            for (ServiceDescriptorResource resource : serviceDescriptorResources) {
-                list.add(createServiceDescriptor(resource));
-            }
-            return list;
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            return descriptorRegistry.getServiceDescriptors();
+//        }else {
+//            try {
+//            GatewayResource gateway = jpa.getGateway();
+//            List<ServiceDescriptorResource> serviceDescriptorResources = gateway.getServiceDescriptorResources();
+//            for (ServiceDescriptorResource resource : serviceDescriptorResources) {
+//                list.add(createServiceDescriptor(resource));
+//            }
+//            return list;
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
         return list;
 	}
 
@@ -727,15 +727,15 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     public boolean isApplicationDescriptorExists(String serviceName,
                                                  String hostName,
                                                  String descriptorName)throws RegException {
-        if (descriptorRegistry != null) {
-            return descriptorRegistry.isApplicationDescriptorExists(serviceName, hostName, descriptorName);
-        }else {
-            try {
-                return jpa.getGateway().isApplicationDescriptorExists(createAppName(serviceName, hostName, descriptorName));
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            return descriptorRegistry.isApplicationDescriptorExists(serviceName, hostName, descriptorName);
+//        }else {
+//            try {
+//                return jpa.getGateway().isApplicationDescriptorExists(createAppName(serviceName, hostName, descriptorName));
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
         return false;
     }
 
@@ -750,178 +750,178 @@ public class AiravataJPARegistry extends AiravataRegistry2{
     }
 
     public void addApplicationDescriptor(String serviceName, String hostName, ApplicationDescription descriptor) throws RegException {
-        if (descriptorRegistry != null) {
-            descriptorRegistry.addApplicationDescriptor(serviceName, hostName, descriptor);
-        } else {
-            if (serviceName == null || hostName == null) {
-                throw new InsufficientDataException("Service name or Host name cannot be null");
-            }
-            try {
-
-                GatewayResource gateway = jpa.getGateway();
-                WorkerResource workerResource = jpa.getWorker();
-                String applicationName = descriptor.getType().getApplicationName().getStringValue();
-                applicationName = createAppName(serviceName, hostName, applicationName);
-                if (isApplicationDescriptorExists(serviceName, hostName, descriptor.getType().getApplicationName().getStringValue())) {
-                    throw new DescriptorAlreadyExistsException(applicationName);
-                }
-                ApplicationDescriptorResource applicationDescriptorResource = gateway.createApplicationDescriptorResource(applicationName);
-                applicationDescriptorResource.setUpdatedUser(workerResource.getUser());
-                applicationDescriptorResource.setServiceDescName(serviceName);
-                applicationDescriptorResource.setHostDescName(hostName);
-                applicationDescriptorResource.setContent(descriptor.toXML());
-                applicationDescriptorResource.save();
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (descriptorRegistry != null) {
+//            descriptorRegistry.addApplicationDescriptor(serviceName, hostName, descriptor);
+//        } else {
+//            if (serviceName == null || hostName == null) {
+//                throw new InsufficientDataException("Service name or Host name cannot be null");
+//            }
+//            try {
+//
+//                GatewayResource gateway = jpa.getGateway();
+//                WorkerResource workerResource = jpa.getWorker();
+//                String applicationName = descriptor.getType().getApplicationName().getStringValue();
+//                applicationName = createAppName(serviceName, hostName, applicationName);
+//                if (isApplicationDescriptorExists(serviceName, hostName, descriptor.getType().getApplicationName().getStringValue())) {
+//                    throw new DescriptorAlreadyExistsException(applicationName);
+//                }
+//                ApplicationDescriptorResource applicationDescriptorResource = gateway.createApplicationDescriptorResource(applicationName);
+//                applicationDescriptorResource.setUpdatedUser(workerResource.getUser());
+//                applicationDescriptorResource.setServiceDescName(serviceName);
+//                applicationDescriptorResource.setHostDescName(hostName);
+//                applicationDescriptorResource.setContent(descriptor.toXML());
+//                applicationDescriptorResource.save();
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     public void udpateApplicationDescriptor(ServiceDescription serviceDescription,
                                             HostDescription hostDescriptor,
                                             ApplicationDescription descriptor) throws RegException {
-        if (descriptorRegistry != null){
-            descriptorRegistry.udpateApplicationDescriptor(serviceDescription,hostDescriptor,descriptor);
-        } else {
-            updateApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
-        }
+//        if (descriptorRegistry != null){
+//            descriptorRegistry.udpateApplicationDescriptor(serviceDescription,hostDescriptor,descriptor);
+//        } else {
+//            updateApplicationDescriptor(serviceDescription.getType().getName(),hostDescriptor.getType().getHostName(),descriptor);
+//        }
     }
 
     public void updateApplicationDescriptor(String serviceName, String hostName, ApplicationDescription descriptor) throws RegException {
-    	if (descriptorRegistry != null){
-            descriptorRegistry.updateApplicationDescriptor(serviceName, hostName, descriptor);
-        } else {
-            if (serviceName==null || hostName==null){
-                throw new InsufficientDataException("Service name or Host name cannot be null");
-            }
-            try {
-            GatewayResource gateway = jpa.getGateway();
-            String applicationName = descriptor.getType().getApplicationName().getStringValue();
-            applicationName = createAppName(serviceName, hostName, applicationName);
-            if (!isApplicationDescriptorExists(serviceName,hostName,descriptor.getType().getApplicationName().getStringValue())){
-                throw new DescriptorDoesNotExistsException(applicationName);
-            }
-            ApplicationDescriptorResource serviceDescriptorResource = gateway.getApplicationDescriptorResource(applicationName);
-            serviceDescriptorResource.setContent(descriptor.toXML());
-            serviceDescriptorResource.save();
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//    	if (descriptorRegistry != null){
+//            descriptorRegistry.updateApplicationDescriptor(serviceName, hostName, descriptor);
+//        } else {
+//            if (serviceName==null || hostName==null){
+//                throw new InsufficientDataException("Service name or Host name cannot be null");
+//            }
+//            try {
+//            GatewayResource gateway = jpa.getGateway();
+//            String applicationName = descriptor.getType().getApplicationName().getStringValue();
+//            applicationName = createAppName(serviceName, hostName, applicationName);
+//            if (!isApplicationDescriptorExists(serviceName,hostName,descriptor.getType().getApplicationName().getStringValue())){
+//                throw new DescriptorDoesNotExistsException(applicationName);
+//            }
+//            ApplicationDescriptorResource serviceDescriptorResource = gateway.getApplicationDescriptorResource(applicationName);
+//            serviceDescriptorResource.setContent(descriptor.toXML());
+//            serviceDescriptorResource.save();
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
-    private ApplicationDescription createApplicationDescriptor(
-			ApplicationDescriptorResource applicationDescriptorResource)
-			throws MalformedDescriptorException {
-		try {
-            return ApplicationDescription.fromXML(applicationDescriptorResource.getContent());
-        } catch (XmlException e) {
-            throw new MalformedDescriptorException(applicationDescriptorResource.getName(),e);
-        }
-	}
+//    private ApplicationDescription createApplicationDescriptor(
+//			ApplicationDescriptorResource applicationDescriptorResource)
+//			throws MalformedDescriptorException {
+//		try {
+//            return ApplicationDescription.fromXML(applicationDescriptorResource.getContent());
+//        } catch (XmlException e) {
+//            throw new MalformedDescriptorException(applicationDescriptorResource.getName(),e);
+//        }
+//	}
 
     public ApplicationDescription getApplicationDescriptor(String serviceName, String hostname, String applicationName)throws DescriptorDoesNotExistsException, MalformedDescriptorException, RegException {
-        if (descriptorRegistry != null){
-            return descriptorRegistry.getApplicationDescriptor(serviceName, hostname, applicationName);
-        }
-        if (serviceName==null || hostname==null){
-    		throw new InsufficientDataException("Service name or Host name cannot be null");
-    	}
-    	GatewayResource gateway = jpa.getGateway();
-		if (!isApplicationDescriptorExists(serviceName,hostname,applicationName)){
-        	throw new DescriptorDoesNotExistsException(createAppName(serviceName, hostname, applicationName));
-        }
-        try {
-            return createApplicationDescriptor(gateway.getApplicationDescriptorResource(createAppName(serviceName, hostname, applicationName)));
-        } catch (RegistryException e) {
-            e.printStackTrace();
-        }
+//        if (descriptorRegistry != null){
+//            return descriptorRegistry.getApplicationDescriptor(serviceName, hostname, applicationName);
+//        }
+//        if (serviceName==null || hostname==null){
+//    		throw new InsufficientDataException("Service name or Host name cannot be null");
+//    	}
+//    	GatewayResource gateway = jpa.getGateway();
+//		if (!isApplicationDescriptorExists(serviceName,hostname,applicationName)){
+//        	throw new DescriptorDoesNotExistsException(createAppName(serviceName, hostname, applicationName));
+//        }
+//        try {
+//            return createApplicationDescriptor(gateway.getApplicationDescriptorResource(createAppName(serviceName, hostname, applicationName)));
+//        } catch (RegistryException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
     public ApplicationDescription getApplicationDescriptors(String serviceName, String hostname) throws RegException {
-        if (descriptorRegistry != null) {
-            return descriptorRegistry.getApplicationDescriptors(serviceName, hostname);
-        }
-        try {
-            GatewayResource gateway = jpa.getGateway();
-            List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, hostname);
-            if (applicationDescriptorResources.size() > 0) {
-                return createApplicationDescriptor(applicationDescriptorResources.get(0));
-            }
-        } catch (RegistryException e) {
-            e.printStackTrace();
-        }
+//        if (descriptorRegistry != null) {
+//            return descriptorRegistry.getApplicationDescriptors(serviceName, hostname);
+//        }
+//        try {
+//            GatewayResource gateway = jpa.getGateway();
+//            List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, hostname);
+//            if (applicationDescriptorResources.size() > 0) {
+//                return createApplicationDescriptor(applicationDescriptorResources.get(0));
+//            }
+//        } catch (RegistryException e) {
+//            e.printStackTrace();
+//        }
         return null;
     }
 
     public Map<String, ApplicationDescription> getApplicationDescriptors(String serviceName) throws RegException {
-        if (descriptorRegistry != null) {
-            return descriptorRegistry.getApplicationDescriptors(serviceName);
-        }
         Map<String, ApplicationDescription> map = new HashMap<String, ApplicationDescription>();
-        try {
-            GatewayResource gateway = jpa.getGateway();
-
-            List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, null);
-            for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
-                map.put(resource.getHostDescName(), createApplicationDescriptor(resource));
-            }
-        } catch (RegistryException e) {
-            e.printStackTrace();
-        }
+//        if (descriptorRegistry != null) {
+//            return descriptorRegistry.getApplicationDescriptors(serviceName);
+//        }
+//        try {
+//            GatewayResource gateway = jpa.getGateway();
+//
+//            List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(serviceName, null);
+//            for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
+//                map.put(resource.getHostDescName(), createApplicationDescriptor(resource));
+//            }
+//        } catch (RegistryException e) {
+//            e.printStackTrace();
+//        }
         return map;
     }
 
     private Map<String,ApplicationDescription> getApplicationDescriptorsFromHostName(String hostName)throws RegException {
         Map<String, ApplicationDescription> map=new HashMap<String,ApplicationDescription>();
-        try {
-            GatewayResource gateway = jpa.getGateway();
-            List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(null, hostName);
-            for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
-                map.put(resource.getServiceDescName(),createApplicationDescriptor(resource));
-            }
-        } catch (RegistryException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            GatewayResource gateway = jpa.getGateway();
+//            List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources(null, hostName);
+//            for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
+//                map.put(resource.getServiceDescName(),createApplicationDescriptor(resource));
+//            }
+//        } catch (RegistryException e) {
+//            e.printStackTrace();
+//        }
 
         return map;
     }
     
     public Map<String[],ApplicationDescription> getApplicationDescriptors()throws MalformedDescriptorException, RegException {
         Map<String[], ApplicationDescription> map=new HashMap<String[],ApplicationDescription>();
-        if (descriptorRegistry != null){
-            return descriptorRegistry.getApplicationDescriptors();
-        }
-        try {
-
-        GatewayResource gateway = jpa.getGateway();
-
-		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources();
-		for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
-			map.put(new String[]{resource.getServiceDescName(),resource.getHostDescName()},createApplicationDescriptor(resource));
-		}
-		return map;
-        } catch (RegistryException e) {
-            e.printStackTrace();
-        }
+//        if (descriptorRegistry != null){
+//            return descriptorRegistry.getApplicationDescriptors();
+//        }
+//        try {
+//
+//        GatewayResource gateway = jpa.getGateway();
+//
+//		List<ApplicationDescriptorResource> applicationDescriptorResources = gateway.getApplicationDescriptorResources();
+//		for (ApplicationDescriptorResource resource : applicationDescriptorResources) {
+//			map.put(new String[]{resource.getServiceDescName(),resource.getHostDescName()},createApplicationDescriptor(resource));
+//		}
+//		return map;
+//        } catch (RegistryException e) {
+//            e.printStackTrace();
+//        }
         return map;
     }
 
     public void removeApplicationDescriptor(String serviceName, String hostName, String applicationName) throws RegException {
-        if (descriptorRegistry != null){
-             descriptorRegistry.removeApplicationDescriptor(serviceName, hostName, applicationName);
-        } else {
-            try {
-            GatewayResource gateway = jpa.getGateway();
-            String appName = createAppName(serviceName, hostName, applicationName);
-            if (!isApplicationDescriptorExists(serviceName,hostName,applicationName)){
-                throw new DescriptorDoesNotExistsException(appName);
-            }
-            gateway.removeApplicationDescriptor(appName);
-            } catch (RegistryException e) {
-                e.printStackTrace();
-            }
-        }
+//        if (descriptorRegistry != null){
+//             descriptorRegistry.removeApplicationDescriptor(serviceName, hostName, applicationName);
+//        } else {
+//            try {
+//            GatewayResource gateway = jpa.getGateway();
+//            String appName = createAppName(serviceName, hostName, applicationName);
+//            if (!isApplicationDescriptorExists(serviceName,hostName,applicationName)){
+//                throw new DescriptorDoesNotExistsException(appName);
+//            }
+//            gateway.removeApplicationDescriptor(appName);
+//            } catch (RegistryException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
     }
 

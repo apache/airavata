@@ -37,9 +37,6 @@ public abstract class AbstractResource implements Resource {
 	public static final String PROJECT_USER = "ProjectUser";
 	public static final String PUBLISHED_WORKFLOW = "Published_Workflow";
 	public static final String USER_WORKFLOW = "User_Workflow";
-	public static final String HOST_DESCRIPTOR = "Host_Descriptor";
-	public static final String SERVICE_DESCRIPTOR = "Service_Descriptor";
-	public static final String APPLICATION_DESCRIPTOR = "Application_Descriptor";
 	public static final String EXPERIMENT = "Experiment";
 	public static final String EXPERIMENT_CONFIG_DATA = "ExperimentConfigData";
 	public static final String EXPERIMENT_INPUT = "Experiment_Input";
@@ -123,32 +120,6 @@ public abstract class AbstractResource implements Resource {
 		public static final String LAST_UPDATED_DATE = "last_updated_date";
 		public static final String PATH = "path";
 		public static final String WORKFLOW_GRAPH = "workflow_graph";
-	}
-
-	// Host_Descriptor table
-	public final class HostDescriptorConstants {
-		public static final String GATEWAY_NAME = "gateway_name";
-		public static final String UPDATED_USER = "updated_user";
-		public static final String HOST_DESC_ID = "host_descriptor_ID";
-		public static final String HOST_DESC_XML = "host_descriptor_xml";
-	}
-
-	// Service_Descriptor table
-	public final class ServiceDescriptorConstants {
-		public static final String GATEWAY_NAME = "gateway_name";
-		public static final String UPDATED_USER = "updated_user";
-		public static final String SERVICE_DESC_ID = "service_descriptor_ID";
-		public static final String SERVICE_DESC_XML = "service_descriptor_xml";
-	}
-
-	// Application_Descriptor table
-	public final class ApplicationDescriptorConstants {
-		public static final String GATEWAY_NAME = "gateway_name";
-		public static final String UPDATED_USER = "updated_user";
-		public static final String APPLICATION_DESC_ID = "application_descriptor_ID";
-		public static final String HOST_DESC_ID = "host_descriptor_ID";
-		public static final String SERVICE_DESC_ID = "service_descriptor_ID";
-		public static final String APPLICATION_DESC_XML = "application_descriptor_xml";
 	}
 
 	// Experiment table
