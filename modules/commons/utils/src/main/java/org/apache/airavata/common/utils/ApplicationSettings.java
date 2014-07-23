@@ -218,7 +218,7 @@ public class ApplicationSettings {
 			List<String> parametersAlreadyProcessed=new ArrayList<String>();
 			for (String parameter : containedParameters.values()) {
 				if (!parametersAlreadyProcessed.contains(parameter)) {
-					String parameterName = parameter.substring(2,parameter.length() - 2);
+					String parameterName = parameter.substring(2,parameter.length() - 1);
 					String parameterValue = getSetting(parameterName,parameter);
 					property = property.replaceAll(Pattern.quote(parameter), parameterValue);
 					parametersAlreadyProcessed.add(parameter);
