@@ -158,25 +158,25 @@ public class PBSOutputParser implements OutputParser {
 
     public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) {
         log.debug(rawOutput);
-        String[] info = rawOutput.split("\n");
+        String[]    info = rawOutput.split("\n");
         int lastStop = 0;
         for (String jobID : statusMap.keySet()) {
-            for(int i=lastStop;i<info.length;i++){
-               if(jobID.contains(info[i].split(" ")[0]) && !"".equals(info[i].split(" ")[0])){
-                   // now starts processing this line
-                   log.info(info[i]);
-                   String correctLine = info[i];
-                   String[] columns = correctLine.split(" ");
-                   List<String> columnList = new ArrayList<String>();
-                   for (String s : columns) {
-                       if (!"".equals(s)) {
-                           columnList.add(s);
-                       }
-                   }
-                   lastStop = i+1;
-                   statusMap.put(jobID, JobStatus.valueOf(columnList.get(9)));
-                   break;
-               }
+            for (int i = lastStop; i < info.length; i++) {
+                if (jobID.split(",")[0].contains(info[i].split(" ")[0]) && !"".equals(info[i].split(" ")[0])) {
+                    // now starts processing this line
+                    log.info(info[i]);
+                    String correctLine = info[i];
+                    String[] columns = correctLine.split(" ");
+                    List<String> columnList = new ArrayList<String>();
+                    for (String s : columns) {
+                        if (!"".equals(s)) {
+                            columnList.add(s);
+                        }
+                    }
+                    lastStop = i + 1;
+                    statusMap.put(jobID, JobStatus.valueOf(columnList.get(9)));
+                    break;
+                }
             }
         }
     }

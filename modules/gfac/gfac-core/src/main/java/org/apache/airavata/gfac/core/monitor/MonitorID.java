@@ -55,6 +55,8 @@ public class MonitorID {
 
     private String jobID;
 
+    private String jobName;
+
     private int failedCount = 0;
 
     private JobState state;
@@ -64,7 +66,7 @@ public class MonitorID {
     public MonitorID() {
     }
 
-    public MonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID, String experimentID, String userName) {
+    public MonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID, String experimentID, String userName,String jobName) {
         this.host = host;
         this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.userName = userName;
@@ -72,6 +74,7 @@ public class MonitorID {
         this.taskID = taskID;
         this.experimentID = experimentID;
         this.workflowNodeID = workflowNodeID;
+        this.jobName = jobName;
     }
 
     public MonitorID(JobExecutionContext jobExecutionContext) {
@@ -83,6 +86,7 @@ public class MonitorID {
         workflowNodeID = jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId();// at this point we only have one node todo: fix this
         try {
             jobID = jobExecutionContext.getJobDetails().getJobID();
+            jobName = jobExecutionContext.getJobDetails().getJobName();
         }catch(NullPointerException e){
             logger.error("There is not job created at this point");
         }
@@ -232,5 +236,13 @@ public class MonitorID {
 
     public void setJobExecutionContext(JobExecutionContext jobExecutionContext) {
         this.jobExecutionContext = jobExecutionContext;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
     }
 }

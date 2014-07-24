@@ -135,7 +135,7 @@ public class SGEOutputParser implements OutputParser{
         int lastStop = 0;
         for (String jobID : statusMap.keySet()) {
             for(int i=lastStop;i<info.length;i++){
-               if(jobID.contains(info[i].split(" ")[0]) && !"".equals(info[i].split(" ")[0])){
+               if(jobID.split(",")[0].contains(info[i].split(" ")[0]) && !"".equals(info[i].split(" ")[0])){
                    // now starts processing this line
                    log.info(info[i]);
                    String correctLine = info[i];

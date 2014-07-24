@@ -163,7 +163,7 @@ public class HPCPullMonitor extends PullMonitor {
                     Map<String, JobState> jobStatuses = connection.getJobStatuses(monitorID);
                     for (MonitorID iMonitorID : monitorID) {
                         currentMonitorID = iMonitorID;
-                        iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()));    //IMPORTANT this is not a simple setter we have a logic
+                        iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()+","+iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
                         jobStatus = new JobStatusChangeRequest(iMonitorID);
                         // we have this JobStatus class to handle amqp monitoring
 
@@ -171,7 +171,7 @@ public class HPCPullMonitor extends PullMonitor {
                         // if the job is completed we do not have to put the job to the queue again
                         iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
 
-                        // After successful monitoring perform following actions to cleanup the queue, if necessary
+                        // After successful monitoring perform follow   ing actions to cleanup the queue, if necessary
                         if (jobStatus.getState().equals(JobState.COMPLETE)) {
                             completedJobs.add(iMonitorID);
                             try {

@@ -1163,21 +1163,22 @@ class ErrorDetails {
 void swap(ErrorDetails &a, ErrorDetails &b);
 
 typedef struct _JobDetails__isset {
-  _JobDetails__isset() : creationTime(false), jobStatus(false), applicationStatus(false), errors(false), computeResourceConsumed(false) {}
+  _JobDetails__isset() : creationTime(false), jobStatus(false), applicationStatus(false), errors(false), computeResourceConsumed(false), jobName(false) {}
   bool creationTime;
   bool jobStatus;
   bool applicationStatus;
   bool errors;
   bool computeResourceConsumed;
+  bool jobName;
 } _JobDetails__isset;
 
 class JobDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "5946807521C11BC65075D497F8568057";
-  static const uint8_t binary_fingerprint[16]; // = {0x59,0x46,0x80,0x75,0x21,0xC1,0x1B,0xC6,0x50,0x75,0xD4,0x97,0xF8,0x56,0x80,0x57};
+  static const char* ascii_fingerprint; // = "827E1049FA5B4D33C335B59DE49B8F88";
+  static const uint8_t binary_fingerprint[16]; // = {0x82,0x7E,0x10,0x49,0xFA,0x5B,0x4D,0x33,0xC3,0x35,0xB5,0x9D,0xE4,0x9B,0x8F,0x88};
 
-  JobDetails() : jobID("DO_NOT_SET_AT_CLIENTS"), jobDescription(), creationTime(0), computeResourceConsumed() {
+  JobDetails() : jobID("DO_NOT_SET_AT_CLIENTS"), jobDescription(), creationTime(0), computeResourceConsumed(), jobName() {
   }
 
   virtual ~JobDetails() throw() {}
@@ -1189,6 +1190,7 @@ class JobDetails {
   ApplicationStatus applicationStatus;
   std::vector<ErrorDetails>  errors;
   std::string computeResourceConsumed;
+  std::string jobName;
 
   _JobDetails__isset __isset;
 
@@ -1225,6 +1227,11 @@ class JobDetails {
     __isset.computeResourceConsumed = true;
   }
 
+  void __set_jobName(const std::string& val) {
+    jobName = val;
+    __isset.jobName = true;
+  }
+
   bool operator == (const JobDetails & rhs) const
   {
     if (!(jobID == rhs.jobID))
@@ -1250,6 +1257,10 @@ class JobDetails {
     if (__isset.computeResourceConsumed != rhs.__isset.computeResourceConsumed)
       return false;
     else if (__isset.computeResourceConsumed && !(computeResourceConsumed == rhs.computeResourceConsumed))
+      return false;
+    if (__isset.jobName != rhs.__isset.jobName)
+      return false;
+    else if (__isset.jobName && !(jobName == rhs.jobName))
       return false;
     return true;
   }
@@ -1357,8 +1368,8 @@ typedef struct _TaskDetails__isset {
 class TaskDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "482C560A67EC84E3BEB13AFC5FEDA02C";
-  static const uint8_t binary_fingerprint[16]; // = {0x48,0x2C,0x56,0x0A,0x67,0xEC,0x84,0xE3,0xBE,0xB1,0x3A,0xFC,0x5F,0xED,0xA0,0x2C};
+  static const char* ascii_fingerprint; // = "5329C387E7633AF234038F8461F51097";
+  static const uint8_t binary_fingerprint[16]; // = {0x53,0x29,0xC3,0x87,0xE7,0x63,0x3A,0xF2,0x34,0x03,0x8F,0x84,0x61,0xF5,0x10,0x97};
 
   TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), applicationDeploymentId() {
   }
@@ -1536,8 +1547,8 @@ typedef struct _WorkflowNodeDetails__isset {
 class WorkflowNodeDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "95130A9D83D5C73D70BAEBDF11F2FFE7";
-  static const uint8_t binary_fingerprint[16]; // = {0x95,0x13,0x0A,0x9D,0x83,0xD5,0xC7,0x3D,0x70,0xBA,0xEB,0xDF,0x11,0xF2,0xFF,0xE7};
+  static const char* ascii_fingerprint; // = "6ABC52FB94DCEC8D6AA3F1F3188E2691";
+  static const uint8_t binary_fingerprint[16]; // = {0x6A,0xBC,0x52,0xFB,0x94,0xDC,0xEC,0x8D,0x6A,0xA3,0xF1,0xF3,0x18,0x8E,0x26,0x91};
 
   WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE"), executionUnit((ExecutionUnit::type)1), executionUnitData() {
     executionUnit = (ExecutionUnit::type)1;
@@ -1775,8 +1786,8 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "6B1FF2298EF5AE2B9EA8F76C2DFA9E8C";
-  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x1F,0xF2,0x29,0x8E,0xF5,0xAE,0x2B,0x9E,0xA8,0xF7,0x6C,0x2D,0xFA,0x9E,0x8C};
+  static const char* ascii_fingerprint; // = "F814FB4A54E4B2B2B1BFB58C022A39D4";
+  static const uint8_t binary_fingerprint[16]; // = {0xF8,0x14,0xFB,0x4A,0x54,0xE4,0xB2,0xB2,0xB1,0xBF,0xB5,0x8C,0x02,0x2A,0x39,0xD4};
 
   Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), workflowExecutionInstanceId() {
   }

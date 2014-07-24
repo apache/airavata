@@ -1981,6 +1981,7 @@ class JobDetails {
   public $applicationStatus = null;
   public $errors = null;
   public $computeResourceConsumed = null;
+  public $jobName = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -2020,6 +2021,10 @@ class JobDetails {
           'var' => 'computeResourceConsumed',
           'type' => TType::STRING,
           ),
+        8 => array(
+          'var' => 'jobName',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -2043,6 +2048,9 @@ class JobDetails {
       }
       if (isset($vals['computeResourceConsumed'])) {
         $this->computeResourceConsumed = $vals['computeResourceConsumed'];
+      }
+      if (isset($vals['jobName'])) {
+        $this->jobName = $vals['jobName'];
       }
     }
   }
@@ -2128,6 +2136,13 @@ class JobDetails {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 8:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->jobName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2192,6 +2207,11 @@ class JobDetails {
     if ($this->computeResourceConsumed !== null) {
       $xfer += $output->writeFieldBegin('computeResourceConsumed', TType::STRING, 7);
       $xfer += $output->writeString($this->computeResourceConsumed);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->jobName !== null) {
+      $xfer += $output->writeFieldBegin('jobName', TType::STRING, 8);
+      $xfer += $output->writeString($this->jobName);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
