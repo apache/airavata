@@ -92,7 +92,7 @@ public class ResourceConnection {
         // creating a sorted map with all the jobIds and with the predefined
         // status as UNKNOWN
         for (MonitorID monitorID : monitorIDs) {
-            treeMap.put(monitorID.getJobID(), JobStatus.U);
+            treeMap.put(monitorID.getJobID()+","+monitorID.getJobName(), JobStatus.U);
         }
         String userName = cluster.getServerInfo().getUserName();
         //todo so currently we execute the qstat for each job but we can use user based monitoring

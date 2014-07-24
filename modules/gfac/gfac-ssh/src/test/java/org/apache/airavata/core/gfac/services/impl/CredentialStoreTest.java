@@ -65,7 +65,7 @@ public class CredentialStoreTest {
         System.setProperty("myproxy.username", "ogce");
         System.setProperty("myproxy.password", "OpenGwy14");
         System.setProperty("trusted.cert.location", "/Users/lahirugunathilake/Downloads/certificates");
-        System.setProperty("credential.store.jdbc.url","jdbc:mysql://gw111.iu.xsede.org:3306/airavata_pga_prod");
+        System.setProperty("credential.store.jdbc.url","jdbc:mysql://gw85.iu.xsede.org:3306/airavata_pga_prod");
         System.setProperty("credential.store.jdbc.user","pgaAiravataUser");
         System.setProperty("credential.store.jdbc.password","pgaAiravataPWD");
         System.setProperty("credential.store.jdbc.driver","com.mysql.jdbc.Driver");
@@ -75,23 +75,23 @@ public class CredentialStoreTest {
             AiravataRegistry2 registry = AiravataRegistryFactory.getRegistry(new Gateway("default"),
                     new AiravataUser("admin"));
             UUID uuid = UUID.randomUUID();
-            System.out.println(uuid.toString());
-            String publicKey = registry.createCredential("default",uuid.toString(),"cgateway" );
-            System.out.println(publicKey);
-//            String tokenId = uuid.toString();
-            String tokenId = "2c308fa9-99f8-4baa-92e4-d062e311483c";
-            CredentialReader credentialReader = new CredentialReaderImpl(new DBUtil("jdbc:mysql://gw111.iu.xsede.org:3306/airavata_pga_prod",
+            System.out.println("TokenId: " + uuid.toString());
+            String publicKey = registry.createCredential("default",uuid.toString(),"lginnali" );
+            System.out.println("Public-Key: " +publicKey);
+            String tokenId = uuid.toString();
+//            String tokenId = "2c308fa9-99f8-4baa-92e4-d062e311483c";
+            CredentialReader credentialReader = new CredentialReaderImpl(new DBUtil("jdbc:mysql://gw85.iu.xsede.org:3306/airavata_pga_prod",
                     "pgaAiravataUser", "pgaAiravataPWD", "com.mysql.jdbc.Driver"));
 
 
             RequestData requestData = new RequestData();
-            requestData.setMyProxyUserName("cgateway");
+            requestData.setMyProxyUserName("lginnali");
             requestData.setTokenId(tokenId);
             requestData.setGatewayId("default");
             TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(credentialReader, requestData);
 
             SSHCredential credentials = tokenizedSSHAuthInfo.getCredentials();
-            ServerInfo serverInfo = new ServerInfo("cgateway", "bigred2.uits.iu.edu");
+            ServerInfo serverInfo = new ServerInfo("lginnali", "bigred2.uits.iu.edu");
 
             PBSCluster pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
             Assert.assertNotNull(pbsCluster);

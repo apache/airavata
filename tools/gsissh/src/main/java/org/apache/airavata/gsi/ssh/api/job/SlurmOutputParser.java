@@ -34,7 +34,7 @@ public class SlurmOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
 
     public void parse(JobDescriptor descriptor, String rawOutput)throws SSHApiException {
-        log.debug(rawOutput);
+        log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
         if (lastString.contains("JOB ID")) {
@@ -94,7 +94,7 @@ public class SlurmOutputParser implements OutputParser {
      * @return
      */
     public String parse(String rawOutput) throws SSHApiException {
-        log.debug(rawOutput);
+        log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         for (String anInfo : info) {
             if (anInfo.contains("Submitted batch job")) {
@@ -102,11 +102,12 @@ public class SlurmOutputParser implements OutputParser {
                 return split[1].trim();
             }
         }
-        throw new SSHApiException(rawOutput);  //To change body of implemented methods use File | Settings | File Templates.
+        return "";
+//        throw new SSHApiException(rawOutput);  //todo//To change body of implemented methods use File | Settings | File Templates.
     }
 
     public JobStatus parse(String jobID, String rawOutput)throws SSHApiException {
-        log.debug(rawOutput);
+        log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
         if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
@@ -148,7 +149,7 @@ public class SlurmOutputParser implements OutputParser {
     }
 
     public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
-        log.debug(rawOutput);
+        log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
         if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
@@ -157,22 +158,24 @@ public class SlurmOutputParser implements OutputParser {
         }
         int lastStop = 0;
         for (String jobID : statusMap.keySet()) {
-            for(int i=lastStop;i<info.length;i++){
-               if(info[i].contains(jobID)){
-                   // now starts processing this line
-                   log.info(info[i]);
-                   String correctLine = info[i];
-                   String[] columns = correctLine.split(" ");
-                   List<String> columnList = new ArrayList<String>();
-                   for (String s : columns) {
-                       if (!"".equals(s)) {
-                           columnList.add(s);
-                       }
-                   }
-                   lastStop = i+1;
-                   statusMap.put(jobID, JobStatus.valueOf(columnList.get(4)));
-                   break;
-               }
+            String jobId = jobID.split(",")[0];
+            String jobName = jobID.split(",")[1];
+            for (int i = lastStop; i < info.length; i++) {
+                if (info[i].contains(jobId) || info[i].contains(jobName.substring(0,8))) {
+                    // now starts processing this line
+                    log.info(info[i]);
+                    String correctLine = info[i];
+                    String[] columns = correctLine.split(" ");
+                    List<String> columnList = new ArrayList<String>();
+                    for (String s : columns) {
+                        if (!"".equals(s)) {
+                            columnList.add(s);
+                        }
+                    }
+                    lastStop = i + 1;
+                    statusMap.put(jobID, JobStatus.valueOf(columnList.get(4)));
+                    break;
+                }
             }
         }
     }

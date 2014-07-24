@@ -148,7 +148,7 @@ public class QstatMonitorTestWithMyProxyAuth {
         for (int i = 0; i < 1; i++) {
             String jobID = pbsCluster.submitBatchJob(jobDescriptor);
             System.out.println("Job submitted successfully, Job ID: " +  jobID);
-            MonitorID monitorID = new HPCMonitorID(hostDescription, jobID,null,null,null, "ogce");
+            MonitorID monitorID = new HPCMonitorID(hostDescription, jobID,null,null,null, "ogce","");
             ((HPCMonitorID)monitorID).setAuthenticationInfo(authenticationInfo);
             try {
                 org.apache.airavata.gfac.monitor.util.CommonUtils.addMonitortoQueue(pullQueue, monitorID);

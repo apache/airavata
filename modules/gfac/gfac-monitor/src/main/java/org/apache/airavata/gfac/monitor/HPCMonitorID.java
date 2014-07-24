@@ -38,8 +38,9 @@ public class HPCMonitorID extends MonitorID {
 
     private AuthenticationInfo authenticationInfo = null;
 
-    public HPCMonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID, String experimentID, String userName) {
-        super(host, jobID, taskID, workflowNodeID, experimentID, userName);
+    public HPCMonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID,
+                        String experimentID, String userName,String jobName) {
+        super(host, jobID, taskID, workflowNodeID, experimentID, userName,jobName);
         setHost(host);
         setJobStartedTime(new Timestamp((new Date()).getTime()));
         setUserName(userName);

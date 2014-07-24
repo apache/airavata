@@ -86,6 +86,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             }
             // This installed path is a mandetory field, because this could change based on the computing resource
             JobDescriptor jobDescriptor = GFACGSISSHUtils.createJobDescriptor(jobExecutionContext, app, cluster);
+            jobDetails.setJobName(jobDescriptor.getJobName());
 
             log.info(jobDescriptor.toXML());
             data.append("jobDesc=").append(jobDescriptor.toXML());
@@ -134,7 +135,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         }
         ThreadedHandler pullMonitorHandler = null;
         ThreadedHandler pushMonitorHandler = null;
-        String monitorMode = ((GsisshHostType) host).getMonitorMode();
+        String monitorMode = host.getMonitorMode();
         for (ThreadedHandler threadedHandler : daemonHandlers) {
             if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
                 pullMonitorHandler = threadedHandler;

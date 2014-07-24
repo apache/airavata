@@ -113,7 +113,7 @@ public class GFACGSISSHUtils {
         jobDescriptor.setStandardErrorFile(app.getStandardError());
         Random random = new Random();
         int i = random.nextInt();
-        jobDescriptor.setJobName(app.getApplicationName().getStringValue() + String.valueOf(i));
+        jobDescriptor.setJobName(String.valueOf(i));
         jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
 
         List<String> inputValues = new ArrayList<String>();
