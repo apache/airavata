@@ -127,10 +127,11 @@ public class AMQPMonitorTest {
         // Execute command
         System.out.println("Target PBS file path: " + workingDirectory);
         // constructing the job object
+        String jobName = "GSI_SSH_SLEEP_JOB";
         JobDescriptor jobDescriptor = new JobDescriptor();
         jobDescriptor.setWorkingDirectory(workingDirectory);
         jobDescriptor.setShellName("/bin/bash");
-        jobDescriptor.setJobName("GSI_SSH_SLEEP_JOB");
+        jobDescriptor.setJobName(jobName);
         jobDescriptor.setExecutablePath("/bin/echo");
         jobDescriptor.setAllEnvExport(true);
         jobDescriptor.setMailOptions("n");
@@ -150,7 +151,7 @@ public class AMQPMonitorTest {
         String jobID = pbsCluster.submitBatchJob(jobDescriptor);
         System.out.println(jobID);
         try {
-            pushQueue.add(new MonitorID(hostDescription, jobID,null,null,null, "ogce"));
+            pushQueue.add(new MonitorID(hostDescription, jobID,null,null,null, "ogce", jobName));
         } catch (Exception e) {
             e.printStackTrace();
         }
