@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 public class CreateLaunchExperimentUS3 {
 	
 	 //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+    public static final String THRIFT_SERVER_HOST = "gridfarm005.ucs.indiana.edu";
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
@@ -59,10 +59,8 @@ public class CreateLaunchExperimentUS3 {
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.getAPIVersion());
 //            addDescriptors();
-//            final String expId = createExperimentForTrestles(airavata);
-            final String expId = createUS3ExperimentForTrestles(airavata);
-//            final String expId = createExperimentForStampede(airavata);
-//            final String expId = createUS3ExperimentForStampede(airavata);
+//            final String expId = createUS3ExperimentForTrestles(airavata);
+            final String expId = createUS3ExperimentForStampede(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
@@ -202,30 +200,30 @@ public class CreateLaunchExperimentUS3 {
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
             output.setKey("output");
-            output.setType(DataType.URI);
-            output.setValue("");
-            DataObjectType output1 = new DataObjectType();
-            output1.setKey("stdout");
-            output1.setType(DataType.STDOUT);
-            output1.setValue("");
-            DataObjectType output2 = new DataObjectType();
-            output2.setKey("stderr");
-            output2.setType(DataType.STDERR);
-            output2.setValue("");
+//           output.setType(DataType.URI);
+           output.setValue("");
+//            DataObjectType output1 = new DataObjectType();
+//            output1.setKey("stdout");
+//            output1.setType(DataType.STDOUT);
+//            output1.setValue("");
+//            DataObjectType output2 = new DataObjectType();
+//            output2.setKey("stderr");
+//            output2.setType(DataType.STDERR);
+//            output2.setValue("");
             exOut.add(output);
-            exOut.add(output1);
-            exOut.add(output2);
+//            exOut.add(output1);
+//            exOut.add(output2);
 
-            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(project);
+           // Project project = ProjectModelUtil.createProject("ultrascan", "ultrascan", "test project");
+            //String projectId = client.createProject(project);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3ExperimentTrestles", "US3AppTrestles", "US3AppTrestles", exInputs);
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentTrestles", "US3AppTrestles", "ultrascan_68d397d9-ffc2-470e-bdf7-8d7b4f1cab2e", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 2, 32, 0, "shared", 0, 0, 0, "uot111");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.xsede.org_fcf21cd7-d8ce-4359-bd7e-49062ce80265", 32, 2, 0, "shared", 30, 0, 0, "uot111");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             
-            scheduling.setResourceHostId("gsissh-trestles");
+            scheduling.setResourceHostId("trestles.sdsc.xsede.org_fcf21cd7-d8ce-4359-bd7e-49062ce80265");
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
         
@@ -264,27 +262,27 @@ public class CreateLaunchExperimentUS3 {
             output.setKey("output");
             output.setType(DataType.URI);
             output.setValue("");
-            DataObjectType output1 = new DataObjectType();
-            output1.setKey("stdout");
-            output1.setType(DataType.STDOUT);
-            output1.setValue("");
-            DataObjectType output2 = new DataObjectType();
-            output2.setKey("stderr");
-            output2.setType(DataType.STDERR);
-            output2.setValue("");
+//            DataObjectType output1 = new DataObjectType();
+//            output1.setKey("stdout");
+//            output1.setType(DataType.STDOUT);
+//            output1.setValue("");
+//            DataObjectType output2 = new DataObjectType();
+//            output2.setKey("stderr");
+//            output2.setType(DataType.STDERR);
+//            output2.setValue("");
             exOut.add(output);
-            exOut.add(output1);
-            exOut.add(output2);
+//            exOut.add(output1);
+//            exOut.add(output2);
 
-            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(project);
+//            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+//            String projectId = client.createProject(project);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3ExperimentStampede", "US3AppStampede", "US3AppStampede", exInputs);
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_68d397d9-ffc2-470e-bdf7-8d7b4f1cab2e", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 2, 32, 0, "normal", 0, 0, 0, "TG-MCB070039N");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org_7e291aa8-319a-4c70-a3b5-b2e6f91c8f5d", 16, 2, 0, "normal", 30, 0, 0, "TG-MCB070039N");
 
-            scheduling.setResourceHostId("gsissh-stampede");
+            scheduling.setResourceHostId("stampede.tacc.xsede.org_7e291aa8-319a-4c70-a3b5-b2e6f91c8f5d");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
            
             userConfigurationData.setAiravataAutoSchedule(false);
