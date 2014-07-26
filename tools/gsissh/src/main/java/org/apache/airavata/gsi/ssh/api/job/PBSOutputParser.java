@@ -161,8 +161,10 @@ public class PBSOutputParser implements OutputParser {
         String[]    info = rawOutput.split("\n");
         int lastStop = 0;
         for (String jobID : statusMap.keySet()) {
+            String jobId = jobID.split(",")[0];
+            String jobName = jobID.split(",")[1];
             for (int i = lastStop; i < info.length; i++) {
-                if (jobID.split(",")[0].contains(info[i].split(" ")[0]) && !"".equals(info[i].split(" ")[0])) {
+                if (info[i].contains(jobName.substring(0,8))) {
                     // now starts processing this line
                     log.info(info[i]);
                     String correctLine = info[i];
