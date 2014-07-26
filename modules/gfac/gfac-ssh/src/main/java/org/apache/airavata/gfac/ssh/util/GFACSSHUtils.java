@@ -101,7 +101,7 @@ public class GFACSSHUtils {
         jobDescriptor.setStandardErrorFile(app.getStandardError());
         Random random = new Random();
         int i = random.nextInt(Integer.MAX_VALUE);
-        jobDescriptor.setJobName(String.valueOf(i));
+        jobDescriptor.setJobName(String.valueOf(i+99999999));
         jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
 
 
