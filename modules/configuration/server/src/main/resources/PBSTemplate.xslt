@@ -20,6 +20,11 @@
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
+        <xsl:when test="ns:jobName">
+#PBS -N <xsl:value-of select="ns:jobName"/>
+        </xsl:when>
+    </xsl:choose>
+    <xsl:choose>
     <xsl:when test="ns:mailOptions">
 #PBS -m <xsl:value-of select="ns:mailOptions"/>
     </xsl:when>

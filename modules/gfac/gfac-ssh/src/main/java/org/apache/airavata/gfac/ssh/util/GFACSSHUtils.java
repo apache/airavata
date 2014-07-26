@@ -100,7 +100,7 @@ public class GFACSSHUtils {
         jobDescriptor.setStandardOutFile(app.getStandardOutput());
         jobDescriptor.setStandardErrorFile(app.getStandardError());
         Random random = new Random();
-        int i = random.nextInt();
+        int i = random.nextInt(Integer.MAX_VALUE);
         jobDescriptor.setJobName(String.valueOf(i));
         jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
 
