@@ -94,7 +94,6 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
 
             String jobID = cluster.submitBatchJob(jobDescriptor);
             jobExecutionContext.setJobDetails(jobDetails);
-            jobID = null; // todo should remove this line
             if (jobID == null) {
                 jobDetails.setJobID("none");
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
