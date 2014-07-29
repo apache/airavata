@@ -58,7 +58,7 @@ public class GFACGSISSHUtils {
 
     public static final String PBS_JOB_MANAGER = "pbs";
     public static final String SLURM_JOB_MANAGER = "slurm";
-    public static final String SUN_GRID_ENGINE_JOB_MANAGER = "sge";
+    public static final String SUN_GRID_ENGINE_JOB_MANAGER = "UGE";
 
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
         HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
