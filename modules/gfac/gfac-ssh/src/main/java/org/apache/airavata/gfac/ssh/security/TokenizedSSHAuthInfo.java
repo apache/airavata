@@ -84,7 +84,7 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
                 gssCredentials = getCredentialsFromStore();
             } catch (Exception e) {
                 log.error("An exception occurred while retrieving credentials from the credential store. " +
-                        "Will continue with my proxy user name and password. Provided TokenId:" + requestData.getTokenId(), e);
+                        "Will continue with my proxy user name and password. Provided TokenId:" + requestData.getTokenId() + e.getMessage(), e);
             }
 
             if (gssCredentials == null) {

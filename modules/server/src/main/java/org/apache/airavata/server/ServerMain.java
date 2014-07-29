@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,11 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.StringUtil.CommandLineParameters;
 import org.apache.commons.cli.ParseException;
+import org.apache.zookeeper.server.ServerCnxnFactory;
+import org.apache.zookeeper.server.ServerConfig;
+import org.apache.zookeeper.server.ZooKeeperServer;
+import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
+import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +56,7 @@ public class ServerMain {
 	private static boolean systemShutDown=false;
 	private static String STOP_COMMAND_STR = "stop";
 
+    private static ServerCnxnFactory cnxnFactory;
 //	private static boolean shutdownHookCalledBefore=false;
     static{
 		servers = new ArrayList<IServer>();
@@ -118,16 +125,79 @@ public class ServerMain {
 //		if (true){
 //			return;
 //		}
-		
-		AiravataUtils.setExecutionAsServer();
-		CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
-		if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
-			performServerStopRequest(commandLineParameters);
-		}else{
-			performServerStart(args);
-		}
-	}
 
+        AiravataUtils.setExecutionAsServer();
+        CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
+        if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
+            performServerStopRequest(commandLineParameters);
+        }else{
+            if (ServerSettings.isEmbeddedZK()) {
+                ServerConfig serverConfig = new ServerConfig();
+                URL resource = ServerMain.class.getClassLoader().getResource("zoo.cfg");
+                if (resource == null) {
+                    logger.error("There is no zoo.cfg file in the classpath... Failed to start Zookeeper Server");
+                    System.exit(1);
+                }
+                try {
+                    serverConfig.parse(resource.getPath());
+                } catch (QuorumPeerConfig.ConfigException e) {
+                    logger.error("Error while starting embedded Zookeeper", e);
+                    System.exit(2);
+                }
+
+                final ServerConfig fServerConfig = serverConfig;
+                (new Thread() {
+                    public void run() {
+                        try {
+                            runZKFromConfig(fServerConfig);
+                        } catch (IOException e) {
+                            logger.error("Error while starting embedded Zookeeper", e);
+                            System.exit(3);
+                        }
+                    }
+                }).start();
+            }else{
+                logger.info("Skipping Zookeeper embedded startup ...");
+            }
+            performServerStart(args);
+		}
+
+    }
+
+    private static void runZKFromConfig(ServerConfig config) throws IOException {
+        logger.info("Starting Zookeeper server...");
+        FileTxnSnapLog txnLog = null;
+        try {
+            // Note that this thread isn't going to be doing anything else,
+            // so rather than spawning another thread, we will just call
+            // run() in this thread.
+            // create a file logger url from the command line args
+            ZooKeeperServer zkServer = new ZooKeeperServer();
+
+            txnLog = new FileTxnSnapLog(new File(config.getDataDir()), new File(
+                    config.getDataDir()));
+            zkServer.setTxnLogFactory(txnLog);
+            zkServer.setTickTime(config.getTickTime());
+            zkServer.setMinSessionTimeout(config.getMinSessionTimeout());
+            zkServer.setMaxSessionTimeout(config.getMaxSessionTimeout());
+            cnxnFactory = ServerCnxnFactory.createFactory();
+            cnxnFactory.configure(config.getClientPortAddress(),
+                    config.getMaxClientCnxns());
+            cnxnFactory.startup(zkServer);
+            cnxnFactory.join();
+            if (zkServer.isRunning()) {
+                zkServer.shutdown();
+            }
+        } catch (InterruptedException e) {
+            // warn, but generally this is ok
+            logger.warn("Server interrupted", e);
+            System.exit(1);
+        } finally {
+            if (txnLog != null) {
+                txnLog.close();
+            }
+        }
+    }
 	private static void performServerStart(String[] args) {
 		setServerStarted();
 		logger.info("Airavata server instance starting...");
@@ -182,7 +252,10 @@ public class ServerMain {
 		}else{
 			logger.error("Server"+(serverPID==-1? "":" instance "+serverPID)+" is not running!!!");
 		}
-	}
+        if (ServerSettings.isEmbeddedZK()) {
+            cnxnFactory.shutdown();
+        }
+    }
 
 	@SuppressWarnings("resource")
 	private static void requestStop() throws IOException {
