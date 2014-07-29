@@ -48,6 +48,7 @@ public class ServerSettings extends ApplicationSettings{
     
     private static final String TOMCAT_PORT = "port";
     private static final String SERVER_CONTEXT_ROOT="server.context-root";
+    public static final String EMBEDDED_ZK = "embedded.zk";
     private static String tomcatPort=null;
 
     private static final String CREDENTIAL_STORE_DB_URL ="credential.store.jdbc.url";
@@ -217,5 +218,8 @@ public class ServerSettings extends ApplicationSettings{
     }
     public static String[] getActivityListeners() throws ApplicationSettingsException {
         return getSetting(ACTIVITY_LISTENERS).split(",");
+    }
+    public static boolean isEmbeddedZK() {
+        return Boolean.parseBoolean(getSetting(EMBEDDED_ZK, "true"));
     }
 }

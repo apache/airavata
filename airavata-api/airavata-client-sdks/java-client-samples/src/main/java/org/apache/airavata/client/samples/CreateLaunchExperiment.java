@@ -82,10 +82,10 @@ public class CreateLaunchExperiment {
 ////            final String expId = createExperimentForSSHHost(airavata);
 ////            final String expId = createExperimentForTrestles(client);
 ////            final String expId = createExperimentForStampede(client);
-//            final String expId = createExperimentForLocalHost(client);
+            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentWRFTrestles(client);
-            final String expId = createExperimentForBR2(client);
+//            final String expId = createExperimentForBR2(client);
 //            final String expId = createExperimentForBR2Amber(client);
 //            final String expId = createExperimentWRFStampede(client);
 //            final String expId = createExperimentForStampedeAmber(client);

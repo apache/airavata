@@ -84,7 +84,7 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
                 gssCredentials = getCredentialsFromStore();
             } catch (Exception e) {
                 log.error("An exception occurred while retrieving credentials from the credential store. " +
-                        "Will continue with my proxy user name and password. Provided TokenId:" + requestData.getTokenId(), e);
+                        "Will continue with my proxy user name and password. Provided TokenId:" + requestData.getTokenId() + e.getMessage(), e);
             }
 
             if (gssCredentials == null) {
@@ -148,12 +148,12 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
     public SSHCredential getDefaultCredentials() throws GFacException, ApplicationSettingsException {
         Properties configurationProperties = ServerSettings.getProperties();
         String sshUserName = configurationProperties.getProperty(Constants.SSH_USER_NAME);
-        String sshPrivateKey = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY);
-        String sshPrivateKeyPass = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
-        String sshPassword = configurationProperties.getProperty(Constants.SSH_PASSWORD);
-        String sshPublicKey = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
         this.getRequestData().setRequestUser(sshUserName);
-        return new SSHCredential(sshPrivateKey.getBytes(), sshPublicKey.getBytes(), sshPrivateKeyPass, requestData.getGatewayId(), sshUserName);
+        this.privateKeyFile = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY);
+        this.publicKeyFile = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
+        this.passPhrase = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
+        this.getRequestData().setRequestUser(sshUserName);
+        return new SSHCredential(null, null, null, requestData.getGatewayId(), sshUserName);
     }
 
     public CredentialReader getCredentialReader() {

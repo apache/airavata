@@ -161,7 +161,7 @@ public class SlurmOutputParser implements OutputParser {
             String jobId = jobID.split(",")[0];
             String jobName = jobID.split(",")[1];
             for (int i = lastStop; i < info.length; i++) {
-                if (info[i].contains(jobId) || info[i].contains(jobName.substring(0,8))) {
+                if (info[i].contains(jobName.substring(0,8))) {
                     // now starts processing this line
                     log.info(info[i]);
                     String correctLine = info[i];
