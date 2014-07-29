@@ -106,6 +106,7 @@
             <outputDirectory>bin</outputDirectory>
             <includes>
                 <include>airavata-server.properties</include>
+		<include>zoo.cfg</include>
                 <include>registry.properties</include>
                 <include>log4j.properties</include>
                 <include>host.xml</include>

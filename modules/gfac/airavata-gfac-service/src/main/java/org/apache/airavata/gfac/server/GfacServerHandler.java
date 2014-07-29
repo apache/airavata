@@ -73,47 +73,26 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
 
     private MonitorPublisher publisher;
 
+    private String gfacServer;
+
+    private String gfacExperiments;
+
+    private String airavataServerHostPort;
 
     public GfacServerHandler() {
         // registering with zk
         try {
             String zkhostPort = AiravataZKUtils.getZKhostPort();
-            String airavataServerHostPort = ServerSettings.getSetting(Constants.GFAC_SERVER_HOST)
+            airavataServerHostPort = ServerSettings.getSetting(Constants.GFAC_SERVER_HOST)
                     + ":" + ServerSettings.getSetting(Constants.GFAC_SERVER_PORT);
             try {
                 zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
-                String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE,"/gfac-server");
-                String gfacExperiments = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE,"/gfac-experiments");
+                gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE,"/gfac-server");
+                gfacExperiments = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE,"/gfac-experiments");
                 synchronized(mutex){
                     mutex.wait();  // waiting for the syncConnected event
                 }
-                Stat zkStat = zk.exists(gfacServer, false);
-                if (zkStat == null) {
-                    zk.create(gfacServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.PERSISTENT);
-                }
-                String instanceId = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME);
-                String instantNode = gfacServer + File.separator + instanceId;
-                zkStat = zk.exists(instantNode, false);
-                if (zkStat == null) {
-                    zk.create(instantNode,
-                            airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
-                }
-                zkStat = zk.exists(gfacExperiments, false);
-                if (zkStat == null) {
-                    zk.create(gfacExperiments,
-                            airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.PERSISTENT);
-                }
-                zkStat = zk.exists(gfacExperiments + File.separator + instanceId, false);
-                if (zkStat == null) {
-                    zk.create(gfacExperiments + File.separator + instanceId,
-                            airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.PERSISTENT);
-                }else{
-                    logger.error(" Zookeeper is inconsistent state  !!!!!");
-                }
+                storeServerConfig();
                 logger.info("Finished starting ZK: " + zk);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -137,9 +116,40 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         }
     }
 
+    private void storeServerConfig() throws KeeperException, InterruptedException, ApplicationSettingsException {
+        Stat zkStat = zk.exists(gfacServer, false);
+        if (zkStat == null) {
+            zk.create(gfacServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
+        }
+        String instanceId = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME);
+        String instantNode = gfacServer + File.separator + instanceId;
+        zkStat = zk.exists(instantNode, false);
+        if (zkStat == null) {
+            zk.create(instantNode,
+                    airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
+        }
+        zkStat = zk.exists(gfacExperiments, false);
+        if (zkStat == null) {
+            zk.create(gfacExperiments,
+                    airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
+        }
+        zkStat = zk.exists(gfacExperiments + File.separator + instanceId, false);
+        if (zkStat == null) {
+            zk.create(gfacExperiments + File.separator + instanceId,
+                    airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
+        }else{
+            logger.error(" Zookeeper is inconsistent state  !!!!!");
+        }
+    }
+
     synchronized public void process(WatchedEvent watchedEvent) {
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();
+            logger.info(state.name());
             if (state == Event.KeeperState.SyncConnected) {
                 mutex.notify();
                 connected = true;
@@ -147,9 +157,14 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
                     state == Event.KeeperState.Disconnected){
                 try {
                     zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(),6000,this);
+                    storeServerConfig();
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ApplicationSettingsException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (KeeperException e) {
                     e.printStackTrace();
                 }
             }
