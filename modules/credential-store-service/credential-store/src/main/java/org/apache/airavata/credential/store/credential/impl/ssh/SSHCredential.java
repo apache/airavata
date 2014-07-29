@@ -50,6 +50,7 @@ public class SSHCredential extends Credential implements Serializable {
         this.passphrase = passphrase;
         this.gateway = gateway;
         this.username = username;
+        this.setPortalUserName(username);
     }
 
     public byte[] getPrivateKey() {
@@ -83,4 +84,5 @@ public class SSHCredential extends Credential implements Serializable {
 	public void setGateway(String gateway) {
 		this.gateway = gateway;
 	}
+
 }

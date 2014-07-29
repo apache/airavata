@@ -658,7 +658,7 @@ public class DocumentCreatorNew {
 
 
         Map<JobManagerCommand, String> commands = new HashMap<JobManagerCommand, String>();
-        commands.put(JobManagerCommand.SUBMISSION, "aprun -n 1");
+        commands.put(JobManagerCommand.SUBMISSION, "aprun -n");
         ResourceJobManager resourceJobManager = DocumentCreatorUtils.createResourceJobManager(ResourceJobManagerType.UGE, "/opt/torque/torque-4.2.3.1/bin/", commands, null);
         SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
         sshJobSubmission.setResourceJobManager(resourceJobManager);
