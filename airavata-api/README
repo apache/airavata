@@ -4,16 +4,14 @@ Licensed under Apache License 2.0 - http://www.apache.org/licenses/LICENSE-2.0
 
 This file describes the organization of Apache Airavata Thrift Interfaces and Data Model
 
-
-
 Airavata Data Model:
 
+  Application Catalog
+  |- Application Interface Descriptions
+  |- Application Deployment Descriptions
+  |- Computational Resource Descriptions
+
 Gateway
-  |- Application Catalog
-  |   |- Application Interface Descriptions
-  |   |- Application Deployment Descriptions
-  |   |- Computational Host Descriptions
-  |   |- Workflow Templates
   |
   |- Groups (Groups is explicitly defined with a set of users within it)
   |   |-Users
