@@ -115,7 +115,7 @@ public class RegisterSampleApplications {
             System.out.println("API version is " + airavataClient.getAPIVersion());
 
             //Register all compute hosts
-//            registerXSEDEHosts();
+            registerXSEDEHosts();
 
             //Register Gateway Resource Preferences
 //            registerGatewayResourceProfile();
