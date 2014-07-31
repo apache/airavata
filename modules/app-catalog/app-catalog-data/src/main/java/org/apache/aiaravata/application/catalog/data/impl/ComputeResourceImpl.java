@@ -107,7 +107,7 @@ public class ComputeResourceImpl implements ComputeResource {
 		    	DataMovementInterfaceResource dmir = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
 		    	dmir.setComputeHostResource(computeHostResource);
 		    	dmir.setComputeResourceId(computeHostResource.getResourceId());
-				computeHostResource.save();
+				dmir.save();
 		    }
 		}
 	}
@@ -122,7 +122,7 @@ public class ComputeResourceImpl implements ComputeResource {
 		    	JobSubmissionInterfaceResource jsir = AppCatalogThriftConversion.getJobSubmissionInterface(jobSubmissionInterface);
 				jsir.setComputeHostResource(computeHostResource);
 				jsir.setComputeResourceId(computeHostResource.getResourceId());
-				computeHostResource.save();
+				jsir.save();
 		    }
 		}
 	}
