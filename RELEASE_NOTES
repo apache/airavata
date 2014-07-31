@@ -2,6 +2,80 @@ Apache Airavata Release Notes
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+Apache Airavata Version 0.13 Released on 2014-08-02
+===================================================
+
+Whats new in this release:
+    * A key addition in this release is addition of App catalog. The app catalog incorporates registering applications,
+      computational resources and flexible use of job management and data movement protocols.
+ More Details:
+    * [AIRAVATA-1125] - Application Catalog
+    * [AIRAVATA-1067] - Allow file transfer from the gateway to the resource through Airavata
+    * [AIRAVATA-1015] - Craft data models for application catalog
+    * [AIRAVATA-1236] - Database design for Application Catalog
+    * [AIRAVATA-1302] - Implement App catalog open-jpa layer and resource layer
+    * [AIRAVATA-1303] - Start app-catalog database with app catalog thrift service starts
+    * [AIRAVATA-1305] - Adding test cases to test app-catalog cpi
+
+API Changes:
+    * AppCatalog API was added as described above.
+    * No changes were made to previously release API methods.
+
+Improvement made in this release:
+    *  This release bundles a stable iteration of using Apache thrift as a framework to implement Airavata API.
+ More Details:
+    * [AIRAVATA-481] - GFac Sample
+    * [AIRAVATA-958] - Integrate airavata credential store with GSISSH library in order to retrieve credentials
+    * [AIRAVATA-989] - Clone a created experiment in Orchestrator to launch on different host
+    * [AIRAVATA-1070] - Integrate the SSH file transfer between the gateway and resources to the Gfac
+    * [AIRAVATA-1126] - Application Catalog Design
+    * [AIRAVATA-1235] - No error type defined for a missing Project
+
+Issues fixed in this release:
+    * Testing and bug fixing resulted in the following fixes.
+    * [AIRAVATA-437] - Stdout and stderr files are read as string and will be problem if the file are big
+    * [AIRAVATA-743] - Cleanup database sql scripts
+    * [AIRAVATA-950] - Host parameters not saved in the database
+    * [AIRAVATA-951] - Misleading error message in airavata server console when submitting a job to BR2
+    * [AIRAVATA-975] - Wrong exception given when certificate path is configured incorrectly
+    * [AIRAVATA-1026] - GFacAPI logic to load input/output handlers is not working property
+    * [AIRAVATA-1058] - Airavata 0.11 Source Build: Dependency Problems
+    * [AIRAVATA-1085] - Update the Experiment Status
+    * [AIRAVATA-1119] - JPARegistry tests are failing
+    * [AIRAVATA-1310] - When entered gateway username and password user gets redirected to XSEDE user portal
+    * [AIRAVATA-1338] - Cannot create Experiments using PHP Gateway
+    * [AIRAVATA-1345] - Refresh button for Experiment Status page
+    * [AIRAVATA-1347] - Cannot edit or view summery of experiments created with WRF application and its input files attached
+    * [AIRAVATA-1348] - Cannot Save and Launch WRF experiment at the same time. It fails.
+
+Client Packages:
+    * A key client side focus of this releases is to validate Airavata functionality with PHP clients.
+       a PHP Reference Gateway is developed to exercise API functionality.
+    * PHP command line samples also have been developed and tested against the API.
+    * An initial version of the C++ SDK was also contributed but is not yet fully tested.
+ More Details:
+    * [AIRAVATA-1064] - Create php Samples using Airavata Thrift API Client SDKs
+    * [AIRAVATA-1352] - In PGA gateway, include creation time in Experiment Summary
+
+Upgrade Instructions:
+    * Airavata 0.13 should work with the previous 0.12 release.
+    * Older releases will need to be manually updated. Beyond 1.0, Airavata will maintain backward compatibility within
+      major releases.
+
+Known Issues:
+    * Airavata 0.13 continous to be a stepping stone towards a stable 1.0 release. A known limitation is lack of a UI
+      to register applications (using the app-catalog API).
+    * XBaya and the workflow capabilities are being integrated into the new architecture and do not yet work with this
+       release. A subsequent release (0.14) will bring back workflows into a functioning.
+
+Documentation:
+    * This release was used as a tutorial to outreach apache airavata to science gateway developers.
+    * Tutorial documentation - https://cwiki.apache.org/confluence/display/AIRAVATA/XSEDE+2014+Tutorial
+    * [AIRAVATA-858] - Error data retrieval from the Airavata API
+    * [AIRAVATA-1329] - Document Hands on tutorial material on PHP reference gateway
+    * [AIRAVATA-583] - Improve content coordination across website and wiki
+
+
 Apache Airavata Version 0.12 Released on 2014-06-27
 ===================================================
 This release is a first iteration of using Apache thrift as a framework to implement Airavata API.
