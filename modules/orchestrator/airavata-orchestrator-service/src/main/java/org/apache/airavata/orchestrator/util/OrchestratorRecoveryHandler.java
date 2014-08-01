@@ -21,6 +21,7 @@
 package org.apache.airavata.orchestrator.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
@@ -67,8 +68,7 @@ public class OrchestratorRecoveryHandler implements Watcher {
      * @throws InterruptedException
      */
     public void recover() throws OrchestratorException, ApplicationSettingsException, IOException, KeeperException, InterruptedException {
-        String zkhostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_HOST)
-                + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_PORT);
+        String zkhostPort = AiravataZKUtils.getZKhostPort();
         zk = new ZooKeeper(zkhostPort, 6000, this);
         synchronized (mutex) {
             mutex.wait();

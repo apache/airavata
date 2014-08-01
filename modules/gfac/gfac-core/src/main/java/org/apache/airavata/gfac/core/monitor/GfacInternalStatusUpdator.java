@@ -57,8 +57,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         Stat exists = null;
         try {
             if (!zk.getState().isConnected()) {
-                String zkhostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_HOST)
-                        + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_SERVER_PORT);
+                String zkhostPort = AiravataZKUtils.getZKhostPort();
                 zk = new ZooKeeper(zkhostPort, 6000, this);
                 synchronized (mutex){
                     mutex.wait();

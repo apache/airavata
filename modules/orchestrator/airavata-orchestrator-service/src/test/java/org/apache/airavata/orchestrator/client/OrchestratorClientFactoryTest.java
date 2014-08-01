@@ -27,12 +27,15 @@ import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.AiravataZKUtils;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.client.util.Initialize;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.server.OrchestratorServer;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.junit.Test;
 
 public class OrchestratorClientFactoryTest {
@@ -42,11 +45,16 @@ public class OrchestratorClientFactoryTest {
     private int NUM_CONCURRENT_REQUESTS = 1;
     Initialize initialize;
     OrchestratorServer service;
+    private static ServerCnxnFactory cnxnFactory;
+
     @Test
     public void setUp() {
     	AiravataUtils.setExecutionAsServer();
         initialize = new Initialize("registry-derby.sql");
         initialize.initializeDB();
+        System.setProperty(Constants.ZOOKEEPER_SERVER_PORT,"2185");
+        AiravataZKUtils.startEmbeddedZK(cnxnFactory);
+
         try {
             service = (new OrchestratorServer());
             service.start();
