@@ -102,7 +102,7 @@
 
     
     <properties>
-        <jersey.version>1.13-SNAPSHOT</jersey.version>
+        <jersey.version>1.13</jersey.version>
         <grizzly.version>2.0.0-M3</grizzly.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archive.name>apache-airavata-client-cpp-sdk</archive.name>
