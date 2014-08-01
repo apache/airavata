@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata-client-parent</artifactId>
-        <version>0.13</version>
+        <version>0.13-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -379,7 +379,7 @@
         </dependency>
     </dependencies>
     <properties>
-        <jersey.version>1.13</jersey.version>
+        <jersey.version>1.13-SNAPSHOT</jersey.version>
         <grizzly.version>2.0.0-M3</grizzly.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata-client</archieve.name>
