@@ -1,0 +1,152 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+package org.apache.airavata.client.cli_samples;
+
+import org.apache.airavata.model.error.*;
+import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.thrift.TException;
+import org.ini4j.Ini;
+import org.ini4j.InvalidFileFormatException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CreateExperiment {
+	public static String THRIFT_SERVER_HOST = "localhost";
+    public static int THRIFT_SERVER_PORT = 8930;
+    private static Airavata.Client client;
+    
+    private final static Logger logger = LoggerFactory.getLogger(CreateExperiment.class);
+    
+    public static void readConfigFile(){
+    	Ini ini = null;
+		try {
+			ini = new Ini(new File("src/main/resources/airavata-client-properties.ini"));
+		} catch (InvalidFileFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	THRIFT_SERVER_HOST = ini.get("airavata", "AIRAVATA_SERVER");
+    	THRIFT_SERVER_PORT = Integer.parseInt(ini.get("airavata", "AIRAVATA_PORT"));
+    }
+    
+    public static String createExperiment(String projId, String owner, String expName){
+    	AiravataUtils.setExecutionAsClient();
+        try {
+			client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
+		} catch (AiravataClientConnectException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	String expId = "";
+    	try{
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("echo_input");
+            input.setType(DataType.STRING);
+            input.setValue("echo_output=Hello World");
+            exInputs.add(input);
+
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("echo_output");
+            output.setType(DataType.STRING);
+            output.setValue("");
+            exOut.add(output);
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment(projId, owner, expName, "SimpleEcho2", "SimpleEcho2", exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            userConfigurationData.setAiravataAutoSchedule(false);
+            userConfigurationData.setOverrideManualScheduledParams(false);
+            userConfigurationData.setComputationalResourceScheduling(scheduling);
+            simpleExperiment.setUserConfigurationData(userConfigurationData);
+            expId = client.createExperiment(simpleExperiment);
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            try {
+				throw new AiravataSystemException(e);
+			} catch (AiravataSystemException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            try {
+				throw new InvalidRequestException(e);
+			} catch (InvalidRequestException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            try {
+				throw new AiravataClientException(e);
+			} catch (AiravataClientException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        }catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            try {
+				throw new TException(e);
+			} catch (TException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+        }
+    	return expId;
+    }
+    
+    public static void main(String[] args) {
+    	if(args.length!=3){
+    		System.out.println("Inputs required: projectId Owner experimentName");
+    		return;
+    	}
+    	readConfigFile();
+    	String projId = args[0];
+    	String owner = args[1];
+    	String expName = args[2];
+    	String expId = createExperiment(projId, owner, expName);
+    	if(expId!=""){
+    		System.out.println("Experiment with id : "+ expId + " created.");
+    	}
+    	else{
+    		System.out.println("Failed to create new experiment");
+    	}
+    }
+
+}
