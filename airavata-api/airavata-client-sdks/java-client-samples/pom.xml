@@ -15,7 +15,7 @@
     <parent>
         <artifactId>airavata-client-sdks</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.13-SNAPSHOT</version>
+        <version>0.12</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -26,6 +26,11 @@
 
     <dependencies>
     
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.12</version>
+		</dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-data-models</artifactId>
@@ -74,13 +79,18 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.connector.version}</version>
+            <version>5.1.17</version>
         </dependency>
 	<dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-client-configuration</artifactId>
             <version>${project.version}</version>
         </dependency>
+	<dependency>
+		<groupId>org.ini4j</groupId>
+		<artifactId>ini4j</artifactId>
+		<version>0.5.2</version>
+	</dependency>
     </dependencies>
 
 </project>
