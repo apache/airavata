@@ -35,8 +35,8 @@ import java.io.File;
 import java.io.IOException;
 
 public class CreateProject{	
-	public static String THRIFT_SERVER_HOST = "localhost";
-    public static int THRIFT_SERVER_PORT = 8930;
+	public static String THRIFT_SERVER_HOST = "";
+    public static int THRIFT_SERVER_PORT = 0;
     private static Airavata.Client client;
     
     public static void readConfigFile(){
