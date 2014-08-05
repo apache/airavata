@@ -320,6 +320,15 @@ struct UnicoreJobSubmission {
 
 
 /**
+* Provider name
+**/
+enum ProviderName {
+    EC2,
+    AWSEC2,
+    RACKSPACE
+}
+
+/**
  * Cloud Job Submission
  *
  *
@@ -333,14 +342,7 @@ struct CloundJobSubmission {
     6: required string userAccountName
 }
 
-/**
-* Provider name
-**/
-enum ProviderName {
-    EC2,
-    AWSEC2,
-    RACKSPACE
-}
+
 
 
 

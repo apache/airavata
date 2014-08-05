@@ -31,7 +31,8 @@ import org.apache.thrift.TEnum;
 @SuppressWarnings("all") public enum ExecutionUnit implements org.apache.thrift.TEnum {
   INPUT(0),
   APPLICATION(1),
-  OUTPUT(2);
+  OUTPUT(2),
+  OTHER(3);
 
   private final int value;
 
@@ -58,6 +59,8 @@ import org.apache.thrift.TEnum;
         return APPLICATION;
       case 2:
         return OUTPUT;
+      case 3:
+        return OTHER;
       default:
         return null;
     }

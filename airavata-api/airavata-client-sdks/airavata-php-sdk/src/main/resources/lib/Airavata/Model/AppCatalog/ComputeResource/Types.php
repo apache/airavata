@@ -84,11 +84,13 @@ final class JobSubmissionProtocol {
   const SSH = 1;
   const GLOBUS = 2;
   const UNICORE = 3;
+  const CLOUD = 4;
   static public $__names = array(
     0 => 'LOCAL',
     1 => 'SSH',
     2 => 'GLOBUS',
     3 => 'UNICORE',
+    4 => 'CLOUD',
   );
 }
 
@@ -104,6 +106,17 @@ final class DataMovementProtocol {
     2 => 'SFTP',
     3 => 'GridFTP',
     4 => 'UNICORE_STORAGE_SERVICE',
+  );
+}
+
+final class ProviderName {
+  const EC2 = 0;
+  const AWSEC2 = 1;
+  const RACKSPACE = 2;
+  static public $__names = array(
+    0 => 'EC2',
+    1 => 'AWSEC2',
+    2 => 'RACKSPACE',
   );
 }
 
@@ -1414,6 +1427,178 @@ class UnicoreJobSubmission {
     if ($this->unicoreEndPointURL !== null) {
       $xfer += $output->writeFieldBegin('unicoreEndPointURL', TType::STRING, 3);
       $xfer += $output->writeString($this->unicoreEndPointURL);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class CloundJobSubmission {
+  static $_TSPEC;
+
+  public $jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
+  public $securityProtocol = null;
+  public $nodeId = null;
+  public $executableType = null;
+  public $providerName = null;
+  public $userAccountName = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'jobSubmissionInterfaceId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'securityProtocol',
+          'type' => TType::I32,
+          ),
+        3 => array(
+          'var' => 'nodeId',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'executableType',
+          'type' => TType::STRING,
+          ),
+        5 => array(
+          'var' => 'providerName',
+          'type' => TType::I32,
+          ),
+        6 => array(
+          'var' => 'userAccountName',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['jobSubmissionInterfaceId'])) {
+        $this->jobSubmissionInterfaceId = $vals['jobSubmissionInterfaceId'];
+      }
+      if (isset($vals['securityProtocol'])) {
+        $this->securityProtocol = $vals['securityProtocol'];
+      }
+      if (isset($vals['nodeId'])) {
+        $this->nodeId = $vals['nodeId'];
+      }
+      if (isset($vals['executableType'])) {
+        $this->executableType = $vals['executableType'];
+      }
+      if (isset($vals['providerName'])) {
+        $this->providerName = $vals['providerName'];
+      }
+      if (isset($vals['userAccountName'])) {
+        $this->userAccountName = $vals['userAccountName'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'CloundJobSubmission';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->jobSubmissionInterfaceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->securityProtocol);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->nodeId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->executableType);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->providerName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userAccountName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('CloundJobSubmission');
+    if ($this->jobSubmissionInterfaceId !== null) {
+      $xfer += $output->writeFieldBegin('jobSubmissionInterfaceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->jobSubmissionInterfaceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->securityProtocol !== null) {
+      $xfer += $output->writeFieldBegin('securityProtocol', TType::I32, 2);
+      $xfer += $output->writeI32($this->securityProtocol);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->nodeId !== null) {
+      $xfer += $output->writeFieldBegin('nodeId', TType::STRING, 3);
+      $xfer += $output->writeString($this->nodeId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->executableType !== null) {
+      $xfer += $output->writeFieldBegin('executableType', TType::STRING, 4);
+      $xfer += $output->writeString($this->executableType);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->providerName !== null) {
+      $xfer += $output->writeFieldBegin('providerName', TType::I32, 5);
+      $xfer += $output->writeI32($this->providerName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userAccountName !== null) {
+      $xfer += $output->writeFieldBegin('userAccountName', TType::STRING, 6);
+      $xfer += $output->writeString($this->userAccountName);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

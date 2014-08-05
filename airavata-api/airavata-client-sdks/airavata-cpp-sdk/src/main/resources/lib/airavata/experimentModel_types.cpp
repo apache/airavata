@@ -240,14 +240,16 @@ const std::map<int, const char*> _DataType_VALUES_TO_NAMES(::apache::thrift::TEn
 int _kExecutionUnitValues[] = {
   ExecutionUnit::INPUT,
   ExecutionUnit::APPLICATION,
-  ExecutionUnit::OUTPUT
+  ExecutionUnit::OUTPUT,
+  ExecutionUnit::OTHER
 };
 const char* _kExecutionUnitNames[] = {
   "INPUT",
   "APPLICATION",
-  "OUTPUT"
+  "OUTPUT",
+  "OTHER"
 };
-const std::map<int, const char*> _ExecutionUnit_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(3, _kExecutionUnitValues, _kExecutionUnitNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ExecutionUnit_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kExecutionUnitValues, _kExecutionUnitNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 const char* ExperimentStatus::ascii_fingerprint = "1662AAADFABAB647546029B578B3B69B";
 const uint8_t ExperimentStatus::binary_fingerprint[16] = {0x16,0x62,0xAA,0xAD,0xFA,0xBA,0xB6,0x47,0x54,0x60,0x29,0xB5,0x78,0xB3,0xB6,0x9B};

@@ -222,10 +222,12 @@ final class ExecutionUnit {
   const INPUT = 0;
   const APPLICATION = 1;
   const OUTPUT = 2;
+  const OTHER = 3;
   static public $__names = array(
     0 => 'INPUT',
     1 => 'APPLICATION',
     2 => 'OUTPUT',
+    3 => 'OTHER',
   );
 }
 

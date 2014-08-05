@@ -29,28 +29,17 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * Enumeration of Airavata supported Job Submission Mechanisms for High Performance Computing Clusters.
- * 
- * SSH:
- *  Execute remote job submission commands using via secure shell protocol.
- * 
- * GRAM:
- *  Execute remote jobs via Globus GRAM service.
- * 
- * UNICORE:
- *  Execute remote jobs via Unicore services
+ * Provider name
  * 
  */
-@SuppressWarnings("all") public enum JobSubmissionProtocol implements org.apache.thrift.TEnum {
-  LOCAL(0),
-  SSH(1),
-  GLOBUS(2),
-  UNICORE(3),
-  CLOUD(4);
+@SuppressWarnings("all") public enum ProviderName implements org.apache.thrift.TEnum {
+  EC2(0),
+  AWSEC2(1),
+  RACKSPACE(2);
 
   private final int value;
 
-  private JobSubmissionProtocol(int value) {
+  private ProviderName(int value) {
     this.value = value;
   }
 
@@ -65,18 +54,14 @@ import org.apache.thrift.TEnum;
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static JobSubmissionProtocol findByValue(int value) { 
+  public static ProviderName findByValue(int value) { 
     switch (value) {
       case 0:
-        return LOCAL;
+        return EC2;
       case 1:
-        return SSH;
+        return AWSEC2;
       case 2:
-        return GLOBUS;
-      case 3:
-        return UNICORE;
-      case 4:
-        return CLOUD;
+        return RACKSPACE;
       default:
         return null;
     }

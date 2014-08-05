@@ -88,7 +88,8 @@ struct JobSubmissionProtocol {
     LOCAL = 0,
     SSH = 1,
     GLOBUS = 2,
-    UNICORE = 3
+    UNICORE = 3,
+    CLOUD = 4
   };
 };
 
@@ -105,6 +106,16 @@ struct DataMovementProtocol {
 };
 
 extern const std::map<int, const char*> _DataMovementProtocol_VALUES_TO_NAMES;
+
+struct ProviderName {
+  enum type {
+    EC2 = 0,
+    AWSEC2 = 1,
+    RACKSPACE = 2
+  };
+};
+
+extern const std::map<int, const char*> _ProviderName_VALUES_TO_NAMES;
 
 typedef struct _ResourceJobManager__isset {
   _ResourceJobManager__isset() : pushMonitoringEndpoint(false), jobManagerBinPath(false), jobManagerCommands(false) {}
@@ -727,6 +738,78 @@ class UnicoreJobSubmission {
 };
 
 void swap(UnicoreJobSubmission &a, UnicoreJobSubmission &b);
+
+
+class CloundJobSubmission {
+ public:
+
+  static const char* ascii_fingerprint; // = "F98AE2E6E51F2426504F2566EB71B5CC";
+  static const uint8_t binary_fingerprint[16]; // = {0xF9,0x8A,0xE2,0xE6,0xE5,0x1F,0x24,0x26,0x50,0x4F,0x25,0x66,0xEB,0x71,0xB5,0xCC};
+
+  CloundJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), nodeId(), executableType(), providerName((ProviderName::type)0), userAccountName() {
+  }
+
+  virtual ~CloundJobSubmission() throw() {}
+
+  std::string jobSubmissionInterfaceId;
+  SecurityProtocol::type securityProtocol;
+  std::string nodeId;
+  std::string executableType;
+  ProviderName::type providerName;
+  std::string userAccountName;
+
+  void __set_jobSubmissionInterfaceId(const std::string& val) {
+    jobSubmissionInterfaceId = val;
+  }
+
+  void __set_securityProtocol(const SecurityProtocol::type val) {
+    securityProtocol = val;
+  }
+
+  void __set_nodeId(const std::string& val) {
+    nodeId = val;
+  }
+
+  void __set_executableType(const std::string& val) {
+    executableType = val;
+  }
+
+  void __set_providerName(const ProviderName::type val) {
+    providerName = val;
+  }
+
+  void __set_userAccountName(const std::string& val) {
+    userAccountName = val;
+  }
+
+  bool operator == (const CloundJobSubmission & rhs) const
+  {
+    if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
+      return false;
+    if (!(securityProtocol == rhs.securityProtocol))
+      return false;
+    if (!(nodeId == rhs.nodeId))
+      return false;
+    if (!(executableType == rhs.executableType))
+      return false;
+    if (!(providerName == rhs.providerName))
+      return false;
+    if (!(userAccountName == rhs.userAccountName))
+      return false;
+    return true;
+  }
+  bool operator != (const CloundJobSubmission &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const CloundJobSubmission & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(CloundJobSubmission &a, CloundJobSubmission &b);
 
 
 class JobSubmissionInterface {

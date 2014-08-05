@@ -180,7 +180,8 @@ struct ExecutionUnit {
   enum type {
     INPUT = 0,
     APPLICATION = 1,
-    OUTPUT = 2
+    OUTPUT = 2,
+    OTHER = 3
   };
 };
 
