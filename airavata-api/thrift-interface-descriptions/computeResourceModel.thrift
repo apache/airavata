@@ -185,7 +185,8 @@ enum JobSubmissionProtocol {
     LOCAL,
     SSH,
     GLOBUS,
-    UNICORE
+    UNICORE,
+    CLOUD
 }
 
 /**
@@ -316,6 +317,32 @@ struct UnicoreJobSubmission {
     2: required SecurityProtocol securityProtocol,
     3: required string unicoreEndPointURL
 }
+
+
+/**
+ * Cloud Job Submission
+ *
+ *
+*/
+struct CloundJobSubmission {
+    1: required string jobSubmissionInterfaceId = DEFAULT_ID,
+    2: required SecurityProtocol securityProtocol,
+    3: required string nodeId,
+    4: required string executableType,
+    5: required ProviderName providerName,
+    6: required string userAccountName
+}
+
+/**
+* Provider name
+**/
+enum ProviderName {
+    EC2,
+    AWSEC2,
+    RACKSPACE
+}
+
+
 
 /**
  * Job Submission Interfaces
