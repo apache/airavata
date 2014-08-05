@@ -924,6 +924,28 @@ service Airavata {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
 
+ /**
+   * Add a Cloud Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   *
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   *
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   *
+   * @param sshJobSubmission
+   *   The SSHJobSubmission object to be added to the resource.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+**/
+ bool addCloudJobSubmissionDetails(1: required string computeResourceId,
+            2: required i32 priorityOrder,
+            3: required computeResourceModel.CloudJobSubmission cloudSubmission)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
   /**
    * Update the given SSH Job Submission details
    *
@@ -939,6 +961,25 @@ service Airavata {
   */
   bool updateSSHJobSubmissionDetails(1: required string jobSubmissionInterfaceId,
             2: required computeResourceModel.SSHJobSubmission sshJobSubmission)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+/**
+   * Update the given SSH Job Submission details
+   *
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   *
+   * @param cloudJobSubmission
+   *   The CloudJobSubmission object to be updated.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool updateCloudJobSubmissionDetails(1: required string jobSubmissionInterfaceId,
+            2: required computeResourceModel.CloudJobSubmission sshJobSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)

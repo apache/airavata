@@ -58,6 +58,7 @@ public abstract class AbstractResource implements Resource {
 	public static final String LOCAL_SUBMISSION = "LocalSubmission";
 	public static final String LOCAL_DATA_MOVEMENT = "LocalDataMovement";
 	public static final String SSH_JOB_SUBMISSION = "SshJobSubmission";
+    public static final String CLOUD_JOB_SUBMISSION = "CloudJobSubmission";
     public static final String MODULE_LOAD_CMD = "ModuleLoadCmd";
 	
 	// Compute Resource Table

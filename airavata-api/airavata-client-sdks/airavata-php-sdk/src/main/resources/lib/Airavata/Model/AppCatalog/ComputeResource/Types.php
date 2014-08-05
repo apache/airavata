@@ -1436,7 +1436,7 @@ class UnicoreJobSubmission {
 
 }
 
-class CloundJobSubmission {
+class CloudJobSubmission {
   static $_TSPEC;
 
   public $jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
@@ -1498,7 +1498,7 @@ class CloundJobSubmission {
   }
 
   public function getName() {
-    return 'CloundJobSubmission';
+    return 'CloudJobSubmission';
   }
 
   public function read($input)
@@ -1570,7 +1570,7 @@ class CloundJobSubmission {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('CloundJobSubmission');
+    $xfer += $output->writeStructBegin('CloudJobSubmission');
     if ($this->jobSubmissionInterfaceId !== null) {
       $xfer += $output->writeFieldBegin('jobSubmissionInterfaceId', TType::STRING, 1);
       $xfer += $output->writeString($this->jobSubmissionInterfaceId);
