@@ -1236,10 +1236,10 @@ void swap(UnicoreJobSubmission &a, UnicoreJobSubmission &b) {
   swap(a.unicoreEndPointURL, b.unicoreEndPointURL);
 }
 
-const char* CloundJobSubmission::ascii_fingerprint = "F98AE2E6E51F2426504F2566EB71B5CC";
-const uint8_t CloundJobSubmission::binary_fingerprint[16] = {0xF9,0x8A,0xE2,0xE6,0xE5,0x1F,0x24,0x26,0x50,0x4F,0x25,0x66,0xEB,0x71,0xB5,0xCC};
+const char* CloudJobSubmission::ascii_fingerprint = "F98AE2E6E51F2426504F2566EB71B5CC";
+const uint8_t CloudJobSubmission::binary_fingerprint[16] = {0xF9,0x8A,0xE2,0xE6,0xE5,0x1F,0x24,0x26,0x50,0x4F,0x25,0x66,0xEB,0x71,0xB5,0xCC};
 
-uint32_t CloundJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t CloudJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1341,9 +1341,9 @@ uint32_t CloundJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot)
   return xfer;
 }
 
-uint32_t CloundJobSubmission::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t CloudJobSubmission::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("CloundJobSubmission");
+  xfer += oprot->writeStructBegin("CloudJobSubmission");
 
   xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->jobSubmissionInterfaceId);
@@ -1374,7 +1374,7 @@ uint32_t CloundJobSubmission::write(::apache::thrift::protocol::TProtocol* oprot
   return xfer;
 }
 
-void swap(CloundJobSubmission &a, CloundJobSubmission &b) {
+void swap(CloudJobSubmission &a, CloudJobSubmission &b) {
   using ::std::swap;
   swap(a.jobSubmissionInterfaceId, b.jobSubmissionInterfaceId);
   swap(a.securityProtocol, b.securityProtocol);

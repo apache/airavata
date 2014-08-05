@@ -740,16 +740,16 @@ class UnicoreJobSubmission {
 void swap(UnicoreJobSubmission &a, UnicoreJobSubmission &b);
 
 
-class CloundJobSubmission {
+class CloudJobSubmission {
  public:
 
   static const char* ascii_fingerprint; // = "F98AE2E6E51F2426504F2566EB71B5CC";
   static const uint8_t binary_fingerprint[16]; // = {0xF9,0x8A,0xE2,0xE6,0xE5,0x1F,0x24,0x26,0x50,0x4F,0x25,0x66,0xEB,0x71,0xB5,0xCC};
 
-  CloundJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), nodeId(), executableType(), providerName((ProviderName::type)0), userAccountName() {
+  CloudJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), nodeId(), executableType(), providerName((ProviderName::type)0), userAccountName() {
   }
 
-  virtual ~CloundJobSubmission() throw() {}
+  virtual ~CloudJobSubmission() throw() {}
 
   std::string jobSubmissionInterfaceId;
   SecurityProtocol::type securityProtocol;
@@ -782,7 +782,7 @@ class CloundJobSubmission {
     userAccountName = val;
   }
 
-  bool operator == (const CloundJobSubmission & rhs) const
+  bool operator == (const CloudJobSubmission & rhs) const
   {
     if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
       return false;
@@ -798,18 +798,18 @@ class CloundJobSubmission {
       return false;
     return true;
   }
-  bool operator != (const CloundJobSubmission &rhs) const {
+  bool operator != (const CloudJobSubmission &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const CloundJobSubmission & ) const;
+  bool operator < (const CloudJobSubmission & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-void swap(CloundJobSubmission &a, CloundJobSubmission &b);
+void swap(CloudJobSubmission &a, CloudJobSubmission &b);
 
 
 class JobSubmissionInterface {

@@ -38,22 +38,7 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
-import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 
@@ -247,6 +232,21 @@ public class AppCatalogThriftConversion {
         return resource;
     }
 
+    public static CloudSubmissionResource getCloudJobSubmission (CloudJobSubmission submission){
+        CloudSubmissionResource resource = new CloudSubmissionResource();
+        resource.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
+        if (submission.getSecurityProtocol() != null){
+            resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
+        }
+        if(submission.getProviderName() != null){
+            resource.setProviderName(submission.getProviderName().toString());
+        }
+        resource.setUserAccountName(submission.getUserAccountName());
+        resource.setNodeId(submission.getNodeId());
+        resource.setExecutableType(submission.getExecutableType());
+        return resource;
+    }
+
     public static LocalDataMovementResource getLocalDataMovement(LOCALDataMovement localSubmission)throws AppCatalogException{
     	LocalDataMovementResource submission = new LocalDataMovementResource();
     	submission.setDataMovementInterfaceId(localSubmission.getDataMovementInterfaceId());
@@ -312,6 +312,17 @@ public class AppCatalogThriftConversion {
     	sshJobSubmission.setSecurityProtocol(SecurityProtocol.valueOf(submission.getSecurityProtocol()));
     	sshJobSubmission.setSshPort(submission.getSshPort());
         return sshJobSubmission;
+    }
+
+    public static CloudJobSubmission getCloudJobSubmissionDescription (CloudSubmissionResource submission) throws AppCatalogException {
+        CloudJobSubmission cloudJobSubmission = new CloudJobSubmission();
+        cloudJobSubmission.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
+        cloudJobSubmission.setExecutableType(submission.getExecutableType());
+        cloudJobSubmission.setSecurityProtocol(SecurityProtocol.valueOf(submission.getSecurityProtocol()));
+        cloudJobSubmission.setNodeId(submission.getNodeId());
+        cloudJobSubmission.setUserAccountName(submission.getUserAccountName());
+        cloudJobSubmission.setProviderName(ProviderName.valueOf(submission.getProviderName()));
+        return cloudJobSubmission;
     }
 
 //    public static GlobusJobSubmission getGlobusJobSubmissionDescription (GlobusJobSubmissionResource submission) throws AppCatalogException {

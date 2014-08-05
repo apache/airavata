@@ -333,7 +333,7 @@ enum ProviderName {
  *
  *
 */
-struct CloundJobSubmission {
+struct CloudJobSubmission {
     1: required string jobSubmissionInterfaceId = DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: required string nodeId,

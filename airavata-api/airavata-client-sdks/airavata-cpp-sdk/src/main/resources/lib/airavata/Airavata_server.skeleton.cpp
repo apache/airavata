@@ -289,9 +289,19 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addSSHJobSubmissionDetails\n");
   }
 
+  bool addCloudJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission) {
+    // Your implementation goes here
+    printf("addCloudJobSubmissionDetails\n");
+  }
+
   bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
     // Your implementation goes here
     printf("updateSSHJobSubmissionDetails\n");
+  }
+
+  bool updateCloudJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& sshJobSubmission) {
+    // Your implementation goes here
+    printf("updateCloudJobSubmissionDetails\n");
   }
 
   bool addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {

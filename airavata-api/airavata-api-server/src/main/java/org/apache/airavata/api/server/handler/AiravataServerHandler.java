@@ -36,12 +36,7 @@ import org.airavata.appcatalog.cpi.ApplicationDeployment;
 import org.airavata.appcatalog.cpi.ComputeResource;
 import org.airavata.appcatalog.cpi.GwyResourceProfile;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
-import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.LocalDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.LocalSubmissionResource;
-import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
@@ -55,16 +50,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
@@ -1842,6 +1828,33 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
     }
 
     /**
+     * Add a Cloud Job Submission details to a compute resource
+     * App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+     *
+     * @param computeResourceId The identifier of the compute resource to which JobSubmission protocol to be added
+     * @param priorityOrder     Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+     * @param cloudJobSubmission  The SSHJobSubmission object to be added to the resource.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder, CloudJobSubmission cloudJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            addJobSubmissionInterface(computeResource, computeResourceId,
+                    computeResource.addCloudJobSubmission(cloudJobSubmission), JobSubmissionProtocol.CLOUD, priorityOrder);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Update the given SSH Job Submission details
      *
      * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be updated.
@@ -1865,6 +1878,29 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
         }
     }
 
+    /**
+     * Update the given SSH Job Submission details
+     *
+     * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be updated.
+     * @param cloudJobSubmission         The SSHJobSubmission object to be updated.
+     * @return status
+     * Returns a success/failure of the deletion.
+     */
+    @Override
+    public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            CloudSubmissionResource submission = AppCatalogThriftConversion.getCloudJobSubmission(cloudJobSubmission);
+            submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            submission.save();
+            return true;
+        } catch (AppCatalogException e) {
+            logger.error("Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
     /**
      * Add a Local data moevement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.

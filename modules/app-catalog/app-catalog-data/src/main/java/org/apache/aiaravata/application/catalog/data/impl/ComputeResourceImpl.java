@@ -25,41 +25,10 @@ import java.util.*;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ComputeResource;
-import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
-import org.apache.aiaravata.application.catalog.data.resources.BatchQueueResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceFileSystemResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceResource;
-import org.apache.aiaravata.application.catalog.data.resources.DataMovementInterfaceResource;
-import org.apache.aiaravata.application.catalog.data.resources.DataMovementProtocolResource;
-import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.GridftpEndpointResource;
-import org.apache.aiaravata.application.catalog.data.resources.HostAliasResource;
-import org.apache.aiaravata.application.catalog.data.resources.HostIPAddressResource;
-import org.apache.aiaravata.application.catalog.data.resources.JobManagerCommandResource;
-import org.apache.aiaravata.application.catalog.data.resources.JobSubmissionInterfaceResource;
-import org.apache.aiaravata.application.catalog.data.resources.LocalDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.LocalSubmissionResource;
-import org.apache.aiaravata.application.catalog.data.resources.Resource;
-import org.apache.aiaravata.application.catalog.data.resources.ResourceJobManagerResource;
-import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogUtils;
-import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
-import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,6 +176,19 @@ public class ComputeResourceImpl implements ComputeResource {
     		resource.getResourceJobManagerResource().setResourceJobManagerId(resourceJobManagerId);
     		resource.save();
         	return resource.getJobSubmissionInterfaceId();
+        }catch (Exception e) {
+            logger.error("Error while saving SSH Job Submission...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public String addCloudJobSubmission(CloudJobSubmission sshJobSubmission) throws AppCatalogException {
+        try {
+            sshJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
+            CloudSubmissionResource resource = AppCatalogThriftConversion.getCloudJobSubmission(sshJobSubmission);
+            resource.save();
+            return resource.getJobSubmissionInterfaceId();
         }catch (Exception e) {
             logger.error("Error while saving SSH Job Submission...", e);
             throw new AppCatalogException(e);
@@ -528,6 +510,18 @@ public class ComputeResourceImpl implements ComputeResource {
             SshJobSubmissionResource resource = new SshJobSubmissionResource();
             resource = (SshJobSubmissionResource)resource.get(submissionId);
             return AppCatalogThriftConversion.getSSHJobSubmissionDescription(resource);
+        }catch (Exception e){
+            logger.error("Error while retrieving SSH Job Submission...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public CloudJobSubmission getCloudJobSubmission(String submissionId) throws AppCatalogException {
+        try {
+            CloudSubmissionResource resource = new CloudSubmissionResource();
+            resource = (CloudSubmissionResource)resource.get(submissionId);
+            return AppCatalogThriftConversion.getCloudJobSubmissionDescription(resource);
         }catch (Exception e){
             logger.error("Error while retrieving SSH Job Submission...", e);
             throw new AppCatalogException(e);
