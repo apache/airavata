@@ -1,5 +1,7 @@
 package org.apache.airavata.client.tools;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,13 +37,13 @@ public class RegisterUS3Application {
     private static Airavata.Client airavataClient;
 
     //Host Id's
-    private static String stampedeResourceId = "stampede.tacc.xsede.org_7e291aa8-319a-4c70-a3b5-b2e6f91c8f5d";
-    private static String trestlesResourceId = "trestles.sdsc.xsede.org_fcf21cd7-d8ce-4359-bd7e-49062ce80265";
-    private static String lonestarResourceId = "lonestar.tacc.teragrid.org_fe9b698a-4f68-459b-acc4-09c457a769b2";
-    private static String alamoResourceId = "alamo.uthscsa.edu_2ff1f99d-565a-48c6-9f7d-a2dc5019d238";
+    private static String stampedeResourceId = "stampede.tacc.xsede.org_af57850b-103b-49a1-aab2-27cb070d3bd9";
+    private static String trestlesResourceId = "trestles.sdsc.xsede.org_1ccc526f-ab74-4a5a-970a-c464cb9def5a";
+    private static String lonestarResourceId = "lonestar.tacc.teragrid.org_2e0273bc-324b-419b-9786-38a360d44772";
+    private static String alamoResourceId = "alamo.uthscsa.edu_7b6cf99a-af2e-4e8b-9eff-998a5ef60fe5";
     
-    private static String ultrascanModuleId = "ultrascan_c393abae-f75d-442f-8ad3-f0b59376131a";
-    private static String ultrascanAppId = "ultrascan_68d397d9-ffc2-470e-bdf7-8d7b4f1cab2e";
+    private static String ultrascanModuleId = "ultrascan_f8e80bc9-c0da-48d8-bb2a-30fe7e3fbab6";
+    private static String ultrascanAppId = "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec";
     
     public static void main(String[] args) {
         try {
@@ -49,18 +51,23 @@ public class RegisterUS3Application {
 			System.out.println("API version is " + airavataClient.getAPIVersion());
 
 			//Register all compute hosts
-//			registerXSEDEHosts();
+			registerXSEDEHosts();
 			
+			// Register Gateway Details
+			registerGatewayResourceProfile();
+		
 			//Register module
-//			registerAppModules();
+			registerAppModules();
 			
 			//Register Application
-//			registerUltrascanInterface();
+			registerUltrascanInterface();
 			
 			//Register Deployment 
-//			registerApplicationDeployment();
-			registerGatewayResourceProfile();
-			
+			registerApplicationDeployment();
+	
+			// update 
+//			updateXSEDEHosts();
+
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
@@ -73,22 +80,51 @@ public class RegisterUS3Application {
 
             //Register Stampede
             stampedeResourceId = registerComputeHost("stampede.tacc.xsede.org", "TACC Stampede Cluster",
-                    ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.GSI, 2222, null);
+                    ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.GSI, 2222, "/usr/local/bin/ibrun");
             System.out.println("Stampede Resource Id is " + stampedeResourceId);
 
             //Register Trestles
             trestlesResourceId = registerComputeHost("trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
-                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.GSI, 22, null);
+                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.GSI, 22, "/opt/mvapich2/pgi/ib/bin/mpiexec -np");
             System.out.println("Trestles Resource Id is " + trestlesResourceId);
             
             //Register Lonestar
             lonestarResourceId = registerComputeHost("lonestar.tacc.teragrid.org", "TACC Lonestar Cluster",
-                    ResourceJobManagerType.UGE, "push", "/opt/torque/bin/", SecurityProtocol.GSI, 22, null);
+                    ResourceJobManagerType.UGE, "push", "/opt/sge6.2/bin/lx24-amd64", SecurityProtocol.GSI, 22, "/sge_common/default/pe_scripts/ibrun");
             System.out.println("Lonestar Resource Id is " + lonestarResourceId);
 
             //Register Alamo
             alamoResourceId = registerComputeHost("alamo.uthscsa.edu", "Alamo Cluster",
-                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, null);
+                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, "/share/apps/openmpi/bin/mpiexec - n" );
+            System.out.println("Alamo Cluster " + alamoResourceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+
+    }
+    public static void updateXSEDEHosts() {
+        try {
+            System.out.println("\n #### Registering XSEDE Computational Resources #### \n");
+
+            //Register Stampede
+            stampedeResourceId = updateComputeHost( stampedeResourceId,"stampede.tacc.xsede.org", "TACC Stampede Cluster",
+                    ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.GSI, 2222, "/usr/local/bin/ibrun");
+            System.out.println("Stampede Resource Id is " + stampedeResourceId);
+
+            //Register Trestles
+            trestlesResourceId = updateComputeHost(trestlesResourceId,"trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
+                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.GSI, 22, "/opt/mvapich2/pgi/ib/bin/mpiexec -np");
+            System.out.println("Trestles Resource Id is " + trestlesResourceId);
+            
+            //Register Lonestar
+            lonestarResourceId = updateComputeHost(lonestarResourceId,"lonestar.tacc.teragrid.org", "TACC Lonestar Cluster",
+                    ResourceJobManagerType.UGE, "push", "/opt/sge6.2/bin/lx24-amd64", SecurityProtocol.GSI, 22, "/sge_common/default/pe_scripts/ibrun");
+            System.out.println("Lonestar Resource Id is " + lonestarResourceId);
+
+            //Register Alamo
+            alamoResourceId = updateComputeHost(alamoResourceId,"alamo.uthscsa.edu", "Alamo Cluster",
+                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, "/share/apps/openmpi/bin/mpiexec -n");
             System.out.println("Alamo Cluster " + alamoResourceId);
 
         } catch (TException e) {
@@ -184,7 +220,7 @@ public class RegisterUS3Application {
                             "/scratch/01623/us3/airavata/");
             
             ComputeResourcePreference alamoResourcePreferences = RegisterSampleApplicationsUtils.
-                    createComputeResourcePreference(lonestarResourceId, null, false, null, null, null,
+                    createComputeResourcePreference(alamoResourceId, null, false, null, null, null,
                             "/mnt/glusterfs/work/");
 
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
@@ -221,13 +257,46 @@ public class RegisterUS3Application {
 			jobManagerCommandStringMap.put(JobManagerCommand.SUBMISSION, jobManagerCommand);
 			resourceJobManager.setJobManagerCommands(jobManagerCommandStringMap);
 		}
-
 		SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
 		sshJobSubmission.setResourceJobManager(resourceJobManager);
 		sshJobSubmission.setSecurityProtocol(securityProtocol);
 		sshJobSubmission.setSshPort(portNumber);
 		boolean sshAddStatus = airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
 
+		if (!sshAddStatus)
+			throw new AiravataClientException();
+
+		SCPDataMovement scpDataMovement = new SCPDataMovement();
+		scpDataMovement.setSecurityProtocol(securityProtocol);
+		scpDataMovement.setSshPort(portNumber);
+		boolean scpAddStatus = airavataClient.addSCPDataMovementDetails(computeResourceId, 1, scpDataMovement);
+
+		if (!scpAddStatus)
+			throw new AiravataClientException();
+
+		return computeResourceId;
+	}
+	public static String updateComputeHost( String computeResourceId, String hostName, String hostDesc, ResourceJobManagerType resourceJobManagerType, String monitoringEndPoint,
+			String jobMangerBinPath, SecurityProtocol securityProtocol, int portNumber, String jobManagerCommand) throws TException {
+
+		if (computeResourceId.isEmpty())
+			throw new AiravataClientException();
+
+		ResourceJobManager resourceJobManager = RegisterSampleApplicationsUtils.createResourceJobManager(resourceJobManagerType, monitoringEndPoint,
+				jobMangerBinPath, null);
+
+		if (jobManagerCommand != null) {
+			Map<JobManagerCommand, String> jobManagerCommandStringMap = new HashMap<JobManagerCommand, String>();
+			jobManagerCommandStringMap.put(JobManagerCommand.SUBMISSION, jobManagerCommand);
+			resourceJobManager.setJobManagerCommands(jobManagerCommandStringMap);
+		}
+		SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
+		sshJobSubmission.setResourceJobManager(resourceJobManager);
+		sshJobSubmission.setSecurityProtocol(securityProtocol);
+		sshJobSubmission.setSshPort(portNumber);
+		boolean sshAddStatus = airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
+		ComputeResourceDescription computeResourceDescription = airavataClient.getComputeResource(computeResourceId);
+		computeResourceDescription.getJobSubmissionInterfacesIterator();
 		if (!sshAddStatus)
 			throw new AiravataClientException();
 

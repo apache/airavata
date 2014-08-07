@@ -50,11 +50,14 @@ import org.apache.airavata.gfac.core.handler.GFacHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
+import org.apache.airavata.gfac.core.monitor.ExperimentIdentity;
 import org.apache.airavata.gfac.core.monitor.JobIdentity;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.TaskIdentity;
+import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangedEvent;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
+import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
 import org.apache.airavata.gfac.core.notification.events.ExecutionFailEvent;
 import org.apache.airavata.gfac.core.notification.listeners.LoggingListener;
 import org.apache.airavata.gfac.core.notification.listeners.WorkflowTrackingListener;
@@ -64,6 +67,7 @@ import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TaskState;
@@ -327,16 +331,6 @@ public class GFacImpl implements GFac {
             }
         } catch (Exception e) {
             try {
-                // we make the experiment as failed due to exception scenario
-//                monitorPublisher.publish(new
-//                        ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
-//                        ExperimentState.FAILED));
-                // Updating the task status if there's any task associated
-//                monitorPublisher.publish(new TaskStatusChangedEvent(
-//                        new TaskIdentity(jobExecutionContext.getExperimentID(),
-//                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-//                                jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED
-//                ));
                 monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
                         new JobIdentity(jobExecutionContext.getExperimentID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
@@ -344,6 +338,13 @@ public class GFacImpl implements GFac {
             } catch (NullPointerException e1) {
                 log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
                         "NullPointerException occurred because at this point there might not have Job Created", e1, e);
+                // Updating status if job id is not set
+				monitorPublisher
+						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
+				// Updating the task status if there's any task associated
+				monitorPublisher.publish(new TaskStatusChangedEvent(new TaskIdentity(jobExecutionContext.getExperimentID(), jobExecutionContext
+						.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED));
+
             }
             jobExecutionContext.setProperty(ERROR_SENT, "true");
             jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));

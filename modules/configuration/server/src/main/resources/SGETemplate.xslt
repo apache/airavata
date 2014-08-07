@@ -8,7 +8,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://airavata.apache.org/gsi/ssh/2012/12">
 <xsl:output method="text" />
 <xsl:template match="/ns:JobDescriptor">
-#! /bin/sh
+#! /bin/bash
 # Grid Engine batch job script built by Apache Airavata
 #   <xsl:choose>
     <xsl:when test="ns:shellName">
@@ -52,7 +52,7 @@
     </xsl:choose>
     <xsl:choose>
     <xsl:when test="(ns:nodes) and (ns:processesPerNode)">
-#$ -pe <xsl:value-of select="ns:nodes"/>way 12*<xsl:value-of select="ns:processesPerNode"/>
+#$ -pe <xsl:value-of select="ns:processesPerNode"/>way <xsl:value-of select="12 * ns:nodes"/>
 <xsl:text>&#xa;</xsl:text>
     </xsl:when>
     </xsl:choose>
