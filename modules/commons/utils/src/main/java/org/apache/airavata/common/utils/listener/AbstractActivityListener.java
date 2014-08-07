@@ -19,12 +19,9 @@
  *
  */
 
-package org.apache.airavata.api.server.util;
+package org.apache.airavata.common.utils.listener;
 
-public class Constants {
-    public static final String API_SERVER_PORT = "apiserver.server.port";
-    public static final String API_SERVER_HOST = "apiserver.server.host";
-    public static final String WORKFLOW_SERVER_PORT = "workflow.server.port";
-    public static final String WORKFLOW_SERVER_HOST = "workflow.server.host";
-    public static final String API_SERVER_MIN_THREADS = "apiserver.server.min.threads";
+
+public interface AbstractActivityListener {
+	public void setup(Object... configurations);
 }

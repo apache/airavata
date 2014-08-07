@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.core.monitor.state;
+package org.apache.airavata.common.utils.listener;
 
 
 public abstract class AbstractStateChangeRequest implements PublisherMessage {

@@ -20,8 +20,11 @@
 */
 package org.apache.airavata.gfac.core.monitor.state;
 
-import org.apache.airavata.gfac.core.monitor.ExperimentIdentity;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import java.util.List;
+
+import org.apache.airavata.common.utils.listener.AbstractStateChangeRequest;
+import org.apache.airavata.gfac.core.monitor.TaskIdentity;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
 
 /**
  * This is the primary job state object used in
@@ -30,34 +33,32 @@ import org.apache.airavata.model.workspace.experiment.ExperimentState;
  * Each monitoring implementation has to return this object with a state and
  * the monitoring ID
  */
-public class ExperimentStatusChangedEvent extends AbstractStateChangeRequest {
-    private ExperimentState state;
-    private ExperimentIdentity identity;
-
+public class TaskOutputDataChangedEvent extends AbstractStateChangeRequest {
+    private List<DataObjectType> output;
+    private TaskIdentity identity;
     // this constructor can be used in Qstat monitor to handle errors
-    public ExperimentStatusChangedEvent() {
+    public TaskOutputDataChangedEvent() {
     }
 
-    public ExperimentStatusChangedEvent(ExperimentIdentity experimentIdentity, ExperimentState state) {
-        this.state = state;
-        setIdentity(experimentIdentity);
+    public TaskOutputDataChangedEvent(TaskIdentity taskIdentity, List<DataObjectType> output) {
+        this.output = output;
+        setIdentity(taskIdentity);
     }
 
-    public ExperimentState getState() {
-        return state;
-    }
-
-    public void setState(ExperimentState state) {
-       this.state = state;
-    }
-
-	public ExperimentIdentity getIdentity() {
+	public TaskIdentity getIdentity() {
 		return identity;
 	}
 
-	public void setIdentity(ExperimentIdentity identity) {
+	public void setIdentity(TaskIdentity identity) {
 		this.identity = identity;
 	}
 
+	public List<DataObjectType> getOutput() {
+		return output;
+	}
+
+	public void setOutput(List<DataObjectType> output) {
+		this.output = output;
+	}
 
 }

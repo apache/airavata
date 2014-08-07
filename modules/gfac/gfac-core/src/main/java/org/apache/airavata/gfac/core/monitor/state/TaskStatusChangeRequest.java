@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.core.monitor.state;
 
+import org.apache.airavata.common.utils.listener.AbstractStateChangeRequest;
 import org.apache.airavata.gfac.core.monitor.TaskIdentity;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 

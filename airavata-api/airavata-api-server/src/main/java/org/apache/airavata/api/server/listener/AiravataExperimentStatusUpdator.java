@@ -18,19 +18,18 @@
  * under the License.
  *
 */
-package org.apache.airavata.api.server.util;
+package org.apache.airavata.api.server.listener;
 
 import java.util.Calendar;
 
-import org.apache.airavata.common.utils.AbstractActivityListener;
+import org.apache.airavata.api.server.util.DataModelUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
-import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangedEvent;
+import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.gfac.core.monitor.state.WorkflowNodeStatusChangedEvent;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
