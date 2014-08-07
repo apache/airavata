@@ -58,6 +58,7 @@
         <class>org.apache.aiaravata.application.catalog.data.model.JobManagerCommand</class>
         <class>org.apache.aiaravata.application.catalog.data.model.LocalSubmission</class>
         <class>org.apache.aiaravata.application.catalog.data.model.LocalDataMovement</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.Workflow</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>
