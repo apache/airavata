@@ -37,7 +37,7 @@ public class SQLGenerator extends AbstractGenerator {
 		INTEGER,
 		LONGTEXT,
 		SMALLINT,
-		BLOB,
+		CLOB,
 	}
 	
 	public String generateSQLCreateQuery(SQLData sqlData){

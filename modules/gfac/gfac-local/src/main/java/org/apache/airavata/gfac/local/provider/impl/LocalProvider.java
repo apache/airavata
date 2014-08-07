@@ -30,7 +30,9 @@ import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.core.monitor.TaskIdentity;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
+import org.apache.airavata.gfac.core.monitor.state.TaskOutputDataChangedEvent;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
@@ -42,7 +44,9 @@ import org.apache.airavata.gfac.local.utils.InputUtils;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.xmlbeans.XmlException;
@@ -169,10 +173,7 @@ public class LocalProvider extends AbstractProvider {
             log.info(buf.toString());
 
             // updating the job status to complete because there's nothing to monitor in local jobs
-            MonitorID monitorID = new MonitorID(jobExecutionContext.getApplicationContext().getHostDescription(), jobId,
-                    jobExecutionContext.getTaskData().getTaskID(),
-                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
-                    jobExecutionContext.getExperiment().getUserName(),jobId);
+            MonitorID monitorID = createMonitorID(jobExecutionContext);
             JobStatusChangeRequest jobStatusChangeRequest = new JobStatusChangeRequest(monitorID);
             jobStatusChangeRequest.setState(JobState.COMPLETE);
             this.getMonitorPublisher().publish(jobStatusChangeRequest);
@@ -184,6 +185,14 @@ public class LocalProvider extends AbstractProvider {
             throw new GFacProviderException(e.getMessage(), e);
         }
     }
+
+	private MonitorID createMonitorID(JobExecutionContext jobExecutionContext) {
+		MonitorID monitorID = new MonitorID(jobExecutionContext.getApplicationContext().getHostDescription(), jobId,
+		        jobExecutionContext.getTaskData().getTaskID(),
+		        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
+		        jobExecutionContext.getExperiment().getUserName(),jobId);
+		return monitorID;
+	}
 
 //	private void saveApplicationJob(JobExecutionContext jobExecutionContext)
 //			throws GFacProviderException {
@@ -215,7 +224,12 @@ public class LocalProvider extends AbstractProvider {
             String stdErrStr = GFacUtils.readFileToString(app.getStandardError());
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
+            TaskDetails taskDetails = (TaskDetails)registry.get(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
+            taskDetails.setApplicationOutputs(outputArray);
+            registry.update(RegistryModelType.TASK_DETAIL, taskDetails, taskDetails.getTaskID());
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+            MonitorID monitorId = createMonitorID(jobExecutionContext);
+            getMonitorPublisher().publish(new TaskOutputDataChangedEvent(new TaskIdentity(monitorId.getExperimentID(), monitorId.getWorkflowNodeID(), monitorId.getTaskID()), outputArray));
         } catch (XmlException e) {
             throw new GFacProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {

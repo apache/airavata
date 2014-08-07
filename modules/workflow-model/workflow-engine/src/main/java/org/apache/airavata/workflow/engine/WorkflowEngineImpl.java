@@ -21,6 +21,7 @@
 
 package org.apache.airavata.workflow.engine;
 
+import org.airavata.appcatalog.cpi.WorkflowCatalog;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
@@ -29,7 +30,6 @@ import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
-import org.apache.airavata.workflow.catalog.WorkflowCatalog;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.airavata.workflow.engine.interpretor.WorkflowInterpreter;
 import org.apache.airavata.workflow.engine.interpretor.WorkflowInterpreterConfiguration;

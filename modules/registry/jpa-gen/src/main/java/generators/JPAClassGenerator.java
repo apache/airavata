@@ -53,7 +53,7 @@ public class JPAClassGenerator extends AbstractGenerator{
 		    	dataType="boolean"; break;
 		    case TIMESTAMP: 
 		    	dataType="Timestamp"; break;
-		    case BLOB:
+		    case CLOB:
 		    	dataType="String"; break;
 		    }
 		    String fieldTitleString = convertToJavaTitleCaseStringConvention(field);

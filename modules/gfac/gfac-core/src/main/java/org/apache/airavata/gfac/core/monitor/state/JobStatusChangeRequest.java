@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.core.monitor.state;
 
+import org.apache.airavata.common.utils.listener.AbstractStateChangeRequest;
 import org.apache.airavata.gfac.core.monitor.JobIdentity;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.model.workspace.experiment.JobState;

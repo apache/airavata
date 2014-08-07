@@ -41,9 +41,10 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.common.utils.AbstractActivityListener;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.gfac.core.monitor.state.TaskOutputDataChangedEvent;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
@@ -1393,8 +1394,34 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	
 	@Override
 	public void setup(Object... configurations) {
-		// TODO Auto-generated method stub
 		
+	}
+	
+	@Subscribe
+    public void taskOutputChanged(TaskOutputDataChangedEvent taskOutputEvent){
+		String taskId = taskOutputEvent.getIdentity().getTaskId();
+		if (isTaskAwaiting(taskId)){
+        	WorkflowNodeState state=WorkflowNodeState.COMPLETED;
+			Node node = getAwaitingNodeForTask(taskId);
+    		List<DataObjectType> applicationOutputs = taskOutputEvent.getOutput();
+			Map<String, String> outputData = new HashMap<String, String>();
+			for (DataObjectType outputObj : applicationOutputs) {
+				List<DataPort> outputPorts = node.getOutputPorts();
+				for (DataPort dataPort : outputPorts) {
+					if (dataPort.getName().equals(outputObj.getKey())){
+						outputData.put(outputObj.getKey(), outputObj.getValue());
+					}
+				}
+			}
+			nodeOutputData.put(node, outputData);
+			setupNodeDetailsOutput(node);
+			node.setState(NodeExecutionState.FINISHED);
+        	try {
+				updateWorkflowNodeStatus(nodeInstanceList.get(node), state);
+			} catch (RegistryException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
     @Subscribe
@@ -1407,26 +1434,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
         	case CANCELED:
         		; break;
         	case COMPLETED:
-        		//task is completed
-        		state = WorkflowNodeState.COMPLETED;
-        		try {
-					TaskDetails task = (TaskDetails)getRegistry().get(RegistryModelType.TASK_DETAIL, taskId);
-					List<DataObjectType> applicationOutputs = task.getApplicationOutputs();
-					Map<String, String> outputData = new HashMap<String, String>();
-					for (DataObjectType outputObj : applicationOutputs) {
-						List<DataPort> outputPorts = node.getOutputPorts();
-						for (DataPort dataPort : outputPorts) {
-							if (dataPort.getName().equals(outputObj.getKey())){
-								outputData.put(outputObj.getKey(), outputObj.getValue());
-							}
-						}
-					}
-					nodeOutputData.put(node, outputData);
-					setupNodeDetailsOutput(node);
-					node.setState(NodeExecutionState.FINISHED);
-				} catch (RegistryException e) {
-					e.printStackTrace();
-				}
+        		//task has completed
+        		//but we'll wait for outputdata
         		break;
         	case CONFIGURING_WORKSPACE:
         		break;
@@ -1447,7 +1456,9 @@ public class WorkflowInterpreter implements AbstractActivityListener{
     			break;
         	}
         	try {
-				updateWorkflowNodeStatus(nodeInstanceList.get(node), state);
+				if (state != WorkflowNodeState.UNKNOWN) {
+					updateWorkflowNodeStatus(nodeInstanceList.get(node), state);
+				}
 			} catch (RegistryException e) {
 				e.printStackTrace();
 			}

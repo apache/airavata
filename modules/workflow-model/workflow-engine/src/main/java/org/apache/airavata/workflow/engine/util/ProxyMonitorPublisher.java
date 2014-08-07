@@ -21,8 +21,8 @@
 
 package org.apache.airavata.workflow.engine.util;
 
-import org.apache.airavata.common.utils.AbstractActivityListener;
 import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 
 public class ProxyMonitorPublisher implements AbstractActivityListener{
 

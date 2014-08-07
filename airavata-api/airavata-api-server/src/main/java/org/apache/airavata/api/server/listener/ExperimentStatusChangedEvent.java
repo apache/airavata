@@ -18,11 +18,11 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.core.monitor.state;
+package org.apache.airavata.api.server.listener;
 
 import org.apache.airavata.common.utils.listener.AbstractStateChangeRequest;
-import org.apache.airavata.gfac.core.monitor.TaskIdentity;
-import org.apache.airavata.model.workspace.experiment.TaskState;
+import org.apache.airavata.gfac.core.monitor.ExperimentIdentity;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
 
 /**
  * This is the primary job state object used in
@@ -31,32 +31,34 @@ import org.apache.airavata.model.workspace.experiment.TaskState;
  * Each monitoring implementation has to return this object with a state and
  * the monitoring ID
  */
-public class TaskStatusChangedEvent extends AbstractStateChangeRequest {
-    private TaskState state;
-    private TaskIdentity identity;
+public class ExperimentStatusChangedEvent extends AbstractStateChangeRequest {
+    private ExperimentState state;
+    private ExperimentIdentity identity;
+
     // this constructor can be used in Qstat monitor to handle errors
-    public TaskStatusChangedEvent() {
+    public ExperimentStatusChangedEvent() {
     }
 
-    public TaskStatusChangedEvent(TaskIdentity taskIdentity, TaskState state) {
+    public ExperimentStatusChangedEvent(ExperimentIdentity experimentIdentity, ExperimentState state) {
         this.state = state;
-        setIdentity(taskIdentity);
+        setIdentity(experimentIdentity);
     }
 
-    public TaskState getState() {
+    public ExperimentState getState() {
         return state;
     }
 
-    public void setState(TaskState state) {
+    public void setState(ExperimentState state) {
        this.state = state;
     }
 
-	public TaskIdentity getIdentity() {
+	public ExperimentIdentity getIdentity() {
 		return identity;
 	}
 
-	public void setIdentity(TaskIdentity identity) {
+	public void setIdentity(ExperimentIdentity identity) {
 		this.identity = identity;
 	}
+
 
 }
