@@ -60,7 +60,9 @@ public class CreateLaunchExperimentUS3 {
             System.out.println("API version is " + airavata.getAPIVersion());
 //            addDescriptors();
 //            final String expId = createUS3ExperimentForTrestles(airavata);
-            final String expId = createUS3ExperimentForStampede(airavata);
+//            final String expId = createUS3ExperimentForStampede(airavata);
+//            final String expId = createUS3ExperimentForLonestar(airavata);
+            final String expId =  createUS3ExperimentForAlamo(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
@@ -200,8 +202,8 @@ public class CreateLaunchExperimentUS3 {
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
             output.setKey("output");
-//           output.setType(DataType.URI);
-           output.setValue("");
+            output.setType(DataType.URI);
+            output.setValue("");
 //            DataObjectType output1 = new DataObjectType();
 //            output1.setKey("stdout");
 //            output1.setType(DataType.STDOUT);
@@ -217,13 +219,13 @@ public class CreateLaunchExperimentUS3 {
            // Project project = ProjectModelUtil.createProject("ultrascan", "ultrascan", "test project");
             //String projectId = client.createProject(project);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentTrestles", "US3AppTrestles", "ultrascan_68d397d9-ffc2-470e-bdf7-8d7b4f1cab2e", exInputs);
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentTrestles", "US3AppTrestles", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.xsede.org_fcf21cd7-d8ce-4359-bd7e-49062ce80265", 32, 2, 0, "shared", 30, 0, 0, "uot111");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.xsede.org_1ccc526f-ab74-4a5a-970a-c464cb9def5a", 32, 2, 0, "shared", 30, 0, 0, "uot111");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             
-            scheduling.setResourceHostId("trestles.sdsc.xsede.org_fcf21cd7-d8ce-4359-bd7e-49062ce80265");
+            scheduling.setResourceHostId("trestles.sdsc.xsede.org_1ccc526f-ab74-4a5a-970a-c464cb9def5a");
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
         
@@ -277,12 +279,134 @@ public class CreateLaunchExperimentUS3 {
 //            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
 //            String projectId = client.createProject(project);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_68d397d9-ffc2-470e-bdf7-8d7b4f1cab2e", exInputs);
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org_7e291aa8-319a-4c70-a3b5-b2e6f91c8f5d", 16, 2, 0, "normal", 30, 0, 0, "TG-MCB070039N");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org_af57850b-103b-49a1-aab2-27cb070d3bd9", 16, 2, 0, "normal", 30, 0, 0, "TG-MCB070039N");
 
-            scheduling.setResourceHostId("stampede.tacc.xsede.org_7e291aa8-319a-4c70-a3b5-b2e6f91c8f5d");
+            scheduling.setResourceHostId("stampede.tacc.xsede.org_af57850b-103b-49a1-aab2-27cb070d3bd9");
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+           
+            userConfigurationData.setAiravataAutoSchedule(false);
+            userConfigurationData.setOverrideManualScheduledParams(false);
+            userConfigurationData.setComputationalResourceScheduling(scheduling);
+        
+            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+            dataHandling.setOutputDataDir("/home/airavata/output/");
+            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
+        
+            simpleExperiment.setUserConfigurationData(userConfigurationData);
+            return client.createExperiment(simpleExperiment);
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        }catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+    }
+    public static String createUS3ExperimentForLonestar (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
+        try{
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("input");
+            input.setType(DataType.URI);
+            input.setValue("file:///home/airavata/input/hpcinput.tar");
+            exInputs.add(input);
+
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("output");
+            output.setType(DataType.URI);
+            output.setValue("");
+//            DataObjectType output1 = new DataObjectType();
+//            output1.setKey("stdout");
+//            output1.setType(DataType.STDOUT);
+//            output1.setValue("");
+//            DataObjectType output2 = new DataObjectType();
+//            output2.setKey("stderr");
+//            output2.setType(DataType.STDERR);
+//            output2.setValue("");
+            exOut.add(output);
+//            exOut.add(output1);
+//            exOut.add(output2);
+
+//            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+//            String projectId = client.createProject(project);
+
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentLonestar", "US3AppLonestar", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("lonestar.tacc.teragrid.org_2e0273bc-324b-419b-9786-38a360d44772", 12, 2, 0, "normal", 30, 0, 0, "ULTRASCAN");
+
+            scheduling.setResourceHostId("lonestar.tacc.teragrid.org_2e0273bc-324b-419b-9786-38a360d44772");
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+           
+            userConfigurationData.setAiravataAutoSchedule(false);
+            userConfigurationData.setOverrideManualScheduledParams(false);
+            userConfigurationData.setComputationalResourceScheduling(scheduling);
+        
+            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+            dataHandling.setOutputDataDir("/home/airavata/output/");
+            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
+        
+            simpleExperiment.setUserConfigurationData(userConfigurationData);
+            return client.createExperiment(simpleExperiment);
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        }catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+    }
+    public static String createUS3ExperimentForAlamo (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
+        try{
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("input");
+            input.setType(DataType.URI);
+            input.setValue("file:///home/airavata/input/hpcinput.tar");
+            exInputs.add(input);
+
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("output");
+            output.setType(DataType.URI);
+            output.setValue("");
+//            DataObjectType output1 = new DataObjectType();
+//            output1.setKey("stdout");
+//            output1.setType(DataType.STDOUT);
+//            output1.setValue("");
+//            DataObjectType output2 = new DataObjectType();
+//            output2.setKey("stderr");
+//            output2.setType(DataType.STDERR);
+//            output2.setValue("");
+            exOut.add(output);
+//            exOut.add(output1);
+//            exOut.add(output2);
+
+//            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+//            String projectId = client.createProject(project);
+
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("alamo.uthscsa.edu_7b6cf99a-af2e-4e8b-9eff-998a5ef60fe5", 4, 2, 0, "default", 30, 0, 0, null);
+
+            scheduling.setResourceHostId("alamo.uthscsa.edu_7b6cf99a-af2e-4e8b-9eff-998a5ef60fe5");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
            
             userConfigurationData.setAiravataAutoSchedule(false);

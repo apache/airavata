@@ -53,9 +53,11 @@ import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.GFacRecoverableHandler;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
+import org.apache.airavata.gfac.core.monitor.ExperimentIdentity;
 import org.apache.airavata.gfac.core.monitor.JobIdentity;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.TaskIdentity;
+import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangedEvent;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
@@ -83,6 +85,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TaskState;
@@ -525,108 +528,136 @@ public class BetterGfacImpl implements GFac {
         return true;
     }
 
-    private void reLaunch(JobExecutionContext jobExecutionContext, int stateVal) throws GFacException {
-        // Scheduler will decide the execution flow of handlers and provider which handles
-        // the job.
-        String experimentID = jobExecutionContext.getExperimentID();
-        try {
-            Scheduler.schedule(jobExecutionContext);
+	private void reLaunch(JobExecutionContext jobExecutionContext, int stateVal) throws GFacException {
+		// Scheduler will decide the execution flow of handlers and provider
+		// which handles
+		// the job.
+		String experimentID = jobExecutionContext.getExperimentID();
+		try {
+			Scheduler.schedule(jobExecutionContext);
 
-            // Executing in handlers in the order as they have configured in GFac configuration
-            // here we do not skip handler if some handler does not have to be run again during re-run it can implement
-            // that logic in to the handler
-            reInvokeInFlowHandlers(jobExecutionContext);
+			// Executing in handlers in the order as they have configured in
+			// GFac configuration
+			// here we do not skip handler if some handler does not have to be
+			// run again during re-run it can implement
+			// that logic in to the handler
+			reInvokeInFlowHandlers(jobExecutionContext);
 
-            // After executing the in handlers provider instance should be set to job execution context.
-            // We get the provider instance and execute it.
-            if (stateVal == 2 || stateVal == 3) {
-                invokeProvider(jobExecutionContext);     // provider never ran in previous invocation
-            } else if (stateVal == 4) {   // whether sync or async job have to invoke the recovering because it crashed in the Handler
-                reInvokeProvider(jobExecutionContext);
-            } else if (stateVal >= 5 && GFacUtils.isSynchronousMode(jobExecutionContext)) {
-                // In this case we do nothing because provider ran successfully, no need to re-run the job
-                log.info("Provider does not have to be recovered because it ran successfully for experiment: " + experimentID);
-            } else if (stateVal == 5 && !GFacUtils.isSynchronousMode(jobExecutionContext)) {
-                // this is async mode where monitoring of jobs is hapenning, we have to recover
-                reInvokeProvider(jobExecutionContext);
-            } else if (stateVal == 6) {
-                reInvokeOutFlowHandlers(jobExecutionContext);
-            } else {
-                log.info("We skip invoking Handler, because the experiment:" + stateVal + " state is beyond the Provider Invocation !!!");
-                log.info("ExperimentId: " + experimentID + " taskId: " + jobExecutionContext.getTaskData().getTaskID());
-            }
-        } catch (Exception e) {
-            try {
-                // we make the experiment as failed due to exception scenario
-                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
-//                monitorPublisher.publish(new
-//                        ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
-//                        ExperimentState.FAILED));
-                // Updating the task status if there's any task associated
-//                monitorPublisher.publish(new TaskStatusChangedEvent(
-//                        new TaskIdentity(jobExecutionContext.getExperimentID(),
-//                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-//                                jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED
-//                ));
-                monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
-                        new JobIdentity(jobExecutionContext.getExperimentID(),
-                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getJobDetails().getJobID()), JobState.FAILED
-                ));
-            } catch (NullPointerException e1) {
-                log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
-                        "NullPointerException occurred because at this point there might not have Job Created", e1, e);
-            }
-            jobExecutionContext.setProperty(ERROR_SENT, "true");
-            jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-            throw new GFacException(e.getMessage(), e);
-        }
-    }
+			// After executing the in handlers provider instance should be set
+			// to job execution context.
+			// We get the provider instance and execute it.
+			if (stateVal == 2 || stateVal == 3) {
+				invokeProvider(jobExecutionContext); // provider never ran in
+														// previous invocation
+			} else if (stateVal == 4) { // whether sync or async job have to
+										// invoke the recovering because it
+										// crashed in the Handler
+				reInvokeProvider(jobExecutionContext);
+			} else if (stateVal >= 5 && GFacUtils.isSynchronousMode(jobExecutionContext)) {
+				// In this case we do nothing because provider ran successfully,
+				// no need to re-run the job
+				log.info("Provider does not have to be recovered because it ran successfully for experiment: " + experimentID);
+			} else if (stateVal == 5 && !GFacUtils.isSynchronousMode(jobExecutionContext)) {
+				// this is async mode where monitoring of jobs is hapenning, we
+				// have to recover
+				reInvokeProvider(jobExecutionContext);
+			} else if (stateVal == 6) {
+				reInvokeOutFlowHandlers(jobExecutionContext);
+			} else {
+				log.info("We skip invoking Handler, because the experiment:" + stateVal + " state is beyond the Provider Invocation !!!");
+				log.info("ExperimentId: " + experimentID + " taskId: " + jobExecutionContext.getTaskData().getTaskID());
+			}
+		} catch (Exception e) {
+			try {
+				// we make the experiment as failed due to exception scenario
+				monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
+				// monitorPublisher.publish(new
+				// ExperimentStatusChangedEvent(new
+				// ExperimentIdentity(jobExecutionContext.getExperimentID()),
+				// ExperimentState.FAILED));
+				// Updating the task status if there's any task associated
+				// monitorPublisher.publish(new TaskStatusChangedEvent(
+				// new TaskIdentity(jobExecutionContext.getExperimentID(),
+				// jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+				// jobExecutionContext.getTaskData().getTaskID()),
+				// TaskState.FAILED
+				// ));
+				monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext), new JobIdentity(jobExecutionContext.getExperimentID(),
+						jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext
+								.getJobDetails().getJobID()), JobState.FAILED));
+			} catch (NullPointerException e1) {
+				log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, "
+						+ "NullPointerException occurred because at this point there might not have Job Created", e1, e);
+				monitorPublisher
+						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
+				// Updating the task status if there's any task associated
+				monitorPublisher.publish(new TaskStatusChangedEvent(new TaskIdentity(jobExecutionContext.getExperimentID(), jobExecutionContext
+						.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED));
 
-    private void launch(JobExecutionContext jobExecutionContext) throws GFacException {
-        // Scheduler will decide the execution flow of handlers and provider which handles
-        // the job.
-        try {
-            Scheduler.schedule(jobExecutionContext);
+			}
+			jobExecutionContext.setProperty(ERROR_SENT, "true");
+			jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
+			throw new GFacException(e.getMessage(), e);
+		}
+	}
 
-            // Executing in handlers in the order as they have configured in GFac configuration
-            // here we do not skip handler if some handler does not have to be run again during re-run it can implement
-            // that logic in to the handler
-            invokeInFlowHandlers(jobExecutionContext);               // to keep the consistency we always try to re-run to avoid complexity
-            //            if (experimentID != null){
-            //                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
-            //            }
+	private void launch(JobExecutionContext jobExecutionContext) throws GFacException {
+		// Scheduler will decide the execution flow of handlers and provider
+		// which handles
+		// the job.
+		try {
+			Scheduler.schedule(jobExecutionContext);
 
-            // After executing the in handlers provider instance should be set to job execution context.
-            // We get the provider instance and execute it.
-            invokeProvider(jobExecutionContext);
-        } catch (Exception e) {
-            try {
-                // we make the experiment as failed due to exception scenario
-                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
-//                monitorPublisher.publish(new
-//                        ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
-//                        ExperimentState.FAILED));
-                // Updating the task status if there's any task associated
-//                monitorPublisher.publish(new TaskStatusChangeRequest(
-//                        new TaskIdentity(jobExecutionContext.getExperimentID(),
-//                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-//                                jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED
-//                ));
-                monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
-                        new JobIdentity(jobExecutionContext.getExperimentID(),
-                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getJobDetails().getJobID()), JobState.FAILED
-                ));
-            } catch (NullPointerException e1) {
-                log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
-                        "NullPointerException occurred because at this point there might not have Job Created", e1, e);
-            }
-            jobExecutionContext.setProperty(ERROR_SENT, "true");
-            jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-            throw new GFacException(e.getMessage(), e);
-        }
-    }
+			// Executing in handlers in the order as they have configured in
+			// GFac configuration
+			// here we do not skip handler if some handler does not have to be
+			// run again during re-run it can implement
+			// that logic in to the handler
+			invokeInFlowHandlers(jobExecutionContext); // to keep the
+														// consistency we always
+														// try to re-run to
+														// avoid complexity
+			// if (experimentID != null){
+			// registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
+			// }
+
+			// After executing the in handlers provider instance should be set
+			// to job execution context.
+			// We get the provider instance and execute it.
+			invokeProvider(jobExecutionContext);
+		} catch (Exception e) {
+			try {
+				// we make the experiment as failed due to exception scenario
+				monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
+				// monitorPublisher.publish(new
+				// ExperimentStatusChangedEvent(new
+				// ExperimentIdentity(jobExecutionContext.getExperimentID()),
+				// ExperimentState.FAILED));
+				// Updating the task status if there's any task associated
+				// monitorPublisher.publish(new TaskStatusChangeRequest(
+				// new TaskIdentity(jobExecutionContext.getExperimentID(),
+				// jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+				// jobExecutionContext.getTaskData().getTaskID()),
+				// TaskState.FAILED
+				// ));
+				monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext), new JobIdentity(jobExecutionContext.getExperimentID(),
+						jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext
+								.getJobDetails().getJobID()), JobState.FAILED));
+			} catch (NullPointerException e1) {
+				log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, "
+						+ "NullPointerException occurred because at this point there might not have Job Created", e1, e);
+				monitorPublisher
+						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
+				// Updating the task status if there's any task associated
+				monitorPublisher.publish(new TaskStatusChangeRequest(new TaskIdentity(jobExecutionContext.getExperimentID(), jobExecutionContext
+						.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED));
+
+			}
+			jobExecutionContext.setProperty(ERROR_SENT, "true");
+			jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
+			throw new GFacException(e.getMessage(), e);
+		}
+	}
 
     private void invokeProvider(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException, InterruptedException, KeeperException {
         GFacProvider provider = jobExecutionContext.getProvider();
