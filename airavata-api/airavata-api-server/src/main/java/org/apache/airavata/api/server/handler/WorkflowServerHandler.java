@@ -23,14 +23,14 @@ package org.apache.airavata.api.server.handler;
 
 import java.util.List;
 
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.airavata.appcatalog.cpi.WorkflowCatalog;
 import org.apache.airavata.api.workflow.Workflow.Iface;
 import org.apache.airavata.model.Workflow;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.workflow.catalog.WorkflowCatalog;
-import org.apache.airavata.workflow.catalog.WorkflowCatalogException;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public class WorkflowServerHandler implements Iface {
 			AiravataClientException, AiravataSystemException, TException {
 		try {
 			return getWorkflowCatalog().getAllWorkflows();
-		} catch (WorkflowCatalogException e) {
+		} catch (AppCatalogException e) {
 			String msg = "Error in retrieving all workflow template Ids.";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -61,7 +61,7 @@ public class WorkflowServerHandler implements Iface {
 			AiravataSystemException, TException {
 		try {
 			return getWorkflowCatalog().getWorkflow(workflowTemplateId);
-		} catch (WorkflowCatalogException e) {
+		} catch (AppCatalogException e) {
 			String msg = "Error in retrieving the workflow "+workflowTemplateId+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -76,7 +76,7 @@ public class WorkflowServerHandler implements Iface {
 			AiravataSystemException, TException {
 		try {
 			getWorkflowCatalog().deleteWorkflow(workflowTemplateId);
-		} catch (WorkflowCatalogException e) {
+		} catch (AppCatalogException e) {
 			String msg = "Error in deleting the workflow "+workflowTemplateId+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -91,7 +91,7 @@ public class WorkflowServerHandler implements Iface {
 			AiravataSystemException, TException {
 		try {
 			return getWorkflowCatalog().registerWorkflow(workflow);
-		} catch (WorkflowCatalogException e) {
+		} catch (AppCatalogException e) {
 			String msg = "Error in registering the workflow "+workflow.getName()+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -106,7 +106,7 @@ public class WorkflowServerHandler implements Iface {
 			AiravataSystemException, TException {
 		try {
 			getWorkflowCatalog().updateWorkflow(workflowTemplateId, workflow);
-		} catch (WorkflowCatalogException e) {
+		} catch (AppCatalogException e) {
 			String msg = "Error in updating the workflow "+workflow.getName()+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -121,7 +121,7 @@ public class WorkflowServerHandler implements Iface {
 			AiravataSystemException, TException {
 		try {
 			return getWorkflowCatalog().getWorkflowTemplateId(workflowName);
-		} catch (WorkflowCatalogException e) {
+		} catch (AppCatalogException e) {
 			String msg = "Error in retrieving the workflow template id for "+workflowName+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -136,7 +136,7 @@ public class WorkflowServerHandler implements Iface {
 			AiravataSystemException, TException {
 		try {
 			return getWorkflowCatalog().isWorkflowExistWithName(workflowName);
-		} catch (WorkflowCatalogException e) {
+		} catch (AppCatalogException e) {
 			String msg = "Error in veriying the workflow for workflow name "+workflowName+".";
 			log.error(msg, e);
 			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);

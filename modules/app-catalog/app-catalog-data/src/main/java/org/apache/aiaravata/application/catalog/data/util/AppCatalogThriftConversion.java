@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.resources.*;
+import org.apache.airavata.model.Workflow;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
@@ -676,5 +677,13 @@ public class AppCatalogThriftConversion {
         gatewayProfile.setGatewayName(gw.getGatewayName());
         gatewayProfile.setComputeResourcePreferences(preferences);
         return gatewayProfile;
+    }
+
+    public static Workflow getWorkflow (WorkflowResource resource){
+        Workflow workflow = new Workflow();
+        workflow.setTemplateId(resource.getWfTemplateId());
+        workflow.setGraph(resource.getGraph());
+        workflow.setName(resource.getWfName());
+        return workflow;
     }
 }

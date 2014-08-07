@@ -39,8 +39,6 @@ import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.workflow.catalog.WorkflowCatalog;
-import org.apache.airavata.workflow.catalog.WorkflowCatalogException;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.ThriftClientData;

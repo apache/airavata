@@ -60,7 +60,8 @@ public abstract class AbstractResource implements Resource {
 	public static final String SSH_JOB_SUBMISSION = "SshJobSubmission";
     public static final String CLOUD_JOB_SUBMISSION = "CloudJobSubmission";
     public static final String MODULE_LOAD_CMD = "ModuleLoadCmd";
-	
+    public static final String WORKFLOW = "Workflow";
+
 	// Compute Resource Table
 	public final class ComputeResourceConstants {
 		public static final String RESOURCE_DESCRIPTION = "resourceDescription";
@@ -324,5 +325,13 @@ public abstract class AbstractResource implements Resource {
     public final class ModuleLoadCmdConstants {
         public static final String CMD = "cmd";
         public static final String APP_DEPLOYMENT_ID = "appDeploymentId";
+    }
+
+    // Workflow Table
+    public final class WorkflowConstants {
+        public static final String WF_NAME = "wfName";
+        public static final String CREATED_USER = "createdUser";
+        public static final String GRAPH = "graph";
+        public static final String WF_TEMPLATE_ID = "wfTemplateId";
     }
 }

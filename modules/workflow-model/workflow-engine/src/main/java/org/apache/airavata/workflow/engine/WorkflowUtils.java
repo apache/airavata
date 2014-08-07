@@ -28,7 +28,6 @@ import org.airavata.appcatalog.cpi.ApplicationInterface;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.workflow.catalog.WorkflowCatalogException;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 
 public class WorkflowUtils {
@@ -47,8 +46,6 @@ public class WorkflowUtils {
 				}
 			}
 		} catch (AppCatalogException e) {
-			e.printStackTrace();
-		} catch (WorkflowCatalogException e) {
 			e.printStackTrace();
 		}
 		return ExecutionType.UNKNOWN;
