@@ -54,7 +54,7 @@ import org.apache.airavata.gfac.core.monitor.ExperimentIdentity;
 import org.apache.airavata.gfac.core.monitor.JobIdentity;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.TaskIdentity;
-import org.apache.airavata.gfac.core.monitor.state.ExperimentStatusChangedEvent;
+//import org.apache.airavata.api.server.listener.ExperimentStatusChangedEvent;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
@@ -339,8 +339,8 @@ public class GFacImpl implements GFac {
                 log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
                         "NullPointerException occurred because at this point there might not have Job Created", e1, e);
                 // Updating status if job id is not set
-				monitorPublisher
-						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
+//				monitorPublisher
+//						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
 				// Updating the task status if there's any task associated
 				monitorPublisher.publish(new TaskStatusChangedEvent(new TaskIdentity(jobExecutionContext.getExperimentID(), jobExecutionContext
 						.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED));
