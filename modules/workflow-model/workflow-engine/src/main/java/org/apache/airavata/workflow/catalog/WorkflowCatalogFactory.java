@@ -21,13 +21,25 @@
 
 package org.apache.airavata.workflow.catalog;
 
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.airavata.appcatalog.cpi.WorkflowCatalog;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class WorkflowCatalogFactory {
+    private static Logger logger = LoggerFactory.getLogger(WorkflowCatalogFactory.class);
 	private static WorkflowCatalog workflowCatalog;
 	
-	public static WorkflowCatalog getWorkflowCatalog(){
-		if (workflowCatalog==null) {
-			workflowCatalog = new WorkflowCatalogImpl();
-		}
-		return workflowCatalog;
-	}
+	public static WorkflowCatalog getWorkflowCatalog() throws AppCatalogException{
+		try {
+            if (workflowCatalog==null) {
+                workflowCatalog = AppCatalogFactory.getAppCatalog().getWorkflowCatalog();
+            }
+            return workflowCatalog;
+        } catch (AppCatalogException e) {
+            logger.error("Unable to create workflow catalog instance", e);
+            throw new AppCatalogException(e);
+        }
+    }
 }

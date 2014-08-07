@@ -19,9 +19,8 @@
  *
  */
 
-package org.apache.airavata.common.utils;
+package org.apache.airavata.common.utils.listener;
 
-
-public interface AbstractActivityListener {
-	public void setup(Object... configurations);
+public interface PublisherMessage {
+//	public String getType();
 }

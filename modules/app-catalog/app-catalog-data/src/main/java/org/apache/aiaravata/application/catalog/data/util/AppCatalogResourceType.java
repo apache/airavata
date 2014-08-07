@@ -57,5 +57,6 @@ public enum AppCatalogResourceType {
 	LOCAL_SUBMISSION,
 	LOCAL_DATA_MOVEMENT,
     MODULE_LOAD_CMD,
-    ClOUD_SUBMISSION
+    ClOUD_SUBMISSION,
+    WORKFLOW
 }
