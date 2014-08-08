@@ -20,6 +20,7 @@
 
 include "workspaceModel.thrift"
 include "airavataErrors.thrift"
+include "messagingEvents.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
