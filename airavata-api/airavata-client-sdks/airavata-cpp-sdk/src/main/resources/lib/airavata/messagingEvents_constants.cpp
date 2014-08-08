@@ -21,22 +21,14 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-#ifndef airavataDataModel_TYPES_H
-#define airavataDataModel_TYPES_H
+#include "messagingEvents_constants.h"
 
-#include <thrift/Thrift.h>
-#include <thrift/TApplicationException.h>
-#include <thrift/protocol/TProtocol.h>
-#include <thrift/transport/TTransport.h>
+namespace apache { namespace airavata { namespace model { namespace messaging { namespace event {
 
-#include <thrift/cxxfunctional.h>
-#include "workspaceModel_types.h"
-#include "airavataErrors_types.h"
-#include "messagingEvents_types.h"
+const messagingEventsConstants g_messagingEvents_constants;
 
+messagingEventsConstants::messagingEventsConstants() {
+}
 
-namespace apache { namespace airavata { namespace model {
+}}}}} // namespace
 
-}}} // namespace
-
-#endif
