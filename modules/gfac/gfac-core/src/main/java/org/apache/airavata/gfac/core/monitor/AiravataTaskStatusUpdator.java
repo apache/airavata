@@ -24,9 +24,10 @@ import java.util.Calendar;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangedEvent;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
+import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.messaging.event.TaskIdentity;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.registry.cpi.Registry;
@@ -63,7 +64,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     }
 
     @Subscribe
-    public void setupTaskStatus(JobStatusChangedEvent jobStatus){
+    public void setupTaskStatus(JobStatusChangeEvent jobStatus){
     	TaskState state=TaskState.UNKNOWN;
     	switch(jobStatus.getState()){
     	case ACTIVE:
@@ -88,9 +89,12 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
 			break;
     	}
     	try {
-			updateTaskStatus(jobStatus.getIdentity().getTaskId(), state);
-			logger.debug("Publishing task status for "+jobStatus.getIdentity().getTaskId()+":"+state.toString());
-			monitorPublisher.publish(new TaskStatusChangedEvent(jobStatus.getIdentity(),state));
+			updateTaskStatus(jobStatus.getJobIdentity().getTaskId(), state);
+			logger.debug("Publishing task status for "+jobStatus.getJobIdentity().getTaskId()+":"+state.toString());
+            TaskIdentity taskIdentity = new TaskIdentity(jobStatus.getJobIdentity().getTaskId(),
+                                                         jobStatus.getJobIdentity().getWorkflowNodeId(),
+                                                         jobStatus.getJobIdentity().getExperimentId());
+            monitorPublisher.publish(new TaskStatusChangeEvent(state, taskIdentity));
 		} catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
 		}

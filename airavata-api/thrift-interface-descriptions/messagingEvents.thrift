@@ -57,22 +57,22 @@ struct JobIdentity {
     4: required string experimentId;
 }
 
-struct JobMonitor {
-    1: optional string username;
-    2: optional i64 jobStartedTime;
-    3: optional i64 lastMonitoredTime;
-    4: optional string hostId;
-    5: optional map<string, string> parameters;
-    6: optional string jobName;
-    7: optional i32 failedCount = 0;
-    // FIXME - Job execution context
-    //8:
- }
+//struct JobMonitor {
+//    1: optional string username;
+//    2: optional i64 jobStartedTime;
+//    3: optional i64 lastMonitoredTime;
+//    4: optional string hostId;
+//    5: optional map<string, string> parameters;
+//    6: optional string jobName;
+//    7: optional i32 failedCount = 0;
+//    // FIXME - Job execution context
+//    //8:
+// }
 
 struct JobStatusChangeEvent {
     1: required experimentModel.JobState state;
     2: required JobIdentity jobIdentity;
-    3: required JobMonitor jobMonitor;
+//    3: required JobMonitor jobMonitor;
 }
 
 

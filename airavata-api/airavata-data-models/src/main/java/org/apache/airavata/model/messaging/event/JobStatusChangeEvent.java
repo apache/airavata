@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
 
   private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("state", org.apache.thrift.protocol.TType.I32, (short)1);
   private static final org.apache.thrift.protocol.TField JOB_IDENTITY_FIELD_DESC = new org.apache.thrift.protocol.TField("jobIdentity", org.apache.thrift.protocol.TType.STRUCT, (short)2);
-  private static final org.apache.thrift.protocol.TField JOB_MONITOR_FIELD_DESC = new org.apache.thrift.protocol.TField("jobMonitor", org.apache.thrift.protocol.TType.STRUCT, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -64,7 +63,6 @@ import org.slf4j.LoggerFactory;
 
   private org.apache.airavata.model.workspace.experiment.JobState state; // required
   private JobIdentity jobIdentity; // required
-  private JobMonitor jobMonitor; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -73,8 +71,7 @@ import org.slf4j.LoggerFactory;
      * @see org.apache.airavata.model.workspace.experiment.JobState
      */
     STATE((short)1, "state"),
-    JOB_IDENTITY((short)2, "jobIdentity"),
-    JOB_MONITOR((short)3, "jobMonitor");
+    JOB_IDENTITY((short)2, "jobIdentity");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -93,8 +90,6 @@ import org.slf4j.LoggerFactory;
           return STATE;
         case 2: // JOB_IDENTITY
           return JOB_IDENTITY;
-        case 3: // JOB_MONITOR
-          return JOB_MONITOR;
         default:
           return null;
       }
@@ -142,8 +137,6 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.workspace.experiment.JobState.class)));
     tmpMap.put(_Fields.JOB_IDENTITY, new org.apache.thrift.meta_data.FieldMetaData("jobIdentity", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, JobIdentity.class)));
-    tmpMap.put(_Fields.JOB_MONITOR, new org.apache.thrift.meta_data.FieldMetaData("jobMonitor", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, JobMonitor.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(JobStatusChangeEvent.class, metaDataMap);
   }
@@ -153,13 +146,11 @@ import org.slf4j.LoggerFactory;
 
   public JobStatusChangeEvent(
     org.apache.airavata.model.workspace.experiment.JobState state,
-    JobIdentity jobIdentity,
-    JobMonitor jobMonitor)
+    JobIdentity jobIdentity)
   {
     this();
     this.state = state;
     this.jobIdentity = jobIdentity;
-    this.jobMonitor = jobMonitor;
   }
 
   /**
@@ -172,9 +163,6 @@ import org.slf4j.LoggerFactory;
     if (other.isSetJobIdentity()) {
       this.jobIdentity = new JobIdentity(other.jobIdentity);
     }
-    if (other.isSetJobMonitor()) {
-      this.jobMonitor = new JobMonitor(other.jobMonitor);
-    }
   }
 
   public JobStatusChangeEvent deepCopy() {
@@ -185,7 +173,6 @@ import org.slf4j.LoggerFactory;
   public void clear() {
     this.state = null;
     this.jobIdentity = null;
-    this.jobMonitor = null;
   }
 
   /**
@@ -242,29 +229,6 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public JobMonitor getJobMonitor() {
-    return this.jobMonitor;
-  }
-
-  public void setJobMonitor(JobMonitor jobMonitor) {
-    this.jobMonitor = jobMonitor;
-  }
-
-  public void unsetJobMonitor() {
-    this.jobMonitor = null;
-  }
-
-  /** Returns true if field jobMonitor is set (has been assigned a value) and false otherwise */
-  public boolean isSetJobMonitor() {
-    return this.jobMonitor != null;
-  }
-
-  public void setJobMonitorIsSet(boolean value) {
-    if (!value) {
-      this.jobMonitor = null;
-    }
-  }
-
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case STATE:
@@ -283,14 +247,6 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case JOB_MONITOR:
-      if (value == null) {
-        unsetJobMonitor();
-      } else {
-        setJobMonitor((JobMonitor)value);
-      }
-      break;
-
     }
   }
 
@@ -301,9 +257,6 @@ import org.slf4j.LoggerFactory;
 
     case JOB_IDENTITY:
       return getJobIdentity();
-
-    case JOB_MONITOR:
-      return getJobMonitor();
 
     }
     throw new IllegalStateException();
@@ -320,8 +273,6 @@ import org.slf4j.LoggerFactory;
       return isSetState();
     case JOB_IDENTITY:
       return isSetJobIdentity();
-    case JOB_MONITOR:
-      return isSetJobMonitor();
     }
     throw new IllegalStateException();
   }
@@ -354,15 +305,6 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_jobIdentity && that_present_jobIdentity))
         return false;
       if (!this.jobIdentity.equals(that.jobIdentity))
-        return false;
-    }
-
-    boolean this_present_jobMonitor = true && this.isSetJobMonitor();
-    boolean that_present_jobMonitor = true && that.isSetJobMonitor();
-    if (this_present_jobMonitor || that_present_jobMonitor) {
-      if (!(this_present_jobMonitor && that_present_jobMonitor))
-        return false;
-      if (!this.jobMonitor.equals(that.jobMonitor))
         return false;
     }
 
@@ -402,16 +344,6 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetJobMonitor()).compareTo(other.isSetJobMonitor());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetJobMonitor()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobMonitor, other.jobMonitor);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     return 0;
   }
 
@@ -447,14 +379,6 @@ import org.slf4j.LoggerFactory;
       sb.append(this.jobIdentity);
     }
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("jobMonitor:");
-    if (this.jobMonitor == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.jobMonitor);
-    }
-    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -469,16 +393,9 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'jobIdentity' is unset! Struct:" + toString());
     }
 
-    if (!isSetJobMonitor()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'jobMonitor' is unset! Struct:" + toString());
-    }
-
     // check for sub-struct validity
     if (jobIdentity != null) {
       jobIdentity.validate();
-    }
-    if (jobMonitor != null) {
-      jobMonitor.validate();
     }
   }
 
@@ -533,15 +450,6 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // JOB_MONITOR
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.jobMonitor = new JobMonitor();
-              struct.jobMonitor.read(iprot);
-              struct.setJobMonitorIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -565,11 +473,6 @@ import org.slf4j.LoggerFactory;
         struct.jobIdentity.write(oprot);
         oprot.writeFieldEnd();
       }
-      if (struct.jobMonitor != null) {
-        oprot.writeFieldBegin(JOB_MONITOR_FIELD_DESC);
-        struct.jobMonitor.write(oprot);
-        oprot.writeFieldEnd();
-      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -589,7 +492,6 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeI32(struct.state.getValue());
       struct.jobIdentity.write(oprot);
-      struct.jobMonitor.write(oprot);
     }
 
     @Override
@@ -600,9 +502,6 @@ import org.slf4j.LoggerFactory;
       struct.jobIdentity = new JobIdentity();
       struct.jobIdentity.read(iprot);
       struct.setJobIdentityIsSet(true);
-      struct.jobMonitor = new JobMonitor();
-      struct.jobMonitor.read(iprot);
-      struct.setJobMonitorIsSet(true);
     }
   }
 

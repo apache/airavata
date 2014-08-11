@@ -320,124 +320,12 @@ class JobIdentity {
 
 void swap(JobIdentity &a, JobIdentity &b);
 
-typedef struct _JobMonitor__isset {
-  _JobMonitor__isset() : username(false), jobStartedTime(false), lastMonitoredTime(false), hostId(false), parameters(false), jobName(false), failedCount(true) {}
-  bool username;
-  bool jobStartedTime;
-  bool lastMonitoredTime;
-  bool hostId;
-  bool parameters;
-  bool jobName;
-  bool failedCount;
-} _JobMonitor__isset;
-
-class JobMonitor {
- public:
-
-  static const char* ascii_fingerprint; // = "D0036787E2FC651CBEB945D6D6CBBEB8";
-  static const uint8_t binary_fingerprint[16]; // = {0xD0,0x03,0x67,0x87,0xE2,0xFC,0x65,0x1C,0xBE,0xB9,0x45,0xD6,0xD6,0xCB,0xBE,0xB8};
-
-  JobMonitor() : username(), jobStartedTime(0), lastMonitoredTime(0), hostId(), jobName(), failedCount(0) {
-  }
-
-  virtual ~JobMonitor() throw() {}
-
-  std::string username;
-  int64_t jobStartedTime;
-  int64_t lastMonitoredTime;
-  std::string hostId;
-  std::map<std::string, std::string>  parameters;
-  std::string jobName;
-  int32_t failedCount;
-
-  _JobMonitor__isset __isset;
-
-  void __set_username(const std::string& val) {
-    username = val;
-    __isset.username = true;
-  }
-
-  void __set_jobStartedTime(const int64_t val) {
-    jobStartedTime = val;
-    __isset.jobStartedTime = true;
-  }
-
-  void __set_lastMonitoredTime(const int64_t val) {
-    lastMonitoredTime = val;
-    __isset.lastMonitoredTime = true;
-  }
-
-  void __set_hostId(const std::string& val) {
-    hostId = val;
-    __isset.hostId = true;
-  }
-
-  void __set_parameters(const std::map<std::string, std::string> & val) {
-    parameters = val;
-    __isset.parameters = true;
-  }
-
-  void __set_jobName(const std::string& val) {
-    jobName = val;
-    __isset.jobName = true;
-  }
-
-  void __set_failedCount(const int32_t val) {
-    failedCount = val;
-    __isset.failedCount = true;
-  }
-
-  bool operator == (const JobMonitor & rhs) const
-  {
-    if (__isset.username != rhs.__isset.username)
-      return false;
-    else if (__isset.username && !(username == rhs.username))
-      return false;
-    if (__isset.jobStartedTime != rhs.__isset.jobStartedTime)
-      return false;
-    else if (__isset.jobStartedTime && !(jobStartedTime == rhs.jobStartedTime))
-      return false;
-    if (__isset.lastMonitoredTime != rhs.__isset.lastMonitoredTime)
-      return false;
-    else if (__isset.lastMonitoredTime && !(lastMonitoredTime == rhs.lastMonitoredTime))
-      return false;
-    if (__isset.hostId != rhs.__isset.hostId)
-      return false;
-    else if (__isset.hostId && !(hostId == rhs.hostId))
-      return false;
-    if (__isset.parameters != rhs.__isset.parameters)
-      return false;
-    else if (__isset.parameters && !(parameters == rhs.parameters))
-      return false;
-    if (__isset.jobName != rhs.__isset.jobName)
-      return false;
-    else if (__isset.jobName && !(jobName == rhs.jobName))
-      return false;
-    if (__isset.failedCount != rhs.__isset.failedCount)
-      return false;
-    else if (__isset.failedCount && !(failedCount == rhs.failedCount))
-      return false;
-    return true;
-  }
-  bool operator != (const JobMonitor &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const JobMonitor & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-void swap(JobMonitor &a, JobMonitor &b);
-
 
 class JobStatusChangeEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "A4467EF21DF0026B864BF2B95C34A774";
-  static const uint8_t binary_fingerprint[16]; // = {0xA4,0x46,0x7E,0xF2,0x1D,0xF0,0x02,0x6B,0x86,0x4B,0xF2,0xB9,0x5C,0x34,0xA7,0x74};
+  static const char* ascii_fingerprint; // = "8D18A3CD1822DBC67D7BD8CB98E7B4F1";
+  static const uint8_t binary_fingerprint[16]; // = {0x8D,0x18,0xA3,0xCD,0x18,0x22,0xDB,0xC6,0x7D,0x7B,0xD8,0xCB,0x98,0xE7,0xB4,0xF1};
 
   JobStatusChangeEvent() : state(( ::apache::airavata::model::workspace::experiment::JobState::type)0) {
   }
@@ -446,7 +334,6 @@ class JobStatusChangeEvent {
 
    ::apache::airavata::model::workspace::experiment::JobState::type state;
   JobIdentity jobIdentity;
-  JobMonitor jobMonitor;
 
   void __set_state(const  ::apache::airavata::model::workspace::experiment::JobState::type val) {
     state = val;
@@ -456,17 +343,11 @@ class JobStatusChangeEvent {
     jobIdentity = val;
   }
 
-  void __set_jobMonitor(const JobMonitor& val) {
-    jobMonitor = val;
-  }
-
   bool operator == (const JobStatusChangeEvent & rhs) const
   {
     if (!(state == rhs.state))
       return false;
     if (!(jobIdentity == rhs.jobIdentity))
-      return false;
-    if (!(jobMonitor == rhs.jobMonitor))
       return false;
     return true;
   }
