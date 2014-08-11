@@ -263,6 +263,50 @@ class TaskStatusChangeEvent {
 void swap(TaskStatusChangeEvent &a, TaskStatusChangeEvent &b);
 
 
+class TaskOutputChangeEvent {
+ public:
+
+  static const char* ascii_fingerprint; // = "6488123A3A8B4CF758D069C9B693C7EB";
+  static const uint8_t binary_fingerprint[16]; // = {0x64,0x88,0x12,0x3A,0x3A,0x8B,0x4C,0xF7,0x58,0xD0,0x69,0xC9,0xB6,0x93,0xC7,0xEB};
+
+  TaskOutputChangeEvent() {
+  }
+
+  virtual ~TaskOutputChangeEvent() throw() {}
+
+  std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType>  output;
+  TaskIdentity taskIdentity;
+
+  void __set_output(const std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & val) {
+    output = val;
+  }
+
+  void __set_taskIdentity(const TaskIdentity& val) {
+    taskIdentity = val;
+  }
+
+  bool operator == (const TaskOutputChangeEvent & rhs) const
+  {
+    if (!(output == rhs.output))
+      return false;
+    if (!(taskIdentity == rhs.taskIdentity))
+      return false;
+    return true;
+  }
+  bool operator != (const TaskOutputChangeEvent &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const TaskOutputChangeEvent & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(TaskOutputChangeEvent &a, TaskOutputChangeEvent &b);
+
+
 class JobIdentity {
  public:
 

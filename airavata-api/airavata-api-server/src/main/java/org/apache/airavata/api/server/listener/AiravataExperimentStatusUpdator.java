@@ -79,7 +79,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	                break;
 	        }
 	        if (!updateExperimentStatus){
-				ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getWorkflowNodeIdentity().getExperimentID()));
+				ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
 				updateExperimentStatus=(executionType==ExecutionType.SINGLE_APP);
 	        }
 			updateExperimentStatus(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), state);

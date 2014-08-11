@@ -29,10 +29,6 @@ import java.util.Map;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.monitor.TaskIdentity;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
-import org.apache.airavata.gfac.core.monitor.state.TaskOutputDataChangedEvent;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
@@ -41,6 +37,10 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.local.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.local.utils.InputUtils;
+import org.apache.airavata.model.messaging.event.JobIdentity;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.TaskIdentity;
+import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -173,10 +173,12 @@ public class LocalProvider extends AbstractProvider {
             log.info(buf.toString());
 
             // updating the job status to complete because there's nothing to monitor in local jobs
-            MonitorID monitorID = createMonitorID(jobExecutionContext);
-            JobStatusChangeRequest jobStatusChangeRequest = new JobStatusChangeRequest(monitorID);
-            jobStatusChangeRequest.setState(JobState.COMPLETE);
-            this.getMonitorPublisher().publish(jobStatusChangeRequest);
+//            MonitorID monitorID = createMonitorID(jobExecutionContext);
+            JobIdentity jobIdentity = new JobIdentity(jobExecutionContext.getJobDetails().getJobID(),
+                    jobExecutionContext.getTaskData().getTaskID(),
+                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                    jobExecutionContext.getExperimentID());
+            this.getMonitorPublisher().publish(new JobStatusChangeEvent(JobState.COMPLETE, jobIdentity));
         } catch (IOException io) {
             throw new GFacProviderException(io.getMessage(), io);
         } catch (InterruptedException e) {
@@ -186,13 +188,13 @@ public class LocalProvider extends AbstractProvider {
         }
     }
 
-	private MonitorID createMonitorID(JobExecutionContext jobExecutionContext) {
-		MonitorID monitorID = new MonitorID(jobExecutionContext.getApplicationContext().getHostDescription(), jobId,
-		        jobExecutionContext.getTaskData().getTaskID(),
-		        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
-		        jobExecutionContext.getExperiment().getUserName(),jobId);
-		return monitorID;
-	}
+//	private MonitorID createMonitorID(JobExecutionContext jobExecutionContext) {
+//		MonitorID monitorID = new MonitorID(jobExecutionContext.getApplicationContext().getHostDescription(), jobId,
+//		        jobExecutionContext.getTaskData().getTaskID(),
+//		        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
+//		        jobExecutionContext.getExperiment().getUserName(),jobId);
+//		return monitorID;
+//	}
 
 //	private void saveApplicationJob(JobExecutionContext jobExecutionContext)
 //			throws GFacProviderException {
@@ -225,11 +227,15 @@ public class LocalProvider extends AbstractProvider {
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
             TaskDetails taskDetails = (TaskDetails)registry.get(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
-            taskDetails.setApplicationOutputs(outputArray);
-            registry.update(RegistryModelType.TASK_DETAIL, taskDetails, taskDetails.getTaskID());
+            if (taskDetails != null){
+                taskDetails.setApplicationOutputs(outputArray);
+                registry.update(RegistryModelType.TASK_DETAIL, taskDetails, taskDetails.getTaskID());
+            }
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
-            MonitorID monitorId = createMonitorID(jobExecutionContext);
-            getMonitorPublisher().publish(new TaskOutputDataChangedEvent(new TaskIdentity(monitorId.getExperimentID(), monitorId.getWorkflowNodeID(), monitorId.getTaskID()), outputArray));
+            TaskIdentity taskIdentity = new TaskIdentity(jobExecutionContext.getTaskData().getTaskID(),
+                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                    jobExecutionContext.getExperimentID());
+            getMonitorPublisher().publish(new TaskOutputChangeEvent(outputArray, taskIdentity));
         } catch (XmlException e) {
             throw new GFacProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {

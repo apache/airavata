@@ -44,8 +44,8 @@ import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.gfac.core.monitor.state.TaskOutputDataChangedEvent;
-import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
+import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.ExecutionUnit;
@@ -1398,8 +1398,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	}
 	
 	@Subscribe
-    public void taskOutputChanged(TaskOutputDataChangedEvent taskOutputEvent){
-		String taskId = taskOutputEvent.getIdentity().getTaskId();
+    public void taskOutputChanged(TaskOutputChangeEvent taskOutputEvent){
+		String taskId = taskOutputEvent.getTaskIdentity().getTaskId();
 		if (isTaskAwaiting(taskId)){
         	WorkflowNodeState state=WorkflowNodeState.COMPLETED;
 			Node node = getAwaitingNodeForTask(taskId);
@@ -1425,8 +1425,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	}
 	
     @Subscribe
-    public void taskStatusChanged(TaskStatusChangedEvent taskStatus){
-    	String taskId = taskStatus.getIdentity().getTaskId();
+    public void taskStatusChanged(TaskStatusChangeEvent taskStatus){
+    	String taskId = taskStatus.getTaskIdentity().getTaskId();
 		if (isTaskAwaiting(taskId)){
         	WorkflowNodeState state=WorkflowNodeState.UNKNOWN;
 			Node node = getAwaitingNodeForTask(taskId);
