@@ -225,8 +225,10 @@ public class LocalProvider extends AbstractProvider {
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
             TaskDetails taskDetails = (TaskDetails)registry.get(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
-            taskDetails.setApplicationOutputs(outputArray);
-            registry.update(RegistryModelType.TASK_DETAIL, taskDetails, taskDetails.getTaskID());
+            if (taskDetails != null){
+                taskDetails.setApplicationOutputs(outputArray);
+                registry.update(RegistryModelType.TASK_DETAIL, taskDetails, taskDetails.getTaskID());
+            }
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
             MonitorID monitorId = createMonitorID(jobExecutionContext);
             getMonitorPublisher().publish(new TaskOutputDataChangedEvent(new TaskIdentity(monitorId.getExperimentID(), monitorId.getWorkflowNodeID(), monitorId.getTaskID()), outputArray));
