@@ -24,8 +24,7 @@ import java.util.Calendar;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangedEvent;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
@@ -54,18 +53,18 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
 
 
     @Subscribe
-    public void updateRegistry(JobStatusChangeRequest jobStatus) {
+    public void updateRegistry(JobStatusChangeEvent jobStatus) {
         /* Here we need to parse the jobStatus message and update
                 the registry accordingly, for now we are just printing to standard Out
                  */
         JobState state = jobStatus.getState();
         if (state != null) {
             try {
-                String taskID = jobStatus.getIdentity().getTaskId();
-                String jobID = jobStatus.getIdentity().getJobId();
+                String taskID = jobStatus.getJobIdentity().getTaskId();
+                String jobID = jobStatus.getJobIdentity().getJobId();
                 updateJobStatus(taskID, jobID, state);
-    			logger.debug("Publishing job status for "+jobStatus.getIdentity().getJobId()+":"+state.toString());
-            	monitorPublisher.publish(new JobStatusChangedEvent(jobStatus.getMonitorID(),jobStatus.getIdentity(),state));
+    			logger.debug("Publishing job status for "+jobStatus.getJobIdentity().getJobId()+":"+state.toString());
+            	monitorPublisher.publish(new JobStatusChangeEvent(jobStatus.getState(), jobStatus.getJobIdentity()));
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             }

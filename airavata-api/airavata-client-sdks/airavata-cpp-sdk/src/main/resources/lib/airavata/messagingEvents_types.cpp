@@ -561,179 +561,8 @@ void swap(JobIdentity &a, JobIdentity &b) {
   swap(a.experimentId, b.experimentId);
 }
 
-const char* JobMonitor::ascii_fingerprint = "D0036787E2FC651CBEB945D6D6CBBEB8";
-const uint8_t JobMonitor::binary_fingerprint[16] = {0xD0,0x03,0x67,0x87,0xE2,0xFC,0x65,0x1C,0xBE,0xB9,0x45,0xD6,0xD6,0xCB,0xBE,0xB8};
-
-uint32_t JobMonitor::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->username);
-          this->__isset.username = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 2:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->jobStartedTime);
-          this->__isset.jobStartedTime = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_I64) {
-          xfer += iprot->readI64(this->lastMonitoredTime);
-          this->__isset.lastMonitoredTime = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 4:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->hostId);
-          this->__isset.hostId = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 5:
-        if (ftype == ::apache::thrift::protocol::T_MAP) {
-          {
-            this->parameters.clear();
-            uint32_t _size3;
-            ::apache::thrift::protocol::TType _ktype4;
-            ::apache::thrift::protocol::TType _vtype5;
-            xfer += iprot->readMapBegin(_ktype4, _vtype5, _size3);
-            uint32_t _i7;
-            for (_i7 = 0; _i7 < _size3; ++_i7)
-            {
-              std::string _key8;
-              xfer += iprot->readString(_key8);
-              std::string& _val9 = this->parameters[_key8];
-              xfer += iprot->readString(_val9);
-            }
-            xfer += iprot->readMapEnd();
-          }
-          this->__isset.parameters = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 6:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->jobName);
-          this->__isset.jobName = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 7:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->failedCount);
-          this->__isset.failedCount = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t JobMonitor::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  xfer += oprot->writeStructBegin("JobMonitor");
-
-  if (this->__isset.username) {
-    xfer += oprot->writeFieldBegin("username", ::apache::thrift::protocol::T_STRING, 1);
-    xfer += oprot->writeString(this->username);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.jobStartedTime) {
-    xfer += oprot->writeFieldBegin("jobStartedTime", ::apache::thrift::protocol::T_I64, 2);
-    xfer += oprot->writeI64(this->jobStartedTime);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.lastMonitoredTime) {
-    xfer += oprot->writeFieldBegin("lastMonitoredTime", ::apache::thrift::protocol::T_I64, 3);
-    xfer += oprot->writeI64(this->lastMonitoredTime);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.hostId) {
-    xfer += oprot->writeFieldBegin("hostId", ::apache::thrift::protocol::T_STRING, 4);
-    xfer += oprot->writeString(this->hostId);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.parameters) {
-    xfer += oprot->writeFieldBegin("parameters", ::apache::thrift::protocol::T_MAP, 5);
-    {
-      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->parameters.size()));
-      std::map<std::string, std::string> ::const_iterator _iter10;
-      for (_iter10 = this->parameters.begin(); _iter10 != this->parameters.end(); ++_iter10)
-      {
-        xfer += oprot->writeString(_iter10->first);
-        xfer += oprot->writeString(_iter10->second);
-      }
-      xfer += oprot->writeMapEnd();
-    }
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.jobName) {
-    xfer += oprot->writeFieldBegin("jobName", ::apache::thrift::protocol::T_STRING, 6);
-    xfer += oprot->writeString(this->jobName);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.failedCount) {
-    xfer += oprot->writeFieldBegin("failedCount", ::apache::thrift::protocol::T_I32, 7);
-    xfer += oprot->writeI32(this->failedCount);
-    xfer += oprot->writeFieldEnd();
-  }
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-void swap(JobMonitor &a, JobMonitor &b) {
-  using ::std::swap;
-  swap(a.username, b.username);
-  swap(a.jobStartedTime, b.jobStartedTime);
-  swap(a.lastMonitoredTime, b.lastMonitoredTime);
-  swap(a.hostId, b.hostId);
-  swap(a.parameters, b.parameters);
-  swap(a.jobName, b.jobName);
-  swap(a.failedCount, b.failedCount);
-  swap(a.__isset, b.__isset);
-}
-
-const char* JobStatusChangeEvent::ascii_fingerprint = "A4467EF21DF0026B864BF2B95C34A774";
-const uint8_t JobStatusChangeEvent::binary_fingerprint[16] = {0xA4,0x46,0x7E,0xF2,0x1D,0xF0,0x02,0x6B,0x86,0x4B,0xF2,0xB9,0x5C,0x34,0xA7,0x74};
+const char* JobStatusChangeEvent::ascii_fingerprint = "8D18A3CD1822DBC67D7BD8CB98E7B4F1";
+const uint8_t JobStatusChangeEvent::binary_fingerprint[16] = {0x8D,0x18,0xA3,0xCD,0x18,0x22,0xDB,0xC6,0x7D,0x7B,0xD8,0xCB,0x98,0xE7,0xB4,0xF1};
 
 uint32_t JobStatusChangeEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -748,7 +577,6 @@ uint32_t JobStatusChangeEvent::read(::apache::thrift::protocol::TProtocol* iprot
 
   bool isset_state = false;
   bool isset_jobIdentity = false;
-  bool isset_jobMonitor = false;
 
   while (true)
   {
@@ -760,9 +588,9 @@ uint32_t JobStatusChangeEvent::read(::apache::thrift::protocol::TProtocol* iprot
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast11;
-          xfer += iprot->readI32(ecast11);
-          this->state = ( ::apache::airavata::model::workspace::experiment::JobState::type)ecast11;
+          int32_t ecast3;
+          xfer += iprot->readI32(ecast3);
+          this->state = ( ::apache::airavata::model::workspace::experiment::JobState::type)ecast3;
           isset_state = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -772,14 +600,6 @@ uint32_t JobStatusChangeEvent::read(::apache::thrift::protocol::TProtocol* iprot
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->jobIdentity.read(iprot);
           isset_jobIdentity = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->jobMonitor.read(iprot);
-          isset_jobMonitor = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -797,8 +617,6 @@ uint32_t JobStatusChangeEvent::read(::apache::thrift::protocol::TProtocol* iprot
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_jobIdentity)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_jobMonitor)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -814,10 +632,6 @@ uint32_t JobStatusChangeEvent::write(::apache::thrift::protocol::TProtocol* opro
   xfer += this->jobIdentity.write(oprot);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("jobMonitor", ::apache::thrift::protocol::T_STRUCT, 3);
-  xfer += this->jobMonitor.write(oprot);
-  xfer += oprot->writeFieldEnd();
-
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -827,7 +641,6 @@ void swap(JobStatusChangeEvent &a, JobStatusChangeEvent &b) {
   using ::std::swap;
   swap(a.state, b.state);
   swap(a.jobIdentity, b.jobIdentity);
-  swap(a.jobMonitor, b.jobMonitor);
 }
 
 }}}}} // namespace

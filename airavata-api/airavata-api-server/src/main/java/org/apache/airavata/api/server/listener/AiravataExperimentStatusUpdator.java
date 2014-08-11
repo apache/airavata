@@ -25,7 +25,8 @@ import java.util.Calendar;
 import org.apache.airavata.api.server.util.DataModelUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.gfac.core.monitor.state.WorkflowNodeStatusChangedEvent;
+import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
@@ -51,7 +52,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
     }
     
     @Subscribe
-    public void setupExperimentStatus(WorkflowNodeStatusChangedEvent nodeStatus) {
+    public void setupExperimentStatus(WorkflowNodeStatusChangeEvent nodeStatus) {
 		try {
 			boolean updateExperimentStatus=true;
 	        ExperimentState state = ExperimentState.UNKNOWN;
@@ -78,12 +79,12 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	                break;
 	        }
 	        if (!updateExperimentStatus){
-				ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getIdentity().getExperimentID()));
+				ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getWorkflowNodeIdentity().getExperimentID()));
 				updateExperimentStatus=(executionType==ExecutionType.SINGLE_APP);
 	        }
-			updateExperimentStatus(nodeStatus.getIdentity().getExperimentID(), state);
-			logger.debug("Publishing experiment status for "+nodeStatus.getIdentity().getExperimentID()+":"+state.toString());
-			monitorPublisher.publish(new ExperimentStatusChangedEvent(nodeStatus.getIdentity(), state));
+			updateExperimentStatus(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), state);
+			logger.debug("Publishing experiment status for "+nodeStatus.getWorkflowNodeIdentity().getExperimentId()+":"+state.toString());
+			monitorPublisher.publish(new ExperimentStatusChangeEvent(state, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
 		} catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
 		}

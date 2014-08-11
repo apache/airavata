@@ -24,8 +24,9 @@ import java.util.Calendar;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
-import org.apache.airavata.gfac.core.monitor.state.WorkflowNodeStatusChangedEvent;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.WorkflowIdentity;
+import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
@@ -52,7 +53,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     }
 
     @Subscribe
-    public void setupWorkflowNodeStatus(TaskStatusChangedEvent taskStatus){
+    public void setupWorkflowNodeStatus(TaskStatusChangeEvent taskStatus){
     	WorkflowNodeState state=WorkflowNodeState.UNKNOWN;
     	switch(taskStatus.getState()){
     	case CANCELED:
@@ -73,9 +74,10 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
 			break;
     	}
     	try {
-			updateWorkflowNodeStatus(taskStatus.getIdentity().getWorkflowNodeID(), state);
-			logger.debug("Publishing workflow node status for "+taskStatus.getIdentity().getWorkflowNodeID()+":"+state.toString());
-			monitorPublisher.publish(new WorkflowNodeStatusChangedEvent(taskStatus.getIdentity(),state));
+			updateWorkflowNodeStatus(taskStatus.getTaskIdentity().getWorkflowNodeId(), state);
+			logger.debug("Publishing workflow node status for "+taskStatus.getTaskIdentity().getWorkflowNodeId()+":"+state.toString());
+            WorkflowIdentity workflowIdentity = new WorkflowIdentity(taskStatus.getTaskIdentity().getWorkflowNodeId(), taskStatus.getTaskIdentity().getExperimentId());
+            monitorPublisher.publish(new WorkflowNodeStatusChangeEvent(state, workflowIdentity));
 		} catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
 		}

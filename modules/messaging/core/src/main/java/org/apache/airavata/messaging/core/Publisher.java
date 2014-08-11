@@ -6,8 +6,8 @@ import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 
 public interface Publisher {
-    public void publish(ExperimentStatusChangeEvent event, Metadata metadata);
-    public void publish(WorkflowNodeStatusChangeEvent event, Metadata metadata);
-    public void publish(TaskStatusChangeEvent event, Metadata metadata);
-    public void publish(JobStatusChangeEvent event, Metadata metadata);
+    public void publish(ExperimentStatusChangeEvent event);
+    public void publish(WorkflowNodeStatusChangeEvent event);
+    public void publish(TaskStatusChangeEvent event);
+    public void publish(JobStatusChangeEvent event);
 }
