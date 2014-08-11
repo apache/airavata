@@ -24,8 +24,6 @@ import java.util.Calendar;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
-import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangedEvent;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.messaging.event.TaskIdentity;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -51,17 +49,17 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     public void setAiravataRegistry(Registry airavataRegistry) {
         this.airavataRegistry = airavataRegistry;
     }
-    
-    @Subscribe
-    public void setupTaskStatus(TaskStatusChangeRequest taskStatus){
-    	try {
-			updateTaskStatus(taskStatus.getIdentity().getTaskId(), taskStatus.getState());
-			logger.debug("Publishing task status for "+taskStatus.getIdentity().getTaskId()+":"+taskStatus.getState().toString());
-			monitorPublisher.publish(new TaskStatusChangedEvent(taskStatus.getIdentity(),taskStatus.getState()));
-		} catch (Exception e) {
-            logger.error("Error persisting data" + e.getLocalizedMessage(), e);
-		}
-    }
+//
+//    @Subscribe
+//    public void setupTaskStatus(TaskStatusChangeRequest taskStatus){
+//    	try {
+//			updateTaskStatus(taskStatus.getIdentity().getTaskId(), taskStatus.getState());
+//			logger.debug("Publishing task status for "+taskStatus.getIdentity().getTaskId()+":"+taskStatus.getState().toString());
+//			monitorPublisher.publish(new TaskStatusChangedEvent(taskStatus.getIdentity(),taskStatus.getState()));
+//		} catch (Exception e) {
+//            logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+//		}
+//    }
 
     @Subscribe
     public void setupTaskStatus(JobStatusChangeEvent jobStatus){
@@ -95,7 +93,8 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
                                                          jobStatus.getJobIdentity().getWorkflowNodeId(),
                                                          jobStatus.getJobIdentity().getExperimentId());
             monitorPublisher.publish(new TaskStatusChangeEvent(state, taskIdentity));
-		} catch (Exception e) {
+
+        } catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
 		}
     }

@@ -507,6 +507,131 @@ class TaskStatusChangeEvent {
 
 }
 
+class TaskOutputChangeEvent {
+  static $_TSPEC;
+
+  public $output = null;
+  public $taskIdentity = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'output',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Workspace\Experiment\DataObjectType',
+            ),
+          ),
+        2 => array(
+          'var' => 'taskIdentity',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Messaging\Event\TaskIdentity',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['output'])) {
+        $this->output = $vals['output'];
+      }
+      if (isset($vals['taskIdentity'])) {
+        $this->taskIdentity = $vals['taskIdentity'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'TaskOutputChangeEvent';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::LST) {
+            $this->output = array();
+            $_size0 = 0;
+            $_etype3 = 0;
+            $xfer += $input->readListBegin($_etype3, $_size0);
+            for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
+            {
+              $elem5 = null;
+              $elem5 = new \Airavata\Model\Workspace\Experiment\DataObjectType();
+              $xfer += $elem5->read($input);
+              $this->output []= $elem5;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->taskIdentity = new \Airavata\Model\Messaging\Event\TaskIdentity();
+            $xfer += $this->taskIdentity->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('TaskOutputChangeEvent');
+    if ($this->output !== null) {
+      if (!is_array($this->output)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('output', TType::LST, 1);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->output));
+        {
+          foreach ($this->output as $iter6)
+          {
+            $xfer += $iter6->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->taskIdentity !== null) {
+      if (!is_object($this->taskIdentity)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('taskIdentity', TType::STRUCT, 2);
+      $xfer += $this->taskIdentity->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class JobIdentity {
   static $_TSPEC;
 

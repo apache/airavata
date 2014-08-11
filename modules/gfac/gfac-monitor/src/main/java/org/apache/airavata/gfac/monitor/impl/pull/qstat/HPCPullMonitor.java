@@ -36,9 +36,6 @@ import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.monitor.TaskIdentity;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
-import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.core.PullMonitor;
@@ -46,6 +43,9 @@ import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
+import org.apache.airavata.model.messaging.event.JobIdentity;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
@@ -139,7 +139,7 @@ public class HPCPullMonitor extends PullMonitor {
         //todo this polling will not work with multiple usernames but with single user
         // and multiple hosts, currently monitoring will work
         UserMonitorData take = null;
-        JobStatusChangeRequest jobStatus = new JobStatusChangeRequest();
+        JobStatusChangeEvent jobStatus = new JobStatusChangeEvent();
         MonitorID currentMonitorID = null;
         HostDescription currentHostDescription = null;
         try {
@@ -164,7 +164,8 @@ public class HPCPullMonitor extends PullMonitor {
                     for (MonitorID iMonitorID : monitorID) {
                         currentMonitorID = iMonitorID;
                         iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()+","+iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
-                        jobStatus = new JobStatusChangeRequest(iMonitorID);
+                        jobStatus.setJobIdentity(new JobIdentity(iMonitorID.getJobID(), iMonitorID.getTaskID(), iMonitorID.getWorkflowNodeID(), iMonitorID.getExperimentID()));
+                        jobStatus.setState(iMonitorID.getStatus());
                         // we have this JobStatus class to handle amqp monitoring
 
                         publisher.publish(jobStatus);
@@ -177,8 +178,9 @@ public class HPCPullMonitor extends PullMonitor {
                             try {
                                 gfac.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
                             } catch (GFacException e) {
-                            	publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(iMonitorID.getExperimentID(), iMonitorID.getWorkflowNodeID(),
-										iMonitorID.getTaskID()), TaskState.FAILED));
+                                org.apache.airavata.model.messaging.event.TaskIdentity taskIdentity = new org.apache.airavata.model.messaging.event.TaskIdentity(iMonitorID.getTaskID(), iMonitorID.getWorkflowNodeID(),
+                                        iMonitorID.getExperimentID());
+                            	publisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
                             	//FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status 
                             	//should be done understanding whole workflow of job submission and data transfer
 //                            	publisher.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(iMonitorID.getExperimentID()),
@@ -193,8 +195,9 @@ public class HPCPullMonitor extends PullMonitor {
                                 logger.error("Launching outflow handlers to check output are genereated or not");
                                 gfac.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
                             } catch (GFacException e) {
-                                publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(iMonitorID.getExperimentID(), iMonitorID.getWorkflowNodeID(),
-                                        iMonitorID.getTaskID()), TaskState.FAILED));
+                                org.apache.airavata.model.messaging.event.TaskIdentity taskIdentity = new org.apache.airavata.model.messaging.event.TaskIdentity(iMonitorID.getTaskID(), iMonitorID.getWorkflowNodeID(),
+                                        iMonitorID.getExperimentID());
+                                publisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
                                 logger.info(e.getLocalizedMessage(), e);
                             }
                         } else {

@@ -449,6 +449,106 @@ void swap(TaskStatusChangeEvent &a, TaskStatusChangeEvent &b) {
   swap(a.taskIdentity, b.taskIdentity);
 }
 
+const char* TaskOutputChangeEvent::ascii_fingerprint = "6488123A3A8B4CF758D069C9B693C7EB";
+const uint8_t TaskOutputChangeEvent::binary_fingerprint[16] = {0x64,0x88,0x12,0x3A,0x3A,0x8B,0x4C,0xF7,0x58,0xD0,0x69,0xC9,0xB6,0x93,0xC7,0xEB};
+
+uint32_t TaskOutputChangeEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_output = false;
+  bool isset_taskIdentity = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->output.clear();
+            uint32_t _size3;
+            ::apache::thrift::protocol::TType _etype6;
+            xfer += iprot->readListBegin(_etype6, _size3);
+            this->output.resize(_size3);
+            uint32_t _i7;
+            for (_i7 = 0; _i7 < _size3; ++_i7)
+            {
+              xfer += this->output[_i7].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          isset_output = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->taskIdentity.read(iprot);
+          isset_taskIdentity = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_output)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_taskIdentity)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t TaskOutputChangeEvent::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("TaskOutputChangeEvent");
+
+  xfer += oprot->writeFieldBegin("output", ::apache::thrift::protocol::T_LIST, 1);
+  {
+    xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->output.size()));
+    std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> ::const_iterator _iter8;
+    for (_iter8 = this->output.begin(); _iter8 != this->output.end(); ++_iter8)
+    {
+      xfer += (*_iter8).write(oprot);
+    }
+    xfer += oprot->writeListEnd();
+  }
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("taskIdentity", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += this->taskIdentity.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(TaskOutputChangeEvent &a, TaskOutputChangeEvent &b) {
+  using ::std::swap;
+  swap(a.output, b.output);
+  swap(a.taskIdentity, b.taskIdentity);
+}
+
 const char* JobIdentity::ascii_fingerprint = "C93D890311F28844166CF6E571EB3AC2";
 const uint8_t JobIdentity::binary_fingerprint[16] = {0xC9,0x3D,0x89,0x03,0x11,0xF2,0x88,0x44,0x16,0x6C,0xF6,0xE5,0x71,0xEB,0x3A,0xC2};
 
@@ -588,9 +688,9 @@ uint32_t JobStatusChangeEvent::read(::apache::thrift::protocol::TProtocol* iprot
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast3;
-          xfer += iprot->readI32(ecast3);
-          this->state = ( ::apache::airavata::model::workspace::experiment::JobState::type)ecast3;
+          int32_t ecast9;
+          xfer += iprot->readI32(ecast9);
+          this->state = ( ::apache::airavata::model::workspace::experiment::JobState::type)ecast9;
           isset_state = true;
         } else {
           xfer += iprot->skip(ftype);

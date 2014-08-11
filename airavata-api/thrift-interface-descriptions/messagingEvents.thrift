@@ -50,6 +50,11 @@ struct TaskStatusChangeEvent {
     2: required TaskIdentity taskIdentity;
 }
 
+struct TaskOutputChangeEvent {
+    1: required list<experimentModel.DataObjectType> output;
+    2: required TaskIdentity taskIdentity;
+}
+
 struct JobIdentity {
     1: required string jobId;
     2: required string taskId;
