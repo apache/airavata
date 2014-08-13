@@ -209,7 +209,7 @@ public class SSHUtils {
         stdOutReader.onOutput(channel);
 
 
-        if (!stdOutReader.getStdErrorString().contains("scp:")) {
+        if (stdOutReader.getStdErrorString().contains("scp:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
         channel.disconnect();
@@ -314,7 +314,7 @@ public class SSHUtils {
 
 
         channel.disconnect();
-        if (!stdOutReader.getStdErrorString().contains("scp:")) {
+        if (stdOutReader.getStdErrorString().contains("scp:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
         //since remote file is always a file  we just return the file
@@ -422,7 +422,7 @@ public class SSHUtils {
                 out.flush();
             }
             stdOutReader.onOutput(channel);
-            if (!stdOutReader.getStdErrorString().contains("scp:")) {
+            if (stdOutReader.getStdErrorString().contains("scp:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
 
@@ -570,7 +570,7 @@ public class SSHUtils {
             session.disconnect();
 
             stdOutReader.onOutput(channel);
-            if (!stdOutReader.getStdErrorString().contains("scp:")) {
+            if (stdOutReader.getStdErrorString().contains("scp:")) {
                 throw new SSHApiException(stdOutReader.getStdErrorString());
             }
         } catch (Exception e) {
@@ -686,7 +686,7 @@ public class SSHUtils {
                 out.flush();
             }
             stdOutReader.onOutput(channel);
-            if (!stdOutReader.getStdErrorString().contains("scp:")) {
+            if (stdOutReader.getStdErrorString().contains("scp:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
 
@@ -724,7 +724,7 @@ public class SSHUtils {
                     + session.getUserName(), e);
         }
         stdOutReader.onOutput(channel);
-        if (!stdOutReader.getStdErrorString().contains("mkdir:")) {
+        if (stdOutReader.getStdErrorString().contains("mkdir:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
 
@@ -756,7 +756,7 @@ public class SSHUtils {
         }
         stdOutReader.onOutput(channel);
         stdOutReader.getStdOutputString();
-        if (!stdOutReader.getStdErrorString().contains("ls:")) {
+        if (stdOutReader.getStdErrorString().contains("ls:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
         channel.disconnect();
