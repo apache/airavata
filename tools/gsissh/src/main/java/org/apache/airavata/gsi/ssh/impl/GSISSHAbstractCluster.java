@@ -424,7 +424,8 @@ public class GSISSHAbstractCluster implements Cluster {
     }
 
     public void getJobStatuses(String userName, Map<String,JobStatus> jobIDs)throws SSHApiException {
-        RawCommandInfo rawCommandInfo = jobManagerConfiguration.getUserBasedMonitorCommand(userName);
+//        RawCommandInfo rawCommandInfo = jobManagerConfiguration.getUserBasedMonitorCommand(userName);
+        RawCommandInfo rawCommandInfo = new RawCommandInfo("qstat -u abc");
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
         String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", rawCommandInfo.getCommand());
@@ -461,7 +462,7 @@ public class GSISSHAbstractCluster implements Cluster {
         String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
 
         if ((stdOutputString == null || "".equals(stdOutputString)) &&
-                ((stdErrorString != null) && (stdErrorString.contains(command)))) {
+                (stdErrorString != null && stdErrorString.contains(command))) {
             log.error("Standard Error output : " + stdErrorString);
             throw new SSHApiException(errorMsg + stdErrorString);
         }
