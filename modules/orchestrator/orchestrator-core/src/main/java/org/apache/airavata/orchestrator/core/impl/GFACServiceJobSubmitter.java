@@ -85,8 +85,13 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
             String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
             String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
             List<String> children = zk.getChildren(gfacServer, this);
-            System.out.println(children);
-            String pickedChild = children.get(new Random().nextInt(Integer.MAX_VALUE) % children.size());
+//            System.out.println(children);
+            String pickedChild;
+            if(children.size() == 0){
+            	pickedChild = "gfac-node0";
+            }else{
+             pickedChild = children.get(new Random().nextInt(Integer.MAX_VALUE) % children.size());
+            }
             // here we are not using an index because the getChildren does not return the same order everytime
 
             String gfacNodeData = new String(zk.getData(gfacServer + File.separator + pickedChild, false, null));
