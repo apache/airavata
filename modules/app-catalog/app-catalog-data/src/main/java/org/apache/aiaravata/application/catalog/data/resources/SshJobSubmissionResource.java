@@ -19,6 +19,7 @@
 
 package org.apache.aiaravata.application.catalog.data.resources;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,24 @@ public class SshJobSubmissionResource extends AbstractResource {
 	private String alternativeSshHostname;
 	private String securityProtocol;
 	private int sshPort;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 	
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
@@ -198,8 +217,10 @@ public class SshJobSubmissionResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingSshJobSubmission == null) {
 				sshJobSubmission = new SshJobSubmission();
+                sshJobSubmission.setCreationTime(createdTime);
 			} else {
 				sshJobSubmission = existingSshJobSubmission;
+                sshJobSubmission.setUpdateTime(updatedTime);
 			}
 			sshJobSubmission.setResourceJobManagerId(getResourceJobManagerId());
 			ResourceJobManager resourceJobManager = em.find(ResourceJobManager.class, getResourceJobManagerId());

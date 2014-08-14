@@ -21,6 +21,7 @@
 
 package org.apache.aiaravata.application.catalog.data.resources;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,24 @@ public class DataMovementInterfaceResource extends AbstractResource {
 	private String dataMovementProtocol;
 	private String dataMovementInterfaceId;
 	private int priorityOrder;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 	
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
@@ -218,8 +237,10 @@ public class DataMovementInterfaceResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingDataMovementInterface == null) {
 				dataMovementInterface = new DataMovementInterface();
+                dataMovementInterface.setCreationTime(createdTime);
 			} else {
 				dataMovementInterface = existingDataMovementInterface;
+                dataMovementInterface.setUpdateTime(updatedTime);
 			}
 			dataMovementInterface.setComputeResourceId(getComputeResourceId());
 			ComputeResource computeResource = em.find(ComputeResource.class, getComputeResourceId());

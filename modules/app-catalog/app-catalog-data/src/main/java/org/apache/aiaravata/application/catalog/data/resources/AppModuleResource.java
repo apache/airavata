@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,24 @@ public class AppModuleResource extends AbstractResource {
     private String moduleName;
     private String moduleVersion;
     private String moduleDesc;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 
     public String getModuleId() {
         return moduleId;
@@ -237,6 +256,7 @@ public class AppModuleResource extends AbstractResource {
                 existingModule.setModuleName(moduleName);
                 existingModule.setModuleVersion(moduleVersion);
                 existingModule.setModuleDesc(moduleDesc);
+                existingModule.setUpdateTime(updatedTime);
                 em.merge(existingModule);
             }else {
                 ApplicationModule applicationModule = new ApplicationModule();
@@ -244,6 +264,7 @@ public class AppModuleResource extends AbstractResource {
                 applicationModule.setModuleName(moduleName);
                 applicationModule.setModuleVersion(moduleVersion);
                 applicationModule.setModuleDesc(moduleDesc);
+                applicationModule.setCreationTime(createdTime);
                 em.persist(applicationModule);
             }
             em.getTransaction().commit();
