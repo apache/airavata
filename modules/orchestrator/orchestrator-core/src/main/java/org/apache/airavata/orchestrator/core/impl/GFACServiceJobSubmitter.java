@@ -124,7 +124,48 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
 	}
 
     public boolean terminate(String experimentID, String taskID) throws OrchestratorException {
-        throw new OrchestratorException(new OperationNotSupportedException("terminate method is not yet implemented"));
+        ZooKeeper zk = orchestratorContext.getZk();
+        try {
+            if (zk == null || !zk.getState().isConnected()) {
+                String zkhostPort = AiravataZKUtils.getZKhostPort();
+                zk = new ZooKeeper(zkhostPort, 6000, this);
+                synchronized (mutex) {
+                    mutex.wait();
+                }
+            }
+            String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
+            String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+            List<String> children = zk.getChildren(gfacServer, this);
+
+            if (children.size() == 0) {
+                // Zookeeper data need cleaning
+                throw new OrchestratorException("There is no active GFac instance to route the request");
+            } else {
+                String pickedChild = children.get(new Random().nextInt(Integer.MAX_VALUE) % children.size());
+                // here we are not using an index because the getChildren does not return the same order everytime
+                String gfacNodeData = new String(zk.getData(gfacServer + File.separator + pickedChild, false, null));
+                logger.info("GFAC instance node data: " + gfacNodeData);
+                String[] split = gfacNodeData.split(":");
+                GfacService.Client localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
+                if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
+                    // before submitting the job we check again the state of the node
+                    return localhost.cancelJob(experimentID, taskID);
+                }
+            }
+        } catch (TException e) {
+            throw new OrchestratorException(e);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (KeeperException e) {
+            e.printStackTrace();
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     synchronized public void process(WatchedEvent event) {

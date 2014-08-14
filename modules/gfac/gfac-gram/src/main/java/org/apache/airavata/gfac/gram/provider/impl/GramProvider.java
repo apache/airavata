@@ -364,8 +364,8 @@ public class GramProvider extends AbstractProvider {
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
     }
 
-    public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException {
-        cancelSingleJob(jobId, jobExecutionContext);
+    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacException {
+        cancelSingleJob(jobExecutionContext.getJobDetails().getJobID(), jobExecutionContext);
     }
 
 

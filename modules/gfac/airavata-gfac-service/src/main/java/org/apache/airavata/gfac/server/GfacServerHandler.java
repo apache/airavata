@@ -203,7 +203,13 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
     }
 
     public boolean cancelJob(String experimentId, String taskId) throws TException {
-        throw new TException("Operation not supported");
+        logger.info("GFac Recieved the Experiment: " + experimentId + " TaskId: " + taskId);
+        GFac gfac = getGfac();
+        try {
+            return gfac.submitJob(experimentId, taskId, ServerSettings.getSetting(Constants.GATEWAY_NAME));
+        } catch (Exception e) {
+            throw new TException("Error launching the experiment : " + e.getMessage(), e);
+        }
     }
 
 

@@ -53,11 +53,10 @@ public interface GFacProvider{
 
     /**
      * Cancels all jobs relevant to an experiment.
-     * @param jobId The experiment id
      * @param jobExecutionContext The job execution context, contains runtime information.
      * @throws GFacException If an error occurred while cancelling the job.
      */
-    public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException;
+    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException;
 
 
 }
