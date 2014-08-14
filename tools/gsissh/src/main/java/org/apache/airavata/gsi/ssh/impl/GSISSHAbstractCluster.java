@@ -222,7 +222,7 @@ public class GSISSHAbstractCluster implements Cluster {
 
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        String outputifAvailable = getOutputifAvailable(stdOutReader, "Error reading output of job submission",rawCommandInfo.getCommand());
+        String outputifAvailable = getOutputifAvailable(stdOutReader, "Error reading output of job submission",rawCommandInfo.getBaseCommand());
         // this might not be the case for all teh resources, if so Cluster implementation can override this method
         // because here after cancelling we try to get the job description and return it back
         JobDescriptor jobById = this.getJobDescriptorById(jobID);
@@ -250,7 +250,7 @@ public class GSISSHAbstractCluster implements Cluster {
         //Check whether pbs submission is successful or not, if it failed throw and exception in submitJob method
         // with the error thrown in qsub command
         //
-        String outputifAvailable = getOutputifAvailable(standardOutReader,"Error reading output of job submission",rawCommandInfo.getCommand());
+        String outputifAvailable = getOutputifAvailable(standardOutReader,"Error reading output of job submission",rawCommandInfo.getBaseCommand());
         OutputParser outputParser = jobManagerConfiguration.getParser();
         return  outputParser.parse(outputifAvailable);
     }
@@ -315,7 +315,7 @@ public class GSISSHAbstractCluster implements Cluster {
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !",rawCommandInfo.getCommand());
+        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !",rawCommandInfo.getBaseCommand());
         JobDescriptor jobDescriptor = new JobDescriptor();
         jobManagerConfiguration.getParser().parse(jobDescriptor,result);
         return jobDescriptor;
@@ -325,7 +325,7 @@ public class GSISSHAbstractCluster implements Cluster {
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", rawCommandInfo.getCommand());
+        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", rawCommandInfo.getBaseCommand());
         return jobManagerConfiguration.getParser().parse(jobID, result);
     }
 
@@ -424,11 +424,10 @@ public class GSISSHAbstractCluster implements Cluster {
     }
 
     public void getJobStatuses(String userName, Map<String,JobStatus> jobIDs)throws SSHApiException {
-//        RawCommandInfo rawCommandInfo = jobManagerConfiguration.getUserBasedMonitorCommand(userName);
-        RawCommandInfo rawCommandInfo = new RawCommandInfo("qstat -u abc");
+        RawCommandInfo rawCommandInfo = jobManagerConfiguration.getUserBasedMonitorCommand(userName);
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", rawCommandInfo.getCommand());
+        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", rawCommandInfo.getBaseCommand());
         jobManagerConfiguration.getParser().parse(userName,jobIDs, result);
     }
 

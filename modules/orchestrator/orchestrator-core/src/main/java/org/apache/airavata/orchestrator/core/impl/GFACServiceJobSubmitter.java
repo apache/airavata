@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.orchestrator.core.impl;
 
 import java.io.File;
@@ -29,6 +29,8 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.core.cpi.GFac;
+import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
@@ -50,86 +52,87 @@ import org.slf4j.LoggerFactory;
  * gfac instance.
  */
 public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
-    private final static Logger logger = LoggerFactory.getLogger(GFACServiceJobSubmitter.class);
-    public static final String IP = "ip";
+	private final static Logger logger = LoggerFactory.getLogger(GFACServiceJobSubmitter.class);
+	public static final String IP = "ip";
 
-    private OrchestratorContext orchestratorContext;
+	private OrchestratorContext orchestratorContext;
 
-    private static Integer mutex = -1;
+	private static Integer mutex = -1;
 
-    public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
-        this.orchestratorContext = orchestratorContext;
-    }
+	public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
+		this.orchestratorContext = orchestratorContext;
+	}
 
-    public GFACInstance selectGFACInstance() throws OrchestratorException {
-        // currently we only support one instance but future we have to pick an instance
-        return null;
-    }
+	public GFACInstance selectGFACInstance() throws OrchestratorException {
+		// currently we only support one instance but future we have to pick an
+		// instance
+		return null;
+	}
 
+	public boolean submit(String experimentID, String taskID) throws OrchestratorException {
+		return this.submit(experimentID, taskID, null);
+	}
 
-    public boolean submit(String experimentID, String taskID) throws OrchestratorException {
-        return this.submit(experimentID, taskID, null);
-    }
+	public boolean submit(String experimentID, String taskID, String tokenId) throws OrchestratorException {
+		ZooKeeper zk = orchestratorContext.getZk();
+		try {
+			if (zk == null || !zk.getState().isConnected()) {
+				String zkhostPort = AiravataZKUtils.getZKhostPort();
+				zk = new ZooKeeper(zkhostPort, 6000, this);
+				synchronized (mutex) {
+					mutex.wait();
+				}
+			}
+			String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
+			String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+			List<String> children = zk.getChildren(gfacServer, this);
+			
+			if (children.size() == 0) {
+				// Zookeeper data need cleaning
+				GfacService.Client localhost = GFacClientFactory.createGFacClient(ServerSettings.getSetting(Constants.GFAC_SERVER_HOST), Integer.parseInt(ServerSettings.getSetting(Constants.GFAC_SERVER_HOST)));
+				return localhost.submitJob(experimentID, taskID, ServerSettings.getSetting(Constants.GATEWAY_NAME));
+			} else {
+				String pickedChild = children.get(new Random().nextInt(Integer.MAX_VALUE) % children.size());
+				// here we are not using an index because the getChildren does not return the same order everytime
+				String gfacNodeData = new String(zk.getData(gfacServer + File.separator + pickedChild, false, null));
+				logger.info("GFAC instance node data: " + gfacNodeData);
+				String[] split = gfacNodeData.split(":");
+				GfacService.Client localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
+				if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
+					// before submitting the job we check again the state of the node
+					if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild, tokenId)) {
+						// FIXME:: The GatewayID is temporarily read from properties file. It should instead be inferred from the token.
+						return localhost.submitJob(experimentID, taskID, ServerSettings.getSetting(Constants.GATEWAY_NAME));
+					}
+				}
+			}
+		} catch (TException e) {
+			throw new OrchestratorException(e);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (KeeperException e) {
+			e.printStackTrace();
+		} catch (ApplicationSettingsException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 
-
-    public boolean submit(String experimentID, String taskID, String tokenId) throws OrchestratorException {
-        ZooKeeper zk = orchestratorContext.getZk();
-        try {
-            if (zk==null || !zk.getState().isConnected()) {
-                String zkhostPort = AiravataZKUtils.getZKhostPort();
-                zk = new ZooKeeper(zkhostPort, 6000, this);
-                synchronized (mutex) {
-                    mutex.wait();
-                }
-            }
-            String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
-            String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
-            List<String> children = zk.getChildren(gfacServer, this);
-//            System.out.println(children);
-            String pickedChild;
-            if(children.size() == 0){
-            	pickedChild = "gfac-node0";
-            }else{
-             pickedChild = children.get(new Random().nextInt(Integer.MAX_VALUE) % children.size());
-            }
-            // here we are not using an index because the getChildren does not return the same order everytime
-
-            String gfacNodeData = new String(zk.getData(gfacServer + File.separator + pickedChild, false, null));
-            logger.info("GFAC instance node data: " + gfacNodeData);
-            String[] split = gfacNodeData.split(":");
-            GfacService.Client localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
-            if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {      // before submitting the job we check again the state of the node
-                if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild,tokenId)) {
-                    //FIXME:: The GatewayID is temporarily read from properties file. It should instead be inferred from the token.
-                    return localhost.submitJob(experimentID, taskID, ServerSettings.getSetting(Constants.GATEWAY_NAME));
-                }
-            }
-        } catch (TException e) {
-            throw new OrchestratorException(e);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (KeeperException e) {
-            e.printStackTrace();
-        } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-
-    synchronized public void process(WatchedEvent event) {
-        synchronized (mutex) {
-            switch (event.getState()) {
-                case SyncConnected:
-                    mutex.notify();
-            }
-            switch (event.getType()) {
-                case NodeCreated:
-                    mutex.notify();
-                    break;
-            }
-        }
-    }
+	synchronized public void process(WatchedEvent event) {
+		synchronized (mutex) {
+			switch (event.getState()) {
+			case SyncConnected:
+				mutex.notify();
+			}
+			switch (event.getType()) {
+			case NodeCreated:
+				mutex.notify();
+				break;
+			}
+		}
+	}
 }
