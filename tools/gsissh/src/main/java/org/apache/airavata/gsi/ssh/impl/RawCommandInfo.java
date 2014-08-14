@@ -48,7 +48,11 @@ public class RawCommandInfo implements CommandInfo {
     public String getRawCommand() {
         return rawCommand;
     }
-
+    
+    public String getBaseCommand() {
+        return rawCommand.substring(0, rawCommand.indexOf(" "));
+    }
+    
     public void setRawCommand(String rawCommand) {
         this.rawCommand = rawCommand;
     }
