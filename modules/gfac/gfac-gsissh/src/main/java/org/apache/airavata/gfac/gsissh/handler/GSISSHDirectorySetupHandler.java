@@ -70,7 +70,6 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
 
             String workingDirectory = app.getScratchWorkingDirectory();
             cluster.makeDirectory(workingDirectory);
-            cluster.makeDirectory(app.getScratchWorkingDirectory());
             cluster.makeDirectory(app.getInputDataDirectory());
             cluster.makeDirectory(app.getOutputDataDirectory());
             DataTransferDetails detail = new DataTransferDetails();
