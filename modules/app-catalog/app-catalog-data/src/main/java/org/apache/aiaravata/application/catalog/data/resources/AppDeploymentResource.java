@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +48,24 @@ public class AppDeploymentResource extends AbstractResource {
     private String appDes;
     private ComputeResourceResource hostResource;
     private AppModuleResource moduleResource;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 
     public String getDeploymentId() {
         return deploymentId;
@@ -352,6 +371,7 @@ public class AppDeploymentResource extends AbstractResource {
                 existingDeployment.setHostID(hostId);
                 existingDeployment.setExecutablePath(executablePath);
                 existingDeployment.setParallelism(parallelism);
+                existingDeployment.setUpdateTime(updatedTime);
                 em.merge(existingDeployment);
             }else {
                 ApplicationDeployment deployment  = new ApplicationDeployment();
@@ -363,6 +383,7 @@ public class AppDeploymentResource extends AbstractResource {
                 deployment.setComputeResource(computeHost);
                 deployment.setExecutablePath(executablePath);
                 deployment.setParallelism(parallelism);
+                deployment.setCreationTime(createdTime);
                 em.persist(deployment);
             }
             em.getTransaction().commit();

@@ -200,23 +200,23 @@ public class AppCatalogThriftConversion {
         return batchQueue;
     }
     
-    public static Map<String, JobSubmissionProtocol> getJobSubmissionProtocolList(List<Resource> resources){
-       Map<String, JobSubmissionProtocol> protocols = new HashMap<String, JobSubmissionProtocol>();
-        for (Resource resource : resources){
-            JobSubmissionProtocolResource submission = (JobSubmissionProtocolResource) resource;
-            protocols.put(submission.getSubmissionID(), JobSubmissionProtocol.valueOf(submission.getJobType()));
-        }
-        return protocols;
-    }
+//    public static Map<String, JobSubmissionProtocol> getJobSubmissionProtocolList(List<Resource> resources){
+//       Map<String, JobSubmissionProtocol> protocols = new HashMap<String, JobSubmissionProtocol>();
+//        for (Resource resource : resources){
+//            JobSubmissionProtocolResource submission = (JobSubmissionProtocolResource) resource;
+//            protocols.put(submission.getSubmissionID(), JobSubmissionProtocol.valueOf(submission.getJobType()));
+//        }
+//        return protocols;
+//    }
 
-    public static Map<String, DataMovementProtocol> getDataMoveProtocolList(List<Resource> resources){
-        Map<String, DataMovementProtocol> protocols = new HashMap<String, DataMovementProtocol>();
-        for (Resource resource : resources){
-            DataMovementProtocolResource protocolResource = (DataMovementProtocolResource) resource;
-            protocols.put(protocolResource.getDataMoveID(), DataMovementProtocol.valueOf(protocolResource.getDataMoveType()));
-        }
-        return protocols;
-    }
+//    public static Map<String, DataMovementProtocol> getDataMoveProtocolList(List<Resource> resources){
+//        Map<String, DataMovementProtocol> protocols = new HashMap<String, DataMovementProtocol>();
+//        for (Resource resource : resources){
+//            DataMovementProtocolResource protocolResource = (DataMovementProtocolResource) resource;
+//            protocols.put(protocolResource.getDataMoveID(), DataMovementProtocol.valueOf(protocolResource.getDataMoveType()));
+//        }
+//        return protocols;
+//    }
 
     public static SshJobSubmissionResource getSSHJobSubmission (SSHJobSubmission submission){
     	SshJobSubmissionResource resource = new SshJobSubmissionResource();

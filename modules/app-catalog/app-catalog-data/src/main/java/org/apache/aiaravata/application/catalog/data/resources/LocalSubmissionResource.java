@@ -21,6 +21,7 @@
 
 package org.apache.aiaravata.application.catalog.data.resources;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,24 @@ public class LocalSubmissionResource extends AbstractResource {
 	private String resourceJobManagerId;
 	private ResourceJobManagerResource resourceJobManagerResource;
 	private String jobSubmissionInterfaceId;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 	
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
@@ -197,8 +216,10 @@ public class LocalSubmissionResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingLocalSubmission == null) {
 				localSubmission = new LocalSubmission();
+                localSubmission.setCreationTime(createdTime);
 			} else {
 				localSubmission = existingLocalSubmission;
+                localSubmission.setUpdateTime(updatedTime);
 			}
 			localSubmission.setResourceJobManagerId(getResourceJobManagerId());
 			ResourceJobManager resourceJobManager = em.find(ResourceJobManager.class, getResourceJobManagerId());

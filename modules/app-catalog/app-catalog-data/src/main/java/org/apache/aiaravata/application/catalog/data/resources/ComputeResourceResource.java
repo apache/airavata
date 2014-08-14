@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +41,26 @@ public class ComputeResourceResource extends AbstractResource {
 	private String resourceDescription;
 	private String resourceId;
 	private String hostName;
-	
-	@Override
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
+
+    @Override
 	public void remove(Object identifier) throws AppCatalogException {
 		EntityManager em = null;
 		try {
@@ -246,8 +265,10 @@ public class ComputeResourceResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingComputeResource == null) {
 				computeResource = new ComputeResource();
+                computeResource.setCreationTime(createdTime);
 			} else {
 				computeResource = existingComputeResource;
+                computeResource.setUpdateTime(updatedTime);
 			}
 			computeResource.setResourceDescription(getResourceDescription());
 			computeResource.setResourceId(getResourceId());

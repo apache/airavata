@@ -22,6 +22,7 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -47,12 +48,35 @@ public class GridftpEndpoint implements Serializable {
 	@Id
 	@Column(name = "DATA_MOVEMENT_INTERFACE_ID")
 	private String dataMovementInterfaceId;
-	
+
 	@ManyToOne(cascade= CascadeType.MERGE)
 	@JoinColumn(name = "DATA_MOVEMENT_INTERFACE_ID")
 	private GridftpDataMovement gridftpDataMovement;
-	
-	public String getEndpoint() {
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "UPDATE_TIME")
+    private Timestamp updateTime;
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
+
+
+    public String getEndpoint() {
 		return endpoint;
 	}
 	

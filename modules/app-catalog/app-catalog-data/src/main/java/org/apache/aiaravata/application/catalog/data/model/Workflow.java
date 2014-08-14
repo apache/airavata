@@ -25,6 +25,7 @@ import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @DataCache
 @Entity
@@ -44,6 +45,28 @@ public class Workflow implements Serializable {
     @Id
     @Column(name = "WF_TEMPLATE_ID")
     private String wfTemplateId;
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "UPDATE_TIME")
+    private Timestamp updateTime;
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public String getWfName() {
         return wfName;
