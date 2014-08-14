@@ -73,7 +73,6 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
             String workingDirectory = app.getScratchWorkingDirectory();
             cluster.makeDirectory(workingDirectory);
-            cluster.makeDirectory(app.getScratchWorkingDirectory());
             cluster.makeDirectory(app.getInputDataDirectory());
             cluster.makeDirectory(app.getOutputDataDirectory());
             DataTransferDetails detail = new DataTransferDetails();
