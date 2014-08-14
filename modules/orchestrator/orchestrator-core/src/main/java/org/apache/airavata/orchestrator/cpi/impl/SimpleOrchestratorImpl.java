@@ -163,8 +163,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public void cancelExperiment(String experimentID)
+    public void cancelExperiment(Experiment experiment, WorkflowNodeDetails workflowNode, TaskDetails task,String tokenId)
 			throws OrchestratorException {
+
         throw new OrchestratorException(new OperationNotSupportedException());
     }
 

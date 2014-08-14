@@ -46,6 +46,8 @@ import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.OperationNotSupportedException;
+
 /*
  * this class is responsible for submitting a job to gfac in service mode,
  * it will select a gfac instance based on the incoming request and submit to that
@@ -88,10 +90,9 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
 			List<String> children = zk.getChildren(gfacServer, this);
 			
 			if (children.size() == 0) {
-				// Zookeeper data need cleaning
-				GfacService.Client localhost = GFacClientFactory.createGFacClient(ServerSettings.getSetting(Constants.GFAC_SERVER_HOST), Integer.parseInt(ServerSettings.getSetting(Constants.GFAC_SERVER_HOST)));
-				return localhost.submitJob(experimentID, taskID, ServerSettings.getSetting(Constants.GATEWAY_NAME));
-			} else {
+                // Zookeeper data need cleaning
+                throw new OrchestratorException("There is no active GFac instance to route the request");
+            } else {
 				String pickedChild = children.get(new Random().nextInt(Integer.MAX_VALUE) % children.size());
 				// here we are not using an index because the getChildren does not return the same order everytime
 				String gfacNodeData = new String(zk.getData(gfacServer + File.separator + pickedChild, false, null));
@@ -122,7 +123,11 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
 		return false;
 	}
 
-	synchronized public void process(WatchedEvent event) {
+    public boolean terminate(String experimentID, String taskID) throws OrchestratorException {
+        throw new OrchestratorException(new OperationNotSupportedException("terminate method is not yet implemented"));
+    }
+
+    synchronized public void process(WatchedEvent event) {
 		synchronized (mutex) {
 			switch (event.getState()) {
 			case SyncConnected:

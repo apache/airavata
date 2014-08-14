@@ -47,11 +47,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.LaunchValidationException;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
-import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
@@ -188,29 +184,29 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	 * @param experimentId
 	 */
 	public boolean launchExperiment(String experimentId) throws TException {
-		Experiment experiment = null;
-		try {
-			List<String> ids = registry.getIds(
+        Experiment experiment = null; // this will inside the bottom catch statement
+        try {
+            experiment = (Experiment) registry.get(
+                    RegistryModelType.EXPERIMENT, experimentId);
+            if (experiment == null) {
+                log.error("Error retrieving the Experiment by the given experimentID: "
+                        + experimentId);
+                return false;
+            }
+            List<String> ids = registry.getIds(
 					RegistryModelType.WORKFLOW_NODE_DETAIL,
 					WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
-			for (String workflowNodeId : ids) {
-				WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
+            for (String workflowNodeId : ids) {
+                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
 						.get(RegistryModelType.WORKFLOW_NODE_DETAIL,
 								workflowNodeId);
-				List<Object> taskDetailList = registry.get(
+                List<Object> taskDetailList = registry.get(
 						RegistryModelType.TASK_DETAIL,
 						TaskDetailConstants.NODE_ID, workflowNodeId);
-				for (Object o : taskDetailList) {
-					TaskDetails taskID = (TaskDetails) o;
-					// iterate through all the generated tasks and performs the
-					// job submisssion+monitoring
-					experiment = (Experiment) registry.get(
-							RegistryModelType.EXPERIMENT, experimentId);
-					if (experiment == null) {
-						log.error("Error retrieving the Experiment by the given experimentID: "
-								+ experimentId);
-						return false;
-					}
+                for (Object o : taskDetailList) {
+                    TaskDetails taskID = (TaskDetails) o;
+                    // iterate through all the generated tasks and performs the
+                    // job submisssion+monitoring
 					ExperimentStatus status = new ExperimentStatus();
 					status.setExperimentState(ExperimentState.LAUNCHED);
 					status.setTimeOfStateChange(Calendar.getInstance()
@@ -309,13 +305,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	 * @throws TException
 	 */
 	public boolean terminateExperiment(String experimentId) throws TException {
-		try {
-			orchestrator.cancelExperiment(experimentId);
-		} catch (OrchestratorException e) {
-			log.error("Error canceling experiment " + experimentId, e);
-			return false;
-		}
-		return true;
+        return validateStatesAndCancel(experimentId);
 	}
 
 	/**
@@ -516,4 +506,109 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 		String selectedModuleId=applicationModules.get(0);
 		return selectedModuleId;
 	}
+
+    private boolean validateStatesAndCancel(String experimentId)throws TException{
+        try {
+            Experiment experiment = (Experiment) registry.get(
+                    RegistryModelType.EXPERIMENT, experimentId);
+            if (experiment == null) {
+                log.error("Error retrieving the Experiment by the given experimentID: "
+                        + experimentId);
+                throw new OrchestratorException("Error retrieving the Experiment by the given experimentID:\n" +
+                        experimentId);
+            }
+            switch (experiment.getExperimentStatus().getExperimentState()){
+                case COMPLETED:
+                    throw new OrchestratorException("Experiment is already finished cannot cancel the experiment");
+                case CANCELED:
+                    throw new OrchestratorException("Experiment is already canceled, cannot perform cancel again !!!");
+                case CANCELING:
+                    throw new OrchestratorException("Experiment is  cancelling, cannot perform cancel again !!!!");
+                case SUSPENDED:
+                    throw new OrchestratorException("Experiment is  suspended, cannot perform cancel !!!!");
+                case FAILED:
+                    throw new OrchestratorException("Experiment is  failed,cannot perform cancel !!!!");
+                case UNKNOWN:
+                    throw new OrchestratorException("Experiment is inconsistent,cannot perform cancel, !!!!");
+            }
+
+            ExperimentStatus status = new ExperimentStatus();
+            status.setExperimentState(ExperimentState.CANCELING);
+            status.setTimeOfStateChange(Calendar.getInstance()
+                    .getTimeInMillis());
+            experiment.setExperimentStatus(status);
+            registry.update(RegistryModelType.EXPERIMENT, experiment,
+                    experimentId);
+
+            List<String> ids = registry.getIds(
+                    RegistryModelType.WORKFLOW_NODE_DETAIL,
+                    WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
+            for (String workflowNodeId : ids) {
+                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
+                        .get(RegistryModelType.WORKFLOW_NODE_DETAIL,
+                                workflowNodeId);
+                if (workflowNodeDetail.getWorkflowNodeStatus().getWorkflowNodeState().getValue() > 1) {
+                    log.error(workflowNodeDetail.getNodeName() + " Workflow Node status cannot mark as cancelled, because " +
+                            "current status is " + workflowNodeDetail.getWorkflowNodeStatus().getWorkflowNodeState().toString());
+                    continue; // this continue is very useful not to process deeper loops if the upper layers have non-cancel states
+                }else {
+                    WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
+                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELING);
+                    workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
+                            .getTimeInMillis());
+                    workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
+                    registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
+                            workflowNodeId);
+                }
+                List<Object> taskDetailList = registry.get(
+                        RegistryModelType.TASK_DETAIL,
+                        TaskDetailConstants.NODE_ID, workflowNodeId);
+                for (Object o : taskDetailList) {
+                    TaskDetails taskDetails = (TaskDetails) o;
+                    TaskStatus taskStatus = ((TaskDetails) o).getTaskStatus();
+                    if(taskStatus.getExecutionState().getValue()>7){
+                        log.error(((TaskDetails) o).getTaskID() + " Task status cannot mark as cancelled, because " +
+                                "current task state is "+((TaskDetails) o).getTaskStatus().getExecutionState().toString());
+                        continue;// this continue is very useful not to process deeper loops if the upper layers have non-cancel states
+                    }else{
+                        taskStatus.setExecutionState(TaskState.CANCELING);
+                        taskStatus.setTimeOfStateChange(Calendar.getInstance()
+                                .getTimeInMillis());
+                        taskDetails.setTaskStatus(taskStatus);
+                        registry.update(RegistryModelType.TASK_DETAIL, o,
+                                taskDetails);
+                    }
+                    // iterate through all the generated tasks and performs the
+                    // job submisssion+monitoring
+                    // launching the experiment
+                    orchestrator.cancelExperiment(experiment,
+                            workflowNodeDetail, taskDetails, null);
+                    taskStatus.setExecutionState(TaskState.CANCELED);
+                    taskStatus.setTimeOfStateChange(Calendar.getInstance()
+                            .getTimeInMillis());
+                    taskDetails.setTaskStatus(taskStatus);
+                    registry.update(RegistryModelType.TASK_DETAIL, o,
+                            taskDetails);
+                }
+                WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
+                workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELED);
+                workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
+                        .getTimeInMillis());
+                workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
+                registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
+                        workflowNodeId);
+            }
+            status = new ExperimentStatus();
+            status.setExperimentState(ExperimentState.CANCELED);
+            status.setTimeOfStateChange(Calendar.getInstance()
+                    .getTimeInMillis());
+            experiment.setExperimentStatus(status);
+            registry.update(RegistryModelType.EXPERIMENT, experiment,
+                    experimentId);
+
+        } catch (Exception e) {
+            throw new TException(e);
+        }
+        return true;
+    }
 }
