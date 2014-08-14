@@ -37,13 +37,17 @@ import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.client.tools.DocumentCreatorNew;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.persistance.registry.jpa.model.ErrorDetail;
 import org.apache.airavata.schemas.gfac.InputParameterType;
 import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.workflow.model.component.system.StreamSourceComponent;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xmlsoap.schemas.soap.encoding.*;
 
+import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,8 +64,8 @@ public class CreateLaunchExperiment {
     private static Airavata.Client client;
     private static String localHostAppId = "localhost_9c5b098c-8906-4be1-9ef3-a7706c9b1e2c,SimpleEcho0_315d9b93-2cdb-4c1b-8dc3-d2077936f5ae";
     private static String sshHostAppId;
-    private static String pbsEchoAppId = "trestles.sdsc.edu_849a1136-7e0a-4f4a-b835-322a83b967b6,SimpleEcho2_f89d3b8c-6f22-4a77-a9f5-a4df88785ab6";
-    private static String pbsWRFAppId = "trestles.sdsc.edu_00482169-8fc4-4633-b779-5ca1f66f27c1,WRF_0f1e90d3-5915-4629-a5a4-73346c1e7535";
+    private static String pbsEchoAppId = "trestles.sdsc.edu_d4b6dfd0-d273-4499-b5dd-19b7f83176ed,SimpleEcho2_060f9325-3f72-4ff6-b8a2-8a2b4911e09d";
+    private static String pbsWRFAppId = "trestles.sdsc.edu_03d239f1-b923-487a-9aa4-fcc7aed8628e,WRF_a5a7372d-2c59-4986-8351-eac563b53f89";
     private static String slurmAppId = "stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
     private static String sgeAppId;
     private static String br2EchoAppId = "bigred2_9c1e6be8-f7d8-4494-98f2-bf508790e8c6,SimpleEchoBR_149fd613-98e2-46e7-ac7c-4d393349469e";
@@ -76,13 +80,14 @@ public class CreateLaunchExperiment {
         try {
             AiravataUtils.setExecutionAsClient();
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + client.getAPIVersion());
-            addDescriptors();
+//            System.out.println("API version is " + client.getAPIVersion());
+//            getExperiment(client, "WRFExperiment_2a2de26c-7f74-47c9-8e14-40e50dedfe0f");
+//            addDescriptors();
 
 ////            final String expId = createExperimentForSSHHost(airavata);
-////            final String expId = createExperimentForTrestles(client);
+            final String expId = createExperimentForTrestles(client);
 ////            final String expId = createExperimentForStampede(client);
-            final String expId = createExperimentForLocalHost(client);
+//            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
 //            final String expId = createExperimentWRFTrestles(client);
 //            final String expId = createExperimentForBR2(client);
@@ -248,17 +253,17 @@ public class CreateLaunchExperiment {
             DataObjectType input = new DataObjectType();
             input.setKey("WRF_Namelist");
             input.setType(DataType.URI);
-            input.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/namelist.input");
+            input.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/namelist1.input");
 
             DataObjectType input1 = new DataObjectType();
             input1.setKey("WRF_Input_File");
             input1.setType(DataType.URI);
-            input1.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfinput_d01");
+            input1.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/wrfinput1_d01");
 
             DataObjectType input2 = new DataObjectType();
             input2.setKey("WRF_Boundary_File");
             input2.setType(DataType.URI);
-            input2.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfbdy_d01");
+            input2.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/wrfbdy_d011");
 
             exInputs.add(input);
             exInputs.add(input1);
@@ -917,5 +922,30 @@ public class CreateLaunchExperiment {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void getExperiment (Airavata.Client client, String expId) throws Exception{
+        try{
+            Experiment experiment = client.getExperiment(expId);
+            List<ErrorDetails> errors = experiment.getErrors();
+            if (errors != null && !errors.isEmpty()){
+                for (ErrorDetails error : errors){
+                    System.out.println("ERROR MESSAGE : " + error.getActualErrorMessage());
+                }
+            }
+
+        } catch (ExperimentNotFoundException e) {
+            logger.error("Experiment does not exist", e);
+            throw new ExperimentNotFoundException("Experiment does not exist");
+        } catch (AiravataSystemException e) {
+            logger.error("Error while retrieving experiment", e);
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        } catch (InvalidRequestException e) {
+            logger.error("Error while retrieving experiment", e);
+            throw new InvalidRequestException("Error while retrieving experiment");
+        } catch (AiravataClientException e) {
+            logger.error("Error while retrieving experiment", e);
+            throw new AiravataClientException(AiravataErrorType.INTERNAL_ERROR);
+        }
     }
 }

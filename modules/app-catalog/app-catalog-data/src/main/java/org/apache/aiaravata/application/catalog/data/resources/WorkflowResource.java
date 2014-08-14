@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +42,24 @@ public class WorkflowResource extends AbstractResource {
     private String createdUser;
     private String graph;
     private String wfTemplateId;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 
     @Override
     public void remove(Object identifier) throws AppCatalogException {
@@ -252,8 +271,10 @@ public class WorkflowResource extends AbstractResource {
             em.getTransaction().begin();
             if (existingWorkflow == null) {
                 workflow = new Workflow();
+                workflow.setCreatedUser(createdUser);
             } else {
                 workflow = existingWorkflow;
+                workflow.setUpdateTime(updatedTime);
             }
             workflow.setWfName(getWfName());
             workflow.setCreatedUser(getCreatedUser());
