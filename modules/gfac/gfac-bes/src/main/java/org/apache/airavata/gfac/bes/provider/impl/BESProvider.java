@@ -338,14 +338,13 @@ public class BESProvider extends AbstractProvider {
     /**
      * EndpointReference need to be saved to make cancel work.
      *
-     * @param activityEpr
      * @param jobExecutionContext
      * @throws GFacProviderException
      */
-    public void cancelJob(String activityEpr, JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         try {
             initSecurityProperties(jobExecutionContext);
-            EndpointReferenceType eprt = EndpointReferenceType.Factory.parse(activityEpr);
+            EndpointReferenceType eprt = EndpointReferenceType.Factory.parse(jobExecutionContext.getJobDetails().getJobID());
             UnicoreHostType host = (UnicoreHostType) jobExecutionContext.getApplicationContext().getHostDescription()
                     .getType();
 

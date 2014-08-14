@@ -53,4 +53,12 @@ public interface GFac {
      */
     public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException;
 
+    /**
+     * This operation can be used to cancel an already running experiment
+     * @param jobExecutionContext
+     * @return Successful cancellation will return true
+     * @throws GFacException
+     */
+    public boolean cancel(JobExecutionContext jobExecutionContext)throws GFacException;
+
 }

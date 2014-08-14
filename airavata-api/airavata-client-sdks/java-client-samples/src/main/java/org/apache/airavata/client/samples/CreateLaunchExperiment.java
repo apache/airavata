@@ -795,12 +795,6 @@ public class CreateLaunchExperiment {
             String sshTokenId = "61abd2ff-f92b-4901-a077-07b51abe2c5d";
             String gsisshTokenId = "61abd2ff-f92b-4901-a077-07b51abe2c5d";
             client.launchExperiment(expId, sshTokenId);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            client.terminateExperiment(expId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);
