@@ -51,8 +51,8 @@ public class RawCommandInfo implements CommandInfo {
     /*
      * To get command without the path and other parameters. This is required to read errors 
      */
-    public String getBaseCommand() {
-        return rawCommand.substring(rawCommand.lastIndexOf("/")+1, rawCommand.indexOf(" "));
+    public String getBaseCommand(String installPath) {
+        return rawCommand.substring(rawCommand.lastIndexOf(installPath)+1, rawCommand.indexOf(" "));
     }
     
     public void setRawCommand(String rawCommand) {

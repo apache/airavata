@@ -17,24 +17,26 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.gsi.ssh.api.job;
 
 import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 
 public interface JobManagerConfiguration {
 
-    public RawCommandInfo getCancelCommand(String jobID);
+	public RawCommandInfo getCancelCommand(String jobID);
 
-    public String getJobDescriptionTemplateName();
+	public String getJobDescriptionTemplateName();
 
-    public RawCommandInfo getMonitorCommand(String jobID);
+	public RawCommandInfo getMonitorCommand(String jobID);
 
-    public RawCommandInfo getUserBasedMonitorCommand(String userName);
+	public RawCommandInfo getUserBasedMonitorCommand(String userName);
 
-    public String getScriptExtension();
+	public String getScriptExtension();
 
-     public RawCommandInfo getSubmitCommand(String workingDirectory,String pbsFilePath);
+	public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath);
 
-    public OutputParser getParser();
+	public OutputParser getParser();
+	
+	public String getInstalledPath();
 }
