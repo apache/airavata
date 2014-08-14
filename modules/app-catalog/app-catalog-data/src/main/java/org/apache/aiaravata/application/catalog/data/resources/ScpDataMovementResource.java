@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,24 @@ public class ScpDataMovementResource extends AbstractResource {
 	private String securityProtocol;
 	private String alternativeScpHostname;
 	private int sshPort;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 	
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
@@ -195,8 +214,10 @@ public class ScpDataMovementResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingScpDataMovement == null) {
 				scpDataMovement = new ScpDataMovement();
+                scpDataMovement.setCreationTime(createdTime);
 			} else {
 				scpDataMovement = existingScpDataMovement;
+                scpDataMovement.setUpdateTime(updatedTime);
 			}
 			scpDataMovement.setQueueDescription(getQueueDescription());
 			scpDataMovement.setDataMovementInterfaceId(getDataMovementInterfaceId());

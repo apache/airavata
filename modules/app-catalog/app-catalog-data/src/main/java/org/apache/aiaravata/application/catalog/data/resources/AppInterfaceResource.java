@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +41,24 @@ public class AppInterfaceResource extends AbstractResource {
     private String interfaceId;
     private String appName;
     private String appDescription;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 
     public String getInterfaceId() {
         return interfaceId;
@@ -283,12 +302,14 @@ public class AppInterfaceResource extends AbstractResource {
             if (existigAppInterface !=  null){
                 existigAppInterface.setAppName(appName);
                 existigAppInterface.setAppDescription(appDescription);
+                existigAppInterface.setUpdateTime(updatedTime);
                 em.merge(existigAppInterface);
             }else {
                 ApplicationInterface applicationInterface = new ApplicationInterface();
                 applicationInterface.setInterfaceID(interfaceId);
                 applicationInterface.setAppName(appName);
                 applicationInterface.setAppDescription(appDescription);
+                applicationInterface.setCreationTime(createdTime);
                 em.persist(applicationInterface);
             }
             em.getTransaction().commit();

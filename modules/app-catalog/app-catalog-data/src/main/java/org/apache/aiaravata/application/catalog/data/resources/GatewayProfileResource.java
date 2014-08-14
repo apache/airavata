@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,24 @@ public class GatewayProfileResource extends AbstractResource {
     private String gatewayID;
     private String gatewayName;
     private String gatewayDesc;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 
     public void remove(Object identifier) throws AppCatalogException {
         EntityManager em = null;
@@ -220,12 +239,14 @@ public class GatewayProfileResource extends AbstractResource {
             if (existingGatewayProfile != null) {
                 existingGatewayProfile.setGatewayDesc(gatewayDesc);
                 existingGatewayProfile.setGatewayName(gatewayName);
+                existingGatewayProfile.setUpdateTime(updatedTime);
                 em.merge(existingGatewayProfile);
             } else {
                 GatewayProfile gatewayProfile = new GatewayProfile();
                 gatewayProfile.setGatewayID(gatewayID);
                 gatewayProfile.setGatewayName(gatewayName);
                 gatewayProfile.setGatewayDesc(gatewayDesc);
+                gatewayProfile.setCreationTime(createdTime);
                 em.persist(gatewayProfile);
             }
             em.getTransaction().commit();

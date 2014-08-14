@@ -23,6 +23,7 @@ package org.apache.aiaravata.application.catalog.data.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "APPLICATION_DEPLOYMENT")
@@ -49,6 +50,27 @@ public class ApplicationDeployment implements Serializable {
     @JoinColumn(name = "COMPUTE_HOSTID")
     private ComputeResource computeResource;
 
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "UPDATE_TIME")
+    private Timestamp updateTime;
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
 
     public String getDeploymentID() {
         return deploymentID;
