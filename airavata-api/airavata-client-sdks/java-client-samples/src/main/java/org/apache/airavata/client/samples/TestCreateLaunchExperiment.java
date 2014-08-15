@@ -39,6 +39,7 @@ import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.persistance.registry.jpa.model.*;
+import org.apache.airavata.workflow.model.component.system.SystemComponent;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,6 +138,24 @@ public class TestCreateLaunchExperiment {
             for (String id : allComputeResourceNames.keySet()){
                 System.out.println("resource id : " + id);
                 System.out.println("resource name : " + allComputeResourceNames.get(id));
+            }
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void getAllAppInterfaces (Airavata.Client client){
+        try {
+            Map<String, String> allApps = client.getAllApplicationInterfaceNames();
+            for (String id : allApps.keySet()){
+                System.out.println("app id : " + id);
+                System.out.println("app name : " + allApps.get(id));
             }
         } catch (AiravataSystemException e) {
             e.printStackTrace();

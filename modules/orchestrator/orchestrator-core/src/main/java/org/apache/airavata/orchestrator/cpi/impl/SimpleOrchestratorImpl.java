@@ -30,9 +30,7 @@ import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
@@ -163,9 +161,17 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public void cancelExperiment(String experimentID)
-			throws OrchestratorException {
-        throw new OrchestratorException(new OperationNotSupportedException());
+    public void cancelExperiment(Experiment experiment, WorkflowNodeDetails workflowNode, TaskDetails task, String tokenId)
+            throws OrchestratorException {
+        List<JobDetails> jobDetailsList = task.getJobDetailsList();
+        for(JobDetails jobDetails:jobDetailsList) {
+            JobState jobState = jobDetails.getJobStatus().getJobState();
+            if (jobState.getValue() > 4){
+                logger.error("Cannot cancel the job, because current job state is : " + jobState.toString() +
+                "jobId: " + jobDetails.getJobID() + " Job Name: " + jobDetails.getJobName());
+            }
+            jobSubmitter.terminate(experiment.getExperimentID(),task.getTaskID());
+        }
     }
 
 

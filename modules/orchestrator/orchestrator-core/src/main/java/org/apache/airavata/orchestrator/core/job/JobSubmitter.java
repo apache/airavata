@@ -63,4 +63,13 @@ public interface JobSubmitter {
      * @throws OrchestratorException
      */
     boolean submit(String experimentID,String taskID,String tokenId) throws OrchestratorException;
+
+    /**
+     * This can be used to terminate the experiment
+     * @param experimentID
+     * @param taskID
+     * @return
+     * @throws OrchestratorException
+     */
+    boolean terminate(String experimentID,String taskID)throws OrchestratorException;
 }

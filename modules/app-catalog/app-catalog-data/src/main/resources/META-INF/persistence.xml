@@ -24,7 +24,6 @@
     <persistence-unit name="appcatalog_data">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
         <class>org.apache.aiaravata.application.catalog.data.model.ComputeResource</class>
-        <class>org.apache.aiaravata.application.catalog.data.model.DataMovementProtocol</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GlobusJobSubmission</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GlobusGKEndpoint</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GSISSHSubmission</class>
@@ -33,7 +32,6 @@
         <class>org.apache.aiaravata.application.catalog.data.model.GSISSHPostJobCommand</class>
         <class>org.apache.aiaravata.application.catalog.data.model.HostAlias</class>
         <class>org.apache.aiaravata.application.catalog.data.model.HostIPAddress</class>
-        <class>org.apache.aiaravata.application.catalog.data.model.JobSubmissionProtocol</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ScpDataMovement</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GridftpDataMovement</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GridftpEndpoint</class>

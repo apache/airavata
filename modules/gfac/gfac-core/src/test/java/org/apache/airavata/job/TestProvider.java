@@ -29,7 +29,7 @@ import java.util.Map;
 
 public class TestProvider extends AbstractProvider {
 
-    public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 

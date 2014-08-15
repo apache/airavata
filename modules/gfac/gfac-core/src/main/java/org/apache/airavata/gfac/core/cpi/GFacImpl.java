@@ -305,6 +305,50 @@ public class GFacImpl implements GFac {
         return true;
     }
 
+
+    public boolean cancel(JobExecutionContext jobExecutionContext) throws GFacException {
+        // We need to check whether this job is submitted as a part of a large workflow. If yes,
+        // we need to setup workflow tracking listerner.
+        String workflowInstanceID = null;
+        if ((workflowInstanceID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_INSTANCE_ID)) != null) {
+            // This mean we need to register workflow tracking listener.
+            //todo implement WorkflowTrackingListener properly
+            registerWorkflowTrackingListener(workflowInstanceID, jobExecutionContext);
+        }
+        // Register log event listener. This is required in all scenarios.
+        jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
+        try {
+            Scheduler.schedule(jobExecutionContext);
+            GFacProvider provider = jobExecutionContext.getProvider();
+            if (provider != null) {
+                initProvider(provider, jobExecutionContext);
+                cancelProvider(provider, jobExecutionContext);
+                disposeProvider(provider, jobExecutionContext);
+            }
+        }catch (Exception e) {
+            try {
+                monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
+                        new JobIdentity(jobExecutionContext.getExperimentID(),
+                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                                jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getJobDetails().getJobID()), JobState.FAILED));
+            } catch (NullPointerException e1) {
+                log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
+                        "NullPointerException occurred because at this point there might not have Job Created", e1, e);
+                // Updating status if job id is not set
+//				monitorPublisher
+//						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
+                // Updating the task status if there's any task associated
+                monitorPublisher.publish(new TaskStatusChangedEvent(new TaskIdentity(jobExecutionContext.getExperimentID(), jobExecutionContext
+                        .getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED));
+
+            }
+            jobExecutionContext.setProperty(ERROR_SENT, "true");
+            jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
+            throw new GFacException(e.getMessage(), e);
+        }
+        return true;
+    }
+
     private void schedule(JobExecutionContext jobExecutionContext) throws GFacException {
         // Scheduler will decide the execution flow of handlers and provider which handles
         // the job.
@@ -363,6 +407,13 @@ public class GFacImpl implements GFac {
     private void executeProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
         try {
              provider.execute(jobExecutionContext);
+        } catch (Exception e) {
+            throw new GFacException("Error while executing provider " + provider.getClass().getName() + " functionality.", e);
+        }
+    }
+    private void cancelProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
+        try {
+            provider.cancelJob(jobExecutionContext);
         } catch (Exception e) {
             throw new GFacException("Error while executing provider " + provider.getClass().getName() + " functionality.", e);
         }

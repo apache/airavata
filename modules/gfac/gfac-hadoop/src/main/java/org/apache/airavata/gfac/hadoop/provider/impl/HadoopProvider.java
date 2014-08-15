@@ -143,7 +143,7 @@ public class HadoopProvider extends AbstractProvider {
     }
 
     @Override
-    public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException {
+    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacException {
         throw new NotImplementedException();
     }
 

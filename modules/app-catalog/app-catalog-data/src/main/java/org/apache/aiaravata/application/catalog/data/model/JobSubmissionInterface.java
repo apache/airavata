@@ -22,6 +22,7 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -57,8 +58,31 @@ public class JobSubmissionInterface implements Serializable {
 	
 	@Column(name = "PRIORITY_ORDER")
 	private int priorityOrder;
-	
-	public String getJobSubmissionInterfaceId() {
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "UPDATE_TIME")
+    private Timestamp updateTime;
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
+
+
+    public String getJobSubmissionInterfaceId() {
 		return jobSubmissionInterfaceId;
 	}
 	
