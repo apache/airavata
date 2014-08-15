@@ -87,13 +87,13 @@ public class ComputeResourceTest {
             sshSubmissionInt.setJobSubmissionInterfaceId(sshsubmissionId);
             sshSubmissionInt.setPriorityOrder(1);
             sshSubmissionInt.setJobSubmissionProtocol(JobSubmissionProtocol.SSH);
-            JobSubmissionInterface globusSubInt = new JobSubmissionInterface();
+//            JobSubmissionInterface globusSubInt = new JobSubmissionInterface();
 //            globusSubInt.setJobSubmissionInterfaceId(globusSubmissionId);
-            globusSubInt.setPriorityOrder(2);
-            globusSubInt.setJobSubmissionProtocol(JobSubmissionProtocol.GLOBUS);
+//            globusSubInt.setPriorityOrder(2);
+//            globusSubInt.setJobSubmissionProtocol(JobSubmissionProtocol.GLOBUS);
             List<JobSubmissionInterface> interfaceList = new ArrayList<JobSubmissionInterface>();
             interfaceList.add(sshSubmissionInt);
-            interfaceList.add(globusSubInt);
+//            interfaceList.add(globusSubInt);
             description.setJobSubmissionInterfaces(interfaceList);
 
             String scpDataMoveId = addSCPDataMovement();
