@@ -19,6 +19,7 @@
 
 package org.apache.aiaravata.application.catalog.data.resources;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,24 @@ public class GridftpDataMovementResource extends AbstractResource {
 	private final static Logger logger = LoggerFactory.getLogger(GridftpDataMovementResource.class);
 	private String dataMovementInterfaceId;
 	private String securityProtocol;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 	
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
@@ -193,8 +212,10 @@ public class GridftpDataMovementResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingGridftpDataMovement == null) {
 				gridftpDataMovement = new GridftpDataMovement();
+                gridftpDataMovement.setCreationTime(createdTime);
 			} else {
 				gridftpDataMovement = existingGridftpDataMovement;
+                gridftpDataMovement.setUpdateTime(updatedTime);
 			}
 			gridftpDataMovement.setDataMovementInterfaceId(getDataMovementInterfaceId());
 			gridftpDataMovement.setSecurityProtocol(getSecurityProtocol());

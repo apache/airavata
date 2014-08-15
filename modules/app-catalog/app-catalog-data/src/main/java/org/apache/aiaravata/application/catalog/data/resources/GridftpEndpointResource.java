@@ -19,6 +19,7 @@
 
 package org.apache.aiaravata.application.catalog.data.resources;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,24 @@ public class GridftpEndpointResource extends AbstractResource {
 	private String endpoint;
 	private String dataMovementInterfaceId;
 	private GridftpDataMovementResource gridftpDataMovementResource;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 	
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
@@ -214,8 +233,10 @@ public class GridftpEndpointResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingGridftpEndpoint == null) {
 				gridftpEndpoint = new GridftpEndpoint();
+                gridftpEndpoint.setCreationTime(createdTime);
 			} else {
 				gridftpEndpoint = existingGridftpEndpoint;
+                gridftpEndpoint.setUpdateTime(updatedTime);
 			}
 			gridftpEndpoint.setEndpoint(getEndpoint());
 			gridftpEndpoint.setDataMovementInterfaceId(getDataMovementInterfaceId());

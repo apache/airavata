@@ -21,6 +21,7 @@
 
 package org.apache.aiaravata.application.catalog.data.resources;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +48,24 @@ public class JobSubmissionInterfaceResource extends AbstractResource {
 	private ComputeResourceResource computeHostResource;
 	private String jobSubmissionProtocol;
 	private int priorityOrder;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 	
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
@@ -218,8 +237,10 @@ public class JobSubmissionInterfaceResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingJobSubmissionInterface == null) {
 				jobSubmissionInterface = new JobSubmissionInterface();
+                jobSubmissionInterface.setCreationTime(createdTime);
 			} else {
 				jobSubmissionInterface = existingJobSubmissionInterface;
+                jobSubmissionInterface.setUpdateTime(updatedTime);
 			}
 			jobSubmissionInterface.setJobSubmissionInterfaceId(getJobSubmissionInterfaceId());
 			jobSubmissionInterface.setComputeResourceId(getComputeResourceId());

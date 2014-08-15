@@ -76,6 +76,10 @@ public class GFACEmbeddedJobSubmitter implements JobSubmitter {
         }
     }
 
+    public boolean terminate(String experimentID, String taskID) throws OrchestratorException {
+        return false;
+    }
+
     public GFac getGfac() {
         return gfac;
     }

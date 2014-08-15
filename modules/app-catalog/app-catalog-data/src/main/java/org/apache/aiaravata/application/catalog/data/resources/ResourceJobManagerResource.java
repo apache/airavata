@@ -21,6 +21,7 @@
 
 package org.apache.aiaravata.application.catalog.data.resources;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,24 @@ public class ResourceJobManagerResource extends AbstractResource {
 	private String pushMonitoringEndpoint;
 	private String jobManagerBinPath;
 	private String resourceJobManagerType;
+    private Timestamp createdTime;
+    private Timestamp updatedTime;
+
+    public Timestamp getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Timestamp createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
+    }
 	
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
@@ -197,8 +216,10 @@ public class ResourceJobManagerResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingResourceJobManager == null) {
 				resourceJobManager = new ResourceJobManager();
+                resourceJobManager.setCreationTime(createdTime);
 			} else {
 				resourceJobManager = existingResourceJobManager;
+                resourceJobManager.setUpdateTime(updatedTime);
 			}
 			resourceJobManager.setResourceJobManagerId(getResourceJobManagerId());
 			resourceJobManager.setPushMonitoringEndpoint(getPushMonitoringEndpoint());

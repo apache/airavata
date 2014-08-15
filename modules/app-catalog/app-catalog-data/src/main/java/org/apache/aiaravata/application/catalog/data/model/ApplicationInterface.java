@@ -26,6 +26,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "APPLICATION_INTERFACE")
@@ -37,6 +38,28 @@ public class ApplicationInterface implements Serializable {
     private String appName;
     @Column(name = "APPLICATION_DESCRIPTION")
     private String appDescription;
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "UPDATE_TIME")
+    private Timestamp updateTime;
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
+
 
     public String getInterfaceID() {
         return interfaceID;

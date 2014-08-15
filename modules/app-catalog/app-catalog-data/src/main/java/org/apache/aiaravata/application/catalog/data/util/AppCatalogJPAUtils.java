@@ -177,20 +177,20 @@ public class AppCatalogJPAUtils {
 					logger.error("Object should be a Gridftp Endpoint.", new IllegalArgumentException());
 					throw new IllegalArgumentException("Object should be a Gridftp Endpoint.");
 				}
-            case JOB_SUBMISSION_PROTOCOL:
-                if (o instanceof JobSubmissionProtocol){
-                    return createJobSubmissionProtocol((JobSubmissionProtocol) o);
-                }else {
-                    logger.error("Object should be a JobSubmissionProtocol.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a JobSubmissionProtocol.");
-                }
-            case DATA_MOVEMENT_PROTOCOL:
-                if (o instanceof DataMovementProtocol){
-                    return createDataMovementProtocol((DataMovementProtocol) o);
-                }else {
-                    logger.error("Object should be a DataMovementProtocol.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a DataMovementProtocol.");
-                }
+//            case JOB_SUBMISSION_PROTOCOL:
+//                if (o instanceof JobSubmissionProtocol){
+//                    return createJobSubmissionProtocol((JobSubmissionProtocol) o);
+//                }else {
+//                    logger.error("Object should be a JobSubmissionProtocol.", new IllegalArgumentException());
+//                    throw new IllegalArgumentException("Object should be a JobSubmissionProtocol.");
+//                }
+//            case DATA_MOVEMENT_PROTOCOL:
+//                if (o instanceof DataMovementProtocol){
+//                    return createDataMovementProtocol((DataMovementProtocol) o);
+//                }else {
+//                    logger.error("Object should be a DataMovementProtocol.", new IllegalArgumentException());
+//                    throw new IllegalArgumentException("Object should be a DataMovementProtocol.");
+//                }
             case APPLICATION_MODULE:
                 if (o instanceof ApplicationModule){
                     return createApplicationModule((ApplicationModule) o);
@@ -358,6 +358,10 @@ public class AppCatalogJPAUtils {
             localSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
             localSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
             localSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
+            localSubmissionResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                localSubmissionResource.setUpdatedTime(o.getUpdateTime());
+            }
         }
 		return localSubmissionResource;
 	}
@@ -380,6 +384,10 @@ public class AppCatalogJPAUtils {
             resourceJobManagerResource.setPushMonitoringEndpoint(o.getPushMonitoringEndpoint());
             resourceJobManagerResource.setJobManagerBinPath(o.getJobManagerBinPath());
             resourceJobManagerResource.setResourceJobManagerType(o.getResourceJobManagerType());
+            resourceJobManagerResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                resourceJobManagerResource.setUpdatedTime(o.getUpdateTime());
+            }
         }
 		return resourceJobManagerResource;
 	}
@@ -392,6 +400,10 @@ public class AppCatalogJPAUtils {
             dataMovementInterfaceResource.setDataMovementProtocol(o.getDataMovementProtocol());
             dataMovementInterfaceResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
             dataMovementInterfaceResource.setPriorityOrder(o.getPriorityOrder());
+            dataMovementInterfaceResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                dataMovementInterfaceResource.setUpdatedTime(o.getUpdateTime());
+            }
         }
 		return dataMovementInterfaceResource;
 	}
@@ -404,6 +416,10 @@ public class AppCatalogJPAUtils {
             jobSubmissionInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
             jobSubmissionInterfaceResource.setJobSubmissionProtocol(o.getJobSubmissionProtocol());
             jobSubmissionInterfaceResource.setPriorityOrder(o.getPriorityOrder());
+            jobSubmissionInterfaceResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                jobSubmissionInterfaceResource.setUpdatedTime(o.getUpdateTime());
+            }
         }
 		return jobSubmissionInterfaceResource;
 	}
@@ -439,6 +455,10 @@ public class AppCatalogJPAUtils {
             computeResourceResource.setResourceDescription(o.getResourceDescription());
             computeResourceResource.setResourceId(o.getResourceId());
             computeResourceResource.setHostName(o.getHostName());
+            computeResourceResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                computeResourceResource.setUpdatedTime(o.getUpdateTime());
+            }
         }
 		return computeResourceResource;
 	}
@@ -534,6 +554,10 @@ public class AppCatalogJPAUtils {
             sshJobSubmissionResource.setAlternativeSshHostname(o.getAlternativeSshHostname());
             sshJobSubmissionResource.setSecurityProtocol(o.getSecurityProtocol());
             sshJobSubmissionResource.setSshPort(o.getSshPort());
+            sshJobSubmissionResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                sshJobSubmissionResource.setUpdatedTime(o.getUpdateTime());
+            }
         }
         return sshJobSubmissionResource;
     }
@@ -546,6 +570,10 @@ public class AppCatalogJPAUtils {
             scpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
             scpDataMovementResource.setAlternativeScpHostname(o.getAlternativeScpHostname());
             scpDataMovementResource.setSshPort(o.getSshPort());
+            scpDataMovementResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                scpDataMovementResource.setUpdatedTime(o.getUpdateTime());
+            }
         }
 		return scpDataMovementResource;
 	}
@@ -555,6 +583,10 @@ public class AppCatalogJPAUtils {
         if (o != null){
             gridftpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
             gridftpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
+            gridftpDataMovementResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                gridftpDataMovementResource.setUpdatedTime(o.getUpdateTime());
+            }
         }
 		return gridftpDataMovementResource;
 	}
@@ -565,31 +597,35 @@ public class AppCatalogJPAUtils {
             gridftpEndpointResource.setEndpoint(o.getEndpoint());
             gridftpEndpointResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
             gridftpEndpointResource.setGridftpDataMovementResource((GridftpDataMovementResource)createGridftpDataMovement(o.getGridftpDataMovement()));
+            gridftpEndpointResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                gridftpEndpointResource.setUpdatedTime(o.getUpdateTime());
+            }
         }
 		return gridftpEndpointResource;
 	}
 
-    private static Resource createJobSubmissionProtocol(JobSubmissionProtocol o) {
-        JobSubmissionProtocolResource resource = new JobSubmissionProtocolResource();
-        if (o != null){
-            resource.setResourceID(o.getResourceID());
-            resource.setSubmissionID(o.getSubmissionID());
-            resource.setJobType(o.getJobType());
-            resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
-        }
-        return resource;
-    }
-
-    private static Resource createDataMovementProtocol(DataMovementProtocol o) {
-        DataMovementProtocolResource resource = new DataMovementProtocolResource();
-        if (o != null) {
-            resource.setResourceID(o.getResourceID());
-            resource.setDataMoveID(o.getDataMoveID());
-            resource.setDataMoveType(o.getDataMoveType());
-            resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
-        }
-        return resource;
-    }
+//    private static Resource createJobSubmissionProtocol(JobSubmissionProtocol o) {
+//        JobSubmissionProtocolResource resource = new JobSubmissionProtocolResource();
+//        if (o != null){
+//            resource.setResourceID(o.getResourceID());
+//            resource.setSubmissionID(o.getSubmissionID());
+//            resource.setJobType(o.getJobType());
+//            resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+//        }
+//        return resource;
+//    }
+//
+//    private static Resource createDataMovementProtocol(DataMovementProtocol o) {
+//        DataMovementProtocolResource resource = new DataMovementProtocolResource();
+//        if (o != null) {
+//            resource.setResourceID(o.getResourceID());
+//            resource.setDataMoveID(o.getDataMoveID());
+//            resource.setDataMoveType(o.getDataMoveType());
+//            resource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
+//        }
+//        return resource;
+//    }
 
     private static Resource createApplicationModule(ApplicationModule o) {
         AppModuleResource moduleResource = new AppModuleResource();
@@ -598,6 +634,10 @@ public class AppCatalogJPAUtils {
             moduleResource.setModuleDesc(o.getModuleDesc());
             moduleResource.setModuleName(o.getModuleName());
             moduleResource.setModuleVersion(o.getModuleVersion());
+            moduleResource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                moduleResource.setUpdatedTime(o.getUpdateTime());
+            }
         }
         return moduleResource;
     }
@@ -613,6 +653,10 @@ public class AppCatalogJPAUtils {
             resource.setParallelism(o.getParallelism());
             resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
             resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
+            resource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                resource.setUpdatedTime(o.getUpdateTime());
+            }
         }
         return resource;
     }
@@ -656,6 +700,10 @@ public class AppCatalogJPAUtils {
             resource.setInterfaceId(o.getInterfaceID());
             resource.setAppName(o.getAppName());
             resource.setAppDescription(o.getAppDescription());
+            resource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                resource.setUpdatedTime(o.getUpdateTime());
+            }
         }
         return resource;
     }
@@ -703,6 +751,10 @@ public class AppCatalogJPAUtils {
             resource.setGatewayID(o.getGatewayID());
             resource.setGatewayName(o.getGatewayName());
             resource.setGatewayDesc(o.getGatewayDesc());
+            resource.setCreatedTime(o.getCreationTime());
+            if (o.getUpdateTime() != null){
+                resource.setUpdatedTime(o.getUpdateTime());
+            }
         }
         return resource;
     }
@@ -740,6 +792,10 @@ public class AppCatalogJPAUtils {
         workflowResource.setCreatedUser(o.getCreatedUser());
         if (o.getGraph() != null){
             workflowResource.setGraph(new String(o.getGraph()));
+        }
+        workflowResource.setCreatedTime(o.getCreationTime());
+        if (o.getUpdateTime() != null){
+            workflowResource.setUpdatedTime(o.getUpdateTime());
         }
         workflowResource.setWfTemplateId(o.getWfTemplateId());
         return workflowResource;

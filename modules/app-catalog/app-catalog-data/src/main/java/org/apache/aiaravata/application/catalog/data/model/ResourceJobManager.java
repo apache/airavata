@@ -22,6 +22,7 @@
 package org.apache.aiaravata.application.catalog.data.model;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,6 +48,28 @@ public class ResourceJobManager implements Serializable {
 	
 	@Column(name = "RESOURCE_JOB_MANAGER_TYPE")
 	private String resourceJobManagerType;
+
+    @Column(name = "CREATION_TIME")
+    private Timestamp creationTime;
+
+    @Column(name = "UPDATE_TIME")
+    private Timestamp updateTime;
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Timestamp getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Timestamp updateTime) {
+        this.updateTime = updateTime;
+    }
 	
 	public String getResourceJobManagerId() {
 		return resourceJobManagerId;

@@ -26,13 +26,10 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFacImpl;
-import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
-import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.AbstractRecoverableProvider;
-import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
@@ -168,7 +165,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void cancelJob(String jobId, JobExecutionContext jobExecutionContext) throws GFacException {
+    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
