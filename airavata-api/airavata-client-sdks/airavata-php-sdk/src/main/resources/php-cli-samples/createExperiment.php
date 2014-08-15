@@ -46,7 +46,7 @@ use Airavata\Model\Workspace\Experiment\DataType;
 
 try {
     if ($argc < 4) {
-        echo "Usage: php createExperiment.php <username> <experiment_name> <project_ID> \n";
+        echo "Please provide the User, Experiment Name and the Project ID."."\n". "Usage: php createExperiment.php <user_name> <experiment_name> <project_ID> \n"."\n";
     } else {
 
         /* User provides input values */
@@ -118,14 +118,14 @@ try {
 
         if ($experimentId) {
             var_dump($experiment);
-            echo "Experiment $experimentId is created! \n    ";
+            echo "Experiment $experimentId is successfully created! \n    "."\n";
         } else {
-            echo "Failed to create experiment. \n";
+            echo "Failed to create experiment. \n"."\n";
         }
     }
 
 } catch (InvalidRequestException $ire) {
-    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+    print 'Invalid Request Exception: ' . $ire->getMessage() . "\n";
 } catch (AiravataClientException $ace) {
     print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
 } catch (AiravataSystemException $ase) {

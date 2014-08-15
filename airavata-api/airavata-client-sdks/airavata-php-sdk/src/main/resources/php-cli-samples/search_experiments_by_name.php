@@ -41,12 +41,12 @@ try
 {
 
     if ($argc != 3) {
-        echo 'php search_experiments_by_name.php <username> <project_ID>';
+        echo 'Please provide a valid User and an Experiment Name or part of the Name.' ."\n". 'Usage: php search_experiments_by_name.php <user_name> <experiment_name>'."\n";
     }
 
     else {
         $experiments = $airavataclient->searchExperimentsByName($argv[1], $argv[2]);
-        echo '# results = ' . sizeof($experiments) . '         <br><br>';
+        echo '# results = ' . sizeof($experiments) . '         '."\n";
         var_dump($experiments);
     }
 
@@ -54,15 +54,15 @@ try
 }
 catch (InvalidRequestException $ire)
 {
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
+    print 'Invalid Request Exception: '."\n" . $ire->getMessage()."\n";
 }
 catch (AiravataClientException $ace)
 {
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
+    print 'Airavata System Exception: '."\n" . $ace->getMessage()."\n";
 }
 catch (AiravataSystemException $ase)
 {
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
+    print 'Airavata System Exception: '."\n" . $ase->getMessage()."\n";
 }
 
 

@@ -36,8 +36,7 @@ use Airavata\Model\Workspace\Project;
 
 try {
     if ($argc < 3) {
-        echo 'php createProject.php <user_name> <project_name>';
-        echo 'php createProject.php <user_name> <project_name>';
+        echo 'Please provide User and the Project Name for the new Project.'."\n". 'Usage: php createProject.php <user_name> <project_name>'."\n";
     } else {
         $project = new Project();
         $project->owner = $argv[1];

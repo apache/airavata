@@ -40,7 +40,7 @@ use Airavata\Model\AppCatalog\AppDeployment\ApplicationModule;
 try {
 
     if (count($argv) != 2) {
-        exit("\n Incorrect Arguments \n. Usage: deleteComputeResource.php <compute resource id>. \n");
+        exit("\n Incorrect Arguments \n. Usage: deleteComputeResource.php <compute_resource_ID. "."\n");
     } else {
 
         $computeResourceId = $argv[1];
@@ -48,21 +48,21 @@ try {
         $success = $airavataclient->deleteComputeResource($computeResourceId);
 
         if ($success) {
-            echo "Application Interface $computeResourceId successfully deleted";
+            echo "Application Interface $computeResourceId is successfully deleted!";
         } else {
-            echo "\n Failed to delete application interface $computeResourceId \n";
+            echo "\n Failed to delete Application Interface $computeResourceId. \n";
         }
     }
 } catch (InvalidRequestException $ire) {
-    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+    print 'Invalid Request Exception: '."\n" . $ire->getMessage() . "\n";
 } catch (AiravataClientException $ace) {
-    print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
+    print 'Airavata System Exception: '."\n" . $ace->getMessage() . "\n";
 } catch (AiravataSystemException $ase) {
-    print 'Airavata System Exception: ' . $ase->getMessage() . "\n";
+    print 'Airavata System Exception: '."\n" . $ase->getMessage() . "\n";
 } catch (TTransportException $tte) {
-    echo 'TTransportException!<br><br>' . $tte->getMessage();
+    echo 'TTransport Exception!'."\n" . $tte->getMessage();
 } catch (\Exception $e) {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!'."\n" . $e->getMessage();
 }
 
 $transport->close();

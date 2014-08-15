@@ -36,8 +36,8 @@ use Thrift\Exception\TTransportException;
 use Airavata\Model\AppCatalog\AppDeployment\ApplicationModule;
 
 try {
-    if ($argc < 1) {
-        echo 'php getComputeResource.php <Compute Resource Id>';
+    if ($argc < 2) {
+        echo 'Please provide a valid Compute Resource ID.' ."\n". "Usage: php getComputeResource.php <compute_resource_ID>"."\n";
     } else {
         $computeResourceId = $argv[1];
 
@@ -46,20 +46,21 @@ try {
         if ($computeResource) {
             var_dump($computeResource);
         } else {
-            echo "\n Failed to fetch compute resource description. \n";
+            echo "Failed to fetch Compute Resource description. \n";
         }
     }
 
 } catch (InvalidRequestException $ire) {
-    echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+    echo 'Invalid Request Exception!'."\n" . $ire->getMessage();
 } catch (AiravataClientException $ace) {
-    echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+    echo 'Airavata Client Exception!'."\n" . $ace->getMessage();
 } catch (AiravataSystemException $ase) {
-    echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
+    echo 'Airavata System Exception!'."\n" . $ase->getMessage();
 } catch (TTransportException $tte) {
-    echo 'TTransportException!<br><br>' . $tte->getMessage();
+    echo 'TTransport Exception!'."\n" . $tte->getMessage();
 } catch (\Exception $e) {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!'."\n"
+     . $e->getMessage();
 }
 
 ?>

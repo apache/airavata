@@ -41,12 +41,12 @@ try
 {
     if ($argc != 2)
     {
-        echo 'php getAllUserExperiments.php <username>';
+        echo 'Please provide the User.'."\n". 'Usage: php getAllUserExperiments.php <user_name>'."\n";
     }
     else
     {
         $userExperiments = $airavataclient->getAllUserExperiments($argv[1]);
-        echo '# of user experiments = ' . sizeof($userExperiments) . '     ';
+        echo '# of User Experiments = ' . sizeof($userExperiments) ."\n". '     ';
         var_dump($userExperiments);
     }
 
@@ -59,7 +59,7 @@ try
 }
 catch (InvalidRequestException $ire)
 {
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
+    print 'Invalid Request Exception: ' . $ire->getMessage()."\n";
 }
 catch (AiravataClientException $ace)
 {

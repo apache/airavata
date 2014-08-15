@@ -36,9 +36,9 @@ use Thrift\Exception\TTransportException;
 try
 {
 
-    if ($argc < 1)
+    if ($argc < 2)
     {
-        echo 'php getAvailableAppInterfaceComputeResources.php <appInterfaceId>';
+        echo 'Please provide a valid Application Interface ID.'."\n". "Usage: php getAvailableAppInterfaceComputeResources.php <app_interface_ID>"."\n";
     }
     else {
 
@@ -49,29 +49,29 @@ try
         if ($appInterfaceComputeResources) {
             var_dump($appInterfaceComputeResources);
         } else {
-            echo "\n Failed to fetch application interface compute resources. \n";
+            echo "\n Failed to fetch Application Interfaces deployed Compute Resources. \n";
         }
 }
 }
 catch (InvalidRequestException $ire)
 {
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
+    print 'Invalid Request Exception:'."\n" . $ire->getMessage()."\n";
 }
 catch (AiravataClientException $ace)
 {
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
+    print 'Airavata System Exception:'."\n" . $ace->getMessage()."\n";
 }
 catch (AiravataSystemException $ase)
 {
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
+    print 'Airavata System Exception: '."\n" . $ase->getMessage()."\n";
 }
 catch (TTransportException $tte)
 {
-    echo 'TTransportException!<br><br>' . $tte->getMessage();
+    echo 'TTransport Exception!'."\n" . $tte->getMessage();
 }
 catch (\Exception $e)
 {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!'."\n" . $e->getMessage();
 }
 
 $transport->close();

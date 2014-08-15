@@ -40,15 +40,15 @@ use Airavata\API\AiravataClient;
 try {
 
     if ($argc != 2) {
-        echo 'Usage: php getAllExperimentsInProject.php <project_ID>';
+        echo 'Please provide the Project ID.'."\n". 'Usage: php getAllExperimentsInProject.php <project_ID>'."\n";
     } else {
         $projectExperiments = $airavataclient->getAllExperimentsInProject($argv[1]);
-        echo '# of project experiments = ' . sizeof($projectExperiments);
+        echo '# of Experiments created with given Project  = ' . sizeof($projectExperiments)."\n";
         var_dump($projectExperiments);
     }
 
 } catch (InvalidRequestException $ire) {
-    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+    print 'Invalid Request Exception: ' . $ire->getMessage() . "\n";
 } catch (AiravataClientException $ace) {
     print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
 } catch (AiravataSystemException $ase) {
