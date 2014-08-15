@@ -33,6 +33,7 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -217,10 +218,10 @@ public class SshJobSubmissionResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingSshJobSubmission == null) {
 				sshJobSubmission = new SshJobSubmission();
-                sshJobSubmission.setCreationTime(createdTime);
+                sshJobSubmission.setCreationTime(AiravataUtils.getCurrentTimestamp());
 			} else {
 				sshJobSubmission = existingSshJobSubmission;
-                sshJobSubmission.setUpdateTime(updatedTime);
+                sshJobSubmission.setUpdateTime(AiravataUtils.getCurrentTimestamp());
 			}
 			sshJobSubmission.setResourceJobManagerId(getResourceJobManagerId());
 			ResourceJobManager resourceJobManager = em.find(ResourceJobManager.class, getResourceJobManagerId());

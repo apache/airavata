@@ -25,6 +25,7 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -239,14 +240,14 @@ public class GatewayProfileResource extends AbstractResource {
             if (existingGatewayProfile != null) {
                 existingGatewayProfile.setGatewayDesc(gatewayDesc);
                 existingGatewayProfile.setGatewayName(gatewayName);
-                existingGatewayProfile.setUpdateTime(updatedTime);
+                existingGatewayProfile.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 em.merge(existingGatewayProfile);
             } else {
                 GatewayProfile gatewayProfile = new GatewayProfile();
                 gatewayProfile.setGatewayID(gatewayID);
                 gatewayProfile.setGatewayName(gatewayName);
                 gatewayProfile.setGatewayDesc(gatewayDesc);
-                gatewayProfile.setCreationTime(createdTime);
+                gatewayProfile.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 em.persist(gatewayProfile);
             }
             em.getTransaction().commit();

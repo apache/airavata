@@ -27,6 +27,7 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -302,14 +303,14 @@ public class AppInterfaceResource extends AbstractResource {
             if (existigAppInterface !=  null){
                 existigAppInterface.setAppName(appName);
                 existigAppInterface.setAppDescription(appDescription);
-                existigAppInterface.setUpdateTime(updatedTime);
+                existigAppInterface.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 em.merge(existigAppInterface);
             }else {
                 ApplicationInterface applicationInterface = new ApplicationInterface();
                 applicationInterface.setInterfaceID(interfaceId);
                 applicationInterface.setAppName(appName);
                 applicationInterface.setAppDescription(appDescription);
-                applicationInterface.setCreationTime(createdTime);
+                applicationInterface.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 em.persist(applicationInterface);
             }
             em.getTransaction().commit();

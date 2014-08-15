@@ -32,6 +32,7 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,10 +213,10 @@ public class GridftpDataMovementResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingGridftpDataMovement == null) {
 				gridftpDataMovement = new GridftpDataMovement();
-                gridftpDataMovement.setCreationTime(createdTime);
+                gridftpDataMovement.setCreationTime(AiravataUtils.getCurrentTimestamp());
 			} else {
 				gridftpDataMovement = existingGridftpDataMovement;
-                gridftpDataMovement.setUpdateTime(updatedTime);
+                gridftpDataMovement.setUpdateTime(AiravataUtils.getCurrentTimestamp());
 			}
 			gridftpDataMovement.setDataMovementInterfaceId(getDataMovementInterfaceId());
 			gridftpDataMovement.setSecurityProtocol(getSecurityProtocol());

@@ -38,6 +38,7 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -237,10 +238,10 @@ public class DataMovementInterfaceResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingDataMovementInterface == null) {
 				dataMovementInterface = new DataMovementInterface();
-                dataMovementInterface.setCreationTime(createdTime);
+                dataMovementInterface.setCreationTime(AiravataUtils.getCurrentTimestamp());
 			} else {
 				dataMovementInterface = existingDataMovementInterface;
-                dataMovementInterface.setUpdateTime(updatedTime);
+                dataMovementInterface.setUpdateTime(AiravataUtils.getCurrentTimestamp());
 			}
 			dataMovementInterface.setComputeResourceId(getComputeResourceId());
 			ComputeResource computeResource = em.find(ComputeResource.class, getComputeResourceId());

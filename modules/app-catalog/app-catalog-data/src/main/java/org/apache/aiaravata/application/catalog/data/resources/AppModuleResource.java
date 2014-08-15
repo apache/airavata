@@ -27,6 +27,7 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -256,7 +257,7 @@ public class AppModuleResource extends AbstractResource {
                 existingModule.setModuleName(moduleName);
                 existingModule.setModuleVersion(moduleVersion);
                 existingModule.setModuleDesc(moduleDesc);
-                existingModule.setUpdateTime(updatedTime);
+                existingModule.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 em.merge(existingModule);
             }else {
                 ApplicationModule applicationModule = new ApplicationModule();
@@ -264,7 +265,7 @@ public class AppModuleResource extends AbstractResource {
                 applicationModule.setModuleName(moduleName);
                 applicationModule.setModuleVersion(moduleVersion);
                 applicationModule.setModuleDesc(moduleDesc);
-                applicationModule.setCreationTime(createdTime);
+                applicationModule.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 em.persist(applicationModule);
             }
             em.getTransaction().commit();
