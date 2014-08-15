@@ -35,6 +35,7 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -216,10 +217,10 @@ public class LocalSubmissionResource extends AbstractResource {
 			em.getTransaction().begin();
 			if (existingLocalSubmission == null) {
 				localSubmission = new LocalSubmission();
-                localSubmission.setCreationTime(createdTime);
+                localSubmission.setCreationTime(AiravataUtils.getCurrentTimestamp());
 			} else {
 				localSubmission = existingLocalSubmission;
-                localSubmission.setUpdateTime(updatedTime);
+                localSubmission.setUpdateTime(AiravataUtils.getCurrentTimestamp());
 			}
 			localSubmission.setResourceJobManagerId(getResourceJobManagerId());
 			ResourceJobManager resourceJobManager = em.find(ResourceJobManager.class, getResourceJobManagerId());

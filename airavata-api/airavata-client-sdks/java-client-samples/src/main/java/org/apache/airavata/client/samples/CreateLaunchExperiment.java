@@ -62,9 +62,9 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client client;
-    private static String localHostAppId = "localhost_9c5b098c-8906-4be1-9ef3-a7706c9b1e2c,SimpleEcho0_315d9b93-2cdb-4c1b-8dc3-d2077936f5ae";
+    private static String localHostAppId = "localhost_33e36776-9e85-4a59-996c-9f558c2693fa,SimpleEcho0_e04db7e1-6984-46a5-9046-639bb827886b";
     private static String sshHostAppId;
-    private static String pbsEchoAppId = "trestles.sdsc.edu_d4b6dfd0-d273-4499-b5dd-19b7f83176ed,SimpleEcho2_060f9325-3f72-4ff6-b8a2-8a2b4911e09d";
+    private static String pbsEchoAppId = "trestles.sdsc.edu_3380f118-a66e-44f2-9e35-341db37b8cb5,SimpleEcho2_3cdaae1e-d4cc-40f6-a0fc-de1aca14b316";
     private static String pbsWRFAppId = "trestles.sdsc.edu_03d239f1-b923-487a-9aa4-fcc7aed8628e,WRF_a5a7372d-2c59-4986-8351-eac563b53f89";
     private static String slurmAppId = "stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
     private static String sgeAppId;
@@ -80,7 +80,7 @@ public class CreateLaunchExperiment {
         try {
             AiravataUtils.setExecutionAsClient();
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-//            System.out.println("API version is " + client.getAPIVersion());
+            System.out.println("API version is " + client.getAPIVersion());
 //            getExperiment(client, "WRFExperiment_2a2de26c-7f74-47c9-8e14-40e50dedfe0f");
 //            addDescriptors();
 
