@@ -39,7 +39,7 @@ try
 {
     if ($argc != 4)
     {
-        echo 'php registerApplicationDeployment.php <appModuleId> <computeHostId> <executablePath>';
+        echo 'Please provide valid Application Module ID, Compute Resource ID and the Exectable Path.' ."\n". 'Usage: php registerApplicationDeployment.php <app_module_ID> <compute_resource_ID> <executable_path>'."\n";
     }
     else
     {
@@ -59,33 +59,33 @@ try
         if ($appDeploymentId)
         {
             var_dump($appDeployment);
-            echo "Application Deployment $appDeploymentId is registered! \n    ";
+            echo "Application Deployment $appDeploymentId is successfully registered! \n    ";
         }
         else
         {
-            echo "Failed to register application deployment. \n";
+            echo "Failed to register Application Deployment. \n";
         }
     }
 }
 catch (InvalidRequestException $ire)
 {
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
+    print 'Invalid Request Exception: '."\n" . $ire->getMessage()."\n";
 }
 catch (AiravataClientException $ace)
 {
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
+    print 'Airavata System Exception: '."\n" . $ace->getMessage()."\n";
 }
 catch (AiravataSystemException $ase)
 {
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
+    print 'Airavata System Exception: '."\n" . $ase->getMessage()."\n";
 }
 catch (TTransportException $tte)
 {
-    echo 'TTransportException!<br><br>' . $tte->getMessage();
+    echo 'TTransportException!'."\n" . $tte->getMessage();
 }
 catch (\Exception $e)
 {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!'."\n" . $e->getMessage();
 }
 
 $transport->close();

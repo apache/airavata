@@ -41,7 +41,7 @@ try
 {
 
     if ($argc != 3) {
-        echo 'php search_experiments_by_application.php <username> <project_ID>';
+        echo 'Please provide a valid User and an Application Interface ID.'."\n". 'Usage: php search_experiments_by_application.php <user_name> <app_interface_ID>'."\n";
     }
 
     else {
@@ -54,15 +54,15 @@ try
 }
 catch (InvalidRequestException $ire)
 {
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
+    print 'Invalid Request Exception: '."\n" . $ire->getMessage()."\n";
 }
 catch (AiravataClientException $ace)
 {
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
+    print 'Airavata System Exception: '."\n" . $ace->getMessage()."\n";
 }
 catch (AiravataSystemException $ase)
 {
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
+    print 'Airavata System Exception: '."\n" . $ase->getMessage()."\n";
 }
 
 

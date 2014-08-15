@@ -36,10 +36,12 @@ use Airavata\Model\AppCatalog\AppInterface\DataType;
 
 try {
 
-    if ($argc < 1) {
-        echo 'php getApplicationInputs.php <appInterfaceId>';
+    if ($argc < 2) {
+        echo ('Please provide a valid Application Interface ID.'."\n". 'Usage: php getApplicationInputs.php <app_interface_ID>'."\n");
     } else {
-
+//if (count($argv) < 2) {
+    //exit("Please provide an Application Module ID."."\n". "Usage: php getApplicationModule.php <app_module_ID>". "\n"."\n");
+//}
         $appInterfaceId = $argv[1];
 
         $appInputs = $airavataclient->getApplicationInputs($appInterfaceId);
@@ -48,22 +50,22 @@ try {
             foreach ($appInputs as $appInput) {
                 var_dump($appInput);
                 $inputType = DataType::$__names[$appInput->type];
-                echo "\n Application Input Name: $appInput->name \t Input Type $inputType \n";
+                echo "Application Input Name: $appInput->name \t Input Type $inputType \n";
             }
         } else {
-            echo "\n Failed to fetch application interface Inputs. \n";
+            echo "Failed to fetch Application Interface Inputs."." \n";
         }
     }
 } catch (InvalidRequestException $ire) {
-    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+    print 'Invalid Request Exception: '. "\n" . $ire->getMessage() . "\n";
 } catch (AiravataClientException $ace) {
-    print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
+    print 'Airavata System Exception: '. "\n" . $ace->getMessage() . "\n";
 } catch (AiravataSystemException $ase) {
-    print 'Airavata System Exception: ' . $ase->getMessage() . "\n";
+    print 'Airavata System Exception: '. "\n" . $ase->getMessage() . "\n";
 } catch (TTransportException $tte) {
-    echo 'TTransportException!<br><br>' . $tte->getMessage();
+    echo 'TTransport Exception!' . "\n". $tte->getMessage();
 } catch (\Exception $e) {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!' . "\n". $e->getMessage();
 }
 
 $transport->close();

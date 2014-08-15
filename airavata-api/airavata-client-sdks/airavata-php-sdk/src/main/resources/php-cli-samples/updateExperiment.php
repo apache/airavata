@@ -41,7 +41,7 @@ use Thrift\Transport\TSocket;
 use Airavata\API\AiravataClient;
 
 if ($argc != 2) {
-    echo 'php updateExperiment.php <experiment_id>';
+    echo 'Please provide the Experiment ID.'."\n".'Usage: php updateExperiment.php <experiment_ID>'."\n";
 } else {
     update_experiment($argv[1]);
 }
@@ -61,17 +61,17 @@ function get_experiment($expId)
     try {
         return $airavataclient->getExperiment($expId);
     } catch (InvalidRequestException $ire) {
-        echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+        echo 'Invalid Request Exception!' ."\n". $ire->getMessage();
     } catch (ExperimentNotFoundException $enf) {
-        echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
+        echo 'Experiment Not Found Exception!' ."\n". $enf->getMessage();
     } catch (AiravataClientException $ace) {
-        echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+        echo 'Airavata Client Exception!' ."\n". $ace->getMessage();
     } catch (AiravataSystemException $ase) {
-        echo 'AiravataSystemException during get!<br><br>' . $ase->getMessage();
+        echo 'Airavata System Exception during get!' ."\n". $ase->getMessage();
     } catch (TTransportException $tte) {
-        echo 'TTransportException!<br><br>' . $tte->getMessage();
+        echo 'TTransport Exception!' ."\n". $tte->getMessage();
     } catch (\Exception $e) {
-        echo 'Exception!<br><br>' . $e->getMessage();
+        echo 'Exception!' ."\n". $e->getMessage();
     }
 
 }
@@ -94,19 +94,20 @@ function update_experiment($expId)
 
         $updatedExperiment = $airavataclient->getExperiment($expId);
 
-        echo "Experiment $experiment->name updated:\n\n";
-        var_dump($updatedExperiment);
+ 		var_dump($updatedExperiment);
+        echo "Experiment $experiment->name is successfully updated!\n\n";
+
     } catch (InvalidRequestException $ire) {
-        echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+        echo 'Invalid Request Exception!' ."\n". $ire->getMessage();
     } catch (ExperimentNotFoundException $enf) {
-        echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
+        echo 'Experiment Not Found Exception!' ."\n". $enf->getMessage();
     } catch (AiravataClientException $ace) {
-        echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+        echo 'Airavata Client Exception!' ."\n". $ace->getMessage();
     } catch (AiravataSystemException $ase) {
-        echo 'AiravataSystemException during update!<br><br>' . $ase->getMessage();
+        echo 'Airavata System Exception during update!' ."\n". $ase->getMessage();
     } catch (TTransportException $tte) {
-        echo 'TTransportException!<br><br>' . $tte->getMessage();
-    }
+        echo 'TTransport Exception!' ."\n". $tte->getMessage();
+    }	
 }
 
 ?>

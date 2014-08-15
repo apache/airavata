@@ -36,8 +36,8 @@ use Thrift\Exception\TTransportException;
 use Airavata\Model\AppCatalog\AppDeployment\ApplicationModule;
 
 try {
-    if ($argc < 1) {
-        echo 'php getApplicationDeployment.php <Application Deployment Id>';
+    if ($argc < 2) {
+        echo 'Please provide and Application Deployment ID.'."\n".'Usage: php getApplicationDeployment.php <app_deployment_ID>'."\n";
     } else {
         $appDeploymentId = $argv[1];
 
@@ -46,20 +46,20 @@ try {
         if ($appDeployment) {
             var_dump($appDeployment);
         } else {
-            echo "\n Failed to fetch application deployment description. \n";
+            echo "\n Failed to fetch Application Deployment information. \n";
         }
     }
 
 } catch (InvalidRequestException $ire) {
-    echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+    echo 'Invalid Request Exception!'."\n" . $ire->getMessage();
 } catch (AiravataClientException $ace) {
-    echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+    echo 'Airavata Client Exception!'."\n" . $ace->getMessage();
 } catch (AiravataSystemException $ase) {
-    echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
+    echo 'Airavata System Exception!'."\n" . $ase->getMessage();
 } catch (TTransportException $tte) {
-    echo 'TTransportException!<br><br>' . $tte->getMessage();
+    echo 'TTransport Exception!'."\n" . $tte->getMessage();
 } catch (\Exception $e) {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!'."\n" . $e->getMessage();
 }
 
 ?>

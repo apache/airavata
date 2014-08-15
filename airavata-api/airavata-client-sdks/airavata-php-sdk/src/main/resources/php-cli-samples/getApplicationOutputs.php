@@ -36,8 +36,8 @@ use Airavata\Model\AppCatalog\AppInterface\DataType;
 
 try {
 
-    if ($argc < 1) {
-        echo 'php getApplicationOutputs.php <appInterfaceId>';
+    if ($argc < 2) {
+        echo 'Please provide a valid Application Interface ID.'."\n".'Usage: php getApplicationOutputs.php <app_interface_ID>'."\n";
     } else {
 
         $appInterfaceId = $argv[1];
@@ -47,22 +47,22 @@ try {
         if ($appOutputs) {
             foreach ($appOutputs as $appOutput) {
                 $outputType = DataType::$__names[$appOutput->type];
-                echo "\n Application Output Name: $appOutput->name \t Output Type $outputType \n";
+                echo "Application Output Name: $appOutput->name \t Output Type $outputType \n";
             }
         } else {
-            echo "\n Failed to fetch application interface Outputs. \n";
+            echo "Failed to fetch Application Interface Outputs. \n";
         }
     }
 } catch (InvalidRequestException $ire) {
-    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+    print 'Invalid Request Exception: '."\n" . $ire->getMessage() . "\n";
 } catch (AiravataClientException $ace) {
-    print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
+    print 'Airavata System Exception: '."\n" . $ace->getMessage() . "\n";
 } catch (AiravataSystemException $ase) {
-    print 'Airavata System Exception: ' . $ase->getMessage() . "\n";
+    print 'Airavata System Exception: ' ."\n". $ase->getMessage() . "\n";
 } catch (TTransportException $tte) {
-    echo 'TTransportException!<br><br>' . $tte->getMessage();
+    echo 'TTransport Exception!<br><br>'."\n" . $tte->getMessage();
 } catch (\Exception $e) {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!'."\n" . $e->getMessage();
 }
 
 $transport->close();

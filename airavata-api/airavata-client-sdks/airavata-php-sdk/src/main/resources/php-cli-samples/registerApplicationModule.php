@@ -38,7 +38,7 @@ try
 {
     if ($argc != 4)
     {
-        echo 'php registerApplicationModule.php <appModuleName> <appModuleVersion> <appModuleDescription>';
+        echo 'Please provide Application Module Name, Version & Description.'."\n". 'php registerApplicationModule.php <app_module_name> <app_module_version> <app_module_description>'."\n";
     }
     else
     {
@@ -56,17 +56,17 @@ try
         if ($appModuleId)
         {
             var_dump($appModule);
-            echo "Application Module $appModuleId is registered! \n    ";
+            echo "Application Module $appModuleId is successfully registered! \n    ";
         }
         else
         {
-            echo "Failed to register application module. \n";
+            echo "Application Module Registration Failed!."." \n";
         }
     }
 }
 catch (InvalidRequestException $ire)
 {
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
+    print 'Invalid Request Exception: ' . $ire->getMessage()."\n";
 }
 catch (AiravataClientException $ace)
 {
@@ -78,7 +78,7 @@ catch (AiravataSystemException $ase)
 }
 catch (\Exception $e)
 {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!' . $e->getMessage();
 }
 
 $transport->close();

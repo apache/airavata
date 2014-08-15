@@ -43,13 +43,13 @@ use Airavata\API\AiravataClient;
 
 if ($argc != 2)
 {
-    echo 'php terminateExperiment.php <experiment_id>';
+    echo 'Please provide a valid Experiment ID.'."\n". 'Usage: php terminateExperiment.php <experiment_ID>'."\n";
 }
 else
 {
     terminate_experiment($argv[1]);
 
-    echo 'If there are no exceptions, assume the experiment terminated successfully';
+    echo 'If there are no exceptions, assume the Experiment is terminated successfully.';
 }
 
 
@@ -70,23 +70,23 @@ function terminate_experiment($expId)
     }
     catch (InvalidRequestException $ire)
     {
-        echo 'InvalidRequestException!\n\n' . $ire->getMessage();
+        echo 'Invalid Request Exception!\n\n' . $ire->getMessage();
     }
     catch (ExperimentNotFoundException $enf)
     {
-        echo 'ExperimentNotFoundException!\n\n' . $enf->getMessage();
+        echo 'Experiment Not Found Exception!\n\n' . $enf->getMessage();
     }
     catch (AiravataClientException $ace)
     {
-        echo 'AiravataClientException!\n\n' . $ace->getMessage();
+        echo 'Airavata Client Exception!\n\n' . $ace->getMessage();
     }
     catch (AiravataSystemException $ase)
     {
-        echo 'AiravataSystemException!\n\n' . $ase->getMessage();
+        echo 'Airavata System Exception!\n\n' . $ase->getMessage();
     }
     catch (TTransportException $tte)
     {
-        echo 'TTransportException!\n\n' . $tte->getMessage();
+        echo 'TTransport Exception!\n\n' . $tte->getMessage();
     }
     catch (\Exception $e)
     {

@@ -39,12 +39,13 @@ use Airavata\API\AiravataClient;
 
 try {
     if ($argc != 3) {
-        echo 'php updateProject.php <project_id> <project_description>';
+        echo 'Please provide the Project ID and the Description.'."\n". 'Usage: php updateProject.php <project_ID> <project_description>'."\n"."\n";        
     } else {
         $project = $airavataclient->getProject($argv[1]);
         $project->description = $argv[2];
         $airavataclient->updateProject($argv[1], $project);
-        echo 'Project ' . $argv[1] . ' successfully modified.';
+        
+        echo 'Project ' . $argv[1] . ' is successfully modified!'."\n"."\n";
     }
 } catch (InvalidRequestException $ire) {
     print 'InvalidRequestException: ' . $ire->getMessage() . "\n";

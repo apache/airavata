@@ -41,25 +41,25 @@ use Airavata\API\AiravataClient;
 
 try {
     if (count($argv) < 2) {
-        exit("Please provide an experimentID. Usage: php getExperimentStatus.php <experimentId> \n");
+        exit("Plese provide the Experiment ID."."\n". "Usage: php getExperimentStatus.php <experiment_ID> \n"."\n");
     } else {
 
         $experimentId = $argv[1];
         $experimentStatus = $airavataclient->getExperimentStatus($experimentId);
 
-        echo "experiment status = " . ExperimentState::$__names[$experimentStatus->experimentState] . "       \n<br>";
+        echo "Experiment Status = " . ExperimentState::$__names[$experimentStatus->experimentState] . "       \n<br>";
     }
 
 } catch (InvalidRequestException $ire) {
-    echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+    echo 'Invalid Request Exception!'."\n". $ire->getMessage();
 } catch (ExperimentNotFoundException $enf) {
-    echo 'ExperimentNotFoundException!<br><br>' . $enf->getMessage();
+    echo 'Experiment Not Found Exception!'."\n". $enf->getMessage();
 } catch (AiravataClientException $ace) {
-    echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+    echo 'Airavata Client Exception!'."\n". $ace->getMessage();
 } catch (AiravataSystemException $ase) {
-    echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
+    echo 'Airavata System Exception'."\n". $ase->getMessage();
 } catch (\Exception $e) {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!'."\n". $e->getMessage();
 }
 
 $transport->close();

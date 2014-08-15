@@ -39,18 +39,18 @@ try {
     if ($appInterfaceComputeResources) {
         var_dump($appInterfaceComputeResources);
     } else {
-        echo "\n Failed to fetch compute resources. \n";
+        echo "\n Failed to fetch Compute Resources. \n";
     }
 } catch (InvalidRequestException $ire) {
-    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+    print 'Invalid Request Exception: ' . $ire->getMessage() . "\n";
 } catch (AiravataClientException $ace) {
     print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
 } catch (AiravataSystemException $ase) {
     print 'Airavata System Exception: ' . $ase->getMessage() . "\n";
 } catch (TTransportException $tte) {
-    echo 'TTransportException!<br><br>' . $tte->getMessage();
+    echo 'TTransportException!' . $tte->getMessage();
 } catch (\Exception $e) {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!' . $e->getMessage();
 }
 
 $transport->close();

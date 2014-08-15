@@ -37,7 +37,7 @@ use Airavata\Model\AppCatalog\AppDeployment\ApplicationModule;
 
 
 if (count($argv) < 2) {
-    exit("Please provide an appModuleID. \n");
+    exit("Please provide an Application Module ID."."\n". "Usage: php getApplicationModule.php <app_module_ID>". "\n"."\n");
 }
 
 $appModuleId = $argv[1];
@@ -60,15 +60,15 @@ function get_appModule($appModuleId)
     try {
         return $airavataclient->getApplicationModule($appModuleId);
     } catch (InvalidRequestException $ire) {
-        echo 'InvalidRequestException!<br><br>' . $ire->getMessage();
+        echo 'Invalid Request Exception!'."\n" . $ire->getMessage();
     } catch (AiravataClientException $ace) {
-        echo 'AiravataClientException!<br><br>' . $ace->getMessage();
+        echo 'Airavata Client Exception!'."\n" . $ace->getMessage();
     } catch (AiravataSystemException $ase) {
-        echo 'AiravataSystemException!<br><br>' . $ase->getMessage();
+        echo 'Airavata System Exception!'."\n" . $ase->getMessage();
     } catch (TTransportException $tte) {
-        echo 'TTransportException!<br><br>' . $tte->getMessage();
+        echo 'TTransport Exception!'."\n" . $tte->getMessage();
     } catch (\Exception $e) {
-        echo 'Exception!<br><br>' . $e->getMessage();
+        echo 'Exception!'."\n". $e->getMessage();
     }
 
 }

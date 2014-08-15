@@ -41,7 +41,7 @@ try
 {
 
     if (count($argv) != 2) {
-        exit("\n Incorrect Arguments \n. Usage: deleteApplicationInterface.php <application interface id>. \n");
+        exit("\n Incorrect Arguments \n. Usage: deleteApplicationInterface.php <application_interface_ID>. \n");
     } else {
 
         $appInterfaceId = $argv[1];
@@ -49,15 +49,15 @@ try
         $success = $airavataclient->deleteApplicationInterface($appInterfaceId);
 
         if ($success) {
-            echo "Application Interface $appInterfaceId successfully deleted";
+            echo "Application Interface $appInterfaceId is successfully deleted!";
         } else {
-            echo "\n Failed to delete application interface $appInterfaceId \n";
+            echo "\n Failed to delete application interface $appInterfaceId. \n";
         }
     }
 }
 catch (InvalidRequestException $ire)
 {
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
+    print 'Invalid Request Exception: ' . $ire->getMessage()."\n";
 }
 catch (AiravataClientException $ace)
 {
@@ -69,11 +69,11 @@ catch (AiravataSystemException $ase)
 }
 catch (TTransportException $tte)
 {
-    echo 'TTransportException!<br><br>' . $tte->getMessage();
+    echo 'TTransport Exception!' . $tte->getMessage();
 }
 catch (\Exception $e)
 {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!' . $e->getMessage();
 }
 
 $transport->close();

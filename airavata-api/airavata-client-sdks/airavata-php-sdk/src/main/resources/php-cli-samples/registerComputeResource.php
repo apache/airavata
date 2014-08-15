@@ -38,7 +38,7 @@ try
 {
     if ($argc != 3)
     {
-        echo 'php registerComputeResource.php <hostName> <resourceDescription>';
+        echo 'Please provide Compute Resource Name and Description.'."\n". 'Usage: php registerComputeResource.php <resource_name> <resource_description>'."\n";
     }
     else
     {
@@ -57,29 +57,29 @@ try
         if ($computeResourceId)
         {
             var_dump($computeResource);
-            echo "\n Compute Resource $computeResourceId is registered! \n    ";
+            echo "Compute Resource $computeResourceId is successfully registered! \n    ";
         }
         else
         {
-            echo "\n Failed to register compute resource description. \n";
+            echo "Failed to register Compute Resource description. \n";
         }
     }
 }
 catch (InvalidRequestException $ire)
 {
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
+    print 'Invalid Request Exception: '."\n" . $ire->getMessage()."\n";
 }
 catch (AiravataClientException $ace)
 {
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
+    print 'Airavata System Exception: '."\n" . $ace->getMessage()."\n";
 }
 catch (AiravataSystemException $ase)
 {
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
+    print 'Airavata System Exception: '."\n" . $ase->getMessage()."\n";
 }
 catch (\Exception $e)
 {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!'."\n" . $e->getMessage();
 }
 
 $transport->close();

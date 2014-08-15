@@ -37,9 +37,9 @@ use Airavata\Model\AppCatalog\AppInterface\DataType;
 try
 {
 
-    if ($argc < 2)
+    if ($argc < 3)
     {
-        echo 'php getGatewayComputeResourcePreference.php <gateway id> <compute resource id>';
+        echo 'Please provide valid Gateway ID and Compute Resoruce ID.'."\n". "php getGatewayComputeResourcePreference.php <gateway_ID> <compute_resource_ID>"."\n";
     }
     else {
 
@@ -51,29 +51,29 @@ try
         if ($computeResourcePreferences) {
                 var_dump($computeResourcePreferences);
         } else {
-            echo "\n Failed to fetch compute resource preference Inputs. \n";
+            echo "Failed to fetch Compute Resource preference of the Gateway. \n";
         }
 }
 }
 catch (InvalidRequestException $ire)
 {
-    print 'InvalidRequestException: ' . $ire->getMessage()."\n";
+    print 'Invalid Request Exception: '."\n" . $ire->getMessage()."\n";
 }
 catch (AiravataClientException $ace)
 {
-    print 'Airavata System Exception: ' . $ace->getMessage()."\n";
+    print 'Airavata System Exception: '."\n"  . $ace->getMessage()."\n";
 }
 catch (AiravataSystemException $ase)
 {
-    print 'Airavata System Exception: ' . $ase->getMessage()."\n";
+    print 'Airavata System Exception: '."\n"  . $ase->getMessage()."\n";
 }
 catch (TTransportException $tte)
 {
-    echo 'TTransportException!<br><br>' . $tte->getMessage();
+    echo 'TTransport Exception!'."\n"  . $tte->getMessage();
 }
 catch (\Exception $e)
 {
-    echo 'Exception!<br><br>' . $e->getMessage();
+    echo 'Exception!'."\n"  . $e->getMessage();
 }
 
 $transport->close();

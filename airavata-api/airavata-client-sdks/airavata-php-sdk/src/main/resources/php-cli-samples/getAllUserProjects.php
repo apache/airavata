@@ -39,14 +39,14 @@ use Airavata\API\AiravataClient;
 
 try {
     if ($argc != 2) {
-        echo "Usage: php getAllUserProjects.php <user> \n";
+        echo "Please provide the User."."\n". "Usage: php getAllUserProjects.php <user_name> \n"."\n";
     } else {
         $userProjects = $airavataclient->getAllUserProjects($argv[1]);
-        echo '# of user projects = ' . sizeof($userProjects) . '       ';
+        echo '# of Projects created by the User = ' . sizeof($userProjects) ."\n". '       ';
         var_dump($userProjects);
     }
 } catch (InvalidRequestException $ire) {
-    print 'InvalidRequestException: ' . $ire->getMessage() . "\n";
+    print 'Invalid Request Exception: ' . $ire->getMessage() . "\n";
 } catch (AiravataClientException $ace) {
     print 'Airavata System Exception: ' . $ace->getMessage() . "\n";
 } catch (AiravataSystemException $ase) {
