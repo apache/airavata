@@ -52,8 +52,8 @@ import java.util.*;
 public class TestCreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
-    public static final int THRIFT_SERVER_PORT = 9930;
+    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(TestCreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
@@ -63,8 +63,13 @@ public class TestCreateLaunchExperiment {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.getAPIVersion());
-            getAllComputeResources(airavata);
-            getAppModule(airavata, "amber_c476de64-ca5c-415a-94e9-b77fbe67b806");
+            List<ExperimentSummary> experiments = searchExperimentsByStatus(airavata, "admin", ExperimentState.FAILED);
+            for (ExperimentSummary experimentSummary : experiments){
+                System.out.println(experimentSummary.getExperimentID());
+                System.out.println(experimentSummary.getExperimentStatus().getExperimentState().toString());
+            }
+//            getAllComputeResources(airavata);
+//            getAppModule(airavata, "amber_c476de64-ca5c-415a-94e9-b77fbe67b806");
 //            getAVailableComputeResourcesForApp(airavata, "Amber_0cecdf39-1ce2-4d98-bc76-87447e10fd4d");
 //            for (int i = 0; i < 10 ; i++){
 //                long time = System.currentTimeMillis();
@@ -120,6 +125,21 @@ public class TestCreateLaunchExperiment {
     public static List<ExperimentSummary> getExperimentsForApplication (Airavata.Client client, String user, String application){
         try {
             return client.searchExperimentsByApplication(user, application);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<ExperimentSummary> searchExperimentsByStatus (Airavata.Client client, String user, ExperimentState experimentState){
+        try {
+            return client.searchExperimentsByStatus(user, experimentState);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {

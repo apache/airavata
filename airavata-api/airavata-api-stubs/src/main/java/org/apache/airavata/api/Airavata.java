@@ -137,6 +137,15 @@ import org.slf4j.LoggerFactory;
     public List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> searchExperimentsByApplication(String userName, String applicationId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
+     * Search Experiments by experiment status
+     * 
+     * 
+     * @param userName
+     * @param experimentState
+     */
+    public List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> searchExperimentsByStatus(String userName, org.apache.airavata.model.workspace.experiment.ExperimentState experimentState) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
      * Get all Experiments within a Project
      * 
      * 
@@ -1274,6 +1283,8 @@ import org.slf4j.LoggerFactory;
 
     public void searchExperimentsByApplication(String userName, String applicationId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
+    public void searchExperimentsByStatus(String userName, org.apache.airavata.model.workspace.experiment.ExperimentState experimentState, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
     public void getAllExperimentsInProject(String projectId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void getAllUserExperiments(String userName, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
@@ -1750,6 +1761,39 @@ import org.slf4j.LoggerFactory;
         throw result.ase;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "searchExperimentsByApplication failed: unknown result");
+    }
+
+    public List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> searchExperimentsByStatus(String userName, org.apache.airavata.model.workspace.experiment.ExperimentState experimentState) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_searchExperimentsByStatus(userName, experimentState);
+      return recv_searchExperimentsByStatus();
+    }
+
+    public void send_searchExperimentsByStatus(String userName, org.apache.airavata.model.workspace.experiment.ExperimentState experimentState) throws org.apache.thrift.TException
+    {
+      searchExperimentsByStatus_args args = new searchExperimentsByStatus_args();
+      args.setUserName(userName);
+      args.setExperimentState(experimentState);
+      sendBase("searchExperimentsByStatus", args);
+    }
+
+    public List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> recv_searchExperimentsByStatus() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      searchExperimentsByStatus_result result = new searchExperimentsByStatus_result();
+      receiveBase(result, "searchExperimentsByStatus");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "searchExperimentsByStatus failed: unknown result");
     }
 
     public List<org.apache.airavata.model.workspace.experiment.Experiment> getAllExperimentsInProject(String projectId) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.airavata.model.error.ProjectNotFoundException, org.apache.thrift.TException
@@ -4162,6 +4206,41 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public void searchExperimentsByStatus(String userName, org.apache.airavata.model.workspace.experiment.ExperimentState experimentState, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      searchExperimentsByStatus_call method_call = new searchExperimentsByStatus_call(userName, experimentState, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class searchExperimentsByStatus_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String userName;
+      private org.apache.airavata.model.workspace.experiment.ExperimentState experimentState;
+      public searchExperimentsByStatus_call(String userName, org.apache.airavata.model.workspace.experiment.ExperimentState experimentState, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.userName = userName;
+        this.experimentState = experimentState;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("searchExperimentsByStatus", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        searchExperimentsByStatus_args args = new searchExperimentsByStatus_args();
+        args.setUserName(userName);
+        args.setExperimentState(experimentState);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_searchExperimentsByStatus();
+      }
+    }
+
     public void getAllExperimentsInProject(String projectId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
       getAllExperimentsInProject_call method_call = new getAllExperimentsInProject_call(projectId, resultHandler, this, ___protocolFactory, ___transport);
@@ -6332,6 +6411,7 @@ import org.slf4j.LoggerFactory;
       processMap.put("searchExperimentsByName", new searchExperimentsByName());
       processMap.put("searchExperimentsByDesc", new searchExperimentsByDesc());
       processMap.put("searchExperimentsByApplication", new searchExperimentsByApplication());
+      processMap.put("searchExperimentsByStatus", new searchExperimentsByStatus());
       processMap.put("getAllExperimentsInProject", new getAllExperimentsInProject());
       processMap.put("getAllUserExperiments", new getAllUserExperiments());
       processMap.put("createExperiment", new createExperiment());
@@ -6672,6 +6752,34 @@ import org.slf4j.LoggerFactory;
         searchExperimentsByApplication_result result = new searchExperimentsByApplication_result();
         try {
           result.success = iface.searchExperimentsByApplication(args.userName, args.applicationId);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
+    public static class searchExperimentsByStatus<I extends Iface> extends org.apache.thrift.ProcessFunction<I, searchExperimentsByStatus_args> {
+      public searchExperimentsByStatus() {
+        super("searchExperimentsByStatus");
+      }
+
+      public searchExperimentsByStatus_args getEmptyArgsInstance() {
+        return new searchExperimentsByStatus_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public searchExperimentsByStatus_result getResult(I iface, searchExperimentsByStatus_args args) throws org.apache.thrift.TException {
+        searchExperimentsByStatus_result result = new searchExperimentsByStatus_result();
+        try {
+          result.success = iface.searchExperimentsByStatus(args.userName, args.experimentState);
         } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
           result.ire = ire;
         } catch (org.apache.airavata.model.error.AiravataClientException ace) {
@@ -8516,6 +8624,7 @@ import org.slf4j.LoggerFactory;
       processMap.put("searchExperimentsByName", new searchExperimentsByName());
       processMap.put("searchExperimentsByDesc", new searchExperimentsByDesc());
       processMap.put("searchExperimentsByApplication", new searchExperimentsByApplication());
+      processMap.put("searchExperimentsByStatus", new searchExperimentsByStatus());
       processMap.put("getAllExperimentsInProject", new getAllExperimentsInProject());
       processMap.put("getAllUserExperiments", new getAllUserExperiments());
       processMap.put("createExperiment", new createExperiment());
@@ -9259,6 +9368,73 @@ import org.slf4j.LoggerFactory;
 
       public void start(I iface, searchExperimentsByApplication_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.model.workspace.experiment.ExperimentSummary>> resultHandler) throws TException {
         iface.searchExperimentsByApplication(args.userName, args.applicationId,resultHandler);
+      }
+    }
+
+    public static class searchExperimentsByStatus<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, searchExperimentsByStatus_args, List<org.apache.airavata.model.workspace.experiment.ExperimentSummary>> {
+      public searchExperimentsByStatus() {
+        super("searchExperimentsByStatus");
+      }
+
+      public searchExperimentsByStatus_args getEmptyArgsInstance() {
+        return new searchExperimentsByStatus_args();
+      }
+
+      public AsyncMethodCallback<List<org.apache.airavata.model.workspace.experiment.ExperimentSummary>> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<List<org.apache.airavata.model.workspace.experiment.ExperimentSummary>>() { 
+          public void onComplete(List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> o) {
+            searchExperimentsByStatus_result result = new searchExperimentsByStatus_result();
+            result.success = o;
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            searchExperimentsByStatus_result result = new searchExperimentsByStatus_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, searchExperimentsByStatus_args args, org.apache.thrift.async.AsyncMethodCallback<List<org.apache.airavata.model.workspace.experiment.ExperimentSummary>> resultHandler) throws TException {
+        iface.searchExperimentsByStatus(args.userName, args.experimentState,resultHandler);
       }
     }
 
@@ -24548,6 +24724,1179 @@ import org.slf4j.LoggerFactory;
 
   }
 
+  public static class searchExperimentsByStatus_args implements org.apache.thrift.TBase<searchExperimentsByStatus_args, searchExperimentsByStatus_args._Fields>, java.io.Serializable, Cloneable, Comparable<searchExperimentsByStatus_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("searchExperimentsByStatus_args");
+
+    private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField EXPERIMENT_STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentState", org.apache.thrift.protocol.TType.I32, (short)2);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new searchExperimentsByStatus_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new searchExperimentsByStatus_argsTupleSchemeFactory());
+    }
+
+    public String userName; // required
+    /**
+     * 
+     * @see org.apache.airavata.model.workspace.experiment.ExperimentState
+     */
+    public org.apache.airavata.model.workspace.experiment.ExperimentState experimentState; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      USER_NAME((short)1, "userName"),
+      /**
+       * 
+       * @see org.apache.airavata.model.workspace.experiment.ExperimentState
+       */
+      EXPERIMENT_STATE((short)2, "experimentState");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // USER_NAME
+            return USER_NAME;
+          case 2: // EXPERIMENT_STATE
+            return EXPERIMENT_STATE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.EXPERIMENT_STATE, new org.apache.thrift.meta_data.FieldMetaData("experimentState", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.workspace.experiment.ExperimentState.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(searchExperimentsByStatus_args.class, metaDataMap);
+    }
+
+    public searchExperimentsByStatus_args() {
+    }
+
+    public searchExperimentsByStatus_args(
+      String userName,
+      org.apache.airavata.model.workspace.experiment.ExperimentState experimentState)
+    {
+      this();
+      this.userName = userName;
+      this.experimentState = experimentState;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public searchExperimentsByStatus_args(searchExperimentsByStatus_args other) {
+      if (other.isSetUserName()) {
+        this.userName = other.userName;
+      }
+      if (other.isSetExperimentState()) {
+        this.experimentState = other.experimentState;
+      }
+    }
+
+    public searchExperimentsByStatus_args deepCopy() {
+      return new searchExperimentsByStatus_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.userName = null;
+      this.experimentState = null;
+    }
+
+    public String getUserName() {
+      return this.userName;
+    }
+
+    public searchExperimentsByStatus_args setUserName(String userName) {
+      this.userName = userName;
+      return this;
+    }
+
+    public void unsetUserName() {
+      this.userName = null;
+    }
+
+    /** Returns true if field userName is set (has been assigned a value) and false otherwise */
+    public boolean isSetUserName() {
+      return this.userName != null;
+    }
+
+    public void setUserNameIsSet(boolean value) {
+      if (!value) {
+        this.userName = null;
+      }
+    }
+
+    /**
+     * 
+     * @see org.apache.airavata.model.workspace.experiment.ExperimentState
+     */
+    public org.apache.airavata.model.workspace.experiment.ExperimentState getExperimentState() {
+      return this.experimentState;
+    }
+
+    /**
+     * 
+     * @see org.apache.airavata.model.workspace.experiment.ExperimentState
+     */
+    public searchExperimentsByStatus_args setExperimentState(org.apache.airavata.model.workspace.experiment.ExperimentState experimentState) {
+      this.experimentState = experimentState;
+      return this;
+    }
+
+    public void unsetExperimentState() {
+      this.experimentState = null;
+    }
+
+    /** Returns true if field experimentState is set (has been assigned a value) and false otherwise */
+    public boolean isSetExperimentState() {
+      return this.experimentState != null;
+    }
+
+    public void setExperimentStateIsSet(boolean value) {
+      if (!value) {
+        this.experimentState = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case USER_NAME:
+        if (value == null) {
+          unsetUserName();
+        } else {
+          setUserName((String)value);
+        }
+        break;
+
+      case EXPERIMENT_STATE:
+        if (value == null) {
+          unsetExperimentState();
+        } else {
+          setExperimentState((org.apache.airavata.model.workspace.experiment.ExperimentState)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case USER_NAME:
+        return getUserName();
+
+      case EXPERIMENT_STATE:
+        return getExperimentState();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case USER_NAME:
+        return isSetUserName();
+      case EXPERIMENT_STATE:
+        return isSetExperimentState();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof searchExperimentsByStatus_args)
+        return this.equals((searchExperimentsByStatus_args)that);
+      return false;
+    }
+
+    public boolean equals(searchExperimentsByStatus_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_userName = true && this.isSetUserName();
+      boolean that_present_userName = true && that.isSetUserName();
+      if (this_present_userName || that_present_userName) {
+        if (!(this_present_userName && that_present_userName))
+          return false;
+        if (!this.userName.equals(that.userName))
+          return false;
+      }
+
+      boolean this_present_experimentState = true && this.isSetExperimentState();
+      boolean that_present_experimentState = true && that.isSetExperimentState();
+      if (this_present_experimentState || that_present_experimentState) {
+        if (!(this_present_experimentState && that_present_experimentState))
+          return false;
+        if (!this.experimentState.equals(that.experimentState))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(searchExperimentsByStatus_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetUserName()).compareTo(other.isSetUserName());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUserName()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userName, other.userName);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetExperimentState()).compareTo(other.isSetExperimentState());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetExperimentState()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentState, other.experimentState);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("searchExperimentsByStatus_args(");
+      boolean first = true;
+
+      sb.append("userName:");
+      if (this.userName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userName);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("experimentState:");
+      if (this.experimentState == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.experimentState);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (userName == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'userName' was not present! Struct: " + toString());
+      }
+      if (experimentState == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentState' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class searchExperimentsByStatus_argsStandardSchemeFactory implements SchemeFactory {
+      public searchExperimentsByStatus_argsStandardScheme getScheme() {
+        return new searchExperimentsByStatus_argsStandardScheme();
+      }
+    }
+
+    private static class searchExperimentsByStatus_argsStandardScheme extends StandardScheme<searchExperimentsByStatus_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, searchExperimentsByStatus_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // USER_NAME
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.userName = iprot.readString();
+                struct.setUserNameIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // EXPERIMENT_STATE
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.experimentState = org.apache.airavata.model.workspace.experiment.ExperimentState.findByValue(iprot.readI32());
+                struct.setExperimentStateIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, searchExperimentsByStatus_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.userName != null) {
+          oprot.writeFieldBegin(USER_NAME_FIELD_DESC);
+          oprot.writeString(struct.userName);
+          oprot.writeFieldEnd();
+        }
+        if (struct.experimentState != null) {
+          oprot.writeFieldBegin(EXPERIMENT_STATE_FIELD_DESC);
+          oprot.writeI32(struct.experimentState.getValue());
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class searchExperimentsByStatus_argsTupleSchemeFactory implements SchemeFactory {
+      public searchExperimentsByStatus_argsTupleScheme getScheme() {
+        return new searchExperimentsByStatus_argsTupleScheme();
+      }
+    }
+
+    private static class searchExperimentsByStatus_argsTupleScheme extends TupleScheme<searchExperimentsByStatus_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, searchExperimentsByStatus_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.userName);
+        oprot.writeI32(struct.experimentState.getValue());
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, searchExperimentsByStatus_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.userName = iprot.readString();
+        struct.setUserNameIsSet(true);
+        struct.experimentState = org.apache.airavata.model.workspace.experiment.ExperimentState.findByValue(iprot.readI32());
+        struct.setExperimentStateIsSet(true);
+      }
+    }
+
+  }
+
+  public static class searchExperimentsByStatus_result implements org.apache.thrift.TBase<searchExperimentsByStatus_result, searchExperimentsByStatus_result._Fields>, java.io.Serializable, Cloneable, Comparable<searchExperimentsByStatus_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("searchExperimentsByStatus_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.LIST, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new searchExperimentsByStatus_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new searchExperimentsByStatus_resultTupleSchemeFactory());
+    }
+
+    public List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+              new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.ExperimentSummary.class))));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(searchExperimentsByStatus_result.class, metaDataMap);
+    }
+
+    public searchExperimentsByStatus_result() {
+    }
+
+    public searchExperimentsByStatus_result(
+      List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public searchExperimentsByStatus_result(searchExperimentsByStatus_result other) {
+      if (other.isSetSuccess()) {
+        List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> __this__success = new ArrayList<org.apache.airavata.model.workspace.experiment.ExperimentSummary>(other.success.size());
+        for (org.apache.airavata.model.workspace.experiment.ExperimentSummary other_element : other.success) {
+          __this__success.add(new org.apache.airavata.model.workspace.experiment.ExperimentSummary(other_element));
+        }
+        this.success = __this__success;
+      }
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public searchExperimentsByStatus_result deepCopy() {
+      return new searchExperimentsByStatus_result(this);
+    }
+
+    @Override
+    public void clear() {
+      this.success = null;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public int getSuccessSize() {
+      return (this.success == null) ? 0 : this.success.size();
+    }
+
+    public java.util.Iterator<org.apache.airavata.model.workspace.experiment.ExperimentSummary> getSuccessIterator() {
+      return (this.success == null) ? null : this.success.iterator();
+    }
+
+    public void addToSuccess(org.apache.airavata.model.workspace.experiment.ExperimentSummary elem) {
+      if (this.success == null) {
+        this.success = new ArrayList<org.apache.airavata.model.workspace.experiment.ExperimentSummary>();
+      }
+      this.success.add(elem);
+    }
+
+    public List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> getSuccess() {
+      return this.success;
+    }
+
+    public searchExperimentsByStatus_result setSuccess(List<org.apache.airavata.model.workspace.experiment.ExperimentSummary> success) {
+      this.success = success;
+      return this;
+    }
+
+    public void unsetSuccess() {
+      this.success = null;
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return this.success != null;
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      if (!value) {
+        this.success = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public searchExperimentsByStatus_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public searchExperimentsByStatus_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public searchExperimentsByStatus_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((List<org.apache.airavata.model.workspace.experiment.ExperimentSummary>)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return getSuccess();
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof searchExperimentsByStatus_result)
+        return this.equals((searchExperimentsByStatus_result)that);
+      return false;
+    }
+
+    public boolean equals(searchExperimentsByStatus_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true && this.isSetSuccess();
+      boolean that_present_success = true && that.isSetSuccess();
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(searchExperimentsByStatus_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("searchExperimentsByStatus_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      if (this.success == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class searchExperimentsByStatus_resultStandardSchemeFactory implements SchemeFactory {
+      public searchExperimentsByStatus_resultStandardScheme getScheme() {
+        return new searchExperimentsByStatus_resultStandardScheme();
+      }
+    }
+
+    private static class searchExperimentsByStatus_resultStandardScheme extends StandardScheme<searchExperimentsByStatus_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, searchExperimentsByStatus_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+                {
+                  org.apache.thrift.protocol.TList _list48 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.ExperimentSummary>(_list48.size);
+                  for (int _i49 = 0; _i49 < _list48.size; ++_i49)
+                  {
+                    org.apache.airavata.model.workspace.experiment.ExperimentSummary _elem50;
+                    _elem50 = new org.apache.airavata.model.workspace.experiment.ExperimentSummary();
+                    _elem50.read(iprot);
+                    struct.success.add(_elem50);
+                  }
+                  iprot.readListEnd();
+                }
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, searchExperimentsByStatus_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.success != null) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
+            for (org.apache.airavata.model.workspace.experiment.ExperimentSummary _iter51 : struct.success)
+            {
+              _iter51.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class searchExperimentsByStatus_resultTupleSchemeFactory implements SchemeFactory {
+      public searchExperimentsByStatus_resultTupleScheme getScheme() {
+        return new searchExperimentsByStatus_resultTupleScheme();
+      }
+    }
+
+    private static class searchExperimentsByStatus_resultTupleScheme extends TupleScheme<searchExperimentsByStatus_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, searchExperimentsByStatus_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          {
+            oprot.writeI32(struct.success.size());
+            for (org.apache.airavata.model.workspace.experiment.ExperimentSummary _iter52 : struct.success)
+            {
+              _iter52.write(oprot);
+            }
+          }
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, searchExperimentsByStatus_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          {
+            org.apache.thrift.protocol.TList _list53 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.ExperimentSummary>(_list53.size);
+            for (int _i54 = 0; _i54 < _list53.size; ++_i54)
+            {
+              org.apache.airavata.model.workspace.experiment.ExperimentSummary _elem55;
+              _elem55 = new org.apache.airavata.model.workspace.experiment.ExperimentSummary();
+              _elem55.read(iprot);
+              struct.success.add(_elem55);
+            }
+          }
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
   public static class getAllExperimentsInProject_args implements org.apache.thrift.TBase<getAllExperimentsInProject_args, getAllExperimentsInProject_args._Fields>, java.io.Serializable, Cloneable, Comparable<getAllExperimentsInProject_args>   {
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getAllExperimentsInProject_args");
 
@@ -25512,14 +26861,14 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list48 = iprot.readListBegin();
-                  struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.Experiment>(_list48.size);
-                  for (int _i49 = 0; _i49 < _list48.size; ++_i49)
+                  org.apache.thrift.protocol.TList _list56 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.Experiment>(_list56.size);
+                  for (int _i57 = 0; _i57 < _list56.size; ++_i57)
                   {
-                    org.apache.airavata.model.workspace.experiment.Experiment _elem50;
-                    _elem50 = new org.apache.airavata.model.workspace.experiment.Experiment();
-                    _elem50.read(iprot);
-                    struct.success.add(_elem50);
+                    org.apache.airavata.model.workspace.experiment.Experiment _elem58;
+                    _elem58 = new org.apache.airavata.model.workspace.experiment.Experiment();
+                    _elem58.read(iprot);
+                    struct.success.add(_elem58);
                   }
                   iprot.readListEnd();
                 }
@@ -25583,9 +26932,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.model.workspace.experiment.Experiment _iter51 : struct.success)
+            for (org.apache.airavata.model.workspace.experiment.Experiment _iter59 : struct.success)
             {
-              _iter51.write(oprot);
+              _iter59.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -25648,9 +26997,9 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.model.workspace.experiment.Experiment _iter52 : struct.success)
+            for (org.apache.airavata.model.workspace.experiment.Experiment _iter60 : struct.success)
             {
-              _iter52.write(oprot);
+              _iter60.write(oprot);
             }
           }
         }
@@ -25674,14 +27023,14 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(5);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list53 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.Experiment>(_list53.size);
-            for (int _i54 = 0; _i54 < _list53.size; ++_i54)
+            org.apache.thrift.protocol.TList _list61 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.Experiment>(_list61.size);
+            for (int _i62 = 0; _i62 < _list61.size; ++_i62)
             {
-              org.apache.airavata.model.workspace.experiment.Experiment _elem55;
-              _elem55 = new org.apache.airavata.model.workspace.experiment.Experiment();
-              _elem55.read(iprot);
-              struct.success.add(_elem55);
+              org.apache.airavata.model.workspace.experiment.Experiment _elem63;
+              _elem63 = new org.apache.airavata.model.workspace.experiment.Experiment();
+              _elem63.read(iprot);
+              struct.success.add(_elem63);
             }
           }
           struct.setSuccessIsSet(true);
@@ -26598,14 +27947,14 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list56 = iprot.readListBegin();
-                  struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.Experiment>(_list56.size);
-                  for (int _i57 = 0; _i57 < _list56.size; ++_i57)
+                  org.apache.thrift.protocol.TList _list64 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.Experiment>(_list64.size);
+                  for (int _i65 = 0; _i65 < _list64.size; ++_i65)
                   {
-                    org.apache.airavata.model.workspace.experiment.Experiment _elem58;
-                    _elem58 = new org.apache.airavata.model.workspace.experiment.Experiment();
-                    _elem58.read(iprot);
-                    struct.success.add(_elem58);
+                    org.apache.airavata.model.workspace.experiment.Experiment _elem66;
+                    _elem66 = new org.apache.airavata.model.workspace.experiment.Experiment();
+                    _elem66.read(iprot);
+                    struct.success.add(_elem66);
                   }
                   iprot.readListEnd();
                 }
@@ -26660,9 +28009,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.model.workspace.experiment.Experiment _iter59 : struct.success)
+            for (org.apache.airavata.model.workspace.experiment.Experiment _iter67 : struct.success)
             {
-              _iter59.write(oprot);
+              _iter67.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -26717,9 +28066,9 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.model.workspace.experiment.Experiment _iter60 : struct.success)
+            for (org.apache.airavata.model.workspace.experiment.Experiment _iter68 : struct.success)
             {
-              _iter60.write(oprot);
+              _iter68.write(oprot);
             }
           }
         }
@@ -26740,14 +28089,14 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list61 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.Experiment>(_list61.size);
-            for (int _i62 = 0; _i62 < _list61.size; ++_i62)
+            org.apache.thrift.protocol.TList _list69 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.Experiment>(_list69.size);
+            for (int _i70 = 0; _i70 < _list69.size; ++_i70)
             {
-              org.apache.airavata.model.workspace.experiment.Experiment _elem63;
-              _elem63 = new org.apache.airavata.model.workspace.experiment.Experiment();
-              _elem63.read(iprot);
-              struct.success.add(_elem63);
+              org.apache.airavata.model.workspace.experiment.Experiment _elem71;
+              _elem71 = new org.apache.airavata.model.workspace.experiment.Experiment();
+              _elem71.read(iprot);
+              struct.success.add(_elem71);
             }
           }
           struct.setSuccessIsSet(true);
@@ -35482,14 +36831,14 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list64 = iprot.readListBegin();
-                  struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.DataObjectType>(_list64.size);
-                  for (int _i65 = 0; _i65 < _list64.size; ++_i65)
+                  org.apache.thrift.protocol.TList _list72 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.DataObjectType>(_list72.size);
+                  for (int _i73 = 0; _i73 < _list72.size; ++_i73)
                   {
-                    org.apache.airavata.model.workspace.experiment.DataObjectType _elem66;
-                    _elem66 = new org.apache.airavata.model.workspace.experiment.DataObjectType();
-                    _elem66.read(iprot);
-                    struct.success.add(_elem66);
+                    org.apache.airavata.model.workspace.experiment.DataObjectType _elem74;
+                    _elem74 = new org.apache.airavata.model.workspace.experiment.DataObjectType();
+                    _elem74.read(iprot);
+                    struct.success.add(_elem74);
                   }
                   iprot.readListEnd();
                 }
@@ -35517,9 +36866,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.model.workspace.experiment.DataObjectType _iter67 : struct.success)
+            for (org.apache.airavata.model.workspace.experiment.DataObjectType _iter75 : struct.success)
             {
-              _iter67.write(oprot);
+              _iter75.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -35550,9 +36899,9 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.model.workspace.experiment.DataObjectType _iter68 : struct.success)
+            for (org.apache.airavata.model.workspace.experiment.DataObjectType _iter76 : struct.success)
             {
-              _iter68.write(oprot);
+              _iter76.write(oprot);
             }
           }
         }
@@ -35564,14 +36913,14 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list69 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.DataObjectType>(_list69.size);
-            for (int _i70 = 0; _i70 < _list69.size; ++_i70)
+            org.apache.thrift.protocol.TList _list77 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.workspace.experiment.DataObjectType>(_list77.size);
+            for (int _i78 = 0; _i78 < _list77.size; ++_i78)
             {
-              org.apache.airavata.model.workspace.experiment.DataObjectType _elem71;
-              _elem71 = new org.apache.airavata.model.workspace.experiment.DataObjectType();
-              _elem71.read(iprot);
-              struct.success.add(_elem71);
+              org.apache.airavata.model.workspace.experiment.DataObjectType _elem79;
+              _elem79 = new org.apache.airavata.model.workspace.experiment.DataObjectType();
+              _elem79.read(iprot);
+              struct.success.add(_elem79);
             }
           }
           struct.setSuccessIsSet(true);
@@ -36242,16 +37591,16 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map72 = iprot.readMapBegin();
-                  struct.success = new HashMap<String,org.apache.airavata.model.workspace.experiment.JobStatus>(2*_map72.size);
-                  for (int _i73 = 0; _i73 < _map72.size; ++_i73)
+                  org.apache.thrift.protocol.TMap _map80 = iprot.readMapBegin();
+                  struct.success = new HashMap<String,org.apache.airavata.model.workspace.experiment.JobStatus>(2*_map80.size);
+                  for (int _i81 = 0; _i81 < _map80.size; ++_i81)
                   {
-                    String _key74;
-                    org.apache.airavata.model.workspace.experiment.JobStatus _val75;
-                    _key74 = iprot.readString();
-                    _val75 = new org.apache.airavata.model.workspace.experiment.JobStatus();
-                    _val75.read(iprot);
-                    struct.success.put(_key74, _val75);
+                    String _key82;
+                    org.apache.airavata.model.workspace.experiment.JobStatus _val83;
+                    _key82 = iprot.readString();
+                    _val83 = new org.apache.airavata.model.workspace.experiment.JobStatus();
+                    _val83.read(iprot);
+                    struct.success.put(_key82, _val83);
                   }
                   iprot.readMapEnd();
                 }
@@ -36279,10 +37628,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (Map.Entry<String, org.apache.airavata.model.workspace.experiment.JobStatus> _iter76 : struct.success.entrySet())
+            for (Map.Entry<String, org.apache.airavata.model.workspace.experiment.JobStatus> _iter84 : struct.success.entrySet())
             {
-              oprot.writeString(_iter76.getKey());
-              _iter76.getValue().write(oprot);
+              oprot.writeString(_iter84.getKey());
+              _iter84.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -36313,10 +37662,10 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<String, org.apache.airavata.model.workspace.experiment.JobStatus> _iter77 : struct.success.entrySet())
+            for (Map.Entry<String, org.apache.airavata.model.workspace.experiment.JobStatus> _iter85 : struct.success.entrySet())
             {
-              oprot.writeString(_iter77.getKey());
-              _iter77.getValue().write(oprot);
+              oprot.writeString(_iter85.getKey());
+              _iter85.getValue().write(oprot);
             }
           }
         }
@@ -36328,16 +37677,16 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(1);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map78 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new HashMap<String,org.apache.airavata.model.workspace.experiment.JobStatus>(2*_map78.size);
-            for (int _i79 = 0; _i79 < _map78.size; ++_i79)
+            org.apache.thrift.protocol.TMap _map86 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new HashMap<String,org.apache.airavata.model.workspace.experiment.JobStatus>(2*_map86.size);
+            for (int _i87 = 0; _i87 < _map86.size; ++_i87)
             {
-              String _key80;
-              org.apache.airavata.model.workspace.experiment.JobStatus _val81;
-              _key80 = iprot.readString();
-              _val81 = new org.apache.airavata.model.workspace.experiment.JobStatus();
-              _val81.read(iprot);
-              struct.success.put(_key80, _val81);
+              String _key88;
+              org.apache.airavata.model.workspace.experiment.JobStatus _val89;
+              _key88 = iprot.readString();
+              _val89 = new org.apache.airavata.model.workspace.experiment.JobStatus();
+              _val89.read(iprot);
+              struct.success.put(_key88, _val89);
             }
           }
           struct.setSuccessIsSet(true);
@@ -47741,13 +49090,13 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list82 = iprot.readListBegin();
-                  struct.success = new ArrayList<String>(_list82.size);
-                  for (int _i83 = 0; _i83 < _list82.size; ++_i83)
+                  org.apache.thrift.protocol.TList _list90 = iprot.readListBegin();
+                  struct.success = new ArrayList<String>(_list90.size);
+                  for (int _i91 = 0; _i91 < _list90.size; ++_i91)
                   {
-                    String _elem84;
-                    _elem84 = iprot.readString();
-                    struct.success.add(_elem84);
+                    String _elem92;
+                    _elem92 = iprot.readString();
+                    struct.success.add(_elem92);
                   }
                   iprot.readListEnd();
                 }
@@ -47802,9 +49151,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.success.size()));
-            for (String _iter85 : struct.success)
+            for (String _iter93 : struct.success)
             {
-              oprot.writeString(_iter85);
+              oprot.writeString(_iter93);
             }
             oprot.writeListEnd();
           }
@@ -47859,9 +49208,9 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (String _iter86 : struct.success)
+            for (String _iter94 : struct.success)
             {
-              oprot.writeString(_iter86);
+              oprot.writeString(_iter94);
             }
           }
         }
@@ -47882,13 +49231,13 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list87 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.success = new ArrayList<String>(_list87.size);
-            for (int _i88 = 0; _i88 < _list87.size; ++_i88)
+            org.apache.thrift.protocol.TList _list95 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.success = new ArrayList<String>(_list95.size);
+            for (int _i96 = 0; _i96 < _list95.size; ++_i96)
             {
-              String _elem89;
-              _elem89 = iprot.readString();
-              struct.success.add(_elem89);
+              String _elem97;
+              _elem97 = iprot.readString();
+              struct.success.add(_elem97);
             }
           }
           struct.setSuccessIsSet(true);
@@ -52832,15 +54181,15 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map90 = iprot.readMapBegin();
-                  struct.success = new HashMap<String,String>(2*_map90.size);
-                  for (int _i91 = 0; _i91 < _map90.size; ++_i91)
+                  org.apache.thrift.protocol.TMap _map98 = iprot.readMapBegin();
+                  struct.success = new HashMap<String,String>(2*_map98.size);
+                  for (int _i99 = 0; _i99 < _map98.size; ++_i99)
                   {
-                    String _key92;
-                    String _val93;
-                    _key92 = iprot.readString();
-                    _val93 = iprot.readString();
-                    struct.success.put(_key92, _val93);
+                    String _key100;
+                    String _val101;
+                    _key100 = iprot.readString();
+                    _val101 = iprot.readString();
+                    struct.success.put(_key100, _val101);
                   }
                   iprot.readMapEnd();
                 }
@@ -52895,10 +54244,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.success.size()));
-            for (Map.Entry<String, String> _iter94 : struct.success.entrySet())
+            for (Map.Entry<String, String> _iter102 : struct.success.entrySet())
             {
-              oprot.writeString(_iter94.getKey());
-              oprot.writeString(_iter94.getValue());
+              oprot.writeString(_iter102.getKey());
+              oprot.writeString(_iter102.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -52953,10 +54302,10 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<String, String> _iter95 : struct.success.entrySet())
+            for (Map.Entry<String, String> _iter103 : struct.success.entrySet())
             {
-              oprot.writeString(_iter95.getKey());
-              oprot.writeString(_iter95.getValue());
+              oprot.writeString(_iter103.getKey());
+              oprot.writeString(_iter103.getValue());
             }
           }
         }
@@ -52977,15 +54326,15 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map96 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.success = new HashMap<String,String>(2*_map96.size);
-            for (int _i97 = 0; _i97 < _map96.size; ++_i97)
+            org.apache.thrift.protocol.TMap _map104 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.success = new HashMap<String,String>(2*_map104.size);
+            for (int _i105 = 0; _i105 < _map104.size; ++_i105)
             {
-              String _key98;
-              String _val99;
-              _key98 = iprot.readString();
-              _val99 = iprot.readString();
-              struct.success.put(_key98, _val99);
+              String _key106;
+              String _val107;
+              _key106 = iprot.readString();
+              _val107 = iprot.readString();
+              struct.success.put(_key106, _val107);
             }
           }
           struct.setSuccessIsSet(true);
@@ -53796,14 +55145,14 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list100 = iprot.readListBegin();
-                  struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription>(_list100.size);
-                  for (int _i101 = 0; _i101 < _list100.size; ++_i101)
+                  org.apache.thrift.protocol.TList _list108 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription>(_list108.size);
+                  for (int _i109 = 0; _i109 < _list108.size; ++_i109)
                   {
-                    org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription _elem102;
-                    _elem102 = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription();
-                    _elem102.read(iprot);
-                    struct.success.add(_elem102);
+                    org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription _elem110;
+                    _elem110 = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription();
+                    _elem110.read(iprot);
+                    struct.success.add(_elem110);
                   }
                   iprot.readListEnd();
                 }
@@ -53858,9 +55207,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription _iter103 : struct.success)
+            for (org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription _iter111 : struct.success)
             {
-              _iter103.write(oprot);
+              _iter111.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -53915,9 +55264,9 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription _iter104 : struct.success)
+            for (org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription _iter112 : struct.success)
             {
-              _iter104.write(oprot);
+              _iter112.write(oprot);
             }
           }
         }
@@ -53938,14 +55287,14 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list105 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription>(_list105.size);
-            for (int _i106 = 0; _i106 < _list105.size; ++_i106)
+            org.apache.thrift.protocol.TList _list113 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription>(_list113.size);
+            for (int _i114 = 0; _i114 < _list113.size; ++_i114)
             {
-              org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription _elem107;
-              _elem107 = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription();
-              _elem107.read(iprot);
-              struct.success.add(_elem107);
+              org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription _elem115;
+              _elem115 = new org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription();
+              _elem115.read(iprot);
+              struct.success.add(_elem115);
             }
           }
           struct.setSuccessIsSet(true);
@@ -54857,14 +56206,14 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list108 = iprot.readListBegin();
-                  struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list108.size);
-                  for (int _i109 = 0; _i109 < _list108.size; ++_i109)
+                  org.apache.thrift.protocol.TList _list116 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list116.size);
+                  for (int _i117 = 0; _i117 < _list116.size; ++_i117)
                   {
-                    org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem110;
-                    _elem110 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
-                    _elem110.read(iprot);
-                    struct.success.add(_elem110);
+                    org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem118;
+                    _elem118 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
+                    _elem118.read(iprot);
+                    struct.success.add(_elem118);
                   }
                   iprot.readListEnd();
                 }
@@ -54919,9 +56268,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter111 : struct.success)
+            for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter119 : struct.success)
             {
-              _iter111.write(oprot);
+              _iter119.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -54976,9 +56325,9 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter112 : struct.success)
+            for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter120 : struct.success)
             {
-              _iter112.write(oprot);
+              _iter120.write(oprot);
             }
           }
         }
@@ -54999,14 +56348,14 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list113 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list113.size);
-            for (int _i114 = 0; _i114 < _list113.size; ++_i114)
+            org.apache.thrift.protocol.TList _list121 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list121.size);
+            for (int _i122 = 0; _i122 < _list121.size; ++_i122)
             {
-              org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem115;
-              _elem115 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
-              _elem115.read(iprot);
-              struct.success.add(_elem115);
+              org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem123;
+              _elem123 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
+              _elem123.read(iprot);
+              struct.success.add(_elem123);
             }
           }
           struct.setSuccessIsSet(true);
@@ -55918,14 +57267,14 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list116 = iprot.readListBegin();
-                  struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list116.size);
-                  for (int _i117 = 0; _i117 < _list116.size; ++_i117)
+                  org.apache.thrift.protocol.TList _list124 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list124.size);
+                  for (int _i125 = 0; _i125 < _list124.size; ++_i125)
                   {
-                    org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem118;
-                    _elem118 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
-                    _elem118.read(iprot);
-                    struct.success.add(_elem118);
+                    org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem126;
+                    _elem126 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
+                    _elem126.read(iprot);
+                    struct.success.add(_elem126);
                   }
                   iprot.readListEnd();
                 }
@@ -55980,9 +57329,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter119 : struct.success)
+            for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter127 : struct.success)
             {
-              _iter119.write(oprot);
+              _iter127.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -56037,9 +57386,9 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter120 : struct.success)
+            for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter128 : struct.success)
             {
-              _iter120.write(oprot);
+              _iter128.write(oprot);
             }
           }
         }
@@ -56060,14 +57409,14 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list121 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list121.size);
-            for (int _i122 = 0; _i122 < _list121.size; ++_i122)
+            org.apache.thrift.protocol.TList _list129 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list129.size);
+            for (int _i130 = 0; _i130 < _list129.size; ++_i130)
             {
-              org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem123;
-              _elem123 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
-              _elem123.read(iprot);
-              struct.success.add(_elem123);
+              org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem131;
+              _elem131 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
+              _elem131.read(iprot);
+              struct.success.add(_elem131);
             }
           }
           struct.setSuccessIsSet(true);
@@ -56973,15 +58322,15 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map124 = iprot.readMapBegin();
-                  struct.success = new HashMap<String,String>(2*_map124.size);
-                  for (int _i125 = 0; _i125 < _map124.size; ++_i125)
+                  org.apache.thrift.protocol.TMap _map132 = iprot.readMapBegin();
+                  struct.success = new HashMap<String,String>(2*_map132.size);
+                  for (int _i133 = 0; _i133 < _map132.size; ++_i133)
                   {
-                    String _key126;
-                    String _val127;
-                    _key126 = iprot.readString();
-                    _val127 = iprot.readString();
-                    struct.success.put(_key126, _val127);
+                    String _key134;
+                    String _val135;
+                    _key134 = iprot.readString();
+                    _val135 = iprot.readString();
+                    struct.success.put(_key134, _val135);
                   }
                   iprot.readMapEnd();
                 }
@@ -57036,10 +58385,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.success.size()));
-            for (Map.Entry<String, String> _iter128 : struct.success.entrySet())
+            for (Map.Entry<String, String> _iter136 : struct.success.entrySet())
             {
-              oprot.writeString(_iter128.getKey());
-              oprot.writeString(_iter128.getValue());
+              oprot.writeString(_iter136.getKey());
+              oprot.writeString(_iter136.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -57094,10 +58443,10 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<String, String> _iter129 : struct.success.entrySet())
+            for (Map.Entry<String, String> _iter137 : struct.success.entrySet())
             {
-              oprot.writeString(_iter129.getKey());
-              oprot.writeString(_iter129.getValue());
+              oprot.writeString(_iter137.getKey());
+              oprot.writeString(_iter137.getValue());
             }
           }
         }
@@ -57118,15 +58467,15 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map130 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.success = new HashMap<String,String>(2*_map130.size);
-            for (int _i131 = 0; _i131 < _map130.size; ++_i131)
+            org.apache.thrift.protocol.TMap _map138 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.success = new HashMap<String,String>(2*_map138.size);
+            for (int _i139 = 0; _i139 < _map138.size; ++_i139)
             {
-              String _key132;
-              String _val133;
-              _key132 = iprot.readString();
-              _val133 = iprot.readString();
-              struct.success.put(_key132, _val133);
+              String _key140;
+              String _val141;
+              _key140 = iprot.readString();
+              _val141 = iprot.readString();
+              struct.success.put(_key140, _val141);
             }
           }
           struct.setSuccessIsSet(true);
@@ -59955,15 +61304,15 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map134 = iprot.readMapBegin();
-                  struct.success = new HashMap<String,String>(2*_map134.size);
-                  for (int _i135 = 0; _i135 < _map134.size; ++_i135)
+                  org.apache.thrift.protocol.TMap _map142 = iprot.readMapBegin();
+                  struct.success = new HashMap<String,String>(2*_map142.size);
+                  for (int _i143 = 0; _i143 < _map142.size; ++_i143)
                   {
-                    String _key136;
-                    String _val137;
-                    _key136 = iprot.readString();
-                    _val137 = iprot.readString();
-                    struct.success.put(_key136, _val137);
+                    String _key144;
+                    String _val145;
+                    _key144 = iprot.readString();
+                    _val145 = iprot.readString();
+                    struct.success.put(_key144, _val145);
                   }
                   iprot.readMapEnd();
                 }
@@ -60018,10 +61367,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, struct.success.size()));
-            for (Map.Entry<String, String> _iter138 : struct.success.entrySet())
+            for (Map.Entry<String, String> _iter146 : struct.success.entrySet())
             {
-              oprot.writeString(_iter138.getKey());
-              oprot.writeString(_iter138.getValue());
+              oprot.writeString(_iter146.getKey());
+              oprot.writeString(_iter146.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -60076,10 +61425,10 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (Map.Entry<String, String> _iter139 : struct.success.entrySet())
+            for (Map.Entry<String, String> _iter147 : struct.success.entrySet())
             {
-              oprot.writeString(_iter139.getKey());
-              oprot.writeString(_iter139.getValue());
+              oprot.writeString(_iter147.getKey());
+              oprot.writeString(_iter147.getValue());
             }
           }
         }
@@ -60100,15 +61449,15 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TMap _map140 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.success = new HashMap<String,String>(2*_map140.size);
-            for (int _i141 = 0; _i141 < _map140.size; ++_i141)
+            org.apache.thrift.protocol.TMap _map148 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.success = new HashMap<String,String>(2*_map148.size);
+            for (int _i149 = 0; _i149 < _map148.size; ++_i149)
             {
-              String _key142;
-              String _val143;
-              _key142 = iprot.readString();
-              _val143 = iprot.readString();
-              struct.success.put(_key142, _val143);
+              String _key150;
+              String _val151;
+              _key150 = iprot.readString();
+              _val151 = iprot.readString();
+              struct.success.put(_key150, _val151);
             }
           }
           struct.setSuccessIsSet(true);
@@ -78624,15 +79973,15 @@ import org.slf4j.LoggerFactory;
             case 1: // JOB_SUBMISSION_PRIORITY_MAP
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map144 = iprot.readMapBegin();
-                  struct.jobSubmissionPriorityMap = new HashMap<String,Integer>(2*_map144.size);
-                  for (int _i145 = 0; _i145 < _map144.size; ++_i145)
+                  org.apache.thrift.protocol.TMap _map152 = iprot.readMapBegin();
+                  struct.jobSubmissionPriorityMap = new HashMap<String,Integer>(2*_map152.size);
+                  for (int _i153 = 0; _i153 < _map152.size; ++_i153)
                   {
-                    String _key146;
-                    int _val147;
-                    _key146 = iprot.readString();
-                    _val147 = iprot.readI32();
-                    struct.jobSubmissionPriorityMap.put(_key146, _val147);
+                    String _key154;
+                    int _val155;
+                    _key154 = iprot.readString();
+                    _val155 = iprot.readI32();
+                    struct.jobSubmissionPriorityMap.put(_key154, _val155);
                   }
                   iprot.readMapEnd();
                 }
@@ -78660,10 +80009,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(JOB_SUBMISSION_PRIORITY_MAP_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, struct.jobSubmissionPriorityMap.size()));
-            for (Map.Entry<String, Integer> _iter148 : struct.jobSubmissionPriorityMap.entrySet())
+            for (Map.Entry<String, Integer> _iter156 : struct.jobSubmissionPriorityMap.entrySet())
             {
-              oprot.writeString(_iter148.getKey());
-              oprot.writeI32(_iter148.getValue());
+              oprot.writeString(_iter156.getKey());
+              oprot.writeI32(_iter156.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -78688,10 +80037,10 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol oprot = (TTupleProtocol) prot;
         {
           oprot.writeI32(struct.jobSubmissionPriorityMap.size());
-          for (Map.Entry<String, Integer> _iter149 : struct.jobSubmissionPriorityMap.entrySet())
+          for (Map.Entry<String, Integer> _iter157 : struct.jobSubmissionPriorityMap.entrySet())
           {
-            oprot.writeString(_iter149.getKey());
-            oprot.writeI32(_iter149.getValue());
+            oprot.writeString(_iter157.getKey());
+            oprot.writeI32(_iter157.getValue());
           }
         }
       }
@@ -78700,15 +80049,15 @@ import org.slf4j.LoggerFactory;
       public void read(org.apache.thrift.protocol.TProtocol prot, changeJobSubmissionPriorities_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         {
-          org.apache.thrift.protocol.TMap _map150 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, iprot.readI32());
-          struct.jobSubmissionPriorityMap = new HashMap<String,Integer>(2*_map150.size);
-          for (int _i151 = 0; _i151 < _map150.size; ++_i151)
+          org.apache.thrift.protocol.TMap _map158 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, iprot.readI32());
+          struct.jobSubmissionPriorityMap = new HashMap<String,Integer>(2*_map158.size);
+          for (int _i159 = 0; _i159 < _map158.size; ++_i159)
           {
-            String _key152;
-            int _val153;
-            _key152 = iprot.readString();
-            _val153 = iprot.readI32();
-            struct.jobSubmissionPriorityMap.put(_key152, _val153);
+            String _key160;
+            int _val161;
+            _key160 = iprot.readString();
+            _val161 = iprot.readI32();
+            struct.jobSubmissionPriorityMap.put(_key160, _val161);
           }
         }
         struct.setJobSubmissionPriorityMapIsSet(true);
@@ -79683,15 +81032,15 @@ import org.slf4j.LoggerFactory;
             case 1: // DATA_MOVEMENT_PRIORITY_MAP
               if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
                 {
-                  org.apache.thrift.protocol.TMap _map154 = iprot.readMapBegin();
-                  struct.dataMovementPriorityMap = new HashMap<String,Integer>(2*_map154.size);
-                  for (int _i155 = 0; _i155 < _map154.size; ++_i155)
+                  org.apache.thrift.protocol.TMap _map162 = iprot.readMapBegin();
+                  struct.dataMovementPriorityMap = new HashMap<String,Integer>(2*_map162.size);
+                  for (int _i163 = 0; _i163 < _map162.size; ++_i163)
                   {
-                    String _key156;
-                    int _val157;
-                    _key156 = iprot.readString();
-                    _val157 = iprot.readI32();
-                    struct.dataMovementPriorityMap.put(_key156, _val157);
+                    String _key164;
+                    int _val165;
+                    _key164 = iprot.readString();
+                    _val165 = iprot.readI32();
+                    struct.dataMovementPriorityMap.put(_key164, _val165);
                   }
                   iprot.readMapEnd();
                 }
@@ -79719,10 +81068,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(DATA_MOVEMENT_PRIORITY_MAP_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, struct.dataMovementPriorityMap.size()));
-            for (Map.Entry<String, Integer> _iter158 : struct.dataMovementPriorityMap.entrySet())
+            for (Map.Entry<String, Integer> _iter166 : struct.dataMovementPriorityMap.entrySet())
             {
-              oprot.writeString(_iter158.getKey());
-              oprot.writeI32(_iter158.getValue());
+              oprot.writeString(_iter166.getKey());
+              oprot.writeI32(_iter166.getValue());
             }
             oprot.writeMapEnd();
           }
@@ -79747,10 +81096,10 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol oprot = (TTupleProtocol) prot;
         {
           oprot.writeI32(struct.dataMovementPriorityMap.size());
-          for (Map.Entry<String, Integer> _iter159 : struct.dataMovementPriorityMap.entrySet())
+          for (Map.Entry<String, Integer> _iter167 : struct.dataMovementPriorityMap.entrySet())
           {
-            oprot.writeString(_iter159.getKey());
-            oprot.writeI32(_iter159.getValue());
+            oprot.writeString(_iter167.getKey());
+            oprot.writeI32(_iter167.getValue());
           }
         }
       }
@@ -79759,15 +81108,15 @@ import org.slf4j.LoggerFactory;
       public void read(org.apache.thrift.protocol.TProtocol prot, changeDataMovementPriorities_args struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         {
-          org.apache.thrift.protocol.TMap _map160 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, iprot.readI32());
-          struct.dataMovementPriorityMap = new HashMap<String,Integer>(2*_map160.size);
-          for (int _i161 = 0; _i161 < _map160.size; ++_i161)
+          org.apache.thrift.protocol.TMap _map168 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.STRING, org.apache.thrift.protocol.TType.I32, iprot.readI32());
+          struct.dataMovementPriorityMap = new HashMap<String,Integer>(2*_map168.size);
+          for (int _i169 = 0; _i169 < _map168.size; ++_i169)
           {
-            String _key162;
-            int _val163;
-            _key162 = iprot.readString();
-            _val163 = iprot.readI32();
-            struct.dataMovementPriorityMap.put(_key162, _val163);
+            String _key170;
+            int _val171;
+            _key170 = iprot.readString();
+            _val171 = iprot.readI32();
+            struct.dataMovementPriorityMap.put(_key170, _val171);
           }
         }
         struct.setDataMovementPriorityMapIsSet(true);
@@ -89788,14 +91137,14 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list164 = iprot.readListBegin();
-                  struct.success = new ArrayList<org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference>(_list164.size);
-                  for (int _i165 = 0; _i165 < _list164.size; ++_i165)
+                  org.apache.thrift.protocol.TList _list172 = iprot.readListBegin();
+                  struct.success = new ArrayList<org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference>(_list172.size);
+                  for (int _i173 = 0; _i173 < _list172.size; ++_i173)
                   {
-                    org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference _elem166;
-                    _elem166 = new org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference();
-                    _elem166.read(iprot);
-                    struct.success.add(_elem166);
+                    org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference _elem174;
+                    _elem174 = new org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference();
+                    _elem174.read(iprot);
+                    struct.success.add(_elem174);
                   }
                   iprot.readListEnd();
                 }
@@ -89850,9 +91199,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.success.size()));
-            for (org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference _iter167 : struct.success)
+            for (org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference _iter175 : struct.success)
             {
-              _iter167.write(oprot);
+              _iter175.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -89907,9 +91256,9 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference _iter168 : struct.success)
+            for (org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference _iter176 : struct.success)
             {
-              _iter168.write(oprot);
+              _iter176.write(oprot);
             }
           }
         }
@@ -89930,14 +91279,14 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list169 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-            struct.success = new ArrayList<org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference>(_list169.size);
-            for (int _i170 = 0; _i170 < _list169.size; ++_i170)
+            org.apache.thrift.protocol.TList _list177 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+            struct.success = new ArrayList<org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference>(_list177.size);
+            for (int _i178 = 0; _i178 < _list177.size; ++_i178)
             {
-              org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference _elem171;
-              _elem171 = new org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference();
-              _elem171.read(iprot);
-              struct.success.add(_elem171);
+              org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference _elem179;
+              _elem179 = new org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference();
+              _elem179.read(iprot);
+              struct.success.add(_elem179);
             }
           }
           struct.setSuccessIsSet(true);
