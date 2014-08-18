@@ -88,7 +88,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
 			break;
     	}
     	try {
-			updateTaskStatus(jobStatus.getIdentity().getTaskId(), state);
+			state = updateTaskStatus(jobStatus.getIdentity().getTaskId(), state);
 			logger.debug("Publishing task status for "+jobStatus.getIdentity().getTaskId()+":"+state.toString());
 			monitorPublisher.publish(new TaskStatusChangedEvent(jobStatus.getIdentity(),state));
 		} catch (Exception e) {
@@ -96,18 +96,23 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
 		}
     }
     
-    public  void updateTaskStatus(String taskId, TaskState state) throws Exception {
-		logger.debug("Updating task status for "+taskId+":"+state.toString());
+    public  TaskState updateTaskStatus(String taskId, TaskState state) throws Exception {
     	TaskDetails details = (TaskDetails)airavataRegistry.get(RegistryModelType.TASK_DETAIL, taskId);
         if(details == null) {
             details = new TaskDetails();
             details.setTaskID(taskId);
         }
         org.apache.airavata.model.workspace.experiment.TaskStatus status = new org.apache.airavata.model.workspace.experiment.TaskStatus();
-        status.setExecutionState(state);
+        if(!TaskState.CANCELED.equals(details.getTaskStatus().getExecutionState())
+                && !TaskState.CANCELING.equals(details.getTaskStatus().getExecutionState())){
+            status.setExecutionState(state);
+        }
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setTaskStatus(status);
+        logger.debug("Updating task status for "+taskId+":"+details.getTaskStatus().toString());
+
         airavataRegistry.update(RegistryModelType.TASK_DETAIL, details, taskId);
+        return details.getTaskStatus().getExecutionState();
     }
 
 	public void setup(Object... configurations) {

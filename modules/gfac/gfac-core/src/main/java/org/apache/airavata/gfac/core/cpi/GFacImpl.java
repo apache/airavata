@@ -290,7 +290,7 @@ public class GFacImpl implements GFac {
         return jobExecutionContext;
     }
 
-    public boolean submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
+    private boolean submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
         String workflowInstanceID = null;
@@ -306,7 +306,18 @@ public class GFacImpl implements GFac {
     }
 
 
-    public boolean cancel(JobExecutionContext jobExecutionContext) throws GFacException {
+    public boolean cancel(String experimentID, String taskID, String gatewayID) throws GFacException {
+        JobExecutionContext jobExecutionContext = null;
+        try {
+            jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
+            return cancel(jobExecutionContext);
+        } catch (Exception e) {
+            log.error("Error inovoking the job with experiment ID: " + experimentID);
+            throw new GFacException(e);
+        }
+    }
+
+    private boolean cancel(JobExecutionContext jobExecutionContext) throws GFacException {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
         String workflowInstanceID = null;

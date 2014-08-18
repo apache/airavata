@@ -29,14 +29,13 @@ import java.util.*;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataZKUtils;
-import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.common.utils.*;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.gfac.*;
+import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
@@ -879,6 +878,15 @@ public class GFacUtils {
 		return Integer.parseInt(expState);
 	}
 
+    public static int getZKExperimentStateValue(ZooKeeper zk,String fullPath)throws ApplicationSettingsException,
+            KeeperException, InterruptedException {
+        Stat exists = zk.exists(fullPath+File.separator+"state", false);
+        if (exists != null) {
+            return Integer.parseInt(new String(zk.getData(fullPath+File.separator+"state", false, exists)));
+        }
+        return -1;
+    }
+
 	public static boolean createPluginZnode(ZooKeeper zk,
 			JobExecutionContext jobExecutionContext, String className)
 			throws ApplicationSettingsException, KeeperException,
@@ -1037,6 +1045,8 @@ public class GFacUtils {
 						.valueOf(GfacExperimentState.LAUNCHED.getValue())
 						.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 						CreateMode.PERSISTENT);
+                zk.create(newExpNode + File.separator + "operation","submit".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
 
 			} else {
 				// ohhh this node exists in some other failed gfac folder, we
@@ -1099,7 +1109,59 @@ public class GFacUtils {
 		return true;
 	}
 
-	public static void savePluginData(JobExecutionContext jobExecutionContext,
+    public static String findExperimentEntry(String experimentID,
+                                                String taskID, ZooKeeper zk
+                                                ) throws KeeperException,
+            InterruptedException {
+        String gfacServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
+        String experimentNode = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+        List<String> children = zk.getChildren(gfacServer, false);
+        for(String pickedChild:children) {
+            String experimentPath = experimentNode + File.separator + pickedChild;
+            String newExpNode = experimentPath + File.separator + experimentID
+                    + "+" + taskID;
+            Stat exists = zk.exists(newExpNode, false);
+            if(exists == null){
+                continue;
+            }else{
+                return newExpNode;
+            }
+        }
+        return null;
+    }
+
+    public static void setExperimentCancel(String experimentId,String taskId,ZooKeeper zk)throws KeeperException,
+            InterruptedException {
+        String experimentEntry = GFacUtils.findExperimentEntry(experimentId, taskId, zk);
+        Stat operation = zk.exists(experimentEntry + File.separator + "operation", false);
+        if (operation == null) { // if there is no entry, this will come when a user immediately cancel a job
+            zk.create(experimentEntry + File.separator + "operation", "cancel".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                    CreateMode.PERSISTENT);
+        } else { // if user submit the job to gfac then cancel during execution
+            zk.setData(experimentEntry + File.separator + "operation", "cancel".getBytes(), operation.getVersion());
+        }
+
+    }
+    public static boolean isCancelled(String experimentID,
+                                             String taskID, ZooKeeper zk
+    ) throws KeeperException,
+            InterruptedException {
+        String experimentEntry = GFacUtils.findExperimentEntry(experimentID, taskID, zk);
+        if(experimentEntry == null){
+            return false;
+        }else {
+            Stat exists = zk.exists(experimentEntry, false);
+            if (exists != null) {
+                String operation = new String(zk.getData(experimentEntry, false, exists));
+                if ("cancel".equals(operation)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void savePluginData(JobExecutionContext jobExecutionContext,
 			StringBuffer data, String className) throws GFacHandlerException {
 		try {
 			ZooKeeper zk = jobExecutionContext.getZk();

@@ -81,12 +81,7 @@ import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.TaskState;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryModelType;
@@ -103,9 +98,8 @@ import org.apache.airavata.schemas.gfac.ProjectAccountType;
 import org.apache.airavata.schemas.gfac.QueueType;
 import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZKUtil;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -114,7 +108,7 @@ import org.xml.sax.SAXException;
  * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
  * the resource, required data for the job has to be stored in registry prior to invoke this object.
  */
-public class BetterGfacImpl implements GFac {
+public class BetterGfacImpl implements GFac,Watcher {
     private static final Logger log = LoggerFactory.getLogger(GFacImpl.class);
     public static final String ERROR_SENT = "ErrorSent";
 
@@ -126,6 +120,8 @@ public class BetterGfacImpl implements GFac {
 
     private ZooKeeper zk;                       // we are not storing zk instance in to jobExecution context
 
+    private static Integer mutex = new Integer(-1);
+
     private static List<ThreadedHandler> daemonHandlers = new ArrayList<ThreadedHandler>();
 
     private static File gfacConfigFile;
@@ -133,6 +129,8 @@ public class BetterGfacImpl implements GFac {
     private static List<AbstractActivityListener> activityListeners = new ArrayList<AbstractActivityListener>();
 
     private static MonitorPublisher monitorPublisher;
+
+    private boolean cancelled = false;
 
     /**
      * Constructor for GFac
@@ -256,6 +254,7 @@ public class BetterGfacImpl implements GFac {
 
         //Fetch the Task details for the requested experimentID from the registry. Extract required pointers from the Task object.
         TaskDetails taskData = (TaskDetails) registry.get(RegistryModelType.TASK_DETAIL, taskID);
+
         String applicationInterfaceId = taskData.getApplicationId();
         String applicationDeploymentId = taskData.getApplicationDeploymentId();
         if (null == applicationInterfaceId) {
@@ -463,6 +462,11 @@ public class BetterGfacImpl implements GFac {
         jobExecutionContext.setTaskData(taskData);
         jobExecutionContext.setGatewayID(gatewayID);
 
+
+        List<JobDetails> jobDetailsList = taskData.getJobDetailsList();
+        for(JobDetails jDetails:jobDetailsList){
+            jobExecutionContext.setJobDetails(jDetails);
+        }
         // setting the registry
         jobExecutionContext.setRegistry(registry);
 
@@ -488,10 +492,13 @@ public class BetterGfacImpl implements GFac {
         return jobExecutionContext;
     }
 
-    public boolean submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
+    private boolean submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
         try {
+            String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
+            Stat exists = zk.exists(experimentEntry + File.separator + "operation", false);
+            zk.getData(experimentEntry + File.separator + "operation", this,exists);
             int stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
@@ -526,11 +533,24 @@ public class BetterGfacImpl implements GFac {
         return true;
     }
 
-    public boolean cancel(JobExecutionContext jobExecutionContext) throws GFacException {
-        // We need to check whether this job is submitted as a part of a large workflow. If yes,
-        // we need to setup workflow tracking listerner.
+    public boolean cancel(String experimentID, String taskID, String gatewayID) throws GFacException {
+        JobExecutionContext jobExecutionContext = null;
         try {
-            int stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
+            jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
+            return cancel(jobExecutionContext);
+        } catch (Exception e) {
+            log.error("Error inovoking the job with experiment ID: " + experimentID);
+            throw new GFacException(e);
+        }
+    }
+
+    private boolean cancel(JobExecutionContext jobExecutionContext) throws GFacException {
+        // We need to check whether this job is submitted as a part of a large workflow. If yes,
+        // we need to setup workflow tracking listener.
+        try {
+            // we cannot call GFacUtils.getZKExperimentStateValue because experiment might be running in some other node
+            String expPath = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
+            int stateVal = GFacUtils.getZKExperimentStateValue(zk, expPath);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
             String workflowInstanceID = null;
@@ -546,12 +566,14 @@ public class BetterGfacImpl implements GFac {
                 log.info("Job is not yet submitted, so nothing much to do except changing the registry entry " +
                         " and stop the execution chain");
                 //todo update registry and find a way to stop the execution chain
+                GFacUtils.setExperimentCancel(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
             } else if (stateVal >= 8) {
-                log.info("There is nothing to recover in this job so we do not re-submit");
+                log.error("This experiment is almost finished, so cannot cancel this experiment");
                 ZKUtil.deleteRecursive(zk,
                         AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID()));
             } else {
                 // Now we know this is an old Job, so we have to handle things gracefully
+                GFacUtils.setExperimentCancel(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
                 log.info("Job is in a position to perform a proper cancellation");
                 try {
                     Scheduler.schedule(jobExecutionContext);
@@ -686,19 +708,29 @@ public class BetterGfacImpl implements GFac {
 			// here we do not skip handler if some handler does not have to be
 			// run again during re-run it can implement
 			// that logic in to the handler
-			invokeInFlowHandlers(jobExecutionContext); // to keep the
-														// consistency we always
-														// try to re-run to
-														// avoid complexity
-			// if (experimentID != null){
+            if (!isCancelled()) {
+                invokeInFlowHandlers(jobExecutionContext); // to keep the
+                // consistency we always
+                // try to re-run to
+                // avoid complexity
+            }else{
+                log.info("Experiment is cancelled, so launch operation is stopping immediately");
+                return; // if the job is cancelled, status change is handled in cancel operation this thread simply has to be returned
+            }
+            // if (experimentID != null){
 			// registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
 			// }
 
 			// After executing the in handlers provider instance should be set
 			// to job execution context.
 			// We get the provider instance and execute it.
-			invokeProviderExecute(jobExecutionContext);
-		} catch (Exception e) {
+            if (!isCancelled()) {
+                invokeProviderExecute(jobExecutionContext);
+            } else {
+                log.info("Experiment is cancelled, so launch operation is stopping immediately");
+                return;
+            }
+            } catch (Exception e) {
 			try {
 				// we make the experiment as failed due to exception scenario
 				monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
@@ -869,26 +901,31 @@ public class BetterGfacImpl implements GFac {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.INHANDLERSINVOKING));
             for (GFacHandlerConfig handlerClassName : handlers) {
-                Class<? extends GFacHandler> handlerClass;
-                GFacHandler handler;
-                try {
-                    GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName());
-                    handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
-                    handler = handlerClass.newInstance();
-                    handler.initProperties(handlerClassName.getProperties());
-                } catch (ClassNotFoundException e) {
-                    throw new GFacException("Cannot load handler class " + handlerClassName, e);
-                } catch (InstantiationException e) {
-                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-                } catch (IllegalAccessException e) {
-                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-                }
-                try {
-                    handler.invoke(jobExecutionContext);
-                    GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
-                    // if exception thrown before that we do not make it finished
-                } catch (GFacHandlerException e) {
-                    throw new GFacException("Error Executing a InFlow Handler", e.getCause());
+                if(!isCancelled()) {
+                    Class<? extends GFacHandler> handlerClass;
+                    GFacHandler handler;
+                    try {
+                        GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName());
+                        handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
+                        handler = handlerClass.newInstance();
+                        handler.initProperties(handlerClassName.getProperties());
+                    } catch (ClassNotFoundException e) {
+                        throw new GFacException("Cannot load handler class " + handlerClassName, e);
+                    } catch (InstantiationException e) {
+                        throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                    } catch (IllegalAccessException e) {
+                        throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                    }
+                    try {
+                        handler.invoke(jobExecutionContext);
+                        GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
+                        // if exception thrown before that we do not make it finished
+                    } catch (GFacHandlerException e) {
+                        throw new GFacException("Error Executing a InFlow Handler", e.getCause());
+                    }
+                }else{
+                    log.info("Experiment execution is cancelled, so InHandler invocation is going to stop");
+                    break;
                 }
             }
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
@@ -911,35 +948,39 @@ public class BetterGfacImpl implements GFac {
                 log.error("Error constructing job execution context during outhandler invocation");
                 throw new GFacException(e);
             }
-            launch(jobExecutionContext);
         }
         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKING));
         for (GFacHandlerConfig handlerClassName : handlers) {
-            Class<? extends GFacHandler> handlerClass;
-            GFacHandler handler;
-            try {
-                GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName());
-                handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
-                handler = handlerClass.newInstance();
-                handler.initProperties(handlerClassName.getProperties());
-            } catch (ClassNotFoundException e) {
-                log.error(e.getMessage());
-                throw new GFacException("Cannot load handler class " + handlerClassName, e);
-            } catch (InstantiationException e) {
-                log.error(e.getMessage());
-                throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-            } catch (IllegalAccessException e) {
-                log.error(e.getMessage());
-                throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-            } catch (Exception e) {
-                throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-            }
-            try {
-                handler.invoke(jobExecutionContext);
-                GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
-            } catch (Exception e) {
-                // TODO: Better error reporting.
-                throw new GFacException("Error Executing a OutFlow Handler", e);
+            if(!isCancelled()) {
+                Class<? extends GFacHandler> handlerClass;
+                GFacHandler handler;
+                try {
+                    GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName());
+                    handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
+                    handler = handlerClass.newInstance();
+                    handler.initProperties(handlerClassName.getProperties());
+                } catch (ClassNotFoundException e) {
+                    log.error(e.getMessage());
+                    throw new GFacException("Cannot load handler class " + handlerClassName, e);
+                } catch (InstantiationException e) {
+                    log.error(e.getMessage());
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                } catch (IllegalAccessException e) {
+                    log.error(e.getMessage());
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                } catch (Exception e) {
+                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                }
+                try {
+                    handler.invoke(jobExecutionContext);
+                    GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
+                } catch (Exception e) {
+                    // TODO: Better error reporting.
+                    throw new GFacException("Error Executing a OutFlow Handler", e);
+                }
+            }else{
+                log.info("Experiment execution is cancelled, so OutHandler invocation is going to stop");
+                break;
             }
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKED));
         }
@@ -1127,5 +1168,23 @@ public class BetterGfacImpl implements GFac {
 
     public void setZk(ZooKeeper zk) {
         this.zk = zk;
+    }
+
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    public void setCancelled(boolean cancelled) {
+        this.cancelled = cancelled;
+    }
+
+    public void process(WatchedEvent watchedEvent) {
+        if(Event.EventType.NodeDataChanged.equals(watchedEvent.getType())){
+            // node data is changed, this means node is cancelled.
+            System.out.println(watchedEvent.getPath());
+            System.out.println("Experiment is cancelled with this path");
+            this.cancelled = true;
+        }
     }
 }

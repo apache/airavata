@@ -87,6 +87,14 @@ public class AiravataZKUtils {
         return null;
     }
 
+    public static int getExpStateValueWithGivenPath(ZooKeeper zk,String fullPath)throws ApplicationSettingsException,
+            KeeperException, InterruptedException {
+        Stat exists = zk.exists(fullPath, false);
+        if (exists != null) {
+            return Integer.parseInt(new String(zk.getData(fullPath, false, exists)));
+        }
+        return -1;
+    }
     public static List<String> getRunningGfacNodeNames(ZooKeeper zk) throws KeeperException, InterruptedException {
         String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_API_SERVER_NODE, "/gfac-server");
         return zk.getChildren(gfacServer, null);

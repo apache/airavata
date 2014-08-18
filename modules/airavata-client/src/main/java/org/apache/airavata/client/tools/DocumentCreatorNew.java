@@ -320,7 +320,7 @@ public class DocumentCreatorNew {
 
         application.setApplicationInterfaceId(client.registerApplicationInterface(application));
 
-        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module1.getAppModuleId(), "/bin/echo", ApplicationParallelismType.SERIAL, "Echo application");
+        ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module1.getAppModuleId(), "/home/ogce/echo.sh", ApplicationParallelismType.SERIAL, "Echo application");
         deployment.setAppDeploymentId(client.registerApplicationDeployment(deployment));
 
         client.addGatewayComputeResourcePreference(getGatewayResourceProfile().getGatewayID(), host.getComputeResourceId(), DocumentCreatorUtils.createComputeResourcePreference(host.getComputeResourceId(), "/oasis/scratch/trestles/ogce/temp_project/", "sds128", false, null, null, null));

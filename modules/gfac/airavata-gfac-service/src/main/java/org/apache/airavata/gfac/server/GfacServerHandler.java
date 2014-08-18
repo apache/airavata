@@ -206,7 +206,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         logger.info("GFac Recieved the Experiment: " + experimentId + " TaskId: " + taskId);
         GFac gfac = getGfac();
         try {
-            return gfac.submitJob(experimentId, taskId, ServerSettings.getSetting(Constants.GATEWAY_NAME));
+            return gfac.cancel(experimentId, taskId, ServerSettings.getSetting(Constants.GATEWAY_NAME));
         } catch (Exception e) {
             throw new TException("Error launching the experiment : " + e.getMessage(), e);
         }

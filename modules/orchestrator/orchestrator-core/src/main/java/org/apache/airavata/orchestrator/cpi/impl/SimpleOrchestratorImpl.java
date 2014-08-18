@@ -169,9 +169,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             if (jobState.getValue() > 4){
                 logger.error("Cannot cancel the job, because current job state is : " + jobState.toString() +
                 "jobId: " + jobDetails.getJobID() + " Job Name: " + jobDetails.getJobName());
+                return;
             }
-            jobSubmitter.terminate(experiment.getExperimentID(),task.getTaskID());
         }
+        jobSubmitter.terminate(experiment.getExperimentID(),task.getTaskID());
     }
 
 

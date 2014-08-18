@@ -45,6 +45,7 @@ import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,12 +162,98 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         }
     }
 
+    public void removeFromMonitorHandlers(JobExecutionContext jobExecutionContext, GsisshHostType host, String jobID) throws GFacHandlerException {
+        List<ThreadedHandler> daemonHandlers = GFacImpl.getDaemonHandlers();
+        if (daemonHandlers == null) {
+            daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+        }
+        ThreadedHandler pullMonitorHandler = null;
+        ThreadedHandler pushMonitorHandler = null;
+        String monitorMode = host.getMonitorMode();
+        for (ThreadedHandler threadedHandler : daemonHandlers) {
+            if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
+                pullMonitorHandler = threadedHandler;
+                if ("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PULL.equals(monitorMode)) {
+                    log.info("Job is launched successfully now parsing it to monitoring in pull mode, JobID Returned:  " + jobID);
+                    jobExecutionContext.setProperty("cancel","true");
+                    pullMonitorHandler.invoke(jobExecutionContext);
+                } else {
+                    log.error("Currently we only support Pull and Push monitoring and monitorMode should be PULL" +
+                            " to handle by the GridPullMonitorHandler");
+                }
+            } else if ("org.apache.airavata.gfac.monitor.handlers.GridPushMonitorHandler".equals(threadedHandler.getClass().getName())) {
+                pushMonitorHandler = threadedHandler;
+                if ("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PUSH.equals(monitorMode)) {
+                    log.info("Job is launched successfully now parsing it to monitoring in push mode, JobID Returned:  " + jobID);
+                    pushMonitorHandler.invoke(jobExecutionContext);
+                } else {
+                    log.error("Currently we only support Pull and Push monitoring and monitorMode should be PUSH" +
+                            " to handle by the GridPushMonitorHandler");
+                }
+            }
+            // have to handle the GridPushMonitorHandler logic
+        }
+        if (pullMonitorHandler == null && pushMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())) {
+            log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
+                    ", execution is configured as asynchronous, so Outhandler will not be invoked");
+        }
+    }
+
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacException {
+    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
+        log.info("cancelling the job status in GSISSHProvider!!!!!");
+        HostDescriptionType host = jobExecutionContext.getApplicationContext().
+                getHostDescription().getType();
+        StringBuffer data = new StringBuffer();
+        JobDetails jobDetails = jobExecutionContext.getJobDetails();
+        try {
+            Cluster cluster = null;
+            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
+            }else {
+                GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
+            }
+            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
+            if (cluster == null) {
+                throw new GFacProviderException("Security context is not set properly");
+            } else {
+                log.info("Successfully retrieved the Security Context");
+            }
+            // This installed path is a mandetory field, because this could change based on the computing resource
+            if(jobDetails == null) {
+                log.error("There is not JobDetails so cancelations cannot perform !!!");
+                return;
+            }
+            if (jobDetails.getJobID() != null) {
+                cluster.cancelJob(jobDetails.getJobID());
+            } else {
+                log.error("No Job Id is set, so cannot perform the cancel operation !!!");
+                return;
+            }
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
+            // we know this host is type GsiSSHHostType
+        } catch (SSHApiException e) {
+            String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+            log.error(error);
+            jobDetails.setJobID("none");
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
+            GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            throw new GFacProviderException(error, e);
+        } catch (Exception e) {
+            String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+            log.error(error);
+            jobDetails.setJobID("none");
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
+            GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            throw new GFacProviderException(error, e);
+        } finally {
+            log.info("Saving data for future recovery: ");
+            log.info(data.toString());
+            GFacUtils.savePluginData(jobExecutionContext, data, this.getClass().getName());
+        }
     }
 
     public void recover(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
