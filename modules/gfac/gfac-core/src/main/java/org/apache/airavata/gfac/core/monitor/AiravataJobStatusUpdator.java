@@ -73,17 +73,20 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
     }
 
     public  void updateJobStatus(String taskId, String jobID, JobState state) throws Exception {
-		logger.debug("Updating job status for "+jobID+":"+state.toString());
         CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
         JobDetails details = (JobDetails)airavataRegistry.get(RegistryModelType.JOB_DETAIL, ids);
         if(details == null) {
             details = new JobDetails();
         }
         org.apache.airavata.model.workspace.experiment.JobStatus status = new org.apache.airavata.model.workspace.experiment.JobStatus();
-        status.setJobState(state);
+        if(!JobState.CANCELED.equals(details.getJobStatus().getJobState())&&
+                !JobState.CANCELING.equals(details.getJobStatus().getJobState())) {
+            status.setJobState(state);
+        }
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setJobStatus(status);
         details.setJobID(jobID);
+        logger.debug("Updating job status for "+jobID+":"+details.getJobStatus().toString());
         airavataRegistry.update(RegistryModelType.JOB_DETAIL, details, ids);
     }
 

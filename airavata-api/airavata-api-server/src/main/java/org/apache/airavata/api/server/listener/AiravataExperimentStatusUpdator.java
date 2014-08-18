@@ -81,26 +81,32 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 				ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getIdentity().getExperimentID()));
 				updateExperimentStatus=(executionType==ExecutionType.SINGLE_APP);
 	        }
-			updateExperimentStatus(nodeStatus.getIdentity().getExperimentID(), state);
-			logger.debug("Publishing experiment status for "+nodeStatus.getIdentity().getExperimentID()+":"+state.toString());
+            state = updateExperimentStatus(nodeStatus.getIdentity().getExperimentID(), state);
+            logger.debug("Publishing experiment status for "+nodeStatus.getIdentity().getExperimentID()+":"+state.toString());
 			monitorPublisher.publish(new ExperimentStatusChangedEvent(nodeStatus.getIdentity(), state));
 		} catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
 		}
     }
     
-    public  void updateExperimentStatus(String experimentId, ExperimentState state) throws Exception {
-        logger.info("Updating the experiment status of experiment: " + experimentId + " to " + state.toString());
+    public  ExperimentState updateExperimentStatus(String experimentId, ExperimentState state) throws Exception {
     	Experiment details = (Experiment)airavataRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
         if(details == null) {
             details = new Experiment();
             details.setExperimentID(experimentId);
         }
         org.apache.airavata.model.workspace.experiment.ExperimentStatus status = new org.apache.airavata.model.workspace.experiment.ExperimentStatus();
-        status.setExperimentState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+        if(!ExperimentState.CANCELED.equals(details.getExperimentStatus().getExperimentState())&&
+                !ExperimentState.CANCELING.equals(details.getExperimentStatus().getExperimentState())) {
+            status.setExperimentState(state);
+        }else{
+            status.setExperimentState(details.getExperimentStatus().getExperimentState());
+        }
         details.setExperimentStatus(status);
+        logger.info("Updating the experiment status of experiment: " + experimentId + " to " + status.getExperimentState().toString());
         airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
+        return details.getExperimentStatus().getExperimentState();
 
     }
 

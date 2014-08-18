@@ -80,12 +80,24 @@ public class GridPullMonitorHandler extends ThreadedHandler {
         hpcPullMonitor.setGfac(jobExecutionContext.getGfac());
         MonitorID monitorID = new HPCMonitorID(getAuthenticationInfo(), jobExecutionContext);
         try {
-            CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID);
+            if ("true".equals(jobExecutionContext.getProperty("cancel"))) {
+                removeJobFromMonitoring(jobExecutionContext);
+            } else {
+                CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID);
+            }
         } catch (AiravataMonitorException e) {
             logger.error("Error adding monitorID object to the queue with experiment ", monitorID.getExperimentID());
         }
     }
 
+    public void removeJobFromMonitoring(JobExecutionContext jobExecutionContext)throws GFacHandlerException {
+        MonitorID monitorID = new HPCMonitorID(getAuthenticationInfo(),jobExecutionContext);
+        try {
+            CommonUtils.removeMonitorFromQueue(hpcPullMonitor.getQueue(),monitorID);
+        } catch (AiravataMonitorException e) {
+            throw new GFacHandlerException(e);
+        }
+    }
     public AuthenticationInfo getAuthenticationInfo() {
         return authenticationInfo;
     }
@@ -100,5 +112,9 @@ public class GridPullMonitorHandler extends ThreadedHandler {
 
     public void setHpcPullMonitor(HPCPullMonitor hpcPullMonitor) {
         this.hpcPullMonitor = hpcPullMonitor;
+    }
+
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        this.removeJobFromMonitoring(jobExecutionContext);
     }
 }

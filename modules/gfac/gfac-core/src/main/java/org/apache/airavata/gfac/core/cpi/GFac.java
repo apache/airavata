@@ -55,10 +55,9 @@ public interface GFac {
 
     /**
      * This operation can be used to cancel an already running experiment
-     * @param jobExecutionContext
      * @return Successful cancellation will return true
      * @throws GFacException
      */
-    public boolean cancel(JobExecutionContext jobExecutionContext)throws GFacException;
+    public boolean cancel(String experimentID, String taskID, String gatewayID)throws GFacException;
 
 }

@@ -305,6 +305,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	 * @throws TException
 	 */
 	public boolean terminateExperiment(String experimentId) throws TException {
+        log.info("Experiment: " + experimentId + " is cancelling  !!!!!");
         return validateStatesAndCancel(experimentId);
 	}
 
@@ -517,94 +518,131 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                 throw new OrchestratorException("Error retrieving the Experiment by the given experimentID:\n" +
                         experimentId);
             }
-            switch (experiment.getExperimentStatus().getExperimentState()){
-                case COMPLETED:
-                    throw new OrchestratorException("Experiment is already finished cannot cancel the experiment");
-                case CANCELED:
-                    throw new OrchestratorException("Experiment is already canceled, cannot perform cancel again !!!");
-                case CANCELING:
-                    throw new OrchestratorException("Experiment is  cancelling, cannot perform cancel again !!!!");
-                case SUSPENDED:
-                    throw new OrchestratorException("Experiment is  suspended, cannot perform cancel !!!!");
-                case FAILED:
-                    throw new OrchestratorException("Experiment is  failed,cannot perform cancel !!!!");
-                case UNKNOWN:
-                    throw new OrchestratorException("Experiment is inconsistent,cannot perform cancel, !!!!");
-            }
-
-            ExperimentStatus status = new ExperimentStatus();
-            status.setExperimentState(ExperimentState.CANCELING);
-            status.setTimeOfStateChange(Calendar.getInstance()
-                    .getTimeInMillis());
-            experiment.setExperimentStatus(status);
-            registry.update(RegistryModelType.EXPERIMENT, experiment,
-                    experimentId);
-
-            List<String> ids = registry.getIds(
-                    RegistryModelType.WORKFLOW_NODE_DETAIL,
-                    WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
-            for (String workflowNodeId : ids) {
-                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
-                        .get(RegistryModelType.WORKFLOW_NODE_DETAIL,
-                                workflowNodeId);
-                if (workflowNodeDetail.getWorkflowNodeStatus().getWorkflowNodeState().getValue() > 1) {
-                    log.error(workflowNodeDetail.getNodeName() + " Workflow Node status cannot mark as cancelled, because " +
-                            "current status is " + workflowNodeDetail.getWorkflowNodeStatus().getWorkflowNodeState().toString());
-                    continue; // this continue is very useful not to process deeper loops if the upper layers have non-cancel states
-                }else {
+            ExperimentState experimentState = experiment.getExperimentStatus().getExperimentState();
+            if (experimentState.getValue()> 4 && experimentState.getValue()<10){
+                    throw new OrchestratorException("Unable to mark experiment as Cancelled, because current state is: "
+                    + experiment.getExperimentStatus().getExperimentState().toString());
+            }else if(experimentState.getValue()<3){
+                // when experiment status is < 3 no jobDetails object is created,
+                // so we don't have to worry, we simply have to change the status and stop the execution
+                ExperimentStatus status = new ExperimentStatus();
+                status.setExperimentState(ExperimentState.CANCELED);
+                status.setTimeOfStateChange(Calendar.getInstance()
+                        .getTimeInMillis());
+                experiment.setExperimentStatus(status);
+                registry.update(RegistryModelType.EXPERIMENT, experiment,
+                        experimentId);
+                List<String> ids = registry.getIds(
+                        RegistryModelType.WORKFLOW_NODE_DETAIL,
+                        WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
+                for (String workflowNodeId : ids) {
+                    WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
+                            .get(RegistryModelType.WORKFLOW_NODE_DETAIL,
+                                    workflowNodeId);
                     WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
-                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELING);
+                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELED);
                     workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
                             .getTimeInMillis());
                     workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
                     registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
                             workflowNodeId);
-                }
-                List<Object> taskDetailList = registry.get(
-                        RegistryModelType.TASK_DETAIL,
-                        TaskDetailConstants.NODE_ID, workflowNodeId);
-                for (Object o : taskDetailList) {
-                    TaskDetails taskDetails = (TaskDetails) o;
-                    TaskStatus taskStatus = ((TaskDetails) o).getTaskStatus();
-                    if(taskStatus.getExecutionState().getValue()>7){
-                        log.error(((TaskDetails) o).getTaskID() + " Task status cannot mark as cancelled, because " +
-                                "current task state is "+((TaskDetails) o).getTaskStatus().getExecutionState().toString());
-                        continue;// this continue is very useful not to process deeper loops if the upper layers have non-cancel states
-                    }else{
-                        taskStatus.setExecutionState(TaskState.CANCELING);
+                    List<Object> taskDetailList = registry.get(
+                            RegistryModelType.TASK_DETAIL,
+                            TaskDetailConstants.NODE_ID, workflowNodeId);
+                    for (Object o : taskDetailList) {
+                        TaskDetails taskDetails = (TaskDetails) o;
+                        TaskStatus taskStatus = ((TaskDetails) o).getTaskStatus();
+                        taskStatus.setExecutionState(TaskState.CANCELED);
                         taskStatus.setTimeOfStateChange(Calendar.getInstance()
                                 .getTimeInMillis());
                         taskDetails.setTaskStatus(taskStatus);
                         registry.update(RegistryModelType.TASK_DETAIL, o,
                                 taskDetails);
                     }
-                    // iterate through all the generated tasks and performs the
-                    // job submisssion+monitoring
-                    // launching the experiment
-                    orchestrator.cancelExperiment(experiment,
-                            workflowNodeDetail, taskDetails, null);
-                    taskStatus.setExecutionState(TaskState.CANCELED);
-                    taskStatus.setTimeOfStateChange(Calendar.getInstance()
-                            .getTimeInMillis());
-                    taskDetails.setTaskStatus(taskStatus);
-                    registry.update(RegistryModelType.TASK_DETAIL, o,
-                            taskDetails);
                 }
-                WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
-                workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELED);
-                workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
+            }else {
+
+                ExperimentStatus status = new ExperimentStatus();
+                status.setExperimentState(ExperimentState.CANCELING);
+                status.setTimeOfStateChange(Calendar.getInstance()
                         .getTimeInMillis());
-                workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
-                registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
-                        workflowNodeId);
+                experiment.setExperimentStatus(status);
+                registry.update(RegistryModelType.EXPERIMENT, experiment,
+                        experimentId);
+
+                List<String> ids = registry.getIds(
+                        RegistryModelType.WORKFLOW_NODE_DETAIL,
+                        WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
+                for (String workflowNodeId : ids) {
+                    WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
+                            .get(RegistryModelType.WORKFLOW_NODE_DETAIL,
+                                    workflowNodeId);
+                    int value = workflowNodeDetail.getWorkflowNodeStatus().getWorkflowNodeState().getValue();
+                    if ( value> 1 && value < 7) { // we skip the unknown state
+                        log.error(workflowNodeDetail.getNodeName() + " Workflow Node status cannot mark as cancelled, because " +
+                                "current status is " + workflowNodeDetail.getWorkflowNodeStatus().getWorkflowNodeState().toString());
+                        continue; // this continue is very useful not to process deeper loops if the upper layers have non-cancel states
+                    } else {
+                        WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
+                        workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELING);
+                        workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
+                                .getTimeInMillis());
+                        workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
+                        registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
+                                workflowNodeId);
+                    }
+                    List<Object> taskDetailList = registry.get(
+                            RegistryModelType.TASK_DETAIL,
+                            TaskDetailConstants.NODE_ID, workflowNodeId);
+                    for (Object o : taskDetailList) {
+                        TaskDetails taskDetails = (TaskDetails) o;
+                        TaskStatus taskStatus = ((TaskDetails) o).getTaskStatus();
+                        if (taskStatus.getExecutionState().getValue() > 7 && taskStatus.getExecutionState().getValue()<12) {
+                            log.error(((TaskDetails) o).getTaskID() + " Task status cannot mark as cancelled, because " +
+                                    "current task state is " + ((TaskDetails) o).getTaskStatus().getExecutionState().toString());
+                            continue;// this continue is very useful not to process deeper loops if the upper layers have non-cancel states
+                        } else {
+                            taskStatus.setExecutionState(TaskState.CANCELING);
+                            taskStatus.setTimeOfStateChange(Calendar.getInstance()
+                                    .getTimeInMillis());
+                            taskDetails.setTaskStatus(taskStatus);
+                            registry.update(RegistryModelType.TASK_DETAIL, o,
+                                    taskDetails.getTaskID());
+                        }
+                        // iterate through all the generated tasks and performs the
+                        // job submisssion+monitoring
+                        // launching the experiment
+                        orchestrator.cancelExperiment(experiment,
+                                workflowNodeDetail, taskDetails, null);
+
+                        // after performing gfac level cancel operation
+                        // mark task cancelled
+                        taskStatus.setExecutionState(TaskState.CANCELED);
+                        taskStatus.setTimeOfStateChange(Calendar.getInstance()
+                                .getTimeInMillis());
+                        taskDetails.setTaskStatus(taskStatus);
+                        registry.update(RegistryModelType.TASK_DETAIL, o,
+                                taskDetails.getTaskID());
+                    }
+                    // mark workflownode cancelled
+                    WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
+                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELED);
+                    workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
+                            .getTimeInMillis());
+                    workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
+                    registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
+                            workflowNodeId);
+                }
+                // mark experiment cancelled
+                status = new ExperimentStatus();
+                status.setExperimentState(ExperimentState.CANCELED);
+                status.setTimeOfStateChange(Calendar.getInstance()
+                        .getTimeInMillis());
+                experiment.setExperimentStatus(status);
+                registry.update(RegistryModelType.EXPERIMENT, experiment,
+                        experimentId);
             }
-            status = new ExperimentStatus();
-            status.setExperimentState(ExperimentState.CANCELED);
-            status.setTimeOfStateChange(Calendar.getInstance()
-                    .getTimeInMillis());
-            experiment.setExperimentStatus(status);
-            registry.update(RegistryModelType.EXPERIMENT, experiment,
-                    experimentId);
+            log.info("Experiment: " + experimentId + " is cancelled !!!!!");
 
         } catch (Exception e) {
             throw new TException(e);

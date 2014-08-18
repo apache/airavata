@@ -65,7 +65,7 @@ public class CreateLaunchExperiment {
     private static String localHostAppId = "localhost_3b5962d3-5e7e-4a97-9d1f-25c5ec436ba5,SimpleEcho0_44c34394-ca27-4fa9-bb2d-87f95a02352a";
     private static String sshHostAppId;
     private static String pbsEchoAppId = "trestles.sdsc.edu_6dc7de3d-0d18-4933-bd96-b40c425f44c5,SimpleEcho2_8cc763c9-c57c-4a23-890c-4d3cee413c68";
-    private static String pbsWRFAppId = "trestles.sdsc.edu_6ba292ab-573b-4b48-b72d-8006c8ced713,WRF_73b3356e-0596-4542-80b7-9048d9103cef";
+    private static String pbsWRFAppId = "trestles.sdsc.edu_66caf560-497d-4316-b1e9-adadc5817b20,WRF_61490c54-dacf-4bc4-874c-ad5909a65afb";
     private static String slurmAppId = "stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
     private static String sgeAppId;
     private static String br2EchoAppId = "bigred2_9c1e6be8-f7d8-4494-98f2-bf508790e8c6,SimpleEchoBR_149fd613-98e2-46e7-ac7c-4d393349469e";
@@ -82,14 +82,14 @@ public class CreateLaunchExperiment {
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + client.getAPIVersion());
 //            getExperiment(client, "WRFExperiment_2a2de26c-7f74-47c9-8e14-40e50dedfe0f");
-//            addDescriptors();
+            addDescriptors();
 
 ////            final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createExperimentForTrestles(client);
+            final String expId = createExperimentForTrestles(client);
 ////            final String expId = createExperimentForStampede(client);
 //            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
-            final String expId = createExperimentWRFTrestles(client);
+//            final String expId = createExperimentWRFTrestles(client);
 //            final String expId = createExperimentForBR2(client);
 //            final String expId = createExperimentForBR2Amber(client);
 //            final String expId = createExperimentWRFStampede(client);
@@ -253,17 +253,17 @@ public class CreateLaunchExperiment {
             DataObjectType input = new DataObjectType();
             input.setKey("WRF_Namelist");
             input.setType(DataType.URI);
-            input.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/namelist.input");
+            input.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/namelist.input");
 
             DataObjectType input1 = new DataObjectType();
             input1.setKey("WRF_Input_File");
             input1.setType(DataType.URI);
-            input1.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/wrfinput_d01");
+            input1.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfinput_d01");
 
             DataObjectType input2 = new DataObjectType();
             input2.setKey("WRF_Boundary_File");
             input2.setType(DataType.URI);
-            input2.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/wrfbdy_d01");
+            input2.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfbdy_d01");
 
             exInputs.add(input);
             exInputs.add(input1);
