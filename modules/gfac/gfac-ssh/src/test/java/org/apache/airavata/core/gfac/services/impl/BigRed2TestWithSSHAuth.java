@@ -244,7 +244,7 @@ public class BigRed2TestWithSSHAuth {
     @Test
     public void testSSHProvider() throws GFacException {
         GFacImpl gFacAPI = new GFacImpl();
-        gFacAPI.submitJob(jobExecutionContext);
+        gFacAPI.submitJob(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
         org.junit.Assert.assertNotNull(jobExecutionContext.getJobDetails().getJobDescription());
         org.junit.Assert.assertNotNull(jobExecutionContext.getJobDetails().getJobID());
     }
