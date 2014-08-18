@@ -26,6 +26,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -596,6 +597,39 @@ public class WorkerResource extends AbstractResource {
                 }
             }
             query = query.substring(0, query.length() - 5);
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q = em.createQuery(query);
+            List resultList = q.getResultList();
+            for (Object o : resultList) {
+                Experiment experiment = (Experiment) o;
+                ExperimentResource experimentResource = (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                result.add(experimentResource);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return result;
+    }
+
+    public List<ExperimentResource> searchExperimentsByState (String experimentState) throws RegistryException{
+        List<ExperimentResource> result = new ArrayList<ExperimentResource>();
+        EntityManager em = null;
+        try {
+            String query = "SELECT e FROM Status s " +
+                    "JOIN s.experiment e " +
+                    "WHERE s.state='" + experimentState +  "' " +
+                    "AND s.statusType='" + StatusType.EXPERIMENT + "'";
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Query q = em.createQuery(query);

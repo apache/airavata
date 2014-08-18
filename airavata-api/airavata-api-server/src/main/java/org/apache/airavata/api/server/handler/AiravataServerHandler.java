@@ -502,6 +502,42 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
         }
     }
 
+    @Override
+    public List<ExperimentSummary> searchExperimentsByStatus(String userName, ExperimentState experimentState) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        try {
+            if (!ResourceUtils.isUserExist(userName)){
+                logger.error("User does not exist in the system. Please provide a valid user..");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("User does not exist in the system. Please provide a valid user..");
+                throw exception;
+            }
+            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            registry = RegistryFactory.getDefaultRegistry();
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, experimentState.toString());
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
+            for (Object object : results) {
+                summaries.add((ExperimentSummary) object);
+            }
+            return summaries;
+        }catch (Exception e) {
+            logger.error("Error while retrieving experiments", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Get all Experiments within a Project
      *
