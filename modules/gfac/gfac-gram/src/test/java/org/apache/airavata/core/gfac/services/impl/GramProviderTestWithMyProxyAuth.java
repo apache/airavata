@@ -213,7 +213,7 @@ public class GramProviderTestWithMyProxyAuth extends GFacBaseTestWithMyProxyAuth
     @Test
     public void testGramProvider() throws GFacException {
         GFacImpl gFacAPI = new GFacImpl();
-        gFacAPI.submitJob(jobExecutionContext);
+        gFacAPI.submitJob(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
         MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
         Assert.assertEquals(MappingFactory.toString((ActualParameter)outMessageContext.getParameter("echo_output")), "hello");
     }
