@@ -69,9 +69,10 @@ public class TestCreateLaunchExperiment {
             Calendar cal2 = Calendar.getInstance();
             Long to = cal2.getTimeInMillis();
 
-            List<ExperimentSummary> experiments = searchExperimentsByDate(airavata, "admin", from, to);
+            List<ExperimentSummary> experiments = getExperimentsForApplication(airavata, "admin", "e");
             for (ExperimentSummary experimentSummary : experiments){
-                System.out.println(experimentSummary.getExperimentID());
+//                System.out.println(experimentSummary.getExperimentID());
+                System.out.println(experimentSummary.getApplicationId());
 //                System.out.println(experimentSummary.getExperimentStatus().getExperimentState().toString());
             }
 //            getAllComputeResources(airavata);

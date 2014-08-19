@@ -2648,6 +2648,8 @@ public class ExperimentRegistry {
                         fil.put(AbstractResource.ExperimentConstants.EXECUTION_USER, filters.get(field));
                     }else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)){
                         fil.put(AbstractResource.ExperimentConstants.DESCRIPTION, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)){
+                        fil.put(AbstractResource.ExperimentConstants.APPLICATION_ID, filters.get(field));
                     }else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)){
                         return searchExperimentsByStatus(ExperimentState.valueOf(filters.get(field)));
                     }else if (field.equals(Constants.FieldConstants.ExperimentConstants.FROM_DATE)){
@@ -2659,10 +2661,14 @@ public class ExperimentRegistry {
                 if (fromTime != 0 && toTime != 0){
                     return searchExperimentsByCreationTime(new Timestamp(fromTime), new Timestamp(toTime));
                 }
-                List<ExperimentResource> experimentResources = workerResource.searchExperiments(fil);
-                if (experimentResources != null && !experimentResources.isEmpty()){
-                    for (ExperimentResource ex : experimentResources){
-                        experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                if (fil.containsKey(AbstractResource.ExperimentConstants.APPLICATION_ID)){
+                    return searchExperimentsByApplication(fil);
+                }else {
+                    List<ExperimentResource> experimentResources = workerResource.searchExperiments(fil);
+                    if (experimentResources != null && !experimentResources.isEmpty()){
+                        for (ExperimentResource ex : experimentResources){
+                            experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                        }
                     }
                 }
                 return experimentSummaries;
@@ -2682,6 +2688,36 @@ public class ExperimentRegistry {
             if (experimentResources != null && !experimentResources.isEmpty()) {
                 for (ExperimentResource ex : experimentResources) {
                     experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                }
+            }
+            return experimentSummaries;
+
+        } catch (Exception e) {
+            logger.error("Error while retrieving experiment summary from registry", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public List<ExperimentSummary> searchExperimentsByApplication (Map<String, String> fil) throws RegistryException {
+        try {
+            List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
+            List<ExperimentResource> experimentResources = workerResource.searchExperiments(fil);
+            if (experimentResources != null && !experimentResources.isEmpty()) {
+                for (ExperimentResource ex : experimentResources) {
+                    String applicationId = ex.getApplicationId();
+                    String[] splits = applicationId.split("_");
+                    if (splits.length != 0){
+                       for (int i = 0; i< splits.length -1; i++){
+                           String appId = fil.get(AbstractResource.ExperimentConstants.APPLICATION_ID);
+                           if (!appId.equals("*")){
+                               if (splits[i].contains(appId)){
+                                   experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                               }
+                           }else {
+                               experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                           }
+                       }
+                    }
                 }
             }
             return experimentSummaries;
