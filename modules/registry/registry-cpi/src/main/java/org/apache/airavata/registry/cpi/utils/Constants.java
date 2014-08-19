@@ -49,6 +49,8 @@ public class Constants {
             public static final String STATE_CHANGE_LIST = "stateChangeList";
             public static final String WORKFLOW_NODE_LIST = "workflowNodeDetailsList";
             public static final String ERROR_DETAIL_LIST = "errors";
+            public static final String FROM_DATE = "fromDate";
+            public static final String TO_DATE = "toDate";
 
         }
 

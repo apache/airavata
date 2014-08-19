@@ -155,11 +155,20 @@ service Airavata {
                       2: airavataErrors.AiravataClientException ace,
                       3: airavataErrors.AiravataSystemException ase)
 
-  /**
+    /**
          * Search Experiments by experiment status
          *
     */
     list<experimentModel.ExperimentSummary> searchExperimentsByStatus (1: required string userName, 2: required experimentModel.ExperimentState experimentState)
+                throws (1: airavataErrors.InvalidRequestException ire,
+                        2: airavataErrors.AiravataClientException ace,
+                        3: airavataErrors.AiravataSystemException ase)
+
+    /**
+         * Search Experiments by experiment status
+         *
+    */
+    list<experimentModel.ExperimentSummary> searchExperimentsByCreationTime (1: required string userName, 2: required i64 fromTime, 3: required i64 toTime)
                 throws (1: airavataErrors.InvalidRequestException ire,
                         2: airavataErrors.AiravataClientException ace,
                         3: airavataErrors.AiravataSystemException ase)
