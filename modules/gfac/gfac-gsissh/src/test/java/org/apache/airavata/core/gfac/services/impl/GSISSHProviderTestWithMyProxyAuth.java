@@ -228,7 +228,7 @@ public class GSISSHProviderTestWithMyProxyAuth {
     @Test
     public void testGSISSHProvider() throws GFacException {
         GFacImpl gFacAPI = new GFacImpl();
-        gFacAPI.submitJob(jobExecutionContext);
+        gFacAPI.submitJob(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
         System.out.println(jobExecutionContext.getJobDetails().getJobDescription());
         System.out.println(jobExecutionContext.getJobDetails().getJobID());
     }
