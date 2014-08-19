@@ -61,6 +61,16 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         super.initialize(jobExecutionContext);
+        try {
+            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
+                GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
+            }
+        } catch (ApplicationSettingsException e) {
+            log.error(e.getMessage());
+            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+        } catch (GFacException e) {
+            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+        }
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
@@ -205,15 +215,14 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
 
     public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
-        log.info("cancelling the job status in GSISSHProvider!!!!!");
+        log.info("canceling the job status in GSISSHProvider!!!!!");
         HostDescriptionType host = jobExecutionContext.getApplicationContext().
                 getHostDescription().getType();
         StringBuffer data = new StringBuffer();
         JobDetails jobDetails = jobExecutionContext.getJobDetails();
         try {
             Cluster cluster = null;
-            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
-            }else {
+            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
             cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
@@ -249,10 +258,6 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
             GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
-        } finally {
-            log.info("Saving data for future recovery: ");
-            log.info(data.toString());
-            GFacUtils.savePluginData(jobExecutionContext, data, this.getClass().getName());
         }
     }
 
