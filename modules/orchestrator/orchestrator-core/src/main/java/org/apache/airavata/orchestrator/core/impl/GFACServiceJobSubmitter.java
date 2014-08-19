@@ -149,7 +149,9 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
                 GfacService.Client localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
                 if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
                     // before submitting the job we check again the state of the node
-                    return localhost.cancelJob(experimentID, taskID);
+                    if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild, null)) {
+                        return localhost.cancelJob(experimentID, taskID);
+                    }
                 }
             }
         } catch (TException e) {

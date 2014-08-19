@@ -565,15 +565,11 @@ public class BetterGfacImpl implements GFac,Watcher {
                 // In this scenario We do everything from the beginning
                 log.info("Job is not yet submitted, so nothing much to do except changing the registry entry " +
                         " and stop the execution chain");
-                //todo update registry and find a way to stop the execution chain
-                GFacUtils.setExperimentCancel(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
             } else if (stateVal >= 8) {
                 log.error("This experiment is almost finished, so cannot cancel this experiment");
                 ZKUtil.deleteRecursive(zk,
                         AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID()));
             } else {
-                // Now we know this is an old Job, so we have to handle things gracefully
-                GFacUtils.setExperimentCancel(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
                 log.info("Job is in a position to perform a proper cancellation");
                 try {
                     Scheduler.schedule(jobExecutionContext);
@@ -812,11 +808,9 @@ public class BetterGfacImpl implements GFac,Watcher {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
-            GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
             initProvider(provider, jobExecutionContext);
             cancelProvider(provider, jobExecutionContext);
             disposeProvider(provider, jobExecutionContext);
-            GFacUtils.updatePluginState(zk, jobExecutionContext, provider.getClass().getName(), GfacPluginState.COMPLETED);
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
         }
         if (GFacUtils.isSynchronousMode(jobExecutionContext)) {

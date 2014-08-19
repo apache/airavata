@@ -24,6 +24,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.server.OrchestratorServerHandler;
 import org.apache.thrift.TException;
@@ -80,7 +81,11 @@ public class OrchestratorRecoveryHandler implements Watcher {
             log.info("Recovering Experiment: " + expId.split("\\+")[0]);
             log.info("------------------------------------------------------------------------------------");
             try {
-                serverHandler.launchExperiment(expId.split("\\+")[0]);
+                if(GFacUtils.isCancelled(expId.split("\\+")[0], expId.split("\\+")[1], zk)) {// during relaunching we check the operation and then launch
+                    serverHandler.terminateExperiment(expId.split("\\+")[0]);
+                }else {
+                    serverHandler.launchExperiment(expId.split("\\+")[0]);
+                }
                 // we do not move the old experiment in to new gfac node, gfac will do it
             } catch (Exception e) {       // we attempt all the experiments
                 e.printStackTrace();
