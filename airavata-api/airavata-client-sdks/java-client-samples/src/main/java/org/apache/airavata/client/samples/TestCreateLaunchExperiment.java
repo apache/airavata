@@ -63,10 +63,17 @@ public class TestCreateLaunchExperiment {
             AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.getAPIVersion());
-            List<ExperimentSummary> experiments = searchExperimentsByStatus(airavata, "admin", ExperimentState.FAILED);
+            Calendar cal1 = Calendar.getInstance();
+            cal1.add(Calendar.DATE, -1);
+            Long from = cal1.getTimeInMillis();
+            Calendar cal2 = Calendar.getInstance();
+            Long to = cal2.getTimeInMillis();
+
+            List<ExperimentSummary> experiments = getExperimentsForApplication(airavata, "admin", "e");
             for (ExperimentSummary experimentSummary : experiments){
-                System.out.println(experimentSummary.getExperimentID());
-                System.out.println(experimentSummary.getExperimentStatus().getExperimentState().toString());
+//                System.out.println(experimentSummary.getExperimentID());
+                System.out.println(experimentSummary.getApplicationId());
+//                System.out.println(experimentSummary.getExperimentStatus().getExperimentState().toString());
             }
 //            getAllComputeResources(airavata);
 //            getAppModule(airavata, "amber_c476de64-ca5c-415a-94e9-b77fbe67b806");
@@ -151,6 +158,22 @@ public class TestCreateLaunchExperiment {
         }
         return null;
     }
+
+    public static List<ExperimentSummary> searchExperimentsByDate (Airavata.Client client, String user, Long from, Long to){
+        try {
+            return client.searchExperimentsByCreationTime(user, from, to);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     public static void getAllComputeResources (Airavata.Client client){
         try {
