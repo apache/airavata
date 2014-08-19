@@ -51,6 +51,7 @@ import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.system.OutputNode;
@@ -127,33 +128,30 @@ public class LaunchApplicationWindow {
         }
 
         // Create input fields
-        Collection<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
-        for (InputNode node : inputNodes) {
-            String id = node.getID();
-            QName parameterType = node.getParameterType();
-            JLabel nameLabel = new JLabel(id);
+        List<NodeImpl> nodes = workflow.getGraph().getNodes();
+        NodeImpl node = null;
+    	for(int i=0; i<nodes.size(); i++){
+    		node = nodes.get(i);
+    		String html = node.getComponent().toHTML();     		
+    		String nodeType =html.substring(html.indexOf("<h1>")+4, html.indexOf(":")).trim();    		
+    		if(nodeType.equals("Application")){    			
+    			break;    			
+    		}
+    	}
+    	List<DataPort> inputPorts = node.getInputPorts();
+    	for(DataPort port : inputPorts){
+    		String id = port.getName();
+    		QName parameterType = port.getType();
+    		JLabel nameLabel = new JLabel(id);
             JLabel typeField = new JLabel(parameterType.getLocalPart());
-            XBayaTextField paramField = new XBayaTextField();
-            Object value = node.getDefaultValue();
-
-            String valueString;
-            if (value == null) {
-                valueString = "";
-            } else {
-                if (value instanceof XmlElement) {
-                    XmlElement valueElement = (XmlElement) value;
-                    valueString = XMLUtil.xmlElementToString(valueElement);
-                } else {
-                    // Only string comes here for now.
-                    valueString = value.toString();
-                }
-            }
-            paramField.setText(valueString);            
+            XBayaTextField paramField = new XBayaTextField();            
+            paramField.setText("");
             this.parameterPanel.add(nameLabel);
             this.parameterPanel.add(typeField);
             this.parameterPanel.add(paramField);
             this.parameterTextFields.add(paramField);
-        }
+    	}
+       
         
 		Map<String, String> hosts = null;
 		        
@@ -268,13 +266,14 @@ public class LaunchApplicationWindow {
     private void execute() throws AiravataClientConnectException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	List<NodeImpl> nodes = workflow.getGraph().getNodes();
     	String appId = null;
+    	NodeImpl node = null;
     	for(int i=0; i<nodes.size(); i++){
-    		NodeImpl node = nodes.get(i);
-    		String html = node.getComponent().toHTML();
+    		node = nodes.get(i);
+    		String html = node.getComponent().toHTML();     		
     		String nodeType =html.substring(html.indexOf("<h1>")+4, html.indexOf(":")).trim();    		
     		if(nodeType.equals("Application")){
     			appId=html.substring(html.indexOf("</h2>")+6, html.indexOf("<br")).trim();
-    			break;
+    			break;    			
     		}
     	}
     	
@@ -301,7 +300,7 @@ public class LaunchApplicationWindow {
         if(owner.equals(""))owner="NotKnown";              
         project.setOwner(owner);
         project.setProjectID(airavataClient.createProject(project));
-        final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
+        final List<DataPort> inputPorts = node.getInputPorts();
         final Experiment experiment = new Experiment();
         experiment.setApplicationId(appId);
         ComputationalResourceScheduling scheduling = new ComputationalResourceScheduling();
@@ -325,24 +324,57 @@ public class LaunchApplicationWindow {
         experiment.setName(instanceName);
         experiment.setProjectID(project.getProjectID());
         experiment.setUserName(thriftClientData.getUsername());
-        for (int i = 0; i < inputNodes.size(); i++) {
-            InputNode inputNode = inputNodes.get(i);
-            XBayaTextField parameterTextField = this.parameterTextFields.get(i);
-            inputNode.getID();
+        for (int i = 0; i < inputPorts.size(); i++) {
+            DataPort inputPort = inputPorts.get(i);
+            XBayaTextField parameterTextField = this.parameterTextFields.get(i);           
             String value = parameterTextField.getText();
             DataObjectType elem = new DataObjectType();
-            elem.setKey(inputNode.getID());
-            elem.setType(DataType.STRING);
+            elem.setKey(inputPort.getName());
+            String type = inputPort.getType().getLocalPart().trim();
+            DataType inpType = DataType.STRING;
+            if(type.equalsIgnoreCase("string")){
+            	inpType=DataType.STRING;
+            }
+            else if(type.equalsIgnoreCase("integer")){
+            	inpType=DataType.INTEGER;
+            }
+            else if(type.equalsIgnoreCase("uri")){
+            	inpType=DataType.URI;
+            }
+            else if(type.equalsIgnoreCase("stdour")){
+            	inpType=DataType.STDOUT;
+            }
+            else if(type.equalsIgnoreCase("stderr")){
+            	inpType=DataType.STDERR;
+            }
+            elem.setType(inpType);
             elem.setValue(value);
 			experiment.addToExperimentInputs(elem );
         }
-        final List<OutputNode> outputNodes = GraphUtil.getOutputNodes(this.workflow.getGraph());
+        final List<DataPort> outputPorts = node.getOutputPorts();
         
-        for (int i = 0; i < outputNodes.size(); i++) {
-            OutputNode outputNode = outputNodes.get(i);
+        for (int i = 0; i < outputPorts.size(); i++) {
+            DataPort outputPort = outputPorts.get(i);
             DataObjectType elem = new DataObjectType();
-            elem.setKey(outputNode.getID());
-            elem.setType(DataType.STRING);
+            elem.setKey(outputPort.getName());
+            String type = outputPort.getType().getLocalPart().trim();
+            DataType outType = DataType.STRING;
+            if(type.equalsIgnoreCase("string")){
+            	outType=DataType.STRING;
+            }
+            else if(type.equalsIgnoreCase("integer")){
+            	outType=DataType.INTEGER;
+            }
+            else if(type.equalsIgnoreCase("uri")){
+            	outType=DataType.URI;
+            }
+            else if(type.equalsIgnoreCase("stdour")){
+            	outType=DataType.STDOUT;
+            }
+            else if(type.equalsIgnoreCase("stderr")){
+            	outType=DataType.STDERR;
+            }
+            elem.setType(outType);
             elem.setValue("");
 			experiment.addToExperimentOutputs(elem );
         }
@@ -368,25 +400,26 @@ public class LaunchApplicationWindow {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        String output = "";
-        while(output.equals("")){
-        	String fullOutput = "Experiment Completed Successfully. Output(s) are shown below:\n";
-        	if(status.equals("COMPLETED")){
+        
+        if(status.equals("COMPLETED")){
+        	String output="";;
+        	String fullOutput="";
+        	while(output.equals("")){
+        		output = "";
+        		fullOutput = "Experiment Completed Successfully. Output(s) are shown below:\n";
             	List<DataObjectType> outputs = airavataClient.getExperimentOutputs(experiment.getExperimentID());
             	for(int i1=0; i1<outputs.size(); i1++){
             		output = outputs.get(i1).getValue();
             		fullOutput+= outputs.get(i1).getKey()+": "+output+"\n";
             		
-            	}
-            	JOptionPane.showMessageDialog(null, fullOutput);
-            }
-            else{
-            	JOptionPane.showMessageDialog(null, "Experiment Failed");
-            	return;
-            }
+            	}            	
+            } 
+        	JOptionPane.showMessageDialog(null, fullOutput);
         }
-
-
+        else{
+        	JOptionPane.showMessageDialog(null, "Experiment Failed");
+        	return;
+        }
         new Thread() {
             @Override
             public void run() {
@@ -395,6 +428,5 @@ public class LaunchApplicationWindow {
         }.start();
 
         hide();
-    } 
-	
+    }       
 }
