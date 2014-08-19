@@ -94,6 +94,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("searchExperimentsByStatus\n");
   }
 
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
+    // Your implementation goes here
+    printf("searchExperimentsByCreationTime\n");
+  }
+
   void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId) {
     // Your implementation goes here
     printf("getAllExperimentsInProject\n");
