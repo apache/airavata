@@ -87,32 +87,23 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
         hpcPullMonitor.setGfac(jobExecutionContext.getGfac());
         MonitorID monitorID = new HPCMonitorID(getAuthenticationInfo(), jobExecutionContext);
         try {
-            if ("true".equals(jobExecutionContext.getProperty("cancel"))) {
-                removeJobFromMonitoring(jobExecutionContext);
-            } else {
-                ZooKeeper zk = jobExecutionContext.getZk();
-                try {
-                    String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
-                    String path = experimentEntry + File.separator + "operation";
-                    Stat exists = zk.exists(path, this);
-                    if(exists != null){
-                        zk.getData(path,this,exists); // watching the operations node
-                    }
-                } catch (KeeperException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            ZooKeeper zk = jobExecutionContext.getZk();
+            try {
+                String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
+                String path = experimentEntry + File.separator + "operation";
+                Stat exists = zk.exists(path, this);
+                if (exists != null) {
+                    zk.getData(path, this, exists); // watching the operations node
                 }
-                CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID);
+            } catch (KeeperException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID);
         } catch (AiravataMonitorException e) {
             logger.error("Error adding monitorID object to the queue with experiment ", monitorID.getExperimentID());
         }
-    }
-
-    public void removeJobFromMonitoring(JobExecutionContext jobExecutionContext)throws GFacHandlerException {
-        MonitorID monitorID = new HPCMonitorID(getAuthenticationInfo(),jobExecutionContext);
-        hpcPullMonitor.getCancelJobList().add(monitorID);
     }
     public AuthenticationInfo getAuthenticationInfo() {
         return authenticationInfo;
@@ -130,15 +121,19 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
         this.hpcPullMonitor = hpcPullMonitor;
     }
 
-    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        this.removeJobFromMonitoring(jobExecutionContext);
-    }
 
     public void process(WatchedEvent watchedEvent) {
         if(Event.EventType.NodeDataChanged.equals(watchedEvent.getType())){
             // node data is changed, this means node is cancelled.
-            logger.info("Experiment is cancelled with this path:");
-            logger.info(watchedEvent.getPath());
+            logger.info("Experiment is cancelled with this path:"+watchedEvent.getPath());
+
+            String[] split = watchedEvent.getPath().split("/");
+            for(String element:split) {
+                if (element.contains("+")) {
+                    logger.info("Adding experimentID+TaskID to be removed from monitoring:"+element);
+                    hpcPullMonitor.getCancelJobList().add(element);
+                }
+            }
         }
     }
 }

@@ -124,7 +124,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         }
         String instanceId = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME);
         String instantNode = gfacServer + File.separator + instanceId;
-        zkStat = zk.exists(instantNode, false);
+        zkStat = zk.exists(instantNode, true);
         if (zkStat == null) {
             zk.create(instantNode,
                     airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
