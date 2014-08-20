@@ -159,6 +159,16 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getJobStatuses\n");
   }
 
+  void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return, const std::string& airavataExperimentId) {
+    // Your implementation goes here
+    printf("getJobDetails\n");
+  }
+
+  void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId) {
+    // Your implementation goes here
+    printf("getDataTransferDetails\n");
+  }
+
   void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) {
     // Your implementation goes here
     printf("cloneExperiment\n");

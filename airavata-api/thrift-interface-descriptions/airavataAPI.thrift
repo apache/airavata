@@ -397,8 +397,32 @@ service Airavata {
               4: airavataErrors.AiravataSystemException ase)
 
   list<experimentModel.DataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
+      throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.ExperimentNotFoundException enf,
+              3: airavataErrors.AiravataClientException ace,
+              4: airavataErrors.AiravataSystemException ase)
+
 
   map<string, experimentModel.JobStatus> getJobStatuses(1: required string airavataExperimentId)
+              throws (1: airavataErrors.InvalidRequestException ire,
+                      2: airavataErrors.ExperimentNotFoundException enf,
+                      3: airavataErrors.AiravataClientException ace,
+                      4: airavataErrors.AiravataSystemException ase)
+
+  list<experimentModel.JobDetails> getJobDetails(1: required string airavataExperimentId)
+                throws (1: airavataErrors.InvalidRequestException ire,
+                        2: airavataErrors.ExperimentNotFoundException enf,
+                        3: airavataErrors.AiravataClientException ace,
+                        4: airavataErrors.AiravataSystemException ase)
+
+  list<experimentModel.DataTransferDetails> getDataTransferDetails(1: required string airavataExperimentId)
+                throws (1: airavataErrors.InvalidRequestException ire,
+                        2: airavataErrors.ExperimentNotFoundException enf,
+                        3: airavataErrors.AiravataClientException ace,
+                        4: airavataErrors.AiravataSystemException ase)
+
+
+
 
   /**
    * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.

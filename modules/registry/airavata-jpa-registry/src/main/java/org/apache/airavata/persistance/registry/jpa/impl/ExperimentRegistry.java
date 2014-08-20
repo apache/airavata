@@ -1184,7 +1184,7 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
             DataTransferDetailResource resource = taskDetail.getDataTransferDetail(transferId);
-            resource.setTaskDetailResource(taskDetail);
+//            resource.setTaskDetailResource(taskDetail);
             resource.setTransferDescription(transferDetails.getTransferDescription());
             resource.setCreationTime(AiravataUtils.getTime(transferDetails.getCreationTime()));
             resource.save();
