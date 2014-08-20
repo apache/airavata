@@ -65,7 +65,7 @@ public class CreateLaunchExperiment {
     private static String localHostAppId = "localhost_3b5962d3-5e7e-4a97-9d1f-25c5ec436ba5,SimpleEcho0_44c34394-ca27-4fa9-bb2d-87f95a02352a";
     private static String sshHostAppId;
     private static String pbsEchoAppId = "trestles.sdsc.edu_03b34af0-f55d-4cb3-9bce-abba35d8b30d,SimpleEcho2_e8ca0bb2-d985-4775-884b-a27b29a33251";
-    private static String pbsWRFAppId = "trestles.sdsc.edu_66caf560-497d-4316-b1e9-adadc5817b20,WRF_61490c54-dacf-4bc4-874c-ad5909a65afb";
+    private static String pbsWRFAppId = "trestles.sdsc.edu_42adfdf7-d7bc-474a-8905-6624817b22ef,WRF_24f50b3c-4f1e-4358-bb10-c6838b12e231";
     private static String slurmAppId = "stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
     private static String sgeAppId;
     private static String br2EchoAppId = "bigred2_9c1e6be8-f7d8-4494-98f2-bf508790e8c6,SimpleEchoBR_149fd613-98e2-46e7-ac7c-4d393349469e";
@@ -85,11 +85,11 @@ public class CreateLaunchExperiment {
 //            addDescriptors();
 
 ////            final String expId = createExperimentForSSHHost(airavata);
-            final String expId = createExperimentForTrestles(client);
+//            final String expId = createExperimentForTrestles(client);
 ////            final String expId = createExperimentForStampede(client);
 //            final String expId = createExperimentForLocalHost(client);
 //            final String expId = createExperimentForLonestar(airavata);
-//            final String expId = createExperimentWRFTrestles(client);
+            final String expId = createExperimentWRFTrestles(client);
 //            final String expId = createExperimentForBR2(client);
 //            final String expId = createExperimentForBR2Amber(client);
 //            final String expId = createExperimentWRFStampede(client);
