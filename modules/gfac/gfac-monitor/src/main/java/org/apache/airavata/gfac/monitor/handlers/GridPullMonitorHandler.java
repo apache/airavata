@@ -28,15 +28,22 @@ import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.monitor.HPCMonitorID;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.gfac.monitor.impl.pull.qstat.HPCPullMonitor;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Properties;
 
 /**
@@ -45,7 +52,7 @@ import java.util.Properties;
  * commands like qstat,squeue and this supports sun grid enging monitoring too
  * which is a slight variation of qstat monitoring.
  */
-public class GridPullMonitorHandler extends ThreadedHandler {
+public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
     private final static Logger logger = LoggerFactory.getLogger(GridPullMonitorHandler.class);
 
     private HPCPullMonitor hpcPullMonitor;
@@ -83,6 +90,19 @@ public class GridPullMonitorHandler extends ThreadedHandler {
             if ("true".equals(jobExecutionContext.getProperty("cancel"))) {
                 removeJobFromMonitoring(jobExecutionContext);
             } else {
+                ZooKeeper zk = jobExecutionContext.getZk();
+                try {
+                    String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
+                    String path = experimentEntry + File.separator + "operation";
+                    Stat exists = zk.exists(path, this);
+                    if(exists != null){
+                        zk.getData(path,this,exists); // watching the operations node
+                    }
+                } catch (KeeperException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID);
             }
         } catch (AiravataMonitorException e) {
@@ -92,11 +112,7 @@ public class GridPullMonitorHandler extends ThreadedHandler {
 
     public void removeJobFromMonitoring(JobExecutionContext jobExecutionContext)throws GFacHandlerException {
         MonitorID monitorID = new HPCMonitorID(getAuthenticationInfo(),jobExecutionContext);
-        try {
-            CommonUtils.removeMonitorFromQueue(hpcPullMonitor.getQueue(),monitorID);
-        } catch (AiravataMonitorException e) {
-            throw new GFacHandlerException(e);
-        }
+        hpcPullMonitor.getCancelJobList().add(monitorID);
     }
     public AuthenticationInfo getAuthenticationInfo() {
         return authenticationInfo;
@@ -116,5 +132,13 @@ public class GridPullMonitorHandler extends ThreadedHandler {
 
     public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         this.removeJobFromMonitoring(jobExecutionContext);
+    }
+
+    public void process(WatchedEvent watchedEvent) {
+        if(Event.EventType.NodeDataChanged.equals(watchedEvent.getType())){
+            // node data is changed, this means node is cancelled.
+            logger.info("Experiment is cancelled with this path:");
+            logger.info(watchedEvent.getPath());
+        }
     }
 }

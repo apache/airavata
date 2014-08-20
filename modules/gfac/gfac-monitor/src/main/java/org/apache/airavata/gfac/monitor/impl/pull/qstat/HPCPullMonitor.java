@@ -71,6 +71,8 @@ public class HPCPullMonitor extends PullMonitor {
 
     private MonitorPublisher publisher;
 
+    private List<MonitorID> cancelJobList;
+
 
     private GFac gfac;
 
@@ -80,6 +82,7 @@ public class HPCPullMonitor extends PullMonitor {
         connections = new HashMap<String, ResourceConnection>();
         this.queue = new LinkedBlockingDeque<UserMonitorData>();
         publisher = new MonitorPublisher(new EventBus());
+        cancelJobList = new ArrayList<MonitorID>();
     }
 
     public HPCPullMonitor(MonitorPublisher monitorPublisher, AuthenticationInfo authInfo) {
@@ -87,12 +90,14 @@ public class HPCPullMonitor extends PullMonitor {
         this.queue = new LinkedBlockingDeque<UserMonitorData>();
         publisher = monitorPublisher;
         authenticationInfo = authInfo;
+        cancelJobList = new ArrayList<MonitorID>();
     }
 
     public HPCPullMonitor(BlockingQueue<UserMonitorData> queue, MonitorPublisher publisher) {
         this.queue = queue;
         this.publisher = publisher;
         connections = new HashMap<String, ResourceConnection>();
+        cancelJobList = new ArrayList<MonitorID>();
     }
 
 
@@ -159,7 +164,18 @@ public class HPCPullMonitor extends PullMonitor {
                         connection = new ResourceConnection(iHostMonitorData,getAuthenticationInfo());
                         connections.put(hostName, connection);
                     }
+                    // before we get the statuses, we check the cancel job list and remove them permanently
                     List<MonitorID> monitorID = iHostMonitorData.getMonitorIDs();
+                    for(MonitorID iMonitorID:monitorID){
+                        for(MonitorID cancelMId:cancelJobList){
+                            if(iMonitorID.getJobID().equals(cancelMId.getJobID())
+                                    && iMonitorID.getExperimentID().equals(cancelMId.getExperimentID())
+                                    && iMonitorID.getTaskID().equals(cancelMId.getTaskID())){
+                                completedJobs.add(iMonitorID);
+                                cancelJobList.remove(cancelMId); // once we found we delte the cancel job, so we don't have to do this check again and again
+                            }
+                        }
+                    }
                     Map<String, JobState> jobStatuses = connection.getJobStatuses(monitorID);
                     for (MonitorID iMonitorID : monitorID) {
                         currentMonitorID = iMonitorID;
@@ -339,5 +355,13 @@ public class HPCPullMonitor extends PullMonitor {
 
     public void setAuthenticationInfo(AuthenticationInfo authenticationInfo) {
         this.authenticationInfo = authenticationInfo;
+    }
+
+    public List<MonitorID> getCancelJobList() {
+        return cancelJobList;
+    }
+
+    public void setCancelJobList(List<MonitorID> cancelJobList) {
+        this.cancelJobList = cancelJobList;
     }
 }
