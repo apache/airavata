@@ -102,9 +102,14 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                         ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
                     } else {
-                        String s = stageInputFiles(jobExecutionContext, paramValue);
-                        ((URIParameterType) actualParameter.getType()).setValue(s);
-                        StringBuffer temp = new StringBuffer(data.append(s).append(",").toString());
+                        String stageInputFile = stageInputFiles(jobExecutionContext, paramValue);
+                        ((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
+                        StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
+                        status.setTransferState(TransferState.UPLOAD);
+                        detail.setTransferStatus(status);
+                        detail.setTransferDescription("Input Data Staged: " + stageInputFile);
+                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                
                         GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                     }
                 } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
