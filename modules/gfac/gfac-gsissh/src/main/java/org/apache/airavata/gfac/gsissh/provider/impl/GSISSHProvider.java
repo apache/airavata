@@ -184,7 +184,6 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
                 pullMonitorHandler = threadedHandler;
                 if ("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PULL.equals(monitorMode)) {
-                    log.info("Job is launched successfully now parsing it to monitoring in pull mode, JobID Returned:  " + jobID);
                     jobExecutionContext.setProperty("cancel","true");
                     pullMonitorHandler.invoke(jobExecutionContext);
                 } else {
@@ -194,7 +193,6 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             } else if ("org.apache.airavata.gfac.monitor.handlers.GridPushMonitorHandler".equals(threadedHandler.getClass().getName())) {
                 pushMonitorHandler = threadedHandler;
                 if ("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PUSH.equals(monitorMode)) {
-                    log.info("Job is launched successfully now parsing it to monitoring in push mode, JobID Returned:  " + jobID);
                     pushMonitorHandler.invoke(jobExecutionContext);
                 } else {
                     log.error("Currently we only support Pull and Push monitoring and monitorMode should be PUSH" +
@@ -218,7 +216,6 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         log.info("canceling the job status in GSISSHProvider!!!!!");
         HostDescriptionType host = jobExecutionContext.getApplicationContext().
                 getHostDescription().getType();
-        StringBuffer data = new StringBuffer();
         JobDetails jobDetails = jobExecutionContext.getJobDetails();
         try {
             Cluster cluster = null;
@@ -242,6 +239,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
                 log.error("No Job Id is set, so cannot perform the cancel operation !!!");
                 return;
             }
+            removeFromMonitorHandlers(jobExecutionContext, (GsisshHostType)host, jobDetails.getJobID());
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
             // we know this host is type GsiSSHHostType
         } catch (SSHApiException e) {
