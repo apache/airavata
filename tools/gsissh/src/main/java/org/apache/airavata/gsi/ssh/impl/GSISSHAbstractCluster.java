@@ -77,7 +77,7 @@ public class GSISSHAbstractCluster implements Cluster {
         this.jobManagerConfiguration = config;
     }
 
-    public GSISSHAbstractCluster(ServerInfo serverInfo, AuthenticationInfo authenticationInfo) throws SSHApiException {
+    public  GSISSHAbstractCluster(ServerInfo serverInfo, AuthenticationInfo authenticationInfo) throws SSHApiException {
 
         this.serverInfo = serverInfo;
 

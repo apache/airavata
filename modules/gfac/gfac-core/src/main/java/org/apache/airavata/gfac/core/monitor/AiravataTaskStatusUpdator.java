@@ -106,6 +106,8 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
         if(!TaskState.CANCELED.equals(details.getTaskStatus().getExecutionState())
                 && !TaskState.CANCELING.equals(details.getTaskStatus().getExecutionState())){
             status.setExecutionState(state);
+        }else{
+            status.setExecutionState(details.getTaskStatus().getExecutionState());
         }
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setTaskStatus(status);
