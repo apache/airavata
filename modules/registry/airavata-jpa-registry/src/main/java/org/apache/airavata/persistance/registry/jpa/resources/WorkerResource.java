@@ -33,6 +33,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -630,6 +631,38 @@ public class WorkerResource extends AbstractResource {
                     "JOIN s.experiment e " +
                     "WHERE s.state='" + experimentState +  "' " +
                     "AND s.statusType='" + StatusType.EXPERIMENT + "'";
+            em = ResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q = em.createQuery(query);
+            List resultList = q.getResultList();
+            for (Object o : resultList) {
+                Experiment experiment = (Experiment) o;
+                ExperimentResource experimentResource = (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                result.add(experimentResource);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return result;
+    }
+
+    public List<ExperimentResource> searchExperimentsByCreationTime (Timestamp fromTime, Timestamp toTime) throws RegistryException{
+        List<ExperimentResource> result = new ArrayList<ExperimentResource>();
+        EntityManager em = null;
+        try {
+            String query = "SELECT e FROM Experiment e " +
+                    "WHERE e.creationTime > '" + fromTime +  "' " +
+                    "AND e.creationTime <'" + toTime + "'";
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Query q = em.createQuery(query);

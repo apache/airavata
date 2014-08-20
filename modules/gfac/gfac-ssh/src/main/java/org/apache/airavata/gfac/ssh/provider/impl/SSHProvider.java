@@ -61,6 +61,8 @@ import org.slf4j.LoggerFactory;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import javax.naming.OperationNotSupportedException;
+
 /**
  * Execute application using remote SSH
  */
@@ -150,7 +152,6 @@ public class SSHProvider extends AbstractProvider {
                 HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().
                         getApplicationDeploymentDescription().getType();
                 JobDetails jobDetails = new JobDetails();
-                String taskID = jobExecutionContext.getTaskData().getTaskID();
                 try {
                     Cluster cluster = null;
                     if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) != null) {
@@ -204,8 +205,50 @@ public class SSHProvider extends AbstractProvider {
     }
 
 
-    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacException {
-        throw new NotImplementedException();
+    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+        JobDetails jobDetails = jobExecutionContext.getJobDetails();
+        HostDescriptionType host = jobExecutionContext.getApplicationContext().
+                getHostDescription().getType();
+        StringBuffer data = new StringBuffer();
+        if (!hpcType) {
+            throw new NotImplementedException();
+        } else {
+            Cluster cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+            if (cluster == null) {
+                throw new GFacProviderException("Security context is not set properly");
+            } else {
+                log.info("Successfully retrieved the Security Context");
+            }
+            // This installed path is a mandetory field, because this could change based on the computing resource
+            if (jobDetails == null) {
+                log.error("There is not JobDetails so cancelations cannot perform !!!");
+                return;
+            }
+            try {
+                if (jobDetails.getJobID() != null) {
+                    cluster.cancelJob(jobDetails.getJobID());
+                } else {
+                    log.error("No Job Id is set, so cannot perform the cancel operation !!!");
+                    return;
+                }
+                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
+            } catch (SSHApiException e) {
+                String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+                log.error(error);
+                jobDetails.setJobID("none");
+                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
+                GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                throw new GFacProviderException(error, e);
+            } catch (Exception e) {
+                String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+                log.error(error);
+                jobDetails.setJobID("none");
+                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
+                GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                throw new GFacProviderException(error, e);
+            }
+            // we know this host is type GsiSSHHostType
+        }
     }
 
 

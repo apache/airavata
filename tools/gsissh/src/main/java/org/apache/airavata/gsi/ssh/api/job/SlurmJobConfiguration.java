@@ -51,7 +51,7 @@ public class SlurmJobConfiguration implements JobManagerConfiguration{
     }
 
     public RawCommandInfo getCancelCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + "qcancel " + jobID);
+        return new RawCommandInfo(this.installedPath + "scancel " + jobID);
     }
 
     public String getJobDescriptionTemplateName() {

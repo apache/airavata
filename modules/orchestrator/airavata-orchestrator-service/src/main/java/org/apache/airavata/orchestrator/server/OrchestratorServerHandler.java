@@ -43,6 +43,7 @@ import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -558,6 +559,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                         taskDetails.setTaskStatus(taskStatus);
                         registry.update(RegistryModelType.TASK_DETAIL, o,
                                 taskDetails);
+                        GFacUtils.setExperimentCancel(experimentId, taskDetails.getTaskID(), zk);
                     }
                 }
             }else {
@@ -608,6 +610,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                             taskDetails.setTaskStatus(taskStatus);
                             registry.update(RegistryModelType.TASK_DETAIL, o,
                                     taskDetails.getTaskID());
+                            GFacUtils.setExperimentCancel(experimentId, taskDetails.getTaskID(), zk);
                         }
                         // iterate through all the generated tasks and performs the
                         // job submisssion+monitoring

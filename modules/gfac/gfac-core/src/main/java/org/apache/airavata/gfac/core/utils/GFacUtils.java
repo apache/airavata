@@ -1012,9 +1012,10 @@ public class GFacUtils {
 		String experimentPath = experimentNode + File.separator + pickedChild;
 		String newExpNode = experimentPath + File.separator + experimentID
 				+ "+" + taskID;
-		Stat exists1 = zk.exists(newExpNode, false);
-		String foundExperimentPath = null;
-		if (exists1 == null) {
+        Stat exists1 = zk.exists(newExpNode, false);
+        String experimentEntry = GFacUtils.findExperimentEntry(experimentID, taskID, zk);
+        String foundExperimentPath = null;
+		if (exists1 == null && experimentEntry == null) {  // this means this is a very new experiment
 			List<String> runningGfacNodeNames = AiravataZKUtils
 					.getAllGfacNodeNames(zk); // here we take old gfac servers
 												// too
@@ -1089,24 +1090,27 @@ public class GFacUtils {
 				log.info("Deleting experiment data: " + foundExperimentPath);
 				ZKUtil.deleteRecursive(zk, foundExperimentPath);
 			}
-		} else {
-			log.error("ExperimentID: " + experimentID + " taskID: " + taskID
-					+ " is already running by this Gfac instance");
-			List<String> runningGfacNodeNames = AiravataZKUtils
-					.getAllGfacNodeNames(zk); // here we take old gfac servers
-												// too
-			for (String gfacServerNode : runningGfacNodeNames) {
-				if (!gfacServerNode.equals(pickedChild)) {
-					foundExperimentPath = experimentNode + File.separator
-							+ gfacServerNode + File.separator + experimentID
-							+ "+" + taskID;
-					break;
-				}
-			}
-			ZKUtil.deleteRecursive(zk, foundExperimentPath);
-			return false;
-		}
-		return true;
+		}else if(experimentEntry != null && GFacUtils.isCancelled(experimentID,taskID,zk) ){
+            // this happens when a cancel request comes to a differnt gfac node, in this case we do not move gfac experiment
+            // node to gfac node specific location, because original request execution will fail with errors
+            return true;
+        } else {
+            log.error("ExperimentID: " + experimentID + " taskID: " + taskID
+                    + " is already running by this Gfac instance");
+            List<String> runningGfacNodeNames = AiravataZKUtils
+                    .getAllGfacNodeNames(zk); // here we take old gfac servers
+            // too
+            for (String gfacServerNode : runningGfacNodeNames) {
+                if (!gfacServerNode.equals(pickedChild)) {
+                    foundExperimentPath = experimentNode + File.separator
+                            + gfacServerNode + File.separator + experimentID
+                            + "+" + taskID;
+                    break;
+                }
+            }
+            ZKUtil.deleteRecursive(zk, foundExperimentPath);
+        }
+        return true;
 	}
 
     public static String findExperimentEntry(String experimentID,
@@ -1152,7 +1156,7 @@ public class GFacUtils {
         }else {
             Stat exists = zk.exists(experimentEntry, false);
             if (exists != null) {
-                String operation = new String(zk.getData(experimentEntry, false, exists));
+                String operation = new String(zk.getData(experimentEntry+File.separator+"operation", false, exists));
                 if ("cancel".equals(operation)) {
                     return true;
                 }
