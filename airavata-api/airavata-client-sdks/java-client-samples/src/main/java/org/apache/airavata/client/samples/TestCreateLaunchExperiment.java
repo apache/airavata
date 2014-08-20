@@ -69,10 +69,17 @@ public class TestCreateLaunchExperiment {
             Calendar cal2 = Calendar.getInstance();
             Long to = cal2.getTimeInMillis();
 
-            List<ExperimentSummary> experiments = getExperimentsForApplication(airavata, "admin", "e");
-            for (ExperimentSummary experimentSummary : experiments){
+            List<JobDetails> jobDetailsList = getJobDetails(airavata, "echoExperiment_14a83cee-5611-4e37-b90c-4444d28359b6");
+            for (JobDetails job : jobDetailsList){
 //                System.out.println(experimentSummary.getExperimentID());
-                System.out.println(experimentSummary.getApplicationId());
+                System.out.println("job description : " + job.getJobDescription());
+//                System.out.println(experimentSummary.getExperimentStatus().getExperimentState().toString());
+            }
+
+            List<DataTransferDetails> dataTransferDetails = getDataTransferDetails(airavata, "echoExperiment_6c32f45d-7755-4d1f-9915-69b9a6972770");
+            for (DataTransferDetails dt : dataTransferDetails){
+//                System.out.println(experimentSummary.getExperimentID());
+                System.out.println("data transfer description "  + dt.getTransferDescription());
 //                System.out.println(experimentSummary.getExperimentStatus().getExperimentState().toString());
             }
 //            getAllComputeResources(airavata);
@@ -117,6 +124,36 @@ public class TestCreateLaunchExperiment {
     public static List<Experiment> getExperimentsForUser (Airavata.Client client, String user){
         try {
             return client.getAllUserExperiments(user);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<JobDetails> getJobDetails (Airavata.Client client, String experimentId){
+        try {
+            return client.getJobDetails(experimentId);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<DataTransferDetails> getDataTransferDetails (Airavata.Client client, String experimentId){
+        try {
+            return client.getDataTransferDetails(experimentId);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {

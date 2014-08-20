@@ -64,7 +64,7 @@ public class CreateLaunchExperiment {
     private static Airavata.Client client;
     private static String localHostAppId = "localhost_3b5962d3-5e7e-4a97-9d1f-25c5ec436ba5,SimpleEcho0_44c34394-ca27-4fa9-bb2d-87f95a02352a";
     private static String sshHostAppId;
-    private static String pbsEchoAppId = "trestles.sdsc.edu_06f378d4-e25e-40f9-bd0e-c252e46177be,SimpleEcho2_2c836f69-3455-4b57-a083-78e2b19e1e43";
+    private static String pbsEchoAppId = "trestles.sdsc.edu_03b34af0-f55d-4cb3-9bce-abba35d8b30d,SimpleEcho2_e8ca0bb2-d985-4775-884b-a27b29a33251";
     private static String pbsWRFAppId = "trestles.sdsc.edu_66caf560-497d-4316-b1e9-adadc5817b20,WRF_61490c54-dacf-4bc4-874c-ad5909a65afb";
     private static String slurmAppId = "stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
     private static String sgeAppId;
