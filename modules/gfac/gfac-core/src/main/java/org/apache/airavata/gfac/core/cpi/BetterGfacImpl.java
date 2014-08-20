@@ -689,13 +689,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 			jobExecutionContext.setProperty(ERROR_SENT, "true");
 			jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
 			throw new GFacException(e.getMessage(), e);
-		}finally {
-            try {
-                zk.close();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+		}
     }
 
 	private void launch(JobExecutionContext jobExecutionContext) throws GFacException {
@@ -762,13 +756,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 			jobExecutionContext.setProperty(ERROR_SENT, "true");
 			jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
 			throw new GFacException(e.getMessage(), e);
-		}finally {
-            try {
-                zk.close();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+		}
     }
 
     private void invokeProviderExecute(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException, InterruptedException, KeeperException {
@@ -1188,8 +1176,7 @@ public class BetterGfacImpl implements GFac,Watcher {
     public void process(WatchedEvent watchedEvent) {
         if(Event.EventType.NodeDataChanged.equals(watchedEvent.getType())){
             // node data is changed, this means node is cancelled.
-            log.info("Experiment is cancelled with this path:");
-            log.info(watchedEvent.getPath());
+            log.info("Experiment is cancelled with this path:"+watchedEvent.getPath());
             this.cancelled = true;
         }
     }

@@ -232,7 +232,6 @@ public class SSHProvider extends AbstractProvider {
                     log.error("No Job Id is set, so cannot perform the cancel operation !!!");
                     return;
                 }
-                removeFromMonitorHandlers(jobExecutionContext, (GsisshHostType)host, jobDetails.getJobID());
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
             } catch (SSHApiException e) {
                 String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();

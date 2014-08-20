@@ -520,7 +520,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                         experimentId);
             }
             ExperimentState experimentState = experiment.getExperimentStatus().getExperimentState();
-            if (experimentState.getValue()> 4 && experimentState.getValue()<10){
+            if (experimentState.getValue()> 5 && experimentState.getValue()<10){
                     throw new OrchestratorException("Unable to mark experiment as Cancelled, because current state is: "
                     + experiment.getExperimentStatus().getExperimentState().toString());
             }else if(experimentState.getValue()<3){

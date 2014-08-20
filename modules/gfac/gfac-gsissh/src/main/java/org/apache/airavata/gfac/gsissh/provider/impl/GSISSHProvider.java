@@ -239,7 +239,6 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
                 log.error("No Job Id is set, so cannot perform the cancel operation !!!");
                 return;
             }
-            removeFromMonitorHandlers(jobExecutionContext, (GsisshHostType)host, jobDetails.getJobID());
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
             // we know this host is type GsiSSHHostType
         } catch (SSHApiException e) {

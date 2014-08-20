@@ -1137,12 +1137,16 @@ public class GFacUtils {
     public static void setExperimentCancel(String experimentId,String taskId,ZooKeeper zk)throws KeeperException,
             InterruptedException {
         String experimentEntry = GFacUtils.findExperimentEntry(experimentId, taskId, zk);
-        Stat operation = zk.exists(experimentEntry + File.separator + "operation", false);
-        if (operation == null) { // if there is no entry, this will come when a user immediately cancel a job
-            zk.create(experimentEntry + File.separator + "operation", "cancel".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                    CreateMode.PERSISTENT);
-        } else { // if user submit the job to gfac then cancel during execution
-            zk.setData(experimentEntry + File.separator + "operation", "cancel".getBytes(), operation.getVersion());
+        if(experimentEntry == null){
+            log.error("Cannot find the experiment Entry, so cancel operation cannot be performed !!!");
+        }else {
+            Stat operation = zk.exists(experimentEntry + File.separator + "operation", false);
+            if (operation == null) { // if there is no entry, this will come when a user immediately cancel a job
+                zk.create(experimentEntry + File.separator + "operation", "cancel".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                        CreateMode.PERSISTENT);
+            } else { // if user submit the job to gfac then cancel during execution
+                zk.setData(experimentEntry + File.separator + "operation", "cancel".getBytes(), operation.getVersion());
+            }
         }
 
     }

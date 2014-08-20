@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -47,6 +48,7 @@ import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.JobStatus;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.SSHHostType;
@@ -71,7 +73,7 @@ public class HPCPullMonitor extends PullMonitor {
 
     private MonitorPublisher publisher;
 
-    private List<MonitorID> cancelJobList;
+    private LinkedBlockingQueue<String> cancelJobList;
 
 
     private GFac gfac;
@@ -82,7 +84,7 @@ public class HPCPullMonitor extends PullMonitor {
         connections = new HashMap<String, ResourceConnection>();
         this.queue = new LinkedBlockingDeque<UserMonitorData>();
         publisher = new MonitorPublisher(new EventBus());
-        cancelJobList = new ArrayList<MonitorID>();
+        cancelJobList = new LinkedBlockingQueue<String>();
     }
 
     public HPCPullMonitor(MonitorPublisher monitorPublisher, AuthenticationInfo authInfo) {
@@ -90,14 +92,14 @@ public class HPCPullMonitor extends PullMonitor {
         this.queue = new LinkedBlockingDeque<UserMonitorData>();
         publisher = monitorPublisher;
         authenticationInfo = authInfo;
-        cancelJobList = new ArrayList<MonitorID>();
+        cancelJobList = new LinkedBlockingQueue<String>();
     }
 
     public HPCPullMonitor(BlockingQueue<UserMonitorData> queue, MonitorPublisher publisher) {
         this.queue = queue;
         this.publisher = publisher;
         connections = new HashMap<String, ResourceConnection>();
-        cancelJobList = new ArrayList<MonitorID>();
+        cancelJobList = new LinkedBlockingQueue<String>();
     }
 
 
@@ -138,7 +140,7 @@ public class HPCPullMonitor extends PullMonitor {
      *
      * @return if the start process is successful return true else false
      */
-    public boolean startPulling() throws AiravataMonitorException {
+    synchronized public boolean startPulling() throws AiravataMonitorException {
         // take the top element in the queue and pull the data and put that element
         // at the tail of the queue
         //todo this polling will not work with multiple usernames but with single user
@@ -165,14 +167,14 @@ public class HPCPullMonitor extends PullMonitor {
                         connections.put(hostName, connection);
                     }
                     // before we get the statuses, we check the cancel job list and remove them permanently
+
                     List<MonitorID> monitorID = iHostMonitorData.getMonitorIDs();
                     for(MonitorID iMonitorID:monitorID){
-                        for(MonitorID cancelMId:cancelJobList){
-                            if(iMonitorID.getJobID().equals(cancelMId.getJobID())
-                                    && iMonitorID.getExperimentID().equals(cancelMId.getExperimentID())
-                                    && iMonitorID.getTaskID().equals(cancelMId.getTaskID())){
+                        for(String cancelMId:cancelJobList) {
+                            if (cancelMId.equals(iMonitorID.getExperimentID() + "+" + iMonitorID.getTaskID())) {
+                                logger.info("Found a match in monitoring Queue, so marking this job to remove from monitor queue " + cancelMId);
+                                logger.info("ExperimentID: " +  cancelMId.split("\\+")[0]+",TaskID: "+cancelMId.split("\\+")[1]+"JobID"+iMonitorID.getJobID());
                                 completedJobs.add(iMonitorID);
-                                cancelJobList.remove(cancelMId); // once we found we delte the cancel job, so we don't have to do this check again and again
                             }
                         }
                     }
@@ -357,11 +359,11 @@ public class HPCPullMonitor extends PullMonitor {
         this.authenticationInfo = authenticationInfo;
     }
 
-    public List<MonitorID> getCancelJobList() {
+    public LinkedBlockingQueue<String> getCancelJobList() {
         return cancelJobList;
     }
 
-    public void setCancelJobList(List<MonitorID> cancelJobList) {
+    public void setCancelJobList(LinkedBlockingQueue<String> cancelJobList) {
         this.cancelJobList = cancelJobList;
     }
 }
