@@ -56,6 +56,8 @@ class AiravataIf {
   virtual void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId) = 0;
   virtual void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
+  virtual void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return, const std::string& airavataExperimentId) = 0;
+  virtual void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId) = 0;
   virtual void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) = 0;
   virtual void terminateExperiment(const std::string& airavataExperimentId) = 0;
   virtual void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
@@ -208,6 +210,12 @@ class AiravataNull : virtual public AiravataIf {
     return;
   }
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & /* _return */, const std::string& /* airavataExperimentId */) {
+    return;
+  }
+  void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & /* _return */, const std::string& /* airavataExperimentId */) {
+    return;
+  }
+  void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
   void cloneExperiment(std::string& /* _return */, const std::string& /* existingExperimentID */, const std::string& /* newExperimentName */) {
@@ -3405,8 +3413,12 @@ class Airavata_getExperimentOutputs_pargs {
 };
 
 typedef struct _Airavata_getExperimentOutputs_result__isset {
-  _Airavata_getExperimentOutputs_result__isset() : success(false) {}
+  _Airavata_getExperimentOutputs_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
   bool success;
+  bool ire;
+  bool enf;
+  bool ace;
+  bool ase;
 } _Airavata_getExperimentOutputs_result__isset;
 
 class Airavata_getExperimentOutputs_result {
@@ -3418,6 +3430,10 @@ class Airavata_getExperimentOutputs_result {
   virtual ~Airavata_getExperimentOutputs_result() throw() {}
 
   std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getExperimentOutputs_result__isset __isset;
 
@@ -3425,9 +3441,33 @@ class Airavata_getExperimentOutputs_result {
     success = val;
   }
 
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
+    enf = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
   bool operator == (const Airavata_getExperimentOutputs_result & rhs) const
   {
     if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(enf == rhs.enf))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
       return false;
     return true;
   }
@@ -3443,8 +3483,12 @@ class Airavata_getExperimentOutputs_result {
 };
 
 typedef struct _Airavata_getExperimentOutputs_presult__isset {
-  _Airavata_getExperimentOutputs_presult__isset() : success(false) {}
+  _Airavata_getExperimentOutputs_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
   bool success;
+  bool ire;
+  bool enf;
+  bool ace;
+  bool ase;
 } _Airavata_getExperimentOutputs_presult__isset;
 
 class Airavata_getExperimentOutputs_presult {
@@ -3454,6 +3498,10 @@ class Airavata_getExperimentOutputs_presult {
   virtual ~Airavata_getExperimentOutputs_presult() throw() {}
 
   std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getExperimentOutputs_presult__isset __isset;
 
@@ -3507,8 +3555,12 @@ class Airavata_getJobStatuses_pargs {
 };
 
 typedef struct _Airavata_getJobStatuses_result__isset {
-  _Airavata_getJobStatuses_result__isset() : success(false) {}
+  _Airavata_getJobStatuses_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
   bool success;
+  bool ire;
+  bool enf;
+  bool ace;
+  bool ase;
 } _Airavata_getJobStatuses_result__isset;
 
 class Airavata_getJobStatuses_result {
@@ -3520,6 +3572,10 @@ class Airavata_getJobStatuses_result {
   virtual ~Airavata_getJobStatuses_result() throw() {}
 
   std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getJobStatuses_result__isset __isset;
 
@@ -3527,9 +3583,33 @@ class Airavata_getJobStatuses_result {
     success = val;
   }
 
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
+    enf = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
   bool operator == (const Airavata_getJobStatuses_result & rhs) const
   {
     if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(enf == rhs.enf))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
       return false;
     return true;
   }
@@ -3545,8 +3625,12 @@ class Airavata_getJobStatuses_result {
 };
 
 typedef struct _Airavata_getJobStatuses_presult__isset {
-  _Airavata_getJobStatuses_presult__isset() : success(false) {}
+  _Airavata_getJobStatuses_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
   bool success;
+  bool ire;
+  bool enf;
+  bool ace;
+  bool ase;
 } _Airavata_getJobStatuses_presult__isset;
 
 class Airavata_getJobStatuses_presult {
@@ -3556,8 +3640,296 @@ class Airavata_getJobStatuses_presult {
   virtual ~Airavata_getJobStatuses_presult() throw() {}
 
   std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getJobStatuses_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getJobDetails_args {
+ public:
+
+  Airavata_getJobDetails_args() : airavataExperimentId() {
+  }
+
+  virtual ~Airavata_getJobDetails_args() throw() {}
+
+  std::string airavataExperimentId;
+
+  void __set_airavataExperimentId(const std::string& val) {
+    airavataExperimentId = val;
+  }
+
+  bool operator == (const Airavata_getJobDetails_args & rhs) const
+  {
+    if (!(airavataExperimentId == rhs.airavataExperimentId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getJobDetails_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getJobDetails_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getJobDetails_pargs {
+ public:
+
+
+  virtual ~Airavata_getJobDetails_pargs() throw() {}
+
+  const std::string* airavataExperimentId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getJobDetails_result__isset {
+  _Airavata_getJobDetails_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool enf;
+  bool ace;
+  bool ase;
+} _Airavata_getJobDetails_result__isset;
+
+class Airavata_getJobDetails_result {
+ public:
+
+  Airavata_getJobDetails_result() {
+  }
+
+  virtual ~Airavata_getJobDetails_result() throw() {}
+
+  std::vector< ::apache::airavata::model::workspace::experiment::JobDetails>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getJobDetails_result__isset __isset;
+
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
+    enf = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getJobDetails_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(enf == rhs.enf))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getJobDetails_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getJobDetails_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getJobDetails_presult__isset {
+  _Airavata_getJobDetails_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool enf;
+  bool ace;
+  bool ase;
+} _Airavata_getJobDetails_presult__isset;
+
+class Airavata_getJobDetails_presult {
+ public:
+
+
+  virtual ~Airavata_getJobDetails_presult() throw() {}
+
+  std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getJobDetails_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getDataTransferDetails_args {
+ public:
+
+  Airavata_getDataTransferDetails_args() : airavataExperimentId() {
+  }
+
+  virtual ~Airavata_getDataTransferDetails_args() throw() {}
+
+  std::string airavataExperimentId;
+
+  void __set_airavataExperimentId(const std::string& val) {
+    airavataExperimentId = val;
+  }
+
+  bool operator == (const Airavata_getDataTransferDetails_args & rhs) const
+  {
+    if (!(airavataExperimentId == rhs.airavataExperimentId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getDataTransferDetails_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getDataTransferDetails_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getDataTransferDetails_pargs {
+ public:
+
+
+  virtual ~Airavata_getDataTransferDetails_pargs() throw() {}
+
+  const std::string* airavataExperimentId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getDataTransferDetails_result__isset {
+  _Airavata_getDataTransferDetails_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool enf;
+  bool ace;
+  bool ase;
+} _Airavata_getDataTransferDetails_result__isset;
+
+class Airavata_getDataTransferDetails_result {
+ public:
+
+  Airavata_getDataTransferDetails_result() {
+  }
+
+  virtual ~Airavata_getDataTransferDetails_result() throw() {}
+
+  std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getDataTransferDetails_result__isset __isset;
+
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val) {
+    enf = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getDataTransferDetails_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(enf == rhs.enf))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getDataTransferDetails_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getDataTransferDetails_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getDataTransferDetails_presult__isset {
+  _Airavata_getDataTransferDetails_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool enf;
+  bool ace;
+  bool ase;
+} _Airavata_getDataTransferDetails_presult__isset;
+
+class Airavata_getDataTransferDetails_presult {
+ public:
+
+
+  virtual ~Airavata_getDataTransferDetails_presult() throw() {}
+
+  std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::ExperimentNotFoundException enf;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getDataTransferDetails_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -10774,6 +11146,12 @@ class AiravataClient : virtual public AiravataIf {
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId);
   void send_getJobStatuses(const std::string& airavataExperimentId);
   void recv_getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return);
+  void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return, const std::string& airavataExperimentId);
+  void send_getJobDetails(const std::string& airavataExperimentId);
+  void recv_getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return);
+  void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId);
+  void send_getDataTransferDetails(const std::string& airavataExperimentId);
+  void recv_getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return);
   void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName);
   void send_cloneExperiment(const std::string& existingExperimentID, const std::string& newExperimentName);
   void recv_cloneExperiment(std::string& _return);
@@ -10969,6 +11347,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getExperimentStatus(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getExperimentOutputs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getJobStatuses(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getJobDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getDataTransferDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_cloneExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_terminateExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -11048,6 +11428,8 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getExperimentStatus"] = &AiravataProcessor::process_getExperimentStatus;
     processMap_["getExperimentOutputs"] = &AiravataProcessor::process_getExperimentOutputs;
     processMap_["getJobStatuses"] = &AiravataProcessor::process_getJobStatuses;
+    processMap_["getJobDetails"] = &AiravataProcessor::process_getJobDetails;
+    processMap_["getDataTransferDetails"] = &AiravataProcessor::process_getDataTransferDetails;
     processMap_["cloneExperiment"] = &AiravataProcessor::process_cloneExperiment;
     processMap_["terminateExperiment"] = &AiravataProcessor::process_terminateExperiment;
     processMap_["registerApplicationModule"] = &AiravataProcessor::process_registerApplicationModule;
@@ -11359,6 +11741,26 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->getJobStatuses(_return, airavataExperimentId);
     }
     ifaces_[i]->getJobStatuses(_return, airavataExperimentId);
+    return;
+  }
+
+  void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return, const std::string& airavataExperimentId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getJobDetails(_return, airavataExperimentId);
+    }
+    ifaces_[i]->getJobDetails(_return, airavataExperimentId);
+    return;
+  }
+
+  void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getDataTransferDetails(_return, airavataExperimentId);
+    }
+    ifaces_[i]->getDataTransferDetails(_return, airavataExperimentId);
     return;
   }
 

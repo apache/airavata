@@ -33,6 +33,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.StatusType;
+import org.apache.airavata.schemas.gfac.IntegerArrayType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1184,7 +1185,7 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
             DataTransferDetailResource resource = taskDetail.getDataTransferDetail(transferId);
-            resource.setTaskDetailResource(taskDetail);
+//            resource.setTaskDetailResource(taskDetail);
             resource.setTransferDescription(transferDetails.getTransferDescription());
             resource.setCreationTime(AiravataUtils.getTime(transferDetails.getCreationTime()));
             resource.save();
@@ -1336,6 +1337,16 @@ public class ExperimentRegistry {
                     workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     taskDetail = workflowNode.getTaskDetail((String) id);
                     errorResource = (ErrorDetailResource) taskDetail.create(ResourceType.ERROR_DETAIL);
+                    if (error.getErrorID() != null){
+                        List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
+                        if (errorDetailList != null && !errorDetailList.isEmpty()){
+                            for (ErrorDetailResource errorDetailResource : errorDetailList){
+                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorID())){
+                                    errorResource = errorDetailResource;
+                                }
+                            }
+                        }
+                    }
                     errorResource.setTaskDetailResource(taskDetail);
                     errorResource.setNodeDetail(taskDetail.getWorkflowNodeDetailResource());
                     errorResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
@@ -1350,6 +1361,16 @@ public class ExperimentRegistry {
                     taskDetail = workflowNode.getTaskDetail((String) cid.getTopLevelIdentifier());
                     JobDetailResource jobDetail = taskDetail.getJobDetail((String) cid.getSecondLevelIdentifier());
                     errorResource = (ErrorDetailResource) jobDetail.create(ResourceType.ERROR_DETAIL);
+                    if (error.getErrorID() != null){
+                        List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
+                        if (errorDetailList != null && !errorDetailList.isEmpty()){
+                            for (ErrorDetailResource errorDetailResource : errorDetailList){
+                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorID())){
+                                       errorResource = errorDetailResource;
+                                }
+                            }
+                        }
+                    }
                     errorResource.setTaskDetailResource(taskDetail);
                     errorResource.setNodeDetail(taskDetail.getWorkflowNodeDetailResource());
                     errorResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
