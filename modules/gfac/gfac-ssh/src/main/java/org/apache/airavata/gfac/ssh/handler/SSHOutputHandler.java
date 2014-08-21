@@ -188,9 +188,11 @@ public class SSHOutputHandler extends AbstractHandler {
                     } else {
                         String valueList = outputList.get(0);
                         cluster.scpFrom(app.getOutputDataDirectory() + File.separator + valueList, outputDataDir);
-                        jobExecutionContext.addOutputFile(outputDataDir + File.separator + valueList);
-                        DataObjectType dataObjectType = new DataObjectType();
-                        dataObjectType.setValue(valueList);
+                        String outputPath = outputDataDir + File.separator + valueList;
+						jobExecutionContext.addOutputFile(outputPath);
+						MappingFactory.fromString(actualParameter, outputPath);
+						DataObjectType dataObjectType = new DataObjectType();
+                        dataObjectType.setValue(outputPath);
                         dataObjectType.setKey(paramName);
                         dataObjectType.setType(DataType.URI);
                         outputArray.add(dataObjectType);

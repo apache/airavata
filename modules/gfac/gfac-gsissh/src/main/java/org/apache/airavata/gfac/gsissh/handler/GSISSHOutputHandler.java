@@ -242,6 +242,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                             GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                         }
                         jobExecutionContext.addOutputFile(outputFile);
+                        MappingFactory.fromString(actualParameter, outputFile);
                         DataObjectType dataObjectType = new DataObjectType();
                         dataObjectType.setValue(valueList);
                         dataObjectType.setKey(paramName);
