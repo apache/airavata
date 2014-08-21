@@ -438,23 +438,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 											.get(0), taskData,airavataCredStoreToken);
 				}
 			}
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (ApplicationSettingsException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (RegistryException e) {
-			e.printStackTrace();
-		} catch (OrchestratorException e) {
-			e.printStackTrace();
-		} catch (AppCatalogException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
+		} catch (Exception e) {
+            throw new TException(e);
+        }
+        return false;
 	}
 
 	private ApplicationDeploymentDescription getAppDeployment(
