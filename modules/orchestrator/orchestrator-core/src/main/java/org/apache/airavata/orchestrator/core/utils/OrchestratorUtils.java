@@ -34,8 +34,6 @@ import org.apache.airavata.orchestrator.core.impl.GFACEmbeddedJobSubmitter;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.exception.RegException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,16 +57,15 @@ public class OrchestratorUtils {
         return orchestratorConfiguration;
     }
 
-    public static HostDescription getHostDescription(Orchestrator orchestrator, TaskDetails taskDetails)throws OrchestratorException {
-        JobSubmitter jobSubmitter = ((SimpleOrchestratorImpl) orchestrator).getJobSubmitter();
-        AiravataRegistry2 registry = ((GFACEmbeddedJobSubmitter) jobSubmitter).getOrchestratorContext().getRegistry();
-        ComputationalResourceScheduling taskScheduling = taskDetails.getTaskScheduling();
-        String resourceHostId = taskScheduling.getResourceHostId();
-        try {
-            return registry.getHostDescriptor(resourceHostId);
-        } catch (RegException e) {
-            throw new OrchestratorException(e);
-        }
-    }
-
+//    public static HostDescription getHostDescription(Orchestrator orchestrator, TaskDetails taskDetails)throws OrchestratorException {
+//        JobSubmitter jobSubmitter = ((SimpleOrchestratorImpl) orchestrator).getJobSubmitter();
+//        AiravataRegistry2 registry = ((GFACEmbeddedJobSubmitter) jobSubmitter).getOrchestratorContext().getRegistry();
+//        ComputationalResourceScheduling taskScheduling = taskDetails.getTaskScheduling();
+//        String resourceHostId = taskScheduling.getResourceHostId();
+//        try {
+//            return registry.getHostDescriptor(resourceHostId);
+//        } catch (RegException e) {
+//            throw new OrchestratorException(e);
+//        }
+//    }
 }

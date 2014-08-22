@@ -22,18 +22,7 @@
 package org.apache.airavata.integration;
 
 import junit.framework.Assert;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.ExperimentAdvanceOptions;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.exception.WorkflowAlreadyExistsException;
 import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.InputData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionData;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeType.WorkflowNode;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -41,11 +30,8 @@ import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 
 import java.io.IOException;
-import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,10 +45,10 @@ public class WorkflowSamplesCaseIT extends WorkflowIntegrationTestBase {
 //        setUpEnvironment();
     }
 
-    @BeforeTest
-    public void setUp() throws Exception {
-        this.airavataAPI = getAiravataAPI();
-    }
+//    @BeforeTest
+//    public void setUp() throws Exception {
+//        this.airavataAPI = getAiravataAPI();
+//    }
 
 //    @Test(groups = {"workflowSamplesGroup"}/*, dependsOnGroups = { "forEachGroup" }*/)
 //    public void testWorkflowSamples() throws Exception {
@@ -75,70 +61,70 @@ public class WorkflowSamplesCaseIT extends WorkflowIntegrationTestBase {
 //		executeExperiment("target/samples/workflows/ComplexForEach.xwf", Arrays.asList("1,2","3,4","5,6","7,8","9,10","11,12","13,14","15,16"), Arrays.asList("2027025","10321920"));
 //    }
 
-    private void executeExperiment(String workflowFilePath,
-                                   List<String> inputs, Object outputs) throws GraphException,
-            ComponentException, IOException, WorkflowAlreadyExistsException,
-            AiravataAPIInvocationException, Exception {
-        log("Saving workflow ...");
-
-        Workflow workflow = new Workflow(getWorkflowComposeContent(workflowFilePath));
-        if (!airavataAPI.getWorkflowManager().isWorkflowExists(workflow.getName())) {
-            airavataAPI.getWorkflowManager().addWorkflow(workflow);
-        }
-        Assert.assertTrue(airavataAPI.getWorkflowManager().isWorkflowExists(workflow.getName()));
-
-        log("Workflow setting up completed ...");
-
-        runWorkFlow(workflow, inputs, outputs);
-    }
-
-    protected void runWorkFlow(Workflow workflow, List<String> inputValues, Object outputValue) throws Exception {
-        List<WorkflowInput> workflowInputs = setupInputs(workflow, inputValues);
-        String workflowName = workflow.getName();
-        ExperimentAdvanceOptions options = airavataAPI.getExecutionManager().createExperimentAdvanceOptions(
-                workflowName, getUserName(), null);
-
-        String experimentId = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, options);
-
-        Assert.assertNotNull(experimentId);
-
-        log.info("Run workflow completed ....");
-
-        airavataAPI.getExecutionManager().waitForExperimentTermination(experimentId);
-        verifyOutput(experimentId, outputValue);
-    }
-
-    protected void verifyOutput(String experimentId, Object outputVerifyingString) throws Exception {
-        log.info("Experiment ID Returned : " + experimentId);
-
-        ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(experimentId);
-
-        log.info("Verifying output ...");
-
-        List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
-
-        Assert.assertFalse("Workflow instance data cannot be empty !", workflowInstanceData.isEmpty());
-
-        for (WorkflowExecutionDataImpl data : workflowInstanceData) {
-            List<NodeExecutionData> nodeDataList = data.getNodeDataList(WorkflowNode.OUTPUTNODE);
-            Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
-            for (NodeExecutionData nodeData : nodeDataList) {
-                for (InputData inputData : nodeData.getInputData()) {
-                    if (outputVerifyingString instanceof List) {
-                        @SuppressWarnings("unchecked")
-                        List<String> outputs = (List<String>) outputVerifyingString;
-                        String[] outputValues = StringUtil.getElementsFromString(inputData.getValue());
-                        Assert.assertEquals(outputs.size(), outputValues.length);
-                        for (int i = 0; i < outputValues.length; i++) {
-                            Assert.assertEquals(outputs.get(i), outputValues[i]);
-                        }
-                    } else {
-                        Assert.assertEquals(outputVerifyingString.toString(), inputData.getValue());
-                    }
-
-                }
-            }
-        }
-    }
+//    private void executeExperiment(String workflowFilePath,
+//                                   List<String> inputs, Object outputs) throws GraphException,
+//            ComponentException, IOException, WorkflowAlreadyExistsException,
+//            AiravataAPIInvocationException, Exception {
+//        log("Saving workflow ...");
+//
+//        Workflow workflow = new Workflow(getWorkflowComposeContent(workflowFilePath));
+//        if (!airavataAPI.getWorkflowManager().isWorkflowExists(workflow.getName())) {
+//            airavataAPI.getWorkflowManager().addWorkflow(workflow);
+//        }
+//        Assert.assertTrue(airavataAPI.getWorkflowManager().isWorkflowExists(workflow.getName()));
+//
+//        log("Workflow setting up completed ...");
+//
+//        runWorkFlow(workflow, inputs, outputs);
+//    }
+//
+//    protected void runWorkFlow(Workflow workflow, List<String> inputValues, Object outputValue) throws Exception {
+//        List<WorkflowInput> workflowInputs = setupInputs(workflow, inputValues);
+//        String workflowName = workflow.getName();
+//        ExperimentAdvanceOptions options = airavataAPI.getExecutionManager().createExperimentAdvanceOptions(
+//                workflowName, getUserName(), null);
+//
+//        String experimentId = airavataAPI.getExecutionManager().runExperiment(workflowName, workflowInputs, options);
+//
+//        Assert.assertNotNull(experimentId);
+//
+//        log.info("Run workflow completed ....");
+//
+//        airavataAPI.getExecutionManager().waitForExperimentTermination(experimentId);
+//        verifyOutput(experimentId, outputValue);
+//    }
+//
+//    protected void verifyOutput(String experimentId, Object outputVerifyingString) throws Exception {
+//        log.info("Experiment ID Returned : " + experimentId);
+//
+//        ExperimentData experimentData = airavataAPI.getProvenanceManager().getExperimentData(experimentId);
+//
+//        log.info("Verifying output ...");
+//
+//        List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
+//
+//        Assert.assertFalse("Workflow instance data cannot be empty !", workflowInstanceData.isEmpty());
+//
+//        for (WorkflowExecutionDataImpl data : workflowInstanceData) {
+//            List<NodeExecutionData> nodeDataList = data.getNodeDataList(WorkflowNode.OUTPUTNODE);
+//            Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
+//            for (NodeExecutionData nodeData : nodeDataList) {
+//                for (InputData inputData : nodeData.getInputData()) {
+//                    if (outputVerifyingString instanceof List) {
+//                        @SuppressWarnings("unchecked")
+//                        List<String> outputs = (List<String>) outputVerifyingString;
+//                        String[] outputValues = StringUtil.getElementsFromString(inputData.getValue());
+//                        Assert.assertEquals(outputs.size(), outputValues.length);
+//                        for (int i = 0; i < outputValues.length; i++) {
+//                            Assert.assertEquals(outputs.get(i), outputValues[i]);
+//                        }
+//                    } else {
+//                        Assert.assertEquals(outputVerifyingString.toString(), inputData.getValue());
+//                    }
+//
+//                }
+//            }
+//        }
+//    }
 
 }

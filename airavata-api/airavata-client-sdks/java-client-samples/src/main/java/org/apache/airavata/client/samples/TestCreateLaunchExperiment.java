@@ -23,31 +23,19 @@ package org.apache.airavata.client.samples;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreator;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.error.*;
-import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.util.ProjectModelUtil;
-import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.persistance.registry.jpa.model.*;
-import org.apache.airavata.workflow.model.component.system.SystemComponent;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 public class TestCreateLaunchExperiment {
 
@@ -105,21 +93,21 @@ public class TestCreateLaunchExperiment {
         }
     }
 
-    private static AiravataAPI getAiravataAPI() throws AiravataAPIInvocationException, ApplicationSettingsException {
-        AiravataAPI airavataAPI;
-        try {
-            String sysUser = ClientSettings.getSetting(DEFAULT_USER);
-            String gateway = ClientSettings.getSetting(DEFAULT_GATEWAY);
-            airavataAPI = AiravataAPIFactory.getAPI(gateway, sysUser);
-        } catch (AiravataAPIInvocationException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new AiravataAPIInvocationException(e);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new ApplicationSettingsException(e.getMessage());
-        }
-        return airavataAPI;
-    }
+//    private static AiravataAPI getAiravataAPI() throws AiravataAPIInvocationException, ApplicationSettingsException {
+//        AiravataAPI airavataAPI;
+//        try {
+//            String sysUser = ClientSettings.getSetting(DEFAULT_USER);
+//            String gateway = ClientSettings.getSetting(DEFAULT_GATEWAY);
+//            airavataAPI = AiravataAPIFactory.getAPI(gateway, sysUser);
+//        } catch (AiravataAPIInvocationException e) {
+//            logger.error("Unable to create airavata API", e.getMessage());
+//            throw new AiravataAPIInvocationException(e);
+//        } catch (ApplicationSettingsException e) {
+//            logger.error("Unable to create airavata API", e.getMessage());
+//            throw new ApplicationSettingsException(e.getMessage());
+//        }
+//        return airavataAPI;
+//    }
 
     public static List<Experiment> getExperimentsForUser (Airavata.Client client, String user){
         try {
