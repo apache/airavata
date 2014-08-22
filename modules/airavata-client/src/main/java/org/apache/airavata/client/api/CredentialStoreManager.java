@@ -27,40 +27,36 @@ public interface CredentialStoreManager {
 
 	/**
 	 * Checks whether a credential exists in the credential store for given gateway and token
-	 * @param String gatewayId
-	 * @param String tokenId
+	 * @param  gatewayId
+	 * @param  tokenId
 	 * @return a boolean (true is credential exists, false if not)
-	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
 	public boolean isCredentialExist(String gatewayId, String tokenId) throws AiravataAPIInvocationException;
 	
 	/**
 	 * Get the public key for a credential in the credential store for given gateway and token
-	 * @param String gatewayId
-	 * @param String tokenId
+	 * @param  gatewayId
+	 * @param  tokenId
 	 * @return String The public key of the credential
-	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
 	public String getCredentialPublicKey(String gatewayId, String tokenId) throws AiravataAPIInvocationException;
 	
 	/**
 	 * Creates a new SSH credential for given gateway and token, encrypts it with the given password 
 	 * and stores it in the credential store
-	 * @param String gatewayId
-	 * @param String tokenId
+	 * @param  gatewayId
+	 * @param  tokenId
 	 * @return String The public key of the credential
-	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
 	public String createCredential(String gatewayId, String tokenId) throws AiravataAPIInvocationException;
 	
 	/**
 	 * Creates a new SSH credential for given gateway and token, encrypts it with the given password 
 	 * and stores it in the credential store
-	 * @param String gatewayId
-	 * @param String tokenId
-	 * @param String username
+	 * @param  gatewayId
+	 * @param  tokenId
+	 * @param  username
 	 * @return String The public key of the credential
-	 * @throws org.apache.airavata.registry.api.exception.RegException
 	 */
 	public String createCredential(String gatewayId, String tokenId, String username) throws AiravataAPIInvocationException;
 }

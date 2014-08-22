@@ -21,18 +21,8 @@
 
 package org.apache.airavata.integration;
 
-import junit.framework.Assert;
-import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.workflow.model.graph.GraphException;
-import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.BeforeTest;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Integration test class.

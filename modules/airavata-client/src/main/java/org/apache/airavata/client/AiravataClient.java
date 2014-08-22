@@ -20,48 +20,25 @@
  */
 package org.apache.airavata.client;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Observable;
-
-import javax.jcr.RepositoryException;
-
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.AiravataManager;
-import org.apache.airavata.client.api.ApplicationManager;
-import org.apache.airavata.client.api.CredentialStoreManager;
-import org.apache.airavata.client.api.ExecutionManager;
-import org.apache.airavata.client.api.ExperimentAdvanceOptions;
-import org.apache.airavata.client.api.ProvenanceManager;
-import org.apache.airavata.client.api.UserManager;
-import org.apache.airavata.client.api.WorkflowManager;
+import org.apache.airavata.client.api.*;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.impl.AiravataManagerImpl;
-import org.apache.airavata.client.impl.ApplicationManagerImpl;
-import org.apache.airavata.client.impl.CredentialStoreManagerImpl;
-import org.apache.airavata.client.impl.ExecutionManagerImpl;
-import org.apache.airavata.client.impl.PasswordCallBackImpl;
-import org.apache.airavata.client.impl.ProvenanceManagerImpl;
-import org.apache.airavata.client.impl.UserManagerImpl;
-import org.apache.airavata.client.impl.WorkflowManagerImpl;
+import org.apache.airavata.client.impl.*;
 import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.Version;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.PasswordCallback;
-import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.jcr.RepositoryException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
 
 public class AiravataClient extends Observable implements AiravataAPI {
 
@@ -76,15 +53,11 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	private AiravataClientConfiguration clientConfiguration;
 	private String currentUser;
 	private URI regitryURI;
-	private PasswordCallback callBack;
-
-	private AiravataRegistry2 registry;
 
 	private Map<String, String> configuration = new HashMap<String, String>();
 	private AiravataManagerImpl airavataManagerImpl;
 	private ApplicationManagerImpl applicationManagerImpl;
 	private WorkflowManagerImpl workflowManagerImpl;
-	private ProvenanceManagerImpl provenanceManagerImpl;
 	private UserManagerImpl userManagerImpl;
 //	private ExecutionManagerThriftImpl executionManagerImpl;
     private ExecutionManager executionManager;
@@ -107,7 +80,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
 	private static HashMap<String, String> createConfig(URI registryUrl, String gateway,
 			String username, String password) throws RepositoryException,
-            RegException, AiravataConfigurationException {
+            AiravataConfigurationException {
 		HashMap<String, String> config = new HashMap<String, String>();
 		if (registryUrl != null) {
 			config.put(AiravataClient.REGISTRY, registryUrl.toString());
@@ -226,57 +199,57 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
     }
 
-	private void updateClientConfiguration(Map<String, String> configuration)
-			throws MalformedURLException {
-		AiravataClientConfiguration clientConfiguration = getClientConfiguration();
-		if (configuration.get(GFAC) != null) {
-			clientConfiguration.setGfacURL(new URL(configuration.get(GFAC)));
-		}
-		if (configuration.get(MSGBOX) != null) {
-			clientConfiguration.setMessageboxURL(new URL(configuration
-					.get(MSGBOX)));
-		}
-		if (configuration.get(BROKER) != null) {
-			clientConfiguration.setMessagebrokerURL(new URL(configuration
-					.get(BROKER)));
-		}
-		if (configuration.get(WORKFLOWSERVICEURL) != null) {
-			clientConfiguration.setXbayaServiceURL(new URL(configuration
-					.get(WORKFLOWSERVICEURL)));
-		}
-		if (configuration.get(MSGBOX) != null) {
-			clientConfiguration.setMessageboxURL(new URL(configuration
-					.get(MSGBOX)));
-		}
+//	private void updateClientConfiguration(Map<String, String> configuration)
+//			throws MalformedURLException {
+//		AiravataClientConfiguration clientConfiguration = getClientConfiguration();
+//		if (configuration.get(GFAC) != null) {
+//			clientConfiguration.setGfacURL(new URL(configuration.get(GFAC)));
+//		}
+//		if (configuration.get(MSGBOX) != null) {
+//			clientConfiguration.setMessageboxURL(new URL(configuration
+//					.get(MSGBOX)));
+//		}
+//		if (configuration.get(BROKER) != null) {
+//			clientConfiguration.setMessagebrokerURL(new URL(configuration
+//					.get(BROKER)));
+//		}
+//		if (configuration.get(WORKFLOWSERVICEURL) != null) {
+//			clientConfiguration.setXbayaServiceURL(new URL(configuration
+//					.get(WORKFLOWSERVICEURL)));
+//		}
+//		if (configuration.get(MSGBOX) != null) {
+//			clientConfiguration.setMessageboxURL(new URL(configuration
+//					.get(MSGBOX)));
+//		}
+//
+//		if (clientConfiguration.getRegistryURL() != null
+//				&& clientConfiguration.getGfacURL() == null) {
+//			try {
+//				clientConfiguration.setGfacURL(getRegistryClient()
+//						.getGFacURIs().get(0).toURL());
+//				configuration.put(GFAC, clientConfiguration.getGfacURL()
+//						.toString());
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
+//	}
 
-		if (clientConfiguration.getRegistryURL() != null
-				&& clientConfiguration.getGfacURL() == null) {
-			try {
-				clientConfiguration.setGfacURL(getRegistryClient()
-						.getGFacURIs().get(0).toURL());
-				configuration.put(GFAC, clientConfiguration.getGfacURL()
-						.toString());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-	}
+//	public AiravataRegistry2 getRegistryClient()
+//			throws AiravataConfigurationException, RegException {
+//		if (registry == null) {
+//			registry = getRegistry(getRegitryURI(), getGateway(),
+//					getCurrentUser(), getCallBack());
+//		}
+//		return registry;
+//	}
 
-	public AiravataRegistry2 getRegistryClient()
-			throws AiravataConfigurationException, RegException {
-		if (registry == null) {
-			registry = getRegistry(getRegitryURI(), getGateway(),
-					getCurrentUser(), getCallBack());
-		}
-		return registry;
-	}
-
-	public static AiravataRegistry2 getRegistry(URI registryURI,
-			String gateway, String username, PasswordCallback callback)
-			throws RegException, AiravataConfigurationException {
-		return AiravataRegistryFactory.getRegistry(registryURI, new Gateway(
-				gateway), new AiravataUser(username), callback);
-	}
+//	public static AiravataRegistry2 getRegistry(URI registryURI,
+//			String gateway, String username, PasswordCallback callback)
+//			throws RegException, AiravataConfigurationException {
+//		return AiravataRegistryFactory.getRegistry(registryURI, new Gateway(
+//				gateway), new AiravataUser(username), callback);
+//	}
 
 	public AiravataClientConfiguration getClientConfiguration() {
 		if (clientConfiguration == null) {
@@ -304,13 +277,6 @@ public class AiravataClient extends Observable implements AiravataAPI {
 			workflowManagerImpl = new WorkflowManagerImpl(this);
 		}
 		return workflowManagerImpl;
-	}
-
-	public ProvenanceManager getProvenanceManager() {
-		if (provenanceManagerImpl == null) {
-			provenanceManagerImpl = new ProvenanceManagerImpl(this);
-		}
-		return provenanceManagerImpl;
 	}
 
 	public UserManager getUserManager() {
@@ -363,23 +329,9 @@ public class AiravataClient extends Observable implements AiravataAPI {
 		this.regitryURI = regitryURI;
 	}
 
-	public String getPassword() {
-		if (getCallBack() != null) {
-			return getCallBack().getPassword(getCurrentUser());
-		}
-		return null;
-	}
 
 	public URI getRegitryURI() {
 		return regitryURI;
-	}
-
-	public PasswordCallback getCallBack() {
-		return callBack;
-	}
-
-	public void setCallBack(PasswordCallback callBack) {
-		this.callBack = callBack;
 	}
 
 	public String getGateway() {
@@ -391,7 +343,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	}
 
 	public static void main(String[] args) throws Exception {
-		AiravataAPI api = AiravataAPIFactory.getAPI(new URI("http://localhost:8080/airavata/services/registry"), "default", "admin", new PasswordCallBackImpl("admin", "admin"));
+		AiravataAPI api = AiravataAPIFactory.getAPI(new URI("http://localhost:8080/airavata/services/registry"), "default", "admin");
 		ExperimentAdvanceOptions options = api.getExecutionManager().createExperimentAdvanceOptions();
 		options.getCustomWorkflowSchedulingSettings().addNewNodeSettings("data1", "comma_app", 1, 1);
 		String workflow = "Workflow3";

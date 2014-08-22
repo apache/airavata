@@ -21,23 +21,11 @@
 
 package org.apache.airavata.integration;
 
-import junit.framework.Assert;
-import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.testng.annotations.BeforeTest;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Integration test class.

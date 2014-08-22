@@ -21,36 +21,11 @@
 
 package org.apache.airavata.integration;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
-
-import junit.framework.Assert;
-
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
-import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.InputData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionData;
-import org.apache.airavata.registry.api.workflow.OutputData;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
-import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.workflow.model.graph.GraphException;
-import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
