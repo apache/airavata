@@ -20,12 +20,6 @@
 */
 package org.apache.airavata.orchestrator.cpi.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-
-import javax.naming.OperationNotSupportedException;
-
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
@@ -39,6 +33,10 @@ import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     private final static Logger logger = LoggerFactory.getLogger(SimpleOrchestratorImpl.class);

@@ -19,13 +19,12 @@
 
 package org.apache.airavata.client;
 
-import java.net.URI;
-
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.impl.PasswordCallBackImpl;
 import org.apache.airavata.common.utils.SecurityUtil;
 import org.apache.airavata.registry.api.PasswordCallback;
+
+import java.net.URI;
 
 public class AiravataAPIFactory {
 	

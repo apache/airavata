@@ -28,7 +28,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.cpi.GFacImpl;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
@@ -67,7 +67,7 @@ public class GridPushMonitorHandler extends ThreadedHandler {
             LinkedBlockingQueue<MonitorID> pushQueue = new LinkedBlockingQueue<MonitorID>();
             LinkedBlockingQueue<MonitorID> finishQueue = new LinkedBlockingQueue<MonitorID>();
             List<String> hosts= Arrays.asList(hostList.split(","));
-            amqpMonitor=new AMQPMonitor(GFacImpl.getMonitorPublisher(),pushQueue,finishQueue,proxyFilePath,connectionName,hosts);
+            amqpMonitor=new AMQPMonitor(BetterGfacImpl.getMonitorPublisher(),pushQueue,finishQueue,proxyFilePath,connectionName,hosts);
         }catch (ApplicationSettingsException e){
             e.printStackTrace();
         }

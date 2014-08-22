@@ -23,11 +23,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <version>10.9.1.0</version>

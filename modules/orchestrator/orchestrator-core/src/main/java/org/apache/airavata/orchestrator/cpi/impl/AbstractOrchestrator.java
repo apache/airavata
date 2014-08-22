@@ -20,42 +20,22 @@
 */
 package org.apache.airavata.orchestrator.cpi.impl;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
-import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
-import org.apache.airavata.registry.api.AiravataRegistry2;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 public abstract class AbstractOrchestrator implements Orchestrator {
 	private final static Logger logger = LoggerFactory.getLogger(AbstractOrchestrator.class);
-	protected AiravataRegistry2 airavataRegistry;
-	protected AiravataAPI airavataAPI;
 	protected OrchestratorContext orchestratorContext;
 	protected OrchestratorConfiguration orchestratorConfiguration;
 
@@ -93,42 +73,34 @@ public abstract class AbstractOrchestrator implements Orchestrator {
         	orchestratorConfiguration = OrchestratorUtils.loadOrchestratorConfiguration();
             setGatewayProperties();
             /* initializing the Orchestratorcontext object */
-            airavataRegistry = AiravataRegistryFactory.getRegistry(new Gateway(getGatewayName()), new AiravataUser(getAiravataUserName()));
+//            airavataRegistry = AiravataRegistryFactory.getRegistry(new Gateway(getGatewayName()), new AiravataUser(getAiravataUserName()));
             // todo move this code to gfac service mode Jobsubmitter,
             // todo this is ugly, SHOULD fix these isEmbedded mode code from Orchestrator
-            if (!orchestratorConfiguration.isEmbeddedMode()) {
-                Map<String, Integer> gfacNodeList = airavataRegistry.getGFACNodeList();
-                if (gfacNodeList.size() == 0) {
-                    String error = "No GFAC instances available in the system, Can't initialize Orchestrator";
-                    logger.error(error);
-                    throw new OrchestratorException(error);
-                }
-                Set<String> uriList = gfacNodeList.keySet();
-                Iterator<String> iterator = uriList.iterator();
-                // todo consume these data to
-                List<GFACInstance> gfacInstanceList = new ArrayList<GFACInstance>();
-                while (iterator.hasNext()) {
-                    String uri = iterator.next();
-                    Integer integer = gfacNodeList.get(uri);
-                    gfacInstanceList.add(new GFACInstance(uri, integer));
-                }
-            }
+//            if (!orchestratorConfiguration.isEmbeddedMode()) {
+//                Map<String, Integer> gfacNodeList = airavataRegistry.getGFACNodeList();
+//                if (gfacNodeList.size() == 0) {
+//                    String error = "No GFAC instances available in the system, Can't initialize Orchestrator";
+//                    logger.error(error);
+//                    throw new OrchestratorException(error);
+//                }
+//                Set<String> uriList = gfacNodeList.keySet();
+//                Iterator<String> iterator = uriList.iterator();
+//                // todo consume these data to
+//                List<GFACInstance> gfacInstanceList = new ArrayList<GFACInstance>();
+//                while (iterator.hasNext()) {
+//                    String uri = iterator.next();
+//                    Integer integer = gfacNodeList.get(uri);
+//                    gfacInstanceList.add(new GFACInstance(uri, integer));
+//                }
+//            }
             orchestratorContext = new OrchestratorContext();
             orchestratorContext.setOrchestratorConfiguration(orchestratorConfiguration);
-            orchestratorConfiguration.setAiravataAPI(getAiravataAPI());
-            orchestratorContext.setRegistry(airavataRegistry);
+//            orchestratorConfiguration.setAiravataAPI(getAiravataAPI());
+//            orchestratorContext.setRegistry(airavataRegistry);
 
             /* initializing registry cpi */
             orchestratorContext.setNewRegistry(new RegistryImpl());
-        } catch (RegException e) {
-            logger.error("Failed to initializing Orchestrator");
-            OrchestratorException orchestratorException = new OrchestratorException(e);
-            throw orchestratorException;
-        } catch (AiravataConfigurationException e) {
-            logger.error("Failed to initializing Orchestrator");
-            OrchestratorException orchestratorException = new OrchestratorException(e);
-            throw orchestratorException;
-        } catch (IOException e) {
+        }  catch (IOException e) {
             logger.error("Failed to initializing Orchestrator - Error parsing configuration files");
             OrchestratorException orchestratorException = new OrchestratorException(e);
             throw orchestratorException;
@@ -152,20 +124,16 @@ public abstract class AbstractOrchestrator implements Orchestrator {
         }
     }
 
-   private AiravataAPI getAiravataAPI() {
-       if (airavataAPI == null) {
-           try {
-               airavataAPI = AiravataAPIFactory.getAPI(getGatewayName(), getAiravataUserName());
-           }  catch (AiravataAPIInvocationException e) {
-               logger.error("Unable to create Airavata API", e);
-           }
-       }
-       return airavataAPI;
-   }
-
-    public AiravataRegistry2 getAiravataRegistry() {
-        return airavataRegistry;
-    }
+//   private AiravataAPI getAiravataAPI() {
+//       if (airavataAPI == null) {
+//           try {
+//               airavataAPI = AiravataAPIFactory.getAPI(getGatewayName(), getAiravataUserName());
+//           }  catch (AiravataAPIInvocationException e) {
+//               logger.error("Unable to create Airavata API", e);
+//           }
+//       }
+//       return airavataAPI;
+//   }
 
     public OrchestratorContext getOrchestratorContext() {
         return orchestratorContext;

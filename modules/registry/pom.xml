@@ -30,7 +30,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>registry-api</module>
                 <module>registry-cpi</module>
                 <module>airavata-jpa-registry</module>
                 <!--<module>jpa-gen</module>-->

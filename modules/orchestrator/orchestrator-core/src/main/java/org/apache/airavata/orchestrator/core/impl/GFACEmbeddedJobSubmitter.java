@@ -21,10 +21,12 @@
 package org.apache.airavata.orchestrator.core.impl;
 
 
+import com.google.common.eventbus.EventBus;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
-import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
@@ -47,7 +49,7 @@ public class GFACEmbeddedJobSubmitter implements JobSubmitter {
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
-        gfac = new GFacImpl(orchestratorContext.getNewRegistry(), null, orchestratorContext.getRegistry());
+        gfac = new BetterGfacImpl(orchestratorContext.getNewRegistry(), null, new MonitorPublisher(new EventBus()));
     }
 
     public GFACInstance selectGFACInstance() throws OrchestratorException {

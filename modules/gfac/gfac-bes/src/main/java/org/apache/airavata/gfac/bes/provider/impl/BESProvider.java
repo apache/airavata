@@ -20,63 +20,6 @@
 */
 package org.apache.airavata.gfac.bes.provider.impl;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
-
-import javax.security.auth.x500.X500Principal;
-
-import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.bes.security.GSISecurityContext;
-import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.notification.events.StatusChangeEvent;
-import org.apache.airavata.gfac.core.notification.events.UnicoreJobIDEvent;
-import org.apache.airavata.gfac.core.provider.AbstractProvider;
-import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.gfac.bes.utils.DataTransferrer;
-import org.apache.airavata.gfac.bes.utils.JSDLGenerator;
-import org.apache.airavata.gfac.bes.utils.StorageCreator;
-import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.registry.api.workflow.ApplicationJob;
-import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
-import org.apache.xmlbeans.XmlCursor;
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration;
-import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration.Enum;
-import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStatusType;
-import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityDocument;
-import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityResponseDocument;
-import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesDocument;
-import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesResponseDocument;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3.x2005.x08.addressing.EndpointReferenceType;
-
 import de.fzj.unicore.bes.client.FactoryClient;
 import de.fzj.unicore.bes.faults.UnknownActivityIdentifierFault;
 import de.fzj.unicore.uas.client.StorageClient;
@@ -89,6 +32,45 @@ import eu.emi.security.authn.x509.impl.DirectoryCertChainValidator;
 import eu.emi.security.authn.x509.impl.KeyAndCertCredential;
 import eu.emi.security.authn.x509.impl.X500NameUtils;
 import eu.unicore.util.httpclient.DefaultClientConfiguration;
+import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.bes.security.GSISecurityContext;
+import org.apache.airavata.gfac.bes.utils.DataTransferrer;
+import org.apache.airavata.gfac.bes.utils.JSDLGenerator;
+import org.apache.airavata.gfac.bes.utils.StorageCreator;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.notification.events.StatusChangeEvent;
+import org.apache.airavata.gfac.core.notification.events.UnicoreJobIDEvent;
+import org.apache.airavata.gfac.core.provider.AbstractProvider;
+import org.apache.airavata.gfac.core.provider.GFacProviderException;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.xmlbeans.XmlCursor;
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.ggf.schemas.bes.x2006.x08.besFactory.*;
+import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration.Enum;
+import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
+import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3.x2005.x08.addressing.EndpointReferenceType;
+
+import javax.security.auth.x500.X500Principal;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+import java.util.*;
 
 
 
@@ -321,14 +303,14 @@ public class BESProvider extends AbstractProvider {
 
     private void saveApplicationJob(JobExecutionContext jobExecutionContext, JobDefinitionType jobDefinition,
                                     String metadata) {
-        ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
-        appJob.setJobId(jobId);
-        appJob.setJobData(jobDefinition.toString());
-        appJob.setSubmittedTime(Calendar.getInstance().getTime());
-        appJob.setStatus(ApplicationJobStatus.SUBMITTED);
-        appJob.setStatusUpdateTime(appJob.getSubmittedTime());
-        appJob.setMetadata(metadata);
-        GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
+//        ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
+//        appJob.setJobId(jobId);
+//        appJob.setJobData(jobDefinition.toString());
+//        appJob.setSubmittedTime(Calendar.getInstance().getTime());
+//        appJob.setStatus(ApplicationJobStatus.SUBMITTED);
+//        appJob.setStatusUpdateTime(appJob.getSubmittedTime());
+//        appJob.setMetadata(metadata);
+//        GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {

@@ -112,31 +112,31 @@ public class AiravataClient extends Observable implements AiravataAPI {
 		if (registryUrl != null) {
 			config.put(AiravataClient.REGISTRY, registryUrl.toString());
 		}
-		AiravataRegistry2 registryObject = getRegistry(registryUrl, gateway,
-				username, new PasswordCallBackImpl(username, password));
-		if (registryObject != null) {
-			URI uri = registryObject.getEventingServiceURI();
-			config.put(
-					AiravataClient.BROKER,
-					uri == null ? "http://localhost:8080/airavata-server/services/EventingService"
-							: uri.toString());
-			uri = registryObject.getMessageBoxURI();
-			config.put(
-					AiravataClient.MSGBOX,
-					uri == null ? "http://localhost:8080/airavata-server/services/MsgBoxService"
-							: uri.toString());
-			List<URI> URLList = registryObject.getWorkflowInterpreterURIs();
-			config.put(
-					AiravataClient.WORKFLOWSERVICEURL,
-					URLList == null || URLList.size() == 0 ? "http://localhost:8080/airavata-server/services/WorkflowInterpretor?wsdl"
-							: URLList.get(0).toString());
-			List<URI> urlList = registryObject.getGFacURIs();
-			config.put(
-					AiravataClient.GFAC,
-					urlList == null || urlList.size() == 0 ? "http://localhost:8080/airavata-server/services/GFacService"
-							: urlList.get(0).toString());
-			config.put(AiravataClient.WITHLISTENER, "true");
-		}
+//		AiravataRegistry2 registryObject = getRegistry(registryUrl, gateway,
+//				username, new PasswordCallBackImpl(username, password));
+//		if (registryObject != null) {
+//			URI uri = registryObject.getEventingServiceURI();
+//			config.put(
+//					AiravataClient.BROKER,
+//					uri == null ? "http://localhost:8080/airavata-server/services/EventingService"
+//							: uri.toString());
+//			uri = registryObject.getMessageBoxURI();
+//			config.put(
+//					AiravataClient.MSGBOX,
+//					uri == null ? "http://localhost:8080/airavata-server/services/MsgBoxService"
+//							: uri.toString());
+//			List<URI> URLList = registryObject.getWorkflowInterpreterURIs();
+//			config.put(
+//					AiravataClient.WORKFLOWSERVICEURL,
+//					URLList == null || URLList.size() == 0 ? "http://localhost:8080/airavata-server/services/WorkflowInterpretor?wsdl"
+//							: URLList.get(0).toString());
+//			List<URI> urlList = registryObject.getGFacURIs();
+//			config.put(
+//					AiravataClient.GFAC,
+//					urlList == null || urlList.size() == 0 ? "http://localhost:8080/airavata-server/services/GFacService"
+//							: urlList.get(0).toString());
+//			config.put(AiravataClient.WITHLISTENER, "true");
+//		}
 		return config;
 	}
 
@@ -146,34 +146,6 @@ public class AiravataClient extends Observable implements AiravataAPI {
 //        if (AiravataUtils.isServer()) {
 //            waitTillRegistryServiceStarts();
 //        }
-
-        try {
-			if (!configCreated) {
-				configuration = createConfig(getRegitryURI(), getGateway(), getCurrentUser(),
-						getPassword());
-				configCreated = true;
-			}
-			updateClientConfiguration(configuration);
-
-			// TODO: At some point this should contain the current user the
-			// airavata
-			// client is
-			// logged in to the Airavata system
-			setCurrentUser(getClientConfiguration().getJcrUsername());
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(
-					"Error while initializing the Airavata API", e);
-		}
-	}
-
-    private void waitTillRegistryServiceStarts() throws AiravataAPIInvocationException{
-
-        synchronized (API_VERSION) {
-            if (!registryServiceStarted) {
-                waitForRegistryServiceToStart(getRegistryWebServiceWSDLUrl());
-                registryServiceStarted = true;
-            }
-        }
     }
 
     private String getRegistryWebServiceWSDLUrl() throws AiravataAPIInvocationException {
@@ -354,7 +326,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
         }
 		return executionManager;
 	}
-	
+
 	@Override
 	public CredentialStoreManager getCredentialStoreManager() {
 		if(credentialStoreManagerImpl == null)
@@ -417,7 +389,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 	public void setGateway(String gateway) {
 		this.gateway = gateway;
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		AiravataAPI api = AiravataAPIFactory.getAPI(new URI("http://localhost:8080/airavata/services/registry"), "default", "admin", new PasswordCallBackImpl("admin", "admin"));
 		ExperimentAdvanceOptions options = api.getExecutionManager().createExperimentAdvanceOptions();

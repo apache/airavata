@@ -21,23 +21,11 @@
 
 package org.apache.airavata.orchestrator.server;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
@@ -51,8 +39,8 @@ import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
+import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.orchestrator.util.OrchestratorRecoveryHandler;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
@@ -61,15 +49,14 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
 public class OrchestratorServerHandler implements OrchestratorService.Iface,
 		Watcher {
@@ -84,7 +71,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 
 	private static Integer mutex = new Integer(-1);
 
-	private AiravataAPI airavataAPI;
 	private String airavataUserName;
 	private String gatewayName;
 
@@ -395,18 +381,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 
 	public void setGatewayName(String gatewayName) {
 		this.gatewayName = gatewayName;
-	}
-
-	private AiravataAPI getAiravataAPI() {
-		if (airavataAPI == null) {
-			try {
-				airavataAPI = AiravataAPIFactory.getAPI(getGatewayName(),
-						getAiravataUserName());
-			} catch (AiravataAPIInvocationException e) {
-				log.error("Unable to create Airavata API", e);
-			}
-		}
-		return airavataAPI;
 	}
 
 	@Override

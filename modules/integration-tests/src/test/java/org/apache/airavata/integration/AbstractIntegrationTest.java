@@ -25,8 +25,6 @@ import java.io.IOException;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.ClientSettings;
 import org.slf4j.Logger;
@@ -36,7 +34,6 @@ public class AbstractIntegrationTest {
 
 	private static String THRIFT_SERVER_HOST;
 	private static int THRIFT_SERVER_PORT;
-	protected AiravataAPI airavataAPI;
 	protected Airavata.Client client;
 	private final int TRIES = 20;
 	private final int TIME_OUT = 10000;
@@ -56,7 +53,6 @@ public class AbstractIntegrationTest {
 	        initClient();
 	
 	        //getting the Airavata API ( to add the descriptors
-	        this.airavataAPI = getAiravataAPI();
 	    } catch (IOException e) {
 	        log.error("Error loading client-properties ..." + e.getMessage());
 	    } catch (AiravataAPIInvocationException e) {
@@ -64,13 +60,6 @@ public class AbstractIntegrationTest {
 	    } catch (Exception e) {
 	        log.error(e.getMessage());
 	    }
-	}
-
-	protected AiravataAPI getAiravataAPI() throws AiravataAPIInvocationException {
-	    if (airavataAPI == null) {
-	        airavataAPI = AiravataAPIFactory.getAPI("default", "admin");
-	    }
-	    return airavataAPI;
 	}
 
 	protected void initClient() throws Exception {

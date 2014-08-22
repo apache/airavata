@@ -60,7 +60,7 @@ public class LocalProviderTest {
 
         URL resource = this.getClass().getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         File configFile = new File(resource.getPath());
-        GFacConfiguration gFacConfiguration = GFacConfiguration.create(configFile, null, null);
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(configFile, null);
         //have to set InFlwo Handlers and outFlowHandlers
         ApplicationContext applicationContext = new ApplicationContext();
         HostDescription host = new HostDescription();

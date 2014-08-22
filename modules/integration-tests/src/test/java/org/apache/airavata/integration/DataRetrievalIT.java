@@ -21,20 +21,12 @@
 
 package org.apache.airavata.integration;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.api.Airavata.Client;
-import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
-import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreator;
+import org.apache.airavata.client.tools.DocumentCreatorNew;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
@@ -48,6 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class DataRetrievalIT extends AbstractIntegrationTest {
     private final static Logger log = LoggerFactory.getLogger(DataRetrievalIT.class);
@@ -154,7 +150,6 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
             public boolean matches(Object o) {
                 return theExpected.contains((String)o);
             }
-			@Override
 			public void describeTo(Description d) {
 			}
         };
@@ -219,9 +214,8 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 		return expId;
 	}
 
-	private void addApplications() throws AiravataAPIInvocationException {
-		AiravataAPI airavataAPI = getAiravataAPI();
-		DocumentCreator documentCreator = new DocumentCreator(airavataAPI);
+	private void addApplications() throws AppCatalogException, TException {
+		DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
 		documentCreator.createLocalHostDocs();
 	}
 	

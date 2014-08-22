@@ -32,7 +32,6 @@ import javax.xml.xpath.XPathExpressionException;
 
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
@@ -82,7 +81,6 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
@@ -109,14 +107,14 @@ import org.xml.sax.SAXException;
  * the resource, required data for the job has to be stored in registry prior to invoke this object.
  */
 public class BetterGfacImpl implements GFac,Watcher {
-    private static final Logger log = LoggerFactory.getLogger(GFacImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(BetterGfacImpl.class);
     public static final String ERROR_SENT = "ErrorSent";
 
     private Registry registry;
 
-    private AiravataAPI airavataAPI;
+//    private AiravataAPI airavataAPI;
 
-    private AiravataRegistry2 airavataRegistry2;
+//    private AiravataRegistry2 airavataRegistry2;
 
     private ZooKeeper zk;                       // we are not storing zk instance in to jobExecution context
 
@@ -136,15 +134,13 @@ public class BetterGfacImpl implements GFac,Watcher {
      * Constructor for GFac
      *
      * @param registry
-     * @param airavataAPI
-     * @param airavataRegistry2
      * @param zooKeeper
      */
-    public BetterGfacImpl(Registry registry, AiravataAPI airavataAPI, AiravataRegistry2 airavataRegistry2, ZooKeeper zooKeeper,
+    public BetterGfacImpl(Registry registry, ZooKeeper zooKeeper,
                           MonitorPublisher publisher) {
         this.registry = registry;
-        this.airavataAPI = airavataAPI;
-        this.airavataRegistry2 = airavataRegistry2;
+//        this.airavataAPI = airavataAPI;
+//        this.airavataRegistry2 = airavataRegistry2;
         monitorPublisher = publisher;     // This is a EventBus common for gfac
         this.zk = zooKeeper;
     }
@@ -173,7 +169,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     public static void startDaemonHandlers() {
         List<GFacHandlerConfig> daemonHandlerConfig = null;
-        URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+        URL resource = BetterGfacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         gfacConfigFile = new File(resource.getPath());
         try {
             daemonHandlerConfig = GFacConfiguration.getDaemonHandlers(gfacConfigFile);
@@ -447,9 +443,9 @@ public class BetterGfacImpl implements GFac,Watcher {
             log.warn("Missing gateway resource profile for gateway id '" + gatewayID + "'.");
         }
 
-        URL resource = GFacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+        URL resource = BetterGfacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         Properties configurationProperties = ServerSettings.getProperties();
-        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), airavataAPI, configurationProperties);
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), configurationProperties);
 
         // start constructing jobexecutioncontext
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, applicationInterfaceId);
@@ -1128,13 +1124,13 @@ public class BetterGfacImpl implements GFac,Watcher {
         BetterGfacImpl.monitorPublisher = monitorPublisher;
     }
 
-    public AiravataAPI getAiravataAPI() {
-        return airavataAPI;
-    }
+//    public AiravataAPI getAiravataAPI() {
+//        return airavataAPI;
+//    }
 
-    public AiravataRegistry2 getAiravataRegistry2() {
-        return airavataRegistry2;
-    }
+//    public AiravataRegistry2 getAiravataRegistry2() {
+//        return airavataRegistry2;
+//    }
 
     public static List<ThreadedHandler> getDaemonHandlers() {
         return daemonHandlers;
