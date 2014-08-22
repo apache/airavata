@@ -22,37 +22,32 @@ package org.apache.airavata.client;
 import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.SecurityUtil;
-import org.apache.airavata.registry.api.PasswordCallback;
 
 import java.net.URI;
 
 public class AiravataAPIFactory {
 	
-	public static AiravataAPI getAPI(String gateway, String username, String alternativeUser) throws AiravataAPIInvocationException{
-        return getAPI(null, gateway, username, alternativeUser, (PasswordCallback)null);
-    }
-	
 	public static AiravataAPI getAPI(String gateway, String username) throws AiravataAPIInvocationException{
-        return getAPI(null, gateway, username, (PasswordCallback)null);
+        return getAPI(null, gateway, username);
     }
 	
-	public static AiravataAPI getAPI(URI registryURL, String gateway, String username, PasswordCallback callback) throws AiravataAPIInvocationException{
-        return getAPI(registryURL, gateway, username, username, callback);
+	public static AiravataAPI getAPI(URI registryURL, String gateway, String username) throws AiravataAPIInvocationException{
+        return getAPI(registryURL, gateway, username, username);
     }
 
-    public static AiravataAPI getAPI(URI registryURL, String gateway, String username, PasswordCallback callback,
+    public static AiravataAPI getAPI(URI registryURL, String gateway, String username,
                                      String trustStoreFilePath, String trustStorePassword)
             throws AiravataAPIInvocationException{
 
         SecurityUtil.setTrustStoreParameters(trustStoreFilePath, trustStorePassword);
-        return getAPI(registryURL, gateway, username, username, callback);
+        return getAPI(registryURL, gateway, username, username);
     }
     
-    public static AiravataAPI getAPI(URI registryURL, String gateway, String username, String alternateUsername, PasswordCallback callback) throws AiravataAPIInvocationException{
+    public static AiravataAPI getAPI(URI registryURL, String gateway, String username, String alternateUsername) throws AiravataAPIInvocationException{
         try {
 			AiravataAPI apiObj = new AiravataClient();
 			apiObj.setCurrentUser(alternateUsername);
-			apiObj.setCallBack(callback);
+//			apiObj.setCallBack(callback);
 			apiObj.setRegitryURI(registryURL);
 			apiObj.setGateway(gateway);
 			apiObj.initialize();
