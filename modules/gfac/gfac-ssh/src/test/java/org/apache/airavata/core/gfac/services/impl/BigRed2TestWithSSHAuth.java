@@ -30,7 +30,7 @@ import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.cpi.GFacImpl;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -94,7 +94,7 @@ public class BigRed2TestWithSSHAuth {
         URL resource = BigRed2TestWithSSHAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         assert resource != null;
         System.out.println(resource.getFile());
-        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null, null);
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null);
 
 //        gFacConfiguration.setMyProxyLifeCycle(3600);
 //        gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
@@ -243,7 +243,7 @@ public class BigRed2TestWithSSHAuth {
 
     @Test
     public void testSSHProvider() throws GFacException {
-        GFacImpl gFacAPI = new GFacImpl();
+        BetterGfacImpl gFacAPI = new BetterGfacImpl();
         gFacAPI.submitJob(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
         org.junit.Assert.assertNotNull(jobExecutionContext.getJobDetails().getJobDescription());
         org.junit.Assert.assertNotNull(jobExecutionContext.getJobDetails().getJobID());

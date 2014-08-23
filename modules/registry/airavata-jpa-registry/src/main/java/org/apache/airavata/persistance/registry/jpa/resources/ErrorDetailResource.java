@@ -177,7 +177,13 @@ public class ErrorDetailResource extends AbstractResource {
         try {
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            ErrorDetail errorDetail = new ErrorDetail();
+            ErrorDetail errorDetail;
+            if (errorId != 0) {
+                errorDetail = em.find(ErrorDetail.class, errorId);
+                errorDetail.setErrorID(errorId);
+            } else {
+                errorDetail = new ErrorDetail();
+            }
             errorDetail.setErrorID(errorId);
             Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
             errorDetail.setExperiment(experiment);

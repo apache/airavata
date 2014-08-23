@@ -22,7 +22,6 @@
 package org.apache.airavata.client.tools;
 
 import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

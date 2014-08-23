@@ -65,7 +65,16 @@ public class MonitorID {
 
     public MonitorID() {
     }
-
+    public MonitorID(MonitorID monitorID){
+        this.host = monitorID.getHost();
+        this.jobStartedTime = new Timestamp((new Date()).getTime());
+        this.userName = monitorID.getUserName();
+        this.jobID = monitorID.getJobID();
+        this.taskID = monitorID.getTaskID();
+        this.experimentID = monitorID.getExperimentID();
+        this.workflowNodeID = monitorID.getWorkflowNodeID();
+        this.jobName = monitorID.getJobName();
+    }
     public MonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID, String experimentID, String userName,String jobName) {
         this.host = host;
         this.jobStartedTime = new Timestamp((new Date()).getTime());

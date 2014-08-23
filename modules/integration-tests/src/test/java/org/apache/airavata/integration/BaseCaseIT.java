@@ -29,7 +29,7 @@ import java.util.Set;
 import junit.framework.Assert;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreator;
+import org.apache.airavata.client.tools.DocumentCreatorNew;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
@@ -40,7 +40,6 @@ import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
 import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
-import org.apache.airavata.registry.api.workflow.ApplicationJob;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.ws.monitor.EventData;
 import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
@@ -62,7 +61,6 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
 
     @BeforeTest
     public void setUp() throws Exception {
-        this.airavataAPI = getAiravataAPI();
         this.client = getClient();
     }
 
@@ -86,8 +84,8 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
     @Test(groups = {"echoGroup"}, dependsOnGroups = {"setupTests"})
     public void testEchoService() throws Exception {
         log.info("Running job in trestles...");
-        DocumentCreator documentCreator = new DocumentCreator(airavataAPI);
-        documentCreator.createPBSDocsForOGCE();
+        DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
+        documentCreator.createPBSDocsForOGCE_Echo();
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
         input.setKey("echo_input");
@@ -160,7 +158,7 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
     @Test(groups = {"echoGroup"}, dependsOnGroups = {"setupTests"})
     public void testEchoServiceStampede() throws Exception {
         log.info("Running job in Stampede...");
-        DocumentCreator documentCreator = new DocumentCreator(airavataAPI);
+        DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
         documentCreator.createSlurmDocs();
         List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
         DataObjectType input = new DataObjectType();
@@ -231,10 +229,10 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
 
     }
 
-    @Test(groups = {"performanceTesting"})
-    public void testExistsHostDescriptor() throws AiravataAPIInvocationException {
-        airavataAPI.getApplicationManager().isHostDescriptorExists("trestles.sdsc.edu");
-    }
+//    @Test(groups = {"performanceTesting"})
+//    public void testExistsHostDescriptor() throws AiravataAPIInvocationException {
+//        airavataAPI.getApplicationManager().isHostDescriptorExists("trestles.sdsc.edu");
+//    }
 
 //    @Test(groups = {"echoGroup"}/* , dependsOnMethods = { "testEchoService" } */)
 //    public void testUpdateEchoService() throws Exception {
@@ -326,23 +324,23 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
 //        }
 //    }
 
-    protected void runWorkFlow(Workflow workflow, List<String> inputValues) throws Exception {
+//    protected void runWorkFlow(Workflow workflow, List<String> inputValues) throws Exception {
+//
+//        String experimentId = executeWorkflow(workflow, inputValues);
+//        monitor(experimentId);
+//    }
 
-        String experimentId = executeWorkflow(workflow, inputValues);
-        monitor(experimentId);
-    }
-
-    protected void runWorkFlowWithoutMonitor(Workflow workflow, List<String> inputValues) throws Exception {
-
-        String experimentId = executeWorkflow(workflow, inputValues);
-
-        verifyOutput(experimentId, "echo_output=Airavata_Test");
-
-        log.info("Verifying application jobs ....");
-
-        List<ApplicationJob> applicationJobs = airavataAPI.getProvenanceManager().getApplicationJobs(experimentId, null, null);
-        Assert.assertEquals(applicationJobs.size(), 1);
-    }
+//    protected void runWorkFlowWithoutMonitor(Workflow workflow, List<String> inputValues) throws Exception {
+//
+//        String experimentId = executeWorkflow(workflow, inputValues);
+//
+//        verifyOutput(experimentId, "echo_output=Airavata_Test");
+//
+//        log.info("Verifying application jobs ....");
+//
+//        List<ApplicationJob> applicationJobs = airavataAPI.getProvenanceManager().getApplicationJobs(experimentId, null, null);
+//        Assert.assertEquals(applicationJobs.size(), 1);
+//    }
 
 //    protected String getWorkflowComposeContent(String fileName) throws IOException {
 //        File f = new File(".");
@@ -364,27 +362,27 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
 //        return buffer.toString();
 //    }
 
-    public void monitor(final String experimentId) throws Exception {
-        final Monitor experimentMonitor = airavataAPI.getExecutionManager().getExperimentMonitor(experimentId,
-                new EventDataListenerAdapter() {
-
-                    public void notify(EventDataRepository eventDataRepo, EventData eventData) {
-                        Assert.assertNotNull(eventDataRepo);
-                        Assert.assertNotNull(eventData);
-                        if (MonitorUtil.EventType.WORKFLOW_TERMINATED.equals(eventData.getType())) {
-                            try {
-                                BaseCaseIT.this.verifyOutput(experimentId, "echo_output=Airavata_Test");
-                            } catch (Exception e) {
-                                log.error("Error verifying output", e);
-                                Assert.fail("Error occurred while verifying output.");
-                            } finally {
-                                getMonitor().stopMonitoring();
-                            }
-                        }
-                        log.info("No of events: " + eventDataRepo.getEvents().size());
-                    }
-                });
-        experimentMonitor.startMonitoring();
-        experimentMonitor.waitForCompletion();
-    }
+//    public void monitor(final String experimentId) throws Exception {
+//        final Monitor experimentMonitor = airavataAPI.getExecutionManager().getExperimentMonitor(experimentId,
+//                new EventDataListenerAdapter() {
+//
+//                    public void notify(EventDataRepository eventDataRepo, EventData eventData) {
+//                        Assert.assertNotNull(eventDataRepo);
+//                        Assert.assertNotNull(eventData);
+//                        if (MonitorUtil.EventType.WORKFLOW_TERMINATED.equals(eventData.getType())) {
+//                            try {
+//                                BaseCaseIT.this.verifyOutput(experimentId, "echo_output=Airavata_Test");
+//                            } catch (Exception e) {
+//                                log.error("Error verifying output", e);
+//                                Assert.fail("Error occurred while verifying output.");
+//                            } finally {
+//                                getMonitor().stopMonitoring();
+//                            }
+//                        }
+//                        log.info("No of events: " + eventDataRepo.getEvents().size());
+//                    }
+//                });
+//        experimentMonitor.startMonitoring();
+//        experimentMonitor.waitForCompletion();
+//    }
 }

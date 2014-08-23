@@ -225,12 +225,17 @@ public class GSISSHAbstractCluster implements Cluster {
         String outputifAvailable = getOutputifAvailable(stdOutReader, "Error reading output of job submission",rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
         // this might not be the case for all teh resources, if so Cluster implementation can override this method
         // because here after cancelling we try to get the job description and return it back
-        JobDescriptor jobById = this.getJobDescriptorById(jobID);
-        if (CommonUtils.isJobFinished(jobById)) {
-            log.debug("Job Cancel operation was successful !");
-            return jobById;
-        } else {
-            log.debug("Job Cancel operation was not successful !");
+        try {
+            JobDescriptor jobById = this.getJobDescriptorById(jobID);
+            if (CommonUtils.isJobFinished(jobById)) {
+                log.debug("Job Cancel operation was successful !");
+                return jobById;
+            } else {
+                log.debug("Job Cancel operation was not successful !");
+                return null;
+            }
+        }catch (Exception e){
+            //its ok to fail to get status when the job is gone
             return null;
         }
     }

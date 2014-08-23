@@ -37,7 +37,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.cpi.GFacImpl;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.InputParameterType;
@@ -55,7 +55,7 @@ public class SSHProviderTestWithSSHAuth {
     public void setUp() throws Exception {
 
     	URL resource = SSHProviderTestWithSSHAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
-        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null,null);
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()),null);
 //        gFacConfiguration.s
         //have to set InFlwo Handlers and outFlowHandlers
         ApplicationContext applicationContext = new ApplicationContext();
@@ -164,7 +164,7 @@ public class SSHProviderTestWithSSHAuth {
 
     @Test
     public void testLocalProvider() throws GFacException {
-        GFacImpl gFacAPI = new GFacImpl();
+        BetterGfacImpl gFacAPI = new BetterGfacImpl();
         gFacAPI.submitJob(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
         MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
         Assert.assertEquals(MappingFactory.toString((ActualParameter)outMessageContext.getParameter("echo_output")), "hello");

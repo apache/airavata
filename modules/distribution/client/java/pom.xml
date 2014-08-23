@@ -229,11 +229,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-registry-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-schema-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -270,11 +265,6 @@
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-client-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!--dependency>

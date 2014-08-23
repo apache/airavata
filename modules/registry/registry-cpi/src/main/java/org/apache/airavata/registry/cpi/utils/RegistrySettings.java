@@ -19,7 +19,12 @@
  *
  */
 
-package org.apache.airavata.registry.api.util;
+package org.apache.airavata.registry.cpi.utils;
+
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ApplicationSettings;
+import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,12 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Pattern;
-
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ApplicationSettings;
-import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.registry.api.exception.RegistrySettingsException;
-import org.apache.airavata.registry.api.exception.RegistrySettingsLoadException;
 
 public class RegistrySettings {
     private static final String REPOSITORY_PROPERTIES = "registry.properties";
@@ -71,13 +70,13 @@ public class RegistrySettings {
         System.out.println(url);
     }
     
-    private static void validateSuccessfulPropertyFileLoad() throws RegistrySettingsException{
+    private static void validateSuccessfulPropertyFileLoad() throws RegistryException{
     	if (propertyLoadException!=null){
-    		throw new RegistrySettingsLoadException(propertyLoadException);
+    		throw new RegistryException(propertyLoadException);
     	}
     }
     
-    public static String getSetting(String key) throws RegistrySettingsException{
+    public static String getSetting(String key) throws RegistryException{
     	String rawValue=null;
     	if (System.getProperties().containsKey(key)){
     		rawValue=System.getProperties().getProperty(key);
@@ -111,14 +110,15 @@ public class RegistrySettings {
     public static String getSetting(String key, String defaultValue){
     	try {
     		return getSetting(key);
-		} catch (RegistrySettingsException e) {
+		} catch (RegistryException e) {
 			//we'll ignore this error since a default value is provided
 		}
 		return defaultValue;
     }
     
-    public static String getRegistryAccessorClass() throws RegistrySettingsException{
-    	return getSetting(REGISTRY_ACCESSOR_CLASS);
+    public static String getRegistryAccessorClass() throws RegistryException{
+
+        return getSetting(REGISTRY_ACCESSOR_CLASS);
     }
     
     public static boolean isApplicationJobStatusHistoryEnabled(){

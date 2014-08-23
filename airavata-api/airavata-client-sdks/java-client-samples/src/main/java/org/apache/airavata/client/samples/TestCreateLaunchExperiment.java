@@ -23,31 +23,19 @@ package org.apache.airavata.client.samples;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreator;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.error.*;
-import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.util.ProjectModelUtil;
-import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.persistance.registry.jpa.model.*;
-import org.apache.airavata.workflow.model.component.system.SystemComponent;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 public class TestCreateLaunchExperiment {
 
@@ -69,10 +57,17 @@ public class TestCreateLaunchExperiment {
             Calendar cal2 = Calendar.getInstance();
             Long to = cal2.getTimeInMillis();
 
-            List<ExperimentSummary> experiments = getExperimentsForApplication(airavata, "admin", "e");
-            for (ExperimentSummary experimentSummary : experiments){
+            List<JobDetails> jobDetailsList = getJobDetails(airavata, "echoExperiment_14a83cee-5611-4e37-b90c-4444d28359b6");
+            for (JobDetails job : jobDetailsList){
 //                System.out.println(experimentSummary.getExperimentID());
-                System.out.println(experimentSummary.getApplicationId());
+                System.out.println("job description : " + job.getJobDescription());
+//                System.out.println(experimentSummary.getExperimentStatus().getExperimentState().toString());
+            }
+
+            List<DataTransferDetails> dataTransferDetails = getDataTransferDetails(airavata, "echoExperiment_6c32f45d-7755-4d1f-9915-69b9a6972770");
+            for (DataTransferDetails dt : dataTransferDetails){
+//                System.out.println(experimentSummary.getExperimentID());
+                System.out.println("data transfer description "  + dt.getTransferDescription());
 //                System.out.println(experimentSummary.getExperimentStatus().getExperimentState().toString());
             }
 //            getAllComputeResources(airavata);
@@ -98,25 +93,55 @@ public class TestCreateLaunchExperiment {
         }
     }
 
-    private static AiravataAPI getAiravataAPI() throws AiravataAPIInvocationException, ApplicationSettingsException {
-        AiravataAPI airavataAPI;
-        try {
-            String sysUser = ClientSettings.getSetting(DEFAULT_USER);
-            String gateway = ClientSettings.getSetting(DEFAULT_GATEWAY);
-            airavataAPI = AiravataAPIFactory.getAPI(gateway, sysUser);
-        } catch (AiravataAPIInvocationException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new AiravataAPIInvocationException(e);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new ApplicationSettingsException(e.getMessage());
-        }
-        return airavataAPI;
-    }
+//    private static AiravataAPI getAiravataAPI() throws AiravataAPIInvocationException, ApplicationSettingsException {
+//        AiravataAPI airavataAPI;
+//        try {
+//            String sysUser = ClientSettings.getSetting(DEFAULT_USER);
+//            String gateway = ClientSettings.getSetting(DEFAULT_GATEWAY);
+//            airavataAPI = AiravataAPIFactory.getAPI(gateway, sysUser);
+//        } catch (AiravataAPIInvocationException e) {
+//            logger.error("Unable to create airavata API", e.getMessage());
+//            throw new AiravataAPIInvocationException(e);
+//        } catch (ApplicationSettingsException e) {
+//            logger.error("Unable to create airavata API", e.getMessage());
+//            throw new ApplicationSettingsException(e.getMessage());
+//        }
+//        return airavataAPI;
+//    }
 
     public static List<Experiment> getExperimentsForUser (Airavata.Client client, String user){
         try {
             return client.getAllUserExperiments(user);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<JobDetails> getJobDetails (Airavata.Client client, String experimentId){
+        try {
+            return client.getJobDetails(experimentId);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        }catch (TException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static List<DataTransferDetails> getDataTransferDetails (Airavata.Client client, String experimentId){
+        try {
+            return client.getDataTransferDetails(experimentId);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {

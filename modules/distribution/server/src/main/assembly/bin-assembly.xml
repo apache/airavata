@@ -198,7 +198,6 @@
                 <include>org.apache.airavata:airavata-common-utils:jar</include>
                 <include>org.apache.airavata:airavata-orchestrator-service:jar</include>
                 <include>org.apache.airavata:airavata-orchestrator-core:jar</include>
-                <include>org.apache.airavata:airavata-registry-api:jar</include>
                 <include>org.apache.airavata:airavata-gfac-schema-utils:jar</include>
                 <include>org.apache.airavata:airavata-workflow-execution-context:jar</include>
                 <include>org.apache.airavata:airavata-registry-cpi:jar</include>
@@ -216,7 +215,6 @@
                 <include>org.apache.airavata:airavata-gfac-hadoop:jar</include>
                 <include>org.apache.airavata:airavata-gfac-bes:jar</include>
                 <include>org.apache.airavata:airavata-gfac-gram:jar</include>
-                <include>org.apache.airavata:airavata-client-api:jar</include>
                 <include>org.apache.airavata:airavata-message-monitor:jar</include>
                 <include>org.apache.airavata:airavata-workflow-model-core:jar</include>
                 <include>org.apache.airavata:airavata-messenger-commons:jar</include>
