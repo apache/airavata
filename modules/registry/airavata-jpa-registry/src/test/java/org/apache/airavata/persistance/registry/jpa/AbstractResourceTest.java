@@ -26,7 +26,7 @@ import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.util.Initialize;
-import org.apache.airavata.registry.api.util.RegistrySettings;
+import org.apache.airavata.registry.cpi.utils.RegistrySettings;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;

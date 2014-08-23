@@ -26,7 +26,6 @@ import java.net.URI;
 import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Version;
-import org.apache.airavata.registry.api.PasswordCallback;
 
 
 /**
@@ -56,7 +55,7 @@ public interface AiravataAPI {
      * Returns the ProvenanceManager
      * @return
      */
-	public ProvenanceManager getProvenanceManager();
+//	public ProvenanceManager getProvenanceManager();
 
     /**
      * Returns the UserManager
@@ -97,7 +96,7 @@ public interface AiravataAPI {
 
 	public void setCurrentUser(String alternateUsername);
 
-	public void setCallBack(PasswordCallback callback);
+//	public void setCallBack(PasswordCallback callback);
 
 	public void setRegitryURI(URI registryURL);
 

@@ -62,22 +62,13 @@ import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ProjectNotFoundException;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
-import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
-import org.apache.airavata.model.workspace.experiment.ExperimentSummary;
-import org.apache.airavata.model.workspace.experiment.JobDetails;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+import org.apache.airavata.persistance.registry.jpa.model.JobDetail;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.ParentDataType;
 import org.apache.airavata.registry.cpi.Registry;
@@ -1040,6 +1031,78 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             throw exception;
         }
         return jobStatus;
+    }
+
+    @Override
+    public List<JobDetails> getJobDetails(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+        List<JobDetails> jobDetailsList = new ArrayList<JobDetails>();
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            List<Object> workflowNodes = registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
+            if (workflowNodes != null && !workflowNodes.isEmpty()){
+                for (Object wf : workflowNodes){
+                    String nodeInstanceId = ((WorkflowNodeDetails) wf).getNodeInstanceId();
+                    List<Object> taskDetails = registry.get(RegistryModelType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
+                    if (taskDetails != null && !taskDetails.isEmpty()){
+                        for (Object ts : taskDetails){
+                            String taskID = ((TaskDetails) ts).getTaskID();
+                            List<Object> jobDetails = registry.get(RegistryModelType.JOB_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
+                            if (jobDetails != null && !jobDetails.isEmpty()){
+                                for (Object job : jobDetails){
+                                    jobDetailsList.add((JobDetails) job);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while retrieving the job details", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the job details. More info : " + e.getMessage());
+            throw exception;
+        }
+        return jobDetailsList;
+    }
+
+    @Override
+    public List<DataTransferDetails> getDataTransferDetails(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+        List<DataTransferDetails> dataTransferDetailList = new ArrayList<DataTransferDetails>();
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
+                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
+            }
+            List<Object> workflowNodes = registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
+            if (workflowNodes != null && !workflowNodes.isEmpty()){
+                for (Object wf : workflowNodes){
+                    String nodeInstanceId = ((WorkflowNodeDetails) wf).getNodeInstanceId();
+                    List<Object> taskDetails = registry.get(RegistryModelType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
+                    if (taskDetails != null && !taskDetails.isEmpty()){
+                        for (Object ts : taskDetails){
+                            String taskID = ((TaskDetails) ts).getTaskID();
+                            List<Object> dataTransferDetails = registry.get(RegistryModelType.DATA_TRANSFER_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
+                            if (dataTransferDetails != null && !dataTransferDetails.isEmpty()){
+                                for (Object dataTransfer : dataTransferDetails){
+                                    dataTransferDetailList.add((DataTransferDetails) dataTransfer);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while retrieving the data transfer details", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving the data transfer details. More info : " + e.getMessage());
+            throw exception;
+        }
+        return dataTransferDetailList;
     }
 
     /**

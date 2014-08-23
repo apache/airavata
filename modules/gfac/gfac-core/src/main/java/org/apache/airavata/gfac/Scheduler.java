@@ -33,8 +33,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
@@ -177,14 +175,6 @@ public class Scheduler {
         }
 
         return ExecutionMode.fromString(executionMode);
-    }
-    public static HostDescription pickaHost(AiravataAPI api, String serviceName) throws AiravataAPIInvocationException {
-        List<HostDescription> registeredHosts = new ArrayList<HostDescription>();
-        Map<String, ApplicationDescription> applicationDescriptors = api.getApplicationManager().getApplicationDescriptors(serviceName);
-        for (String hostDescName : applicationDescriptors.keySet()) {
-            registeredHosts.add(api.getApplicationManager().getHostDescription(hostDescName));
-        }
-        return scheduleHost(registeredHosts);
     }
 
     private static HostDescription scheduleHost(List<HostDescription> registeredHosts) {

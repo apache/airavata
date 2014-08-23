@@ -21,23 +21,11 @@
 
 package org.apache.airavata.integration;
 
-import junit.framework.Assert;
-import org.apache.airavata.client.api.builder.DescriptorBuilder;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
-import org.apache.airavata.schemas.gfac.DataType;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
 import org.testng.annotations.BeforeTest;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Integration test class.
@@ -50,9 +38,7 @@ public class ForEachCaseIT extends WorkflowIntegrationTestBase {
 
     @BeforeTest
     public void setUp() throws Exception {
-        this.airavataAPI = getAiravataAPI();
-
-        setupDescriptors();
+//        setupDescriptors();
     }
 
 //    @Test(groups = {"forEachGroup"})
@@ -68,60 +54,60 @@ public class ForEachCaseIT extends WorkflowIntegrationTestBase {
 
     private void setupDescriptors() throws AiravataAPIInvocationException,
             DescriptorAlreadyExistsException, IOException {
-        DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
-        HostDescription hostDescription = descriptorBuilder.buildHostDescription(HostDescriptionType.type, "localhost2",
-                "127.0.0.1");
-
-        log("Adding host description ....");
-        addHostDescriptor(hostDescription);
-        Assert.assertTrue(airavataAPI.getApplicationManager().isHostDescriptorExists(hostDescription.getType().getHostName()));
-
-        List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
-        inputParameters.add(descriptorBuilder.buildInputParameterType("data1", "data1", DataType.STRING));
-        inputParameters.add(descriptorBuilder.buildInputParameterType("data2", "data2", DataType.STRING));
-
-        List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
-        outputParameters.add(descriptorBuilder.buildOutputParameterType("out", "out", DataType.STD_OUT));
-
-        ServiceDescription serviceDescription = descriptorBuilder.buildServiceDescription("comma_app", "comma_app",
-                inputParameters, outputParameters);
-
-        ServiceDescription serviceDescription2 = descriptorBuilder.buildServiceDescription("echo_app", "echo_app",
-                inputParameters, outputParameters);
-
-        log("Adding service description ...");
-        addServiceDescriptor(serviceDescription, "comma_app");
-        Assert.assertTrue(airavataAPI.getApplicationManager().isServiceDescriptorExists(
-                serviceDescription.getType().getName()));
-
-        addServiceDescriptor(serviceDescription2, "echo_app");
-        Assert.assertTrue(airavataAPI.getApplicationManager().isServiceDescriptorExists(
-                serviceDescription2.getType().getName()));
-
-        // Deployment descriptor
-        File executable;
-        if (OsUtils.isWindows()) {
-            executable = getFile("src/test/resources/comma_data.bat");
-        } else {
-            executable = getFile("src/test/resources/comma_data.sh");
-            Runtime.getRuntime().exec("chmod +x " + executable.getAbsolutePath());
-        }
-
-        ApplicationDescription applicationDeploymentDescription = descriptorBuilder
-                .buildApplicationDeploymentDescription("comma_app_localhost", executable.getAbsolutePath(), OsUtils.getTempFolderPath());
-        ApplicationDescription applicationDeploymentDescription2 = descriptorBuilder
-                .buildApplicationDeploymentDescription("echo_app_localhost", OsUtils.getEchoExecutable(), OsUtils.getTempFolderPath());
-
-        log("Adding deployment description ...");
-        addApplicationDescriptor(applicationDeploymentDescription, serviceDescription, hostDescription, "comma_app_localhost");
-
-        Assert.assertTrue(airavataAPI.getApplicationManager().isApplicationDescriptorExists(
-                serviceDescription.getType().getName(), hostDescription.getType().getHostName(),
-                applicationDeploymentDescription.getType().getApplicationName().getStringValue()));
-
-        addApplicationDescriptor(applicationDeploymentDescription2, serviceDescription2, hostDescription, "echo_app_localhost");
-        Assert.assertTrue(airavataAPI.getApplicationManager().isApplicationDescriptorExists(
-                serviceDescription2.getType().getName(), hostDescription.getType().getHostName(),
-                applicationDeploymentDescription2.getType().getApplicationName().getStringValue()));
+//        DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
+//        HostDescription hostDescription = descriptorBuilder.buildHostDescription(HostDescriptionType.type, "localhost2",
+//                "127.0.0.1");
+//
+//        log("Adding host description ....");
+//        addHostDescriptor(hostDescription);
+//        Assert.assertTrue(airavataAPI.getApplicationManager().isHostDescriptorExists(hostDescription.getType().getHostName()));
+//
+//        List<InputParameterType> inputParameters = new ArrayList<InputParameterType>();
+//        inputParameters.add(descriptorBuilder.buildInputParameterType("data1", "data1", DataType.STRING));
+//        inputParameters.add(descriptorBuilder.buildInputParameterType("data2", "data2", DataType.STRING));
+//
+//        List<OutputParameterType> outputParameters = new ArrayList<OutputParameterType>();
+//        outputParameters.add(descriptorBuilder.buildOutputParameterType("out", "out", DataType.STD_OUT));
+//
+//        ServiceDescription serviceDescription = descriptorBuilder.buildServiceDescription("comma_app", "comma_app",
+//                inputParameters, outputParameters);
+//
+//        ServiceDescription serviceDescription2 = descriptorBuilder.buildServiceDescription("echo_app", "echo_app",
+//                inputParameters, outputParameters);
+//
+//        log("Adding service description ...");
+//        addServiceDescriptor(serviceDescription, "comma_app");
+//        Assert.assertTrue(airavataAPI.getApplicationManager().isServiceDescriptorExists(
+//                serviceDescription.getType().getName()));
+//
+//        addServiceDescriptor(serviceDescription2, "echo_app");
+//        Assert.assertTrue(airavataAPI.getApplicationManager().isServiceDescriptorExists(
+//                serviceDescription2.getType().getName()));
+//
+//        // Deployment descriptor
+//        File executable;
+//        if (OsUtils.isWindows()) {
+//            executable = getFile("src/test/resources/comma_data.bat");
+//        } else {
+//            executable = getFile("src/test/resources/comma_data.sh");
+//            Runtime.getRuntime().exec("chmod +x " + executable.getAbsolutePath());
+//        }
+//
+//        ApplicationDescription applicationDeploymentDescription = descriptorBuilder
+//                .buildApplicationDeploymentDescription("comma_app_localhost", executable.getAbsolutePath(), OsUtils.getTempFolderPath());
+//        ApplicationDescription applicationDeploymentDescription2 = descriptorBuilder
+//                .buildApplicationDeploymentDescription("echo_app_localhost", OsUtils.getEchoExecutable(), OsUtils.getTempFolderPath());
+//
+//        log("Adding deployment description ...");
+//        addApplicationDescriptor(applicationDeploymentDescription, serviceDescription, hostDescription, "comma_app_localhost");
+//
+//        Assert.assertTrue(airavataAPI.getApplicationManager().isApplicationDescriptorExists(
+//                serviceDescription.getType().getName(), hostDescription.getType().getHostName(),
+//                applicationDeploymentDescription.getType().getApplicationName().getStringValue()));
+//
+//        addApplicationDescriptor(applicationDeploymentDescription2, serviceDescription2, hostDescription, "echo_app_localhost");
+//        Assert.assertTrue(airavataAPI.getApplicationManager().isApplicationDescriptorExists(
+//                serviceDescription2.getType().getName(), hostDescription.getType().getHostName(),
+//                applicationDeploymentDescription2.getType().getApplicationName().getStringValue()));
     }
 }

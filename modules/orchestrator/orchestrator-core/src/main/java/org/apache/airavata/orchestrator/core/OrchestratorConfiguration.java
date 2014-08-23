@@ -20,8 +20,6 @@
 */
 package org.apache.airavata.orchestrator.core;
 
-import org.apache.airavata.client.api.AiravataAPI;
-
 import java.net.URL;
 import java.util.List;
 
@@ -40,8 +38,6 @@ public class OrchestratorConfiguration {
     private int threadPoolSize = 10;
 
     private boolean startSubmitter = false;
-
-    private AiravataAPI airavataAPI;
 
     private URL brokerURL;
 
@@ -106,14 +102,6 @@ public class OrchestratorConfiguration {
 
     public void setStartSubmitter(boolean startSubmitter) {
         this.startSubmitter = startSubmitter;
-    }
-
-    public AiravataAPI getAiravataAPI() {
-        return airavataAPI;
-    }
-
-    public void setAiravataAPI(AiravataAPI airavataAPI) {
-        this.airavataAPI = airavataAPI;
     }
 
     public String getHangedJobSubmitterClass() {

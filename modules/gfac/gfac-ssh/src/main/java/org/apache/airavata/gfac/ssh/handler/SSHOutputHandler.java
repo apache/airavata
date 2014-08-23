@@ -144,12 +144,12 @@ public class SSHOutputHandler extends AbstractHandler {
 
             String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
-            status.setTransferState(TransferState.COMPLETE);
+            status.setTransferState(TransferState.STDOUT_DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDOUT:" + stdOutStr);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
-            status.setTransferState(TransferState.COMPLETE);
+            status.setTransferState(TransferState.STDERROR_DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDERR:" + stdErrStr);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
@@ -188,9 +188,11 @@ public class SSHOutputHandler extends AbstractHandler {
                     } else {
                         String valueList = outputList.get(0);
                         cluster.scpFrom(app.getOutputDataDirectory() + File.separator + valueList, outputDataDir);
-                        jobExecutionContext.addOutputFile(outputDataDir + File.separator + valueList);
-                        DataObjectType dataObjectType = new DataObjectType();
-                        dataObjectType.setValue(valueList);
+                        String outputPath = outputDataDir + File.separator + valueList;
+						jobExecutionContext.addOutputFile(outputPath);
+						MappingFactory.fromString(actualParameter, outputPath);
+						DataObjectType dataObjectType = new DataObjectType();
+                        dataObjectType.setValue(outputPath);
                         dataObjectType.setKey(paramName);
                         dataObjectType.setType(DataType.URI);
                         outputArray.add(dataObjectType);

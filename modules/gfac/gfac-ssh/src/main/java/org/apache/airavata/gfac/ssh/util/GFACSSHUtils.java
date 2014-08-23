@@ -57,10 +57,10 @@ public class GFACSSHUtils {
 
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
         HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
-        if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
-                || registeredHost.getType() instanceof GsisshHostType) {
+        if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType) {
             logger.error("This is a wrong method to invoke to non ssh host types,please check your gfac-config.xml");
-        } else if (registeredHost.getType() instanceof SSHHostType) {
+        } else if (registeredHost.getType() instanceof SSHHostType
+                || registeredHost.getType() instanceof GsisshHostType) {
             SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
             String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
             RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
@@ -71,10 +71,10 @@ public class GFACSSHUtils {
             Cluster pbsCluster = null;
             try {
                 TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
-                String installedParentPath = "/";
-                if (((SSHHostType) registeredHost.getType()).getHpcResource()) {
-                    installedParentPath = ((HpcApplicationDeploymentType)
+                String installedParentPath = ((HpcApplicationDeploymentType)
                             jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
+                if(installedParentPath== null) {
+                    installedParentPath = "/";
                 }
                 SSHCredential credentials = tokenizedSSHAuthInfo.getCredentials();// this is just a call to get and set credentials in to this object,data will be used
                 serverInfo.setUserName(credentials.getPortalUserName());

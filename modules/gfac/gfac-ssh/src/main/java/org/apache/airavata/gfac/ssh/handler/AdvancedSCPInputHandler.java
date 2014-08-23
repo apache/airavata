@@ -41,6 +41,10 @@ import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
@@ -143,6 +147,9 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
                 StringBuffer temp = new StringBuffer(data.append(parentPath).append(",").toString());
                 GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
             }
+            DataTransferDetails detail = new DataTransferDetails();
+            TransferStatus status = new TransferStatus();
+          
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {
@@ -155,9 +162,14 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
                         ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
                     } else {
-                        String s = stageInputFiles(pbsCluster, paramValue, parentPath);
-                        ((URIParameterType) actualParameter.getType()).setValue(s);
-                        StringBuffer temp = new StringBuffer(data.append(s).append(",").toString());
+                        String stageInputFile = stageInputFiles(pbsCluster, paramValue, parentPath);
+                        ((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
+                        StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
+                        status.setTransferState(TransferState.UPLOAD);
+                        detail.setTransferStatus(status);
+                        detail.setTransferDescription("Input Data Staged: " + stageInputFile);
+                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                
                         GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                     }
                 } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {

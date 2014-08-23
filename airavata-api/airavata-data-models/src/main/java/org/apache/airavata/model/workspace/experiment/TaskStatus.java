@@ -189,7 +189,7 @@ import org.slf4j.LoggerFactory;
    * @see TaskState
    */
   public void setExecutionState(TaskState executionState) {
-        this.executionState = executionState;
+    this.executionState = executionState;
   }
 
   public void unsetExecutionState() {

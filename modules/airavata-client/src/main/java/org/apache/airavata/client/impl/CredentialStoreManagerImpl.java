@@ -35,41 +35,45 @@ public class CredentialStoreManagerImpl implements CredentialStoreManager{
 	
 	@Override
 	public boolean isCredentialExist(String gatewayId, String tokenId) throws AiravataAPIInvocationException {
-		if(gatewayId==null || gatewayId.isEmpty() || tokenId == null || tokenId.isEmpty()) {
-    		return false;
-    	}
-		try {
-			return client.getRegistryClient().isCredentialExist(gatewayId, tokenId);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		if(gatewayId==null || gatewayId.isEmpty() || tokenId == null || tokenId.isEmpty()) {
+//    		return false;
+//    	}
+//		try {
+//			return client.getRegistryClient().isCredentialExist(gatewayId, tokenId);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return false;
 	}
 
 	@Override
 	public String getCredentialPublicKey(String gatewayId, String tokenId) throws AiravataAPIInvocationException {
-		try {
-			return client.getRegistryClient().getCredentialPublicKey(gatewayId, tokenId);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			return client.getRegistryClient().getCredentialPublicKey(gatewayId, tokenId);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 
 	@Override
 	public String createCredential(String gatewayId, String tokenId) throws AiravataAPIInvocationException {
-		try {
-			return client.getRegistryClient().createCredential(gatewayId, tokenId);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			return client.getRegistryClient().createCredential(gatewayId, tokenId);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 
 	@Override
 	public String createCredential(String gatewayId, String tokenId, String username) throws AiravataAPIInvocationException {
-		try {
-			return client.getRegistryClient().createCredential(gatewayId, tokenId, username);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			return client.getRegistryClient().createCredential(gatewayId, tokenId, username);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 
 }

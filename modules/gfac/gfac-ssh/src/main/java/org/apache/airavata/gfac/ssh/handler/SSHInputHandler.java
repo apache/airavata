@@ -58,6 +58,10 @@ public class SSHInputHandler extends AbstractHandler {
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         DataTransferDetails detail = new DataTransferDetails();
         TransferStatus status = new TransferStatus();
+        int index = 0;
+        int oldIndex = 0;
+        List<String> oldFiles = new ArrayList<String>();
+        StringBuffer data = new StringBuffer("|");
         MessageContext inputNew = new MessageContext();
         try {
 
@@ -80,9 +84,28 @@ public class SSHInputHandler extends AbstractHandler {
                 String paramValue = MappingFactory.toString(actualParameter);
                 //TODO: Review this with type
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
-                    ((URIParameterType) actualParameter.getType()).setValue(stageInputFiles(jobExecutionContext, paramValue));
+                	if (index < oldIndex) {
+                        log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
+                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+                        data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
+                    }else{
+                	String stageInputFile = stageInputFiles(jobExecutionContext, paramValue);
+                    ((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
+                    StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
+                    
+                    status.setTransferState(TransferState.UPLOAD);
+                    detail.setTransferStatus(status);
+                    detail.setTransferDescription("Input Data Staged: " + stageInputFile);
+                    registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                    GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+                    }
                 } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-                    List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
+                	if (index < oldIndex) {
+                        log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
+                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+                        data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
+                    }else{
+                	List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
                     List<String> newFiles = new ArrayList<String>();
                     for (String paramValueEach : split) {
                         String stageInputFiles = stageInputFiles(jobExecutionContext, paramValueEach);
@@ -91,8 +114,11 @@ public class SSHInputHandler extends AbstractHandler {
                         detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
                         registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
                         newFiles.add(stageInputFiles);
+                        StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
+                        GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                     }
                     ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
+                    }
                 }
                 inputNew.getParameters().put(paramName, actualParameter);
             }

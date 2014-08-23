@@ -27,7 +27,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.cpi.GFacImpl;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.schemas.gfac.*;
 import org.junit.Assert;
 import org.junit.Before;
@@ -83,7 +83,7 @@ public class EC2ProviderTest {
         URL resource = EC2ProviderTest.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         assert resource != null;
         System.out.println(resource.getFile());
-        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null, null);
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null);
 
         /* EC2 Host */
         HostDescription host = new HostDescription(Ec2HostType.type);
@@ -160,7 +160,7 @@ public class EC2ProviderTest {
 
     @Test
     public void testGramProvider() throws GFacException {
-        GFacImpl gFacAPI = new GFacImpl();
+        BetterGfacImpl gFacAPI = new BetterGfacImpl();
         gFacAPI.submitJob(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
         MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
         Assert.assertEquals(MappingFactory.

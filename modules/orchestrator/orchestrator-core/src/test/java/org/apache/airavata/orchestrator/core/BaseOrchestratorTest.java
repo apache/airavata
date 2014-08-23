@@ -21,15 +21,16 @@
 package org.apache.airavata.orchestrator.core;
 
 
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreator;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.client.tools.DocumentCreatorNew;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.orchestrator.core.util.Initialize;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 
 public class BaseOrchestratorTest {
 
@@ -37,7 +38,7 @@ public class BaseOrchestratorTest {
     private WorkerResource workerResource;
     private UserResource userResource;
     private Initialize initialize;
-    private DocumentCreator documentCreator;
+    private DocumentCreatorNew documentCreator;
 
     public void setUp() throws Exception {
         initialize = new Initialize("registry-derby.sql");
@@ -48,10 +49,9 @@ public class BaseOrchestratorTest {
         userResource.setUserName(ServerSettings.getDefaultUser());
         userResource.setPassword(ServerSettings.getDefaultUser());
 
-        documentCreator = new DocumentCreator(getAiravataAPI());
+        documentCreator = new DocumentCreatorNew(getAiravataClient());
         documentCreator.createLocalHostDocs();
-        documentCreator.createGramDocs();
-        documentCreator.createPBSDocsForOGCE();
+        documentCreator.createPBSDocsForOGCE_Echo();
     }
 
     public void tearDown() throws Exception {
@@ -70,25 +70,21 @@ public class BaseOrchestratorTest {
         return userResource;
     }
 
-    private AiravataAPI getAiravataAPI() {
-        AiravataAPI airavataAPI = null;
+    private Airavata.Client getAiravataClient() {
+        Airavata.Client client = null;
         try {
-            String systemUserName = ServerSettings.getSystemUser();
-            String gateway = ServerSettings.getSystemUserGateway();
-            airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
-        } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
-        } catch (AiravataAPIInvocationException e) {
+            client = AiravataClientFactory.createAiravataClient("localhost", 8930);
+        } catch (AiravataClientConnectException e) {
             e.printStackTrace();
         }
-        return airavataAPI;
+        return client;
     }
 
-    public DocumentCreator getDocumentCreator() {
+    public DocumentCreatorNew getDocumentCreator() {
         return documentCreator;
     }
 
-    public void setDocumentCreator(DocumentCreator documentCreator) {
+    public void setDocumentCreator(DocumentCreatorNew documentCreator) {
         this.documentCreator = documentCreator;
     }
 

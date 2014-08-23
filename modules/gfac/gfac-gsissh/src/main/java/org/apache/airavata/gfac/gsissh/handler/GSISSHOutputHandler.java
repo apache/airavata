@@ -180,12 +180,12 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
 
             String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
-            status.setTransferState(TransferState.COMPLETE);
+            status.setTransferState(TransferState.STDOUT_DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDOUT:" + stdOutStr);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
-            status.setTransferState(TransferState.COMPLETE);
+            status.setTransferState(TransferState.STDERROR_DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDERR:" + stdErrStr);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
@@ -242,6 +242,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                             GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                         }
                         jobExecutionContext.addOutputFile(outputFile);
+                        MappingFactory.fromString(actualParameter, outputFile);
                         DataObjectType dataObjectType = new DataObjectType();
                         dataObjectType.setValue(valueList);
                         dataObjectType.setKey(paramName);

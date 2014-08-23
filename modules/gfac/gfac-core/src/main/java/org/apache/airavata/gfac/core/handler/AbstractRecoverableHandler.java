@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.core.handler;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.cpi.GFacImpl;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
@@ -38,7 +38,7 @@ public abstract class AbstractRecoverableHandler implements GFacRecoverableHandl
     protected MonitorPublisher publisher = null;
 
     protected AbstractRecoverableHandler() {
-        publisher = GFacImpl.getMonitorPublisher();   // This will not be null because this will be initialize in GFacIml
+        publisher = BetterGfacImpl.getMonitorPublisher();   // This will not be null because this will be initialize in GFacIml
     }
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
