@@ -58,7 +58,7 @@ public class RegisterSampleApplications {
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(RegisterSampleApplications.class);
     private static final String DEFAULT_GATEWAY = "default";
-    private static Airavata.Client airavataClient;
+    private Airavata.Client airavataClient;
 
     //Host Id's
     private static String stampedeResourceId = "stampede.tacc.xsede.org_92ac5ed6-35a5-4910-82ef-48f128f9245a";
@@ -114,7 +114,7 @@ public class RegisterSampleApplications {
     }
     public static void main(String[] args) {
         try {
-            airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
+            Airavata.Client airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavataClient.getAPIVersion());
 
             RegisterSampleApplications registerSampleApplications = new RegisterSampleApplications(airavataClient);
@@ -278,7 +278,7 @@ public class RegisterSampleApplications {
 
     }
 
-    public static void registerGromaxWorkflowInterfaces() {
+    public void registerGromaxWorkflowInterfaces() {
         try {
             System.out.println("#### Registering Echo Interface #### \n");
 
@@ -419,7 +419,7 @@ public class RegisterSampleApplications {
     }
 
     
-    public static void registerEchoInterface() {
+    public void registerEchoInterface() {
         try {
             System.out.println("#### Registering Echo Interface #### \n");
 
@@ -448,7 +448,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void registerAmberInterface() {
+    public void registerAmberInterface() {
         try {
             System.out.println("#### Registering Amber Interface #### \n");
 
@@ -490,7 +490,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void registerAutoDockInterface() {
+    public void registerAutoDockInterface() {
         try {
             System.out.println("#### Registering AutoDock Interface #### \n");
 
@@ -527,7 +527,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void registerEspressoInterface() {
+    public void registerEspressoInterface() {
         try {
             System.out.println("#### Registering Espresso Interface #### \n");
 
@@ -561,7 +561,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void registerGromacsInterface() {
+    public void registerGromacsInterface() {
         try {
             System.out.println("#### Registering Gromacs Interface #### \n");
 
@@ -597,7 +597,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void registerLammpsInterface() {
+    public void registerLammpsInterface() {
         try {
             System.out.println("#### Registering LAMMPS Interface #### \n");
 
@@ -625,7 +625,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void registerNWChemInterface() {
+    public void registerNWChemInterface() {
         try {
             System.out.println("#### Registering NWChem Interface #### \n");
 
@@ -654,7 +654,7 @@ public class RegisterSampleApplications {
     }
 
 
-    public static void registerTrinityInterface() {
+    public void registerTrinityInterface() {
         try {
             System.out.println("#### Registering Trinity Interface #### \n");
 
@@ -689,7 +689,7 @@ public class RegisterSampleApplications {
     }
 
 
-    public static void registerWRFInterface() {
+    public void registerWRFInterface() {
         try {
             System.out.println("#### Registering WRF Interface #### \n");
 
@@ -730,7 +730,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void registerStampedeApps() {
+    public void registerStampedeApps() {
         try {
             System.out.println("#### Registering Application Deployments on Stampede #### \n");
 
@@ -794,7 +794,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void registerTrestlesApps() {
+    public void registerTrestlesApps() {
         try {
             System.out.println("#### Registering Application Deployments on Trestles #### \n");
 
@@ -830,7 +830,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void registerBigRedApps() {
+    public void registerBigRedApps() {
         try {
             System.out.println("#### Registering Application Deployments on BigRed II #### \n");
 
@@ -873,7 +873,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static String registerComputeHost(String hostName, String hostDesc,
+    public String registerComputeHost(String hostName, String hostDesc,
                                              ResourceJobManagerType resourceJobManagerType,
                                              String monitoringEndPoint, String jobMangerBinPath,
                                              SecurityProtocol securityProtocol, int portNumber, String jobManagerCommand) throws TException {
@@ -945,7 +945,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void writeIdPropertyFile() {
+    public void writeIdPropertyFile() {
         try {
             Properties properties = new Properties();
             properties.setProperty("stampedeResourceId", stampedeResourceId);
