@@ -21,8 +21,6 @@
 
 package org.apache.airavata.integration;
 
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.exception.DescriptorAlreadyExistsException;
 import org.testng.annotations.BeforeTest;
 
 import java.io.IOException;
@@ -52,8 +50,8 @@ public class ForEachCaseIT extends WorkflowIntegrationTestBase {
 //        executeExperiment("src/test/resources/ForEachEchoWorkflow.xwf", Arrays.asList("10,20", "30,40"), Arrays.asList("10,30", "20,40"));
 //    }
 
-    private void setupDescriptors() throws AiravataAPIInvocationException,
-            DescriptorAlreadyExistsException, IOException {
+//    private void setupDescriptors() throws AiravataAPIInvocationException,
+//            DescriptorAlreadyExistsException, IOException {
 //        DescriptorBuilder descriptorBuilder = airavataAPI.getDescriptorBuilder();
 //        HostDescription hostDescription = descriptorBuilder.buildHostDescription(HostDescriptionType.type, "localhost2",
 //                "127.0.0.1");
@@ -109,5 +107,5 @@ public class ForEachCaseIT extends WorkflowIntegrationTestBase {
 //        Assert.assertTrue(airavataAPI.getApplicationManager().isApplicationDescriptorExists(
 //                serviceDescription2.getType().getName(), hostDescription.getType().getHostName(),
 //                applicationDeploymentDescription2.getType().getApplicationName().getStringValue()));
-    }
+//    }
 }

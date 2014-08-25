@@ -215,7 +215,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 	}
 
 	private void addApplications() throws AppCatalogException, TException {
-		DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
+		DocumentCreatorNew documentCreator = new DocumentCreatorNew(airavataClient);
 		documentCreator.createLocalHostDocs();
 	}
 	
