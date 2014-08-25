@@ -61,8 +61,8 @@ public class CreateLaunchExperimentUS3 {
 //            addDescriptors();
 //            final String expId = createUS3ExperimentForTrestles(airavata);
 //            final String expId = createUS3ExperimentForStampede(airavata);
-//            final String expId = createUS3ExperimentForLonestar(airavata);
-            final String expId =  createUS3ExperimentForAlamo(airavata);
+            final String expId = createUS3ExperimentForLonestar(airavata);
+//            final String expId =  createUS3ExperimentForAlamo(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
             System.out.println("Launched successfully");
@@ -104,7 +104,9 @@ public class CreateLaunchExperimentUS3 {
             } catch (InterruptedException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-
+            
+//            airavata.terminateExperiment(expId);
+     
 //            Experiment experiment = airavata.getExperiment(expId);
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (Exception e) {
@@ -197,7 +199,18 @@ public class CreateLaunchExperimentUS3 {
             input.setKey("input");
             input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
+            DataObjectType input1 = new DataObjectType();
+            input1.setKey("walltime");
+            input1.setType(DataType.STRING);
+            input1.setValue("-walltime=60");
+            DataObjectType input2 = new DataObjectType();
+            input2.setKey("mgroupcount");
+            input2.setType(DataType.STRING);
+            input2.setValue("-mgroupcount=1");
+            
             exInputs.add(input);
+            exInputs.add(input1);
+            exInputs.add(input2);
 
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
@@ -257,7 +270,19 @@ public class CreateLaunchExperimentUS3 {
             input.setKey("input");
             input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
+            DataObjectType input1 = new DataObjectType();
+            input1.setKey("walltime");
+            input1.setType(DataType.STRING);
+            input1.setValue("-walltime=60");
+            DataObjectType input2 = new DataObjectType();
+            input2.setKey("mgroupcount");
+            input2.setType(DataType.STRING);
+            input2.setValue("-mgroupcount=1");
+            
             exInputs.add(input);
+            exInputs.add(input1);
+            exInputs.add(input2);
+
 
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
@@ -318,7 +343,18 @@ public class CreateLaunchExperimentUS3 {
             input.setKey("input");
             input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
+            DataObjectType input1 = new DataObjectType();
+            input1.setKey("walltime");
+            input1.setType(DataType.STRING);
+            input1.setValue("-walltime=60");
+            DataObjectType input2 = new DataObjectType();
+            input2.setKey("mgroupcount");
+            input2.setType(DataType.STRING);
+            input2.setValue("-mgroupcount=1");
+            
             exInputs.add(input);
+            exInputs.add(input1);
+            exInputs.add(input2);
 
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
@@ -379,7 +415,19 @@ public class CreateLaunchExperimentUS3 {
             input.setKey("input");
             input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
+            DataObjectType input1 = new DataObjectType();
+            input1.setKey("walltime");
+            input1.setType(DataType.STRING);
+            input1.setValue("-walltime=60");
+            DataObjectType input2 = new DataObjectType();
+            input2.setKey("mgroupcount");
+            input2.setType(DataType.STRING);
+            input2.setValue("-mgroupcount=1");
+            
             exInputs.add(input);
+            exInputs.add(input1);
+            exInputs.add(input2);
+
 
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
