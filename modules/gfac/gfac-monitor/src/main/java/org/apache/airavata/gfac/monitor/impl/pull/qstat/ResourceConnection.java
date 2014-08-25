@@ -144,6 +144,6 @@ public class ResourceConnection {
     }
 
     public boolean isConnected(){
-        this.cluster.getSession().isConnected();
+        return this.cluster.getSession().isConnected();
     }
 }
