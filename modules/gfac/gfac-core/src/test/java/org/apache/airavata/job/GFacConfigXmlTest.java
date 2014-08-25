@@ -28,7 +28,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.cpi.GFacImpl;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -40,10 +40,10 @@ import java.io.IOException;
 
 public class GFacConfigXmlTest {
 
-    private GFacImpl gfac;
+    private BetterGfacImpl gfac;
     @BeforeClass
     public void setUp() throws Exception {
-        gfac = new GFacImpl();
+        gfac = new BetterGfacImpl();
     }
 
     @Test
@@ -51,7 +51,7 @@ public class GFacConfigXmlTest {
         Assert.assertNotNull(gfac.getGfacConfigFile());
         Assert.assertEquals(1,gfac.getDaemonHandlers().size());
         try {
-            JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(gfac.getGfacConfigFile(), null, null), "testService");
+            JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(gfac.getGfacConfigFile(), null), "testService");
             ApplicationContext applicationContext = new ApplicationContext();
             HostDescription host = new HostDescription(GsisshHostType.type);
             host.getType().setHostAddress("trestles.sdsc.edu");
@@ -80,7 +80,7 @@ public class GFacConfigXmlTest {
             Assert.assertNotNull(gfac.getGfacConfigFile());
             Assert.assertEquals(1,gfac.getDaemonHandlers().size());
             try {
-                JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(gfac.getGfacConfigFile(), null, null), "UltraScan");
+                JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(gfac.getGfacConfigFile(), null), "UltraScan");
                 ApplicationContext applicationContext = new ApplicationContext();
                 HostDescription host = new HostDescription(GsisshHostType.type);
                 host.getType().setHostAddress("trestles.sdsc.edu");

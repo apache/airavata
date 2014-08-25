@@ -20,10 +20,7 @@
 */
 package org.apache.airavata.gfac.server;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.airavata.common.exception.AiravataConfigurationException;
+import com.google.common.eventbus.EventBus;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
@@ -35,23 +32,15 @@ import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.cpi.gfac_cpi_serviceConstants;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.registry.api.AiravataRegistryFactory;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Gateway;
-import org.apache.airavata.registry.api.exception.RegException;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.EventBus;
+import java.io.File;
+import java.io.IOException;
 
 
 public class GfacServerHandler implements GfacService.Iface, Watcher{
@@ -252,12 +241,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
 
     private GFac getGfac()throws TException{
         try {
-            return new BetterGfacImpl(registry, null,
-                                AiravataRegistryFactory.getRegistry(new Gateway(getGatewayName()),
-                                        new AiravataUser(getAiravataUserName())),zk,publisher);
-        } catch (RegException e) {
-            throw new TException("Error initializing gfac instance",e);
-        } catch (AiravataConfigurationException e) {
+            return new BetterGfacImpl(registry,zk,publisher);
+        } catch (Exception e) {
             throw new TException("Error initializing gfac instance",e);
         }
     }

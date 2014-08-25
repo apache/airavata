@@ -45,7 +45,8 @@ import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.ui.dialogs.monitor.MonitorConfigurationWindow;
-import org.apache.airavata.xbaya.ui.experiment.WorkflowInterpreterLaunchWindow;
+import org.apache.airavata.xbaya.ui.experiment.LaunchApplicationWindow;
+//import org.apache.airavata.xbaya.ui.experiment.WorkflowInterpreterLaunchWindow;
 import org.apache.airavata.xbaya.ui.monitor.MonitorStarter;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.ToolbarButton;
@@ -267,7 +268,8 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
     private void createLaunchXBayaInterpreterItem() {
         this.launchXBayaInterpreterItem = new JMenuItem("Run on Interpreter Server...", MenuIcons.RUN_ICON);
         AbstractAction action = new AbstractAction() {
-            private WorkflowInterpreterLaunchWindow window;
+        	//private WorkflowInterpreterLaunchWindow window;
+            private LaunchApplicationWindow window;
             public void actionPerformed(ActionEvent e) {
                 if(!engine.getMonitor().hasCurrentExecutionTerminatedNotificationReceived() && engine.getMonitor().isMonitoring()){
                     if (JOptionPane.showConfirmDialog(null,
@@ -277,7 +279,8 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
                     }
                 }
 //                if (this.window == null) {
-                this.window = new WorkflowInterpreterLaunchWindow(engine);
+                //this.window = new WorkflowInterpreterLaunchWindow(engine);
+                this.window = new LaunchApplicationWindow(engine);
 //                }
                 try {
                     this.window.show();

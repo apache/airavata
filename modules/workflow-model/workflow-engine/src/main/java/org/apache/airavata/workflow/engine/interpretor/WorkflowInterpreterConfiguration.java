@@ -23,8 +23,6 @@ package org.apache.airavata.workflow.engine.interpretor;
 
 import org.apache.airavata.workflow.model.wf.Workflow;
 
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-
 public class WorkflowInterpreterConfiguration {
 //	public static final int GUI_MODE = 1;
 //	public static final int SERVER_MODE = 2;

@@ -37,7 +37,7 @@ import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.cpi.GFacImpl;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -91,7 +91,7 @@ public class GSISSHProviderTestWithMyProxyAuth {
         URL resource = GSISSHProviderTestWithMyProxyAuth.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         assert resource != null;
         System.out.println(resource.getFile());
-        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null, null);
+        GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), null);
 
 //        gFacConfiguration.setMyProxyLifeCycle(3600);
 //        gFacConfiguration.setMyProxyServer("myproxy.teragrid.org");
@@ -227,7 +227,7 @@ public class GSISSHProviderTestWithMyProxyAuth {
     }
     @Test
     public void testGSISSHProvider() throws GFacException {
-        GFacImpl gFacAPI = new GFacImpl();
+        BetterGfacImpl gFacAPI = new BetterGfacImpl();
         gFacAPI.submitJob(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
         System.out.println(jobExecutionContext.getJobDetails().getJobDescription());
         System.out.println(jobExecutionContext.getJobDetails().getJobID());

@@ -24,7 +24,6 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
-import org.apache.airavata.gfac.core.cpi.GFacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
@@ -68,8 +67,8 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
             String myProxyServer = ServerSettings.getSetting("myproxy.server");
             setAuthenticationInfo(new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
                     7512, 17280000, certPath));
-            if(GFacImpl.getMonitorPublisher() != null){
-                hpcPullMonitor = new HPCPullMonitor(GFacImpl.getMonitorPublisher(),getAuthenticationInfo());    // we use our own credentials for monitoring, not from the store
+            if(BetterGfacImpl.getMonitorPublisher() != null){
+                hpcPullMonitor = new HPCPullMonitor(BetterGfacImpl.getMonitorPublisher(),getAuthenticationInfo());    // we use our own credentials for monitoring, not from the store
             }else {
                 hpcPullMonitor = new HPCPullMonitor(BetterGfacImpl.getMonitorPublisher(),getAuthenticationInfo());  // we use our own credentials for monitoring, not from the store
             }

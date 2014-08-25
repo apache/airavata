@@ -19,24 +19,12 @@
 
 package org.apache.airavata.client.samples;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.UltrascanDocumentCreator;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
@@ -44,6 +32,11 @@ import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CreateLaunchExperimentUS3 {
 	
@@ -55,7 +48,6 @@ public class CreateLaunchExperimentUS3 {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     public static void main(String[] args) {
         try {
-            AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.getAPIVersion());
 //            addDescriptors();
@@ -114,37 +106,37 @@ public class CreateLaunchExperimentUS3 {
             e.printStackTrace();
         }
     }
-    public static void addDescriptors() throws AiravataAPIInvocationException,ApplicationSettingsException  {
-        try {
-            UltrascanDocumentCreator documentCreator = new UltrascanDocumentCreator(getAiravataAPI());
-            documentCreator.createMPIPBSDocsTrestles();
-            documentCreator.createEchoPBSDocsforTestles();
-            documentCreator.createEchoSlurmDocsofStampede();
-            documentCreator.createMPISLURMDocsStampede();
-        } catch (AiravataAPIInvocationException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new AiravataAPIInvocationException(e);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new ApplicationSettingsException(e.getMessage());
-        }
-    }
+//    public static void addDescriptors() throws AiravataAPIInvocationException,ApplicationSettingsException  {
+//        try {
+//            UltrascanDocumentCreator documentCreator = new UltrascanDocumentCreator(getAiravataAPI());
+//            documentCreator.createMPIPBSDocsTrestles();
+//            documentCreator.createEchoPBSDocsforTestles();
+//            documentCreator.createEchoSlurmDocsofStampede();
+//            documentCreator.createMPISLURMDocsStampede();
+//        } catch (AiravataAPIInvocationException e) {
+//            logger.error("Unable to create airavata API", e.getMessage());
+//            throw new AiravataAPIInvocationException(e);
+//        } catch (ApplicationSettingsException e) {
+//            logger.error("Unable to create airavata API", e.getMessage());
+//            throw new ApplicationSettingsException(e.getMessage());
+//        }
+//    }
 
-    private static AiravataAPI getAiravataAPI() throws AiravataAPIInvocationException, ApplicationSettingsException {
-        AiravataAPI airavataAPI;
-        try {
-            String sysUser = ClientSettings.getSetting(DEFAULT_USER);
-            String gateway = ClientSettings.getSetting(DEFAULT_GATEWAY);
-            airavataAPI = AiravataAPIFactory.getAPI(gateway, sysUser);
-        } catch (AiravataAPIInvocationException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new AiravataAPIInvocationException(e);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Unable to create airavata API", e.getMessage());
-            throw new ApplicationSettingsException(e.getMessage());
-        }
-        return airavataAPI;
-    }
+//    private static AiravataAPI getAiravataAPI() throws AiravataAPIInvocationException, ApplicationSettingsException {
+//        AiravataAPI airavataAPI;
+//        try {
+//            String sysUser = ClientSettings.getSetting(DEFAULT_USER);
+//            String gateway = ClientSettings.getSetting(DEFAULT_GATEWAY);
+//            airavataAPI = AiravataAPIFactory.getAPI(gateway, sysUser);
+//        } catch (AiravataAPIInvocationException e) {
+//            logger.error("Unable to create airavata API", e.getMessage());
+//            throw new AiravataAPIInvocationException(e);
+//        } catch (ApplicationSettingsException e) {
+//            logger.error("Unable to create airavata API", e.getMessage());
+//            throw new ApplicationSettingsException(e.getMessage());
+//        }
+//        return airavataAPI;
+//    }
 
     public static String createExperimentForTrestles(Airavata.Client client) throws TException  {
         try{

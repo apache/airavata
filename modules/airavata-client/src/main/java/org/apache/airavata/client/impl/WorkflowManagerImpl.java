@@ -21,23 +21,18 @@
 
 package org.apache.airavata.client.impl;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.WorkflowManager;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.api.exception.WorkflowAlreadyExistsException;
-import org.apache.airavata.common.exception.AiravataConfigurationException;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.registry.api.exception.RegException;
-import org.apache.airavata.registry.api.exception.worker.UserWorkflowAlreadyExistsException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowData;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Map;
 
 public class WorkflowManagerImpl implements WorkflowManager {
 	private AiravataClient client;
@@ -105,107 +100,110 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
     private void addWorkflow(Workflow workflow, String workflowAsString, String owner)
             throws WorkflowAlreadyExistsException, AiravataAPIInvocationException {
-        try {
-            getClient().getRegistryClient().addWorkflow(workflow.getName(), workflowAsString);
-        } catch (UserWorkflowAlreadyExistsException e) {
-            throw new WorkflowAlreadyExistsException("Workflow " +
-                    workflow.getName()
-                    + " already exists in the system.", e);
-        } catch (RegException e) {
-            throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
-                    workflow.getName(), e);
-        } catch (AiravataConfigurationException e) {
-            throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
-                    workflow.getName(), e);
-        }
+//        try {
+//            getClient().getRegistryClient().addWorkflow(workflow.getName(), workflowAsString);
+//        } catch (UserWorkflowAlreadyExistsException e) {
+//            throw new WorkflowAlreadyExistsException("Workflow " +
+//                    workflow.getName()
+//                    + " already exists in the system.", e);
+//        } catch (RegException e) {
+//            throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
+//                    workflow.getName(), e);
+//        } catch (AiravataConfigurationException e) {
+//            throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
+//                    workflow.getName(), e);
+//        }
 
-        if (owner == null) {
-            try {
-                getClient().getRegistryClient().publishWorkflow(workflow.getName());
-            } catch (RegException e) {
-                throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
-                        workflow.getName(), e);
-            } catch (AiravataConfigurationException e) {
-                throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
-                        workflow.getName(), e);
-            }
-        }
+//        if (owner == null) {
+//            try {
+//                getClient().getRegistryClient().publishWorkflow(workflow.getName());
+//            } catch (RegException e) {
+//                throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
+//                        workflow.getName(), e);
+//            } catch (AiravataConfigurationException e) {
+//                throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
+//                        workflow.getName(), e);
+//            }
+//        }
     }
 
     private void updateWorkflow(Workflow workflow, String workflowAsString, String owner)
             throws AiravataAPIInvocationException {
-        try {
-            getClient().getRegistryClient().updateWorkflow(workflow.getName(), workflowAsString);
-        } catch (RegException e) {
-            throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
-                    workflow.getName(), e);
-        } catch (AiravataConfigurationException e) {
-            throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
-                    workflow.getName(), e);
-        }
-
-        if (owner == null) {
-            try {
-                getClient().getRegistryClient().publishWorkflow(workflow.getName());
-            } catch (RegException e) {
-                throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
-                        workflow.getName(), e);
-            } catch (AiravataConfigurationException e) {
-                throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
-                        workflow.getName(), e);
-            }
-        }
+//        try {
+//            getClient().getRegistryClient().updateWorkflow(workflow.getName(), workflowAsString);
+//        } catch (RegException e) {
+//            throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
+//                    workflow.getName(), e);
+//        } catch (AiravataConfigurationException e) {
+//            throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
+//                    workflow.getName(), e);
+//        }
+//
+//        if (owner == null) {
+//            try {
+//                getClient().getRegistryClient().publishWorkflow(workflow.getName());
+//            } catch (RegException e) {
+//                throw new AiravataAPIInvocationException("An internal error occurred while adding workflow " +
+//                        workflow.getName(), e);
+//            } catch (AiravataConfigurationException e) {
+//                throw new AiravataAPIInvocationException("Error retrieving registry client for workflow " +
+//                        workflow.getName(), e);
+//            }
+//        }
     }
 
     // Remove once deprecated methods are removed from the API
     @Deprecated
 	private boolean saveWorkflow(Workflow workflow, String workflowAsString,String owner)
 			throws AiravataAPIInvocationException {
-		try {
-			
-			if (getClient().getRegistryClient().isWorkflowExists(workflow.getName())) {
-				getClient().getRegistryClient().updateWorkflow(workflow.getName(),workflowAsString);
-			}else{
-				getClient().getRegistryClient().addWorkflow(workflow.getName(),workflowAsString);
-			}
-			if (owner==null){
-				getClient().getRegistryClient().publishWorkflow(workflow.getName());
-			}
-			return true;
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//
+//			if (getClient().getRegistryClient().isWorkflowExists(workflow.getName())) {
+//				getClient().getRegistryClient().updateWorkflow(workflow.getName(),workflowAsString);
+//			}else{
+//				getClient().getRegistryClient().addWorkflow(workflow.getName(),workflowAsString);
+//			}
+//			if (owner==null){
+//				getClient().getRegistryClient().publishWorkflow(workflow.getName());
+//			}
+//			return true;
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return false;
 	}
 
 	@Override
 	public List<Workflow> getWorkflows(String owner)
 			throws AiravataAPIInvocationException {
-		try {
-			List<Workflow> workflows=new ArrayList<Workflow>();
-			Map<String, String> workflowMap = getClient().getRegistryClient().getWorkflows();
-			for(String workflowStr:workflowMap.values()){
-				workflows.add(getWorkflowFromString(workflowStr));
-			}
-			return workflows;
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			List<Workflow> workflows=new ArrayList<Workflow>();
+//			Map<String, String> workflowMap = getClient().getRegistryClient().getWorkflows();
+//			for(String workflowStr:workflowMap.values()){
+//				workflows.add(getWorkflowFromString(workflowStr));
+//			}
+//			return workflows;
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 
 	@Override
 	public List<String> getWorkflowTemplateIds(String owner)
 			throws AiravataAPIInvocationException {
-		try {
-			List<String> workflowList = new ArrayList<String>();
-			Map<String, String> workflows;
-			workflows = getClient().getRegistryClient().getWorkflows();
-			for (String name : workflows.keySet()) {
-				workflowList.add(name);
-			}
-			return workflowList;
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			List<String> workflowList = new ArrayList<String>();
+//			Map<String, String> workflows;
+//			workflows = getClient().getRegistryClient().getWorkflows();
+//			for (String name : workflows.keySet()) {
+//				workflowList.add(name);
+//			}
+//			return workflowList;
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 
 	@Override
@@ -217,22 +215,24 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	@Override
 	public String getWorkflowAsString(String workflowName, String owner)
 			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().getWorkflowGraphXML(workflowName);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			return getClient().getRegistryClient().getWorkflowGraphXML(workflowName);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 
 	@Override
 	public boolean deleteWorkflow(String workflowName, String owner)
 			throws AiravataAPIInvocationException {
-		try {
-			getClient().getRegistryClient().removeWorkflow(workflowName);
-			return true;
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			getClient().getRegistryClient().removeWorkflow(workflowName);
+//			return true;
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return false;
 	}
 
 	@Override
@@ -380,41 +380,43 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	@Override
 	public boolean isPublishedWorkflowExists(String workflowName)
 			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().isPublishedWorkflowExists(workflowName);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			return getClient().getRegistryClient().isPublishedWorkflowExists(workflowName);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return false;
 	}
 
 	@Override
 	public void publishWorkflow(String workflowName, String publishWorkflowName)
 			throws AiravataAPIInvocationException {
-		try {
-			getClient().getRegistryClient().publishWorkflow(workflowName, publishWorkflowName);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			getClient().getRegistryClient().publishWorkflow(workflowName, publishWorkflowName);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
 	}
 
 	@Override
 	public void publishWorkflow(String workflowName)
 			throws AiravataAPIInvocationException {
-		try {
-			getClient().getRegistryClient().publishWorkflow(workflowName);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			getClient().getRegistryClient().publishWorkflow(workflowName);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
 	}
 
 	@Override
 	public String getPublishedWorkflowGraphXML(String workflowName)
 			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().getPublishedWorkflowGraphXML(workflowName);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			return getClient().getRegistryClient().getPublishedWorkflowGraphXML(workflowName);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 	
 	@Override
@@ -426,36 +428,38 @@ public class WorkflowManagerImpl implements WorkflowManager {
 	@Override
 	public List<String> getPublishedWorkflowNames()
 			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().getPublishedWorkflowNames();
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			return getClient().getRegistryClient().getPublishedWorkflowNames();
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 
 	@Override
 	public Map<String, Workflow> getPublishedWorkflows()
 			throws AiravataAPIInvocationException {
-		try {
-			Map<String, Workflow> workflows=new HashMap<String, Workflow>();
-			Map<String, String> publishedWorkflows = getClient().getRegistryClient().getPublishedWorkflows();
-			for (String name : publishedWorkflows.keySet()) {
-				workflows.put(name, getWorkflowFromString(publishedWorkflows.get(name)));
-			}
-			return workflows;
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			Map<String, Workflow> workflows=new HashMap<String, Workflow>();
+//			Map<String, String> publishedWorkflows = getClient().getRegistryClient().getPublishedWorkflows();
+//			for (String name : publishedWorkflows.keySet()) {
+//				workflows.put(name, getWorkflowFromString(publishedWorkflows.get(name)));
+//			}
+//			return workflows;
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 
 	@Override
 	public void removePublishedWorkflow(String workflowName)
 			throws AiravataAPIInvocationException {
-		try {
-			getClient().getRegistryClient().removePublishedWorkflow(workflowName);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			getClient().getRegistryClient().removePublishedWorkflow(workflowName);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
 	}
 
 	@Override
@@ -469,60 +473,63 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
 	@Override
 	public List<WorkflowInput> getWorkflowInputs(WorkflowData workflowData) throws AiravataAPIInvocationException {
-		try {
-			if (workflowData.isPublished()){
-				return getWorkflowFromString(getClient().getRegistryClient().getPublishedWorkflowGraphXML(workflowData.getName())).getWorkflowInputs();
-			}else{
-				return getWorkflowInputs(workflowData.getName());
-			}
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		try {
+//			if (workflowData.isPublished()){
+//				return getWorkflowFromString(getClient().getRegistryClient().getPublishedWorkflowGraphXML(workflowData.getName())).getWorkflowInputs();
+//			}else{
+//				return getWorkflowInputs(workflowData.getName());
+//			}
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 
 	@Override
 	public List<WorkflowData> getAllWorkflows() throws AiravataAPIInvocationException {
-		List<WorkflowData> list = new ArrayList<WorkflowData>();
-		List<String> workflowTemplateIds = getWorkflowTemplateIds();
-		try {
-			for (String id : workflowTemplateIds) {
-				list.add(new WorkflowData(id,null,false));
-			}
-			List<String> publishedWorkflowNames = getClient().getRegistryClient().getPublishedWorkflowNames();
-			for (String id : publishedWorkflowNames) {
-				list.add(new WorkflowData(id,null,false));
-			}
-			return list;
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
+//		List<WorkflowData> list = new ArrayList<WorkflowData>();
+//		List<String> workflowTemplateIds = getWorkflowTemplateIds();
+//		try {
+//			for (String id : workflowTemplateIds) {
+//				list.add(new WorkflowData(id,null,false));
+//			}
+//			List<String> publishedWorkflowNames = getClient().getRegistryClient().getPublishedWorkflowNames();
+//			for (String id : publishedWorkflowNames) {
+//				list.add(new WorkflowData(id,null,false));
+//			}
+//			return list;
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+        return null;
 	}
 
     @Override
     public boolean isWorkflowExists(String workflowName) throws AiravataAPIInvocationException {
-        try {
-            return getClient().getRegistryClient().isWorkflowExists(workflowName);
-        } catch (Exception e) {
-            throw new AiravataAPIInvocationException(e);
-        }
+//        try {
+//            return getClient().getRegistryClient().isWorkflowExists(workflowName);
+//        } catch (Exception e) {
+//            throw new AiravataAPIInvocationException(e);
+//        }
+        return false;
     }
 
     @Override
     public void updateWorkflow(String workflowName, String workflowGraphXml) throws AiravataAPIInvocationException {
-        try {
-            getClient().getRegistryClient().updateWorkflow(workflowName, workflowGraphXml);
-        } catch (Exception e) {
-            throw new AiravataAPIInvocationException(e);
-        }
+//        try {
+//            getClient().getRegistryClient().updateWorkflow(workflowName, workflowGraphXml);
+//        } catch (Exception e) {
+//            throw new AiravataAPIInvocationException(e);
+//        }
     }
 
     @Override
     public void removeWorkflow(String workflowName) throws AiravataAPIInvocationException {
-        try {
-            getClient().getRegistryClient().removeWorkflow(workflowName);
-        } catch (Exception e) {
-            throw new AiravataAPIInvocationException(e);
-        }
+//        try {
+//            getClient().getRegistryClient().removeWorkflow(workflowName);
+//        } catch (Exception e) {
+//            throw new AiravataAPIInvocationException(e);
+//        }
     }
 
 }

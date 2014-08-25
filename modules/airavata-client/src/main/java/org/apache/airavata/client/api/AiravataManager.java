@@ -22,8 +22,6 @@
 package org.apache.airavata.client.api;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.registry.api.AiravataUser;
-import org.apache.airavata.registry.api.Gateway;
 
 import java.net.URI;
 import java.util.Date;
@@ -133,7 +131,7 @@ public interface AiravataManager {
 
     public void unsetMessageBoxURI() throws AiravataAPIInvocationException;
 
-    public Gateway getGateway () throws AiravataAPIInvocationException;
+//    public Gateway getGateway () throws AiravataAPIInvocationException;
 
-    public AiravataUser getUser() throws AiravataAPIInvocationException;
+//    public AiravataUser getUser() throws AiravataAPIInvocationException;
 }

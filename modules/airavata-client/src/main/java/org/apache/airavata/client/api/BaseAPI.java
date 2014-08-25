@@ -25,7 +25,6 @@ import java.net.URI;
 
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.Version;
-import org.apache.airavata.registry.api.PasswordCallback;
 
 public interface BaseAPI {
 
@@ -43,5 +42,5 @@ public interface BaseAPI {
     public void initialize() throws AiravataAPIInvocationException;
     
 	public URI getServiceURL() throws AiravataAPIInvocationException;
-	public PasswordCallback getPasswordCallback() throws AiravataAPIInvocationException;
+//	public PasswordCallback getPasswordCallback() throws AiravataAPIInvocationException;
 }
