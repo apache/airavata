@@ -160,8 +160,13 @@ public class HPCPullMonitor extends PullMonitor {
                     String hostName =  iHostMonitorData.getHost().getType().getHostAddress();
                     ResourceConnection connection = null;
                     if (connections.containsKey(hostName)) {
-                        logger.debug("We already have this connection so not going to create one");
-                        connection = connections.get(hostName);
+                        if(!connections.get(hostName).isConnected()){
+                            connection = new ResourceConnection(iHostMonitorData,getAuthenticationInfo());
+                            connections.put(hostName, connection);
+                        }else{
+                            logger.debug("We already have this connection so not going to create one");
+                            connection = connections.get(hostName);
+                        }
                     } else {
                         connection = new ResourceConnection(iHostMonitorData,getAuthenticationInfo());
                         connections.put(hostName, connection);
