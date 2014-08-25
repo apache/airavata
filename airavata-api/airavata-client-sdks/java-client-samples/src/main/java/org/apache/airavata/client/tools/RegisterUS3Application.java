@@ -1,7 +1,5 @@
 package org.apache.airavata.client.tools;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,9 +29,12 @@ public class RegisterUS3Application {
 	
 	private final static Logger logger = LoggerFactory.getLogger(RegisterSampleApplications.class);
     
-	public static final String THRIFT_SERVER_HOST = "gridfarm005.ucs.indiana.edu";
-    public static final int THRIFT_SERVER_PORT = 8930;
-    private static final String DEFAULT_GATEWAY = "default";
+//	public static final String THRIFT_SERVER_HOST = "gridfarm005.ucs.indiana.edu";
+//  public static final int THRIFT_SERVER_PORT = 8930;
+	private static final String DEFAULT_GATEWAY= "default"; 
+	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+	public static final int THRIFT_SERVER_PORT = 9930;		
+//    private static final String DEFAULT_GATEWAY = "ultrascan";
     private static Airavata.Client airavataClient;
 
     //Host Id's
@@ -224,7 +225,6 @@ public class RegisterUS3Application {
                             "/mnt/glusterfs/work/");
 
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
-            gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
             gatewayResourceProfile.setGatewayName(DEFAULT_GATEWAY);
             gatewayResourceProfile.addToComputeResourcePreferences(stampedeResourcePreferences);
             gatewayResourceProfile.addToComputeResourcePreferences(trestlesResourcePreferences);
