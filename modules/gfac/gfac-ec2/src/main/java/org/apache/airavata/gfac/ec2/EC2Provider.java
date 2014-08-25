@@ -28,8 +28,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.GFacException;
@@ -140,14 +138,14 @@ public class EC2Provider extends AbstractProvider {
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
     
         String shellCmd = createShellCmd(jobExecutionContext);
-        AiravataAPI airavataAPI = jobExecutionContext.getGFacConfiguration().getAiravataAPI();
-        if (airavataAPI!=null){
-        	try {
-				airavataAPI.getProvenanceManager().updateApplicationJobData(jobId, shellCmd);
-			} catch (AiravataAPIInvocationException e) {
-				log.error("Error in saving EC2 shell command!!!", e);
-			}
-        }
+//        AiravataAPI airavataAPI = jobExecutionContext.getGFacConfiguration().getAiravataAPI();
+//        if (airavataAPI!=null){
+//        	try {
+//				airavataAPI.getProvenanceManager().updateApplicationJobData(jobId, shellCmd);
+//			} catch (AiravataAPIInvocationException e) {
+//				log.error("Error in saving EC2 shell command!!!", e);
+//			}
+//        }
         SshClient sshClient = new SshClient();
         sshClient.setSocketTimeout(SOCKET_TIMEOUT);
         SshConnectionProperties properties = new SshConnectionProperties();

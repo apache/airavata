@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
-import org.apache.airavata.registry.api.AiravataRegistry2;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.zookeeper.ZooKeeper;
 
@@ -36,8 +35,6 @@ public class OrchestratorContext {
     private List<GFACInstance> gfacInstanceList;
 
     private OrchestratorConfiguration orchestratorConfiguration;
-
-    private AiravataRegistry2 registry;
 
     private Registry newRegistry;
 
@@ -64,14 +61,6 @@ public class OrchestratorContext {
 
     public void setOrchestratorConfiguration(OrchestratorConfiguration orchestratorConfiguration) {
         this.orchestratorConfiguration = orchestratorConfiguration;
-    }
-
-    public AiravataRegistry2 getRegistry() {
-        return registry;
-    }
-
-    public void setRegistry(AiravataRegistry2 registry) {
-        this.registry = registry;
     }
 
     public Registry getNewRegistry() {

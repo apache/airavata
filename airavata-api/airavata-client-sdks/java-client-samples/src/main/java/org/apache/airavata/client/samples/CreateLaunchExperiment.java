@@ -21,37 +21,20 @@
 
 package org.apache.airavata.client.samples;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.client.tools.RegisterSampleApplications;
 import org.apache.airavata.model.error.*;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ClientSettings;
+import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreator;
-import org.apache.airavata.client.tools.DocumentCreatorNew;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.persistance.registry.jpa.model.ErrorDetail;
-import org.apache.airavata.schemas.gfac.InputParameterType;
-import org.apache.airavata.schemas.gfac.OutputParameterType;
-import org.apache.airavata.schemas.gfac.ParameterType;
-import org.apache.airavata.workflow.model.component.system.StreamSourceComponent;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlsoap.schemas.soap.encoding.*;
 
-import java.lang.String;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class CreateLaunchExperiment {
 
@@ -61,11 +44,11 @@ public class CreateLaunchExperiment {
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
-    private static Airavata.Client client;
+    private static Airavata.Client airavataClient;
     private static String localHostAppId = "localhost_3b5962d3-5e7e-4a97-9d1f-25c5ec436ba5,SimpleEcho0_44c34394-ca27-4fa9-bb2d-87f95a02352a";
     private static String sshHostAppId;
-    private static String pbsEchoAppId = "trestles.sdsc.edu_03b34af0-f55d-4cb3-9bce-abba35d8b30d,SimpleEcho2_e8ca0bb2-d985-4775-884b-a27b29a33251";
-    private static String pbsWRFAppId = "trestles.sdsc.edu_42adfdf7-d7bc-474a-8905-6624817b22ef,WRF_24f50b3c-4f1e-4358-bb10-c6838b12e231";
+    private static String pbsEchoAppId = "trestles.sdsc.edu_b67c9b6a-3940-4ba1-ac67-4f5c42e60fb8,SimpleEcho2_4c9e76f3-eab0-4ccb-8630-b53f22646ebd";
+    private static String pbsWRFAppId = "trestles.sdsc.edu_c033c9b4-601e-4cd7-ac98-d7de33df0557,WRF_f1726a18-9aec-4077-91c2-93877df01972";
     private static String slurmAppId = "stampede.tacc.xsede.org_b2ef59cb-f626-4767-9ca0-601f94c42ba4,SimpleEcho3_b81c2559-a088-42a3-84ce-40119d874918";
     private static String sgeAppId;
     private static String br2EchoAppId = "bigred2_9c1e6be8-f7d8-4494-98f2-bf508790e8c6,SimpleEchoBR_149fd613-98e2-46e7-ac7c-4d393349469e";
@@ -78,27 +61,26 @@ public class CreateLaunchExperiment {
 
     public static void main(String[] args) {
         try {
-            AiravataUtils.setExecutionAsClient();
-            client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + client.getAPIVersion());
+            airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
+            System.out.println("API version is " + airavataClient.getAPIVersion());
 //            getExperiment(client, "WRFExperiment_2a2de26c-7f74-47c9-8e14-40e50dedfe0f");
-//            addDescriptors();
+//               registerApplications();
 
 ////            final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createExperimentForTrestles(client);
-////            final String expId = createExperimentForStampede(client);
-//            final String expId = createExperimentForLocalHost(client);
+//            final String expId = createExperimentForTrestles(airavataClient);
+////            final String expId = createExperimentForStampede(airavataClient);
+//            final String expId = createExperimentForLocalHost(airavataClient);
 //            final String expId = createExperimentForLonestar(airavata);
-            final String expId = createExperimentWRFTrestles(client);
-//            final String expId = createExperimentForBR2(client);
-//            final String expId = createExperimentForBR2Amber(client);
-//            final String expId = createExperimentWRFStampede(client);
-//            final String expId = createExperimentForStampedeAmber(client);
-//            final String expId = createExperimentForTrestlesAmber(client);
+            final String expId = createExperimentWRFTrestles(airavataClient);
+//            final String expId = createExperimentForBR2(airavataClient);
+//            final String expId = createExperimentForBR2Amber(airavataClient);
+//            final String expId = createExperimentWRFStampede(airavataClient);
+//            final String expId = createExperimentForStampedeAmber(airavataClient);
+//            final String expId = createExperimentForTrestlesAmber(airavataClient);
 
             System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
-            launchExperiment(client, expId);
+            launchExperiment(airavataClient, expId);
 
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (Exception e) {
@@ -107,38 +89,57 @@ public class CreateLaunchExperiment {
         }
     }
 
-    public static void addDescriptors() throws AiravataAPIInvocationException, ApplicationSettingsException {
-        try {
-            DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
-//            DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
-            localHostAppId = documentCreator.createLocalHostDocs();
-            sshHostAppId = documentCreator.createSSHHostDocs();
-//            documentCreator.createGramDocs();
-            pbsEchoAppId =documentCreator.createPBSDocsForOGCE_Echo();
-            pbsWRFAppId =documentCreator.createPBSDocsForOGCE_WRF();
-            slurmAppId = documentCreator.createSlurmDocs();
-            sgeAppId = documentCreator.createSGEDocs();
-//            documentCreator.createEchoHostDocs();
-            br2EchoAppId = documentCreator.createBigRedDocs();
-            slurmWRFAppId = documentCreator.createSlumWRFDocs();
-            br2AmberAppId = documentCreator.createBigRedAmberDocs();
-            slurmAmberAppId = documentCreator.createStampedeAmberDocs();
-            trestlesAmberAppId = documentCreator.createTrestlesAmberDocs();
-            System.out.printf(localHostAppId);
-            System.out.println(sshHostAppId);
-            System.out.println(pbsEchoAppId);
-            System.out.println(pbsWRFAppId);
-            System.out.println(slurmAppId);
-            System.out.println(sgeAppId);
-            System.out.println(br2EchoAppId);
-            System.out.println(slurmWRFAppId);
-            System.out.println(br2AmberAppId);
-            System.out.println(trestlesAmberAppId);
-        } catch (Exception e) {
-            logger.error("Unable to create documents", e.getMessage());
-            throw new ApplicationSettingsException(e.getMessage());
-        }
+    public static void registerApplications() {
+        RegisterSampleApplications registerSampleApplications = new RegisterSampleApplications(airavataClient);
+
+        //Register all compute hosts
+        registerSampleApplications.registerXSEDEHosts();
+
+        //Register Gateway Resource Preferences
+        registerSampleApplications.registerGatewayResourceProfile();
+
+        //Register all application modules
+        registerSampleApplications.registerAppModules();
+
+        //Register all application deployments
+        registerSampleApplications.registerAppDeployments();
+
+        //Register all application interfaces
+        registerSampleApplications.registerAppInterfaces();
     }
+
+//    public static void addDescriptors() throws AiravataAPIInvocationException, ApplicationSettingsException {
+//        try {
+//            DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
+////            DocumentCreator documentCreator = new DocumentCreator(getAiravataAPI());
+//            localHostAppId = documentCreator.createLocalHostDocs();
+//            sshHostAppId = documentCreator.createSSHHostDocs();
+////            documentCreator.createGramDocs();
+//            pbsEchoAppId =documentCreator.createPBSDocsForOGCE_Echo();
+//            pbsWRFAppId =documentCreator.createPBSDocsForOGCE_WRF();
+//            slurmAppId = documentCreator.createSlurmDocs();
+//            sgeAppId = documentCreator.createSGEDocs();
+////            documentCreator.createEchoHostDocs();
+//            br2EchoAppId = documentCreator.createBigRedDocs();
+//            slurmWRFAppId = documentCreator.createSlumWRFDocs();
+//            br2AmberAppId = documentCreator.createBigRedAmberDocs();
+//            slurmAmberAppId = documentCreator.createStampedeAmberDocs();
+//            trestlesAmberAppId = documentCreator.createTrestlesAmberDocs();
+//            System.out.printf(localHostAppId);
+//            System.out.println(sshHostAppId);
+//            System.out.println(pbsEchoAppId);
+//            System.out.println(pbsWRFAppId);
+//            System.out.println(slurmAppId);
+//            System.out.println(sgeAppId);
+//            System.out.println(br2EchoAppId);
+//            System.out.println(slurmWRFAppId);
+//            System.out.println(br2AmberAppId);
+//            System.out.println(trestlesAmberAppId);
+//        } catch (Exception e) {
+//            logger.error("Unable to create documents", e.getMessage());
+//            throw new ApplicationSettingsException(e.getMessage());
+//        }
+//    }
 
     public static String createExperimentForTrestles(Airavata.Client client) throws TException {
         try {
@@ -253,17 +254,17 @@ public class CreateLaunchExperiment {
             DataObjectType input = new DataObjectType();
             input.setKey("WRF_Namelist");
             input.setType(DataType.URI);
-            input.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/namelist.input");
+            input.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/namelist.input");
 
             DataObjectType input1 = new DataObjectType();
             input1.setKey("WRF_Input_File");
             input1.setType(DataType.URI);
-            input1.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfinput_d01");
+            input1.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/wrfinput_d01");
 
             DataObjectType input2 = new DataObjectType();
             input2.setKey("WRF_Boundary_File");
             input2.setType(DataType.URI);
-            input2.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfbdy_d01");
+            input2.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/wrfbdy_d01");
 
             exInputs.add(input);
             exInputs.add(input1);

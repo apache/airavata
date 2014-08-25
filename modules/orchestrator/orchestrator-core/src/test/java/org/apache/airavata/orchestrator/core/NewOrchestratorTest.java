@@ -20,27 +20,6 @@
 */
 package org.apache.airavata.orchestrator.core;
 
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.orchestrator.cpi.Orchestrator;
-import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.ParentDataType;
-import org.apache.airavata.registry.cpi.Registry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public class NewOrchestratorTest extends BaseOrchestratorTest {
 //    private static final Logger log = LoggerFactory.getLogger(NewOrchestratorTest.class);
 //

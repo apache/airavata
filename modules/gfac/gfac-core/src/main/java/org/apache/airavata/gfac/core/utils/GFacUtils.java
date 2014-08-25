@@ -20,22 +20,18 @@
  */
 package org.apache.airavata.gfac.core.utils;
 
-import java.io.*;
-import java.net.InetAddress;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.util.*;
-
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.*;
+import org.apache.airavata.common.utils.AiravataZKUtils;
+import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
-import org.apache.airavata.gfac.*;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.ExecutionMode;
+import org.apache.airavata.gfac.GFacConfiguration;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
@@ -43,18 +39,21 @@ import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.registry.api.workflow.ApplicationJob;
-import org.apache.airavata.registry.api.workflow.ApplicationJob.ApplicationJobStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.schemas.gfac.*;
-import org.apache.airavata.schemas.gfac.DataType.Enum;
 import org.apache.axiom.om.OMElement;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.net.InetAddress;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.util.*;
 
 public class GFacUtils {
 	private final static Logger log = LoggerFactory.getLogger(GFacUtils.class);
@@ -565,133 +564,133 @@ public class GFacUtils {
 		return actualParameter;
 	}
 
-	public static ApplicationJob createApplicationJob(
-			JobExecutionContext jobExecutionContext) {
-		ApplicationJob appJob = new ApplicationJob();
-		appJob.setExperimentId((String) jobExecutionContext
-				.getProperty(Constants.PROP_TOPIC));
-		appJob.setWorkflowExecutionId(appJob.getExperimentId());
-		appJob.setNodeId((String) jobExecutionContext
-				.getProperty(Constants.PROP_WORKFLOW_NODE_ID));
-		appJob.setServiceDescriptionId(jobExecutionContext
-				.getApplicationContext().getServiceDescription().getType()
-				.getName());
-		appJob.setHostDescriptionId(jobExecutionContext.getApplicationContext()
-				.getHostDescription().getType().getHostName());
-		appJob.setApplicationDescriptionId(jobExecutionContext
-				.getApplicationContext().getApplicationDeploymentDescription()
-				.getType().getApplicationName().getStringValue());
-		return appJob;
-	}
+//	public static ApplicationJob createApplicationJob(
+//			JobExecutionContext jobExecutionContext) {
+//		ApplicationJob appJob = new ApplicationJob();
+//		appJob.setExperimentId((String) jobExecutionContext
+//				.getProperty(Constants.PROP_TOPIC));
+//		appJob.setWorkflowExecutionId(appJob.getExperimentId());
+//		appJob.setNodeId((String) jobExecutionContext
+//				.getProperty(Constants.PROP_WORKFLOW_NODE_ID));
+//		appJob.setServiceDescriptionId(jobExecutionContext
+//				.getApplicationContext().getServiceDescription().getType()
+//				.getName());
+//		appJob.setHostDescriptionId(jobExecutionContext.getApplicationContext()
+//				.getHostDescription().getType().getHostName());
+//		appJob.setApplicationDescriptionId(jobExecutionContext
+//				.getApplicationContext().getApplicationDeploymentDescription()
+//				.getType().getApplicationName().getStringValue());
+//		return appJob;
+//	}
 
-	public static void updateApplicationJobStatusUpdateTime(
-			JobExecutionContext context, String jobId, Date statusUpdateTime) {
-		AiravataAPI airavataAPI = context.getGFacConfiguration()
-				.getAiravataAPI();
-		try {
-			airavataAPI.getProvenanceManager()
-					.updateApplicationJobStatusUpdateTime(jobId,
-							statusUpdateTime);
-		} catch (AiravataAPIInvocationException e) {
-			log.error("Error in updating application job status time "
-					+ statusUpdateTime.toString() + " for job Id " + jobId
-					+ "!!!", e);
-		}
-	}
+//	public static void updateApplicationJobStatusUpdateTime(
+//			JobExecutionContext context, String jobId, Date statusUpdateTime) {
+//		AiravataAPI airavataAPI = context.getGFacConfiguration()
+//				.getAiravataAPI();
+//		try {
+//			airavataAPI.getProvenanceManager()
+//					.updateApplicationJobStatusUpdateTime(jobId,
+//							statusUpdateTime);
+//		} catch (AiravataAPIInvocationException e) {
+//			log.error("Error in updating application job status time "
+//					+ statusUpdateTime.toString() + " for job Id " + jobId
+//					+ "!!!", e);
+//		}
+//	}
+//
+//	public static void updateApplicationJobStatus(JobExecutionContext context,
+//			String jobId, ApplicationJobStatus status, Date statusUpdateTime) {
+//		AiravataAPI airavataAPI = context.getGFacConfiguration()
+//				.getAiravataAPI();
+//		try {
+//			airavataAPI.getProvenanceManager().updateApplicationJobStatus(
+//					jobId, status, statusUpdateTime);
+//		} catch (AiravataAPIInvocationException e) {
+//			log.error(
+//					"Error in updating application job status "
+//							+ status.toString() + " for job Id " + jobId
+//							+ "!!!", e);
+//		}
+//	}
 
-	public static void updateApplicationJobStatus(JobExecutionContext context,
-			String jobId, ApplicationJobStatus status, Date statusUpdateTime) {
-		AiravataAPI airavataAPI = context.getGFacConfiguration()
-				.getAiravataAPI();
-		try {
-			airavataAPI.getProvenanceManager().updateApplicationJobStatus(
-					jobId, status, statusUpdateTime);
-		} catch (AiravataAPIInvocationException e) {
-			log.error(
-					"Error in updating application job status "
-							+ status.toString() + " for job Id " + jobId
-							+ "!!!", e);
-		}
-	}
+//	/**
+//	 * Gets the job ids given experiment id.
+//	 *
+//	 * @param context
+//	 *            The job execution context.
+//	 * @param experimentId
+//	 *            The experiment id.
+//	 * @return List of job ids relevant to given experiment id.
+//	 */
+//	public static List<ApplicationJob> getJobIds(JobExecutionContext context,
+//			String experimentId) {
+//
+//		AiravataAPI airavataAPI = context.getGFacConfiguration()
+//				.getAiravataAPI();
+//		try {
+//			return airavataAPI.getProvenanceManager().getApplicationJobs(
+//					experimentId, null, null);
+//		} catch (AiravataAPIInvocationException e) {
+//			log.error("Error retrieving application jobs for experiment id "
+//					+ experimentId, e);
+//		}
+//
+//		return new ArrayList<ApplicationJob>(0);
+//	}
 
-	/**
-	 * Gets the job ids given experiment id.
-	 * 
-	 * @param context
-	 *            The job execution context.
-	 * @param experimentId
-	 *            The experiment id.
-	 * @return List of job ids relevant to given experiment id.
-	 */
-	public static List<ApplicationJob> getJobIds(JobExecutionContext context,
-			String experimentId) {
+//	/**
+//	 * Gets the job ids given experiment id and workflow id.
+//	 *
+//	 * @param context
+//	 *            The job execution context.
+//	 * @param experimentId
+//	 *            The experiment id.
+//	 * @param workflowId
+//	 *            The workflow id
+//	 * @return List of job ids relevant to given experiment id and workflow id.
+//	 */
+//	public static List<ApplicationJob> getJobIds(JobExecutionContext context,
+//			String experimentId, String workflowId) {
+//
+//		AiravataAPI airavataAPI = context.getGFacConfiguration()
+//				.getAiravataAPI();
+//		try {
+//			return airavataAPI.getProvenanceManager().getApplicationJobs(
+//					experimentId, workflowId, null);
+//		} catch (AiravataAPIInvocationException e) {
+//			log.error("Error retrieving application jobs for experiment id "
+//					+ experimentId, " workflow id " + workflowId, e);
+//		}
+//
+//		return new ArrayList<ApplicationJob>(0);
+//	}
 
-		AiravataAPI airavataAPI = context.getGFacConfiguration()
-				.getAiravataAPI();
-		try {
-			return airavataAPI.getProvenanceManager().getApplicationJobs(
-					experimentId, null, null);
-		} catch (AiravataAPIInvocationException e) {
-			log.error("Error retrieving application jobs for experiment id "
-					+ experimentId, e);
-		}
-
-		return new ArrayList<ApplicationJob>(0);
-	}
-
-	/**
-	 * Gets the job ids given experiment id and workflow id.
-	 * 
-	 * @param context
-	 *            The job execution context.
-	 * @param experimentId
-	 *            The experiment id.
-	 * @param workflowId
-	 *            The workflow id
-	 * @return List of job ids relevant to given experiment id and workflow id.
-	 */
-	public static List<ApplicationJob> getJobIds(JobExecutionContext context,
-			String experimentId, String workflowId) {
-
-		AiravataAPI airavataAPI = context.getGFacConfiguration()
-				.getAiravataAPI();
-		try {
-			return airavataAPI.getProvenanceManager().getApplicationJobs(
-					experimentId, workflowId, null);
-		} catch (AiravataAPIInvocationException e) {
-			log.error("Error retrieving application jobs for experiment id "
-					+ experimentId, " workflow id " + workflowId, e);
-		}
-
-		return new ArrayList<ApplicationJob>(0);
-	}
-
-	/**
-	 * Gets the job ids given experiment id and workflow id.
-	 * 
-	 * @param context
-	 *            The job execution context.
-	 * @param experimentId
-	 *            The experiment id.
-	 * @param workflowId
-	 *            The workflow id
-	 * @return List of job ids relevant to given experiment id and workflow id.
-	 */
-	public static List<ApplicationJob> getJobIds(JobExecutionContext context,
-			String experimentId, String workflowId, String nodeId) {
-
-		AiravataAPI airavataAPI = context.getGFacConfiguration()
-				.getAiravataAPI();
-		try {
-			return airavataAPI.getProvenanceManager().getApplicationJobs(
-					experimentId, workflowId, nodeId);
-		} catch (AiravataAPIInvocationException e) {
-			log.error("Error retrieving application jobs for experiment id "
-					+ experimentId, " workflow id " + workflowId, e);
-		}
-
-		return new ArrayList<ApplicationJob>(0);
-	}
+//	/**
+//	 * Gets the job ids given experiment id and workflow id.
+//	 *
+//	 * @param context
+//	 *            The job execution context.
+//	 * @param experimentId
+//	 *            The experiment id.
+//	 * @param workflowId
+//	 *            The workflow id
+//	 * @return List of job ids relevant to given experiment id and workflow id.
+//	 */
+//	public static List<ApplicationJob> getJobIds(JobExecutionContext context,
+//			String experimentId, String workflowId, String nodeId) {
+//
+//		AiravataAPI airavataAPI = context.getGFacConfiguration()
+//				.getAiravataAPI();
+//		try {
+//			return airavataAPI.getProvenanceManager().getApplicationJobs(
+//					experimentId, workflowId, nodeId);
+//		} catch (AiravataAPIInvocationException e) {
+//			log.error("Error retrieving application jobs for experiment id "
+//					+ experimentId, " workflow id " + workflowId, e);
+//		}
+//
+//		return new ArrayList<ApplicationJob>(0);
+//	}
 
 	/*
 	 * public static RequestData getRequestData(Properties
@@ -717,18 +716,18 @@ public class GFacUtils {
 	 * }
 	 */
 
-	public static void recordApplicationJob(JobExecutionContext context,
-			ApplicationJob job) {
-		AiravataAPI airavataAPI = context.getGFacConfiguration()
-				.getAiravataAPI();
-		try {
-			airavataAPI.getProvenanceManager().addApplicationJob(job);
-		} catch (AiravataAPIInvocationException e) {
-			log.error(
-					"Error in persisting application job data for application job "
-							+ job.getJobId() + "!!!", e);
-		}
-	}
+//	public static void recordApplicationJob(JobExecutionContext context,
+//			ApplicationJob job) {
+//		AiravataAPI airavataAPI = context.getGFacConfiguration()
+//				.getAiravataAPI();
+//		try {
+//			airavataAPI.getProvenanceManager().addApplicationJob(job);
+//		} catch (AiravataAPIInvocationException e) {
+//			log.error(
+//					"Error in persisting application job data for application job "
+//							+ job.getJobId() + "!!!", e);
+//		}
+//	}
 
 	public static void saveJobStatus(JobExecutionContext jobExecutionContext,
 			JobDetails details, JobState state) throws GFacException {

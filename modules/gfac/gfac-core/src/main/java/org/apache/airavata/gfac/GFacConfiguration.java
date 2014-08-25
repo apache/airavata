@@ -34,7 +34,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
 import org.apache.airavata.gfac.core.provider.GFacProviderConfig;
 import org.slf4j.Logger;
@@ -46,7 +45,7 @@ public class GFacConfiguration {
     public static final Logger log = LoggerFactory.getLogger(GFacConfiguration.class);
 
 
-    private AiravataAPI airavataAPI;
+//    private AiravataAPI airavataAPI;
 
     private static Document handlerDoc;
     // Keep list of full qualified class names of GFac handlers which should invoked before
@@ -59,13 +58,12 @@ public class GFacConfiguration {
 
     public ExecutionMode executionMode = ExecutionMode.SYNCHRONOUS; // default execution mode is SYNCHRONOUS
 
-    public GFacConfiguration(AiravataAPI airavataAPI) {
-        this.airavataAPI = airavataAPI;
+    public GFacConfiguration() {
     }
 
-    public AiravataAPI getAiravataAPI() {
-        return airavataAPI;
-    }
+//    public AiravataAPI getAiravataAPI() {
+//        return airavataAPI;
+//    }
 
 
     public List<GFacHandlerConfig> getInHandlers() {
@@ -156,11 +154,11 @@ public class GFacConfiguration {
      * @return GFacConfiguration object.
      */
     //FIXME
-    public static GFacConfiguration create(File configFile, AiravataAPI airavataAPI, Properties configurationProperties) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
+    public static GFacConfiguration create(File configFile,  Properties configurationProperties) throws ParserConfigurationException, IOException, SAXException, XPathExpressionException {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
         handlerDoc = docBuilder.parse(configFile);
-        return new GFacConfiguration(airavataAPI);
+        return new GFacConfiguration();
     }
 
     private static String xpathGetText(Document doc, String expression) throws XPathExpressionException {

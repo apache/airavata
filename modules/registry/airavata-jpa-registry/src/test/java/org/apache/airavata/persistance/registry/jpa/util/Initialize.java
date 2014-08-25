@@ -27,9 +27,8 @@ import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
-import org.apache.airavata.registry.api.exception.RegistrySettingsException;
-import org.apache.airavata.registry.api.util.RegistrySettings;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.utils.RegistrySettings;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +104,7 @@ public class Initialize {
             jdbcUser = RegistrySettings.getSetting("registry.jdbc.user");
             jdbcPassword = RegistrySettings.getSetting("registry.jdbc.password");
             jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
-        } catch (RegistrySettingsException e) {
+        } catch (RegistryException e) {
             logger.error("Unable to read properties" , e);
         }
 
@@ -166,10 +165,8 @@ public class Initialize {
             projectResource.save();
         
           
-        } catch (RegistrySettingsException e) {
-            logger.error("Unable to read properties", e);
         } catch (RegistryException e) {
-            logger.error("Error while saving data", e);
+            logger.error("Unable to read properties", e);
         }
     }
 

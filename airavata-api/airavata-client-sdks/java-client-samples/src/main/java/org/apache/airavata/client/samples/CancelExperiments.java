@@ -24,7 +24,6 @@ package org.apache.airavata.client.samples;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,6 @@ public class CancelExperiments {
 
     public static void main(String[] args) {
         try {
-            AiravataUtils.setExecutionAsClient();
             client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
 
             String expeId = "echoExperiment_31c132fd-87ea-4781-803c-ae5f04a79baf";

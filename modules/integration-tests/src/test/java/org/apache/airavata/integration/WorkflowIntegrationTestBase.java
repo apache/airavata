@@ -21,43 +21,11 @@
 
 package org.apache.airavata.integration;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
-
-import junit.framework.Assert;
-
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
-import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.ApplicationManager;
-import org.apache.airavata.client.api.ExperimentAdvanceOptions;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.api.exception.WorkflowAlreadyExistsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.registry.api.impl.WorkflowExecutionDataImpl;
-import org.apache.airavata.registry.api.workflow.ExperimentData;
-import org.apache.airavata.registry.api.workflow.InputData;
-import org.apache.airavata.registry.api.workflow.NodeExecutionData;
-import org.apache.airavata.registry.api.workflow.OutputData;
-import org.apache.airavata.registry.api.workflow.WorkflowNodeType;
-import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.workflow.model.graph.GraphException;
-import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.workflow.model.wf.WorkflowInput;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,9 +54,7 @@ public abstract class WorkflowIntegrationTestBase {
 
     protected static final int TIME_OUT = 20000;
     protected static final int TRIES = 3;
-    protected AiravataAPI airavataAPI;
     protected Airavata.Client client;
-    protected ApplicationManager applicationManager;
 
     protected void log(String message) {
         log.info(message);
@@ -125,12 +91,6 @@ public abstract class WorkflowIntegrationTestBase {
         return userName;
     }
 
-    public AiravataAPI getAiravataAPI() throws AiravataAPIInvocationException {
-        if (airavataAPI == null){
-            airavataAPI = AiravataAPIFactory.getAPI(getGatewayName(), getUserName());
-        }
-        return airavataAPI;
-    }
 
     public String getPassword() {
         return password;
@@ -231,164 +191,147 @@ public abstract class WorkflowIntegrationTestBase {
         getClient().launchExperiment(expId, "testToken");
     }
 
-    protected void executeExperiment(String workflowFilePath,
-                                     List<String> inputs, List<String> outputs) throws GraphException,
-            ComponentException, IOException, WorkflowAlreadyExistsException,
-            AiravataAPIInvocationException, Exception {
-        log("Saving workflow ...");
 
-        Workflow workflow = new Workflow(getWorkflowComposeContent(workflowFilePath));
-        if (!airavataAPI.getWorkflowManager().isWorkflowExists(workflow.getName())) {
-            airavataAPI.getWorkflowManager().addWorkflow(workflow);
-        }
-        Assert.assertTrue(airavataAPI.getWorkflowManager().isWorkflowExists(workflow.getName()));
-
-        log("Workflow setting up completed ...");
-
-//        executeWorkflow(workflow, inputs, outputs);
-    }
-
-
-    protected void executeWorkflow(Workflow workflow, List<String> inputValues, List<String> outputValue) throws Exception {
-        String experimentId = executeWorkflow(workflow, inputValues);
-        airavataAPI.getExecutionManager().waitForExperimentTermination(experimentId);
-        verifyOutput(experimentId, outputValue);
-    }
-
-    protected String executeWorkflow(Workflow workflow, List<String> inputValues) throws Exception {
-        List<WorkflowInput> workflowInputs = setupInputs(workflow, inputValues);
-        String workflowName = workflow.getName();
-        ExperimentAdvanceOptions options = getAiravataAPI().getExecutionManager().createExperimentAdvanceOptions(
-                workflowName, getUserName(), null);
-
-        options.getCustomSecuritySettings().getCredentialStoreSecuritySettings().setTokenId("1234");
-
-        String experimentId = getAiravataAPI().getExecutionManager().runExperiment(workflowName, workflowInputs, options);
-
-        Assert.assertNotNull(experimentId);
-
-        log.info("Run workflow completed ....");
-        log.info("Starting monitoring ....");
-        return experimentId;
-    }
-
-
-    protected void verifyOutput(String experimentId, List<String> outputVerifyingString) throws Exception {
-        log.info("Experiment ID Returned : " + experimentId);
-
-        ExperimentData experimentData = getAiravataAPI().getProvenanceManager().getExperimentData(experimentId);
-
-        log.info("Verifying output ...");
-
-        List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
-
-        Assert.assertFalse("Workflow instance data cannot be empty !", workflowInstanceData.isEmpty());
-
-        for (WorkflowExecutionDataImpl data : workflowInstanceData) {
-            List<NodeExecutionData> nodeDataList = data.getNodeDataList(WorkflowNodeType.WorkflowNode.OUTPUTNODE);
-            Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
-            for (NodeExecutionData nodeData : nodeDataList) {
-                for (InputData inputData : nodeData.getInputData()) {
-                    String[] outputValues = StringUtil.getElementsFromString(inputData.getValue());
-                    Assert.assertEquals(outputVerifyingString.size(), outputValues.length);
-                    for (int i = 0; i < outputValues.length; i++) {
-                        Assert.assertEquals(outputVerifyingString.get(i), outputValues[i]);
-                    }
-                }
-            }
-        }
-    }
-
-    protected void verifyOutput(String experimentId, String outputVerifyingString) throws Exception {
-        log.info("Experiment ID Returned : " + experimentId);
-
-        ExperimentData experimentData = getAiravataAPI().getProvenanceManager().getExperimentData(experimentId);
-
-        log.info("Verifying output ...");
-
-        List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
-
-        Assert.assertFalse("Workflow instance data cannot be empty !", workflowInstanceData.isEmpty());
-
-        for (WorkflowExecutionDataImpl data : workflowInstanceData) {
-            List<NodeExecutionData> nodeDataList = data.getNodeDataList();
-            for (NodeExecutionData nodeData : nodeDataList) {
-
-                Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
-
-                for (OutputData outputData : nodeData.getOutputData()) {
-                    Assert.assertEquals("Airavata_Test", outputData.getValue());
-                }
-                for (InputData inputData : nodeData.getInputData()) {
-                    Assert.assertEquals(outputVerifyingString, inputData.getValue());
-                }
-            }
-        }
-    }
-
-    protected List<WorkflowInput> setupInputs(Workflow workflow, List<String> inputValues) throws Exception {
-        List<WorkflowInput> workflowInputs = getAiravataAPI().getWorkflowManager().getWorkflowInputs(workflow.getName());
-
-        Assert.assertEquals(workflowInputs.size(), inputValues.size());
-
-        int i = 0;
-        for (String valueString : inputValues) {
-            workflowInputs.get(i).setValue(valueString);
-            ++i;
-        }
-        return workflowInputs;
-    }
-
-    protected String getWorkflowComposeContent(String fileName) throws IOException {
-        File file = getFile(fileName);
-
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        String line;
-        StringBuilder buffer = new StringBuilder();
-        while ((line = reader.readLine()) != null) {
-            buffer.append(line);
-        }
-        reader.close();
-        log.debug("Workflow compose - " + buffer.toString());
-        return buffer.toString();
-    }
-
-    protected File getFile(String fileName) {
-        File f = new File(".");
-        log.debug(f.getAbsolutePath());
-
-        File file = new File(fileName);
-        if (!file.exists()) {
-            file = new File("modules/integration-tests/" + fileName);
-        }
-        return file;
-    }
-
-    /*
-    * When running the tests multiple times in the same server, when the application, Host, service descriptions are
-    * there already the tests fail. But using these functions for the tests prevents that from happening.
-    * */
-    protected void addHostDescriptor(HostDescription hostDescription) throws AiravataAPIInvocationException {
-        applicationManager = getAiravataAPI().getApplicationManager();
-        String hostName = hostDescription.getType().getHostName();
-        if (!applicationManager.isHostDescriptorExists(hostName)){
-            applicationManager.addHostDescription(hostDescription);
-        }
-    }
-
-    protected void addServiceDescriptor(ServiceDescription serviceDescription, String serviceName) throws AiravataAPIInvocationException {
-        applicationManager = getAiravataAPI().getApplicationManager();
-        if (!applicationManager.isServiceDescriptorExists(serviceName)){
-            applicationManager.addServiceDescription(serviceDescription);
-        }
-    }
-
-    protected void addApplicationDescriptor(ApplicationDescription applicationDescription, ServiceDescription serviceDescription, HostDescription hostDescription, String appeName) throws AiravataAPIInvocationException {
-        boolean descriptorExists = applicationManager.isApplicationDescriptorExists(serviceDescription.getType().getName(), hostDescription.getType().getHostName(), appeName);
-        if (!descriptorExists) {
-            applicationManager.addApplicationDescription(serviceDescription, hostDescription,
-                    applicationDescription);
-        }
-    }
+//    protected void executeWorkflow(Workflow workflow, List<String> inputValues, List<String> outputValue) throws Exception {
+//        String experimentId = executeWorkflow(workflow, inputValues);
+//        airavataAPI.getExecutionManager().waitForExperimentTermination(experimentId);
+//        verifyOutput(experimentId, outputValue);
+//    }
+//
+//    protected String executeWorkflow(Workflow workflow, List<String> inputValues) throws Exception {
+//        List<WorkflowInput> workflowInputs = setupInputs(workflow, inputValues);
+//        String workflowName = workflow.getName();
+//        ExperimentAdvanceOptions options = getAiravataAPI().getExecutionManager().createExperimentAdvanceOptions(
+//                workflowName, getUserName(), null);
+//
+//        options.getCustomSecuritySettings().getCredentialStoreSecuritySettings().setTokenId("1234");
+//
+//        String experimentId = getAiravataAPI().getExecutionManager().runExperiment(workflowName, workflowInputs, options);
+//
+//        Assert.assertNotNull(experimentId);
+//
+//        log.info("Run workflow completed ....");
+//        log.info("Starting monitoring ....");
+//        return experimentId;
+//    }
+//
+//
+//    protected void verifyOutput(String experimentId, List<String> outputVerifyingString) throws Exception {
+//        log.info("Experiment ID Returned : " + experimentId);
+//
+//        ExperimentData experimentData = getAiravataAPI().getProvenanceManager().getExperimentData(experimentId);
+//
+//        log.info("Verifying output ...");
+//
+//        List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
+//
+//        Assert.assertFalse("Workflow instance data cannot be empty !", workflowInstanceData.isEmpty());
+//
+//        for (WorkflowExecutionDataImpl data : workflowInstanceData) {
+//            List<NodeExecutionData> nodeDataList = data.getNodeDataList(WorkflowNodeType.WorkflowNode.OUTPUTNODE);
+//            Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
+//            for (NodeExecutionData nodeData : nodeDataList) {
+//                for (InputData inputData : nodeData.getInputData()) {
+//                    String[] outputValues = StringUtil.getElementsFromString(inputData.getValue());
+//                    Assert.assertEquals(outputVerifyingString.size(), outputValues.length);
+//                    for (int i = 0; i < outputValues.length; i++) {
+//                        Assert.assertEquals(outputVerifyingString.get(i), outputValues[i]);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    protected void verifyOutput(String experimentId, String outputVerifyingString) throws Exception {
+//        log.info("Experiment ID Returned : " + experimentId);
+//
+//        ExperimentData experimentData = getAiravataAPI().getProvenanceManager().getExperimentData(experimentId);
+//
+//        log.info("Verifying output ...");
+//
+//        List<WorkflowExecutionDataImpl> workflowInstanceData = experimentData.getWorkflowExecutionDataList();
+//
+//        Assert.assertFalse("Workflow instance data cannot be empty !", workflowInstanceData.isEmpty());
+//
+//        for (WorkflowExecutionDataImpl data : workflowInstanceData) {
+//            List<NodeExecutionData> nodeDataList = data.getNodeDataList();
+//            for (NodeExecutionData nodeData : nodeDataList) {
+//
+//                Assert.assertFalse("Node execution data list cannot be empty !", nodeDataList.isEmpty());
+//
+//                for (OutputData outputData : nodeData.getOutputData()) {
+//                    Assert.assertEquals("Airavata_Test", outputData.getValue());
+//                }
+//                for (InputData inputData : nodeData.getInputData()) {
+//                    Assert.assertEquals(outputVerifyingString, inputData.getValue());
+//                }
+//            }
+//        }
+//    }
+//
+//    protected List<WorkflowInput> setupInputs(Workflow workflow, List<String> inputValues) throws Exception {
+//        List<WorkflowInput> workflowInputs = getAiravataAPI().getWorkflowManager().getWorkflowInputs(workflow.getName());
+//
+//        Assert.assertEquals(workflowInputs.size(), inputValues.size());
+//
+//        int i = 0;
+//        for (String valueString : inputValues) {
+//            workflowInputs.get(i).setValue(valueString);
+//            ++i;
+//        }
+//        return workflowInputs;
+//    }
+//
+//    protected String getWorkflowComposeContent(String fileName) throws IOException {
+//        File file = getFile(fileName);
+//
+//        BufferedReader reader = new BufferedReader(new FileReader(file));
+//        String line;
+//        StringBuilder buffer = new StringBuilder();
+//        while ((line = reader.readLine()) != null) {
+//            buffer.append(line);
+//        }
+//        reader.close();
+//        log.debug("Workflow compose - " + buffer.toString());
+//        return buffer.toString();
+//    }
+//
+//    protected File getFile(String fileName) {
+//        File f = new File(".");
+//        log.debug(f.getAbsolutePath());
+//
+//        File file = new File(fileName);
+//        if (!file.exists()) {
+//            file = new File("modules/integration-tests/" + fileName);
+//        }
+//        return file;
+//    }
+//
+//    /*
+//    * When running the tests multiple times in the same server, when the application, Host, service descriptions are
+//    * there already the tests fail. But using these functions for the tests prevents that from happening.
+//    * */
+//    protected void addHostDescriptor(HostDescription hostDescription) throws AiravataAPIInvocationException {
+//        applicationManager = getAiravataAPI().getApplicationManager();
+//        String hostName = hostDescription.getType().getHostName();
+//        if (!applicationManager.isHostDescriptorExists(hostName)){
+//            applicationManager.addHostDescription(hostDescription);
+//        }
+//    }
+//
+//    protected void addServiceDescriptor(ServiceDescription serviceDescription, String serviceName) throws AiravataAPIInvocationException {
+//        applicationManager = getAiravataAPI().getApplicationManager();
+//        if (!applicationManager.isServiceDescriptorExists(serviceName)){
+//            applicationManager.addServiceDescription(serviceDescription);
+//        }
+//    }
+//
+//    protected void addApplicationDescriptor(ApplicationDescription applicationDescription, ServiceDescription serviceDescription, HostDescription hostDescription, String appeName) throws AiravataAPIInvocationException {
+//        boolean descriptorExists = applicationManager.isApplicationDescriptorExists(serviceDescription.getType().getName(), hostDescription.getType().getHostName(), appeName);
+//        if (!descriptorExists) {
+//            applicationManager.addApplicationDescription(serviceDescription, hostDescription,
+//                    applicationDescription);
+//        }
+//    }
 
 }

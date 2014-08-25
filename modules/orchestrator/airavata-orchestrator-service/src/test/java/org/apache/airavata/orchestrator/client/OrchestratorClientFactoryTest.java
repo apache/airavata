@@ -21,15 +21,18 @@
 
 package org.apache.airavata.orchestrator.client;
 
+import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
 import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.client.tools.DocumentCreator;
+import org.apache.airavata.client.tools.DocumentCreatorNew;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.orchestrator.client.util.Initialize;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.server.OrchestratorServer;
@@ -39,7 +42,7 @@ import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.junit.Test;
 
 public class OrchestratorClientFactoryTest {
-    private DocumentCreator documentCreator;
+    private DocumentCreatorNew documentCreator;
     private OrchestratorService.Client orchestratorClient;
     private Registry registry;
     private int NUM_CONCURRENT_REQUESTS = 1;
@@ -59,13 +62,12 @@ public class OrchestratorClientFactoryTest {
             service = (new OrchestratorServer());
             service.start();
             registry = RegistryFactory.getDefaultRegistry();
+            documentCreator = new DocumentCreatorNew(getAiravataClient());
+            documentCreator.createLocalHostDocs();
         } catch (Exception e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         AiravataUtils.setExecutionAsServer();
-        documentCreator = new DocumentCreator(getAiravataAPI());
-        documentCreator.createLocalHostDocs();
-
         try {
             service.stop();
         } catch (Exception e) {
@@ -74,18 +76,14 @@ public class OrchestratorClientFactoryTest {
 
     }
 
-    private AiravataAPI getAiravataAPI() {
-        AiravataAPI airavataAPI = null;
+    private Airavata.Client getAiravataClient() {
+        Airavata.Client client = null;
             try {
-                String systemUserName = ServerSettings.getDefaultUser();
-                String gateway = ServerSettings.getDefaultUserGateway();
-                airavataAPI = AiravataAPIFactory.getAPI(gateway, systemUserName);
-            } catch (ApplicationSettingsException e) {
-                e.printStackTrace();
-            } catch (AiravataAPIInvocationException e) {
+                client = AiravataClientFactory.createAiravataClient("localhost", 8930);
+            } catch (AiravataClientConnectException e) {
                 e.printStackTrace();
             }
-        return airavataAPI;
+        return client;
     }
 
     private void storeDescriptors() {

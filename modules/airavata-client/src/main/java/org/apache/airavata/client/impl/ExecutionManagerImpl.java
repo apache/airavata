@@ -21,15 +21,6 @@
 
 package org.apache.airavata.client.impl;
 
-import java.net.URISyntaxException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
-
-import javax.xml.stream.XMLStreamException;
-
 import org.apache.airavata.client.AiravataAPIUtils;
 import org.apache.airavata.client.AiravataClient;
 import org.apache.airavata.client.api.ExecutionManager;
@@ -39,26 +30,19 @@ import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.client.stub.interpretor.WorkflowInterpretorStub;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.registry.api.ExecutionErrors.Source;
-import org.apache.airavata.registry.api.workflow.ApplicationJobExecutionError;
-import org.apache.airavata.registry.api.workflow.ExecutionError;
-import org.apache.airavata.registry.api.workflow.ExperimentExecutionError;
-import org.apache.airavata.registry.api.workflow.NodeExecutionError;
-import org.apache.airavata.registry.api.workflow.WorkflowExecutionError;
-import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus;
-import org.apache.airavata.registry.api.workflow.WorkflowExecutionStatus.State;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowInput;
-import org.apache.airavata.ws.monitor.EventData;
-import org.apache.airavata.ws.monitor.EventDataListener;
-import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
-import org.apache.airavata.ws.monitor.EventDataRepository;
-import org.apache.airavata.ws.monitor.Monitor;
-import org.apache.airavata.ws.monitor.MonitorConfiguration;
+import org.apache.airavata.ws.monitor.*;
 import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.llom.util.AXIOMUtil;
 import org.apache.axis2.AxisFault;
+
+import javax.xml.stream.XMLStreamException;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
+import java.util.Calendar;
+import java.util.List;
 
 public class ExecutionManagerImpl implements ExecutionManager {
 	private AiravataClient client;
@@ -112,26 +96,26 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	@Override
 	public void waitForExperimentTermination(String experimentId)
 			throws AiravataAPIInvocationException {
-		Monitor experimentMonitor = getExperimentMonitor(experimentId, new EventDataListenerAdapter() {
-			@Override
-			public void notify(EventDataRepository eventDataRepo,
-					EventData eventData) {
-				if (eventData.getType()==EventType.WORKFLOW_TERMINATED){
-					getMonitor().stopMonitoring();
-				}
-			}
-		});
-		experimentMonitor.startMonitoring();
-		try {
-			WorkflowExecutionStatus workflowInstanceStatus = getClient().getProvenanceManager().getWorkflowInstanceStatus(experimentId, experimentId);
-			if (workflowInstanceStatus.getExecutionStatus()==State.FINISHED || workflowInstanceStatus.getExecutionStatus()==State.FAILED){
-				experimentMonitor.stopMonitoring();
-				return;
-			}
-		} catch (AiravataAPIInvocationException e) {
-			//Workflow may not have started yet. Best to use the monitor to follow the progress 
-		}
-		experimentMonitor.waitForCompletion();
+//		Monitor experimentMonitor = getExperimentMonitor(experimentId, new EventDataListenerAdapter() {
+//			@Override
+//			public void notify(EventDataRepository eventDataRepo,
+//					EventData eventData) {
+//				if (eventData.getType()==EventType.WORKFLOW_TERMINATED){
+//					getMonitor().stopMonitoring();
+//				}
+//			}
+//		});
+//		experimentMonitor.startMonitoring();
+//		try {
+//			WorkflowExecutionStatus workflowInstanceStatus = getClient().getProvenanceManager().getWorkflowInstanceStatus(experimentId, experimentId);
+//			if (workflowInstanceStatus.getExecutionStatus()==State.FINISHED || workflowInstanceStatus.getExecutionStatus()==State.FAILED){
+//				experimentMonitor.stopMonitoring();
+//				return;
+//			}
+//		} catch (AiravataAPIInvocationException e) {
+//			//Workflow may not have started yet. Best to use the monitor to follow the progress
+//		}
+//		experimentMonitor.waitForCompletion();
 	}
 	
 	@Override
@@ -183,16 +167,17 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	public void setClient(AiravataClient client) {
 		this.client = client;
 	}
+
 	private String runExperimentGeneral(Workflow workflowObj, List<WorkflowInput> inputs, ExperimentAdvanceOptions options, EventDataListener listener) throws AiravataAPIInvocationException {
-		try {
-			List<NameValue> inputValues = new ArrayList<NameValue>();
-			for (WorkflowInput input : inputs) {
-				NameValue nameValue = new NameValue();
-				nameValue.setName(input.getName());
-				nameValue.setValue(String.valueOf(input.getValue()==null?input.getDefaultValue():input.getValue()));
-				inputValues.add(nameValue);
-			}
-			String workflowString = XMLUtil.xmlElementToString(workflowObj.toXML());
+//		try {
+//			List<NameValue> inputValues = new ArrayList<NameValue>();
+//			for (WorkflowInput input : inputs) {
+//				NameValue nameValue = new NameValue();
+//				nameValue.setName(input.getName());
+//				nameValue.setValue(String.valueOf(input.getValue()==null?input.getDefaultValue():input.getValue()));
+//				inputValues.add(nameValue);
+//			}
+//			String workflowString = XMLUtil.xmlElementToString(workflowObj.toXML());
 //			List<WSComponentPort> ports = getWSComponentPortInputs(workflowObj);
 //			for (WorkflowInput input : inputs) {
 //				WSComponentPort port = getWSComponentPort(input.getName(),
@@ -211,34 +196,35 @@ public class ExecutionManagerImpl implements ExecutionManager {
 //				}
 //				inputValues.add(nameValue);
 //			}
-			String experimentID=options.getCustomExperimentId();
-			String workflowTemplateName = workflowObj.getName();
-			if (experimentID == null || experimentID.isEmpty()) {
-				experimentID = workflowTemplateName + "_" + UUID.randomUUID();
-			}
-	        getClient().getProvenanceManager().setWorkflowInstanceTemplateName(experimentID,workflowTemplateName);
-
-	        //TODO - fix user passing
-	        String submissionUser = getClient().getUserManager().getAiravataUser();
-			String executionUser=options.getExperimentExecutionUser();
-			if (executionUser==null){
-				executionUser=submissionUser;
-			}
-			WorkflowContextHeaderBuilder builder = AiravataAPIUtils.createWorkflowContextHeaderBuilder(options, executionUser, submissionUser);
-			runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
-			NameValue[] inputVals = inputValues.toArray(new NameValue[] {});
-			if (listener!=null){
-				getExperimentMonitor(experimentID, listener).startMonitoring();
-			}
-			launchWorkflow(experimentID, workflowString, inputVals, builder);
-			return experimentID;	
-//		}  catch (GraphException e) {
-//			throw new AiravataAPIInvocationException(e);
-//		} catch (ComponentException e) {
-//			throw new AiravataAPIInvocationException(e);
-		} catch (Exception e) {
-	        throw new AiravataAPIInvocationException("Error working with Airavata Registry: " + e.getLocalizedMessage(), e);
-	    }
+//			String experimentID=options.getCustomExperimentId();
+//			String workflowTemplateName = workflowObj.getName();
+//			if (experimentID == null || experimentID.isEmpty()) {
+//				experimentID = workflowTemplateName + "_" + UUID.randomUUID();
+//			}
+//	        getClient().getProvenanceManager().setWorkflowInstanceTemplateName(experimentID,workflowTemplateName);
+//
+//	        //TODO - fix user passing
+//	        String submissionUser = getClient().getUserManager().getAiravataUser();
+//			String executionUser=options.getExperimentExecutionUser();
+//			if (executionUser==null){
+//				executionUser=submissionUser;
+//			}
+//			WorkflowContextHeaderBuilder builder = AiravataAPIUtils.createWorkflowContextHeaderBuilder(options, executionUser, submissionUser);
+//			runPreWorkflowExecutionTasks(experimentID, executionUser, options.getExperimentMetadata(), options.getExperimentName());
+//			NameValue[] inputVals = inputValues.toArray(new NameValue[] {});
+//			if (listener!=null){
+//				getExperimentMonitor(experimentID, listener).startMonitoring();
+//			}
+//			launchWorkflow(experimentID, workflowString, inputVals, builder);
+//			return experimentID;
+////		}  catch (GraphException e) {
+////			throw new AiravataAPIInvocationException(e);
+////		} catch (ComponentException e) {
+////			throw new AiravataAPIInvocationException(e);
+//		} catch (Exception e) {
+//	        throw new AiravataAPIInvocationException("Error working with Airavata Registry: " + e.getLocalizedMessage(), e);
+//	    }
+        return null;
 	}
 
     private Workflow extractWorkflow(String workflowName) throws AiravataAPIInvocationException {
@@ -295,16 +281,17 @@ public class ExecutionManagerImpl implements ExecutionManager {
 	
 	private void runPreWorkflowExecutionTasks(String experimentId, String user,
 			String metadata, String experimentName) throws AiravataAPIInvocationException {
-		if (user != null) {
-			getClient().getProvenanceManager().setExperimentUser(experimentId, user);
-		}
-		if (metadata != null) {
-			getClient().getProvenanceManager().setExperimentMetadata(experimentId, metadata);
-		}
-		if (experimentName == null) {
-			experimentName = experimentId;
-		}
-		getClient().getProvenanceManager().setExperimentName(experimentId, experimentName);
+//		if (user != null) {
+//			getClient().getProvenanceManager().setExperimentUser(experimentId, user);
+//		}
+//		if (metadata != null) {
+//			getClient().getProvenanceManager().setExperimentMetadata(experimentId, metadata);
+//		}
+//		if (experimentName == null) {
+//			experimentName = experimentId;
+//		}
+//		getClient().getProvenanceManager().setExperimentName(experimentId, experimentName);
+
 	}
 
 	public static void main(String[] args) {
@@ -319,111 +306,114 @@ public class ExecutionManagerImpl implements ExecutionManager {
 		}
 	}
 
-	@Override
-	public List<ExperimentExecutionError> getExperimentExecutionErrors(
-			String experimentId) throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().getExperimentExecutionErrors(experimentId);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
+//	@Override
+//	public List<ExperimentExecutionError> getExperimentExecutionErrors(
+//			String experimentId) throws AiravataAPIInvocationException {
+////		try {
+////			return getClient().getRegistryClient().getExperimentExecutionErrors(experimentId);
+////		} catch (Exception e) {
+////			throw new AiravataAPIInvocationException(e);
+////		}
+//        return null;
+//	}
 
-	@Override
-	public List<WorkflowExecutionError> getWorkflowExecutionErrors(
-			String experimentId, String workflowInstanceId)
-			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().getWorkflowExecutionErrors(experimentId, 
-					workflowInstanceId);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
+//	@Override
+//	public List<WorkflowExecutionError> getWorkflowExecutionErrors(
+//			String experimentId, String workflowInstanceId)
+//			throws AiravataAPIInvocationException {
+////		try {
+////			return getClient().getRegistryClient().getWorkflowExecutionErrors(experimentId,
+////					workflowInstanceId);
+////		} catch (Exception e) {
+////			throw new AiravataAPIInvocationException(e);
+////		}
+//        return null;
+//	}
 
-	@Override
-	public List<NodeExecutionError> getNodeExecutionErrors(String experimentId,
-			String workflowInstanceId, String nodeId)
-			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().getNodeExecutionErrors(experimentId, 
-					workflowInstanceId, nodeId);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
+//	@Override
+//	public List<NodeExecutionError> getNodeExecutionErrors(String experimentId,
+//			String workflowInstanceId, String nodeId)
+//			throws AiravataAPIInvocationException {
+////		try {
+////			return getClient().getRegistryClient().getNodeExecutionErrors(experimentId,
+////					workflowInstanceId, nodeId);
+////		} catch (Exception e) {
+////			throw new AiravataAPIInvocationException(e);
+////		}
+//        return null;
+//	}
 
-	@Override
-	public List<ApplicationJobExecutionError> getApplicationJobErrors(String experimentId,
-			String workflowInstanceId, String nodeId, String gfacJobId)
-			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().getApplicationJobErrors(experimentId, 
-					workflowInstanceId, nodeId, gfacJobId);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
+//	@Override
+//	public List<ApplicationJobExecutionError> getApplicationJobErrors(String experimentId,
+//			String workflowInstanceId, String nodeId, String gfacJobId)
+//			throws AiravataAPIInvocationException {
+//		try {
+//			return getClient().getRegistryClient().getApplicationJobErrors(experimentId,
+//					workflowInstanceId, nodeId, gfacJobId);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+//	}
 
-	@Override
-	public List<ApplicationJobExecutionError> getApplicationJobErrors(String gfacJobId)
-			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().getApplicationJobErrors(gfacJobId);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
+//	@Override
+//	public List<ApplicationJobExecutionError> getApplicationJobErrors(String gfacJobId)
+//			throws AiravataAPIInvocationException {
+//		try {
+//			return getClient().getRegistryClient().getApplicationJobErrors(gfacJobId);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+//	}
 
-	@Override
-	public List<ExecutionError> getExecutionErrors(String experimentId,
-			String workflowInstanceId, String nodeId, String gfacJobId,
-			Source... filterBy) throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().getExecutionErrors(experimentId, 
-					workflowInstanceId, nodeId, gfacJobId, filterBy);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
+//	@Override
+//	public List<ExecutionError> getExecutionErrors(String experimentId,
+//			String workflowInstanceId, String nodeId, String gfacJobId,
+//			Source... filterBy) throws AiravataAPIInvocationException {
+//		try {
+//			return getClient().getRegistryClient().getExecutionErrors(experimentId,
+//					workflowInstanceId, nodeId, gfacJobId, filterBy);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+//	}
 
-	@Override
-	public int addExperimentError(ExperimentExecutionError error)
-			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().addExperimentError(error);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
+//	@Override
+//	public int addExperimentError(ExperimentExecutionError error)
+//			throws AiravataAPIInvocationException {
+//		try {
+//			return getClient().getRegistryClient().addExperimentError(error);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+//	}
 
-	@Override
-	public int addWorkflowExecutionError(WorkflowExecutionError error)
-			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().addWorkflowExecutionError(error);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
+//	@Override
+//	public int addWorkflowExecutionError(WorkflowExecutionError error)
+//			throws AiravataAPIInvocationException {
+//		try {
+//			return getClient().getRegistryClient().addWorkflowExecutionError(error);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+//	}
 
-	@Override
-	public int addNodeExecutionError(NodeExecutionError error)
-			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().addNodeExecutionError(error);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
+//	@Override
+//	public int addNodeExecutionError(NodeExecutionError error)
+//			throws AiravataAPIInvocationException {
+//		try {
+//			return getClient().getRegistryClient().addNodeExecutionError(error);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+//	}
 
-	@Override
-	public int addApplicationJobExecutionError(ApplicationJobExecutionError error)
-			throws AiravataAPIInvocationException {
-		try {
-			return getClient().getRegistryClient().addApplicationJobExecutionError(error);
-		} catch (Exception e) {
-			throw new AiravataAPIInvocationException(e);
-		}
-	}
+//	@Override
+//	public int addApplicationJobExecutionError(ApplicationJobExecutionError error)
+//			throws AiravataAPIInvocationException {
+//		try {
+//			return getClient().getRegistryClient().addApplicationJobExecutionError(error);
+//		} catch (Exception e) {
+//			throw new AiravataAPIInvocationException(e);
+//		}
+//	}
 }

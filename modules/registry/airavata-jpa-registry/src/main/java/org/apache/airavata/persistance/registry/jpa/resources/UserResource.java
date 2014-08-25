@@ -28,8 +28,7 @@ import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
-import org.apache.airavata.registry.api.exception.RegistrySettingsException;
-import org.apache.airavata.registry.api.util.RegistrySettings;
+import org.apache.airavata.registry.cpi.utils.RegistrySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -124,7 +123,7 @@ public class UserResource extends AbstractResource {
                             RegistrySettings.getSetting("default.registry.password.hash.method")));
                 } catch (NoSuchAlgorithmException e) {
                     throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
-                } catch (RegistrySettingsException e) {
+                } catch (RegistryException e) {
                     throw new RuntimeException("Error reading hash algorithm from configurations", e);
                 }
             }
@@ -135,7 +134,7 @@ public class UserResource extends AbstractResource {
                                 RegistrySettings.getSetting("default.registry.password.hash.method")));
                     } catch (NoSuchAlgorithmException e) {
                         throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
-                    } catch (RegistrySettingsException e) {
+                    } catch (RegistryException e) {
                         throw new RuntimeException("Error reading hash algorithm from configurations", e);
                     }
                 }
