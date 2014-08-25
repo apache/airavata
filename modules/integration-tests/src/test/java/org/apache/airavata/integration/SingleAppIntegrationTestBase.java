@@ -52,7 +52,7 @@ public class SingleAppIntegrationTestBase extends AbstractIntegrationTest {
                 ExperimentStatus experimentStatus = null;
                 do {
                     try {
-                    	experimentStatus = client.getExperimentStatus(expId);
+                    	experimentStatus = airavataClient.getExperimentStatus(expId);
 						if (previousUpdateTime!=experimentStatus.getTimeOfStateChange()) {
 							previousUpdateTime=experimentStatus.getTimeOfStateChange();
 							log.info(expId

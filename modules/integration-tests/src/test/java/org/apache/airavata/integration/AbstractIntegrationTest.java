@@ -25,7 +25,6 @@ import java.io.IOException;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.ClientSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,7 @@ public class AbstractIntegrationTest {
 
 	private static String THRIFT_SERVER_HOST;
 	private static int THRIFT_SERVER_PORT;
-	protected Airavata.Client client;
+	protected Airavata.Client airavataClient;
 	private final int TRIES = 20;
 	private final int TIME_OUT = 10000;
     final static Logger log = LoggerFactory.getLogger(AbstractIntegrationTest.class);
@@ -55,8 +54,6 @@ public class AbstractIntegrationTest {
 	        //getting the Airavata API ( to add the descriptors
 	    } catch (IOException e) {
 	        log.error("Error loading client-properties ..." + e.getMessage());
-	    } catch (AiravataAPIInvocationException e) {
-	        log.error("Error initializing the Airavata API ... " + e.getMessage());
 	    } catch (Exception e) {
 	        log.error(e.getMessage());
 	    }
@@ -64,10 +61,10 @@ public class AbstractIntegrationTest {
 
 	protected void initClient() throws Exception {
 	    int tries = 0;
-	    while (client==null) {
+	    while (airavataClient==null) {
 	    	log.info("Waiting till server initializes ........[try "+ (++tries) + " of "+TRIES+"]");
 	        try {
-	            client = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
+                airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
 	        } catch (Exception e) { 
 	        	if (tries == TRIES) {
 					log("Server not responding. Cannot continue with integration tests ...");
@@ -80,7 +77,7 @@ public class AbstractIntegrationTest {
 	}
 
 	protected Airavata.Client getClient() {
-	    return client;
+	    return airavataClient;
 	}
 
     public void log(String message) {

@@ -21,7 +21,6 @@ package org.apache.airavata.client.samples;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
@@ -49,7 +48,6 @@ public class CreateLaunchExperimentUS3 {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     public static void main(String[] args) {
         try {
-            AiravataUtils.setExecutionAsClient();
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.getAPIVersion());
 //            addDescriptors();

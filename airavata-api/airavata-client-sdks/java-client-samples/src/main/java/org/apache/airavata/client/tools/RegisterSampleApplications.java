@@ -109,28 +109,33 @@ public class RegisterSampleApplications {
     private static String trinityInterfaceId = "";
     private static String wrfInterfaceId;
 
+    public RegisterSampleApplications(Airavata.Client airavataClient) {
+           this.airavataClient = airavataClient;
+    }
     public static void main(String[] args) {
         try {
             airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavataClient.getAPIVersion());
 
+            RegisterSampleApplications registerSampleApplications = new RegisterSampleApplications(airavataClient);
+
             //Register all compute hosts
-            registerXSEDEHosts();
+            registerSampleApplications.registerXSEDEHosts();
 
             //Register Gateway Resource Preferences
-//            registerGatewayResourceProfile();
+            registerSampleApplications.registerGatewayResourceProfile();
 
             //Register all application modules
-            registerAppModules();
+            registerSampleApplications.registerAppModules();
 
             //Register all application deployments
-//            registerAppDeployments();
+            registerSampleApplications.registerAppDeployments();
 
             //Register all application interfaces
-            registerAppInterfaces();
+            registerSampleApplications.registerAppInterfaces();
 
             //write output into propertiesFile
-//            writeIdPropertyFile();
+            registerSampleApplications.writeIdPropertyFile();
 
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
@@ -138,7 +143,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    public static void registerXSEDEHosts() {
+    public void registerXSEDEHosts() {
         try {
             System.out.println("\n #### Registering XSEDE Computational Resources #### \n");
 
@@ -163,7 +168,7 @@ public class RegisterSampleApplications {
 
     }
 
-    public static void registerAppModules() {
+    public void registerAppModules() {
         try {
             System.out.println("\n #### Registering Application Modules #### \n");
 
@@ -227,7 +232,7 @@ public class RegisterSampleApplications {
 
     }
 
-    public static void registerAppDeployments() {
+    public void registerAppDeployments() {
         System.out.println("\n #### Registering Application Deployments #### \n");
 
         //Registering Stampede Apps
@@ -240,18 +245,18 @@ public class RegisterSampleApplications {
         registerBigRedApps();
     }
 
-    public static void registerAppInterfaces() {
+    public void registerAppInterfaces() {
         System.out.println("\n #### Registering Application Interfaces #### \n");
         registerGromaxWorkflowInterfaces();
         
         //Registering Echo
-//        registerEchoInterface();
+        registerEchoInterface();
 
         //Registering Amber
-//        registerAmberInterface();
+        registerAmberInterface();
 
         //Registering AutoDock
-//        registerAutoDockInterface();
+        registerAutoDockInterface();
 
         //Registering Espresso
         registerEspressoInterface();
@@ -269,7 +274,7 @@ public class RegisterSampleApplications {
         registerTrinityInterface();
 
         //Registering WRF
-//        registerWRFInterface();
+        registerWRFInterface();
 
     }
 
@@ -364,7 +369,6 @@ public class RegisterSampleApplications {
             applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("struct_topoogy",
                     "", DataType.URI));
-                        
 
             echoInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("grompp", "grompp",
@@ -908,7 +912,7 @@ public class RegisterSampleApplications {
         return computeResourceId;
     }
 
-    public static void registerGatewayResourceProfile() {
+    public void registerGatewayResourceProfile() {
 
         try {
             System.out.println("#### Registering Application Deployments on BigRed II #### \n");
