@@ -49,9 +49,10 @@ public class AppCatalogJPAUtils {
     public static EntityManager getEntityManager() throws ApplicationSettingsException {
         if (factory == null) {
             String connectionProperties = "DriverClassName=" + readServerProperties(APPCATALOG_JDBC_DRIVER) + "," +
-                    "Url=" + readServerProperties(APPCATALOG_JDBC_URL) + "," +
+                    "Url=" + readServerProperties(APPCATALOG_JDBC_URL) + "?autoReconnect=true," +
                     "Username=" + readServerProperties(APPCATALOG_JDBC_USER) + "," +
-                    "Password=" + readServerProperties(APPCATALOG_JDBC_PWD);
+                    "Password=" + readServerProperties(APPCATALOG_JDBC_PWD) +
+                    ",validationQuery=" + readServerProperties(APPCATALOG_VALIDATION_QUERY);
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
@@ -64,7 +65,7 @@ public class AppCatalogJPAUtils {
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.jdbc.QuerySQLCache", "false");
-            properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000,  autoReconnect=true");
+            properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
         return factory.createEntityManager();
