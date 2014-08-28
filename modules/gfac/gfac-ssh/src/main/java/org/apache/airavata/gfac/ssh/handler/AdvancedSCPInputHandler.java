@@ -52,6 +52,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -133,11 +135,6 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
                         this.passPhrase);
             }
             // Server info
-            ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-            Cluster pbsCluster = null;
-            // here doesn't matter what the job manager is because we are only doing some file handling
-            // not really dealing with monitoring or job submission, so we pa
-            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
             String parentPath = inputPath + File.separator + jobExecutionContext.getExperimentID() + File.separator + jobExecutionContext.getTaskData().getTaskID();
             if (index < oldIndex) {
                 parentPath = oldFiles.get(index);
@@ -149,48 +146,80 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
             }
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();
-          
-            MessageContext input = jobExecutionContext.getInMessageContext();
-            Set<String> parameters = input.getParameters().keySet();
-            for (String paramName : parameters) {
-                ActualParameter actualParameter = (ActualParameter) input.getParameters().get(paramName);
-                String paramValue = MappingFactory.toString(actualParameter);
-                //TODO: Review this with type
-                if ("URI".equals(actualParameter.getType().getType().toString())) {
-                    if (index < oldIndex) {
-                        log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
-                        data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
-                    } else {
-                        String stageInputFile = stageInputFiles(pbsCluster, paramValue, parentPath);
-                        ((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
-                        StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
-                        status.setTransferState(TransferState.UPLOAD);
-                        detail.setTransferStatus(status);
-                        detail.setTransferDescription("Input Data Staged: " + stageInputFile);
-                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                
-                        GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
-                    }
-                } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-                    List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
-                    List<String> newFiles = new ArrayList<String>();
-                    for (String paramValueEach : split) {
-                        if (index < oldIndex) {
-                            log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                            newFiles.add(oldFiles.get(index));
-                            data.append(oldFiles.get(index++)).append(",");
-                        } else {
-                            String stageInputFiles = stageInputFiles(pbsCluster, paramValueEach, parentPath);
-                            StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
-                            GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
-                            newFiles.add(stageInputFiles);
-                        }
-                    }
-                    ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
-                }
-                inputNew.getParameters().put(paramName, actualParameter);
-            }
+            Cluster pbsCluster = null;
+            // here doesn't matter what the job manager is because we are only doing some file handling
+            // not really dealing with monitoring or job submission, so we pa
+            String lastHost = null;
+            
+			MessageContext input = jobExecutionContext.getInMessageContext();
+			Set<String> parameters = input.getParameters().keySet();
+			for (String paramName : parameters) {
+				ActualParameter actualParameter = (ActualParameter) input.getParameters().get(paramName);
+				String paramValue = MappingFactory.toString(actualParameter);
+				// TODO: Review this with type
+				if ("URI".equals(actualParameter.getType().getType().toString())) {
+					try {
+						URL file = new URL(paramValue);
+						this.userName = file.getUserInfo();
+						this.hostName = file.getHost();
+						paramValue = file.getPath();
+					} catch (MalformedURLException e) {
+						log.error(e.getLocalizedMessage(),e);
+					}
+					ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
+					if (pbsCluster == null && (lastHost == null || !lastHost.equals(hostName))) {
+						pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+					}
+					lastHost = hostName;
+
+					if (index < oldIndex) {
+						log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
+						((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+						data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
+					} else {
+						String stageInputFile = stageInputFiles(pbsCluster, paramValue, parentPath);
+						((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
+						StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
+						status.setTransferState(TransferState.UPLOAD);
+						detail.setTransferStatus(status);
+						detail.setTransferDescription("Input Data Staged: " + stageInputFile);
+						registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+
+						GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+					}
+				} else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
+					List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
+					List<String> newFiles = new ArrayList<String>();
+					for (String paramValueEach : split) {
+						try {
+							URL file = new URL(paramValue);
+							this.userName = file.getUserInfo();
+							this.hostName = file.getHost();
+							paramValueEach = file.getPath();
+						} catch (MalformedURLException e) {
+							log.error(e.getLocalizedMessage(),e);
+						}
+						ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
+						if (pbsCluster == null && (lastHost == null || !lastHost.equals(hostName))) {
+							pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+						}
+						lastHost = hostName;
+
+						if (index < oldIndex) {
+							log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
+							newFiles.add(oldFiles.get(index));
+							data.append(oldFiles.get(index++)).append(",");
+						} else {
+							String stageInputFiles = stageInputFiles(pbsCluster, paramValueEach, parentPath);
+							StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
+							GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+							newFiles.add(stageInputFiles);
+						}
+					}
+					((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
+				}
+				inputNew.getParameters().put(paramName, actualParameter);
+			}
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
