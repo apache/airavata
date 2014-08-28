@@ -51,7 +51,8 @@ public class AppCatalogJPAUtils {
             String connectionProperties = "DriverClassName=" + readServerProperties(APPCATALOG_JDBC_DRIVER) + "," +
                     "Url=" + readServerProperties(APPCATALOG_JDBC_URL) + "?autoReconnect=true," +
                     "Username=" + readServerProperties(APPCATALOG_JDBC_USER) + "," +
-                    "Password=" + readServerProperties(APPCATALOG_JDBC_PWD);
+                    "Password=" + readServerProperties(APPCATALOG_JDBC_PWD) +
+                    ",validationQuery=" + readServerProperties(APPCATALOG_VALIDATION_QUERY);
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
