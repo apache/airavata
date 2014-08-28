@@ -47,7 +47,7 @@ public class ResourceUtils {
     
     public static EntityManager getEntityManager(){
         if (factory == null) {
-            String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" + Utils.getJDBCURL() + "," +
+            String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" + Utils.getJDBCURL() + "?autoReconnect=true,," +
                     "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword() + ",validationQuery=" +
             Utils.getValidationQuery();
             System.out.println(connectionProperties);
@@ -66,7 +66,7 @@ public class ResourceUtils {
 //            properties.put("openjpa.LockTimeout", "30000");
 //            properties.put("openjpa.LockManager", "none");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
-            properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=60000,  autoReconnect=true");
+            properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
 			properties.put("openjpa.jdbc.QuerySQLCache", "false");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }

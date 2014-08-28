@@ -97,6 +97,7 @@ public class ResourceConnection {
         String userName = cluster.getServerInfo().getUserName();
         //todo so currently we execute the qstat for each job but we can use user based monitoring
         //todo or we should concatenate all the commands and execute them in one go and parse the response
+        //
         cluster.getJobStatuses(userName, treeMap);
         for (String key : treeMap.keySet()) {
             treeMap1.put(key, getStatusFromString(treeMap.get(key).toString()));
@@ -140,5 +141,9 @@ public class ResourceConnection {
 
     public void setCluster(PBSCluster cluster) {
         this.cluster = cluster;
+    }
+
+    public boolean isConnected(){
+        return this.cluster.getSession().isConnected();
     }
 }
