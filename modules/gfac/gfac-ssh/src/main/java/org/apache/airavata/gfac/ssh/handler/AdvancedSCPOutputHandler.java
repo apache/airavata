@@ -45,6 +45,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -117,12 +119,24 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                         this.passPhrase);
             }
             // Server info
+            if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir() != null){
+            	try{
+            	URL outputPathURL = new URL(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir());
+            	this.userName = outputPathURL.getUserInfo();
+            	this.hostName = outputPathURL.getHost();
+            	outputPath = outputPathURL.getPath();
+            	} catch (MalformedURLException e) {
+					log.error(e.getLocalizedMessage(),e);
+				}
+            }
             ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
 
             Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+            if(!jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().isPersistOutputData()){
             outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
                     + File.separator;
             pbsCluster.makeDirectory(outputPath);
+            }
             pbsCluster.scpTo(outputPath, standardError);
             pbsCluster.scpTo(outputPath, standardOutput);
             List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
