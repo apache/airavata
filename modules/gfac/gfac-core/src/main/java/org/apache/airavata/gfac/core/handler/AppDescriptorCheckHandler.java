@@ -30,9 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.Date;
 import java.util.Properties;
-import java.util.UUID;
 
 public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
     private static final Logger logger = LoggerFactory.getLogger(AppDescriptorCheckHandler.class);
@@ -55,12 +53,8 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
         * Working dir
         */
         if (appDesc.getStaticWorkingDirectory() == null || "null".equals(appDesc.getStaticWorkingDirectory())) {
-            String date = new Date().toString();
-            date = date.replaceAll(" ", "_");
-            date = date.replaceAll(":", "_");
-
             String tmpDir = appDesc.getScratchWorkingDirectory() + File.separator
-                    + jobExecutionContext.getServiceName() + "_" + date + "_" + UUID.randomUUID();
+                    + jobExecutionContext.getExperimentID();
 
             appDesc.setStaticWorkingDirectory(tmpDir);
         }
