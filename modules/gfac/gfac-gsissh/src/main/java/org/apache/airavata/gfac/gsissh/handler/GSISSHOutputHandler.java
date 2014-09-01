@@ -146,10 +146,10 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             String outputDataDir = null;
             File localStdOutFile;
             File localStdErrFile;
-
-            if (taskData.getAdvancedOutputDataHandling() != null) {
-                outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
-            }
+            //FIXME: AdvancedOutput is remote location and third party transfer should work to make this work 
+//            if (taskData.getAdvancedOutputDataHandling() != null) {
+//                outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
+//            }
             if (outputDataDir == null) {
                 outputDataDir = File.separator + "tmp";
             }
