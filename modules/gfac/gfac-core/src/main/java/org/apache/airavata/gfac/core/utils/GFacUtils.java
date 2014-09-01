@@ -140,11 +140,11 @@ public class GFacUtils {
 					.equals(appHost));
 	}
 
-	public static String createUniqueNameForService(String serviceName) {
+	public static String createUniqueNameWithDate(String name) {
 		String date = new Date().toString();
 		date = date.replaceAll(" ", "_");
 		date = date.replaceAll(":", "_");
-		return serviceName + "_" + date + "_" + UUID.randomUUID();
+		return name + "_" + date;
 	}
 
 	public static String createGsiftpURIAsString(String host, String localPath)

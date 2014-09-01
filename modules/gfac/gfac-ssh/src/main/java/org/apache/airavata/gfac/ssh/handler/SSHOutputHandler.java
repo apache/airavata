@@ -117,16 +117,16 @@ public class SSHOutputHandler extends AbstractHandler {
             }
 
             // Get the Stdouts and StdErrs
-            String timeStampedServiceName = GFacUtils.createUniqueNameForService(jobExecutionContext.getServiceName());
+            String timeStampedExperimentID = GFacUtils.createUniqueNameWithDate(jobExecutionContext.getExperimentID());
 
             TaskDetails taskData = jobExecutionContext.getTaskData();
             String outputDataDir = null;
             File localStdOutFile;
             File localStdErrFile;
-
-            if (taskData.getAdvancedOutputDataHandling() != null) {
-                outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
-            }
+            //FIXME: AdvancedOutput is remote location and third party transfer should work to make this work 
+//            if (taskData.getAdvancedOutputDataHandling() != null) {
+//                outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
+//            }
             if (outputDataDir == null) {
                 outputDataDir = File.separator + "tmp";
             }
@@ -134,8 +134,8 @@ public class SSHOutputHandler extends AbstractHandler {
             (new File(outputDataDir)).mkdirs();
 
 
-            localStdOutFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stdout");
-            localStdErrFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stderr");
+            localStdOutFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stdout");
+            localStdErrFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stderr");
 //            cluster.makeDirectory(outputDataDir);
             cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
             Thread.sleep(1000);
