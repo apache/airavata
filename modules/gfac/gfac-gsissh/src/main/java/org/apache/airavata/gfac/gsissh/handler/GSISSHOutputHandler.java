@@ -140,7 +140,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 }
             }
 
-            String timeStampedServiceName = GFacUtils.createUniqueNameForService(jobExecutionContext.getServiceName());
+            String timeStampedExperimentID = GFacUtils.createUniqueNameWithDate(jobExecutionContext.getExperimentID());
 
             TaskDetails taskData = jobExecutionContext.getTaskData();
             String outputDataDir = null;
@@ -161,7 +161,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 localStdOutFile = new File(oldFiles.get(index));
                 data.append(oldFiles.get(index++)).append(",");
             } else {
-                localStdOutFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stdout");
+                localStdOutFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stdout");
                 cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
                 Thread.sleep(1000);
                 StringBuffer temp = new StringBuffer(data.append(localStdOutFile.getAbsolutePath()).append(",").toString());
@@ -171,7 +171,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 localStdErrFile = new File(oldFiles.get(index));
                 data.append(oldFiles.get(index++)).append(",");
             } else {
-                localStdErrFile = new File(outputDataDir + File.separator + timeStampedServiceName + "stderr");
+                localStdErrFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stderr");
                 cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
                 Thread.sleep(1000);
                 StringBuffer temp = new StringBuffer(data.append(localStdErrFile.getAbsolutePath()).append(",").toString());
