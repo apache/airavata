@@ -157,7 +157,7 @@ public class PBSOutputParser implements OutputParser {
     }
 
     public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) {
-        log.debug(rawOutput);
+        log.info(rawOutput);
         String[]    info = rawOutput.split("\n");
         int lastStop = 0;
         for (String jobID : statusMap.keySet()) {
