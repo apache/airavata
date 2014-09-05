@@ -464,13 +464,10 @@ public class GSISSHAbstractCluster implements Cluster {
     private String getOutputifAvailable(StandardOutReader jobIDReaderCommandOutput, String errorMsg, String command) throws SSHApiException {
         String stdOutputString = jobIDReaderCommandOutput.getStdOutputString();
         String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
-
         log.info("StandardOutput Returned:" + stdOutputString);
         log.info("StandardError  Returned:" +stdErrorString);
-        if ((stdOutputString == null || "".equals(stdOutputString)) &&
-                (stdErrorString != null && stdErrorString.contains(command))) {
-            log.error("Standard Error output : " + stdErrorString);
-            throw new SSHApiException(errorMsg + stdErrorString);
+        if("".equals(stdOutputString)){
+            log.error("-------------- Standard output came as empty, so this poll is going to fail --------------");
         }
         return stdOutputString;
     }
