@@ -465,6 +465,8 @@ public class GSISSHAbstractCluster implements Cluster {
         String stdOutputString = jobIDReaderCommandOutput.getStdOutputString();
         String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
 
+        log.info("StandardOutput Returned:" + stdOutputString);
+        log.info("StandardError  Returned:" +stdErrorString);
         if ((stdOutputString == null || "".equals(stdOutputString)) &&
                 (stdErrorString != null && stdErrorString.contains(command))) {
             log.error("Standard Error output : " + stdErrorString);
