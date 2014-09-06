@@ -25,6 +25,7 @@ import java.util.List;
 
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
+import org.apache.airavata.orchestrator.cpi.Orchestrator;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.zookeeper.ZooKeeper;
 
@@ -41,10 +42,15 @@ public class OrchestratorContext {
     private ZooKeeper zk;
     
     public OrchestratorContext(List<GFACInstance> gfacInstanceList) {
-        this.gfacInstanceList = new ArrayList<GFACInstance>();
+        if (gfacInstanceList != null) {
+            this.gfacInstanceList = gfacInstanceList;
+        }else {
+            this.gfacInstanceList = new ArrayList<GFACInstance>();
+        }
     }
 
     public OrchestratorContext() {
+        this(null);
     }
 
     public List<GFACInstance> getGfacInstanceList() {
@@ -72,7 +78,7 @@ public class OrchestratorContext {
     }
 
     public void setGfacInstanceList(List<GFACInstance> gfacInstanceList) {
-        this.gfacInstanceList = gfacInstanceList;
+        this.gfacInstanceList.addAll(gfacInstanceList);
     }
 
     public void setZk(ZooKeeper zk) {
