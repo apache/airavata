@@ -1,0 +1,17 @@
+# $Id: e5cc84c2.tacc.cadesc,v 1.1 2008/10/23 02:20:34 marg Exp $
+
+CA_NAME             TACC Classic Certification Authority
+HOMEPAGE            http://www.tacc.utexas.edu/CA/
+CONTACT             ca@tacc.utexas.edu
+HASH                e5cc84c2 
+SIGNED_BY           /DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/CN=TACC Root CA       
+SUBJECT             /DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/CN=TACC Classic CA 
+MAY_SIGN            /DC=EDU/DC=UTEXAS/DC=TACC/O=UT-AUSTIN/O=TACC Classic CA/*
+CERTIFICATE_MD5     EA:31:04:07:7B:0A:04:EC:DD:B1:A2:75:29:39:83:98 
+CERTIFICATE_SHA1    5B:AE:F7:20:B1:3A:91:4F:1C:FE:8F:AF:5E:ED:48:DB:62:0E:47:65 
+CERTIFICATE_URL     http://www.tacc.utexas.edu/CA/e5cc84c2.0
+SIGNING_POLICY_URL  http://www.tacc.utexas.edu/CA/e5cc84c2.signing_policy
+# CERT_BEGINS         Thu 2008-10-02 04:02:04 UTC 
+CERT_EXPIRES        Tue 2013-10-01 04:02:04 UTC
+CRL_URL             http://www.tacc.utexas.edu/CA/e5cc84c2.r0
+

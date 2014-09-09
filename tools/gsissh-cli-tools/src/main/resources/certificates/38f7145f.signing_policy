@@ -1,0 +1,4 @@
+# DigiCert Grid Trust CA Signing Policy
+access_id_CA		X509	'/C=US/O=DigiCert Grid/OU=www.digicert.com/CN=DigiCert Grid Trust CA'
+pos_rights		globus	CA:sign
+cond_subjects		globus	'"/DC=com/DC=DigiCert-Grid/*" "/DC=com/DC=DigiCertGrid/*" "/C=US/O=DigiCert Grid/*"'
