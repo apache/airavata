@@ -1,0 +1,15 @@
+CA_NAME             PSC Root Certificate Authority
+HOMEPAGE            http://www.psc.edu/ca/
+CONTACT             ca-admin@psc.edu
+HASH                9b88e95b
+# SIGNED_BY           self
+SUBJECT             /C=US/O=Pittsburgh Supercomputing Center/CN=PSC Root CA
+MAY_SIGN            /C=US/O=Pittsburgh Supercomputing Center/*
+CERTIFICATE_MD5     A4:DC:F4:AB:62:B1:6B:8C:90:78:03:94:A6:8E:B9:5A
+CERTIFICATE_SHA1    76:14:59:94:16:2B:E2:05:C9:16:3F:85:8E:7C:70:EE:B9:DD:84:50
+CERTIFICATE_URL     http://www.psc.edu/ca/cert/9b88e95b.0
+SIGNING_POLICY_URL  http://www.psc.edu/ca/cert/9b88e95b.signing_policy
+CRL_URL             http://www.psc.edu/ca/crl/9b88e95b.r0
+# CERT_BEGINS         Thu 2006-08-17 16:46:13 UTC
+CERT_EXPIRES        Thu 2016-03-17 05:00:00 UTC
+

@@ -1,0 +1,74 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+[ New GridShib CA, May 2009 (mccreary) ]
+
+Received via email with S/MIME signature on 13May09.  Signed using
+certificate w/ subject:
+
+	CN = Jim Basney
+	O  = National Center for Supercomputing Applications
+	OU = People
+Serial Num = 01:04
+
+from authority:
+
+	CN = CACL
+	O  = National Center for Supercomputing Applications
+	OU = Certificate Authorities
+
+Valid from 23May08 until 24May2009
+
+Fingerprints:
+	SHA1	FC:BF:6C:6E:9E:71:AC:B5:01:4C:FE:FF:57:D8:17:86:E4:07:32:31
+	MD5 	E3:B8:68:A8:5C:62:00:78:A0:DB:30:48:03:B0:5A:C9
+
+Self-signed CACL CA cert in tarball verified on 13May09, see NCSA_CACL_provenance
+for details.
+
+Tar file containing the CA cert and signing policy was also obtained from
+<http://www.ncsa.uiuc.edu/~jbasney/ncsa-gridshib-ca-igtf.tar.gz>
+Good PGP signature for this tar file was obtained from
+<http://www.ncsa.uiuc.edu/~jbasney/ncsa-gridshib-ca-igtf.tar.gz.sig>
+Signature made with this key:
+
+pub   1024D/424ACD8C 2009-01-01 [expires: 2010-01-26]
+      Key fingerprint = 7396 9433 032F 4DC9 94A4  514A 1155 CA38 424A CD8C
+uid                  Jim Basney <jbasney@ncsa.uiuc.edu>
+sub   2048g/A97983D9 2009-01-01 [expires: 2010-01-26]
+
+Unfortunately this key is not part of the TG security working group web of trust.
+
+Extracted the following files from the tar file and checked against the
+attachments from the email message:
+
+ncsa-gridshib-ca-igtf/e8ac4b61.0
+ncsa-gridshib-ca-igtf/e8ac4b61.signing_policy
+
+Cosmetic differences between email and tar files:
+diff ./e8ac4b61.0 ../ncsa-gridshib-ca-igtf/e8ac4b61.0
+24,25d23
+< 
+< 
+diff ./e8ac4b61.signing_policy ../ncsa-gridshib-ca-igtf/e8ac4b61.signing_policy
+4,5d3
+< 
+< 
+
+Obtained CRL URL from subsequent S/MIME email message from Jim Basney, signed
+with the same CACL cert.
+
+http://ca.ncsa.uiuc.edu/e8ac4b61.r0 
+
+New GridShib cert:
+openssl x509 -subject -fingerprint -sha1 -noout -in e8ac4b61.0
+subject= /C=US/O=National Center for Supercomputing Applications/OU=Certificate Authorities/CN=GridShib CA
+SHA1 Fingerprint=48:DE:D1:9E:40:BF:3A:20:2B:A2:F6:F2:85:6A:62:37:5D:E9:AD:E1
+MD5 Fingerprint=3D:6F:CD:C7:C2:E9:B0:DF:F9:0F:B7:28:0F:57:CD:63
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.7 (Darwin)
+
+iD8DBQFKCzPaYjEf42hR7yYRAgP4AKCWfo4Kgxb2GLOWldO55r9a+e8ZrwCcC/K4
+HyZGK7+1+mZ/FYpUSP7a5NM=
+=jt55
+-----END PGP SIGNATURE-----
