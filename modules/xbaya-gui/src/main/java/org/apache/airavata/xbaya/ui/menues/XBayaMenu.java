@@ -53,6 +53,8 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
 	private RegistryMenuItem registryMenuItem;
 
     private AmazonEC2MenuItem amazonEC2MenuItem;
+    
+    private ApplicationMenuItem applicationMenuItem;
 
 //	private ToolsMenuItem toolsMenuItem;
 
@@ -80,7 +82,7 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
 		runMenuItem = new RunMenuItem(getEngine(), getToolBar());
 		registryMenuItem = new RegistryMenuItem(getEngine(),getToolBar());
 //		toolsMenuItem = new ToolsMenuItem(getEngine());
-
+		applicationMenuItem = new ApplicationMenuItem(getEngine());
 		createMenuBar();
 		executionModeChanged(getEngine().getConfiguration());
 	}
@@ -106,6 +108,7 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
 //        menuBar.add(toolsMenuItem.getMenu());
         menuBar.add(registryMenuItem.getMenu());
         menuBar.add(amazonEC2MenuItem.getMenu());
+        menuBar.add(applicationMenuItem.getMenu());
         // Space before Help
         this.menuBar.add(Box.createHorizontalGlue());
 
