@@ -25,6 +25,7 @@ import org.apache.airavata.gsi.ssh.api.*;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.config.ConfigReader;
+import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 import org.apache.airavata.gsi.ssh.impl.SystemCommandOutput;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
