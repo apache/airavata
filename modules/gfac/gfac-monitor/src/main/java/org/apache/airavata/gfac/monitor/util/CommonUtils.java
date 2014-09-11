@@ -89,7 +89,7 @@ public class CommonUtils {
                 // then this is the right place to update
                 List<HostMonitorData> monitorIDs = next.getHostMonitorData();
                 for (HostMonitorData host : monitorIDs) {
-                    if (host.getHost().equals(monitorID.getHost())) {
+                    if (host.getHost().toXML().equals(monitorID.getHost().toXML())) {
                         // ok we found right place to add this monitorID
                         host.addMonitorIDForHost(monitorID);
                         return;
@@ -135,7 +135,8 @@ public class CommonUtils {
                     if(iHostMonitorID.getHost().equals(monitorID.getHost())) {
                         List<MonitorID> monitorIDs = iHostMonitorID.getMonitorIDs();
                         for(MonitorID iMonitorID:monitorIDs){
-                            if(iMonitorID.getJobID().equals(monitorID.getJobID())) {
+                            if(iMonitorID.getJobID().equals(monitorID.getJobID())
+                                    || iMonitorID.getJobName().equals(monitorID.getJobName())) {
                                 // OK we found the object, we cannot do list.remove(object) states of two objects
                                 // could be different, thats why we check the jobID
                                 logger.info("Removing the job:"+ monitorID.getJobID()+" from monitoring last status:" + monitorID.getStatus().toString());
