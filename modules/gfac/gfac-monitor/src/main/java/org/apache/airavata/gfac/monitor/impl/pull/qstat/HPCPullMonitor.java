@@ -44,6 +44,7 @@ import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.core.PullMonitor;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.gfac.monitor.impl.push.amqp.SimpleJobFinishConsumer;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
@@ -63,6 +64,7 @@ import com.google.common.eventbus.EventBus;
  */
 public class HPCPullMonitor extends PullMonitor {
     private final static Logger logger = LoggerFactory.getLogger(HPCPullMonitor.class);
+    public static final int FAILED_COUNT = 5;
 
     // I think this should use DelayedBlocking Queue to do the monitoring*/
     private BlockingQueue<UserMonitorData> queue;
@@ -75,6 +77,7 @@ public class HPCPullMonitor extends PullMonitor {
 
     private LinkedBlockingQueue<String> cancelJobList;
 
+    private List<String> completedJobsFromPush;
 
     private GFac gfac;
 
@@ -82,17 +85,21 @@ public class HPCPullMonitor extends PullMonitor {
 
     public HPCPullMonitor() {
         connections = new HashMap<String, ResourceConnection>();
-        this.queue = new LinkedBlockingDeque<UserMonitorData>();
+        queue = new LinkedBlockingDeque<UserMonitorData>();
         publisher = new MonitorPublisher(new EventBus());
         cancelJobList = new LinkedBlockingQueue<String>();
+        completedJobsFromPush = new ArrayList<String>();
+        (new SimpleJobFinishConsumer(this.completedJobsFromPush)).listen();
     }
 
     public HPCPullMonitor(MonitorPublisher monitorPublisher, AuthenticationInfo authInfo) {
         connections = new HashMap<String, ResourceConnection>();
-        this.queue = new LinkedBlockingDeque<UserMonitorData>();
+        queue = new LinkedBlockingDeque<UserMonitorData>();
         publisher = monitorPublisher;
         authenticationInfo = authInfo;
         cancelJobList = new LinkedBlockingQueue<String>();
+        this.completedJobsFromPush = new ArrayList<String>();
+        (new SimpleJobFinishConsumer(this.completedJobsFromPush)).listen();
     }
 
     public HPCPullMonitor(BlockingQueue<UserMonitorData> queue, MonitorPublisher publisher) {
@@ -100,6 +107,8 @@ public class HPCPullMonitor extends PullMonitor {
         this.publisher = publisher;
         connections = new HashMap<String, ResourceConnection>();
         cancelJobList = new LinkedBlockingQueue<String>();
+        this.completedJobsFromPush = new ArrayList<String>();
+        (new SimpleJobFinishConsumer(this.completedJobsFromPush)).listen();
     }
 
 
@@ -171,24 +180,41 @@ public class HPCPullMonitor extends PullMonitor {
                         connection = new ResourceConnection(iHostMonitorData,getAuthenticationInfo());
                         connections.put(hostName, connection);
                     }
-                    // before we get the statuses, we check the cancel job list and remove them permanently
 
+                    // before we get the statuses, we check the cancel job list and remove them permanently
                     List<MonitorID> monitorID = iHostMonitorData.getMonitorIDs();
+                    Iterator<String> iterator1 = cancelJobList.iterator();
+
                     for(MonitorID iMonitorID:monitorID){
-                        for(String cancelMId:cancelJobList) {
+                        while(iterator1.hasNext()) {
+                            String cancelMId = iterator1.next();
                             if (cancelMId.equals(iMonitorID.getExperimentID() + "+" + iMonitorID.getTaskID())) {
                                 logger.info("Found a match in monitoring Queue, so marking this job to remove from monitor queue " + cancelMId);
                                 logger.info("ExperimentID: " + cancelMId.split("\\+")[0] + ",TaskID: " + cancelMId.split("\\+")[1] + "JobID" + iMonitorID.getJobID());
                                 completedJobs.add(iMonitorID);
                                 iMonitorID.setStatus(JobState.CANCELED);
+                                iterator1.remove();
+                            }
+                        }
+                    }
+                    Iterator<String> iterator = completedJobsFromPush.iterator();
+                    for(MonitorID iMonitorID:monitorID){
+                        while(iterator.hasNext()) {
+                            String cancelMId = iterator.next();
+                            if (cancelMId.equals(iMonitorID.getUserName() + "," + iMonitorID.getJobName())) {
+                                logger.info("This job is finished because push notification came with <username,jobName> " + cancelMId);
+                                completedJobs.add(iMonitorID);
+                                iterator.remove();
+                                iMonitorID.setStatus(JobState.COMPLETE);
                             }
                         }
                     }
                     Map<String, JobState> jobStatuses = connection.getJobStatuses(monitorID);
                     for (MonitorID iMonitorID : monitorID) {
                         currentMonitorID = iMonitorID;
-                        if (!JobState.CANCELED.equals(iMonitorID.getStatus())) {
-                            iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID() + "," + iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
+                        if (!JobState.CANCELED.equals(iMonitorID.getStatus())&&
+                                !JobState.COMPLETE.equals(iMonitorID.getStatus())) {
+                            iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID() + "," + iMonitorID.getJobName()));    //IMPORTANT this is NOT a simple setter we have a logic
                         }
                             jobStatus = new JobStatusChangeRequest(iMonitorID);
                             // we have this JobStatus class to handle amqp monitoring
@@ -211,7 +237,7 @@ public class HPCPullMonitor extends PullMonitor {
 //										ExperimentState.FAILED));
                                     logger.info(e.getLocalizedMessage(), e);
                                 }
-                            } else if (iMonitorID.getFailedCount() > 2) {
+                            } else if (iMonitorID.getFailedCount() > FAILED_COUNT) {
                                 logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed 3 times, so skip this Job from Monitor");
                                 iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                                 completedJobs.add(iMonitorID);
