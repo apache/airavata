@@ -395,5 +395,12 @@ public class JobDescriptor {
         return this.getJobDescriptorDocument().getJobDescriptor().getUserName();
     }
 
+    public void setCallBackIp(String ip){
+        this.jobDescriptionDocument.getJobDescriptor().setCallBackIp(ip);
+    }
+
+    public String getCallBackIp(){
+        return this.jobDescriptionDocument.getJobDescriptor().getCallBackIp();
+    }
 }
 

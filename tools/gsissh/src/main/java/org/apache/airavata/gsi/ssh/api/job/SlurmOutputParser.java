@@ -149,11 +149,11 @@ public class SlurmOutputParser implements OutputParser {
     }
 
     public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
-        log.info(rawOutput);
+        log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length -1];
         if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
-            // There are no jobs for this username
+            log.info("There are no jobs with this username ... ");
             return;
         }
         int lastStop = 0;
