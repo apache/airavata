@@ -343,6 +343,7 @@ public class HPCPullMonitor extends PullMonitor {
 
     /**
      * Build the /stat/{username}/{hostAddress}/job znode path and store job count
+     *
      * @param userMonitorData
      * @param completedJobs
      * @throws ApplicationSettingsException
@@ -373,9 +374,20 @@ public class HPCPullMonitor extends PullMonitor {
                             .append(hostData.getHost().getType().getHostAddress()).append("/").append(Constants.JOB);
                     checkAndCreateZNode(zk, jobPathBuilder.toString());
                     int jobCount = 0;
+                    String jobCountStr = new String(zk.getData(jobPathBuilder.toString(), null, null));
+                    try {
+                        jobCount = Integer.parseInt(jobCountStr);
+                    } catch (NumberFormatException e) {
+                        // do nothing , keep jobCount 0
+                    }
                     List<MonitorID> idList = hostData.getMonitorIDs();
+                    boolean updatePath = true;
                     if (idList != null) {
-                        jobCount = idList.size();
+                        if (jobCount == idList.size()) {
+                            updatePath = false;
+                        } else {
+                            jobCount = idList.size();
+                        }
                         // removed already updated jobs from complete jobs
                         for (MonitorID monitorID : idList) {
                             if (completedJobs.contains(monitorID)) {
@@ -383,8 +395,10 @@ public class HPCPullMonitor extends PullMonitor {
                             }
                         }
                     }
-                    zk.setData(jobPathBuilder.toString(), String.valueOf(jobCount).getBytes(), -1);
-                    updatedPathList.add(jobPathBuilder.toString());
+                    if (updatePath) {
+                        zk.setData(jobPathBuilder.toString(), String.valueOf(jobCount).getBytes(), -1);
+                        updatedPathList.add(jobPathBuilder.toString());
+                    }
                 }
 
                 //handle completed jobs
@@ -416,7 +430,7 @@ public class HPCPullMonitor extends PullMonitor {
         } catch (ApplicationSettingsException e) {
             logger.error("Error while getting zookeeper hostport property", e);
         } catch (InterruptedException e) {
-            logger.error("Error while waiting for SyncConnected message" , e);
+            logger.error("Error while waiting for SyncConnected message", e);
         }
 
     }
