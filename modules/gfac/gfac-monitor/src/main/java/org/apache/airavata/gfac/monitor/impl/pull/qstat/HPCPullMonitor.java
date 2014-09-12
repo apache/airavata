@@ -278,7 +278,7 @@ public class HPCPullMonitor extends PullMonitor {
             for (MonitorID completedJob : completedJobs) {
                 CommonUtils.removeMonitorFromQueue(queue, completedJob);
             }
-            updateZkWithJobCount(take , completedJobs);
+//            updateZkWithJobCount(take , completedJobs);
         } catch (InterruptedException e) {
             if (!this.queue.contains(take)) {
                 try {
