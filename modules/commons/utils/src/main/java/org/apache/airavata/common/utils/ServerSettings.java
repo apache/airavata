@@ -21,6 +21,8 @@
 
 package org.apache.airavata.common.utils;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import javax.management.InstanceNotFoundException;
@@ -37,29 +39,30 @@ import org.apache.coyote.http11.Http11AprProtocol;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.coyote.http11.Http11Protocol;
 
-public class ServerSettings extends ApplicationSettings{
-    private static final String SYSTEM_USER="system.user";
-    private static final String SYSTEM_USER_PASSWORD="system.password";
-    private static final String SYSTEM_USER_GATEWAY="system.gateway";
-    
-    private static final String DEFAULT_USER="default.registry.user";
-    private static final String DEFAULT_USER_PASSWORD="default.registry.password";
-    private static final String DEFAULT_USER_GATEWAY="default.registry.gateway";
-    
+public class ServerSettings extends ApplicationSettings {
+    private static final String SYSTEM_USER = "system.user";
+    private static final String SYSTEM_USER_PASSWORD = "system.password";
+    private static final String SYSTEM_USER_GATEWAY = "system.gateway";
+
+    private static final String DEFAULT_USER = "default.registry.user";
+    private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
+    private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
+
     private static final String TOMCAT_PORT = "port";
-    private static final String SERVER_CONTEXT_ROOT="server.context-root";
+    private static final String SERVER_CONTEXT_ROOT = "server.context-root";
     public static final String EMBEDDED_ZK = "embedded.zk";
-    private static String tomcatPort=null;
+    public static final String IP = "ip";
+    private static String tomcatPort = null;
 
-    private static final String CREDENTIAL_STORE_DB_URL ="credential.store.jdbc.url";
-    private static final String CREDENTIAL_STORE_DB_USER ="credential.store.jdbc.user";
-    private static final String CREDENTIAL_STORE_DB_PASSWORD ="credential.store.jdbc.password";
-    private static final String CREDENTIAL_STORE_DB_DRIVER ="credential.store.jdbc.driver";
+    private static final String CREDENTIAL_STORE_DB_URL = "credential.store.jdbc.url";
+    private static final String CREDENTIAL_STORE_DB_USER = "credential.store.jdbc.user";
+    private static final String CREDENTIAL_STORE_DB_PASSWORD = "credential.store.jdbc.password";
+    private static final String CREDENTIAL_STORE_DB_DRIVER = "credential.store.jdbc.driver";
 
-    private static final String REGISTRY_DB_URL ="registry.jdbc.url";
-    private static final String REGISTRY_DB_USER ="registry.jdbc.user";
-    private static final String REGISTRY_DB_PASSWORD ="registry.jdbc.password";
-    private static final String REGISTRY_DB_DRIVER ="registry.jdbc.driver";
+    private static final String REGISTRY_DB_URL = "registry.jdbc.url";
+    private static final String REGISTRY_DB_USER = "registry.jdbc.user";
+    private static final String REGISTRY_DB_PASSWORD = "registry.jdbc.password";
+    private static final String REGISTRY_DB_DRIVER = "registry.jdbc.driver";
     private static final String ENABLE_HTTPS = "enable.https";
     private static final String HOST_SCHEDULER = "host.scheduler";
     private static final String MY_PROXY_SERVER = "myproxy.server";
@@ -70,32 +73,32 @@ public class ServerSettings extends ApplicationSettings{
 
     private static boolean stopAllThreads = false;
 
-    public static String getDefaultUser() throws ApplicationSettingsException{
-    	return getSetting(DEFAULT_USER);
-    }
-    
-    public static String getDefaultUserPassword() throws ApplicationSettingsException{
-    	return getSetting(DEFAULT_USER_PASSWORD);
-    }
-    
-    public static String getDefaultUserGateway() throws ApplicationSettingsException{
-    	return getSetting(DEFAULT_USER_GATEWAY);
-    }
-    
-    public static String getSystemUser() throws ApplicationSettingsException{
-    	return getSetting(SYSTEM_USER);
-    }
-    
-    public static String getSystemUserPassword() throws ApplicationSettingsException{
-    	return getSetting(SYSTEM_USER_PASSWORD);
-    }
-    
-    public static String getSystemUserGateway() throws ApplicationSettingsException{
-    	return getSetting(SYSTEM_USER_GATEWAY);
+    public static String getDefaultUser() throws ApplicationSettingsException {
+        return getSetting(DEFAULT_USER);
     }
 
-    public static String getServerContextRoot(){
-    	return getSetting(SERVER_CONTEXT_ROOT,"axis2");
+    public static String getDefaultUserPassword() throws ApplicationSettingsException {
+        return getSetting(DEFAULT_USER_PASSWORD);
+    }
+
+    public static String getDefaultUserGateway() throws ApplicationSettingsException {
+        return getSetting(DEFAULT_USER_GATEWAY);
+    }
+
+    public static String getSystemUser() throws ApplicationSettingsException {
+        return getSetting(SYSTEM_USER);
+    }
+
+    public static String getSystemUserPassword() throws ApplicationSettingsException {
+        return getSetting(SYSTEM_USER_PASSWORD);
+    }
+
+    public static String getSystemUserGateway() throws ApplicationSettingsException {
+        return getSetting(SYSTEM_USER_GATEWAY);
+    }
+
+    public static String getServerContextRoot() {
+        return getSetting(SERVER_CONTEXT_ROOT, "axis2");
     }
 
     public static String getCredentialStoreDBUser() throws ApplicationSettingsException {
@@ -140,57 +143,57 @@ public class ServerSettings extends ApplicationSettings{
     }
 
     public static String getTomcatPort(String protocol) throws ApplicationSettingsException {
-    	if (tomcatPort==null) {
-			try {
-				//First try to get the port from a tomcat if it is already running
-				ArrayList<MBeanServer> mBeanServers = MBeanServerFactory
-						.findMBeanServer(null);
-				if (mBeanServers.size() > 0) {
-					MBeanServer mBeanServer = mBeanServers.get(0);
-					Server server = null;
-					String[] domains = mBeanServer.getDomains();
-					for (String domain : domains) {
-						try {
-							server = (Server) mBeanServer.getAttribute(
-									new ObjectName(domain, "type", "Server"),
-									"managedResource");
-							break;
-						} catch (InstanceNotFoundException e) {
-							//ignore
-						}
-					}
-					if (server != null) {
-						Service[] findServices = server.findServices();
-						for (Service service : findServices) {
-							for (Connector connector : service.findConnectors()) {
-								ProtocolHandler protocolHandler = connector.getProtocolHandler();
-                                if(protocol != null && protocol.equals(connector.getScheme())){
-								if (protocolHandler instanceof Http11Protocol
-										|| protocolHandler instanceof Http11AprProtocol
-										|| protocolHandler instanceof Http11NioProtocol) {
-									Http11Protocol p = (Http11Protocol) protocolHandler;
-									if (p.getSslImplementationName() == null
-											|| p.getSslImplementationName()
-													.equals("")) {
-										tomcatPort = String.valueOf(connector
-												.getPort());
-									}
+        if (tomcatPort == null) {
+            try {
+                //First try to get the port from a tomcat if it is already running
+                ArrayList<MBeanServer> mBeanServers = MBeanServerFactory
+                        .findMBeanServer(null);
+                if (mBeanServers.size() > 0) {
+                    MBeanServer mBeanServer = mBeanServers.get(0);
+                    Server server = null;
+                    String[] domains = mBeanServer.getDomains();
+                    for (String domain : domains) {
+                        try {
+                            server = (Server) mBeanServer.getAttribute(
+                                    new ObjectName(domain, "type", "Server"),
+                                    "managedResource");
+                            break;
+                        } catch (InstanceNotFoundException e) {
+                            //ignore
+                        }
+                    }
+                    if (server != null) {
+                        Service[] findServices = server.findServices();
+                        for (Service service : findServices) {
+                            for (Connector connector : service.findConnectors()) {
+                                ProtocolHandler protocolHandler = connector.getProtocolHandler();
+                                if (protocol != null && protocol.equals(connector.getScheme())) {
+                                    if (protocolHandler instanceof Http11Protocol
+                                            || protocolHandler instanceof Http11AprProtocol
+                                            || protocolHandler instanceof Http11NioProtocol) {
+                                        Http11Protocol p = (Http11Protocol) protocolHandler;
+                                        if (p.getSslImplementationName() == null
+                                                || p.getSslImplementationName()
+                                                .equals("")) {
+                                            tomcatPort = String.valueOf(connector
+                                                    .getPort());
+                                        }
+                                    }
                                 }
-								}
-							}
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			//if unable to determine the server port from a running tomcat server, get it from 
-			//the server settings file
-			if (tomcatPort == null) {
-				tomcatPort = getSetting(TOMCAT_PORT);
-			}
-		}
-		return tomcatPort;
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //if unable to determine the server port from a running tomcat server, get it from
+            //the server settings file
+            if (tomcatPort == null) {
+                tomcatPort = getSetting(TOMCAT_PORT);
+            }
+        }
+        return tomcatPort;
     }
 
     public static String getHostScheduler() throws ApplicationSettingsException {
@@ -204,22 +207,41 @@ public class ServerSettings extends ApplicationSettings{
     public static void setStopAllThreads(boolean stopAllThreads) {
         ServerSettings.stopAllThreads = stopAllThreads;
     }
+
     public static String getMyProxyServer() throws ApplicationSettingsException {
         return getSetting(MY_PROXY_SERVER);
     }
+
     public static String getMyProxyUser() throws ApplicationSettingsException {
         return getSetting(MY_PROXY_USER);
     }
+
     public static String getMyProxyPassword() throws ApplicationSettingsException {
         return getSetting(MY_PROXY_PASSWORD);
     }
+
     public static int getMyProxyLifetime() throws ApplicationSettingsException {
         return Integer.parseInt(getSetting(MY_PROXY_LIFETIME));
     }
+
     public static String[] getActivityListeners() throws ApplicationSettingsException {
         return getSetting(ACTIVITY_LISTENERS).split(",");
     }
+
     public static boolean isEmbeddedZK() {
         return Boolean.parseBoolean(getSetting(EMBEDDED_ZK, "true"));
+    }
+
+    public static String getIp() {
+        try {
+            return getSetting(IP);
+        } catch (ApplicationSettingsException e) {
+            try {
+                return InetAddress.getLocalHost().getHostAddress();
+            } catch (UnknownHostException e1) {
+                e1.printStackTrace();
+            }
+        }
+        return null;
     }
 }

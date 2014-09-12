@@ -132,7 +132,7 @@ public class CommonUtils {
                 // then this is the right place to update
                 List<HostMonitorData> hostMonitorData = next.getHostMonitorData();
                 for(HostMonitorData iHostMonitorID:hostMonitorData){
-                    if(iHostMonitorID.getHost().equals(monitorID.getHost())) {
+                    if(iHostMonitorID.getHost().toXML().equals(monitorID.getHost().toXML())) {
                         List<MonitorID> monitorIDs = iHostMonitorID.getMonitorIDs();
                         for(MonitorID iMonitorID:monitorIDs){
                             if(iMonitorID.getJobID().equals(monitorID.getJobID())
@@ -155,9 +155,9 @@ public class CommonUtils {
                 }
             }
         }
-        throw new AiravataMonitorException("Cannot find the given MonitorID in the queue with userName " +
+        logger.error("Cannot find the given MonitorID in the queue with userName " +
                 monitorID.getUserName() + "  and jobID " + monitorID.getJobID());
-
+        logger.info("This might not be an error because someone else removed this job from the queue");
     }
 
     public static boolean isEqual(HostDescription host1,HostDescription host2) {
