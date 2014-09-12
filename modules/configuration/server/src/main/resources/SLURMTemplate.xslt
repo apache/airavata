@@ -69,7 +69,7 @@ cd <xsl:text>   </xsl:text><xsl:value-of select="ns:workingDirectory"/><xsl:text
 <xsl:for-each select="ns:inputs/ns:input">
       <xsl:value-of select="."/><xsl:text>   </xsl:text>
     </xsl:for-each>
-~/rabbitmq-java-client-bin-3.3.5/runjava.sh com.rabbitmq.examples.SimpleProducer amqp://<xsl:value-of select="ns:callBackIp"/> <xsl:value-of select="ns:userName"/>,<xsl:value-of select="ns:jobName"/>
+~/rabbitmq-java-client-bin-3.3.5/runjava.sh com.rabbitmq.examples.SimpleProducer amqp://<xsl:value-of select="ns:callBackIp"/><xsl:text> </xsl:text><xsl:value-of select="ns:userName"/>,<xsl:value-of select="ns:jobName"/>
 </xsl:template>
 
 </xsl:stylesheet>
