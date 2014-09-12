@@ -193,12 +193,12 @@ public class MonitorID {
             if (getFailedCount() >= 2) {
                 switch (this.state) {
                     case ACTIVE:
-                        this.state = JobState.COMPLETE;
+//                        this.state = JobState.COMPLETE;
                         logger.info("Failed count is high and old status is ACTIVE so we mark this as COMPLETE");
                         break;
                     case QUEUED:
                         logger.info("Failed count is high and old status is QUEUED so we mark this as COMPLETE");
-                        this.state = JobState.COMPLETE;
+//                        this.state = JobState.COMPLETE;
                         break;
                     default:
                         int loginfo = getFailedCount()+1;

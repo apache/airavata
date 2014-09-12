@@ -39,6 +39,7 @@ public class SystemCommandOutput implements CommandOutput {
     public void onOutput(Channel channel) {
         try {
             InputStream inputStream = channel.getInputStream();
+
             byte[] tmp = new byte[1024];
             while (true) {
                 while (inputStream.available() > 0) {

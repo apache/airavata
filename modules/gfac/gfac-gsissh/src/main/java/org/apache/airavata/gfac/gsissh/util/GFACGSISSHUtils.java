@@ -42,6 +42,7 @@ import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
+import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
@@ -112,6 +113,7 @@ public class GFACGSISSHUtils {
                                                     ApplicationDeploymentDescriptionType app, Cluster cluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
         // this is common for any application descriptor
+        jobDescriptor.setCallBackIp(ServerSettings.getIp());
         jobDescriptor.setInputDirectory(app.getInputDataDirectory());
         jobDescriptor.setOutputDirectory(app.getOutputDataDirectory());
         jobDescriptor.setExecutablePath(app.getExecutableLocation());
@@ -151,6 +153,7 @@ public class GFACGSISSHUtils {
         if (app instanceof HpcApplicationDeploymentType) {
             HpcApplicationDeploymentType applicationDeploymentType
                     = (HpcApplicationDeploymentType) app;
+            jobDescriptor.setUserName(((GSISSHAbstractCluster)cluster).getServerInfo().getUserName());
             jobDescriptor.setShellName("/bin/bash");
             jobDescriptor.setAllEnvExport(true);
             jobDescriptor.setMailOptions("n");
