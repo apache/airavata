@@ -209,7 +209,7 @@ public class GSISSHAbstractCluster implements Cluster {
 
         try {
             session.connect();
-        } catch (JSchException e) {
+        } catch (Exception e) {
             throw new SSHApiException("An exception occurred while connecting to server." +
                     "Connecting server - " + serverInfo.getHost() + ":" + serverInfo.getPort() +
                     " connecting user name - "
@@ -466,8 +466,11 @@ public class GSISSHAbstractCluster implements Cluster {
         String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
         log.info("StandardOutput Returned:" + stdOutputString);
         log.info("StandardError  Returned:" +stdErrorString);
-        if("".equals(stdOutputString)){
-            log.error("-------------- Standard output came as empty, so this poll is going to fail --------------");
+        
+        // We are checking for stderr containing the command issued. Thus ignores the verbose logs in stderr.  
+        if (stdErrorString != null && stdErrorString.contains(command)) {
+            log.error("Standard Error output : " + stdErrorString);
+            throw new SSHApiException(errorMsg + "\n\r StandardOutput: "+ stdOutputString + "\n\r StandardError: "+ stdErrorString);
         }
         return stdOutputString;
     }
