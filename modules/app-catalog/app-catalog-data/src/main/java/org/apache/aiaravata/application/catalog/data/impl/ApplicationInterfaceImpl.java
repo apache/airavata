@@ -30,6 +30,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.applicationInterfaceModelConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,11 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
         try {
             AppModuleResource moduleResource = new AppModuleResource();
             moduleResource.setModuleName(applicationModule.getAppModuleName());
-            moduleResource.setModuleId(AppCatalogUtils.getID(applicationModule.getAppModuleName()));
+            if (!applicationModule.getAppModuleId().equals("") && !applicationModule.getAppModuleId().equals(applicationInterfaceModelConstants.DEFAULT_ID)){
+                moduleResource.setModuleId(applicationModule.getAppModuleId());
+            }else {
+                moduleResource.setModuleId(AppCatalogUtils.getID(applicationModule.getAppModuleName()));
+            }
             moduleResource.setModuleDesc(applicationModule.getAppModuleDescription());
             moduleResource.setModuleVersion(applicationModule.getAppModuleVersion());
             moduleResource.save();
@@ -63,7 +68,11 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
             resource.setAppName(applicationInterfaceDescription.getApplicationName());
-            resource.setInterfaceId(AppCatalogUtils.getID(applicationInterfaceDescription.getApplicationName()));
+            if (!applicationInterfaceDescription.getApplicationInterfaceId().equals("") && !applicationInterfaceDescription.getApplicationInterfaceId().equals(applicationInterfaceModelConstants.DEFAULT_ID)){
+                resource.setInterfaceId(applicationInterfaceDescription.getApplicationInterfaceId());
+            }else {
+                resource.setInterfaceId(AppCatalogUtils.getID(applicationInterfaceDescription.getApplicationName()));
+            }
             resource.setAppDescription(applicationInterfaceDescription.getApplicationDesription());
             resource.save();
             applicationInterfaceDescription.setApplicationInterfaceId(resource.getInterfaceId());
