@@ -190,40 +190,16 @@ public class MonitorID {
         // because in some machines job state vanishes quicckly when the job is done
         // during that case job state comes as unknown.so we handle it here.
         if (this.state != null && status.equals(JobState.UNKNOWN)) {
-            if (getFailedCount() >= 2) {
-                switch (this.state) {
-                    case ACTIVE:
-//                        this.state = JobState.COMPLETE;
-                        logger.info("Failed count is high and old status is ACTIVE so we mark this as COMPLETE");
-                        break;
-                    case QUEUED:
-                        logger.info("Failed count is high and old status is QUEUED so we mark this as COMPLETE");
-//                        this.state = JobState.COMPLETE;
-                        break;
-                    default:
-                        int loginfo = getFailedCount()+1;
-                        logger.info("JobId:" + this.getJobID()+" Increasing the failed count to:"+loginfo+"");
-                        setFailedCount(getFailedCount() + 1);
-                        try {
-                            // when state becomes unknown we sleep for a while
-                            Thread.sleep(10000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                        }
-                        break;
-                }
-            } else {
-                try {
-                    // when state becomes unknown we sleep for a while
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                int loginfo = getFailedCount()+1;
-                logger.info("JobId:" + this.getJobID()+" Increasing the failed count to:"+loginfo+"");
-                setFailedCount(getFailedCount() + 1);
+            try {
+                // when state becomes unknown we sleep for a while
+                Thread.sleep(10000);  // we do not do with this failed count currently because it created more issues.
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
-        }    else {
+            int loginfo = getFailedCount() + 1;
+            logger.info("JobId:" + this.getJobID() + " Increasing the failed count to:" + loginfo + "");
+            setFailedCount(getFailedCount() + 1);
+        }else {
             // normal scenario
             logger.info("Resetting failed count to 0 because correct state came in");
             setFailedCount(0);
