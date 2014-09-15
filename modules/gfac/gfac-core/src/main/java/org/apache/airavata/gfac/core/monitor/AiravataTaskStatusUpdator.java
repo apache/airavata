@@ -71,7 +71,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     	case CANCELED:
     		state=TaskState.CANCELED; break;
     	case COMPLETE:
-    		state=TaskState.COMPLETED; break;
+    		state=TaskState.POST_PROCESSING; break;
     	case FAILED:
     		state=TaskState.FAILED; break;
     	case HELD: case SUSPENDED: case QUEUED:
