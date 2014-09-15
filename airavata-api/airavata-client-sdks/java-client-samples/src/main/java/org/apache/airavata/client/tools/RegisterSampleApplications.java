@@ -36,13 +36,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelism
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
@@ -57,10 +51,12 @@ public class RegisterSampleApplications {
 //    public static final int THRIFT_SERVER_PORT = 9930;
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(RegisterSampleApplications.class);
-    private static final String DEFAULT_GATEWAY = "default";
+//    private static final String DEFAULT_GATEWAY = "default";
+    private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private Airavata.Client airavataClient;
 
     //Host Id's
+    private static String localhostId = "";
     private static String stampedeResourceId = "stampede.tacc.xsede.org_92ac5ed6-35a5-4910-82ef-48f128f9245a";
     private static String trestlesResourceId = "trestles.sdsc.xsede.org_db29986e-5a27-4949-ae7f-04a6012d0d35";
     private static String bigredResourceId = "bigred2.uits.iu.edu_3eae6e9d-a1a7-44ec-ac85-3796ef726ef1";
@@ -100,6 +96,7 @@ public class RegisterSampleApplications {
 
     //App Interface Id's
     private static String echoInterfaceId = "";
+    private static String echoLocalInterfaceId = "";
     private static String amberInterfaceId = "";
     private static String autoDockInterfaceId = "";
     private static String espressoInterfaceId = "";
@@ -112,6 +109,7 @@ public class RegisterSampleApplications {
     public RegisterSampleApplications(Airavata.Client airavataClient) {
            this.airavataClient = airavataClient;
     }
+
     public static void main(String[] args) {
         try {
             Airavata.Client airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
@@ -141,6 +139,27 @@ public class RegisterSampleApplications {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public void registerLocalHost() {
+        try {
+            System.out.println("\n #### Registering Localhost Computational Resource #### \n");
+
+            ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils.
+                    createComputeResourceDescription("localhost", "LocalHost", null, null);
+            localhostId = airavataClient.registerComputeResource(computeResourceDescription);
+            ResourceJobManager resourceJobManager = RegisterSampleApplicationsUtils.
+                    createResourceJobManager(ResourceJobManagerType.FORK, null, null, null);
+            LOCALSubmission submission = new LOCALSubmission();
+            submission.setResourceJobManager(resourceJobManager);
+            boolean localSubmission = airavataClient.addLocalSubmissionDetails(localhostId, 1, submission);
+            if (!localSubmission) throw new AiravataClientException();
+            System.out.println("LocalHost Resource Id is " + localhostId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void registerXSEDEHosts() {
@@ -235,6 +254,8 @@ public class RegisterSampleApplications {
     public void registerAppDeployments() {
         System.out.println("\n #### Registering Application Deployments #### \n");
 
+        //Registering localhost echo App
+        registerLocalApps();
         //Registering Stampede Apps
         registerStampedeApps();
 
@@ -247,8 +268,11 @@ public class RegisterSampleApplications {
 
     public void registerAppInterfaces() {
         System.out.println("\n #### Registering Application Interfaces #### \n");
-        registerGromaxWorkflowInterfaces();
-        
+//        registerGromaxWorkflowInterfaces();
+
+        //Registering local Echo
+//        registerLocalEchoInterface();
+
         //Registering Echo
         registerEchoInterface();
 
@@ -280,10 +304,10 @@ public class RegisterSampleApplications {
 
     public void registerGromaxWorkflowInterfaces() {
         try {
-            System.out.println("#### Registering Echo Interface #### \n");
+            System.out.println("#### Registering Gromax Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
-            appModules.add(echoModuleId);
+            appModules.add(gromacsModuleId);
 
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
@@ -297,7 +321,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("topology",
                     "", DataType.URI));
 
-            echoInterfaceId = airavataClient.registerApplicationInterface(
+            gromacsInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("pb2gmx", "pb2gmx",
                             appModules, applicationInputs, applicationOutputs));
 
@@ -317,7 +341,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("energy_min_struct",
                     "", DataType.URI));
 
-            echoInterfaceId = airavataClient.registerApplicationInterface(
+            gromacsInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("simulation1", "simulation1",
                             appModules, applicationInputs, applicationOutputs));
 
@@ -331,7 +355,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("struct_with_pbc",
                     "", DataType.URI));
 
-            echoInterfaceId = airavataClient.registerApplicationInterface(
+            gromacsInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("editconf", "Edit configuration",
                             appModules, applicationInputs, applicationOutputs));
             
@@ -352,7 +376,7 @@ public class RegisterSampleApplications {
                     "", DataType.URI));
                         
 
-            echoInterfaceId = airavataClient.registerApplicationInterface(
+            gromacsInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("genbox", "genbox",
                             appModules, applicationInputs, applicationOutputs));
             
@@ -370,7 +394,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("struct_topoogy",
                     "", DataType.URI));
 
-            echoInterfaceId = airavataClient.registerApplicationInterface(
+            gromacsInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("grompp", "grompp",
                             appModules, applicationInputs, applicationOutputs));
             
@@ -389,7 +413,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("sys_config",
                     "", DataType.URI));
             
-            echoInterfaceId = airavataClient.registerApplicationInterface(
+            gromacsInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("genion", "grompp",
                             appModules, applicationInputs, applicationOutputs));
             
@@ -407,18 +431,46 @@ public class RegisterSampleApplications {
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("energymin_sys",
                     "", DataType.URI));
             
-            echoInterfaceId = airavataClient.registerApplicationInterface(
+            gromacsInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("simulation2", "simulation2",
                             appModules, applicationInputs, applicationOutputs));
             
-            System.out.println("Echo Application Interface Id " + echoInterfaceId);
+            System.out.println("Gromax Application Interface Id " + echoInterfaceId);
 
         } catch (TException e) {
             e.printStackTrace();
         }
     }
 
-    
+    public void registerLocalEchoInterface() {
+        try {
+            System.out.println("#### Registering Echo Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(echoModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("echo_input", "echo_output=Hello World",
+                    DataType.STRING, null, false, "A test string to Echo", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("echo_output",
+                    "", DataType.STRING);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            echoLocalInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(echoName, echoDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("Local Echo Application Interface Id " + echoLocalInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void registerEchoInterface() {
         try {
             System.out.println("#### Registering Echo Interface #### \n");
@@ -726,6 +778,21 @@ public class RegisterSampleApplications {
             System.out.println("WRF Application Interface Id " + wrfInterfaceId);
 
         } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void registerLocalApps (){
+        try {
+            System.out.println("#### Registering Application Deployments on Localhost #### \n");
+            //Register Echo
+            String echoAppDeployId = airavataClient.registerApplicationDeployment(
+                    RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, localhostId,
+                            "/bin/echo", ApplicationParallelismType.SERIAL, echoDescription));
+
+
+            System.out.println("Echo on localhost Id " + echoAppDeployId);
+        }catch (TException e) {
             e.printStackTrace();
         }
     }

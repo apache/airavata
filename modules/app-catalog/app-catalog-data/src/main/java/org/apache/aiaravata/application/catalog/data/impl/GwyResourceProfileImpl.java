@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.GwyResourceProfile;
+import org.apache.aiaravata.application.catalog.data.model.GatewayProfile;
 import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.aiaravata.application.catalog.data.resources.ComputeHostPreferenceResource;
 import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceResource;
@@ -35,6 +36,7 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConver
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogUtils;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.gatewayResourceProfileModelConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +48,11 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
             profileResource.setGatewayName(gatewayProfile.getGatewayName());
-            profileResource.setGatewayID(AppCatalogUtils.getID(gatewayProfile.getGatewayName()));
+            if (!gatewayProfile.getGatewayID().equals("") && !gatewayProfile.getGatewayID().equals(gatewayResourceProfileModelConstants.DEFAULT_ID)){
+                profileResource.setGatewayID(gatewayProfile.getGatewayID());
+            }else {
+                profileResource.setGatewayID(AppCatalogUtils.getID(gatewayProfile.getGatewayName()));
+            }
             profileResource.setGatewayDesc(gatewayProfile.getGatewayDescription());
             profileResource.save();
             gatewayProfile.setGatewayID(profileResource.getGatewayID());
