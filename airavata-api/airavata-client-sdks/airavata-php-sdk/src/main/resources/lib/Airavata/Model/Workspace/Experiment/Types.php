@@ -1513,6 +1513,7 @@ class UserConfigurationData {
   public $advanceInputDataHandling = null;
   public $advanceOutputDataHandling = null;
   public $qosParams = null;
+  public $throttleResources = false;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1549,6 +1550,10 @@ class UserConfigurationData {
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\QualityOfServiceParams',
           ),
+        8 => array(
+          'var' => 'throttleResources',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1572,6 +1577,9 @@ class UserConfigurationData {
       }
       if (isset($vals['qosParams'])) {
         $this->qosParams = $vals['qosParams'];
+      }
+      if (isset($vals['throttleResources'])) {
+        $this->throttleResources = $vals['throttleResources'];
       }
     }
   }
@@ -1648,6 +1656,13 @@ class UserConfigurationData {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 8:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->throttleResources);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1706,6 +1721,11 @@ class UserConfigurationData {
       }
       $xfer += $output->writeFieldBegin('qosParams', TType::STRUCT, 7);
       $xfer += $this->qosParams->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->throttleResources !== null) {
+      $xfer += $output->writeFieldBegin('throttleResources', TType::BOOL, 8);
+      $xfer += $output->writeBool($this->throttleResources);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

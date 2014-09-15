@@ -930,21 +930,22 @@ class QualityOfServiceParams {
 void swap(QualityOfServiceParams &a, QualityOfServiceParams &b);
 
 typedef struct _UserConfigurationData__isset {
-  _UserConfigurationData__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), advanceInputDataHandling(false), advanceOutputDataHandling(false), qosParams(false) {}
+  _UserConfigurationData__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), advanceInputDataHandling(false), advanceOutputDataHandling(false), qosParams(false), throttleResources(true) {}
   bool shareExperimentPublicly;
   bool computationalResourceScheduling;
   bool advanceInputDataHandling;
   bool advanceOutputDataHandling;
   bool qosParams;
+  bool throttleResources;
 } _UserConfigurationData__isset;
 
 class UserConfigurationData {
  public:
 
-  static const char* ascii_fingerprint; // = "889486266D7ADC041ED1C586A2468611";
-  static const uint8_t binary_fingerprint[16]; // = {0x88,0x94,0x86,0x26,0x6D,0x7A,0xDC,0x04,0x1E,0xD1,0xC5,0x86,0xA2,0x46,0x86,0x11};
+  static const char* ascii_fingerprint; // = "4E5EF84AE34A2F52BCD6617A229780E0";
+  static const uint8_t binary_fingerprint[16]; // = {0x4E,0x5E,0xF8,0x4A,0xE3,0x4A,0x2F,0x52,0xBC,0xD6,0x61,0x7A,0x22,0x97,0x80,0xE0};
 
-  UserConfigurationData() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false) {
+  UserConfigurationData() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false) {
   }
 
   virtual ~UserConfigurationData() throw() {}
@@ -956,6 +957,7 @@ class UserConfigurationData {
   AdvancedInputDataHandling advanceInputDataHandling;
   AdvancedOutputDataHandling advanceOutputDataHandling;
   QualityOfServiceParams qosParams;
+  bool throttleResources;
 
   _UserConfigurationData__isset __isset;
 
@@ -992,6 +994,11 @@ class UserConfigurationData {
     __isset.qosParams = true;
   }
 
+  void __set_throttleResources(const bool val) {
+    throttleResources = val;
+    __isset.throttleResources = true;
+  }
+
   bool operator == (const UserConfigurationData & rhs) const
   {
     if (!(airavataAutoSchedule == rhs.airavataAutoSchedule))
@@ -1017,6 +1024,10 @@ class UserConfigurationData {
     if (__isset.qosParams != rhs.__isset.qosParams)
       return false;
     else if (__isset.qosParams && !(qosParams == rhs.qosParams))
+      return false;
+    if (__isset.throttleResources != rhs.__isset.throttleResources)
+      return false;
+    else if (__isset.throttleResources && !(throttleResources == rhs.throttleResources))
       return false;
     return true;
   }
@@ -1787,8 +1798,8 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "F814FB4A54E4B2B2B1BFB58C022A39D4";
-  static const uint8_t binary_fingerprint[16]; // = {0xF8,0x14,0xFB,0x4A,0x54,0xE4,0xB2,0xB2,0xB1,0xBF,0xB5,0x8C,0x02,0x2A,0x39,0xD4};
+  static const char* ascii_fingerprint; // = "EAE6C4E7D5F1EDAC82E4630FDDD892A9";
+  static const uint8_t binary_fingerprint[16]; // = {0xEA,0xE6,0xC4,0xE7,0xD5,0xF1,0xED,0xAC,0x82,0xE4,0x63,0x0F,0xDD,0xD8,0x92,0xA9};
 
   Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), workflowExecutionInstanceId() {
   }
