@@ -25,6 +25,7 @@ import java.util.Calendar;
 import org.apache.airavata.api.server.util.DataModelUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.util.ExecutionType;
@@ -42,6 +43,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 
     private Registry airavataRegistry;
     private MonitorPublisher monitorPublisher;
+    private Publisher publisher;
 
     public Registry getAiravataRegistry() {
         return airavataRegistry;
@@ -85,6 +87,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 			updateExperimentStatus(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), state);
 			logger.debug("Publishing experiment status for "+nodeStatus.getWorkflowNodeIdentity().getExperimentId()+":"+state.toString());
 			monitorPublisher.publish(new ExperimentStatusChangeEvent(state, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
+			publisher.publish(new ExperimentStatusChangeEvent(state, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
 		} catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
 		}
@@ -111,7 +114,9 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 				this.airavataRegistry=(Registry)configuration;
 			} else if (configuration instanceof MonitorPublisher){
 				this.monitorPublisher=(MonitorPublisher) configuration;
-			} 
-		}
+			} else if (configuration instanceof Publisher){
+                this.publisher=(Publisher) configuration;
+            }
+        }
 	}
 }
