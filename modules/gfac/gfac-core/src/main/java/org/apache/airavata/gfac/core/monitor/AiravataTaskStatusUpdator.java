@@ -24,6 +24,7 @@ import java.util.Calendar;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.messaging.event.TaskIdentity;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -37,10 +38,9 @@ import com.google.common.eventbus.Subscribe;
 
 public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataTaskStatusUpdator.class);
-
     private Registry airavataRegistry;
-
     private MonitorPublisher monitorPublisher;
+    private Publisher publisher;
     
     public Registry getAiravataRegistry() {
         return airavataRegistry;
@@ -93,6 +93,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
                                                          jobStatus.getJobIdentity().getWorkflowNodeId(),
                                                          jobStatus.getJobIdentity().getExperimentId());
             monitorPublisher.publish(new TaskStatusChangeEvent(state, taskIdentity));
+            publisher.publish(new TaskStatusChangeEvent(state, taskIdentity));
 
         } catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
@@ -119,7 +120,9 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
 				this.airavataRegistry=(Registry)configuration;
 			} else if (configuration instanceof MonitorPublisher){
 				this.monitorPublisher=(MonitorPublisher) configuration;
-			} 
-		}
+			} else if (configuration instanceof Publisher){
+                this.publisher=(Publisher) configuration;
+            }
+        }
 	}
 }

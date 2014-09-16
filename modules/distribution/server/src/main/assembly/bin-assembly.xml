@@ -220,6 +220,7 @@
                 <include>org.apache.airavata:airavata-message-monitor:jar</include>
                 <include>org.apache.airavata:airavata-workflow-model-core:jar</include>
                 <include>org.apache.airavata:airavata-messenger-commons:jar</include>
+                <include>org.apache.airavata:airavata-messaging-core:jar</include>
                 <include>org.apache.airavata:airavata-messenger-client:jar</include>
                 <include>org.apache.airavata:airavata-workflow-tracking:jar</include>
                 <include>org.apache.airavata:airavata-workflow-engine:jar</include>

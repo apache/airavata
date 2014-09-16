@@ -24,6 +24,7 @@ import java.util.Calendar;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.WorkflowIdentity;
 import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
@@ -41,8 +42,9 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     private final static Logger logger = LoggerFactory.getLogger(AiravataWorkflowNodeStatusUpdator.class);
 
     private Registry airavataRegistry;
-
     private MonitorPublisher monitorPublisher;
+    private Publisher publisher;
+
 
     public Registry getAiravataRegistry() {
         return airavataRegistry;
@@ -78,6 +80,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
 			logger.debug("Publishing workflow node status for "+taskStatus.getTaskIdentity().getWorkflowNodeId()+":"+state.toString());
             WorkflowIdentity workflowIdentity = new WorkflowIdentity(taskStatus.getTaskIdentity().getWorkflowNodeId(), taskStatus.getTaskIdentity().getExperimentId());
             monitorPublisher.publish(new WorkflowNodeStatusChangeEvent(state, workflowIdentity));
+            publisher.publish(new WorkflowNodeStatusChangeEvent(state, workflowIdentity));
 		} catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
 		}
@@ -103,7 +106,9 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
 				this.airavataRegistry=(Registry)configuration;
 			} else if (configuration instanceof MonitorPublisher){
 				this.monitorPublisher=(MonitorPublisher) configuration;
-			} 
-		}
+			}  else if (configuration instanceof Publisher){
+                this.publisher=(Publisher) configuration;
+            }
+        }
 	}
 }
