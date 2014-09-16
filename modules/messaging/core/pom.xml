@@ -53,10 +53,15 @@
             <artifactId>airavata-data-models</artifactId>
             <version>${project.version}</version>
         </dependency>
-	<dependency>
+	    <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-client-configuration</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>3.2.4</version>
         </dependency>
     </dependencies>
 </project>

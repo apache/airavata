@@ -28,6 +28,9 @@ import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 
 public class AiravataRabbitMQPublisher implements Publisher {
+    public AiravataRabbitMQPublisher() {
+    }
+
     public void publish(ExperimentStatusChangeEvent event) {
 
     }
