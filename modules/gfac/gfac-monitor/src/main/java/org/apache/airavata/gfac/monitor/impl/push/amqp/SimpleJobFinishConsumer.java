@@ -63,13 +63,13 @@ public class SimpleJobFinishConsumer {
                             ch.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                         }
                     } catch (Exception ex) {
-                        logger.error("Cannot connect to a RabbitMQ Server: " + ex);
+                        logger.error("Cannot connect to a RabbitMQ Server: " , ex);
                     }
                 }
 
             }).start();
         } catch (Exception ex) {
-            logger.error("Cannot connect to a RabbitMQ Server: " + ex);
+            logger.error("Cannot connect to a RabbitMQ Server: " , ex);
             logger.info("------------- Push monitoring for HPC jobs is disabled -------------");
         }
     }
