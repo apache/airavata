@@ -38,7 +38,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addComputeResource(ComputeResourceDescription description) throws AppCatalogException {
         try {
-            if (!description.getComputeResourceId().equals("") || !description.getComputeResourceId().equals(computeResourceModelConstants.DEFAULT_ID)){
+            if (description.getComputeResourceId().equals("") || description.getComputeResourceId().equals(computeResourceModelConstants.DEFAULT_ID)){
                 description.setComputeResourceId(AppCatalogUtils.getID(description.getHostName()));
             }
         	return saveComputeResourceDescriptorData(description);
