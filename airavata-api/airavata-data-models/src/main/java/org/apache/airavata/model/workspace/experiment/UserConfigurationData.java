@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField ADVANCE_INPUT_DATA_HANDLING_FIELD_DESC = new org.apache.thrift.protocol.TField("advanceInputDataHandling", org.apache.thrift.protocol.TType.STRUCT, (short)5);
   private static final org.apache.thrift.protocol.TField ADVANCE_OUTPUT_DATA_HANDLING_FIELD_DESC = new org.apache.thrift.protocol.TField("advanceOutputDataHandling", org.apache.thrift.protocol.TType.STRUCT, (short)6);
   private static final org.apache.thrift.protocol.TField QOS_PARAMS_FIELD_DESC = new org.apache.thrift.protocol.TField("qosParams", org.apache.thrift.protocol.TType.STRUCT, (short)7);
+  private static final org.apache.thrift.protocol.TField THROTTLE_RESOURCES_FIELD_DESC = new org.apache.thrift.protocol.TField("throttleResources", org.apache.thrift.protocol.TType.BOOL, (short)8);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -78,6 +79,7 @@ import org.slf4j.LoggerFactory;
   private AdvancedInputDataHandling advanceInputDataHandling; // optional
   private AdvancedOutputDataHandling advanceOutputDataHandling; // optional
   private QualityOfServiceParams qosParams; // optional
+  private boolean throttleResources; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -87,7 +89,8 @@ import org.slf4j.LoggerFactory;
     COMPUTATIONAL_RESOURCE_SCHEDULING((short)4, "computationalResourceScheduling"),
     ADVANCE_INPUT_DATA_HANDLING((short)5, "advanceInputDataHandling"),
     ADVANCE_OUTPUT_DATA_HANDLING((short)6, "advanceOutputDataHandling"),
-    QOS_PARAMS((short)7, "qosParams");
+    QOS_PARAMS((short)7, "qosParams"),
+    THROTTLE_RESOURCES((short)8, "throttleResources");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -116,6 +119,8 @@ import org.slf4j.LoggerFactory;
           return ADVANCE_OUTPUT_DATA_HANDLING;
         case 7: // QOS_PARAMS
           return QOS_PARAMS;
+        case 8: // THROTTLE_RESOURCES
+          return THROTTLE_RESOURCES;
         default:
           return null;
       }
@@ -159,8 +164,9 @@ import org.slf4j.LoggerFactory;
   private static final int __AIRAVATAAUTOSCHEDULE_ISSET_ID = 0;
   private static final int __OVERRIDEMANUALSCHEDULEDPARAMS_ISSET_ID = 1;
   private static final int __SHAREEXPERIMENTPUBLICLY_ISSET_ID = 2;
+  private static final int __THROTTLERESOURCES_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.ADVANCE_INPUT_DATA_HANDLING,_Fields.ADVANCE_OUTPUT_DATA_HANDLING,_Fields.QOS_PARAMS};
+  private _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.ADVANCE_INPUT_DATA_HANDLING,_Fields.ADVANCE_OUTPUT_DATA_HANDLING,_Fields.QOS_PARAMS,_Fields.THROTTLE_RESOURCES};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -178,6 +184,8 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, AdvancedOutputDataHandling.class)));
     tmpMap.put(_Fields.QOS_PARAMS, new org.apache.thrift.meta_data.FieldMetaData("qosParams", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, QualityOfServiceParams.class)));
+    tmpMap.put(_Fields.THROTTLE_RESOURCES, new org.apache.thrift.meta_data.FieldMetaData("throttleResources", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UserConfigurationData.class, metaDataMap);
   }
@@ -188,6 +196,8 @@ import org.slf4j.LoggerFactory;
     this.overrideManualScheduledParams = false;
 
     this.shareExperimentPublicly = false;
+
+    this.throttleResources = false;
 
   }
 
@@ -222,6 +232,7 @@ import org.slf4j.LoggerFactory;
     if (other.isSetQosParams()) {
       this.qosParams = new QualityOfServiceParams(other.qosParams);
     }
+    this.throttleResources = other.throttleResources;
   }
 
   public UserConfigurationData deepCopy() {
@@ -240,6 +251,8 @@ import org.slf4j.LoggerFactory;
     this.advanceInputDataHandling = null;
     this.advanceOutputDataHandling = null;
     this.qosParams = null;
+    this.throttleResources = false;
+
   }
 
   public boolean isAiravataAutoSchedule() {
@@ -400,6 +413,28 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public boolean isThrottleResources() {
+    return this.throttleResources;
+  }
+
+  public void setThrottleResources(boolean throttleResources) {
+    this.throttleResources = throttleResources;
+    setThrottleResourcesIsSet(true);
+  }
+
+  public void unsetThrottleResources() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __THROTTLERESOURCES_ISSET_ID);
+  }
+
+  /** Returns true if field throttleResources is set (has been assigned a value) and false otherwise */
+  public boolean isSetThrottleResources() {
+    return EncodingUtils.testBit(__isset_bitfield, __THROTTLERESOURCES_ISSET_ID);
+  }
+
+  public void setThrottleResourcesIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __THROTTLERESOURCES_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case AIRAVATA_AUTO_SCHEDULE:
@@ -458,6 +493,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case THROTTLE_RESOURCES:
+      if (value == null) {
+        unsetThrottleResources();
+      } else {
+        setThrottleResources((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -484,6 +527,9 @@ import org.slf4j.LoggerFactory;
     case QOS_PARAMS:
       return getQosParams();
 
+    case THROTTLE_RESOURCES:
+      return Boolean.valueOf(isThrottleResources());
+
     }
     throw new IllegalStateException();
   }
@@ -509,6 +555,8 @@ import org.slf4j.LoggerFactory;
       return isSetAdvanceOutputDataHandling();
     case QOS_PARAMS:
       return isSetQosParams();
+    case THROTTLE_RESOURCES:
+      return isSetThrottleResources();
     }
     throw new IllegalStateException();
   }
@@ -586,6 +634,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_qosParams && that_present_qosParams))
         return false;
       if (!this.qosParams.equals(that.qosParams))
+        return false;
+    }
+
+    boolean this_present_throttleResources = true && this.isSetThrottleResources();
+    boolean that_present_throttleResources = true && that.isSetThrottleResources();
+    if (this_present_throttleResources || that_present_throttleResources) {
+      if (!(this_present_throttleResources && that_present_throttleResources))
+        return false;
+      if (this.throttleResources != that.throttleResources)
         return false;
     }
 
@@ -675,6 +732,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetThrottleResources()).compareTo(other.isSetThrottleResources());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetThrottleResources()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.throttleResources, other.throttleResources);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -746,6 +813,12 @@ import org.slf4j.LoggerFactory;
       } else {
         sb.append(this.qosParams);
       }
+      first = false;
+    }
+    if (isSetThrottleResources()) {
+      if (!first) sb.append(", ");
+      sb.append("throttleResources:");
+      sb.append(this.throttleResources);
       first = false;
     }
     sb.append(")");
@@ -873,6 +946,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 8: // THROTTLE_RESOURCES
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.throttleResources = iprot.readBool();
+              struct.setThrottleResourcesIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -925,6 +1006,11 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetThrottleResources()) {
+        oprot.writeFieldBegin(THROTTLE_RESOURCES_FIELD_DESC);
+        oprot.writeBool(struct.throttleResources);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -960,7 +1046,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetQosParams()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetThrottleResources()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetShareExperimentPublicly()) {
         oprot.writeBool(struct.shareExperimentPublicly);
       }
@@ -976,6 +1065,9 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetQosParams()) {
         struct.qosParams.write(oprot);
       }
+      if (struct.isSetThrottleResources()) {
+        oprot.writeBool(struct.throttleResources);
+      }
     }
 
     @Override
@@ -985,7 +1077,7 @@ import org.slf4j.LoggerFactory;
       struct.setAiravataAutoScheduleIsSet(true);
       struct.overrideManualScheduledParams = iprot.readBool();
       struct.setOverrideManualScheduledParamsIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.shareExperimentPublicly = iprot.readBool();
         struct.setShareExperimentPubliclyIsSet(true);
@@ -1009,6 +1101,10 @@ import org.slf4j.LoggerFactory;
         struct.qosParams = new QualityOfServiceParams();
         struct.qosParams.read(iprot);
         struct.setQosParamsIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.throttleResources = iprot.readBool();
+        struct.setThrottleResourcesIsSet(true);
       }
     }
   }
