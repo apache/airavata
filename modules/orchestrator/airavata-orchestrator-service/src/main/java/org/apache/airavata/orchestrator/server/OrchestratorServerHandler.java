@@ -300,6 +300,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                 case Expired:case Disconnected:
                         try {
                             zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+                            synchronized (mutex) {
+                                mutex.wait(); // waiting for the syncConnected event
+                            }
                             String airavataServerHostPort = ServerSettings
                                     .getSetting(Constants.ORCHESTRATOR_SERVER_HOST)
                                     + ":"

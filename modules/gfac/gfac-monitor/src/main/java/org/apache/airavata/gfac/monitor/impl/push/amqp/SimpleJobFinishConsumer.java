@@ -54,7 +54,7 @@ public class SimpleJobFinishConsumer {
 
             ch.queueDeclare(queueName, false, false, false, null);
 
-            logger.info("--------Declare the queue " + queueName + "the channel with Rabbitmq server successfully-------");
+            logger.info("--------Declare the queue " + queueName + " in Rabbitmq server successfully-------");
 
             final QueueingConsumer consumer = new QueueingConsumer(ch);
             ch.basicConsume(queueName, consumer);
@@ -63,7 +63,7 @@ public class SimpleJobFinishConsumer {
                     try {
                         while (true) {
                             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-                            System.out.println(new String(delivery.getBody()));
+                            logger.info("---------------- Job Finish message received:"+new String(delivery.getBody())+" --------------");
                             completedJobsFromPush.add(new String(delivery.getBody()));
                             ch.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                         }
