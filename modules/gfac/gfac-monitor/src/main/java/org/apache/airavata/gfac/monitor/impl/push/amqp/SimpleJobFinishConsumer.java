@@ -46,10 +46,15 @@ public class SimpleJobFinishConsumer {
             ConnectionFactory connFactory = new ConnectionFactory();
             connFactory.setUri(uri);
             Connection conn = connFactory.newConnection();
+            logger.info("--------Created the connection to Rabbitmq server successfully-------");
 
             final Channel ch = conn.createChannel();
 
+            logger.info("--------Created the channel with Rabbitmq server successfully-------");
+
             ch.queueDeclare(queueName, false, false, false, null);
+
+            logger.info("--------Declare the queue " + queueName + "the channel with Rabbitmq server successfully-------");
 
             final QueueingConsumer consumer = new QueueingConsumer(ch);
             ch.basicConsume(queueName, consumer);
@@ -63,7 +68,7 @@ public class SimpleJobFinishConsumer {
                             ch.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                         }
                     } catch (Exception ex) {
-                        logger.error("Cannot connect to a RabbitMQ Server: " , ex);
+                        logger.error("--------Cannot connect to a RabbitMQ Server--------" , ex);
                     }
                 }
 
