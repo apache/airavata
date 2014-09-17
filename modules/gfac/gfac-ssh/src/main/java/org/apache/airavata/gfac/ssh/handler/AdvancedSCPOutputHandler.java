@@ -119,7 +119,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                         this.passPhrase);
             }
             // Server info
-            if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir() != null){
+            if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir() != null){
             	try{
             	URL outputPathURL = new URL(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir());
             	this.userName = outputPathURL.getUserInfo();
