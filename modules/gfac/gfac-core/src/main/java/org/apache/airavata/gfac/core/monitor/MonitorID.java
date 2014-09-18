@@ -193,12 +193,6 @@ public class MonitorID {
         // because in some machines job state vanishes quicckly when the job is done
         // during that case job state comes as unknown.so we handle it here.
         if (this.state != null && status.equals(JobState.UNKNOWN)) {
-            try {
-                // when state becomes unknown we sleep for a while
-                Thread.sleep(10000);  // we do not do with this failed count currently because it created more issues.
-            } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
             int loginfo = getFailedCount() + 1;
             logger.info("JobId:" + this.getJobID() + " Increasing the failed count to:" + loginfo + "");
             setFailedCount(getFailedCount() + 1);

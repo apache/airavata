@@ -70,7 +70,7 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
             if(BetterGfacImpl.getMonitorPublisher() != null){
                 hpcPullMonitor = new HPCPullMonitor(BetterGfacImpl.getMonitorPublisher(),getAuthenticationInfo());    // we use our own credentials for monitoring, not from the store
             }else {
-                hpcPullMonitor = new HPCPullMonitor(BetterGfacImpl.getMonitorPublisher(),getAuthenticationInfo());  // we use our own credentials for monitoring, not from the store
+                throw new GFacHandlerException("Error initializing Monitor Handler, because Monitor Publisher is null !!!");
             }
         } catch (ApplicationSettingsException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

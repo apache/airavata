@@ -152,7 +152,7 @@ public class HPCPullMonitor extends PullMonitor {
      *
      * @return if the start process is successful return true else false
      */
-    synchronized public boolean startPulling() throws AiravataMonitorException {
+     public boolean startPulling() throws AiravataMonitorException {
         // take the top element in the queue and pull the data and put that element
         // at the tail of the queue
         //todo this polling will not work with multiple usernames but with single user
