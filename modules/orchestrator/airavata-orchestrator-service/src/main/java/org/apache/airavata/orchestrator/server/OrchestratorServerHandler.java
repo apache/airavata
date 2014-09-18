@@ -103,34 +103,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 				synchronized (mutex) {
 					mutex.wait(); // waiting for the syncConnected event
 				}
-				Stat zkStat = zk.exists(OrchServer, false);
-				if (zkStat == null) {
-					zk.create(OrchServer, new byte[0],
-							ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-				}
-				String instantNode = OrchServer
-						+ File.separator
-						+ String.valueOf(new Random()
-								.nextInt(Integer.MAX_VALUE));
-				zkStat = zk.exists(instantNode, false);
-				if (zkStat == null) {
-					zk.create(instantNode, airavataServerHostPort.getBytes(),
-							ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL); // other
-																				// component
-																				// will
-																				// watch
-																				// these
-																				// childeren
-																				// creation
-																				// deletion
-																				// to
-																				// monitor
-																				// the
-																				// status
-																				// of
-																				// the
-																				// node
-				}
+                registerOrchestratorService(airavataServerHostPort, OrchServer);
 				// creating a watch in orchestrator to monitor the gfac
 				// instances
 				zk.getChildren(ServerSettings.getSetting(
@@ -162,7 +135,24 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 		}
 	}
 
-	/**
+    private void registerOrchestratorService(String airavataServerHostPort, String orchServer) throws KeeperException, InterruptedException {
+        Stat zkStat = zk.exists(orchServer, false);
+        if (zkStat == null) {
+            zk.create(orchServer, new byte[0],
+                    ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+        }
+        String instantNode = orchServer
+                + File.separator
+                + String.valueOf(new Random()
+                        .nextInt(Integer.MAX_VALUE));
+        zkStat = zk.exists(instantNode, false);
+        if (zkStat == null) {
+            zk.create(instantNode, airavataServerHostPort.getBytes(),
+                    ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
+        }
+    }
+
+    /**
 	 * * After creating the experiment Data user have the * experimentID as the
 	 * handler to the experiment, during the launchExperiment * We just have to
 	 * give the experimentID * * @param experimentID * @return sucess/failure *
@@ -307,7 +297,31 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 				case SyncConnected:
 					mutex.notify();
 					break;
-				}
+                case Expired:case Disconnected:
+                        try {
+                            zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+                            synchronized (mutex) {
+                                mutex.wait(); // waiting for the syncConnected event
+                            }
+                            String airavataServerHostPort = ServerSettings
+                                    .getSetting(Constants.ORCHESTRATOR_SERVER_HOST)
+                                    + ":"
+                                    + ServerSettings
+                                    .getSetting(Constants.ORCHESTRATOR_SERVER_PORT);
+                            String OrchServer = ServerSettings
+                                    .getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE);
+                            registerOrchestratorService(airavataServerHostPort, OrchServer);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (ApplicationSettingsException e) {
+                            e.printStackTrace();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        } catch (KeeperException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                }
 				if (watchedEvent.getPath() != null
 						&& watchedEvent.getPath().startsWith(
 								ServerSettings.getSetting(
@@ -358,6 +372,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 						}).start();
 						break;
 					}
+
+
 				}
 			} catch (KeeperException e) {
 				e.printStackTrace();

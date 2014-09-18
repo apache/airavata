@@ -119,7 +119,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                         this.passPhrase);
             }
             // Server info
-            if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir() != null){
+            if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir() != null){
             	try{
             	URL outputPathURL = new URL(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir());
             	this.userName = outputPathURL.getUserInfo();
@@ -132,7 +132,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
 
             Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
-            if(!jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().isPersistOutputData()){
+            if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && !jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().isPersistOutputData()){
             outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
                     + File.separator;
             pbsCluster.makeDirectory(outputPath);

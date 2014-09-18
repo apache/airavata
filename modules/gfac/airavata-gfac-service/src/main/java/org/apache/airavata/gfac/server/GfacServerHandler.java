@@ -146,6 +146,9 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
                     state == Event.KeeperState.Disconnected){
                 try {
                     zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(),6000,this);
+                    synchronized(mutex){
+                        mutex.wait();  // waiting for the syncConnected event
+                    }
                     storeServerConfig();
                 } catch (IOException e) {
                     e.printStackTrace();
