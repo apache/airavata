@@ -39,7 +39,7 @@ public class OrchestratorContext {
 
     private Registry newRegistry;
 
-    private ZooKeeper zk;
+    private static ZooKeeper zk; // this instance can be accessed by the Validators and other components
     
     public OrchestratorContext(List<GFACInstance> gfacInstanceList) {
         if (gfacInstanceList != null) {
@@ -81,11 +81,11 @@ public class OrchestratorContext {
         this.gfacInstanceList.addAll(gfacInstanceList);
     }
 
-    public void setZk(ZooKeeper zk) {
+    public  void setZk(ZooKeeper zk) {
         this.zk = zk;
     }
 
-    public ZooKeeper getZk() {
+    public static ZooKeeper getZk() {
         return zk;
     }
 }

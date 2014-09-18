@@ -46,9 +46,9 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
-    private static String echoAppId = "Echo_bb2fe905-718b-4f4a-91ad-e1551feb06c3";
-    private static String wrfAppId = "WRF_35684c10-7749-4691-939b-225903fd2f73";
-    private static String amberAppId = "Amber_f4384478-a707-45f9-b2ed-477fe7fb486b";
+    private static String echoAppId = "Echo_b7cebf37-df12-4803-a50c-efdbc2edd9b6";
+    private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
+    private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
     private static String localHost = "localhost";
     private static String trestlesHostName = "trestles.sdsc.xsede.org";
@@ -59,14 +59,14 @@ public class CreateLaunchExperiment {
         try {
             airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavataClient.getAPIVersion());
-//            registerApplications();
+            registerApplications();
 
 
 
 ////            final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createEchoExperimentForTrestles(airavataClient);
 //            final String expId = createEchoExperimentForStampede(airavataClient);
-            final String expId = createExperimentEchoForLocalHost(airavataClient);
+//            final String expId = createExperimentEchoForLocalHost(airavataClient);
 //            final String expId = createExperimentWRFTrestles(airavataClient);
 //            final String expId = createExperimentForBR2(airavataClient);
 //            final String expId = createExperimentForBR2Amber(airavataClient);
@@ -74,9 +74,9 @@ public class CreateLaunchExperiment {
 //            final String expId = createExperimentForStampedeAmber(airavataClient);
 //            final String expId = createExperimentForTrestlesAmber(airavataClient);
 
-            System.out.println("Experiment ID : " + expId);
+//            System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
-            launchExperiment(airavataClient, expId);
+//            launchExperiment(airavataClient, expId);
 
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (Exception e) {

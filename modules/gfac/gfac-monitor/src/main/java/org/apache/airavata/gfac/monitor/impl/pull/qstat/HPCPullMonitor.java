@@ -118,7 +118,11 @@ public class HPCPullMonitor extends PullMonitor {
         this.startPulling = true;
         while (this.startPulling && !ServerSettings.isStopAllThreads()) {
             try {
-                startPulling();
+                if (this.queue.size() > 0) {
+                    synchronized (this.queue) {
+                        startPulling();
+                    }
+                }
                 // After finishing one iteration of the full queue this thread sleeps 1 second
                 Thread.sleep(10000);
             } catch (Exception e) {

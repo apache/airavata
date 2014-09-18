@@ -20,8 +20,15 @@ package org.apache.airavata.gfac.monitor;/*
 */
 
 import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
+import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
+import org.apache.airavata.gfac.ssh.security.TokenizedSSHAuthInfo;
+import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -54,8 +61,25 @@ public class HPCMonitorID extends MonitorID {
         super(jobExecutionContext);
         this.authenticationInfo = authenticationInfo;
         if (this.authenticationInfo != null) {
-            if (this.authenticationInfo instanceof MyProxyAuthenticationInfo) {
-                setUserName(((MyProxyAuthenticationInfo) this.authenticationInfo).getUserName());
+            try {
+                SecurityContext securityContext = jobExecutionContext.getSecurityContext(Constants.GSI_SECURITY_CONTEXT);
+                ServerInfo serverInfo = null;
+                if (securityContext != null) {
+                    serverInfo = (((GSISecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                }
+                if(serverInfo == null) {
+                    securityContext = jobExecutionContext.getSecurityContext(Constants.SSH_SECURITY_CONTEXT);
+                    if(securityContext !=null){
+                        serverInfo = (((SSHSecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                    }
+                }
+                if(serverInfo!=null) {
+                    if (serverInfo.getUserName() != null) {
+                        setUserName(serverInfo.getUserName());
+                    }
+                }
+            } catch (GFacException e) {
+                e.printStackTrace();
             }
         }
     }

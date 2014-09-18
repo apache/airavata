@@ -145,4 +145,10 @@ public interface Cluster {
      */
     public void disconnect() throws SSHApiException;
 
+    /**
+     * This gives the server Info
+     * @return
+     */
+    public ServerInfo getServerInfo();
+
 }
