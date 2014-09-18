@@ -32,6 +32,7 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
+import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
@@ -105,7 +106,7 @@ public class GFACGSISSHUtils {
             } catch (Exception e) {
                 throw new GFacException("An error occurred while creating GSI security context", e);
             }
-            jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, context);
+            jobExecutionContext.addSecurityContext(Constants.GSI_SECURITY_CONTEXT, context);
         }
     }
 

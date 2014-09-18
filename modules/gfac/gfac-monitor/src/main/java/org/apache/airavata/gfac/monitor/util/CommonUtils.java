@@ -95,36 +95,38 @@ public class CommonUtils {
     }
 
     public static void addMonitortoQueue(BlockingQueue<UserMonitorData> queue, MonitorID monitorID) throws AiravataMonitorException {
-        Iterator<UserMonitorData> iterator = queue.iterator();
-        while (iterator.hasNext()) {
-            UserMonitorData next = iterator.next();
-            if (next.getUserName().equals(monitorID.getUserName())) {
-                // then this is the right place to update
-                List<HostMonitorData> monitorIDs = next.getHostMonitorData();
-                for (HostMonitorData host : monitorIDs) {
-                    if (host.getHost().toXML().equals(monitorID.getHost().toXML())) {
-                        // ok we found right place to add this monitorID
-                        host.addMonitorIDForHost(monitorID);
-                        return;
+        synchronized (queue) {
+            Iterator<UserMonitorData> iterator = queue.iterator();
+            while (iterator.hasNext()) {
+                UserMonitorData next = iterator.next();
+                if (next.getUserName().equals(monitorID.getUserName())) {
+                    // then this is the right place to update
+                    List<HostMonitorData> monitorIDs = next.getHostMonitorData();
+                    for (HostMonitorData host : monitorIDs) {
+                        if (host.getHost().toXML().equals(monitorID.getHost().toXML())) {
+                            // ok we found right place to add this monitorID
+                            host.addMonitorIDForHost(monitorID);
+                            return;
+                        }
                     }
+                    // there is a userMonitor object for this user name but no Hosts for this host
+                    // so we have to create new Hosts
+                    HostMonitorData hostMonitorData = new HostMonitorData(monitorID.getHost());
+                    hostMonitorData.addMonitorIDForHost(monitorID);
+                    next.addHostMonitorData(hostMonitorData);
+                    return;
                 }
-                // there is a userMonitor object for this user name but no Hosts for this host
-                // so we have to create new Hosts
-                HostMonitorData hostMonitorData = new HostMonitorData(monitorID.getHost());
-                hostMonitorData.addMonitorIDForHost(monitorID);
-                next.addHostMonitorData(hostMonitorData);
-                return;
             }
-        }
-        HostMonitorData hostMonitorData = new HostMonitorData(monitorID.getHost());
-        hostMonitorData.addMonitorIDForHost(monitorID);
+            HostMonitorData hostMonitorData = new HostMonitorData(monitorID.getHost());
+            hostMonitorData.addMonitorIDForHost(monitorID);
 
-        UserMonitorData userMonitorData = new UserMonitorData(monitorID.getUserName());
-        userMonitorData.addHostMonitorData(hostMonitorData);
-        try {
-            queue.put(userMonitorData);
-        } catch (InterruptedException e) {
-            throw new AiravataMonitorException(e);
+            UserMonitorData userMonitorData = new UserMonitorData(monitorID.getUserName());
+            userMonitorData.addHostMonitorData(hostMonitorData);
+            try {
+                queue.put(userMonitorData);
+            } catch (InterruptedException e) {
+                throw new AiravataMonitorException(e);
+            }
         }
     }
     public static boolean isTheLastJobInQueue(BlockingQueue<MonitorID> queue,MonitorID monitorID){
@@ -138,30 +140,32 @@ public class CommonUtils {
         return true;
     }
     public static void removeMonitorFromQueue(BlockingQueue<UserMonitorData> queue,MonitorID monitorID) throws AiravataMonitorException {
-        Iterator<UserMonitorData> iterator = queue.iterator();
-        while(iterator.hasNext()){
-            UserMonitorData next = iterator.next();
-            if(next.getUserName().equals(monitorID.getUserName())){
-                // then this is the right place to update
-                List<HostMonitorData> hostMonitorData = next.getHostMonitorData();
-                for(HostMonitorData iHostMonitorID:hostMonitorData){
-                    if(iHostMonitorID.getHost().toXML().equals(monitorID.getHost().toXML())) {
-                        List<MonitorID> monitorIDs = iHostMonitorID.getMonitorIDs();
-                        for(MonitorID iMonitorID:monitorIDs){
-                            if(iMonitorID.getJobID().equals(monitorID.getJobID())
-                                    || iMonitorID.getJobName().equals(monitorID.getJobName())) {
-                                // OK we found the object, we cannot do list.remove(object) states of two objects
-                                // could be different, thats why we check the jobID
-                                logger.info("Removing the job:"+ monitorID.getJobID()+" from monitoring last status:" + monitorID.getStatus().toString());
-                                monitorIDs.remove(iMonitorID);
-                                if(monitorIDs.size()==0) {
-                                    hostMonitorData.remove(iHostMonitorID);
-                                    if (hostMonitorData.size() == 0) {
-                                        // no useful data so we have to remove the element from the queue
-                                        queue.remove(next);
+        synchronized (queue) {
+            Iterator<UserMonitorData> iterator = queue.iterator();
+            while (iterator.hasNext()) {
+                UserMonitorData next = iterator.next();
+                if (next.getUserName().equals(monitorID.getUserName())) {
+                    // then this is the right place to update
+                    List<HostMonitorData> hostMonitorData = next.getHostMonitorData();
+                    for (HostMonitorData iHostMonitorID : hostMonitorData) {
+                        if (iHostMonitorID.getHost().toXML().equals(monitorID.getHost().toXML())) {
+                            List<MonitorID> monitorIDs = iHostMonitorID.getMonitorIDs();
+                            for (MonitorID iMonitorID : monitorIDs) {
+                                if (iMonitorID.getJobID().equals(monitorID.getJobID())
+                                        || iMonitorID.getJobName().equals(monitorID.getJobName())) {
+                                    // OK we found the object, we cannot do list.remove(object) states of two objects
+                                    // could be different, thats why we check the jobID
+                                    logger.info("Removing the job:" + monitorID.getJobID() + " from monitoring last status:" + monitorID.getStatus().toString());
+                                    monitorIDs.remove(iMonitorID);
+                                    if (monitorIDs.size() == 0) {
+                                        hostMonitorData.remove(iHostMonitorID);
+                                        if (hostMonitorData.size() == 0) {
+                                            // no useful data so we have to remove the element from the queue
+                                            queue.remove(next);
+                                        }
                                     }
+                                    return;
                                 }
-                                return;
                             }
                         }
                     }

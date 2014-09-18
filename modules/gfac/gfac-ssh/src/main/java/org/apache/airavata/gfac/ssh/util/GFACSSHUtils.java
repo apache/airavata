@@ -79,7 +79,7 @@ public class GFACSSHUtils {
                 }
                 SSHCredential credentials = tokenizedSSHAuthInfo.getCredentials();// this is just a call to get and set credentials in to this object,data will be used
                 serverInfo.setUserName(credentials.getPortalUserName());
-
+                jobExecutionContext.getExperiment().setUserName(credentials.getPortalUserName());
                 // inside the pbsCluser object
                 pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
                         CommonUtils.getPBSJobManager(installedParentPath));
@@ -87,7 +87,7 @@ public class GFACSSHUtils {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
             sshSecurityContext.setPbsCluster(pbsCluster);
-            jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, sshSecurityContext);
+            jobExecutionContext.addSecurityContext(Constants.SSH_SECURITY_CONTEXT, sshSecurityContext);
         }
     }
 
