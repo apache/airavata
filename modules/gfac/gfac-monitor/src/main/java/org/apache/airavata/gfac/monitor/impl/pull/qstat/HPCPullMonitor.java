@@ -231,17 +231,22 @@ public class HPCPullMonitor extends PullMonitor {
                             // After successful monitoring perform follow   ing actions to cleanup the queue, if necessary
                             if (jobStatus.getState().equals(JobState.COMPLETE)) {
                                 completedJobs.add(iMonitorID);
-                                try {
-                                    gfac.invokeOutFlowHandlers(iMonitorID.getJobExecutionContext());
-                                } catch (GFacException e) {
-                                    publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(iMonitorID.getExperimentID(), iMonitorID.getWorkflowNodeID(),
-                                            iMonitorID.getTaskID()), TaskState.FAILED));
-                                    //FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status
-                                    //should be done understanding whole workflow of job submission and data transfer
-//                            	publisher.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(iMonitorID.getExperimentID()),
-//										ExperimentState.FAILED));
-                                    logger.info(e.getLocalizedMessage(), e);
-                                }
+                                // we run all the finished jobs in separate threads, because each job doesn't have to wait until
+                                // each one finish transfering files
+                                    final MonitorID tMonitorID = iMonitorID;
+                                    (new Thread() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                gfac.invokeOutFlowHandlers(tMonitorID.getJobExecutionContext());
+                                            } catch (GFacException e) {
+                                                publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(tMonitorID.getExperimentID(), tMonitorID.getWorkflowNodeID(),
+                                                        tMonitorID.getTaskID()), TaskState.FAILED));
+                                                //FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status
+                                                logger.info(e.getLocalizedMessage(), e);
+                                            }
+                                        }
+                                    }).start();
                             } else if (iMonitorID.getFailedCount() > FAILED_COUNT) {
                                 logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed" +iMonitorID.getFailedCount()+
                                         " 3 times, so skip this Job from Monitor");
