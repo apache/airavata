@@ -162,6 +162,7 @@ public class PBSOutputParser implements OutputParser {
 //        int lastStop = 0;
         for (String jobID : statusMap.keySet()) {
             String jobName = jobID.split(",")[1];
+            boolean found = false;
             for (int i = 0; i < info.length; i++) {
                 if (info[i].contains(jobName.substring(0,8))) {
                     // now starts processing this line
@@ -176,9 +177,12 @@ public class PBSOutputParser implements OutputParser {
                     }
 //                    lastStop = i + 1;
                     statusMap.put(jobID, JobStatus.valueOf(columnList.get(9)));
+                    found = true;
                     break;
                 }
             }
+            if(!found){
+                log.error("Couldn't find the status of the Job with JobName: " + jobName + "Job Id: " + jobID.split(",")[0]);
         }
     }
 
