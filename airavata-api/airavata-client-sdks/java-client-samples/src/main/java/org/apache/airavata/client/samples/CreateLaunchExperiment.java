@@ -40,8 +40,8 @@ import java.util.Map;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "149.165.228.109";
-    public static final int THRIFT_SERVER_PORT = 9930;
+    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
@@ -50,7 +50,7 @@ public class CreateLaunchExperiment {
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
-    private static String localHost = "149.165.228.109";
+    private static String localHost = "localhost";
     private static String trestlesHostName = "trestles.sdsc.xsede.org";
     private static String stampedeHostName = "stampede.tacc.xsede.org";
     private static String br2HostName = "bigred2.uits.iu.edu";
@@ -60,28 +60,12 @@ public class CreateLaunchExperiment {
             airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavataClient.getAPIVersion());
 //            registerApplications();
-
-
-
-////            final String expId = createExperimentForSSHHost(airavata);
+////          final String expId = createExperimentForSSHHost(airavata);
+//            final String expId = createEchoExperimentForTrestles(airavataClient);
 //            final String expId = createEchoExperimentForStampede(airavataClient);
 //            final String expId = createExperimentEchoForLocalHost(airavataClient);
 //            final String expId = createExperimentWRFTrestles(airavataClient);
-            for(int i=0;i<100;i++) {
-//                (new Thread(){
-//                    @Override
-//                    public void run() {
-//                        try {
-                            final String expId = createExperimentForBR2(airavataClient);
-                            launchExperiment(airavataClient, expId);
-                            System.out.println(expId);
-//                        } catch (Exception e) {
-//                            logger.error("Error while connecting with server", e.getMessage());
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }).start();
-//            final String expId = createEchoExperimentForTrestles(airavataClient);
+              final String expId = createExperimentForBR2(airavataClient);
 //            final String expId = createExperimentForBR2Amber(airavataClient);
 //            final String expId = createExperimentWRFStampede(airavataClient);
 //            final String expId = createExperimentForStampedeAmber(airavataClient);
@@ -89,10 +73,8 @@ public class CreateLaunchExperiment {
 
 //            System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
-
-            }
-
-//            System.out.println("retrieved exp id : " + experiment.getExperimentID());
+              launchExperiment(airavataClient, expId);
+              System.out.println(expId);
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
