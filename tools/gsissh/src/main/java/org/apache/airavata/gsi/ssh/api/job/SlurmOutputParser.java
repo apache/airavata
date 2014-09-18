@@ -173,8 +173,11 @@ public class SlurmOutputParser implements OutputParser {
                             columnList.add(s);
                         }
                     }
-//                    lastStop = i + 1;
-                    statusMap.put(jobID, JobStatus.valueOf(columnList.get(4)));
+                    try {
+                        statusMap.put(jobID, JobStatus.valueOf(columnList.get(4)));
+                    } catch (IndexOutOfBoundsException e) {
+                        statusMap.put(jobID, JobStatus.valueOf("U"));
+                    }
                     found = true;
                     break;
                 }

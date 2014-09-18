@@ -176,13 +176,17 @@ public class PBSOutputParser implements OutputParser {
                         }
                     }
 //                    lastStop = i + 1;
-                    statusMap.put(jobID, JobStatus.valueOf(columnList.get(9)));
+                    try {
+                        statusMap.put(jobID, JobStatus.valueOf(columnList.get(9)));
+                    }catch(IndexOutOfBoundsException e){
+                        statusMap.put(jobID, JobStatus.valueOf("U"));
+                    }
                     found = true;
                     break;
                 }
             }
-            if(!found){
-                log.error("Couldn't find the status of the Job with JobName: " + jobName + "Job Id: " + jobID.split(",")[0]);
+            if(!found)
+            log.error("Couldn't find the status of the Job with JobName: " + jobName + "Job Id: " + jobID.split(",")[0]);
         }
     }
 
