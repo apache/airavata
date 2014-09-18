@@ -33,21 +33,21 @@ import java.util.Map;
 public class SlurmOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
 
-    public void parse(JobDescriptor descriptor, String rawOutput)throws SSHApiException {
+    public void parse(JobDescriptor descriptor, String rawOutput) throws SSHApiException {
         log.info(rawOutput);
         String[] info = rawOutput.split("\n");
-        String lastString = info[info.length -1];
+        String lastString = info[info.length - 1];
         if (lastString.contains("JOB ID")) {
             // because there's no state
             descriptor.setStatus("U");
-        }else{
+        } else {
             int column = 0;
             System.out.println(lastString);
-            for(String each:lastString.split(" ")){
-                if(each.trim().isEmpty()){
+            for (String each : lastString.split(" ")) {
+                if (each.trim().isEmpty()) {
                     continue;
-                }else{
-                    switch (column){
+                } else {
+                    switch (column) {
                         case 0:
                             descriptor.setJobID(each);
                             column++;
@@ -106,18 +106,18 @@ public class SlurmOutputParser implements OutputParser {
 //        throw new SSHApiException(rawOutput);  //todo//To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public JobStatus parse(String jobID, String rawOutput)throws SSHApiException {
+    public JobStatus parse(String jobID, String rawOutput) throws SSHApiException {
         log.info(rawOutput);
         String[] info = rawOutput.split("\n");
-        String lastString = info[info.length -1];
+        String lastString = info[info.length - 1];
         if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
             // because there's no state
             return JobStatus.valueOf("U");
-        }else{
+        } else {
             int column = 0;
-            for(String each:lastString.split(" ")){
-                if(!each.trim().isEmpty()){
-                    switch (column){
+            for (String each : lastString.split(" ")) {
+                if (!each.trim().isEmpty()) {
+                    switch (column) {
                         case 0:
                             column++;
                             break;
@@ -151,7 +151,7 @@ public class SlurmOutputParser implements OutputParser {
     public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
-        String lastString = info[info.length -1];
+        String lastString = info[info.length - 1];
         if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
             log.info("There are no jobs with this username ... ");
             return;
@@ -160,8 +160,9 @@ public class SlurmOutputParser implements OutputParser {
         for (String jobID : statusMap.keySet()) {
             String jobId = jobID.split(",")[0];
             String jobName = jobID.split(",")[1];
+            boolean found = false;
             for (int i = 0; i < info.length; i++) {
-                if (info[i].contains(jobName.substring(0,8))) {
+                if (info[i].contains(jobName.substring(0, 8))) {
                     // now starts processing this line
                     log.info(info[i]);
                     String correctLine = info[i];
@@ -174,8 +175,11 @@ public class SlurmOutputParser implements OutputParser {
                     }
 //                    lastStop = i + 1;
                     statusMap.put(jobID, JobStatus.valueOf(columnList.get(4)));
+                    found = true;
                     break;
                 }
+            }
+            if (!found) {
                 log.error("Couldn't find the status of the Job with JobName: " + jobName + "Job Id: " + jobId);
             }
         }
