@@ -320,6 +320,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                         } catch (KeeperException e) {
                             e.printStackTrace();
                         }
+                        break;
                 }
 				if (watchedEvent.getPath() != null
 						&& watchedEvent.getPath().startsWith(
