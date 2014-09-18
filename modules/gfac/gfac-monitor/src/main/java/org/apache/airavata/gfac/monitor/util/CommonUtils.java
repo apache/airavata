@@ -172,7 +172,7 @@ public class CommonUtils {
                 }
             }
         }
-        logger.error("Cannot find the given MonitorID in the queue with userName " +
+        logger.info("Cannot find the given MonitorID in the queue with userName " +
                 monitorID.getUserName() + "  and jobID " + monitorID.getJobID());
         logger.info("This might not be an error because someone else removed this job from the queue");
     }

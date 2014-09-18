@@ -40,17 +40,17 @@ import java.util.Map;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "localhost";
-    public static final int THRIFT_SERVER_PORT = 8930;
+    public static final String THRIFT_SERVER_HOST = "149.165.228.109";
+    public static final int THRIFT_SERVER_PORT = 9930;
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
-    private static String echoAppId = "Echo_b7cebf37-df12-4803-a50c-efdbc2edd9b6";
+    private static String echoAppId = "Echo_c6e6aaac-7d9d-44fc-aba2-63b5100528e8";
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
-    private static String localHost = "localhost";
+    private static String localHost = "149.165.228.109";
     private static String trestlesHostName = "trestles.sdsc.xsede.org";
     private static String stampedeHostName = "stampede.tacc.xsede.org";
     private static String br2HostName = "bigred2.uits.iu.edu";
@@ -59,16 +59,29 @@ public class CreateLaunchExperiment {
         try {
             airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavataClient.getAPIVersion());
-            registerApplications();
+//            registerApplications();
 
 
 
 ////            final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createEchoExperimentForTrestles(airavataClient);
 //            final String expId = createEchoExperimentForStampede(airavataClient);
 //            final String expId = createExperimentEchoForLocalHost(airavataClient);
 //            final String expId = createExperimentWRFTrestles(airavataClient);
-//            final String expId = createExperimentForBR2(airavataClient);
+            for(int i=0;i<100;i++) {
+//                (new Thread(){
+//                    @Override
+//                    public void run() {
+//                        try {
+                            final String expId = createExperimentForBR2(airavataClient);
+                            launchExperiment(airavataClient, expId);
+                            System.out.println(expId);
+//                        } catch (Exception e) {
+//                            logger.error("Error while connecting with server", e.getMessage());
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }).start();
+//            final String expId = createEchoExperimentForTrestles(airavataClient);
 //            final String expId = createExperimentForBR2Amber(airavataClient);
 //            final String expId = createExperimentWRFStampede(airavataClient);
 //            final String expId = createExperimentForStampedeAmber(airavataClient);
@@ -76,7 +89,8 @@ public class CreateLaunchExperiment {
 
 //            System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
-//            launchExperiment(airavataClient, expId);
+
+            }
 
 //            System.out.println("retrieved exp id : " + experiment.getExperimentID());
         } catch (Exception e) {
@@ -568,11 +582,11 @@ public class CreateLaunchExperiment {
             output.setValue("");
             exOut.add(output);
 
-            Project project = ProjectModelUtil.createProject("default", "admin", "test project");
+            Project project = ProjectModelUtil.createProject("default", "lahiru", "test project");
             String projectId = client.createProject(project);
 
             Experiment simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", echoAppId, exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "lahiru", "sshEchoExperiment", "SimpleEchoBR", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
@@ -856,7 +870,7 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            String sshTokenId = "61abd2ff-f92b-4901-a077-07b51abe2c5d";
+            String sshTokenId = "2c308fa9-99f8-4baa-92e4-d062e311483c";
             String gsisshTokenId = "61abd2ff-f92b-4901-a077-07b51abe2c5d";
             client.launchExperiment(expId, sshTokenId);
         } catch (ExperimentNotFoundException e) {

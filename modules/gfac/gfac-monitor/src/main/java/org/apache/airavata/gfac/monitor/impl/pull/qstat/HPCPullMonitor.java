@@ -63,7 +63,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class HPCPullMonitor extends PullMonitor {
     private final static Logger logger = LoggerFactory.getLogger(HPCPullMonitor.class);
-    public static final int FAILED_COUNT = 5;
+    public static final int FAILED_COUNT = 100000;
 
     // I think this should use DelayedBlocking Queue to do the monitoring*/
     private BlockingQueue<UserMonitorData> queue;
@@ -207,9 +207,11 @@ public class HPCPullMonitor extends PullMonitor {
                             if (cancelMId.equals(iMonitorID.getUserName() + "," + iMonitorID.getJobName())) {
                                 logger.info("This job is finished because push notification came with <username,jobName> " + cancelMId);
                                 completedJobs.add(iMonitorID);
-                                iterator.remove();
                                 iMonitorID.setStatus(JobState.COMPLETE);
                             }
+                            //we have to make this empty everytime we iterate, otherwise this list will accumilate and will
+                            // lead to a memory leak
+                            iterator.remove();
                         }
                     }
                     Map<String, JobState> jobStatuses = connection.getJobStatuses(monitorID);
@@ -241,7 +243,8 @@ public class HPCPullMonitor extends PullMonitor {
                                     logger.info(e.getLocalizedMessage(), e);
                                 }
                             } else if (iMonitorID.getFailedCount() > FAILED_COUNT) {
-                                logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed 3 times, so skip this Job from Monitor");
+                                logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed" +iMonitorID.getFailedCount()+
+                                        " 3 times, so skip this Job from Monitor");
                                 iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                                 completedJobs.add(iMonitorID);
                                 try {
