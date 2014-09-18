@@ -160,7 +160,7 @@ public class SlurmOutputParser implements OutputParser {
         for (String jobID : statusMap.keySet()) {
             String jobId = jobID.split(",")[0];
             String jobName = jobID.split(",")[1];
-            for (int i = lastStop; i < info.length; i++) {
+            for (int i = 0; i < info.length; i++) {
                 if (info[i].contains(jobName.substring(0,8))) {
                     // now starts processing this line
                     log.info(info[i]);
