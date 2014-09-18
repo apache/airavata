@@ -156,7 +156,7 @@ public class SlurmOutputParser implements OutputParser {
             log.info("There are no jobs with this username ... ");
             return;
         }
-        int lastStop = 0;
+//        int lastStop = 0;
         for (String jobID : statusMap.keySet()) {
             String jobId = jobID.split(",")[0];
             String jobName = jobID.split(",")[1];
@@ -172,10 +172,11 @@ public class SlurmOutputParser implements OutputParser {
                             columnList.add(s);
                         }
                     }
-                    lastStop = i + 1;
+//                    lastStop = i + 1;
                     statusMap.put(jobID, JobStatus.valueOf(columnList.get(4)));
                     break;
                 }
+                log.error("Couldn't find the status of the Job with JobName: " + jobName + "Job Id: " + jobId);
             }
         }
     }
