@@ -160,7 +160,6 @@ public class SlurmOutputParser implements OutputParser {
         for (String jobID : statusMap.keySet()) {
             String jobId = jobID.split(",")[0];
             String jobName = jobID.split(",")[1];
-            boolean found = false;
             for (int i = 0; i < info.length; i++) {
                 if (info[i].contains(jobName.substring(0, 8))) {
                     // now starts processing this line
@@ -175,12 +174,8 @@ public class SlurmOutputParser implements OutputParser {
                     }
 //                    lastStop = i + 1;
                     statusMap.put(jobID, JobStatus.valueOf(columnList.get(4)));
-                    found = true;
                     break;
                 }
-            }
-            if (!found) {
-                log.error("Couldn't find the status of the Job with JobName: " + jobName + "Job Id: " + jobId);
             }
         }
     }
