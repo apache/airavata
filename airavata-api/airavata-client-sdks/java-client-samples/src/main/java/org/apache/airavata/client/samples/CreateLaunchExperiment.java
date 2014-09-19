@@ -34,14 +34,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "localhost";
-    public static final int THRIFT_SERVER_PORT = 8930;
+    public static final String THRIFT_SERVER_HOST = "149.165.228.109";
+    public static final int THRIFT_SERVER_PORT = 9930;
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
@@ -50,7 +51,7 @@ public class CreateLaunchExperiment {
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
-    private static String localHost = "localhost";
+    private static String localHost = "149.165.228.109";
     private static String trestlesHostName = "trestles.sdsc.xsede.org";
     private static String stampedeHostName = "stampede.tacc.xsede.org";
     private static String br2HostName = "bigred2.uits.iu.edu";
@@ -60,21 +61,26 @@ public class CreateLaunchExperiment {
             airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavataClient.getAPIVersion());
 //            registerApplications();
-////          final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createEchoExperimentForTrestles(airavataClient);
-//            final String expId = createEchoExperimentForStampede(airavataClient);
-//            final String expId = createExperimentEchoForLocalHost(airavataClient);
-//            final String expId = createExperimentWRFTrestles(airavataClient);
-              final String expId = createExperimentForBR2(airavataClient);
-//            final String expId = createExperimentForBR2Amber(airavataClient);
-//            final String expId = createExperimentWRFStampede(airavataClient);
-//            final String expId = createExperimentForStampedeAmber(airavataClient);
-//            final String expId = createExperimentForTrestlesAmber(airavataClient);
+            Date date = new Date();
+            long time = date.getTime();
+            int numberOfRequests = 1;
+            for (int i = 0; i < numberOfRequests; i++) {
+//                (new Thread() {
+//                    @Override
+//                    public void run() {
+                        try {
+                            launchExperiment(airavataClient, createExperimentForBR2(airavataClient));
+                        } catch (Exception e) {
+                            logger.error("Error while connecting with server", e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+            long time1 = (date.getTime()-time);
+            System.out.println("Number of requests: " + numberOfRequests + " time taken Miliseconds: " + time1);
 
-//            System.out.println("Experiment ID : " + expId);
-//            updateExperiment(airavata, expId);
-              launchExperiment(airavataClient, expId);
-              System.out.println(expId);
+//                }).start();
+//            }
+
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
@@ -124,10 +130,10 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
-            if (computeResources != null && computeResources.size() != 0){
-                for (String id : computeResources.keySet()){
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
-                    if (resourceName.equals(trestlesHostName)){
+                    if (resourceName.equals(trestlesHostName)) {
                         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 1, 1, "normal", 1, 0, 1, "sds128");
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setAiravataAutoSchedule(false);
@@ -198,10 +204,10 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(wrfAppId);
-            if (computeResources != null && computeResources.size() != 0){
-                for (String id : computeResources.keySet()){
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
-                    if (resourceName.equals(stampedeHostName)){
+                    if (resourceName.equals(stampedeHostName)) {
                         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 2, 32, 1, "development", 90, 0, 1, "TG-STA110014S");
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setAiravataAutoSchedule(false);
@@ -272,10 +278,10 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(wrfAppId);
-            if (computeResources != null && computeResources.size() != 0){
-                for (String id : computeResources.keySet()){
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
-                    if (resourceName.equals(trestlesHostName)){
+                    if (resourceName.equals(trestlesHostName)) {
                         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 1, 1, "normal", 1, 0, 1, "sds128");
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setAiravataAutoSchedule(false);
@@ -348,10 +354,10 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
-            if (computeResources != null && computeResources.size() != 0){
-                for (String id : computeResources.keySet()){
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
-                    if (resourceName.equals(localHost)){
+                    if (resourceName.equals(localHost)) {
                         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 1, 1, "normal", 1, 0, 1, "");
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setAiravataAutoSchedule(false);
@@ -448,10 +454,10 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
-            if (computeResources != null && computeResources.size() != 0){
-                for (String id : computeResources.keySet()){
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
-                    if (resourceName.equals(stampedeHostName)){
+                    if (resourceName.equals(stampedeHostName)) {
                         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 1, 1, "normal", 1, 0, 1, "TG-STA110014S");
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setAiravataAutoSchedule(false);
@@ -572,11 +578,11 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
-            if (computeResources != null && computeResources.size() != 0){
-                for (String id : computeResources.keySet()){
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
-                    if (resourceName.equals(br2HostName)){
-                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id,  1, 1, 1, "normal", 1, 0, 1, null);
+                    if (resourceName.equals(br2HostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 1, 1, "normal", 1, 0, 1, null);
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
@@ -655,10 +661,10 @@ public class CreateLaunchExperiment {
 
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
-            if (computeResources != null && computeResources.size() != 0){
-                for (String id : computeResources.keySet()){
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
-                    if (resourceName.equals(br2HostName)){
+                    if (resourceName.equals(br2HostName)) {
                         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "cpu", 20, 0, 1, null);
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setAiravataAutoSchedule(false);
@@ -737,10 +743,10 @@ public class CreateLaunchExperiment {
             simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
-            if (computeResources != null && computeResources.size() != 0){
-                for (String id : computeResources.keySet()){
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
-                    if (resourceName.equals(stampedeHostName)){
+                    if (resourceName.equals(stampedeHostName)) {
                         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "development", 20, 0, 1, null);
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setAiravataAutoSchedule(false);
@@ -768,86 +774,86 @@ public class CreateLaunchExperiment {
     }
 
     public static String createExperimentForTrestlesAmber(Airavata.Client client) throws TException {
-           try {
-               List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-               DataObjectType input = new DataObjectType();
-               input.setKey("Heat_Restart_File");
-               input.setType(DataType.URI);
-               input.setValue("/Users/lahirugunathilake/Downloads/02_Heat.rst");
-               exInputs.add(input);
+        try {
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("Heat_Restart_File");
+            input.setType(DataType.URI);
+            input.setValue("/Users/lahirugunathilake/Downloads/02_Heat.rst");
+            exInputs.add(input);
 
-               DataObjectType input1 = new DataObjectType();
-               input1.setKey("Production_Control_File");
-               input1.setType(DataType.URI);
-               input1.setValue("/Users/lahirugunathilake/Downloads/03_Prod.in");
-               exInputs.add(input1);
+            DataObjectType input1 = new DataObjectType();
+            input1.setKey("Production_Control_File");
+            input1.setType(DataType.URI);
+            input1.setValue("/Users/lahirugunathilake/Downloads/03_Prod.in");
+            exInputs.add(input1);
 
-               DataObjectType input2 = new DataObjectType();
-               input2.setKey("Production_Control_File");
-               input2.setType(DataType.URI);
-               input2.setValue("/Users/lahirugunathilake/Downloads/prmtop");
-               exInputs.add(input2);
+            DataObjectType input2 = new DataObjectType();
+            input2.setKey("Production_Control_File");
+            input2.setType(DataType.URI);
+            input2.setValue("/Users/lahirugunathilake/Downloads/prmtop");
+            exInputs.add(input2);
 
-               List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-               DataObjectType output = new DataObjectType();
-               output.setKey("AMBER_Execution_Summary");
-               output.setType(DataType.URI);
-               output.setValue("");
-               exOut.add(output);
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("AMBER_Execution_Summary");
+            output.setType(DataType.URI);
+            output.setValue("");
+            exOut.add(output);
 
-               DataObjectType output1 = new DataObjectType();
-               output1.setKey("AMBER_Execution_log");
-               output1.setType(DataType.URI);
-               output1.setValue("");
-               exOut.add(output1);
-               DataObjectType output2 = new DataObjectType();
-               output2.setKey("AMBER_Trajectory_file");
-               output2.setType(DataType.URI);
-               output2.setValue("");
-               exOut.add(output2);
-               DataObjectType output3 = new DataObjectType();
-               output3.setKey("AMBER_Restart_file");
-               output3.setType(DataType.URI);
-               output3.setValue("");
-               exOut.add(output3);
+            DataObjectType output1 = new DataObjectType();
+            output1.setKey("AMBER_Execution_log");
+            output1.setType(DataType.URI);
+            output1.setValue("");
+            exOut.add(output1);
+            DataObjectType output2 = new DataObjectType();
+            output2.setKey("AMBER_Trajectory_file");
+            output2.setType(DataType.URI);
+            output2.setValue("");
+            exOut.add(output2);
+            DataObjectType output3 = new DataObjectType();
+            output3.setKey("AMBER_Restart_file");
+            output3.setType(DataType.URI);
+            output3.setValue("");
+            exOut.add(output3);
 
-               Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-               String projectId = client.createProject(project);
+            Project project = ProjectModelUtil.createProject("default", "admin", "test project");
+            String projectId = client.createProject(project);
 
-               Experiment simpleExperiment =
-                       ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
-               simpleExperiment.setExperimentOutputs(exOut);
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
 
-               Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
-               if (computeResources != null && computeResources.size() != 0){
-                   for (String id : computeResources.keySet()){
-                       String resourceName = computeResources.get(id);
-                       if (resourceName.equals(trestlesHostName)){
-                           ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
-                           UserConfigurationData userConfigurationData = new UserConfigurationData();
-                           userConfigurationData.setAiravataAutoSchedule(false);
-                           userConfigurationData.setOverrideManualScheduledParams(false);
-                           userConfigurationData.setComputationalResourceScheduling(scheduling);
-                           simpleExperiment.setUserConfigurationData(userConfigurationData);
-                           return client.createExperiment(simpleExperiment);
-                       }
-                   }
-               }
-           } catch (AiravataSystemException e) {
-               logger.error("Error occured while creating the experiment...", e.getMessage());
-               throw new AiravataSystemException(e);
-           } catch (InvalidRequestException e) {
-               logger.error("Error occured while creating the experiment...", e.getMessage());
-               throw new InvalidRequestException(e);
-           } catch (AiravataClientException e) {
-               logger.error("Error occured while creating the experiment...", e.getMessage());
-               throw new AiravataClientException(e);
-           } catch (TException e) {
-               logger.error("Error occured while creating the experiment...", e.getMessage());
-               throw new TException(e);
-           }
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(trestlesHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        return client.createExperiment(simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
         return null;
-       }
+    }
 
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
@@ -979,12 +985,12 @@ public class CreateLaunchExperiment {
         return null;
     }
 
-    public static void getExperiment (Airavata.Client client, String expId) throws Exception{
-        try{
+    public static void getExperiment(Airavata.Client client, String expId) throws Exception {
+        try {
             Experiment experiment = client.getExperiment(expId);
             List<ErrorDetails> errors = experiment.getErrors();
-            if (errors != null && !errors.isEmpty()){
-                for (ErrorDetails error : errors){
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorDetails error : errors) {
                     System.out.println("ERROR MESSAGE : " + error.getActualErrorMessage());
                 }
             }
