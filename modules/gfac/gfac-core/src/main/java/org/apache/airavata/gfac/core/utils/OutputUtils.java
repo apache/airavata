@@ -95,9 +95,8 @@ public class OutputUtils {
         if (match != null) {
             match = match.trim();
             return match;
-        } else {
-            throw new Exception("Data for the output parameter '" + outParam + "' was not found");
-        }
+        } 
+        return null;
     }
 
     public static String[] parseStdoutArray(String stdout, String outParam) throws Exception {
@@ -108,10 +107,9 @@ public class OutputUtils {
         while (matcher.find()) {
             match.append(matcher.group(1) + StringUtil.DELIMETER);
         }
-        if (match != null) {
+        if (match != null && match.length() >0) {
         	return StringUtil.getElementsFromString(match.toString());
-        } else {
-            throw new Exception("Data for the output parameter '" + outParam + "' was not found");
-        }
+        } 
+        return null;
     }
 }

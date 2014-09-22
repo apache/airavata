@@ -146,6 +146,9 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                 ActualParameter actualParameter = (ActualParameter) output.get(paramName);
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
                 	String downloadFile = MappingFactory.toString(actualParameter);
+                	if(downloadFile == null){
+                		throw new GFacHandlerException("Empty Output returned from the application");
+                	}
                 	pbsCluster.scpTo(outputPath, downloadFile);
                     String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar)+1, downloadFile.length());
                     DataObjectType dataObjectType = new DataObjectType();
