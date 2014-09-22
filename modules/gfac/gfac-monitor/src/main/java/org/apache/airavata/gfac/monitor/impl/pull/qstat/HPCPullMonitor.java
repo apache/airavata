@@ -25,11 +25,13 @@ import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.TaskIdentity;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
+import org.apache.airavata.gfac.core.utils.OutHandlerWorker;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.core.PullMonitor;
@@ -47,12 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -212,6 +209,7 @@ public class HPCPullMonitor extends PullMonitor {
                             // lead to a memory leak
                             iterator.remove();
                         }
+                        iterator = completedJobsFromPush.listIterator();
                     }
                     Map<String, JobState> jobStatuses = connection.getJobStatuses(monitorID);
                     for (MonitorID iMonitorID : monitorID) {
@@ -232,20 +230,7 @@ public class HPCPullMonitor extends PullMonitor {
                                 completedJobs.add(iMonitorID);
                                 // we run all the finished jobs in separate threads, because each job doesn't have to wait until
                                 // each one finish transfering files
-                                    final MonitorID tMonitorID = iMonitorID;
-                                    (new Thread() {
-                                        @Override
-                                        public void run() {
-                                            try {
-                                                gfac.invokeOutFlowHandlers(tMonitorID.getJobExecutionContext());
-                                            } catch (GFacException e) {
-                                                publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(tMonitorID.getExperimentID(), tMonitorID.getWorkflowNodeID(),
-                                                        tMonitorID.getTaskID()), TaskState.FAILED));
-                                                //FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status
-                                                logger.info(e.getLocalizedMessage(), e);
-                                            }
-                                        }
-                                    }).start();
+                                BetterGfacImpl.getCachedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
                             } else if (iMonitorID.getFailedCount() > FAILED_COUNT) {
                                 logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed" +iMonitorID.getFailedCount()+
                                         " 3 times, so skip this Job from Monitor");
