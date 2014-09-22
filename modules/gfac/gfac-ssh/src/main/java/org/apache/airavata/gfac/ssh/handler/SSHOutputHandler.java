@@ -202,9 +202,12 @@ public class SSHOutputHandler extends AbstractHandler {
                 }
             }
             if (outputArray == null || outputArray.isEmpty()) {
-                throw new GFacHandlerException(
+            	log.error("Empty Output returned from the Application, Double check the application and ApplicationDescriptor output Parameter Names");
+            	if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() == null){
+            		throw new GFacHandlerException(
                         "Empty Output returned from the Application, Double check the application"
                                 + "and ApplicationDescriptor output Parameter Names");
+            	}
             }
             app.setStandardError(localStdErrFile.getAbsolutePath());
             app.setStandardOutput(localStdOutFile.getAbsolutePath());
