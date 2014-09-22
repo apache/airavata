@@ -26,6 +26,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
@@ -130,6 +132,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     private boolean cancelled = false;
 
+    private static ExecutorService cachedThreadPool;
+
     /**
      * Constructor for GFac
      *
@@ -143,6 +147,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 //        this.airavataRegistry2 = airavataRegistry2;
         monitorPublisher = publisher;     // This is a EventBus common for gfac
         this.zk = zooKeeper;
+       this.cachedThreadPool = Executors.newCachedThreadPool();
     }
 
     public static void startStatusUpdators(Registry registry, ZooKeeper zk, MonitorPublisher publisher) {
@@ -1175,5 +1180,9 @@ public class BetterGfacImpl implements GFac,Watcher {
             log.info("Experiment is cancelled with this path:"+watchedEvent.getPath());
             this.cancelled = true;
         }
+    }
+
+    public static ExecutorService getCachedThreadPool(){
+        return cachedThreadPool;
     }
 }

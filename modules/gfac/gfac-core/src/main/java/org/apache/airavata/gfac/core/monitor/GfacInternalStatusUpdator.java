@@ -82,9 +82,13 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         }
         switch (statusChangeRequest.getState()) {
             case COMPLETED:
+                logger.info("Experiment Completed, So removing the ZK entry for the experiment" + monitorID.getExperimentID());
+                logger.info("Zookeeper experiment Path: " + experimentPath);
                 ZKUtil.deleteRecursive(zk, experimentPath);
                 break;
             case FAILED:
+                logger.info("Experiment Failed, So removing the ZK entry for the experiment" + monitorID.getExperimentID());
+                logger.info("Zookeeper experiment Path: " + experimentPath);
                 ZKUtil.deleteRecursive(zk,experimentPath);
                 break;
             default:
