@@ -132,8 +132,6 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     private boolean cancelled = false;
 
-    private static ExecutorService cachedThreadPool;
-
     /**
      * Constructor for GFac
      *
@@ -147,7 +145,6 @@ public class BetterGfacImpl implements GFac,Watcher {
 //        this.airavataRegistry2 = airavataRegistry2;
         monitorPublisher = publisher;     // This is a EventBus common for gfac
         this.zk = zooKeeper;
-       this.cachedThreadPool = Executors.newCachedThreadPool();
     }
 
     public static void startStatusUpdators(Registry registry, ZooKeeper zk, MonitorPublisher publisher) {
@@ -499,7 +496,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         try {
             String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
             Stat exists = zk.exists(experimentEntry + File.separator + "operation", false);
-            zk.getData(experimentEntry + File.separator + "operation", this,exists);
+            zk.getData(experimentEntry + File.separator + "operation", this, exists);
             int stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
@@ -525,13 +522,12 @@ public class BetterGfacImpl implements GFac,Watcher {
             }
             return true;
         } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
+            throw new GFacException("Error launching the Job",e);
         } catch (KeeperException e) {
-            e.printStackTrace();
+            throw new GFacException("Error launching the Job",e);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            throw new GFacException("Error launching the Job",e);
         }
-        return true;
     }
 
     public boolean cancel(String experimentID, String taskID, String gatewayID) throws GFacException {
@@ -1179,9 +1175,5 @@ public class BetterGfacImpl implements GFac,Watcher {
             log.info("Experiment is cancelled with this path:"+watchedEvent.getPath());
             this.cancelled = true;
         }
-    }
-
-    public static ExecutorService getCachedThreadPool(){
-        return cachedThreadPool;
     }
 }
