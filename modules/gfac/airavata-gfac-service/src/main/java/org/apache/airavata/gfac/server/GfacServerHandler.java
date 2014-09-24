@@ -29,6 +29,8 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
+import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
+import org.apache.airavata.gfac.core.utils.InputHandlerWorker;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.cpi.gfac_cpi_serviceConstants;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
@@ -41,6 +43,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 
 
 public class GfacServerHandler implements GfacService.Iface, Watcher{
@@ -67,6 +72,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
     private String gfacExperiments;
 
     private String airavataServerHostPort;
+
+    private List<Future> inHandlerFutures;
 
     public GfacServerHandler() {
         // registering with zk
@@ -100,6 +107,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             setGatewayProperties();
             BetterGfacImpl.startDaemonHandlers();
             BetterGfacImpl.startStatusUpdators(registry,zk,publisher);
+            inHandlerFutures = new ArrayList<Future>();
         }catch (Exception e){
            logger.error("Error initialising GFAC",e);
         }
@@ -187,11 +195,9 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
     public boolean submitJob(String experimentId, String taskId, String gatewayId) throws TException {
         logger.info("GFac Recieved the Experiment: " + experimentId + " TaskId: " + taskId);
         GFac gfac = getGfac();
-        try {
-            return gfac.submitJob(experimentId, taskId, gatewayId);
-        } catch (GFacException e) {
-            throw new TException("Error launching the experiment : " + e.getMessage(), e);
-        }
+        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
+        inHandlerFutures.add(GFacThreadPoolExecutor.getCachedThreadPool().submit(inputHandlerWorker));
+        return true;
     }
 
     public boolean cancelJob(String experimentId, String taskId) throws TException {
@@ -203,7 +209,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             throw new TException("Error launching the experiment : " + e.getMessage(), e);
         }
     }
-
 
     public Registry getRegistry() {
         return registry;
@@ -249,4 +254,5 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             throw new TException("Error initializing gfac instance",e);
         }
     }
+
 }
