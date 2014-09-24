@@ -60,7 +60,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class HPCPullMonitor extends PullMonitor {
     private final static Logger logger = LoggerFactory.getLogger(HPCPullMonitor.class);
-    public static final int FAILED_COUNT = 100000;
+    public static final int FAILED_COUNT = 3;
 
     // I think this should use DelayedBlocking Queue to do the monitoring*/
     private BlockingQueue<UserMonitorData> queue;
