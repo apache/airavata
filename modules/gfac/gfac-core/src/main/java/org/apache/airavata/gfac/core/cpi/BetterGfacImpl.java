@@ -966,8 +966,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                     handler.invoke(jobExecutionContext);
                     GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
                 } catch (Exception e) {
-                    // TODO: Better error reporting.
-                    throw new GFacException("Error Executing a OutFlow Handler", e);
+                    throw new GFacException(e);
                 }
             }else{
                 log.info("Experiment execution is cancelled, so OutHandler invocation is going to stop");
