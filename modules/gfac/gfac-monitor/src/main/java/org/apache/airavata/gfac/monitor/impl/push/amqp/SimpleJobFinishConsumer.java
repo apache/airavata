@@ -64,7 +64,9 @@ public class SimpleJobFinishConsumer {
                         while (true) {
                             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
                             logger.info("---------------- Job Finish message received:"+new String(delivery.getBody())+" --------------");
-                            completedJobsFromPush.add(new String(delivery.getBody()));
+                            synchronized (completedJobsFromPush) {
+                                completedJobsFromPush.add(new String(delivery.getBody()));
+                            }
                             ch.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                         }
                     } catch (Exception ex) {
