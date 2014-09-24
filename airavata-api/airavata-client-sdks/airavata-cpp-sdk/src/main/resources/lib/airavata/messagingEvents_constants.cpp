@@ -28,6 +28,8 @@ namespace apache { namespace airavata { namespace model { namespace messaging { 
 const messagingEventsConstants g_messagingEvents_constants;
 
 messagingEventsConstants::messagingEventsConstants() {
+  DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS";
+
 }
 
 }}}}} // namespace

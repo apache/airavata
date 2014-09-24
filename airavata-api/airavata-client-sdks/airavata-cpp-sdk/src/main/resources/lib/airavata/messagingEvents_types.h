@@ -35,6 +35,28 @@
 
 namespace apache { namespace airavata { namespace model { namespace messaging { namespace event {
 
+struct MessageLevel {
+  enum type {
+    INFO = 0,
+    DEBUG = 1,
+    ERROR = 2,
+    ACK = 3
+  };
+};
+
+extern const std::map<int, const char*> _MessageLevel_VALUES_TO_NAMES;
+
+struct MessageType {
+  enum type {
+    EXPERIMENT = 0,
+    TASK = 1,
+    WORKFLOWNODE = 2,
+    JOB = 3
+  };
+};
+
+extern const std::map<int, const char*> _MessageType_VALUES_TO_NAMES;
+
 
 class ExperimentStatusChangeEvent {
  public:
@@ -407,6 +429,84 @@ class JobStatusChangeEvent {
 };
 
 void swap(JobStatusChangeEvent &a, JobStatusChangeEvent &b);
+
+typedef struct _Message__isset {
+  _Message__isset() : updatedTime(false), messageLevel(false) {}
+  bool updatedTime;
+  bool messageLevel;
+} _Message__isset;
+
+class Message {
+ public:
+
+  static const char* ascii_fingerprint; // = "6904C391426E568AF9DEAF69860C076A";
+  static const uint8_t binary_fingerprint[16]; // = {0x69,0x04,0xC3,0x91,0x42,0x6E,0x56,0x8A,0xF9,0xDE,0xAF,0x69,0x86,0x0C,0x07,0x6A};
+
+  Message() : event(), messageId("DO_NOT_SET_AT_CLIENTS"), messageType((MessageType::type)0), updatedTime(0), messageLevel((MessageLevel::type)0) {
+  }
+
+  virtual ~Message() throw() {}
+
+  std::string event;
+  std::string messageId;
+  MessageType::type messageType;
+  int64_t updatedTime;
+  MessageLevel::type messageLevel;
+
+  _Message__isset __isset;
+
+  void __set_event(const std::string& val) {
+    event = val;
+  }
+
+  void __set_messageId(const std::string& val) {
+    messageId = val;
+  }
+
+  void __set_messageType(const MessageType::type val) {
+    messageType = val;
+  }
+
+  void __set_updatedTime(const int64_t val) {
+    updatedTime = val;
+    __isset.updatedTime = true;
+  }
+
+  void __set_messageLevel(const MessageLevel::type val) {
+    messageLevel = val;
+    __isset.messageLevel = true;
+  }
+
+  bool operator == (const Message & rhs) const
+  {
+    if (!(event == rhs.event))
+      return false;
+    if (!(messageId == rhs.messageId))
+      return false;
+    if (!(messageType == rhs.messageType))
+      return false;
+    if (__isset.updatedTime != rhs.__isset.updatedTime)
+      return false;
+    else if (__isset.updatedTime && !(updatedTime == rhs.updatedTime))
+      return false;
+    if (__isset.messageLevel != rhs.__isset.messageLevel)
+      return false;
+    else if (__isset.messageLevel && !(messageLevel == rhs.messageLevel))
+      return false;
+    return true;
+  }
+  bool operator != (const Message &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Message & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(Message &a, Message &b);
 
 }}}}} // namespace
 

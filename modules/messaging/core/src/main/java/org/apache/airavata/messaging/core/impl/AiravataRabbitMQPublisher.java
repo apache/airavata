@@ -22,10 +22,7 @@
 package org.apache.airavata.messaging.core.impl;
 
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.*;
 
 public class AiravataRabbitMQPublisher implements Publisher {
     private String brokerUrl;
@@ -39,19 +36,7 @@ public class AiravataRabbitMQPublisher implements Publisher {
         RabbitMQProducer rabbitMQProducer = new RabbitMQProducer(brokerUrl, routingKey, exchangeName, prefetchCount, isRequeueOnFail);
     }
 
-    public void publish(ExperimentStatusChangeEvent event) {
-
-    }
-
-    public void publish(WorkflowNodeStatusChangeEvent event) {
-
-    }
-
-    public void publish(TaskStatusChangeEvent event) {
-
-    }
-
-    public void publish(JobStatusChangeEvent event) {
+    public void publish(Message message) {
 
     }
 }

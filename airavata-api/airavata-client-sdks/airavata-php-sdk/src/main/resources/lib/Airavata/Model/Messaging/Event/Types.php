@@ -17,6 +17,32 @@ use Thrift\Protocol\TBinaryProtocolAccelerated;
 use Thrift\Exception\TApplicationException;
 
 
+final class MessageLevel {
+  const INFO = 0;
+  const DEBUG = 1;
+  const ERROR = 2;
+  const ACK = 3;
+  static public $__names = array(
+    0 => 'INFO',
+    1 => 'DEBUG',
+    2 => 'ERROR',
+    3 => 'ACK',
+  );
+}
+
+final class MessageType {
+  const EXPERIMENT = 0;
+  const TASK = 1;
+  const WORKFLOWNODE = 2;
+  const JOB = 3;
+  static public $__names = array(
+    0 => 'EXPERIMENT',
+    1 => 'TASK',
+    2 => 'WORKFLOWNODE',
+    3 => 'JOB',
+  );
+}
+
 class ExperimentStatusChangeEvent {
   static $_TSPEC;
 
@@ -860,5 +886,159 @@ class JobStatusChangeEvent {
   }
 
 }
+
+class Message {
+  static $_TSPEC;
+
+  public $event = null;
+  public $messageId = "DO_NOT_SET_AT_CLIENTS";
+  public $messageType = null;
+  public $updatedTime = null;
+  public $messageLevel = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'event',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'messageId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'messageType',
+          'type' => TType::I32,
+          ),
+        4 => array(
+          'var' => 'updatedTime',
+          'type' => TType::I64,
+          ),
+        5 => array(
+          'var' => 'messageLevel',
+          'type' => TType::I32,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['event'])) {
+        $this->event = $vals['event'];
+      }
+      if (isset($vals['messageId'])) {
+        $this->messageId = $vals['messageId'];
+      }
+      if (isset($vals['messageType'])) {
+        $this->messageType = $vals['messageType'];
+      }
+      if (isset($vals['updatedTime'])) {
+        $this->updatedTime = $vals['updatedTime'];
+      }
+      if (isset($vals['messageLevel'])) {
+        $this->messageLevel = $vals['messageLevel'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Message';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->event);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->messageId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->messageType);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::I64) {
+            $xfer += $input->readI64($this->updatedTime);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->messageLevel);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Message');
+    if ($this->event !== null) {
+      $xfer += $output->writeFieldBegin('event', TType::STRING, 1);
+      $xfer += $output->writeString($this->event);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->messageId !== null) {
+      $xfer += $output->writeFieldBegin('messageId', TType::STRING, 2);
+      $xfer += $output->writeString($this->messageId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->messageType !== null) {
+      $xfer += $output->writeFieldBegin('messageType', TType::I32, 3);
+      $xfer += $output->writeI32($this->messageType);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->updatedTime !== null) {
+      $xfer += $output->writeFieldBegin('updatedTime', TType::I64, 4);
+      $xfer += $output->writeI64($this->updatedTime);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->messageLevel !== null) {
+      $xfer += $output->writeFieldBegin('messageLevel', TType::I32, 5);
+      $xfer += $output->writeI32($this->messageLevel);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+$GLOBALS['messagingEvents_CONSTANTS']['DEFAULT_ID'] = "DO_NOT_SET_AT_CLIENTS";
 
 

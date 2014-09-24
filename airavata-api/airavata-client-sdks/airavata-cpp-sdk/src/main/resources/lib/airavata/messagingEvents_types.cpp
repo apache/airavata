@@ -27,6 +27,34 @@
 
 namespace apache { namespace airavata { namespace model { namespace messaging { namespace event {
 
+int _kMessageLevelValues[] = {
+  MessageLevel::INFO,
+  MessageLevel::DEBUG,
+  MessageLevel::ERROR,
+  MessageLevel::ACK
+};
+const char* _kMessageLevelNames[] = {
+  "INFO",
+  "DEBUG",
+  "ERROR",
+  "ACK"
+};
+const std::map<int, const char*> _MessageLevel_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kMessageLevelValues, _kMessageLevelNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
+int _kMessageTypeValues[] = {
+  MessageType::EXPERIMENT,
+  MessageType::TASK,
+  MessageType::WORKFLOWNODE,
+  MessageType::JOB
+};
+const char* _kMessageTypeNames[] = {
+  "EXPERIMENT",
+  "TASK",
+  "WORKFLOWNODE",
+  "JOB"
+};
+const std::map<int, const char*> _MessageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kMessageTypeValues, _kMessageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 const char* ExperimentStatusChangeEvent::ascii_fingerprint = "19B5240589E680301A7E32DF3971EFBE";
 const uint8_t ExperimentStatusChangeEvent::binary_fingerprint[16] = {0x19,0xB5,0x24,0x05,0x89,0xE6,0x80,0x30,0x1A,0x7E,0x32,0xDF,0x39,0x71,0xEF,0xBE};
 
@@ -741,6 +769,135 @@ void swap(JobStatusChangeEvent &a, JobStatusChangeEvent &b) {
   using ::std::swap;
   swap(a.state, b.state);
   swap(a.jobIdentity, b.jobIdentity);
+}
+
+const char* Message::ascii_fingerprint = "6904C391426E568AF9DEAF69860C076A";
+const uint8_t Message::binary_fingerprint[16] = {0x69,0x04,0xC3,0x91,0x42,0x6E,0x56,0x8A,0xF9,0xDE,0xAF,0x69,0x86,0x0C,0x07,0x6A};
+
+uint32_t Message::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_event = false;
+  bool isset_messageId = false;
+  bool isset_messageType = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readBinary(this->event);
+          isset_event = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->messageId);
+          isset_messageId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast10;
+          xfer += iprot->readI32(ecast10);
+          this->messageType = (MessageType::type)ecast10;
+          isset_messageType = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I64) {
+          xfer += iprot->readI64(this->updatedTime);
+          this->__isset.updatedTime = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast11;
+          xfer += iprot->readI32(ecast11);
+          this->messageLevel = (MessageLevel::type)ecast11;
+          this->__isset.messageLevel = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_event)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_messageId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_messageType)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Message::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Message");
+
+  xfer += oprot->writeFieldBegin("event", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeBinary(this->event);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("messageId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->messageId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("messageType", ::apache::thrift::protocol::T_I32, 3);
+  xfer += oprot->writeI32((int32_t)this->messageType);
+  xfer += oprot->writeFieldEnd();
+
+  if (this->__isset.updatedTime) {
+    xfer += oprot->writeFieldBegin("updatedTime", ::apache::thrift::protocol::T_I64, 4);
+    xfer += oprot->writeI64(this->updatedTime);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.messageLevel) {
+    xfer += oprot->writeFieldBegin("messageLevel", ::apache::thrift::protocol::T_I32, 5);
+    xfer += oprot->writeI32((int32_t)this->messageLevel);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(Message &a, Message &b) {
+  using ::std::swap;
+  swap(a.event, b.event);
+  swap(a.messageId, b.messageId);
+  swap(a.messageType, b.messageType);
+  swap(a.updatedTime, b.updatedTime);
+  swap(a.messageLevel, b.messageLevel);
+  swap(a.__isset, b.__isset);
 }
 
 }}}}} // namespace
