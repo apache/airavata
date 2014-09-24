@@ -20,8 +20,11 @@
 */
 package org.apache.airavata.gfac.core.monitor;
 
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.Calendar;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.Publisher;
@@ -93,7 +96,16 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
                                                          jobStatus.getJobIdentity().getWorkflowNodeId(),
                                                          jobStatus.getJobIdentity().getExperimentId());
             monitorPublisher.publish(new TaskStatusChangeEvent(state, taskIdentity));
-            publisher.publish(new TaskStatusChangeEvent(state, taskIdentity));
+            TaskStatusChangeEvent changeEvent = new TaskStatusChangeEvent(state, taskIdentity);
+            Message message = new Message();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(changeEvent);
+            message.setEvent(baos.toByteArray());
+            message.setMessageType(MessageType.TASK);
+            message.setMessageLevel(MessageLevel.INFO);
+            message.setMessageId(AiravataUtils.getId("TASK"));
+            publisher.publish(message);
 
         } catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);

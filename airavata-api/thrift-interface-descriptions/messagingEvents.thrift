@@ -24,6 +24,22 @@ namespace java org.apache.airavata.model.messaging.event
 namespace php Airavata.Model.Messaging.Event
 namespace cpp apache.airavata.model.messaging.event
 
+const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
+
+enum MessageLevel {
+    INFO,
+    DEBUG,
+    ERROR,
+    ACK
+}
+
+enum MessageType {
+    EXPERIMENT,
+    TASK,
+    WORKFLOWNODE,
+    JOB
+}
+
 struct ExperimentStatusChangeEvent {
     1: required experimentModel.ExperimentState state;
     2: required string experimentId;
@@ -78,6 +94,14 @@ struct JobStatusChangeEvent {
     1: required experimentModel.JobState state;
     2: required JobIdentity jobIdentity;
 //    3: required JobMonitor jobMonitor;
+}
+
+struct Message {
+    1: required binary event;
+    2: required string messageId = DEFAULT_ID;
+    3: required MessageType messageType;
+    4: optional i64 updatedTime;
+    5: optional MessageLevel messageLevel;
 }
 
 

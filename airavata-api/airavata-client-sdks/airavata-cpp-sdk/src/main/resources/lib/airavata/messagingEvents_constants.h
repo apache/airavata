@@ -32,6 +32,7 @@ class messagingEventsConstants {
  public:
   messagingEventsConstants();
 
+  std::string DEFAULT_ID;
 };
 
 extern const messagingEventsConstants g_messagingEvents_constants;
