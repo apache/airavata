@@ -31,6 +31,7 @@ import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.TaskIdentity;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
+import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.utils.OutHandlerWorker;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
@@ -195,21 +196,24 @@ public class HPCPullMonitor extends PullMonitor {
                                 iterator1.remove();
                             }
                         }
+                        iterator1 = cancelJobList.iterator();
                     }
-                    Iterator<String> iterator = completedJobsFromPush.iterator();
-                    for(MonitorID iMonitorID:monitorID){
-                        while(iterator.hasNext()) {
-                            String cancelMId = iterator.next();
-                            if (cancelMId.equals(iMonitorID.getUserName() + "," + iMonitorID.getJobName())) {
-                                logger.info("This job is finished because push notification came with <username,jobName> " + cancelMId);
-                                completedJobs.add(iMonitorID);
-                                iMonitorID.setStatus(JobState.COMPLETE);
+                    synchronized (completedJobsFromPush) {
+                        Iterator<String> iterator = completedJobsFromPush.iterator();
+                        for (MonitorID iMonitorID : monitorID) {
+                            while (iterator.hasNext()) {
+                                String cancelMId = iterator.next();
+                                if (cancelMId.equals(iMonitorID.getUserName() + "," + iMonitorID.getJobName())) {
+                                    logger.info("This job is finished because push notification came with <username,jobName> " + cancelMId);
+                                    completedJobs.add(iMonitorID);
+                                    iMonitorID.setStatus(JobState.COMPLETE);
+                                }
+                                //we have to make this empty everytime we iterate, otherwise this list will accumilate and will
+                                // lead to a memory leak
+                                iterator.remove();
                             }
-                            //we have to make this empty everytime we iterate, otherwise this list will accumilate and will
-                            // lead to a memory leak
-                            iterator.remove();
+                            iterator = completedJobsFromPush.listIterator();
                         }
-                        iterator = completedJobsFromPush.listIterator();
                     }
                     Map<String, JobState> jobStatuses = connection.getJobStatuses(monitorID);
                     for (MonitorID iMonitorID : monitorID) {
@@ -218,7 +222,12 @@ public class HPCPullMonitor extends PullMonitor {
                                 !JobState.COMPLETE.equals(iMonitorID.getStatus())) {
                             iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID() + "," + iMonitorID.getJobName()));    //IMPORTANT this is NOT a simple setter we have a logic
                         }
-                            jobStatus = new JobStatusChangeRequest(iMonitorID);
+
+                        String id = iMonitorID.getUserName() + "," + iMonitorID.getJobName();
+                        if(completedJobsFromPush.contains(id)){
+                            iMonitorID.setStatus(JobState.COMPLETE);
+                        }
+                        jobStatus = new JobStatusChangeRequest(iMonitorID);
                             // we have this JobStatus class to handle amqp monitoring
 
                             publisher.publish(jobStatus);
@@ -227,10 +236,12 @@ public class HPCPullMonitor extends PullMonitor {
 
                             // After successful monitoring perform follow   ing actions to cleanup the queue, if necessary
                             if (jobStatus.getState().equals(JobState.COMPLETE)) {
-                                completedJobs.add(iMonitorID);
+                                if(completedJobs.contains(iMonitorID)) {
+                                    completedJobs.add(iMonitorID);
+                                }
                                 // we run all the finished jobs in separate threads, because each job doesn't have to wait until
                                 // each one finish transfering files
-                                BetterGfacImpl.getCachedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
+                                GFacThreadPoolExecutor.getCachedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
                             } else if (iMonitorID.getFailedCount() > FAILED_COUNT) {
                                 logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed" +iMonitorID.getFailedCount()+
                                         " 3 times, so skip this Job from Monitor");
