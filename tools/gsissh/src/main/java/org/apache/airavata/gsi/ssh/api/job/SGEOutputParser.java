@@ -117,12 +117,16 @@ public class SGEOutputParser implements OutputParser{
         }
     }
 
-    public String parse(String rawOutput) {
-        log.debug(rawOutput);
-        String[] info = rawOutput.split("\n");
-        String lastLine = info[info.length - 1];
-        return lastLine.split(" ")[2];  //In PBS stdout is going to be directly the jobID
-    }
+	public String parse(String rawOutput) {
+		log.debug(rawOutput);
+		if (rawOutput != null && !rawOutput.isEmpty()) {
+			String[] info = rawOutput.split("\n");
+			String lastLine = info[info.length - 1];
+			return lastLine.split(" ")[2]; // In PBS stdout is going to be directly the jobID
+		} else {
+			return "";
+		}
+	}
 
     public JobStatus parse(String jobID, String rawOutput) {
        // not implemented to sun grid engine
