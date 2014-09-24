@@ -114,13 +114,6 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             // to perform monitoring, daemon handlers can be accessed from anywhere
             delegateToMonitorHandlers(jobExecutionContext, (GsisshHostType) host, jobID);
             // we know this host is type GsiSSHHostType
-        } catch (SSHApiException e) {
-            String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
-            log.error(error);
-            jobDetails.setJobID("none");
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
-            GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-            throw new GFacProviderException(error, e);
         } catch (Exception e) {
             String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
             log.error(error);

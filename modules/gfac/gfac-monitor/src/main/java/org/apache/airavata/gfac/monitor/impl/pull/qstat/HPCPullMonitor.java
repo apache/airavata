@@ -20,7 +20,17 @@
 */
 package org.apache.airavata.gfac.monitor.impl.pull.qstat;
 
-import com.google.common.eventbus.EventBus;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -48,11 +58,7 @@ import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Timestamp;
-import java.util.*;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.LinkedBlockingQueue;
+import com.google.common.eventbus.EventBus;
 
 /**
  * This monitor is based on qstat command which can be run
@@ -243,7 +249,8 @@ public class HPCPullMonitor extends PullMonitor {
                                     publisher.publish(new TaskStatusChangeRequest(new TaskIdentity(iMonitorID.getExperimentID(), iMonitorID.getWorkflowNodeID(),
                                             iMonitorID.getTaskID()), TaskState.FAILED));
                                     logger.info(e.getLocalizedMessage(), e);
-                                }
+                                    throw new GFacException(e.getMessage(), e);
+                        	    }
                             } else {
                                 // Evey
                                 iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));

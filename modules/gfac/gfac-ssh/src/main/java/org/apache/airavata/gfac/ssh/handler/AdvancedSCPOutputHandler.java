@@ -27,6 +27,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
@@ -37,8 +38,10 @@ import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.DataType;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.slf4j.Logger;
@@ -102,6 +105,11 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     GFACSSHUtils.addSecurityContext(jobExecutionContext);
                 } catch (ApplicationSettingsException e) {
                     log.error(e.getMessage());
+                    try {
+         				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+         			} catch (GFacException e1) {
+         				 log.error(e1.getLocalizedMessage());
+         			}
                     throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
                 }
             }
@@ -147,6 +155,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
                 	String downloadFile = MappingFactory.toString(actualParameter);
                 	if(downloadFile == null || !(new File(downloadFile).isFile())){
+                        GFacUtils.saveErrorDetails(jobExecutionContext, "Empty Output returned from the application", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 		throw new GFacHandlerException("Empty Output returned from the application");
                 	}
                 	pbsCluster.scpTo(outputPath, downloadFile);
@@ -160,11 +169,21 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
              }
            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
         } catch (SSHApiException e) {
+            try {
+				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+			} catch (GFacException e1) {
+				 log.error(e1.getLocalizedMessage());
+			}
             log.error("Error transfering files to remote host : " + hostName + " with the user: " + userName);
             log.error(e.getMessage());
             throw new GFacHandlerException(e);
         } catch (Exception e) {
-            throw new GFacHandlerException(e);
+        	 try {
+ 				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+ 			} catch (GFacException e1) {
+ 				 log.error(e1.getLocalizedMessage());
+ 			}
+        	throw new GFacHandlerException(e);
         }
     }
 }

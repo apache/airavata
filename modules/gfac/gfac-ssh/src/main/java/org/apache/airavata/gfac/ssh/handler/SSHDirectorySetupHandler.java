@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.ssh.handler;
 
 import java.util.Properties;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -50,12 +49,15 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
             if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
             }
-        } catch (ApplicationSettingsException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
+            try {
+ 				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+ 			} catch (GFacException e1) {
+ 				 log.error(e1.getLocalizedMessage());
+ 			}
             throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
-        } catch (GFacException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        } 
 
         log.info("Setup SSH job directorties");
         super.invoke(jobExecutionContext);
@@ -83,8 +85,6 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
 
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
-        } catch (SSHApiException e) {
-            throw new GFacHandlerException("Error executing the Handler: " + SSHDirectorySetupHandler.class, e);
         } catch (Exception e) {
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();

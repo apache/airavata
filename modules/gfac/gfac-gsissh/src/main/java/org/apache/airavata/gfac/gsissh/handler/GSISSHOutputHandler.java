@@ -98,10 +98,12 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
 
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
-        } catch (ApplicationSettingsException e) {
-            log.error(e.getMessage());
-            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
-        } catch (GFacException e) {
+        }  catch (Exception e) {
+        	 try {
+  				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+  			} catch (GFacException e1) {
+  				 log.error(e1.getLocalizedMessage());
+  			}  
             log.error(e.getMessage());
             throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
         }
@@ -118,6 +120,8 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
             }
             if (cluster == null) {
+                GFacUtils.saveErrorDetails(jobExecutionContext, "Security context is not set properly", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
+                
                 throw new GFacProviderException("Security context is not set properly");
             } else {
                 log.info("Successfully retrieved the Security Context");
@@ -155,15 +159,21 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             }
             outputDataDir = outputDataDir + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID();
             (new File(outputDataDir)).mkdirs();
-
-
+         	
+            String stdOutStr = "";
             if (index < oldIndex) {
                 localStdOutFile = new File(oldFiles.get(index));
                 data.append(oldFiles.get(index++)).append(",");
             } else {
+            	int i = 0;
                 localStdOutFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stdout");
+                while(stdOutStr.isEmpty()){
                 cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
-                Thread.sleep(1000);
+                stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+                i++;
+                if(i==3)break;
+                }
+                
                 StringBuffer temp = new StringBuffer(data.append(localStdOutFile.getAbsolutePath()).append(",").toString());
                 GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
             }
@@ -173,12 +183,10 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             } else {
                 localStdErrFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stderr");
                 cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
-                Thread.sleep(1000);
                 StringBuffer temp = new StringBuffer(data.append(localStdErrFile.getAbsolutePath()).append(",").toString());
                 GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
             }
 
-            String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
             status.setTransferState(TransferState.STDOUT_DOWNLOAD);
             detail.setTransferStatus(status);
@@ -270,14 +278,6 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             detail.setTransferDescription(outputDataDir);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
-        } catch (XmlException e) {
-            throw new GFacHandlerException("Cannot read output:" + e.getMessage(), e);
-        } catch (ConnectionException e) {
-            throw new GFacHandlerException(e.getMessage(), e);
-        } catch (TransportException e) {
-            throw new GFacHandlerException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new GFacHandlerException(e.getMessage(), e);
         } catch (Exception e) {
             try {
                 status.setTransferState(TransferState.FAILED);
