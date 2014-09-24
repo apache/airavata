@@ -28,7 +28,15 @@ import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 
 public class AiravataRabbitMQPublisher implements Publisher {
+    private String brokerUrl;
+    private String routingKey;
+    private String exchangeName;
+    private int prefetchCount;
+    private boolean isRequeueOnFail;
+
     public AiravataRabbitMQPublisher() {
+
+        RabbitMQProducer rabbitMQProducer = new RabbitMQProducer(brokerUrl, routingKey, exchangeName, prefetchCount, isRequeueOnFail);
     }
 
     public void publish(ExperimentStatusChangeEvent event) {
