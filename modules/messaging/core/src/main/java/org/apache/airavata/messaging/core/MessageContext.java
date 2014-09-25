@@ -19,24 +19,26 @@
  *
  */
 
-package org.apache.airavata.messaging.core.impl;
+package org.apache.airavata.messaging.core;
 
-import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.thrift.TBase;
 
-public class AiravataRabbitMQPublisher implements Publisher {
-    private String brokerUrl;
-    private String routingKey;
-    private String exchangeName;
-    private int prefetchCount;
-    private boolean isRequeueOnFail;
+public class MessageContext {
+    private final TBase event;
 
-    public AiravataRabbitMQPublisher() {
+    private final MessageType type;
 
-        RabbitMQProducer rabbitMQProducer = new RabbitMQProducer(brokerUrl, routingKey, exchangeName, prefetchCount, isRequeueOnFail);
+    public MessageContext(TBase message, MessageType type) {
+        this.event = message;
+        this.type = type;
     }
 
-    public void publish(Message message) {
+    public TBase getEvent() {
+        return event;
+    }
 
+    public MessageType getType() {
+        return type;
     }
 }

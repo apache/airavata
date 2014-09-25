@@ -19,11 +19,19 @@
  *
  */
 
-package org.apache.airavata.messaging.core;
+package org.apache.airavata.common.utils;
 
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.thrift.TBase;
+import org.apache.thrift.TDeserializer;
+import org.apache.thrift.TException;
+import org.apache.thrift.TSerializer;
 
-public interface Publisher {
-    public void publish(MessageContext message) throws AiravataException;
+public class ThriftUtils {
+    public static byte[] serializeThriftObject(TBase object) throws TException {
+        return new TSerializer().serialize(object);
+    }
+
+    public static void createThriftFromBytes(byte []bytes, TBase object) throws TException {
+        new TDeserializer().deserialize(object, bytes);
+    }
 }
