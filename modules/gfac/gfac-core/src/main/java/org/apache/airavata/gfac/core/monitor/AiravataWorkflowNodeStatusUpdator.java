@@ -56,7 +56,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     }
 
     @Subscribe
-    public void setupWorkflowNodeStatus(TaskStatusChangeEvent taskStatus){
+    public void setupWorkflowNodeStatus(TaskStatusChangeEvent taskStatus) throws Exception{
     	WorkflowNodeState state=WorkflowNodeState.UNKNOWN;
     	switch(taskStatus.getState()){
     	case CANCELED:
@@ -93,6 +93,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
             publisher.publish(message);
 		} catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+            throw new Exception("Error persisting workflow node status..", e);
 		}
     }
 

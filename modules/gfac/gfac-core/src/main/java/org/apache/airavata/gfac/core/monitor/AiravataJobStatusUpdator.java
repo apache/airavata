@@ -58,7 +58,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
 
 
     @Subscribe
-    public void updateRegistry(JobStatusChangeEvent jobStatus) {
+    public void updateRegistry(JobStatusChangeEvent jobStatus) throws Exception{
         /* Here we need to parse the jobStatus message and update
                 the registry accordingly, for now we are just printing to standard Out
                  */
@@ -82,6 +82,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
                 publisher.publish(message);
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+                throw new Exception("Error persisting job status..", e);
             }
         }
     }
