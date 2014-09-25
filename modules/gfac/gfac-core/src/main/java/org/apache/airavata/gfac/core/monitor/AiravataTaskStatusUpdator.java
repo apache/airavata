@@ -65,7 +65,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
 //    }
 
     @Subscribe
-    public void setupTaskStatus(JobStatusChangeEvent jobStatus){
+    public void setupTaskStatus(JobStatusChangeEvent jobStatus) throws Exception{
     	TaskState state=TaskState.UNKNOWN;
     	switch(jobStatus.getState()){
     	case ACTIVE:
@@ -109,6 +109,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
 
         } catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+            throw new Exception("Error persisting task status..", e);
 		}
     }
     
