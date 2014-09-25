@@ -39,6 +39,7 @@ public class RabbitMQPublisher implements Publisher {
 
     private RabbitMQProducer rabbitMQProducer;
 
+
     public RabbitMQPublisher() throws Exception {
         String brokerUrl;
         String exchangeName;
@@ -51,14 +52,17 @@ public class RabbitMQPublisher implements Publisher {
             throw new AiravataException(message, e);
         }
         rabbitMQProducer = new RabbitMQProducer(brokerUrl, exchangeName);
-        rabbitMQProducer.open();
     }
 
     public void publish(MessageContext msgCtx) throws AiravataException {
         try {
-            byte []body = ThriftUtils.serializeThriftObject(msgCtx.getEvent());
+            rabbitMQProducer.open();
+            byte[] body = ThriftUtils.serializeThriftObject(msgCtx.getEvent());
             Message message = new Message();
             message.setEvent(body);
+            message.setMessageId(msgCtx.getMessageId());
+            message.setMessageType(msgCtx.getType());
+            message.setUpdatedTime(msgCtx.getUpdatedTime().getTime());
             String routingKey = null;
             if (msgCtx.getType().equals(MessageType.EXPERIMENT)){
                 ExperimentStatusChangeEvent event = (ExperimentStatusChangeEvent) msgCtx.getEvent();
@@ -79,7 +83,8 @@ public class RabbitMQPublisher implements Publisher {
                         identity.getTaskId() + "." +
                         identity.getJobId();
             }
-            rabbitMQProducer.send(body, routingKey);
+            byte[] messageBody = ThriftUtils.serializeThriftObject(message);
+            rabbitMQProducer.send(messageBody, routingKey);
         } catch (TException e) {
             String msg = "Error while deserializing the object";
             log.error(msg, e);

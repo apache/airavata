@@ -20,16 +20,17 @@
 */
 package org.apache.airavata.api.server.listener;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.util.Calendar;
-
+import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.api.server.util.DataModelUtils;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
@@ -38,7 +39,7 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.Subscribe;
+import java.util.Calendar;
 
 public class AiravataExperimentStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataExperimentStatusUpdator.class);
@@ -90,15 +91,12 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 			logger.debug("Publishing experiment status for "+nodeStatus.getWorkflowNodeIdentity().getExperimentId()+":"+state.toString());
 			monitorPublisher.publish(new ExperimentStatusChangeEvent(state, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
             ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent(state, nodeStatus.getWorkflowNodeIdentity().getExperimentId());
-            Message message = new Message();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(experimentStatusChangeEvent);
-            message.setEvent(baos.toByteArray());
-            message.setMessageType(MessageType.EXPERIMENT);
-            message.setMessageLevel(MessageLevel.INFO);
-            message.setMessageId(AiravataUtils.getId("EXP"));
-            publisher.publish(message);
+            String messageId = AiravataUtils.getId("EXPERIMENT");
+            MessageContext msgCntxt = new MessageContext(experimentStatusChangeEvent, MessageType.EXPERIMENT, messageId);
+            msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            if ( ServerSettings.isRabbitMqPublishEnabled()){
+                publisher.publish(msgCntxt);
+            }
 		} catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             throw new Exception("Error persisting experiment status..", e);

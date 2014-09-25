@@ -20,15 +20,17 @@
 */
 package org.apache.airavata.gfac.core.monitor;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.util.Calendar;
-
+import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.WorkflowIdentity;
+import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
@@ -37,7 +39,7 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.Subscribe;
+import java.util.Calendar;
 
 public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataWorkflowNodeStatusUpdator.class);
@@ -82,15 +84,13 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
             WorkflowIdentity workflowIdentity = new WorkflowIdentity(taskStatus.getTaskIdentity().getWorkflowNodeId(), taskStatus.getTaskIdentity().getExperimentId());
             monitorPublisher.publish(new WorkflowNodeStatusChangeEvent(state, workflowIdentity));
             WorkflowNodeStatusChangeEvent changeEvent = new WorkflowNodeStatusChangeEvent(state, workflowIdentity);
-            Message message = new Message();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(changeEvent);
-            message.setEvent(baos.toByteArray());
-            message.setMessageType(MessageType.WORKFLOWNODE);
-            message.setMessageLevel(MessageLevel.INFO);
-            message.setMessageId(AiravataUtils.getId("NODE"));
-            publisher.publish(message);
+            String messageId = AiravataUtils.getId("WFNODE");
+            MessageContext msgCntxt = new MessageContext(changeEvent, MessageType.WORKFLOWNODE, messageId);
+            msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+
+            if ( ServerSettings.isRabbitMqPublishEnabled()){
+                publisher.publish(msgCntxt);
+            }
 		} catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             throw new Exception("Error persisting workflow node status..", e);
