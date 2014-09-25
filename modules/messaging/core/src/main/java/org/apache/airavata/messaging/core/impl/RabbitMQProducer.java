@@ -28,6 +28,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 public class RabbitMQProducer {
+    public static final int DEFAULT_PRE_FETCH = 64;
+
     private static Logger log = LoggerFactory.getLogger(RabbitMQProducer.class);
 
     private Connection connection;
@@ -40,21 +42,23 @@ public class RabbitMQProducer {
 
     private String exchangeName;
 
-    private String routingKey;
-
-    private int prefetchCount;
+    private int prefetchCount = DEFAULT_PRE_FETCH;
 
     private boolean isReQueueOnFail = false;
 
     private String url;
 
-    public RabbitMQProducer(String url, String routingKey, String exchangeName,
-                            int prefetchCount, boolean isReQueueOnFail) {
-        this.prefetchCount = prefetchCount;
-        this.isReQueueOnFail = isReQueueOnFail;
+    public RabbitMQProducer(String url, String exchangeName) {
         this.exchangeName = exchangeName;
-        this.routingKey = routingKey;
         this.url = url;
+    }
+
+    public void setPrefetchCount(int prefetchCount) {
+        this.prefetchCount = prefetchCount;
+    }
+
+    public void setReQueueOnFail(boolean isReQueueOnFail) {
+        this.isReQueueOnFail = isReQueueOnFail;
     }
 
     private void reset() {
@@ -109,7 +113,7 @@ public class RabbitMQProducer {
         }
     }
 
-    public void send(byte []message) throws Exception {
+    public void send(byte []message, String routingKey) throws Exception {
         try {
             channel.basicPublish(exchangeName, routingKey, null, message);
         } catch (IOException e) {
@@ -125,7 +129,6 @@ public class RabbitMQProducer {
             connectionFactory.setUri(url);
             Connection connection = connectionFactory.newConnection();
             connection.addShutdownListener(new ShutdownListener() {
-                @Override
                 public void shutdownCompleted(ShutdownSignalException cause) {
                 }
             });
