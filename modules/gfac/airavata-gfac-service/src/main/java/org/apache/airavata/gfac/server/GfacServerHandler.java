@@ -63,7 +63,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
 
     private boolean connected = false;
 
-    private static Integer mutex = new Integer(-1);
+    private static Integer mutex = -1;
 
     private MonitorPublisher publisher;
 
@@ -153,8 +153,9 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             } else if(state == Event.KeeperState.Expired ||
                     state == Event.KeeperState.Disconnected){
                 try {
-                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(),6000,this);
-                    synchronized(mutex){
+                    mutex = -1;
+                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+                    synchronized (mutex) {
                         mutex.wait();  // waiting for the syncConnected event
                     }
                     storeServerConfig();

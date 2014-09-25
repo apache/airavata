@@ -24,6 +24,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +42,8 @@ public class SimpleJobFinishConsumer {
 
     public void listen() {
         try {
+            String queueName = ServerSettings.getSetting(Constants.GFAC_SERVER_PORT, "8950");
             String uri = "amqp://localhost";
-            String queueName = "SimpleQueue";
 
             ConnectionFactory connFactory = new ConnectionFactory();
             connFactory.setUri(uri);
