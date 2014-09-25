@@ -20,16 +20,17 @@
 */
 package org.apache.airavata.gfac.core.monitor;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.util.Calendar;
-
+import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.TaskIdentity;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.registry.cpi.Registry;
@@ -37,7 +38,7 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.Subscribe;
+import java.util.Calendar;
 
 public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataTaskStatusUpdator.class);
@@ -97,15 +98,12 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
                                                          jobStatus.getJobIdentity().getExperimentId());
             monitorPublisher.publish(new TaskStatusChangeEvent(state, taskIdentity));
             TaskStatusChangeEvent changeEvent = new TaskStatusChangeEvent(state, taskIdentity);
-            Message message = new Message();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(changeEvent);
-            message.setEvent(baos.toByteArray());
-            message.setMessageType(MessageType.TASK);
-            message.setMessageLevel(MessageLevel.INFO);
-            message.setMessageId(AiravataUtils.getId("TASK"));
-            publisher.publish(message);
+            String messageId = AiravataUtils.getId("TASK");
+            MessageContext msgCntxt = new MessageContext(changeEvent, MessageType.TASK, messageId);
+            msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            if ( ServerSettings.isRabbitMqPublishEnabled()){
+                publisher.publish(msgCntxt);
+            }
 
         } catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);

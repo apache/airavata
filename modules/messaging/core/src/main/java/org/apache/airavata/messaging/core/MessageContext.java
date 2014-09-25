@@ -24,14 +24,19 @@ package org.apache.airavata.messaging.core;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.thrift.TBase;
 
+import java.sql.Timestamp;
+
 public class MessageContext {
     private final TBase event;
-
     private final MessageType type;
+    private final String messageId;
+    private Timestamp updatedTime;
 
-    public MessageContext(TBase message, MessageType type) {
+
+    public MessageContext(TBase message, MessageType type, String messageId) {
         this.event = message;
         this.type = type;
+        this.messageId = messageId;
     }
 
     public TBase getEvent() {
@@ -40,5 +45,17 @@ public class MessageContext {
 
     public MessageType getType() {
         return type;
+    }
+
+    public Timestamp getUpdatedTime() {
+        return updatedTime;
+    }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setUpdatedTime(Timestamp updatedTime) {
+        this.updatedTime = updatedTime;
     }
 }
