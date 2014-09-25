@@ -399,8 +399,18 @@ public class JobDescriptor {
         this.jobDescriptionDocument.getJobDescriptor().setCallBackIp(ip);
     }
 
+    public void setCallBackPort(String ip){
+        this.jobDescriptionDocument.getJobDescriptor().setCallBackPort(ip);
+    }
+
+
     public String getCallBackIp(){
         return this.jobDescriptionDocument.getJobDescriptor().getCallBackIp();
     }
+    public String getCallBackPort(){
+        return this.jobDescriptionDocument.getJobDescriptor().getCallBackPort();
+    }
+
+
 }
 

@@ -46,7 +46,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
-    private static String echoAppId = "Echo_c6e6aaac-7d9d-44fc-aba2-63b5100528e8";
+    private static String echoAppId = "Echo_38c5ad74-3a27-46d3-963b-d63f1c37b194";
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
@@ -56,13 +56,14 @@ public class CreateLaunchExperiment {
     private static String br2HostName = "bigred2.uits.iu.edu";
 
     public static void main(String[] args) {
-        try {
+        for (int i = 0; i < 1; i++)
+            try {
             airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavataClient.getAPIVersion());
 //            registerApplications(); // run this only the first time
 
 //            final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createEchoExperimentForTrestles(airavataClient);
+                final String expId = createEchoExperimentForTrestles(airavataClient);
 //            final String expId = createEchoExperimentForStampede(airavataClient);
 //            final String expId = createExperimentEchoForLocalHost(airavataClient);
 //            final String expId = createExperimentWRFTrestles(airavataClient);
@@ -74,7 +75,8 @@ public class CreateLaunchExperiment {
 
 //            System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
-//              launchExperiment(airavataClient, expId);
+            launchExperiment(airavataClient, expId);
+
 //              System.out.println(expId);
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());

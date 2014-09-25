@@ -115,6 +115,7 @@ public class GFACGSISSHUtils {
         JobDescriptor jobDescriptor = new JobDescriptor();
         // this is common for any application descriptor
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
+        jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
         jobDescriptor.setInputDirectory(app.getInputDataDirectory());
         jobDescriptor.setOutputDirectory(app.getOutputDataDirectory());
         jobDescriptor.setExecutablePath(app.getExecutableLocation());

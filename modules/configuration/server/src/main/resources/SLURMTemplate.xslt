@@ -8,7 +8,8 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="http://airavata.apache.org/gsi/ssh/2012/12">
 <xsl:output method="text" />
 <xsl:template match="/ns:JobDescriptor">
-<xsl:choose>
+    <xsl:param name="quote">"</xsl:param>
+    <xsl:choose>
 <xsl:when test="ns:shellName">
 #!<xsl:value-of select="ns:shellName"/>
     </xsl:when>
@@ -69,7 +70,7 @@ cd <xsl:text>   </xsl:text><xsl:value-of select="ns:workingDirectory"/><xsl:text
 <xsl:for-each select="ns:inputs/ns:input">
       <xsl:value-of select="."/><xsl:text>   </xsl:text>
     </xsl:for-each>
-~/rabbitmq-java-client-bin-3.3.5/runjava.sh com.rabbitmq.examples.SimpleProducer amqp://<xsl:value-of select="ns:callBackIp"/><xsl:text> </xsl:text><xsl:value-of select="ns:userName"/>,<xsl:value-of select="ns:jobName"/>
+    ~/rabbitmq-java-client-bin-3.3.5/runjava.sh com.rabbitmq.examples.SimpleProducer amqp://<xsl:value-of select="ns:callBackIp"/><xsl:text> </xsl:text><xsl:value-of select="ns:userName"/>,<xsl:value-of select="ns:jobName"/><xsl:text> </xsl:text><xsl:value-of select="$quote"/><xsl:value-of select="$quote"/><xsl:text> </xsl:text><xsl:value-of select="ns:callBackPort"/>
 </xsl:template>
 
 </xsl:stylesheet>
