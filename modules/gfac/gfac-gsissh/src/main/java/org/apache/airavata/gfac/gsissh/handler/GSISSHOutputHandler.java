@@ -168,8 +168,13 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             	int i = 0;
                 localStdOutFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stdout");
                 while(stdOutStr.isEmpty()){
-                cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
-                stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+                try {
+                	cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
+                	stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+				} catch (Exception e) {
+					log.error(e.getLocalizedMessage());
+					  Thread.sleep(2000);
+		        }
                 i++;
                 if(i==3)break;
                 }
