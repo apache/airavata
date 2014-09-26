@@ -57,7 +57,9 @@ import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -128,8 +130,11 @@ public class BetterGfacImpl implements GFac {
         try {
             String[] listenerClassList = ServerSettings.getActivityListeners();
             String activityPublisher = ServerSettings.getActivityPublisher();
-            Class<? extends Publisher> aPublisher = Class.forName(activityPublisher).asSubclass(Publisher.class);
-            Publisher rabbitMQPublisher = aPublisher.newInstance();
+            Publisher rabbitMQPublisher = null;
+            if (ServerSettings.isRabbitMqPublishEnabled()){
+                Class<? extends Publisher> aPublisher = Class.forName(activityPublisher).asSubclass(Publisher.class);
+                rabbitMQPublisher = aPublisher.newInstance();
+            }
             for (String listenerClass : listenerClassList) {
                 Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
                 AbstractActivityListener abstractActivityListener = aClass.newInstance();
@@ -556,7 +561,7 @@ public class BetterGfacImpl implements GFac {
 				// jobExecutionContext.getTaskData().getTaskID()),
 				// TaskState.FAILED
 				// ));
-                org.apache.airavata.model.messaging.event.JobIdentity jobIdentity = new org.apache.airavata.model.messaging.event.JobIdentity(
+                JobIdentifier jobIdentity = new JobIdentifier(
                         jobExecutionContext.getJobDetails().getJobID(), jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                         jobExecutionContext.getExperimentID());
@@ -567,7 +572,7 @@ public class BetterGfacImpl implements GFac {
 //				monitorPublisher
 //						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
 				// Updating the task status if there's any task associated
-                org.apache.airavata.model.messaging.event.TaskIdentity taskIdentity = new org.apache.airavata.model.messaging.event.TaskIdentity(jobExecutionContext.getTaskData().getTaskID(),
+                TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                         jobExecutionContext.getExperimentID());
 				monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
@@ -618,7 +623,7 @@ public class BetterGfacImpl implements GFac {
 				// jobExecutionContext.getTaskData().getTaskID()),
 				// TaskState.FAILED
 				// ));
-                org.apache.airavata.model.messaging.event.JobIdentity jobIdentity = new org.apache.airavata.model.messaging.event.JobIdentity(
+                JobIdentifier jobIdentity = new JobIdentifier(
                         jobExecutionContext.getJobDetails().getJobID(),jobExecutionContext.getTaskData().getTaskID(),jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                         jobExecutionContext.getExperimentID());
 				monitorPublisher.publish(new JobStatusChangeEvent(JobState.FAILED, jobIdentity));
@@ -627,7 +632,7 @@ public class BetterGfacImpl implements GFac {
 						+ "NullPointerException occurred because at this point there might not have Job Created", e1, e);
 				//monitorPublisher.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
 				// Updating the task status if there's any task associated
-                org.apache.airavata.model.messaging.event.TaskIdentity taskIdentity = new org.apache.airavata.model.messaging.event.TaskIdentity(jobExecutionContext.getTaskData().getTaskID(),
+                TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                         jobExecutionContext.getExperimentID());
                 monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
@@ -805,7 +810,7 @@ public class BetterGfacImpl implements GFac {
 //                ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
 //                ExperimentState.COMPLETED));
         // Updating the task status if there's any task associated
-        org.apache.airavata.model.messaging.event.TaskIdentity taskIdentity = new org.apache.airavata.model.messaging.event.TaskIdentity(jobExecutionContext.getTaskData().getTaskID(),
+        TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                 jobExecutionContext.getExperimentID());
         monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.COMPLETED, taskIdentity));
@@ -934,7 +939,7 @@ public class BetterGfacImpl implements GFac {
 //                ExperimentState.COMPLETED));
         // Updating the task status if there's any task associated
 
-        org.apache.airavata.model.messaging.event.TaskIdentity taskIdentity = new org.apache.airavata.model.messaging.event.TaskIdentity(jobExecutionContext.getTaskData().getTaskID(),
+        TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                 jobExecutionContext.getExperimentID());
         monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.COMPLETED, taskIdentity));

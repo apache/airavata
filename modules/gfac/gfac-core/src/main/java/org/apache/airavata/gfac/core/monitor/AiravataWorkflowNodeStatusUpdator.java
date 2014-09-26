@@ -29,7 +29,7 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.WorkflowIdentity;
+import org.apache.airavata.model.messaging.event.WorkflowIdentifier;
 import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
@@ -81,11 +81,11 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     	try {
 			updateWorkflowNodeStatus(taskStatus.getTaskIdentity().getWorkflowNodeId(), state);
 			logger.debug("Publishing workflow node status for "+taskStatus.getTaskIdentity().getWorkflowNodeId()+":"+state.toString());
-            WorkflowIdentity workflowIdentity = new WorkflowIdentity(taskStatus.getTaskIdentity().getWorkflowNodeId(), taskStatus.getTaskIdentity().getExperimentId());
-            monitorPublisher.publish(new WorkflowNodeStatusChangeEvent(state, workflowIdentity));
-            WorkflowNodeStatusChangeEvent changeEvent = new WorkflowNodeStatusChangeEvent(state, workflowIdentity);
+            WorkflowIdentifier workflowIdentity = new WorkflowIdentifier(taskStatus.getTaskIdentity().getWorkflowNodeId(), taskStatus.getTaskIdentity().getExperimentId());
+            WorkflowNodeStatusChangeEvent event = new WorkflowNodeStatusChangeEvent(state, workflowIdentity);
+            monitorPublisher.publish(event);
             String messageId = AiravataUtils.getId("WFNODE");
-            MessageContext msgCntxt = new MessageContext(changeEvent, MessageType.WORKFLOWNODE, messageId);
+            MessageContext msgCntxt = new MessageContext(event, MessageType.WORKFLOWNODE, messageId);
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
 
             if ( ServerSettings.isRabbitMqPublishEnabled()){
@@ -98,7 +98,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     }
 
     public  void updateWorkflowNodeStatus(String workflowNodeId, WorkflowNodeState state) throws Exception {
-		logger.debug("Updating workflow node status for "+workflowNodeId+":"+state.toString());
+		logger.info("Updating workflow node status for "+workflowNodeId+":"+state.toString());
     	WorkflowNodeDetails details = (WorkflowNodeDetails)airavataRegistry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
         if(details == null) {
             details = new WorkflowNodeDetails();

@@ -57,9 +57,9 @@ import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.model.messaging.event.JobIdentity;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.TaskIdentity;
+import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -326,7 +326,7 @@ public class GFacImpl implements GFac {
             }
         } catch (Exception e) {
             try {
-                JobIdentity jobIdentity = new JobIdentity(jobExecutionContext.getJobDetails().getJobID(),
+                JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
                         jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                         jobExecutionContext.getExperimentID());
@@ -338,7 +338,7 @@ public class GFacImpl implements GFac {
 //				monitorPublisher
 //						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
 				// Updating the task status if there's any task associated
-                TaskIdentity taskIdentity = new TaskIdentity(jobExecutionContext.getTaskData().getTaskID(),
+                TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                         jobExecutionContext.getExperimentID());
                 monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
@@ -458,7 +458,7 @@ public class GFacImpl implements GFac {
 //                ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
 //                ExperimentState.COMPLETED));
         // Updating the task status if there's any task associated
-        TaskIdentity taskIdentity = new TaskIdentity(jobExecutionContext.getTaskData().getTaskID(),
+        TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                 jobExecutionContext.getExperimentID());
         monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.COMPLETED, taskIdentity));

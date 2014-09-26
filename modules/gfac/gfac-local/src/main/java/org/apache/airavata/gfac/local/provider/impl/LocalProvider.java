@@ -37,9 +37,9 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.local.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.local.utils.InputUtils;
-import org.apache.airavata.model.messaging.event.JobIdentity;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.TaskIdentity;
+import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
@@ -174,7 +174,7 @@ public class LocalProvider extends AbstractProvider {
 
             // updating the job status to complete because there's nothing to monitor in local jobs
 //            MonitorID monitorID = createMonitorID(jobExecutionContext);
-            JobIdentity jobIdentity = new JobIdentity(jobExecutionContext.getJobDetails().getJobID(),
+            JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
                     jobExecutionContext.getTaskData().getTaskID(),
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                     jobExecutionContext.getExperimentID());
@@ -232,7 +232,7 @@ public class LocalProvider extends AbstractProvider {
                 registry.update(RegistryModelType.TASK_DETAIL, taskDetails, taskDetails.getTaskID());
             }
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
-            TaskIdentity taskIdentity = new TaskIdentity(jobExecutionContext.getTaskData().getTaskID(),
+            TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                     jobExecutionContext.getExperimentID());
             getMonitorPublisher().publish(new TaskOutputChangeEvent(outputArray, taskIdentity));

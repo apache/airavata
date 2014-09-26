@@ -102,16 +102,16 @@ class ExperimentStatusChangeEvent {
 void swap(ExperimentStatusChangeEvent &a, ExperimentStatusChangeEvent &b);
 
 
-class WorkflowIdentity {
+class WorkflowIdentifier {
  public:
 
   static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
   static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
 
-  WorkflowIdentity() : workflowNodeId(), experimentId() {
+  WorkflowIdentifier() : workflowNodeId(), experimentId() {
   }
 
-  virtual ~WorkflowIdentity() throw() {}
+  virtual ~WorkflowIdentifier() throw() {}
 
   std::string workflowNodeId;
   std::string experimentId;
@@ -124,7 +124,7 @@ class WorkflowIdentity {
     experimentId = val;
   }
 
-  bool operator == (const WorkflowIdentity & rhs) const
+  bool operator == (const WorkflowIdentifier & rhs) const
   {
     if (!(workflowNodeId == rhs.workflowNodeId))
       return false;
@@ -132,18 +132,18 @@ class WorkflowIdentity {
       return false;
     return true;
   }
-  bool operator != (const WorkflowIdentity &rhs) const {
+  bool operator != (const WorkflowIdentifier &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const WorkflowIdentity & ) const;
+  bool operator < (const WorkflowIdentifier & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-void swap(WorkflowIdentity &a, WorkflowIdentity &b);
+void swap(WorkflowIdentifier &a, WorkflowIdentifier &b);
 
 
 class WorkflowNodeStatusChangeEvent {
@@ -158,13 +158,13 @@ class WorkflowNodeStatusChangeEvent {
   virtual ~WorkflowNodeStatusChangeEvent() throw() {}
 
    ::apache::airavata::model::workspace::experiment::WorkflowNodeState::type state;
-  WorkflowIdentity workflowNodeIdentity;
+  WorkflowIdentifier workflowNodeIdentity;
 
   void __set_state(const  ::apache::airavata::model::workspace::experiment::WorkflowNodeState::type val) {
     state = val;
   }
 
-  void __set_workflowNodeIdentity(const WorkflowIdentity& val) {
+  void __set_workflowNodeIdentity(const WorkflowIdentifier& val) {
     workflowNodeIdentity = val;
   }
 
@@ -190,16 +190,16 @@ class WorkflowNodeStatusChangeEvent {
 void swap(WorkflowNodeStatusChangeEvent &a, WorkflowNodeStatusChangeEvent &b);
 
 
-class TaskIdentity {
+class TaskIdentifier {
  public:
 
   static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
   static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
 
-  TaskIdentity() : taskId(), workflowNodeId(), experimentId() {
+  TaskIdentifier() : taskId(), workflowNodeId(), experimentId() {
   }
 
-  virtual ~TaskIdentity() throw() {}
+  virtual ~TaskIdentifier() throw() {}
 
   std::string taskId;
   std::string workflowNodeId;
@@ -217,7 +217,7 @@ class TaskIdentity {
     experimentId = val;
   }
 
-  bool operator == (const TaskIdentity & rhs) const
+  bool operator == (const TaskIdentifier & rhs) const
   {
     if (!(taskId == rhs.taskId))
       return false;
@@ -227,18 +227,18 @@ class TaskIdentity {
       return false;
     return true;
   }
-  bool operator != (const TaskIdentity &rhs) const {
+  bool operator != (const TaskIdentifier &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const TaskIdentity & ) const;
+  bool operator < (const TaskIdentifier & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-void swap(TaskIdentity &a, TaskIdentity &b);
+void swap(TaskIdentifier &a, TaskIdentifier &b);
 
 
 class TaskStatusChangeEvent {
@@ -253,13 +253,13 @@ class TaskStatusChangeEvent {
   virtual ~TaskStatusChangeEvent() throw() {}
 
    ::apache::airavata::model::workspace::experiment::TaskState::type state;
-  TaskIdentity taskIdentity;
+  TaskIdentifier taskIdentity;
 
   void __set_state(const  ::apache::airavata::model::workspace::experiment::TaskState::type val) {
     state = val;
   }
 
-  void __set_taskIdentity(const TaskIdentity& val) {
+  void __set_taskIdentity(const TaskIdentifier& val) {
     taskIdentity = val;
   }
 
@@ -285,6 +285,50 @@ class TaskStatusChangeEvent {
 void swap(TaskStatusChangeEvent &a, TaskStatusChangeEvent &b);
 
 
+class TaskStatusChangeRequestEvent {
+ public:
+
+  static const char* ascii_fingerprint; // = "9686679C94D43D75F2B35A0BED2E4003";
+  static const uint8_t binary_fingerprint[16]; // = {0x96,0x86,0x67,0x9C,0x94,0xD4,0x3D,0x75,0xF2,0xB3,0x5A,0x0B,0xED,0x2E,0x40,0x03};
+
+  TaskStatusChangeRequestEvent() : state(( ::apache::airavata::model::workspace::experiment::TaskState::type)0) {
+  }
+
+  virtual ~TaskStatusChangeRequestEvent() throw() {}
+
+   ::apache::airavata::model::workspace::experiment::TaskState::type state;
+  TaskIdentifier taskIdentity;
+
+  void __set_state(const  ::apache::airavata::model::workspace::experiment::TaskState::type val) {
+    state = val;
+  }
+
+  void __set_taskIdentity(const TaskIdentifier& val) {
+    taskIdentity = val;
+  }
+
+  bool operator == (const TaskStatusChangeRequestEvent & rhs) const
+  {
+    if (!(state == rhs.state))
+      return false;
+    if (!(taskIdentity == rhs.taskIdentity))
+      return false;
+    return true;
+  }
+  bool operator != (const TaskStatusChangeRequestEvent &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const TaskStatusChangeRequestEvent & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(TaskStatusChangeRequestEvent &a, TaskStatusChangeRequestEvent &b);
+
+
 class TaskOutputChangeEvent {
  public:
 
@@ -297,13 +341,13 @@ class TaskOutputChangeEvent {
   virtual ~TaskOutputChangeEvent() throw() {}
 
   std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType>  output;
-  TaskIdentity taskIdentity;
+  TaskIdentifier taskIdentity;
 
   void __set_output(const std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & val) {
     output = val;
   }
 
-  void __set_taskIdentity(const TaskIdentity& val) {
+  void __set_taskIdentity(const TaskIdentifier& val) {
     taskIdentity = val;
   }
 
@@ -329,16 +373,16 @@ class TaskOutputChangeEvent {
 void swap(TaskOutputChangeEvent &a, TaskOutputChangeEvent &b);
 
 
-class JobIdentity {
+class JobIdentifier {
  public:
 
   static const char* ascii_fingerprint; // = "C93D890311F28844166CF6E571EB3AC2";
   static const uint8_t binary_fingerprint[16]; // = {0xC9,0x3D,0x89,0x03,0x11,0xF2,0x88,0x44,0x16,0x6C,0xF6,0xE5,0x71,0xEB,0x3A,0xC2};
 
-  JobIdentity() : jobId(), taskId(), workflowNodeId(), experimentId() {
+  JobIdentifier() : jobId(), taskId(), workflowNodeId(), experimentId() {
   }
 
-  virtual ~JobIdentity() throw() {}
+  virtual ~JobIdentifier() throw() {}
 
   std::string jobId;
   std::string taskId;
@@ -361,7 +405,7 @@ class JobIdentity {
     experimentId = val;
   }
 
-  bool operator == (const JobIdentity & rhs) const
+  bool operator == (const JobIdentifier & rhs) const
   {
     if (!(jobId == rhs.jobId))
       return false;
@@ -373,18 +417,18 @@ class JobIdentity {
       return false;
     return true;
   }
-  bool operator != (const JobIdentity &rhs) const {
+  bool operator != (const JobIdentifier &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const JobIdentity & ) const;
+  bool operator < (const JobIdentifier & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-void swap(JobIdentity &a, JobIdentity &b);
+void swap(JobIdentifier &a, JobIdentifier &b);
 
 
 class JobStatusChangeEvent {
@@ -399,13 +443,13 @@ class JobStatusChangeEvent {
   virtual ~JobStatusChangeEvent() throw() {}
 
    ::apache::airavata::model::workspace::experiment::JobState::type state;
-  JobIdentity jobIdentity;
+  JobIdentifier jobIdentity;
 
   void __set_state(const  ::apache::airavata::model::workspace::experiment::JobState::type val) {
     state = val;
   }
 
-  void __set_jobIdentity(const JobIdentity& val) {
+  void __set_jobIdentity(const JobIdentifier& val) {
     jobIdentity = val;
   }
 
@@ -429,6 +473,50 @@ class JobStatusChangeEvent {
 };
 
 void swap(JobStatusChangeEvent &a, JobStatusChangeEvent &b);
+
+
+class JobStatusChangeRequestEvent {
+ public:
+
+  static const char* ascii_fingerprint; // = "8D18A3CD1822DBC67D7BD8CB98E7B4F1";
+  static const uint8_t binary_fingerprint[16]; // = {0x8D,0x18,0xA3,0xCD,0x18,0x22,0xDB,0xC6,0x7D,0x7B,0xD8,0xCB,0x98,0xE7,0xB4,0xF1};
+
+  JobStatusChangeRequestEvent() : state(( ::apache::airavata::model::workspace::experiment::JobState::type)0) {
+  }
+
+  virtual ~JobStatusChangeRequestEvent() throw() {}
+
+   ::apache::airavata::model::workspace::experiment::JobState::type state;
+  JobIdentifier jobIdentity;
+
+  void __set_state(const  ::apache::airavata::model::workspace::experiment::JobState::type val) {
+    state = val;
+  }
+
+  void __set_jobIdentity(const JobIdentifier& val) {
+    jobIdentity = val;
+  }
+
+  bool operator == (const JobStatusChangeRequestEvent & rhs) const
+  {
+    if (!(state == rhs.state))
+      return false;
+    if (!(jobIdentity == rhs.jobIdentity))
+      return false;
+    return true;
+  }
+  bool operator != (const JobStatusChangeRequestEvent &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const JobStatusChangeRequestEvent & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(JobStatusChangeRequestEvent &a, JobStatusChangeRequestEvent &b);
 
 typedef struct _Message__isset {
   _Message__isset() : updatedTime(false), messageLevel(false) {}

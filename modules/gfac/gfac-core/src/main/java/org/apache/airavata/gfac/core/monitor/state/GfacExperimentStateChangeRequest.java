@@ -20,25 +20,25 @@
 */
 package org.apache.airavata.gfac.core.monitor.state;
 
-import org.apache.airavata.gfac.core.monitor.JobIdentity;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
 
 public class GfacExperimentStateChangeRequest {
     private GfacExperimentState state;
 
-    private JobIdentity identity;
+    private JobIdentifier identity;
 
     private MonitorID monitorID;
 
     public GfacExperimentStateChangeRequest(MonitorID monitorID, GfacExperimentState state) {
-        setIdentity(new JobIdentity(monitorID.getExperimentID(), monitorID.getWorkflowNodeID(),
+        setIdentity(new JobIdentifier(monitorID.getExperimentID(), monitorID.getWorkflowNodeID(),
                 monitorID.getTaskID(), monitorID.getJobID()));
         setMonitorID(monitorID);
         this.state = state;
     }
 
-    public GfacExperimentStateChangeRequest(MonitorID monitorID, JobIdentity jobId, GfacExperimentState state) {
+    public GfacExperimentStateChangeRequest(MonitorID monitorID, JobIdentifier jobId, GfacExperimentState state) {
         setIdentity(jobId);
         setMonitorID(monitorID);
         this.state = state;
@@ -53,11 +53,11 @@ public class GfacExperimentStateChangeRequest {
         this.state = state;
     }
 
-    public JobIdentity getIdentity() {
+    public JobIdentifier getIdentity() {
         return identity;
     }
 
-    public void setIdentity(JobIdentity identity) {
+    public void setIdentity(JobIdentifier identity) {
         this.identity = identity;
     }
 

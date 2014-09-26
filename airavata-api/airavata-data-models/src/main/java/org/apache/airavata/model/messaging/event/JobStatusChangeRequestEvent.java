@@ -49,29 +49,29 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class WorkflowNodeStatusChangeEvent implements org.apache.thrift.TBase<WorkflowNodeStatusChangeEvent, WorkflowNodeStatusChangeEvent._Fields>, java.io.Serializable, Cloneable, Comparable<WorkflowNodeStatusChangeEvent> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("WorkflowNodeStatusChangeEvent");
+@SuppressWarnings("all") public class JobStatusChangeRequestEvent implements org.apache.thrift.TBase<JobStatusChangeRequestEvent, JobStatusChangeRequestEvent._Fields>, java.io.Serializable, Cloneable, Comparable<JobStatusChangeRequestEvent> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("JobStatusChangeRequestEvent");
 
   private static final org.apache.thrift.protocol.TField STATE_FIELD_DESC = new org.apache.thrift.protocol.TField("state", org.apache.thrift.protocol.TType.I32, (short)1);
-  private static final org.apache.thrift.protocol.TField WORKFLOW_NODE_IDENTITY_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowNodeIdentity", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+  private static final org.apache.thrift.protocol.TField JOB_IDENTITY_FIELD_DESC = new org.apache.thrift.protocol.TField("jobIdentity", org.apache.thrift.protocol.TType.STRUCT, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new WorkflowNodeStatusChangeEventStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new WorkflowNodeStatusChangeEventTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new JobStatusChangeRequestEventStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new JobStatusChangeRequestEventTupleSchemeFactory());
   }
 
-  private org.apache.airavata.model.workspace.experiment.WorkflowNodeState state; // required
-  private WorkflowIdentifier workflowNodeIdentity; // required
+  private org.apache.airavata.model.workspace.experiment.JobState state; // required
+  private JobIdentifier jobIdentity; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     /**
      * 
-     * @see org.apache.airavata.model.workspace.experiment.WorkflowNodeState
+     * @see org.apache.airavata.model.workspace.experiment.JobState
      */
     STATE((short)1, "state"),
-    WORKFLOW_NODE_IDENTITY((short)2, "workflowNodeIdentity");
+    JOB_IDENTITY((short)2, "jobIdentity");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -88,8 +88,8 @@ import org.slf4j.LoggerFactory;
       switch(fieldId) {
         case 1: // STATE
           return STATE;
-        case 2: // WORKFLOW_NODE_IDENTITY
-          return WORKFLOW_NODE_IDENTITY;
+        case 2: // JOB_IDENTITY
+          return JOB_IDENTITY;
         default:
           return null;
       }
@@ -134,60 +134,60 @@ import org.slf4j.LoggerFactory;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.STATE, new org.apache.thrift.meta_data.FieldMetaData("state", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.workspace.experiment.WorkflowNodeState.class)));
-    tmpMap.put(_Fields.WORKFLOW_NODE_IDENTITY, new org.apache.thrift.meta_data.FieldMetaData("workflowNodeIdentity", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, WorkflowIdentifier.class)));
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.workspace.experiment.JobState.class)));
+    tmpMap.put(_Fields.JOB_IDENTITY, new org.apache.thrift.meta_data.FieldMetaData("jobIdentity", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, JobIdentifier.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(WorkflowNodeStatusChangeEvent.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(JobStatusChangeRequestEvent.class, metaDataMap);
   }
 
-  public WorkflowNodeStatusChangeEvent() {
+  public JobStatusChangeRequestEvent() {
   }
 
-  public WorkflowNodeStatusChangeEvent(
-    org.apache.airavata.model.workspace.experiment.WorkflowNodeState state,
-    WorkflowIdentifier workflowNodeIdentity)
+  public JobStatusChangeRequestEvent(
+    org.apache.airavata.model.workspace.experiment.JobState state,
+    JobIdentifier jobIdentity)
   {
     this();
     this.state = state;
-    this.workflowNodeIdentity = workflowNodeIdentity;
+    this.jobIdentity = jobIdentity;
   }
 
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public WorkflowNodeStatusChangeEvent(WorkflowNodeStatusChangeEvent other) {
+  public JobStatusChangeRequestEvent(JobStatusChangeRequestEvent other) {
     if (other.isSetState()) {
       this.state = other.state;
     }
-    if (other.isSetWorkflowNodeIdentity()) {
-      this.workflowNodeIdentity = new WorkflowIdentifier(other.workflowNodeIdentity);
+    if (other.isSetJobIdentity()) {
+      this.jobIdentity = new JobIdentifier(other.jobIdentity);
     }
   }
 
-  public WorkflowNodeStatusChangeEvent deepCopy() {
-    return new WorkflowNodeStatusChangeEvent(this);
+  public JobStatusChangeRequestEvent deepCopy() {
+    return new JobStatusChangeRequestEvent(this);
   }
 
   @Override
   public void clear() {
     this.state = null;
-    this.workflowNodeIdentity = null;
+    this.jobIdentity = null;
   }
 
   /**
    * 
-   * @see org.apache.airavata.model.workspace.experiment.WorkflowNodeState
+   * @see org.apache.airavata.model.workspace.experiment.JobState
    */
-  public org.apache.airavata.model.workspace.experiment.WorkflowNodeState getState() {
+  public org.apache.airavata.model.workspace.experiment.JobState getState() {
     return this.state;
   }
 
   /**
    * 
-   * @see org.apache.airavata.model.workspace.experiment.WorkflowNodeState
+   * @see org.apache.airavata.model.workspace.experiment.JobState
    */
-  public void setState(org.apache.airavata.model.workspace.experiment.WorkflowNodeState state) {
+  public void setState(org.apache.airavata.model.workspace.experiment.JobState state) {
     this.state = state;
   }
 
@@ -206,26 +206,26 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public WorkflowIdentifier getWorkflowNodeIdentity() {
-    return this.workflowNodeIdentity;
+  public JobIdentifier getJobIdentity() {
+    return this.jobIdentity;
   }
 
-  public void setWorkflowNodeIdentity(WorkflowIdentifier workflowNodeIdentity) {
-    this.workflowNodeIdentity = workflowNodeIdentity;
+  public void setJobIdentity(JobIdentifier jobIdentity) {
+    this.jobIdentity = jobIdentity;
   }
 
-  public void unsetWorkflowNodeIdentity() {
-    this.workflowNodeIdentity = null;
+  public void unsetJobIdentity() {
+    this.jobIdentity = null;
   }
 
-  /** Returns true if field workflowNodeIdentity is set (has been assigned a value) and false otherwise */
-  public boolean isSetWorkflowNodeIdentity() {
-    return this.workflowNodeIdentity != null;
+  /** Returns true if field jobIdentity is set (has been assigned a value) and false otherwise */
+  public boolean isSetJobIdentity() {
+    return this.jobIdentity != null;
   }
 
-  public void setWorkflowNodeIdentityIsSet(boolean value) {
+  public void setJobIdentityIsSet(boolean value) {
     if (!value) {
-      this.workflowNodeIdentity = null;
+      this.jobIdentity = null;
     }
   }
 
@@ -235,15 +235,15 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetState();
       } else {
-        setState((org.apache.airavata.model.workspace.experiment.WorkflowNodeState)value);
+        setState((org.apache.airavata.model.workspace.experiment.JobState)value);
       }
       break;
 
-    case WORKFLOW_NODE_IDENTITY:
+    case JOB_IDENTITY:
       if (value == null) {
-        unsetWorkflowNodeIdentity();
+        unsetJobIdentity();
       } else {
-        setWorkflowNodeIdentity((WorkflowIdentifier)value);
+        setJobIdentity((JobIdentifier)value);
       }
       break;
 
@@ -255,8 +255,8 @@ import org.slf4j.LoggerFactory;
     case STATE:
       return getState();
 
-    case WORKFLOW_NODE_IDENTITY:
-      return getWorkflowNodeIdentity();
+    case JOB_IDENTITY:
+      return getJobIdentity();
 
     }
     throw new IllegalStateException();
@@ -271,8 +271,8 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case STATE:
       return isSetState();
-    case WORKFLOW_NODE_IDENTITY:
-      return isSetWorkflowNodeIdentity();
+    case JOB_IDENTITY:
+      return isSetJobIdentity();
     }
     throw new IllegalStateException();
   }
@@ -281,12 +281,12 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof WorkflowNodeStatusChangeEvent)
-      return this.equals((WorkflowNodeStatusChangeEvent)that);
+    if (that instanceof JobStatusChangeRequestEvent)
+      return this.equals((JobStatusChangeRequestEvent)that);
     return false;
   }
 
-  public boolean equals(WorkflowNodeStatusChangeEvent that) {
+  public boolean equals(JobStatusChangeRequestEvent that) {
     if (that == null)
       return false;
 
@@ -299,12 +299,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_workflowNodeIdentity = true && this.isSetWorkflowNodeIdentity();
-    boolean that_present_workflowNodeIdentity = true && that.isSetWorkflowNodeIdentity();
-    if (this_present_workflowNodeIdentity || that_present_workflowNodeIdentity) {
-      if (!(this_present_workflowNodeIdentity && that_present_workflowNodeIdentity))
+    boolean this_present_jobIdentity = true && this.isSetJobIdentity();
+    boolean that_present_jobIdentity = true && that.isSetJobIdentity();
+    if (this_present_jobIdentity || that_present_jobIdentity) {
+      if (!(this_present_jobIdentity && that_present_jobIdentity))
         return false;
-      if (!this.workflowNodeIdentity.equals(that.workflowNodeIdentity))
+      if (!this.jobIdentity.equals(that.jobIdentity))
         return false;
     }
 
@@ -317,7 +317,7 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(WorkflowNodeStatusChangeEvent other) {
+  public int compareTo(JobStatusChangeRequestEvent other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -334,12 +334,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetWorkflowNodeIdentity()).compareTo(other.isSetWorkflowNodeIdentity());
+    lastComparison = Boolean.valueOf(isSetJobIdentity()).compareTo(other.isSetJobIdentity());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetWorkflowNodeIdentity()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.workflowNodeIdentity, other.workflowNodeIdentity);
+    if (isSetJobIdentity()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobIdentity, other.jobIdentity);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -361,7 +361,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("WorkflowNodeStatusChangeEvent(");
+    StringBuilder sb = new StringBuilder("JobStatusChangeRequestEvent(");
     boolean first = true;
 
     sb.append("state:");
@@ -372,11 +372,11 @@ import org.slf4j.LoggerFactory;
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("workflowNodeIdentity:");
-    if (this.workflowNodeIdentity == null) {
+    sb.append("jobIdentity:");
+    if (this.jobIdentity == null) {
       sb.append("null");
     } else {
-      sb.append(this.workflowNodeIdentity);
+      sb.append(this.jobIdentity);
     }
     first = false;
     sb.append(")");
@@ -389,13 +389,13 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'state' is unset! Struct:" + toString());
     }
 
-    if (!isSetWorkflowNodeIdentity()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'workflowNodeIdentity' is unset! Struct:" + toString());
+    if (!isSetJobIdentity()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'jobIdentity' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
-    if (workflowNodeIdentity != null) {
-      workflowNodeIdentity.validate();
+    if (jobIdentity != null) {
+      jobIdentity.validate();
     }
   }
 
@@ -415,15 +415,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class WorkflowNodeStatusChangeEventStandardSchemeFactory implements SchemeFactory {
-    public WorkflowNodeStatusChangeEventStandardScheme getScheme() {
-      return new WorkflowNodeStatusChangeEventStandardScheme();
+  private static class JobStatusChangeRequestEventStandardSchemeFactory implements SchemeFactory {
+    public JobStatusChangeRequestEventStandardScheme getScheme() {
+      return new JobStatusChangeRequestEventStandardScheme();
     }
   }
 
-  private static class WorkflowNodeStatusChangeEventStandardScheme extends StandardScheme<WorkflowNodeStatusChangeEvent> {
+  private static class JobStatusChangeRequestEventStandardScheme extends StandardScheme<JobStatusChangeRequestEvent> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, WorkflowNodeStatusChangeEvent struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, JobStatusChangeRequestEvent struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -435,17 +435,17 @@ import org.slf4j.LoggerFactory;
         switch (schemeField.id) {
           case 1: // STATE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.state = org.apache.airavata.model.workspace.experiment.WorkflowNodeState.findByValue(iprot.readI32());
+              struct.state = org.apache.airavata.model.workspace.experiment.JobState.findByValue(iprot.readI32());
               struct.setStateIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // WORKFLOW_NODE_IDENTITY
+          case 2: // JOB_IDENTITY
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.workflowNodeIdentity = new WorkflowIdentifier();
-              struct.workflowNodeIdentity.read(iprot);
-              struct.setWorkflowNodeIdentityIsSet(true);
+              struct.jobIdentity = new JobIdentifier();
+              struct.jobIdentity.read(iprot);
+              struct.setJobIdentityIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -459,7 +459,7 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, WorkflowNodeStatusChangeEvent struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, JobStatusChangeRequestEvent struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -468,9 +468,9 @@ import org.slf4j.LoggerFactory;
         oprot.writeI32(struct.state.getValue());
         oprot.writeFieldEnd();
       }
-      if (struct.workflowNodeIdentity != null) {
-        oprot.writeFieldBegin(WORKFLOW_NODE_IDENTITY_FIELD_DESC);
-        struct.workflowNodeIdentity.write(oprot);
+      if (struct.jobIdentity != null) {
+        oprot.writeFieldBegin(JOB_IDENTITY_FIELD_DESC);
+        struct.jobIdentity.write(oprot);
         oprot.writeFieldEnd();
       }
       oprot.writeFieldStop();
@@ -479,29 +479,29 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class WorkflowNodeStatusChangeEventTupleSchemeFactory implements SchemeFactory {
-    public WorkflowNodeStatusChangeEventTupleScheme getScheme() {
-      return new WorkflowNodeStatusChangeEventTupleScheme();
+  private static class JobStatusChangeRequestEventTupleSchemeFactory implements SchemeFactory {
+    public JobStatusChangeRequestEventTupleScheme getScheme() {
+      return new JobStatusChangeRequestEventTupleScheme();
     }
   }
 
-  private static class WorkflowNodeStatusChangeEventTupleScheme extends TupleScheme<WorkflowNodeStatusChangeEvent> {
+  private static class JobStatusChangeRequestEventTupleScheme extends TupleScheme<JobStatusChangeRequestEvent> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, WorkflowNodeStatusChangeEvent struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, JobStatusChangeRequestEvent struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeI32(struct.state.getValue());
-      struct.workflowNodeIdentity.write(oprot);
+      struct.jobIdentity.write(oprot);
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, WorkflowNodeStatusChangeEvent struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, JobStatusChangeRequestEvent struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.state = org.apache.airavata.model.workspace.experiment.WorkflowNodeState.findByValue(iprot.readI32());
+      struct.state = org.apache.airavata.model.workspace.experiment.JobState.findByValue(iprot.readI32());
       struct.setStateIsSet(true);
-      struct.workflowNodeIdentity = new WorkflowIdentifier();
-      struct.workflowNodeIdentity.read(iprot);
-      struct.setWorkflowNodeIdentityIsSet(true);
+      struct.jobIdentity = new JobIdentifier();
+      struct.jobIdentity.read(iprot);
+      struct.setJobIdentityIsSet(true);
     }
   }
 
