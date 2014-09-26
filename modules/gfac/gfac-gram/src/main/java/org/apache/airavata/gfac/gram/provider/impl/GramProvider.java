@@ -186,8 +186,14 @@ public class GramProvider extends AbstractProvider {
                  * batch.
                 * The third boolean is to specify to use the full proxy and not delegate a limited proxy.
                 */
-                job.request(true, gateKeeper, false, false);
-
+//                job.request(true, gateKeeper, false, false);
+                
+            	
+            	// first boolean -> to run job as batch
+            	// second boolean -> to use limited proxy
+            	//TODO: need review?
+                job.request(gateKeeper, false, false);
+                
                 // Single boolean to track all authentication failures, therefore we need to re-initialize
                 // this here
                 renewCredentialsAttempt = false;
@@ -259,8 +265,14 @@ public class GramProvider extends AbstractProvider {
             * The third boolean is to specify to use the full proxy and not delegate a limited proxy.
             */
             try {
+                  
+//                job.request(true, gateKeeper, false, false);
+                
+            	// first boolean -> to run job as batch
+            	// second boolean -> to use limited proxy
+            	//TODO: need review?
+                job.request(gateKeeper, false, false);
 
-                job.request(true, gateKeeper, false, false);
                 renewCredentialsAttempt = false;
 
             } catch (GramException e) {
