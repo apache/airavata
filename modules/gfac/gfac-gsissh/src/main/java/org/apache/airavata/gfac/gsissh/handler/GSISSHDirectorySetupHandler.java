@@ -20,10 +20,10 @@
 */
 package org.apache.airavata.gfac.gsissh.handler;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
+import java.util.Properties;
+
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
@@ -31,13 +31,15 @@ import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Properties;
 
 public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
       private static final Logger log = LoggerFactory.getLogger(GSISSHDirectorySetupHandler.class);
@@ -47,10 +49,12 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
-        } catch (ApplicationSettingsException e) {
-            log.error(e.getMessage());
-            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
-        } catch (GFacException e) {
+        } catch (Exception e) {
+        	 try {
+  				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+  			} catch (GFacException e1) {
+  				 log.error(e1.getLocalizedMessage());
+  			}
         	throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
         }
 
@@ -62,6 +66,11 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
                 try {
         Cluster cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
         if (cluster == null) {
+        	 try {
+  				GFacUtils.saveErrorDetails(jobExecutionContext, "Security context is not set properly", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+  			} catch (GFacException e1) {
+  				 log.error(e1.getLocalizedMessage());
+  			}
             throw new GFacHandlerException("Security context is not set properly");
         } else {
             log.info("Successfully retrieved the Security Context");
@@ -80,8 +89,6 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
 
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
-        } catch (SSHApiException e) {
-            throw new GFacHandlerException("Error executing the Handler: " + GSISSHDirectorySetupHandler.class, e);
         } catch (Exception e) {
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();

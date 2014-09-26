@@ -85,6 +85,11 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                     GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
                 } catch (ApplicationSettingsException e) {
                     log.error(e.getMessage());
+                    try {
+       				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                    } catch (GFacException e1) {
+       				 log.error(e1.getLocalizedMessage());
+                    }  
                     throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
                 }
             }

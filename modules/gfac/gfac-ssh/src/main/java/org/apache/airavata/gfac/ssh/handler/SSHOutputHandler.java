@@ -94,12 +94,14 @@ public class SSHOutputHandler extends AbstractHandler {
 
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
             }
-        } catch (ApplicationSettingsException e) {
+        } catch (Exception e) {
             log.error(e.getMessage());
+            try {
+ 				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+ 			} catch (GFacException e1) {
+ 				 log.error(e1.getLocalizedMessage());
+ 			}
             throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
-        } catch (GFacException e1) {
-            log.error(e1.getMessage());
-            throw new GFacHandlerException("Error while creating SSHSecurityContext", e1, e1.getLocalizedMessage());
         }
 
         super.invoke(jobExecutionContext);
@@ -137,12 +139,18 @@ public class SSHOutputHandler extends AbstractHandler {
             localStdOutFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stdout");
             localStdErrFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stderr");
 //            cluster.makeDirectory(outputDataDir);
+            int i = 0;
+            String stdOutStr = "";
+            while(stdOutStr.isEmpty()){ 		
             cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
+            stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+            i++;
+            if(i == 3) break;
+            }
             Thread.sleep(1000);
             cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
             Thread.sleep(1000);
 
-            String stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
             status.setTransferState(TransferState.STDOUT_DOWNLOAD);
             detail.setTransferStatus(status);
@@ -218,15 +226,7 @@ public class SSHOutputHandler extends AbstractHandler {
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
             
-        } catch (XmlException e) {
-            throw new GFacHandlerException("Cannot read output:" + e.getMessage(), e);
-        } catch (ConnectionException e) {
-            throw new GFacHandlerException(e.getMessage(), e);
-        } catch (TransportException e) {
-            throw new GFacHandlerException(e.getMessage(), e);
-        } catch (IOException e) {
-            throw new GFacHandlerException(e.getMessage(), e);
-        } catch (Exception e) {
+        }catch (Exception e) {
             try {
                 status.setTransferState(TransferState.FAILED);
                 detail.setTransferStatus(status);
