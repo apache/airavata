@@ -20,80 +20,82 @@
 */
 package org.apache.airavata.gfac.bes.provider.impl;
 
-import de.fzj.unicore.bes.client.FactoryClient;
-import de.fzj.unicore.bes.faults.UnknownActivityIdentifierFault;
-import de.fzj.unicore.uas.client.StorageClient;
-import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
-import eu.emi.security.authn.x509.helpers.CertificateHelpers;
-import eu.emi.security.authn.x509.helpers.proxy.X509v3CertificateBuilder;
-import eu.emi.security.authn.x509.impl.CertificateUtils;
-import eu.emi.security.authn.x509.impl.CertificateUtils.Encoding;
-import eu.emi.security.authn.x509.impl.DirectoryCertChainValidator;
-import eu.emi.security.authn.x509.impl.KeyAndCertCredential;
-import eu.emi.security.authn.x509.impl.X500NameUtils;
-import eu.unicore.util.httpclient.DefaultClientConfiguration;
+import java.util.Calendar;
+import java.util.Map;
+
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.bes.security.GSISecurityContext;
-import org.apache.airavata.gfac.bes.utils.DataTransferrer;
+import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
+import org.apache.airavata.gfac.bes.utils.ActivityInfo;
+import org.apache.airavata.gfac.bes.utils.BESConstants;
+import org.apache.airavata.gfac.bes.utils.DataServiceInfo;
 import org.apache.airavata.gfac.bes.utils.JSDLGenerator;
-import org.apache.airavata.gfac.bes.utils.StorageCreator;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.notification.events.StatusChangeEvent;
-import org.apache.airavata.gfac.core.notification.events.UnicoreJobIDEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
+import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.apache.xmlbeans.XmlCursor;
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.ggf.schemas.bes.x2006.x08.besFactory.*;
+import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration;
 import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration.Enum;
+import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStatusType;
+import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityDocument;
+import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityResponseDocument;
+import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesDocument;
+import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesResponseDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3.x2005.x08.addressing.EndpointReferenceType;
 
-import javax.security.auth.x500.X500Principal;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigInteger;
-import java.security.InvalidKeyException;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
-import java.util.*;
+import de.fzj.unicore.bes.client.FactoryClient;
+import de.fzj.unicore.bes.faults.UnknownActivityIdentifierFault;
+import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
+import eu.emi.security.authn.x509.impl.X500NameUtils;
+import eu.unicore.util.httpclient.DefaultClientConfiguration;
 
 
 
-public class BESProvider extends AbstractProvider {
+public class BESProvider extends AbstractProvider implements GFacProvider, BESConstants{
     protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private DefaultClientConfiguration secProperties;
 
     private String jobId;
     
-    
-        
 	public void initialize(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException, GFacException {
-		log.info("Initializing UNICORE Provider");
+		log.info("Initializing UNICORE Provider..");
 		super.initialize(jobExecutionContext);
-    	initSecurityProperties(jobExecutionContext);
-    	log.debug("initialized security properties");
+		secProperties = (DefaultClientConfiguration)jobExecutionContext.getProperty(PROP_CLIENT_CONF);
+        if (secProperties != null) {
+        	secProperties = secProperties.clone();
+        	return;
+        }
+            
+        UNICORESecurityContext unicoreContext = (UNICORESecurityContext) jobExecutionContext.getSecurityContext(UNICORESecurityContext.UNICORE_SECURITY_CONTEXT);
+        if(log.isDebugEnabled()) {
+        	log.debug("Generating default configuration.");
+        }
+        //TODO: check what credential mode should be used
+        try {
+			secProperties = unicoreContext.getDefaultConfiguration();
+		} catch (ApplicationSettingsException e) {
+			throw new GFacProviderException(e.getMessage(), e);
+		}
+        if(log.isDebugEnabled()) {
+        	log.debug("Security properties initialized.");
+        }
     }
 
 
-	public void execute(JobExecutionContext jobExecutionContext)
-			throws GFacProviderException {
+	public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         UnicoreHostType host = (UnicoreHostType) jobExecutionContext.getApplicationContext().getHostDescription()
                 .getType();
 
@@ -101,59 +103,52 @@ public class BESProvider extends AbstractProvider {
 
         EndpointReferenceType eprt = EndpointReferenceType.Factory.newInstance();
         eprt.addNewAddress().setStringValue(factoryUrl);
+        
+//		WSUtilities.addServerIdentity(eprt, serverDN);
+
 
         String userDN = getUserName(jobExecutionContext);
-
+        
+        //TODO: to be removed
         if (userDN == null || userDN.equalsIgnoreCase("admin")) {
             userDN = "CN=zdv575, O=Ultrascan Gateway, C=DE";
         }
-
-        String xlogin = getCNFromUserDN(userDN);
-        // create storage
-        StorageCreator storageCreator = new StorageCreator(secProperties, factoryUrl, 5, xlogin);
-
-        StorageClient sc = null;
+        
         try {
-            try {
-                sc = storageCreator.createStorage();
-            } catch (Exception e2) {
-                log.error("Cannot create storage..");
-                throw new GFacProviderException("Cannot create storage..", e2);
-            }
-
+            
+            DataServiceInfo dsInfo = new DataServiceInfo(jobExecutionContext);
+            
             CreateActivityDocument cad = CreateActivityDocument.Factory.newInstance();
             JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory.newInstance();
 
             JobDefinitionType jobDefinition = jobDefDoc.addNewJobDefinition();
             try {
-                jobDefinition = JSDLGenerator.buildJSDLInstance(jobExecutionContext, sc.getUrl()).getJobDefinition();
+                jobDefinition = JSDLGenerator.buildJSDLInstance(jobExecutionContext, dsInfo).getJobDefinition();
                 cad.addNewCreateActivity().addNewActivityDocument().setJobDefinition(jobDefinition);
-
                 log.info("JSDL" + jobDefDoc.toString());
             } catch (Exception e1) {
                 throw new GFacProviderException("Cannot generate JSDL instance from the JobExecutionContext.", e1);
             }
 
-            // upload files if any
-            DataTransferrer dt = new DataTransferrer(jobExecutionContext, sc);
-            dt.uploadLocalFiles();
-
-            FactoryClient factory = null;
-            try {
+           FactoryClient factory = null;
+           JobDetails jobDetails = new JobDetails();
+           
+           try {
                 factory = new FactoryClient(eprt, secProperties);
             } catch (Exception e) {
                 throw new GFacProviderException(e.getLocalizedMessage(), e);
             }
-
             CreateActivityResponseDocument response = null;
             try {
                 log.info(String.format("Activity Submitting to %s ... \n", factoryUrl));
                 response = factory.createActivity(cad);
+                
                 log.info(String.format("Activity Submitted to %s \n", factoryUrl));
             } catch (Exception e) {
                 throw new GFacProviderException("Cannot create activity.", e);
             }
             EndpointReferenceType activityEpr = response.getCreateActivityResponse().getActivityIdentifier();
+           	
 
             log.info("Activity : " + activityEpr.getAddress().getStringValue() + " Submitted.");
 
@@ -163,98 +158,30 @@ public class BESProvider extends AbstractProvider {
                 jobId = new Long(Calendar.getInstance().getTimeInMillis()).toString();
             }
             log.info("JobID: " + jobId);
-            jobExecutionContext.getNotifier().publish(new UnicoreJobIDEvent(jobId));
-            saveApplicationJob(jobExecutionContext, jobDefinition, activityEpr.toString());
-
-            factory.getActivityStatus(activityEpr);
+//            jobExecutionContext.getNotifier().publish(new UnicoreJobIDEvent(jobId));
+            //TODO: not working
+//            saveApplicationJob(jobExecutionContext, jobDefinition, activityEpr.toString());
+            jobDetails.setJobID(activityEpr.toString());
+            jobDetails.setJobDescription(activityEpr.toString());
+            
+            jobExecutionContext.setJobDetails(jobDetails);
+            
             log.info(formatStatusMessage(activityEpr.getAddress().getStringValue(),
                     factory.getActivityStatus(activityEpr).toString()));
 
             // TODO publish the status messages to the message bus
-            while ((factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED)
-                    && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FAILED)
-                    && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.CANCELLED)) {
-
-                ActivityStatusType activityStatus = null;
-                try {
-                    activityStatus = getStatus(factory, activityEpr);
-                    JobState jobStatus = getApplicationJobStatus(activityStatus);
-                    String jobStatusMessage = "Status of job " + jobId + "is " + jobStatus;
-                    jobExecutionContext.getNotifier().publish(new StatusChangeEvent(jobStatusMessage));
-                    details.setJobID(jobId);
-                    GFacUtils.updateJobStatus(jobExecutionContext, details, jobStatus);
-                } catch (UnknownActivityIdentifierFault e) {
-                    throw new GFacProviderException(e.getMessage(), e.getCause());
-                }catch (GFacException e) {
-                    throw new GFacProviderException(e.getMessage(), e.getCause());
-                }
-
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                }
-                continue;
-            }
-
             ActivityStatusType activityStatus = null;
-            try {
-                activityStatus = getStatus(factory, activityEpr);
-            } catch (UnknownActivityIdentifierFault e) {
-                throw new GFacProviderException(e.getMessage(), e.getCause());
-            }
-
-            log.info(formatStatusMessage(activityEpr.getAddress().getStringValue(), activityStatus.getState()
-                    .toString()));
-
-            if ((activityStatus.getState() == ActivityStateEnumeration.FAILED)) {
-                String error = activityStatus.getFault().getFaultcode().getLocalPart() + "\n"
-                        + activityStatus.getFault().getFaultstring() + "\n EXITCODE: " + activityStatus.getExitCode();
-                log.info(error);
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                }
-                dt.downloadStdOuts();
-            } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
-                String experimentID = (String) jobExecutionContext.getProperty(Constants.PROP_TOPIC);
-                JobState jobStatus = JobState.CANCELED;
-                String jobStatusMessage = "Status of job " + jobId + "is " + jobStatus;
-                jobExecutionContext.getNotifier().publish(new StatusChangeEvent(jobStatusMessage));
-                details.setJobID(jobId);
-                try {
-					GFacUtils.saveJobStatus(jobExecutionContext,details, jobStatus);
-				} catch (GFacException e) {
-					 throw new GFacProviderException(e.getLocalizedMessage(),e);
-				}
-                throw new GFacProviderException(experimentID + "Job Canceled");
-            }
-
-            else if (activityStatus.getState() == ActivityStateEnumeration.FINISHED) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                }
-                if (activityStatus.getExitCode() == 0) {
-                    dt.downloadRemoteFiles();
-                } else {
-                    dt.downloadStdOuts();
-                }
-            }
-
+            ActivityInfo activityInfo;
+            activityInfo = new ActivityInfo();
+            activityInfo.setActivityEPR(activityEpr);
+            activityInfo.setActivityStatusDoc(activityStatus);
+            jobExecutionContext.setProperty(PROP_ACTIVITY_INFO, activityInfo);
         } catch (UnknownActivityIdentifierFault e1) {
             throw new GFacProviderException(e1.getLocalizedMessage(), e1);
-        } finally {
-            // destroy sms instance
-            try {
-                if (sc != null) {
-                    sc.destroy();
-                }
-            } catch (Exception e) {
-                log.warn("Cannot destroy temporary SMS instance:" + sc.getUrl(), e);
-            }
         }
     }
-
+	
+	
 	private JobState getApplicationJobStatus(ActivityStatusType activityStatus){
         if (activityStatus == null) {
             return JobState.UNKNOWN;
@@ -302,8 +229,10 @@ public class BESProvider extends AbstractProvider {
     }
 
     private void saveApplicationJob(JobExecutionContext jobExecutionContext, JobDefinitionType jobDefinition,
-                                    String metadata) {
-//        ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
+                                    String metadata) throws GFacException {
+
+    	
+//    	ApplicationJob appJob = GFacUtils.createApplicationJob(jobExecutionContext);
 //        appJob.setJobId(jobId);
 //        appJob.setJobData(jobDefinition.toString());
 //        appJob.setSubmittedTime(Calendar.getInstance().getTime());
@@ -311,22 +240,23 @@ public class BESProvider extends AbstractProvider {
 //        appJob.setStatusUpdateTime(appJob.getSubmittedTime());
 //        appJob.setMetadata(metadata);
 //        GFacUtils.recordApplicationJob(jobExecutionContext, appJob);
-    }
-
-    public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        secProperties = null;
+        
+        details.setJobID(jobId);
+        GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SUBMITTED);
+        
     }
 
     /**
      * EndpointReference need to be saved to make cancel work.
      *
+     * @param activityEpr
      * @param jobExecutionContext
      * @throws GFacProviderException
      */
-    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException {
+    public void cancelJob(String activityEpr, JobExecutionContext jobExecutionContext) throws GFacProviderException {
         try {
-            initSecurityProperties(jobExecutionContext);
-            EndpointReferenceType eprt = EndpointReferenceType.Factory.parse(jobExecutionContext.getJobDetails().getJobID());
+//            initSecurityProperties(jobExecutionContext);
+            EndpointReferenceType eprt = EndpointReferenceType.Factory.parse(activityEpr);
             UnicoreHostType host = (UnicoreHostType) jobExecutionContext.getApplicationContext().getHostDescription()
                     .getType();
 
@@ -342,87 +272,6 @@ public class BESProvider extends AbstractProvider {
 
     }
 
-    protected void downloadOffline(String smsEpr, JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        try {
-            initSecurityProperties(jobExecutionContext);
-            EndpointReferenceType eprt = EndpointReferenceType.Factory.parse(smsEpr);
-            StorageClient sms = new StorageClient(eprt, secProperties);
-            DataTransferrer dt = new DataTransferrer(jobExecutionContext, sms);
-            // there must be output files there
-            // this is also possible if client is re-connected, the jobs are
-            // still
-            // running and no output is produced
-            dt.downloadRemoteFiles();
-
-            // may be use the below method before downloading for checking
-            // the number of entries
-            // sms.listDirectory(".");
-
-        } catch (Exception e) {
-            throw new GFacProviderException(e.getLocalizedMessage(), e);
-        }
-    }
-
-    protected void initSecurityProperties(JobExecutionContext jobExecutionContext) throws GFacProviderException,
-            GFacException {
-
-        if (secProperties != null)
-            return;
-
-        GSISecurityContext gssContext = (GSISecurityContext) jobExecutionContext
-                .getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT);
-
-        try {
-            String certLocation = gssContext.getTrustedCertificatePath();
-            List<String> trustedCert = new ArrayList<String>();
-            trustedCert.add(certLocation + "/*.0");
-            trustedCert.add(certLocation + "/*.pem");
-
-            DirectoryCertChainValidator dcValidator = new DirectoryCertChainValidator(trustedCert, Encoding.PEM, -1,
-                    60000, null);
-
-            String userID = getUserName(jobExecutionContext);
-
-            if ( userID == null || "".equals(userID) || userID.equalsIgnoreCase("admin") ) {
-                userID = "CN=zdv575, O=Ultrascan Gateway, C=DE";
-            }
-
-            String userDN = userID.replaceAll("^\"|\"$", "");
-
-            // TODO: should be changed to default airavata server locations
-            KeyAndCertCredential cred = generateShortLivedCertificate(userDN, certLocation
-                    + "/cacert.pem", certLocation
-                    + "/cakey.pem", "ultrascan3");
-            secProperties = new DefaultClientConfiguration(dcValidator, cred);
-
-            // secProperties.doSSLAuthn();
-            secProperties.getETDSettings().setExtendTrustDelegation(true);
-
-            secProperties.setDoSignMessage(true);
-
-            String[] outHandlers = secProperties.getOutHandlerClassNames();
-
-            Set<String> outHandlerLst = null;
-
-            // timeout in milliseconds
-            Properties p = secProperties.getExtraSettings();
-            p.setProperty("http.connection.timeout", "300000");
-            p.setProperty("http.socket.timeout", "300000");
-
-            if (outHandlers == null) {
-                outHandlerLst = new HashSet<String>();
-            } else {
-                outHandlerLst = new HashSet<String>(Arrays.asList(outHandlers));
-            }
-
-            outHandlerLst.add("de.fzj.unicore.uas.security.ProxyCertOutHandler");
-
-            secProperties.setOutHandlerClassNames(outHandlerLst.toArray(new String[outHandlerLst.size()]));
-
-        } catch (Exception e) {
-            throw new GFacProviderException(e.getMessage(), e);
-        }
-    }
 
     //FIXME: Get user details
     private String getUserName(JobExecutionContext context) {
@@ -474,76 +323,36 @@ public class BESProvider extends AbstractProvider {
 
     }
 
-    public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
-
-    }
-
-    protected KeyAndCertCredential generateShortLivedCertificate(String userDN, String caCertPath, String caKeyPath,
-                                                                 String caPwd) throws Exception {
-        final long CredentialGoodFromOffset = 1000L * 60L * 15L; // 15 minutes
-        // ago
-
-        final long startTime = System.currentTimeMillis() - CredentialGoodFromOffset;
-        final long endTime = startTime + 30 * 3600 * 1000;
-
-        String keyLengthProp = "1024";
-        int keyLength = Integer.parseInt(keyLengthProp);
-        String signatureAlgorithm = "SHA1withRSA";
-
-        KeyAndCertCredential caCred = getCACredential(caCertPath, caKeyPath, caPwd);
-
-        KeyPairGenerator kpg = KeyPairGenerator.getInstance(caCred.getKey().getAlgorithm());
-        kpg.initialize(keyLength);
-        KeyPair pair = kpg.generateKeyPair();
-
-        X500Principal subjectDN = new X500Principal(userDN);
-        Random rand = new Random();
-
-        SubjectPublicKeyInfo publicKeyInfo;
-        try {
-            publicKeyInfo = SubjectPublicKeyInfo.getInstance(new ASN1InputStream(pair.getPublic().getEncoded())
-                    .readObject());
-        } catch (IOException e) {
-            throw new InvalidKeyException("Can not parse the public key"
-                    + "being included in the short lived certificate", e);
-        }
-
-        X500Name issuerX500Name = CertificateHelpers.toX500Name(caCred.getCertificate().getSubjectX500Principal());
-
-        X500Name subjectX500Name = CertificateHelpers.toX500Name(subjectDN);
-
-        X509v3CertificateBuilder certBuilder = new X509v3CertificateBuilder(issuerX500Name, new BigInteger(20, rand),
-                new Date(startTime), new Date(endTime), subjectX500Name, publicKeyInfo);
-
-        AlgorithmIdentifier sigAlgId = X509v3CertificateBuilder.extractAlgorithmId(caCred.getCertificate());
-
-        X509Certificate certificate = certBuilder.build(caCred.getKey(), sigAlgId, signatureAlgorithm, null, null);
-
-        certificate.checkValidity(new Date());
-        certificate.verify(caCred.getCertificate().getPublicKey());
-        KeyAndCertCredential result = new KeyAndCertCredential(pair.getPrivate(), new X509Certificate[] { certificate,
-                caCred.getCertificate() });
-
-        return result;
-    }
-
-    private KeyAndCertCredential getCACredential(String caCertPath, String caKeyPath, String password) throws Exception {
-        InputStream isKey = new FileInputStream(caKeyPath);
-        PrivateKey pk = CertificateUtils.loadPrivateKey(isKey, Encoding.PEM, password.toCharArray());
-
-        InputStream isCert = new FileInputStream(caCertPath);
-        X509Certificate caCert = CertificateUtils.loadCertificate(isCert, Encoding.PEM);
-
-        if (isKey != null)
-            isKey.close();
-        if (isCert != null)
-            isCert.close();
-
-        return new KeyAndCertCredential(pk, new X509Certificate[] { caCert });
-    }
 
     private String getCNFromUserDN(String userDN) {
         return X500NameUtils.getAttributeValues(userDN, BCStyle.CN)[0];
 
     }
+
+
+	@Override
+	public void initProperties(Map<String, String> properties)
+			throws GFacProviderException, GFacException {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	
+
+
+	@Override
+	public void dispose(JobExecutionContext jobExecutionContext)
+			throws GFacProviderException, GFacException {
+		secProperties = null;
+		
+	}
+
+
+	@Override
+	public void cancelJob(JobExecutionContext jobExecutionContext)
+			throws GFacProviderException, GFacException {
+		// TODO Auto-generated method stub
+		
+	}
 }

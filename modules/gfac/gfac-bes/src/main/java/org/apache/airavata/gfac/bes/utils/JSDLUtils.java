@@ -74,7 +74,7 @@ public class JSDLUtils
 	public static final String NUMBEROFPROCESSES = "NumberOfProcesses";
 	public static final String THREADSPERHOST = "ThreadsPerHost";
 
-	
+
 	
 	public static EnvironmentType addEnvVariable(JobDefinitionType def,String name, String value) {
 		POSIXApplicationType posixApp = getOrCreatePOSIXApplication(def);
@@ -107,7 +107,7 @@ public class JSDLUtils
 
 	}
 	public static void addDataStagingTargetElement(JobDefinitionType value, String fileSystem, String file, String uri) {
-		addDataStagingTargetElement(value,fileSystem, file, uri, 0);
+		addDataStagingTargetElement(value,fileSystem, file, uri, 1);
 	}
 
 	public static void addDataStagingTargetElement(JobDefinitionType value, String fileSystem, String file, String uri, int flags) {
@@ -133,7 +133,7 @@ public class JSDLUtils
 	}
 
 	public static void addDataStagingSourceElement(JobDefinitionType value, String uri, String fileSystem, String file) {
-		addDataStagingSourceElement(value, uri, fileSystem, file, 0);
+		addDataStagingSourceElement(value, uri, fileSystem, file, 1);
 	}
 
 	public static void addDataStagingSourceElement(JobDefinitionType value, String uri, String fileSystem, String file, int flags) {
