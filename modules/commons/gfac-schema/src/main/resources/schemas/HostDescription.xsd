@@ -1,168 +1,196 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--Licensed to the Apache Software
-	Foundation (ASF) under one or more contributor license agreements. See the
-	NOTICE file distributed with this work for additional information regarding
-	copyright ownership. The ASF licenses this file to you under the Apache License,
-	Version 2.0 (theÏ "License"); you may not use this file except in compliance
-	with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-	Unless required by applicable law or agreed to in writing, software distributed
-	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
-	OR CONDITIONS OF ANY ~ KIND, either express or implied. See the License for
-	the specific language governing permissions and limitations under the License. -->
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	you under the Apache License, Version 2.0 (theÏ "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY ~ KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
 
 <schema targetNamespace="http://airavata.apache.org/schemas/gfac/2012/12"
-        xmlns:gfac="http://airavata.apache.org/schemas/gfac/2012/12" xmlns="http://www.w3.org/2001/XMLSchema"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	xmlns:gfac="http://airavata.apache.org/schemas/gfac/2012/12" xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
 
-    <include schemaLocation="BasicTypes.xsd"/>
+	<include schemaLocation="BasicTypes.xsd" />
 
-    <element name="hostDescription" type="gfac:hostDescriptionType"/>
+	<element name="hostDescription" type="gfac:hostDescriptionType" />
 
-    <!-- Host Description -->
-    <complexType name="hostDescriptionType">
-        <sequence>
-            <element name="authorInfo" type="gfac:authorInfoType"
-                     minOccurs="0" maxOccurs="unbounded"/>
-            <element name="documentInfo" type="gfac:documentInfoType"
-                     minOccurs="0" maxOccurs="1"/>
-            <element name="hostName" type="xsd:string" minOccurs="1"
-                     maxOccurs="1"/>
-            <element name="hostAddress" type="xsd:string" minOccurs="1"
-                     maxOccurs="1"/>
-        </sequence>
-    </complexType>
+	<!-- Host Description -->
+	<complexType name="hostDescriptionType">
+		<sequence>
+			<element name="authorInfo" type="gfac:authorInfoType"
+				minOccurs="0" maxOccurs="unbounded" />
+			<element name="documentInfo" type="gfac:documentInfoType"
+				minOccurs="0" maxOccurs="1" />
+			<element name="hostName" type="xsd:string" minOccurs="1"
+				maxOccurs="1" />
+			<element name="hostAddress" type="xsd:string" minOccurs="1"
+				maxOccurs="1" />
+		</sequence>
+	</complexType>
 
 
-    <complexType name="preJobCommands">
-        <sequence>
-            <element name="command" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-    </complexType>
+	<complexType name="preJobCommands">
+		<sequence>
+			<element name="command" type="xsd:string" minOccurs="0"
+				maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
 
-    <complexType name="postJobCommands">
-        <sequence>
-            <element name="command" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
-        </sequence>
-    </complexType>
+	<complexType name="postJobCommands">
+		<sequence>
+			<element name="command" type="xsd:string" minOccurs="0"
+				maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
 
-    <complexType name="exportProperties">
-        <sequence>
-            <element name="name" minOccurs="1" maxOccurs="unbounded">
-                <complexType>
-                    <simpleContent>
-                        <extension base="xsd:string">
-                            <attribute name="value" type="xsd:string" use="required"/>
-                        </extension>
-                    </simpleContent>
-                </complexType>
-            </element>
-        </sequence>
-    </complexType>
+	<complexType name="exportProperties">
+		<sequence>
+			<element name="name" minOccurs="1" maxOccurs="unbounded">
+				<complexType>
+					<simpleContent>
+						<extension base="xsd:string">
+							<attribute name="value" type="xsd:string" use="required" />
+						</extension>
+					</simpleContent>
+				</complexType>
+			</element>
+		</sequence>
+	</complexType>
 
-    <!-- Globus Host Description -->
-    <complexType name="globusHostType">
-        <complexContent>
-            <extension base="gfac:hostDescriptionType">
-                <sequence>
-                    <element name="gridFTPEndPoint" type="xsd:string"
-                             minOccurs="1" maxOccurs="unbounded"/>
-                    <element name="globusGateKeeperEndPoint" type="xsd:string"
-                             minOccurs="1" maxOccurs="unbounded"/>
-                </sequence>
-            </extension>
-        </complexContent>
-    </complexType>
+	<!-- Globus Host Description -->
+	<complexType name="globusHostType">
+		<complexContent>
+			<extension base="gfac:hostDescriptionType">
+				<sequence>
+					<element name="gridFTPEndPoint" type="xsd:string"
+						minOccurs="1" maxOccurs="unbounded" />
+					<element name="globusGateKeeperEndPoint" type="xsd:string"
+						minOccurs="1" maxOccurs="unbounded" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
 
-    <!-- EC2 Host Description -->
-    <complexType name="ec2HostType">
-        <complexContent>
-            <extension base="gfac:hostDescriptionType">
-                <sequence>
-                    <element name="imageID" type="xsd:string"
-                             minOccurs="1" maxOccurs="unbounded"/>
-                    <element name="instanceID" type="xsd:string"
-                             minOccurs="1" maxOccurs="unbounded"/>
-                </sequence>
-            </extension>
-        </complexContent>
-    </complexType>
+	<!-- EC2 Host Description -->
+	<complexType name="ec2HostType">
+		<complexContent>
+			<extension base="gfac:hostDescriptionType">
+				<sequence>
+					<element name="imageID" type="xsd:string" minOccurs="1"
+						maxOccurs="unbounded" />
+					<element name="instanceID" type="xsd:string" minOccurs="1"
+						maxOccurs="unbounded" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
 
-    <complexType name="UnicoreHostType">
-        <complexContent>
-            <extension base="gfac:hostDescriptionType">
-                <sequence>
-                    <sequence>
-                        <element name="gridFTPEndPoint" type="xsd:string"
-                                 minOccurs="0" maxOccurs="unbounded"/>
-                        <element name="unicoreBESEndPoint" type="xsd:string"
-                                 minOccurs="1" maxOccurs="unbounded"/>
-                    </sequence>
-                </sequence>
-            </extension>
-        </complexContent>
-    </complexType>
+	<complexType name="UnicoreHostType">
+		<complexContent>
+			<extension base="gfac:hostDescriptionType">
+				<sequence>
+					<sequence>
+						<element name="unicoreBESEndPoint" type="xsd:string" minOccurs="1" maxOccurs="unbounded" />
+						<!-- jobDirectoryMode allows gateway to specify how data will be accessed 
+							to an GFAC instance. It includes the directory interface and a file transfer 
+							protocol. The allowable protocols are, "SMS-ByteIO" / "GridFTP" / "RNS-ByteIO" -->
+						<element ref="gfac:jobDirectoryMode" minOccurs="1" />
+						<!-- gridFTPEndpoint only needs to be provided when using GridFTP as 
+							jobDirectoryMode -->
+						<element name="gridFTPEndPoint" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+					</sequence>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<!-- some more comments -->
+	<element name="jobDirectoryMode">
+		<simpleType>
+			<restriction base="string">
+				<enumeration value="GridFTP" />
+				<enumeration value="SMSByteIO" />
+				<enumeration value="RNSByteIO" />
+			</restriction>
+		</simpleType>
+	</element>
 
-    <complexType name="gsisshHostType">
-        <complexContent>
-            <extension base="gfac:hostDescriptionType">
-                <sequence>
-                    <element name="port" type="xsd:int" minOccurs="0" maxOccurs="1"/>
-                    <element name="exports" type="gfac:exportProperties" minOccurs="0" maxOccurs="1"/>
-                    <element name="preJobCommands" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
-                    <element name="postJobCommands" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
-                    <element name="installedPath" type="xsd:string" minOccurs="0" maxOccurs="1" default="/opt/torque/bin"/>
-                    <element name="jobManager" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-                    <element name="monitorMode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-                </sequence>
-            </extension>
-        </complexContent>
-    </complexType>
-    <!-- SSH Host Description -->
-    <complexType name="SSHHostType">
-        <complexContent>
-            <extension base="gfac:hostDescriptionType">
-                <sequence>
-                    <element name="fileEndPointPrefix" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
-                    <element name="hpcResource" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-                </sequence>
-            </extension>
-        </complexContent>
-    </complexType>
+	<complexType name="gsisshHostType">
+		<complexContent>
+			<extension base="gfac:hostDescriptionType">
+				<sequence>
+					<element name="port" type="xsd:int" minOccurs="0"
+						maxOccurs="1" />
+					<element name="exports" type="gfac:exportProperties"
+						minOccurs="0" maxOccurs="1" />
+					<element name="preJobCommands" type="xsd:string" minOccurs="0"
+						maxOccurs="unbounded" />
+					<element name="postJobCommands" type="xsd:string"
+						minOccurs="0" maxOccurs="unbounded" />
+					<element name="installedPath" type="xsd:string" minOccurs="0"
+						maxOccurs="1" default="/opt/torque/bin" />
+					<element name="jobManager" type="xsd:string" minOccurs="0"
+						maxOccurs="1" />
+					<element name="monitorMode" type="xsd:string" minOccurs="0"
+						maxOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	<!-- SSH Host Description -->
+	<complexType name="SSHHostType">
+		<complexContent>
+			<extension base="gfac:hostDescriptionType">
+				<sequence>
+					<element name="fileEndPointPrefix" type="xsd:string"
+						minOccurs="0" maxOccurs="unbounded" />
+					<element name="hpcResource" type="xsd:boolean" minOccurs="1"
+						maxOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
 
-    <!-- Hadoop Host Description -->
-    <complexType name="hadoopHostType">
-        <complexContent>
-            <extension base="gfac:hostDescriptionType">
-                <sequence>
-                    <element name="hadoopConfigurationDirectory" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-                    <element name="whirrConfiguration" maxOccurs="1" minOccurs="0">
-                        <complexType>
-                            <sequence>
-                                <element name="configurationFile" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-                                <element name="byonClusterConfigurationFile" type="xsd:string" minOccurs="0"
-                                         maxOccurs="1"/>
-                                <element name="configuration" minOccurs="0" maxOccurs="1">
-                                    <complexType>
-                                        <sequence>
-                                            <element name="property" maxOccurs="unbounded">
-                                                <complexType>
-                                                    <sequence>
-                                                        <element name="name" type="xsd:string" maxOccurs="1"
-                                                                 minOccurs="1"/>
-                                                        <element name="value" type="xsd:string" maxOccurs="1"
-                                                                 minOccurs="1"/>
-                                                    </sequence>
-                                                </complexType>
-                                            </element>
-                                        </sequence>
-                                    </complexType>
-                                </element>
-                            </sequence>
-                        </complexType>
-                    </element>
-                </sequence>
-            </extension>
-        </complexContent>
-    </complexType>
+	<!-- Hadoop Host Description -->
+	<complexType name="hadoopHostType">
+		<complexContent>
+			<extension base="gfac:hostDescriptionType">
+				<sequence>
+					<element name="hadoopConfigurationDirectory" type="xsd:string"
+						minOccurs="0" maxOccurs="1" />
+					<element name="whirrConfiguration" maxOccurs="1" minOccurs="0">
+						<complexType>
+							<sequence>
+								<element name="configurationFile" type="xsd:string"
+									minOccurs="0" maxOccurs="1" />
+								<element name="byonClusterConfigurationFile" type="xsd:string"
+									minOccurs="0" maxOccurs="1" />
+								<element name="configuration" minOccurs="0" maxOccurs="1">
+									<complexType>
+										<sequence>
+											<element name="property" maxOccurs="unbounded">
+												<complexType>
+													<sequence>
+														<element name="name" type="xsd:string" maxOccurs="1"
+															minOccurs="1" />
+														<element name="value" type="xsd:string" maxOccurs="1"
+															minOccurs="1" />
+													</sequence>
+												</complexType>
+											</element>
+										</sequence>
+									</complexType>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
 
 </schema>
