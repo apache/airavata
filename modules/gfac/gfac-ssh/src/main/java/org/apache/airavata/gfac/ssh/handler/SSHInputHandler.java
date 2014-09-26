@@ -161,10 +161,24 @@ public class SSHInputHandler extends AbstractHandler {
             if(paramValue.startsWith("file")){
                 paramValue = paramValue.substring(paramValue.indexOf(":") + 1, paramValue.length());
             }
-            cluster.scpTo(targetFile, paramValue);
+            boolean success = false;
+            int j = 1;
+            while(!success){
+            try {
+				cluster.scpTo(targetFile, paramValue);
+				success = true;
+			} catch (Exception e) {
+				log.info(e.getLocalizedMessage());
+				Thread.sleep(2000);
+				 if(j==3) {
+					throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
+				 }
+            }
+            j++;
+            }
             }
             return targetFile;
-        } catch (SSHApiException e) {
+        } catch (Exception e) {
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
         }
     }
