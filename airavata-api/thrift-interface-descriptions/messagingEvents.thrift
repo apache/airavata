@@ -45,17 +45,17 @@ struct ExperimentStatusChangeEvent {
     2: required string experimentId;
 }
 
-struct WorkflowIdentity {
+struct WorkflowIdentifier {
     1: required string workflowNodeId;
     2: required string experimentId;
 }
 
 struct WorkflowNodeStatusChangeEvent {
     1: required experimentModel.WorkflowNodeState state;
-    2: required WorkflowIdentity workflowNodeIdentity;
+    2: required WorkflowIdentifier workflowNodeIdentity;
 }
 
-struct TaskIdentity {
+struct TaskIdentifier {
     1: required string taskId;
     2: required string workflowNodeId;
     3: required string experimentId;
@@ -63,15 +63,20 @@ struct TaskIdentity {
 
 struct TaskStatusChangeEvent {
     1: required experimentModel.TaskState state;
-    2: required TaskIdentity taskIdentity;
+    2: required TaskIdentifier  taskIdentity;
+}
+
+struct TaskStatusChangeRequestEvent {
+    1: required experimentModel.TaskState state;
+    2: required TaskIdentifier taskIdentity;
 }
 
 struct TaskOutputChangeEvent {
     1: required list<experimentModel.DataObjectType> output;
-    2: required TaskIdentity taskIdentity;
+    2: required TaskIdentifier taskIdentity;
 }
 
-struct JobIdentity {
+struct JobIdentifier {
     1: required string jobId;
     2: required string taskId;
     3: required string workflowNodeId;
@@ -92,8 +97,12 @@ struct JobIdentity {
 
 struct JobStatusChangeEvent {
     1: required experimentModel.JobState state;
-    2: required JobIdentity jobIdentity;
-//    3: required JobMonitor jobMonitor;
+    2: required JobIdentifier jobIdentity;
+}
+
+struct JobStatusChangeRequestEvent {
+    1: required experimentModel.JobState state;
+    2: required JobIdentifier jobIdentity;
 }
 
 struct Message {

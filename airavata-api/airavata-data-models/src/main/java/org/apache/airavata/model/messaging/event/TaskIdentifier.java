@@ -49,31 +49,28 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class JobIdentity implements org.apache.thrift.TBase<JobIdentity, JobIdentity._Fields>, java.io.Serializable, Cloneable, Comparable<JobIdentity> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("JobIdentity");
+@SuppressWarnings("all") public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, TaskIdentifier._Fields>, java.io.Serializable, Cloneable, Comparable<TaskIdentifier> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TaskIdentifier");
 
-  private static final org.apache.thrift.protocol.TField JOB_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("jobId", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField TASK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("taskId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField WORKFLOW_NODE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowNodeId", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField TASK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("taskId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField WORKFLOW_NODE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowNodeId", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new JobIdentityStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new JobIdentityTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new TaskIdentifierStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new TaskIdentifierTupleSchemeFactory());
   }
 
-  private String jobId; // required
   private String taskId; // required
   private String workflowNodeId; // required
   private String experimentId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    JOB_ID((short)1, "jobId"),
-    TASK_ID((short)2, "taskId"),
-    WORKFLOW_NODE_ID((short)3, "workflowNodeId"),
-    EXPERIMENT_ID((short)4, "experimentId");
+    TASK_ID((short)1, "taskId"),
+    WORKFLOW_NODE_ID((short)2, "workflowNodeId"),
+    EXPERIMENT_ID((short)3, "experimentId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -88,13 +85,11 @@ import org.slf4j.LoggerFactory;
      */
     public static _Fields findByThriftId(int fieldId) {
       switch(fieldId) {
-        case 1: // JOB_ID
-          return JOB_ID;
-        case 2: // TASK_ID
+        case 1: // TASK_ID
           return TASK_ID;
-        case 3: // WORKFLOW_NODE_ID
+        case 2: // WORKFLOW_NODE_ID
           return WORKFLOW_NODE_ID;
-        case 4: // EXPERIMENT_ID
+        case 3: // EXPERIMENT_ID
           return EXPERIMENT_ID;
         default:
           return null;
@@ -139,8 +134,6 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.JOB_ID, new org.apache.thrift.meta_data.FieldMetaData("jobId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TASK_ID, new org.apache.thrift.meta_data.FieldMetaData("taskId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.WORKFLOW_NODE_ID, new org.apache.thrift.meta_data.FieldMetaData("workflowNodeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -148,20 +141,18 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("experimentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(JobIdentity.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TaskIdentifier.class, metaDataMap);
   }
 
-  public JobIdentity() {
+  public TaskIdentifier() {
   }
 
-  public JobIdentity(
-    String jobId,
+  public TaskIdentifier(
     String taskId,
     String workflowNodeId,
     String experimentId)
   {
     this();
-    this.jobId = jobId;
     this.taskId = taskId;
     this.workflowNodeId = workflowNodeId;
     this.experimentId = experimentId;
@@ -170,10 +161,7 @@ import org.slf4j.LoggerFactory;
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public JobIdentity(JobIdentity other) {
-    if (other.isSetJobId()) {
-      this.jobId = other.jobId;
-    }
+  public TaskIdentifier(TaskIdentifier other) {
     if (other.isSetTaskId()) {
       this.taskId = other.taskId;
     }
@@ -185,39 +173,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public JobIdentity deepCopy() {
-    return new JobIdentity(this);
+  public TaskIdentifier deepCopy() {
+    return new TaskIdentifier(this);
   }
 
   @Override
   public void clear() {
-    this.jobId = null;
     this.taskId = null;
     this.workflowNodeId = null;
     this.experimentId = null;
-  }
-
-  public String getJobId() {
-    return this.jobId;
-  }
-
-  public void setJobId(String jobId) {
-    this.jobId = jobId;
-  }
-
-  public void unsetJobId() {
-    this.jobId = null;
-  }
-
-  /** Returns true if field jobId is set (has been assigned a value) and false otherwise */
-  public boolean isSetJobId() {
-    return this.jobId != null;
-  }
-
-  public void setJobIdIsSet(boolean value) {
-    if (!value) {
-      this.jobId = null;
-    }
   }
 
   public String getTaskId() {
@@ -291,14 +255,6 @@ import org.slf4j.LoggerFactory;
 
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
-    case JOB_ID:
-      if (value == null) {
-        unsetJobId();
-      } else {
-        setJobId((String)value);
-      }
-      break;
-
     case TASK_ID:
       if (value == null) {
         unsetTaskId();
@@ -328,9 +284,6 @@ import org.slf4j.LoggerFactory;
 
   public Object getFieldValue(_Fields field) {
     switch (field) {
-    case JOB_ID:
-      return getJobId();
-
     case TASK_ID:
       return getTaskId();
 
@@ -351,8 +304,6 @@ import org.slf4j.LoggerFactory;
     }
 
     switch (field) {
-    case JOB_ID:
-      return isSetJobId();
     case TASK_ID:
       return isSetTaskId();
     case WORKFLOW_NODE_ID:
@@ -367,23 +318,14 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof JobIdentity)
-      return this.equals((JobIdentity)that);
+    if (that instanceof TaskIdentifier)
+      return this.equals((TaskIdentifier)that);
     return false;
   }
 
-  public boolean equals(JobIdentity that) {
+  public boolean equals(TaskIdentifier that) {
     if (that == null)
       return false;
-
-    boolean this_present_jobId = true && this.isSetJobId();
-    boolean that_present_jobId = true && that.isSetJobId();
-    if (this_present_jobId || that_present_jobId) {
-      if (!(this_present_jobId && that_present_jobId))
-        return false;
-      if (!this.jobId.equals(that.jobId))
-        return false;
-    }
 
     boolean this_present_taskId = true && this.isSetTaskId();
     boolean that_present_taskId = true && that.isSetTaskId();
@@ -421,23 +363,13 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(JobIdentity other) {
+  public int compareTo(TaskIdentifier other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetJobId()).compareTo(other.isSetJobId());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetJobId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobId, other.jobId);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetTaskId()).compareTo(other.isSetTaskId());
     if (lastComparison != 0) {
       return lastComparison;
@@ -485,17 +417,9 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("JobIdentity(");
+    StringBuilder sb = new StringBuilder("TaskIdentifier(");
     boolean first = true;
 
-    sb.append("jobId:");
-    if (this.jobId == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.jobId);
-    }
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("taskId:");
     if (this.taskId == null) {
       sb.append("null");
@@ -525,10 +449,6 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetJobId()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'jobId' is unset! Struct:" + toString());
-    }
-
     if (!isSetTaskId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'taskId' is unset! Struct:" + toString());
     }
@@ -560,15 +480,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class JobIdentityStandardSchemeFactory implements SchemeFactory {
-    public JobIdentityStandardScheme getScheme() {
-      return new JobIdentityStandardScheme();
+  private static class TaskIdentifierStandardSchemeFactory implements SchemeFactory {
+    public TaskIdentifierStandardScheme getScheme() {
+      return new TaskIdentifierStandardScheme();
     }
   }
 
-  private static class JobIdentityStandardScheme extends StandardScheme<JobIdentity> {
+  private static class TaskIdentifierStandardScheme extends StandardScheme<TaskIdentifier> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, JobIdentity struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, TaskIdentifier struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -578,15 +498,7 @@ import org.slf4j.LoggerFactory;
           break;
         }
         switch (schemeField.id) {
-          case 1: // JOB_ID
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.jobId = iprot.readString();
-              struct.setJobIdIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 2: // TASK_ID
+          case 1: // TASK_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.taskId = iprot.readString();
               struct.setTaskIdIsSet(true);
@@ -594,7 +506,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // WORKFLOW_NODE_ID
+          case 2: // WORKFLOW_NODE_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.workflowNodeId = iprot.readString();
               struct.setWorkflowNodeIdIsSet(true);
@@ -602,7 +514,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // EXPERIMENT_ID
+          case 3: // EXPERIMENT_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.experimentId = iprot.readString();
               struct.setExperimentIdIsSet(true);
@@ -619,15 +531,10 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, JobIdentity struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, TaskIdentifier struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.jobId != null) {
-        oprot.writeFieldBegin(JOB_ID_FIELD_DESC);
-        oprot.writeString(struct.jobId);
-        oprot.writeFieldEnd();
-      }
       if (struct.taskId != null) {
         oprot.writeFieldBegin(TASK_ID_FIELD_DESC);
         oprot.writeString(struct.taskId);
@@ -649,28 +556,25 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class JobIdentityTupleSchemeFactory implements SchemeFactory {
-    public JobIdentityTupleScheme getScheme() {
-      return new JobIdentityTupleScheme();
+  private static class TaskIdentifierTupleSchemeFactory implements SchemeFactory {
+    public TaskIdentifierTupleScheme getScheme() {
+      return new TaskIdentifierTupleScheme();
     }
   }
 
-  private static class JobIdentityTupleScheme extends TupleScheme<JobIdentity> {
+  private static class TaskIdentifierTupleScheme extends TupleScheme<TaskIdentifier> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, JobIdentity struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, TaskIdentifier struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.jobId);
       oprot.writeString(struct.taskId);
       oprot.writeString(struct.workflowNodeId);
       oprot.writeString(struct.experimentId);
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, JobIdentity struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, TaskIdentifier struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.jobId = iprot.readString();
-      struct.setJobIdIsSet(true);
       struct.taskId = iprot.readString();
       struct.setTaskIdIsSet(true);
       struct.workflowNodeId = iprot.readString();

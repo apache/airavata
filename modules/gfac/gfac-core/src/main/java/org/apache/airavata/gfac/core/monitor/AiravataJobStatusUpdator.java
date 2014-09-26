@@ -27,7 +27,9 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -57,7 +59,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
 
 
     @Subscribe
-    public void updateRegistry(JobStatusChangeEvent jobStatus) throws Exception{
+    public void updateRegistry(JobStatusChangeRequestEvent jobStatus) throws Exception{
         /* Here we need to parse the jobStatus message and update
                 the registry accordingly, for now we are just printing to standard Out
                  */
@@ -68,10 +70,10 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
                 String jobID = jobStatus.getJobIdentity().getJobId();
                 updateJobStatus(taskID, jobID, state);
     			logger.debug("Publishing job status for "+jobStatus.getJobIdentity().getJobId()+":"+state.toString());
-            	monitorPublisher.publish(new JobStatusChangeEvent(jobStatus.getState(), jobStatus.getJobIdentity()));
-                JobStatusChangeEvent changeEvent = new JobStatusChangeEvent(jobStatus.getState(), jobStatus.getJobIdentity());
+                JobStatusChangeEvent event = new JobStatusChangeEvent(jobStatus.getState(), jobStatus.getJobIdentity());
+                monitorPublisher.publish(event);
                 String messageId = AiravataUtils.getId("JOB");
-                MessageContext msgCntxt = new MessageContext(changeEvent, MessageType.JOB, messageId);
+                MessageContext msgCntxt = new MessageContext(event, MessageType.JOB, messageId);
                 msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                 if ( ServerSettings.isRabbitMqPublishEnabled()){
                     publisher.publish(msgCntxt);
@@ -84,7 +86,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
     }
 
     public  void updateJobStatus(String taskId, String jobID, JobState state) throws Exception {
-		logger.debug("Updating job status for "+jobID+":"+state.toString());
+		logger.info("Updating job status for " + jobID + ":" + state.toString());
         CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
         JobDetails details = (JobDetails)airavataRegistry.get(RegistryModelType.JOB_DETAIL, ids);
         if(details == null) {

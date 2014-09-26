@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
   }
 
   private org.apache.airavata.model.workspace.experiment.JobState state; // required
-  private JobIdentity jobIdentity; // required
+  private JobIdentifier jobIdentity; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -136,7 +136,7 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.STATE, new org.apache.thrift.meta_data.FieldMetaData("state", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.workspace.experiment.JobState.class)));
     tmpMap.put(_Fields.JOB_IDENTITY, new org.apache.thrift.meta_data.FieldMetaData("jobIdentity", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, JobIdentity.class)));
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, JobIdentifier.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(JobStatusChangeEvent.class, metaDataMap);
   }
@@ -146,7 +146,7 @@ import org.slf4j.LoggerFactory;
 
   public JobStatusChangeEvent(
     org.apache.airavata.model.workspace.experiment.JobState state,
-    JobIdentity jobIdentity)
+    JobIdentifier jobIdentity)
   {
     this();
     this.state = state;
@@ -161,7 +161,7 @@ import org.slf4j.LoggerFactory;
       this.state = other.state;
     }
     if (other.isSetJobIdentity()) {
-      this.jobIdentity = new JobIdentity(other.jobIdentity);
+      this.jobIdentity = new JobIdentifier(other.jobIdentity);
     }
   }
 
@@ -206,11 +206,11 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public JobIdentity getJobIdentity() {
+  public JobIdentifier getJobIdentity() {
     return this.jobIdentity;
   }
 
-  public void setJobIdentity(JobIdentity jobIdentity) {
+  public void setJobIdentity(JobIdentifier jobIdentity) {
     this.jobIdentity = jobIdentity;
   }
 
@@ -243,7 +243,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetJobIdentity();
       } else {
-        setJobIdentity((JobIdentity)value);
+        setJobIdentity((JobIdentifier)value);
       }
       break;
 
@@ -443,7 +443,7 @@ import org.slf4j.LoggerFactory;
             break;
           case 2: // JOB_IDENTITY
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.jobIdentity = new JobIdentity();
+              struct.jobIdentity = new JobIdentifier();
               struct.jobIdentity.read(iprot);
               struct.setJobIdentityIsSet(true);
             } else { 
@@ -499,7 +499,7 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.state = org.apache.airavata.model.workspace.experiment.JobState.findByValue(iprot.readI32());
       struct.setStateIsSet(true);
-      struct.jobIdentity = new JobIdentity();
+      struct.jobIdentity = new JobIdentifier();
       struct.jobIdentity.read(iprot);
       struct.setJobIdentityIsSet(true);
     }

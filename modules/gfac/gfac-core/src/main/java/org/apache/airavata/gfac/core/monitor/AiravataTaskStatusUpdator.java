@@ -27,10 +27,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.TaskIdentity;
-import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.registry.cpi.Registry;
@@ -53,17 +50,26 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     public void setAiravataRegistry(Registry airavataRegistry) {
         this.airavataRegistry = airavataRegistry;
     }
-//
-//    @Subscribe
-//    public void setupTaskStatus(TaskStatusChangeRequest taskStatus){
-//    	try {
-//			updateTaskStatus(taskStatus.getIdentity().getTaskId(), taskStatus.getState());
-//			logger.debug("Publishing task status for "+taskStatus.getIdentity().getTaskId()+":"+taskStatus.getState().toString());
-//			monitorPublisher.publish(new TaskStatusChangedEvent(taskStatus.getIdentity(),taskStatus.getState()));
-//		} catch (Exception e) {
-//            logger.error("Error persisting data" + e.getLocalizedMessage(), e);
-//		}
-//    }
+
+    @Subscribe
+    public void setupTaskStatus(TaskStatusChangeRequestEvent taskStatus) throws Exception{
+    	try {
+			updateTaskStatus(taskStatus.getTaskIdentity().getTaskId(), taskStatus.getState());
+			logger.debug("Publishing task status for "+taskStatus.getTaskIdentity().getTaskId()+":"+taskStatus.getState().toString());
+            TaskStatusChangeEvent event = new TaskStatusChangeEvent(taskStatus.getState(), taskStatus.getTaskIdentity());
+            monitorPublisher.publish(event);
+            String messageId = AiravataUtils.getId("TASK");
+            MessageContext msgCntxt = new MessageContext(event, MessageType.TASK, messageId);
+            msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            if ( ServerSettings.isRabbitMqPublishEnabled()){
+                publisher.publish(msgCntxt);
+            }
+		} catch (Exception e) {
+            String msg = "Error persisting data task status to database...";
+            logger.error(msg + e.getLocalizedMessage(), e);
+            throw new Exception(msg, e);
+		}
+    }
 
     @Subscribe
     public void setupTaskStatus(JobStatusChangeEvent jobStatus) throws Exception{
@@ -93,13 +99,13 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     	try {
 			updateTaskStatus(jobStatus.getJobIdentity().getTaskId(), state);
 			logger.debug("Publishing task status for "+jobStatus.getJobIdentity().getTaskId()+":"+state.toString());
-            TaskIdentity taskIdentity = new TaskIdentity(jobStatus.getJobIdentity().getTaskId(),
+            TaskIdentifier taskIdentity = new TaskIdentifier(jobStatus.getJobIdentity().getTaskId(),
                                                          jobStatus.getJobIdentity().getWorkflowNodeId(),
                                                          jobStatus.getJobIdentity().getExperimentId());
-            monitorPublisher.publish(new TaskStatusChangeEvent(state, taskIdentity));
-            TaskStatusChangeEvent changeEvent = new TaskStatusChangeEvent(state, taskIdentity);
+            TaskStatusChangeEvent event = new TaskStatusChangeEvent(state, taskIdentity);
+            monitorPublisher.publish(event);
             String messageId = AiravataUtils.getId("TASK");
-            MessageContext msgCntxt = new MessageContext(changeEvent, MessageType.TASK, messageId);
+            MessageContext msgCntxt = new MessageContext(event, MessageType.TASK, messageId);
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             if ( ServerSettings.isRabbitMqPublishEnabled()){
                 publisher.publish(msgCntxt);
@@ -112,7 +118,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     }
     
     public  void updateTaskStatus(String taskId, TaskState state) throws Exception {
-		logger.debug("Updating task status for "+taskId+":"+state.toString());
+		logger.info("Updating task status for " + taskId + ":" + state.toString());
     	TaskDetails details = (TaskDetails)airavataRegistry.get(RegistryModelType.TASK_DETAIL, taskId);
         if(details == null) {
             details = new TaskDetails();

@@ -89,10 +89,10 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	        }
 			updateExperimentStatus(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), state);
 			logger.debug("Publishing experiment status for "+nodeStatus.getWorkflowNodeIdentity().getExperimentId()+":"+state.toString());
-			monitorPublisher.publish(new ExperimentStatusChangeEvent(state, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
-            ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent(state, nodeStatus.getWorkflowNodeIdentity().getExperimentId());
+            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(state, nodeStatus.getWorkflowNodeIdentity().getExperimentId());
+            monitorPublisher.publish(event);
             String messageId = AiravataUtils.getId("EXPERIMENT");
-            MessageContext msgCntxt = new MessageContext(experimentStatusChangeEvent, MessageType.EXPERIMENT, messageId);
+            MessageContext msgCntxt = new MessageContext(event, MessageType.EXPERIMENT, messageId);
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             if ( ServerSettings.isRabbitMqPublishEnabled()){
                 publisher.publish(msgCntxt);

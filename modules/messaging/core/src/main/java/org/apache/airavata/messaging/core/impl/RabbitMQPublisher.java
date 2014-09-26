@@ -52,11 +52,12 @@ public class RabbitMQPublisher implements Publisher {
             throw new AiravataException(message, e);
         }
         rabbitMQProducer = new RabbitMQProducer(brokerUrl, exchangeName);
+        rabbitMQProducer.open();
     }
 
     public void publish(MessageContext msgCtx) throws AiravataException {
         try {
-            rabbitMQProducer.open();
+            log.info("Publishing status to rabbitmq...");
             byte[] body = ThriftUtils.serializeThriftObject(msgCtx.getEvent());
             Message message = new Message();
             message.setEvent(body);
@@ -73,11 +74,11 @@ public class RabbitMQPublisher implements Publisher {
                         event.getTaskIdentity().getWorkflowNodeId() + "." + event.getTaskIdentity().getTaskId();
             }else if (msgCtx.getType().equals(MessageType.WORKFLOWNODE)){
                 WorkflowNodeStatusChangeEvent event = (WorkflowNodeStatusChangeEvent) msgCtx.getEvent();
-                WorkflowIdentity workflowNodeIdentity = event.getWorkflowNodeIdentity();
+                WorkflowIdentifier workflowNodeIdentity = event.getWorkflowNodeIdentity();
                 routingKey = workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();
             }else if (msgCtx.getType().equals(MessageType.JOB)){
                 JobStatusChangeEvent event = (JobStatusChangeEvent)msgCtx.getEvent();
-                JobIdentity identity = event.getJobIdentity();
+                JobIdentifier identity = event.getJobIdentity();
                 routingKey = identity.getExperimentId() + "." +
                         identity.getWorkflowNodeId() + "." +
                         identity.getTaskId() + "." +

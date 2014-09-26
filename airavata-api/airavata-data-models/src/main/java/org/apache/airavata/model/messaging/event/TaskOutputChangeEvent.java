@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
   }
 
   private List<org.apache.airavata.model.workspace.experiment.DataObjectType> output; // required
-  private TaskIdentity taskIdentity; // required
+  private TaskIdentifier taskIdentity; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -133,7 +133,7 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.DataObjectType.class))));
     tmpMap.put(_Fields.TASK_IDENTITY, new org.apache.thrift.meta_data.FieldMetaData("taskIdentity", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, TaskIdentity.class)));
+        new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, TaskIdentifier.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TaskOutputChangeEvent.class, metaDataMap);
   }
@@ -143,7 +143,7 @@ import org.slf4j.LoggerFactory;
 
   public TaskOutputChangeEvent(
     List<org.apache.airavata.model.workspace.experiment.DataObjectType> output,
-    TaskIdentity taskIdentity)
+    TaskIdentifier taskIdentity)
   {
     this();
     this.output = output;
@@ -162,7 +162,7 @@ import org.slf4j.LoggerFactory;
       this.output = __this__output;
     }
     if (other.isSetTaskIdentity()) {
-      this.taskIdentity = new TaskIdentity(other.taskIdentity);
+      this.taskIdentity = new TaskIdentifier(other.taskIdentity);
     }
   }
 
@@ -214,11 +214,11 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public TaskIdentity getTaskIdentity() {
+  public TaskIdentifier getTaskIdentity() {
     return this.taskIdentity;
   }
 
-  public void setTaskIdentity(TaskIdentity taskIdentity) {
+  public void setTaskIdentity(TaskIdentifier taskIdentity) {
     this.taskIdentity = taskIdentity;
   }
 
@@ -251,7 +251,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetTaskIdentity();
       } else {
-        setTaskIdentity((TaskIdentity)value);
+        setTaskIdentity((TaskIdentifier)value);
       }
       break;
 
@@ -462,7 +462,7 @@ import org.slf4j.LoggerFactory;
             break;
           case 2: // TASK_IDENTITY
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.taskIdentity = new TaskIdentity();
+              struct.taskIdentity = new TaskIdentifier();
               struct.taskIdentity.read(iprot);
               struct.setTaskIdentityIsSet(true);
             } else { 
@@ -541,7 +541,7 @@ import org.slf4j.LoggerFactory;
         }
       }
       struct.setOutputIsSet(true);
-      struct.taskIdentity = new TaskIdentity();
+      struct.taskIdentity = new TaskIdentifier();
       struct.taskIdentity.read(iprot);
       struct.setTaskIdentityIsSet(true);
     }

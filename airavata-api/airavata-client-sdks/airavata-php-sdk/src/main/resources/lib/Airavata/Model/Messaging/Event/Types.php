@@ -135,7 +135,7 @@ class ExperimentStatusChangeEvent {
 
 }
 
-class WorkflowIdentity {
+class WorkflowIdentifier {
   static $_TSPEC;
 
   public $workflowNodeId = null;
@@ -165,7 +165,7 @@ class WorkflowIdentity {
   }
 
   public function getName() {
-    return 'WorkflowIdentity';
+    return 'WorkflowIdentifier';
   }
 
   public function read($input)
@@ -209,7 +209,7 @@ class WorkflowIdentity {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('WorkflowIdentity');
+    $xfer += $output->writeStructBegin('WorkflowIdentifier');
     if ($this->workflowNodeId !== null) {
       $xfer += $output->writeFieldBegin('workflowNodeId', TType::STRING, 1);
       $xfer += $output->writeString($this->workflowNodeId);
@@ -243,7 +243,7 @@ class WorkflowNodeStatusChangeEvent {
         2 => array(
           'var' => 'workflowNodeIdentity',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Messaging\Event\WorkflowIdentity',
+          'class' => '\Airavata\Model\Messaging\Event\WorkflowIdentifier',
           ),
         );
     }
@@ -285,7 +285,7 @@ class WorkflowNodeStatusChangeEvent {
           break;
         case 2:
           if ($ftype == TType::STRUCT) {
-            $this->workflowNodeIdentity = new \Airavata\Model\Messaging\Event\WorkflowIdentity();
+            $this->workflowNodeIdentity = new \Airavata\Model\Messaging\Event\WorkflowIdentifier();
             $xfer += $this->workflowNodeIdentity->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -324,7 +324,7 @@ class WorkflowNodeStatusChangeEvent {
 
 }
 
-class TaskIdentity {
+class TaskIdentifier {
   static $_TSPEC;
 
   public $taskId = null;
@@ -362,7 +362,7 @@ class TaskIdentity {
   }
 
   public function getName() {
-    return 'TaskIdentity';
+    return 'TaskIdentifier';
   }
 
   public function read($input)
@@ -413,7 +413,7 @@ class TaskIdentity {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('TaskIdentity');
+    $xfer += $output->writeStructBegin('TaskIdentifier');
     if ($this->taskId !== null) {
       $xfer += $output->writeFieldBegin('taskId', TType::STRING, 1);
       $xfer += $output->writeString($this->taskId);
@@ -452,7 +452,7 @@ class TaskStatusChangeEvent {
         2 => array(
           'var' => 'taskIdentity',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Messaging\Event\TaskIdentity',
+          'class' => '\Airavata\Model\Messaging\Event\TaskIdentifier',
           ),
         );
     }
@@ -494,7 +494,7 @@ class TaskStatusChangeEvent {
           break;
         case 2:
           if ($ftype == TType::STRUCT) {
-            $this->taskIdentity = new \Airavata\Model\Messaging\Event\TaskIdentity();
+            $this->taskIdentity = new \Airavata\Model\Messaging\Event\TaskIdentifier();
             $xfer += $this->taskIdentity->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -513,6 +513,103 @@ class TaskStatusChangeEvent {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('TaskStatusChangeEvent');
+    if ($this->state !== null) {
+      $xfer += $output->writeFieldBegin('state', TType::I32, 1);
+      $xfer += $output->writeI32($this->state);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->taskIdentity !== null) {
+      if (!is_object($this->taskIdentity)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('taskIdentity', TType::STRUCT, 2);
+      $xfer += $this->taskIdentity->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class TaskStatusChangeRequestEvent {
+  static $_TSPEC;
+
+  public $state = null;
+  public $taskIdentity = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'state',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'taskIdentity',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Messaging\Event\TaskIdentifier',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['state'])) {
+        $this->state = $vals['state'];
+      }
+      if (isset($vals['taskIdentity'])) {
+        $this->taskIdentity = $vals['taskIdentity'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'TaskStatusChangeRequestEvent';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->state);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->taskIdentity = new \Airavata\Model\Messaging\Event\TaskIdentifier();
+            $xfer += $this->taskIdentity->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('TaskStatusChangeRequestEvent');
     if ($this->state !== null) {
       $xfer += $output->writeFieldBegin('state', TType::I32, 1);
       $xfer += $output->writeI32($this->state);
@@ -554,7 +651,7 @@ class TaskOutputChangeEvent {
         2 => array(
           'var' => 'taskIdentity',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Messaging\Event\TaskIdentity',
+          'class' => '\Airavata\Model\Messaging\Event\TaskIdentifier',
           ),
         );
     }
@@ -607,7 +704,7 @@ class TaskOutputChangeEvent {
           break;
         case 2:
           if ($ftype == TType::STRUCT) {
-            $this->taskIdentity = new \Airavata\Model\Messaging\Event\TaskIdentity();
+            $this->taskIdentity = new \Airavata\Model\Messaging\Event\TaskIdentifier();
             $xfer += $this->taskIdentity->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -658,7 +755,7 @@ class TaskOutputChangeEvent {
 
 }
 
-class JobIdentity {
+class JobIdentifier {
   static $_TSPEC;
 
   public $jobId = null;
@@ -704,7 +801,7 @@ class JobIdentity {
   }
 
   public function getName() {
-    return 'JobIdentity';
+    return 'JobIdentifier';
   }
 
   public function read($input)
@@ -762,7 +859,7 @@ class JobIdentity {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('JobIdentity');
+    $xfer += $output->writeStructBegin('JobIdentifier');
     if ($this->jobId !== null) {
       $xfer += $output->writeFieldBegin('jobId', TType::STRING, 1);
       $xfer += $output->writeString($this->jobId);
@@ -806,7 +903,7 @@ class JobStatusChangeEvent {
         2 => array(
           'var' => 'jobIdentity',
           'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Messaging\Event\JobIdentity',
+          'class' => '\Airavata\Model\Messaging\Event\JobIdentifier',
           ),
         );
     }
@@ -848,7 +945,7 @@ class JobStatusChangeEvent {
           break;
         case 2:
           if ($ftype == TType::STRUCT) {
-            $this->jobIdentity = new \Airavata\Model\Messaging\Event\JobIdentity();
+            $this->jobIdentity = new \Airavata\Model\Messaging\Event\JobIdentifier();
             $xfer += $this->jobIdentity->read($input);
           } else {
             $xfer += $input->skip($ftype);
@@ -867,6 +964,103 @@ class JobStatusChangeEvent {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('JobStatusChangeEvent');
+    if ($this->state !== null) {
+      $xfer += $output->writeFieldBegin('state', TType::I32, 1);
+      $xfer += $output->writeI32($this->state);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->jobIdentity !== null) {
+      if (!is_object($this->jobIdentity)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('jobIdentity', TType::STRUCT, 2);
+      $xfer += $this->jobIdentity->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class JobStatusChangeRequestEvent {
+  static $_TSPEC;
+
+  public $state = null;
+  public $jobIdentity = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'state',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'jobIdentity',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Messaging\Event\JobIdentifier',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['state'])) {
+        $this->state = $vals['state'];
+      }
+      if (isset($vals['jobIdentity'])) {
+        $this->jobIdentity = $vals['jobIdentity'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'JobStatusChangeRequestEvent';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->state);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->jobIdentity = new \Airavata\Model\Messaging\Event\JobIdentifier();
+            $xfer += $this->jobIdentity->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('JobStatusChangeRequestEvent');
     if ($this->state !== null) {
       $xfer += $output->writeFieldBegin('state', TType::I32, 1);
       $xfer += $output->writeI32($this->state);

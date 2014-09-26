@@ -49,16 +49,16 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class WorkflowIdentity implements org.apache.thrift.TBase<WorkflowIdentity, WorkflowIdentity._Fields>, java.io.Serializable, Cloneable, Comparable<WorkflowIdentity> {
-  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("WorkflowIdentity");
+@SuppressWarnings("all") public class WorkflowIdentifier implements org.apache.thrift.TBase<WorkflowIdentifier, WorkflowIdentifier._Fields>, java.io.Serializable, Cloneable, Comparable<WorkflowIdentifier> {
+  private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("WorkflowIdentifier");
 
   private static final org.apache.thrift.protocol.TField WORKFLOW_NODE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowNodeId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
-    schemes.put(StandardScheme.class, new WorkflowIdentityStandardSchemeFactory());
-    schemes.put(TupleScheme.class, new WorkflowIdentityTupleSchemeFactory());
+    schemes.put(StandardScheme.class, new WorkflowIdentifierStandardSchemeFactory());
+    schemes.put(TupleScheme.class, new WorkflowIdentifierTupleSchemeFactory());
   }
 
   private String workflowNodeId; // required
@@ -134,13 +134,13 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("experimentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
-    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(WorkflowIdentity.class, metaDataMap);
+    org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(WorkflowIdentifier.class, metaDataMap);
   }
 
-  public WorkflowIdentity() {
+  public WorkflowIdentifier() {
   }
 
-  public WorkflowIdentity(
+  public WorkflowIdentifier(
     String workflowNodeId,
     String experimentId)
   {
@@ -152,7 +152,7 @@ import org.slf4j.LoggerFactory;
   /**
    * Performs a deep copy on <i>other</i>.
    */
-  public WorkflowIdentity(WorkflowIdentity other) {
+  public WorkflowIdentifier(WorkflowIdentifier other) {
     if (other.isSetWorkflowNodeId()) {
       this.workflowNodeId = other.workflowNodeId;
     }
@@ -161,8 +161,8 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public WorkflowIdentity deepCopy() {
-    return new WorkflowIdentity(this);
+  public WorkflowIdentifier deepCopy() {
+    return new WorkflowIdentifier(this);
   }
 
   @Override
@@ -269,12 +269,12 @@ import org.slf4j.LoggerFactory;
   public boolean equals(Object that) {
     if (that == null)
       return false;
-    if (that instanceof WorkflowIdentity)
-      return this.equals((WorkflowIdentity)that);
+    if (that instanceof WorkflowIdentifier)
+      return this.equals((WorkflowIdentifier)that);
     return false;
   }
 
-  public boolean equals(WorkflowIdentity that) {
+  public boolean equals(WorkflowIdentifier that) {
     if (that == null)
       return false;
 
@@ -305,7 +305,7 @@ import org.slf4j.LoggerFactory;
   }
 
   @Override
-  public int compareTo(WorkflowIdentity other) {
+  public int compareTo(WorkflowIdentifier other) {
     if (!getClass().equals(other.getClass())) {
       return getClass().getName().compareTo(other.getClass().getName());
     }
@@ -349,7 +349,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("WorkflowIdentity(");
+    StringBuilder sb = new StringBuilder("WorkflowIdentifier(");
     boolean first = true;
 
     sb.append("workflowNodeId:");
@@ -400,15 +400,15 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  private static class WorkflowIdentityStandardSchemeFactory implements SchemeFactory {
-    public WorkflowIdentityStandardScheme getScheme() {
-      return new WorkflowIdentityStandardScheme();
+  private static class WorkflowIdentifierStandardSchemeFactory implements SchemeFactory {
+    public WorkflowIdentifierStandardScheme getScheme() {
+      return new WorkflowIdentifierStandardScheme();
     }
   }
 
-  private static class WorkflowIdentityStandardScheme extends StandardScheme<WorkflowIdentity> {
+  private static class WorkflowIdentifierStandardScheme extends StandardScheme<WorkflowIdentifier> {
 
-    public void read(org.apache.thrift.protocol.TProtocol iprot, WorkflowIdentity struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol iprot, WorkflowIdentifier struct) throws org.apache.thrift.TException {
       org.apache.thrift.protocol.TField schemeField;
       iprot.readStructBegin();
       while (true)
@@ -443,7 +443,7 @@ import org.slf4j.LoggerFactory;
       struct.validate();
     }
 
-    public void write(org.apache.thrift.protocol.TProtocol oprot, WorkflowIdentity struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol oprot, WorkflowIdentifier struct) throws org.apache.thrift.TException {
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
@@ -463,23 +463,23 @@ import org.slf4j.LoggerFactory;
 
   }
 
-  private static class WorkflowIdentityTupleSchemeFactory implements SchemeFactory {
-    public WorkflowIdentityTupleScheme getScheme() {
-      return new WorkflowIdentityTupleScheme();
+  private static class WorkflowIdentifierTupleSchemeFactory implements SchemeFactory {
+    public WorkflowIdentifierTupleScheme getScheme() {
+      return new WorkflowIdentifierTupleScheme();
     }
   }
 
-  private static class WorkflowIdentityTupleScheme extends TupleScheme<WorkflowIdentity> {
+  private static class WorkflowIdentifierTupleScheme extends TupleScheme<WorkflowIdentifier> {
 
     @Override
-    public void write(org.apache.thrift.protocol.TProtocol prot, WorkflowIdentity struct) throws org.apache.thrift.TException {
+    public void write(org.apache.thrift.protocol.TProtocol prot, WorkflowIdentifier struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.workflowNodeId);
       oprot.writeString(struct.experimentId);
     }
 
     @Override
-    public void read(org.apache.thrift.protocol.TProtocol prot, WorkflowIdentity struct) throws org.apache.thrift.TException {
+    public void read(org.apache.thrift.protocol.TProtocol prot, WorkflowIdentifier struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.workflowNodeId = iprot.readString();
       struct.setWorkflowNodeIdIsSet(true);
