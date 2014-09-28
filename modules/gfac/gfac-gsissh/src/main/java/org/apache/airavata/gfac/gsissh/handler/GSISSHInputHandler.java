@@ -195,6 +195,14 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
             return targetFile;
         } catch (Exception e) {
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
+        }finally {
+            if (cluster != null) {
+                try {
+                    cluster.disconnect();
+                } catch (SSHApiException e) {
+                    throw new GFacHandlerException(e.getMessage(), e);
+                }
+            }
         }
     }
 

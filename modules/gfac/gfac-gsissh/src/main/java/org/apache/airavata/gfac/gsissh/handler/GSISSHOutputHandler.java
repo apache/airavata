@@ -43,6 +43,7 @@ import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -112,8 +113,9 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
 
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription().getType();
+        Cluster cluster = null;
+        
         try {
-            Cluster cluster = null;
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
                 cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
             } else {
@@ -294,6 +296,14 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }
             throw new GFacHandlerException("Error in retrieving results", e);
+        }finally {
+            if (cluster != null) {
+                try {
+                    cluster.disconnect();
+                } catch (SSHApiException e) {
+                    throw new GFacHandlerException(e.getMessage(), e);
+                }
+            }
         }
 
     }

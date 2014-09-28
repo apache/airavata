@@ -102,6 +102,8 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
         List<String> oldFiles = new ArrayList<String>();
         MessageContext inputNew = new MessageContext();
         StringBuffer data = new StringBuffer("|");
+        Cluster pbsCluster = null;
+        
         try {
             String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
             if (pluginData != null) {
@@ -153,7 +155,6 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
             }
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();
-            Cluster pbsCluster = null;
             // here doesn't matter what the job manager is because we are only doing some file handling
             // not really dealing with monitoring or job submission, so we pa
             String lastHost = null;
@@ -235,7 +236,16 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
  				 log.error(e1.getLocalizedMessage());
  			}
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
+        }finally {
+            if (pbsCluster != null) {
+                try {
+                	pbsCluster.disconnect();
+                } catch (SSHApiException e) {
+                    throw new GFacHandlerException(e.getMessage(), e);
+                }
+            }
         }
+        
         jobExecutionContext.setInMessageContext(inputNew);
     }
 
