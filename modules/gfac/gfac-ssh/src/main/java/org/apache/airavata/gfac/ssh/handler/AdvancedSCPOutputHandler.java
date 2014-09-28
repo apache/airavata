@@ -99,6 +99,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
 
     @Override
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+    	Cluster pbsCluster = null;
         try {
             if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
                 try {
@@ -139,7 +140,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             }
             ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
 
-            Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && !jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().isPersistOutputData()){
             outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
                     + File.separator;
@@ -184,6 +185,14 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
  				 log.error(e1.getLocalizedMessage());
  			}
         	throw new GFacHandlerException(e);
+        }finally {
+            if (pbsCluster != null) {
+                try {
+                	pbsCluster.disconnect();
+                } catch (SSHApiException e) {
+                    throw new GFacHandlerException(e.getMessage(), e);
+                }
+            }
         }
     }
 }

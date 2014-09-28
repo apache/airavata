@@ -26,6 +26,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
@@ -63,8 +64,9 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
         makeDirectory(jobExecutionContext);
 	}
 	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-                try {
-        Cluster cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
+		 Cluster cluster = null;
+		try {
+         cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
         if (cluster == null) {
         	 try {
   				GFacUtils.saveErrorDetails(jobExecutionContext, "Security context is not set properly", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
@@ -102,6 +104,14 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }
             throw new GFacHandlerException("Error executing the Handler: " + GSISSHDirectorySetupHandler.class, e);
+        }finally {
+            if (cluster != null) {
+                try {
+                    cluster.disconnect();
+                } catch (SSHApiException e) {
+                    throw new GFacHandlerException(e.getMessage(), e);
+                }
+            }
         }
 	}
 
