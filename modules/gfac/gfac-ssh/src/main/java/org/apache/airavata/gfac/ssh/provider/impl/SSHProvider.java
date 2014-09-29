@@ -134,16 +134,15 @@ public class SSHProvider extends AbstractProvider {
 
 //                GFacUtils.updateJobStatus(details, JobState.COMPLETE);
             } catch (Exception e) {
+            	  if (cluster != null) {
+                      try {
+                          cluster.disconnect();
+                      } catch (SSHApiException e1) {
+                          throw new GFacProviderException(e1.getMessage(), e1);
+                      }
+                  }
                 throw new GFacProviderException(e.getMessage(), e);
-            } finally {
-                if (cluster != null) {
-                    try {
-                        cluster.disconnect();
-                    } catch (SSHApiException e) {
-                        throw new GFacProviderException(e.getMessage(), e);
-                    }
-                }
-            }
+            } 
         } else {
             try {
                 jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
