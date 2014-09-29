@@ -91,28 +91,27 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
 
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
-        } catch (Exception e) {
-            DataTransferDetails detail = new DataTransferDetails();
-            TransferStatus status = new TransferStatus();
-            detail.setTransferDescription(e.getLocalizedMessage());
-            status.setTransferState(TransferState.FAILED);
-            detail.setTransferStatus(status);
-            try {
-                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
-            } catch (Exception e1) {
-                throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
-            }
-            throw new GFacHandlerException("Error executing the Handler: " + GSISSHDirectorySetupHandler.class, e);
-        }finally {
-            if (cluster != null) {
-                try {
-                    cluster.disconnect();
-                } catch (SSHApiException e) {
-                    throw new GFacHandlerException(e.getMessage(), e);
-                }
-            }
-        }
+		} catch (Exception e) {
+			if (cluster != null) {
+				try {
+					cluster.disconnect();
+				} catch (SSHApiException e1) {
+					throw new GFacHandlerException(e1.getMessage(), e1);
+				}
+			}
+			DataTransferDetails detail = new DataTransferDetails();
+			TransferStatus status = new TransferStatus();
+			detail.setTransferDescription(e.getLocalizedMessage());
+			status.setTransferState(TransferState.FAILED);
+			detail.setTransferStatus(status);
+			try {
+				registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
+			} catch (Exception e1) {
+				throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
+			}
+			throw new GFacHandlerException("Error executing the Handler: " + GSISSHDirectorySetupHandler.class, e);
+		}
 	}
 
     public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {

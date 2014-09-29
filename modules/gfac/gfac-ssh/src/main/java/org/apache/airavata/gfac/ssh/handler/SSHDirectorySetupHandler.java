@@ -87,6 +87,14 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
         } catch (Exception e) {
+			if (cluster != null) {
+				try {
+					cluster.disconnect();
+				} catch (SSHApiException e1) {
+					throw new GFacHandlerException(e1.getMessage(), e1);
+				}
+			}
+
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();
             status.setTransferState(TransferState.FAILED);
@@ -98,14 +106,6 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }
             throw new GFacHandlerException("Error executing the Handler: " + SSHDirectorySetupHandler.class, e);
-        }finally {
-            if (cluster != null) {
-                try {
-                cluster.disconnect();
-                } catch (SSHApiException e) {
-                    throw new GFacHandlerException(e.getMessage(), e);
-                }
-            }
         }
         
 	}
