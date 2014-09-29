@@ -81,8 +81,9 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().
                 getApplicationDeploymentDescription().getType();
         JobDetails jobDetails = new JobDetails();
+        Cluster cluster = null;
+        
         try {
-            Cluster cluster = null;
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
                 cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
             }
@@ -125,7 +126,15 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             log.info("Saving data for future recovery: ");
             log.info(data.toString());
             GFacUtils.savePluginData(jobExecutionContext, data, this.getClass().getName());
-        }
+            if (cluster != null) {
+                try {
+                    cluster.disconnect();
+                } catch (SSHApiException e) {
+                    throw new GFacProviderException(e.getMessage(), e);
+                }
+            }
+        } 
+          
     }
 
     public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext, GsisshHostType host, String jobID) throws GFacHandlerException {

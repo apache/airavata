@@ -42,6 +42,7 @@ import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -110,8 +111,9 @@ public class SSHOutputHandler extends AbstractHandler {
 
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription().getType();
+        Cluster cluster = null;
         try {
-            Cluster cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+             cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
             if (cluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
             } else {
@@ -142,8 +144,13 @@ public class SSHOutputHandler extends AbstractHandler {
             int i = 0;
             String stdOutStr = "";
             while(stdOutStr.isEmpty()){ 		
-            cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
-            stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+            try {
+            	cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
+                stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+			} catch (Exception e) {
+				log.error(e.getLocalizedMessage());
+				Thread.sleep(2000);
+			}
             i++;
             if(i == 3) break;
             }
@@ -236,6 +243,14 @@ public class SSHOutputHandler extends AbstractHandler {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }
             throw new GFacHandlerException("Error in retrieving results", e);
+        }finally {
+            if (cluster != null) {
+                try {
+                cluster.disconnect();
+                } catch (SSHApiException e) {
+                    throw new GFacHandlerException(e.getMessage(), e);
+                }
+            }
         }
 
     }

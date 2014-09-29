@@ -63,8 +63,15 @@ public class SSHInputHandler extends AbstractHandler {
         List<String> oldFiles = new ArrayList<String>();
         StringBuffer data = new StringBuffer("|");
         MessageContext inputNew = new MessageContext();
+        Cluster cluster = null;
+        
         try {
-
+        	cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+            if (cluster == null) {
+                throw new GFacException("Security context is not set properly");
+            } else {
+                log.info("Successfully retrieved the Security Context");
+            }
             if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
                 try {
                     GFACSSHUtils.addSecurityContext(jobExecutionContext);
@@ -94,7 +101,7 @@ public class SSHInputHandler extends AbstractHandler {
                         ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
                     }else{
-                	String stageInputFile = stageInputFiles(jobExecutionContext, paramValue);
+                	String stageInputFile = stageInputFiles(cluster,jobExecutionContext, paramValue);
                     ((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
                     StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
                     
@@ -113,7 +120,7 @@ public class SSHInputHandler extends AbstractHandler {
                 	List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
                     List<String> newFiles = new ArrayList<String>();
                     for (String paramValueEach : split) {
-                        String stageInputFiles = stageInputFiles(jobExecutionContext, paramValueEach);
+                        String stageInputFiles = stageInputFiles(cluster,jobExecutionContext, paramValueEach);
                         status.setTransferState(TransferState.UPLOAD);
                         detail.setTransferStatus(status);
                         detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
@@ -138,17 +145,19 @@ public class SSHInputHandler extends AbstractHandler {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
+        }finally {
+            if (cluster != null) {
+                try {
+                cluster.disconnect();
+                } catch (SSHApiException e) {
+                    throw new GFacHandlerException(e.getMessage(), e);
+                }
+            }
         }
         jobExecutionContext.setInMessageContext(inputNew);
     }
 
-    private static String stageInputFiles(JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
-        Cluster cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
-        if (cluster == null) {
-            throw new GFacException("Security context is not set properly");
-        } else {
-            log.info("Successfully retrieved the Security Context");
-        }
+    private static String stageInputFiles(Cluster cluster, JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
         int i = paramValue.lastIndexOf(File.separator);
         String substring = paramValue.substring(i + 1);
@@ -161,10 +170,24 @@ public class SSHInputHandler extends AbstractHandler {
             if(paramValue.startsWith("file")){
                 paramValue = paramValue.substring(paramValue.indexOf(":") + 1, paramValue.length());
             }
-            cluster.scpTo(targetFile, paramValue);
+            boolean success = false;
+            int j = 1;
+            while(!success){
+            try {
+				cluster.scpTo(targetFile, paramValue);
+				success = true;
+			} catch (Exception e) {
+				log.info(e.getLocalizedMessage());
+				Thread.sleep(2000);
+				 if(j==3) {
+					throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
+				 }
+            }
+            j++;
+            }
             }
             return targetFile;
-        } catch (SSHApiException e) {
+        } catch (Exception e) {
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
         }
     }
