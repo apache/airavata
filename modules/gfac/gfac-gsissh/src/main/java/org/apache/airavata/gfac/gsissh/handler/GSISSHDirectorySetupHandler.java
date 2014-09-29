@@ -92,13 +92,6 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
 		} catch (Exception e) {
-			if (cluster != null) {
-				try {
-					cluster.disconnect();
-				} catch (SSHApiException e1) {
-					throw new GFacHandlerException(e1.getMessage(), e1);
-				}
-			}
 			DataTransferDetails detail = new DataTransferDetails();
 			TransferStatus status = new TransferStatus();
 			detail.setTransferDescription(e.getLocalizedMessage());
