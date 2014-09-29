@@ -135,13 +135,6 @@ public class SSHInputHandler extends AbstractHandler {
                 inputNew.getParameters().put(paramName, actualParameter);
             }
         } catch (Exception e) {
-              if (cluster != null) {
-                  try {
-                  cluster.disconnect();
-                  } catch (SSHApiException e1) {
-                      throw new GFacHandlerException(e1.getMessage(), e1);
-                  }
-              }
             log.error(e.getMessage());
             status.setTransferState(TransferState.FAILED);
             detail.setTransferStatus(status);
