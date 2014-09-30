@@ -155,14 +155,7 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                 inputNew.getParameters().put(paramName, actualParameter);
             }
         } catch (Exception e) {
-			if (cluster != null) {
-				try {
-					cluster.disconnect();
-				} catch (SSHApiException e1) {
-					throw new GFacHandlerException(e1.getMessage(), e1);
-				}
-			}
-            log.error(e.getMessage());
+			log.error(e.getMessage());
             status.setTransferState(TransferState.FAILED);
             detail.setTransferDescription(e.getLocalizedMessage());
             detail.setTransferStatus(status);
