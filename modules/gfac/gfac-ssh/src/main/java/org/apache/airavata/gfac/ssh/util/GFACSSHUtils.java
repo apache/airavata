@@ -56,6 +56,8 @@ import java.util.*;
 public class GFACSSHUtils {
     private final static Logger logger = LoggerFactory.getLogger(GFACSSHUtils.class);
 
+    public static Map<String, Cluster> clusters = new HashMap<String, Cluster>();
+
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
         HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
         if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType) {
@@ -81,8 +83,28 @@ public class GFACSSHUtils {
                 serverInfo.setUserName(credentials.getPortalUserName());
                 jobExecutionContext.getExperiment().setUserName(credentials.getPortalUserName());
                 // inside the pbsCluser object
-                pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
-                        CommonUtils.getPBSJobManager(installedParentPath));
+
+                String key = credentials.getPortalUserName() + registeredHost.getType().getHostAddress() +
+                        serverInfo.getPort();
+                boolean recreate = false;
+                if (clusters.containsKey(key) && clusters.get(key).getSession().isConnected()) {
+                    pbsCluster = clusters.get(key);
+                    try {
+                        pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+                        // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+                    }catch(Exception e){
+                        logger.info("Connection found the connection map is expired, so we create from the scratch");
+                        recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+                    }
+                }else{
+                    recreate = true;
+                }
+
+                if(recreate) {
+                    pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
+                            CommonUtils.getPBSJobManager(installedParentPath));
+                    clusters.put(key, pbsCluster);
+                }
             } catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
