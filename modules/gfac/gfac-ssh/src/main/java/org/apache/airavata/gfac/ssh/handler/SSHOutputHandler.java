@@ -243,14 +243,6 @@ public class SSHOutputHandler extends AbstractHandler {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }
             throw new GFacHandlerException("Error in retrieving results", e);
-        }finally {
-            if (cluster != null) {
-                try {
-                cluster.disconnect();
-                } catch (SSHApiException e) {
-                    throw new GFacHandlerException(e.getMessage(), e);
-                }
-            }
         }
 
     }
