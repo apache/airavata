@@ -116,7 +116,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             delegateToMonitorHandlers(jobExecutionContext, (GsisshHostType) host, jobID);
             // we know this host is type GsiSSHHostType
         } catch (Exception e) {
-            String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+		    String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
@@ -126,13 +126,6 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             log.info("Saving data for future recovery: ");
             log.info(data.toString());
             GFacUtils.savePluginData(jobExecutionContext, data, this.getClass().getName());
-            if (cluster != null) {
-                try {
-                    cluster.disconnect();
-                } catch (SSHApiException e) {
-                    throw new GFacProviderException(e.getMessage(), e);
-                }
-            }
         } 
           
     }

@@ -145,14 +145,6 @@ public class SSHInputHandler extends AbstractHandler {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
-        }finally {
-            if (cluster != null) {
-                try {
-                cluster.disconnect();
-                } catch (SSHApiException e) {
-                    throw new GFacHandlerException(e.getMessage(), e);
-                }
-            }
         }
         jobExecutionContext.setInMessageContext(inputNew);
     }
