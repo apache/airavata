@@ -62,7 +62,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class HPCPullMonitor extends PullMonitor {
     private final static Logger logger = LoggerFactory.getLogger(HPCPullMonitor.class);
-    public static final int FAILED_COUNT = 3;
+    public static final int FAILED_COUNT = 1;
 
     // I think this should use DelayedBlocking Queue to do the monitoring*/
     private BlockingQueue<UserMonitorData> queue;
@@ -194,7 +194,7 @@ public class HPCPullMonitor extends PullMonitor {
                                 logger.info("ExperimentID: " + cancelMId.split("\\+")[0] + ",TaskID: " + cancelMId.split("\\+")[1] + "JobID" + iMonitorID.getJobID());
                                 iMonitorID.setStatus(JobState.CANCELED);
                                 completedJobs.put(iMonitorID.getJobName(), iMonitorID);
-                                iterator1.remove();
+                                cancelJobList.remove(cancelMId);
                                 break;
                             }
                         }
@@ -210,13 +210,10 @@ public class HPCPullMonitor extends PullMonitor {
                                     logger.info("This job is finished because push notification came with <username,jobName> " + completeId);
                                     completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                     iMonitorID.setStatus(JobState.COMPLETE);
+                                    completedJobsFromPush.remove(completeId);//we have to make this empty everytime we iterate, otherwise this list will accumulate and will
+                                    // lead to a memory leak
                                     break;
                                 }
-                                //we have to make this empty everytime we iterate, otherwise this list will accumulate and will
-                                // lead to a memory leak
-                            }
-                            if(completeId!=null) {
-                                completedJobsFromPush.remove(completeId);
                             }
                             iterator = completedJobsFromPush.listIterator();
                         }
@@ -244,14 +241,13 @@ public class HPCPullMonitor extends PullMonitor {
                                     " 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             JobDescriptor jobDescriptor = JobDescriptor.fromXML(iMonitorID.getJobExecutionContext().getJobDetails().getJobDescription());
-                            List<String> stdOut = connection.getCluster().listDirectory(jobDescriptor.getOutputDirectory());
-                            if (stdOut.size() > 0) {
-                                if (stdOut.contains(jobDescriptor.getStandardErrorFile()) && stdOut.contains(jobDescriptor.getStandardOutFile())) {
-                                    completedJobs.put(iMonitorID.getJobName(), iMonitorID);
-                                } else {
-                                    iMonitorID.setFailedCount(0);
-                                }
+                            List<String> stdOut = connection.getCluster().listDirectory(jobDescriptor.getOutputDirectory()); // check the outputs directory
+                            if (stdOut.size() > 0) { // have to be careful with this
+                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
+                            } else {
+                                iMonitorID.setFailedCount(0);
                             }
+
                         } else {
                             // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
@@ -308,30 +304,12 @@ public class HPCPullMonitor extends PullMonitor {
                 publisher.publish(jobStatus);
             } else if (e.getMessage().contains("illegally formed job identifier")) {
                 logger.error("Wrong job ID is given so dropping the job from monitoring system");
-            } else if (!this.queue.contains(take)) {   // we put the job back to the queue only if its state is not unknown
-                if (currentMonitorID == null) {
-                    logger.error("Monitoring the jobs failed, for user: " + take.getUserName()
-                            + " in Host: " + currentHostDescription.getType().getHostAddress());
-                } else {
-                    if (currentMonitorID != null) {
-                        if (currentMonitorID.getFailedCount() < 2) {
-                            try {
-                                currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
-                                this.queue.put(take);
-                            } catch (InterruptedException e1) {
-                                e1.printStackTrace();
-                            }
-                        } else {
-                            logger.error(e.getMessage());
-                            logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
-                        }
-                    }
+            } else if (!this.queue.contains(take)) {
+                try {
+                    queue.put(take);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
                 }
-            }
-            try {
-                queue.put(take);
-            } catch (InterruptedException e1) {
-                e1.printStackTrace();
             }
             throw new AiravataMonitorException("Error retrieving the job status", e);
         } catch (Exception e) {
