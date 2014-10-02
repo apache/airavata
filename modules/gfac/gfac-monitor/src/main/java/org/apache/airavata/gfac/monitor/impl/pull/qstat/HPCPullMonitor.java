@@ -246,11 +246,13 @@ public class HPCPullMonitor extends PullMonitor {
                             JobDescriptor jobDescriptor = JobDescriptor.fromXML(iMonitorID.getJobExecutionContext().getJobDetails().getJobDescription());
                             List<String> stdOut = connection.getCluster().listDirectory(jobDescriptor.getOutputDirectory());
                             if (stdOut.size() > 0) {
-                                if(stdOut.contains(jobDescriptor.getStandardErrorFile())&&stdOut.contains(jobDescriptor.getStandardOutFile())) {
+                                if (stdOut.contains(jobDescriptor.getStandardErrorFile()) && stdOut.contains(jobDescriptor.getStandardOutFile())) {
                                     completedJobs.put(iMonitorID.getJobName(), iMonitorID);
+                                } else {
+                                    iMonitorID.setFailedCount(0);
                                 }
                             }
-                            } else {
+                        } else {
                             // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             // if the job is complete we remove it from the Map, if any of these maps
