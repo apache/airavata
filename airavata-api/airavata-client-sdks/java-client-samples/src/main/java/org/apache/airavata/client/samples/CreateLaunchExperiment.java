@@ -46,7 +46,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
-    private static String echoAppId = "Echo_a96fcc6c-70d8-4557-974f-def8205e8e75";
+    private static String echoAppId = "Echo_f99c94a4-a663-492e-bce6-266e77c06978";
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
@@ -56,14 +56,13 @@ public class CreateLaunchExperiment {
     private static String br2HostName = "bigred2.uits.iu.edu";
 
     public static void main(String[] args) {
-        for (int i = 0; i < 1; i++)
             try {
-            airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavataClient.getAPIVersion());
+                airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
+                System.out.println("API version is " + airavataClient.getAPIVersion());
 //            registerApplications(); // run this only the first time
-
+                for (int i = 0; i < 100; i++) {
 //            final String expId = createExperimentForSSHHost(airavata);
-                final String expId = createEchoExperimentForTrestles(airavataClient);
+                    final String expId = createEchoExperimentForTrestles(airavataClient);
 //            final String expId = createEchoExperimentForStampede(airavataClient);
 //            final String expId = createExperimentEchoForLocalHost(airavataClient);
 //            final String expId = createExperimentWRFTrestles(airavataClient);
@@ -75,13 +74,12 @@ public class CreateLaunchExperiment {
 
 //            System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
-            launchExperiment(airavataClient, expId);
-
-//              System.out.println(expId);
-        } catch (Exception e) {
-            logger.error("Error while connecting with server", e.getMessage());
-            e.printStackTrace();
-        }
+                    launchExperiment(airavataClient, expId);
+                }
+            } catch (Exception e) {
+                logger.error("Error while connecting with server", e.getMessage());
+                e.printStackTrace();
+            }
     }
 
     public static void registerApplications() {

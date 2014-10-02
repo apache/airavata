@@ -85,7 +85,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     	case CANCELING:
     		state=TaskState.CANCELING; break;
 		default:
-			break;
+			return;
     	}
     	try {
 			state = updateTaskStatus(jobStatus.getIdentity().getTaskId(), state);
