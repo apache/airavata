@@ -270,7 +270,8 @@ public class HPCPullMonitor extends PullMonitor {
             Set<String> keys = completedJobs.keySet();
             for (String jobName: keys) {
                 MonitorID completedJob = completedJobs.get(jobName);
-                GFacThreadPoolExecutor.getCachedThreadPool().submit(new OutHandlerWorker(gfac, completedJob, publisher));
+                gfac.invokeOutFlowHandlers(completedJob.getJobExecutionContext());
+//                GFacThreadPoolExecutor.getCachedThreadPool().submit(new OutHandlerWorker(gfac, completedJob, publisher));
                 CommonUtils.removeMonitorFromQueue(queue, completedJob);
                 if (zk == null) {
                     zk = completedJob.getJobExecutionContext().getZk();
@@ -343,8 +344,6 @@ public class HPCPullMonitor extends PullMonitor {
             }
             throw new AiravataMonitorException("Error retrieving the job status", e);
         }
-
-
         return true;
     }
 
