@@ -306,6 +306,12 @@ public class GSISSHAbstractCluster implements Cluster {
                      retry = 0;
                 } catch (SSHApiException e) {
                     retry--;
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                    reconnect(serverInfo, authenticationInfo);
                     reconnect(serverInfo,authenticationInfo);
                     if(retry==0) {
                         throw e;
@@ -387,6 +393,12 @@ public class GSISSHAbstractCluster implements Cluster {
                 }
             } catch (JSchException e) {
                 retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                reconnect(serverInfo, authenticationInfo);
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
@@ -408,6 +420,11 @@ public class GSISSHAbstractCluster implements Cluster {
                 retry=0;
             } catch (IOException e) {
                 retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
@@ -415,6 +432,11 @@ public class GSISSHAbstractCluster implements Cluster {
                 }
             } catch (JSchException e) {
                 retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
                 reconnect(serverInfo, authenticationInfo);
                 if(retry==0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
@@ -455,6 +477,11 @@ public class GSISSHAbstractCluster implements Cluster {
                         + serverInfo.getHost() + ":rFile", e);
             } catch (JSchException e) {
                 retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
@@ -462,6 +489,11 @@ public class GSISSHAbstractCluster implements Cluster {
                 }
             } catch (SSHApiException e) {
                 retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
@@ -484,6 +516,11 @@ public class GSISSHAbstractCluster implements Cluster {
                 retry=0;
             } catch (IOException e) {
                 retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed during creating directory:" + directoryPath + " to remote file "
@@ -498,6 +535,11 @@ public class GSISSHAbstractCluster implements Cluster {
                 }
             }catch (SSHApiException e) {
                 retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
@@ -518,6 +560,11 @@ public class GSISSHAbstractCluster implements Cluster {
                 retry=0;
             } catch (SSHApiException e) {
                 retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed Getting statuses  to remote file", e);
