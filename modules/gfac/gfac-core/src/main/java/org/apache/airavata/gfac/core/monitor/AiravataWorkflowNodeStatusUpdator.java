@@ -70,7 +70,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     	case CANCELING:
     		state=WorkflowNodeState.CANCELING; break;
 		default:
-			break;
+			return;
     	}
     	try {
 			updateWorkflowNodeStatus(taskStatus.getIdentity().getWorkflowNodeID(), state);
