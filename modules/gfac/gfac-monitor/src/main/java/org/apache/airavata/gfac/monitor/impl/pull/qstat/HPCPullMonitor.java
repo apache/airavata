@@ -326,22 +326,17 @@ public class HPCPullMonitor extends PullMonitor {
                     }
                 }
             }
+            try {
+                queue.put(take);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
             throw new AiravataMonitorException("Error retrieving the job status", e);
         } catch (Exception e) {
-            if (currentMonitorID != null) {
-                if (currentMonitorID.getFailedCount() < 3) {
-                    try {
-                        currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
-                        this.queue.put(take);
-                        // if we get a wrong status we wait for a while and request again
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                } else {
-                    logger.error(e.getMessage());
-                    logger.error("Tryied to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
-                }
+            try {
+                queue.put(take);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
             }
             throw new AiravataMonitorException("Error retrieving the job status", e);
         }
