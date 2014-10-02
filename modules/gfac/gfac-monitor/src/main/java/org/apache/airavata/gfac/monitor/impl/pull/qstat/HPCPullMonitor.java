@@ -41,6 +41,7 @@ import org.apache.airavata.gfac.monitor.impl.push.amqp.SimpleJobFinishConsumer;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
+import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
@@ -191,8 +192,8 @@ public class HPCPullMonitor extends PullMonitor {
                             if (cancelMId.equals(iMonitorID.getExperimentID() + "+" + iMonitorID.getTaskID())) {
                                 logger.info("Found a match in monitoring Queue, so marking this job to remove from monitor queue " + cancelMId);
                                 logger.info("ExperimentID: " + cancelMId.split("\\+")[0] + ",TaskID: " + cancelMId.split("\\+")[1] + "JobID" + iMonitorID.getJobID());
-                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                 iMonitorID.setStatus(JobState.CANCELED);
+                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                 iterator1.remove();
                                 break;
                             }
@@ -242,8 +243,13 @@ public class HPCPullMonitor extends PullMonitor {
                             logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed" + iMonitorID.getFailedCount() +
                                     " 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
-                            completedJobs.put(iMonitorID.getJobName(), iMonitorID);
-                        } else {
+                            JobDescriptor jobDescriptor = JobDescriptor.fromXML(iMonitorID.getJobExecutionContext().getJobDetails().getJobDescription());
+                            List<String> stdErr = connection.getCluster().listDirectory(jobDescriptor.getStandardErrorFile());
+                            List<String> stdOut = connection.getCluster().listDirectory(jobDescriptor.getStandardOutFile());
+                            if (stdErr.size() > 0 && stdOut.size() > 0) {
+                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
+                            }
+                            } else {
                             // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             // if the job is complete we remove it from the Map, if any of these maps
@@ -264,7 +270,8 @@ public class HPCPullMonitor extends PullMonitor {
             Set<String> keys = completedJobs.keySet();
             for (String jobName: keys) {
                 MonitorID completedJob = completedJobs.get(jobName);
-                GFacThreadPoolExecutor.getCachedThreadPool().submit(new OutHandlerWorker(gfac, completedJob, publisher));
+                gfac.invokeOutFlowHandlers(completedJob.getJobExecutionContext());
+//                GFacThreadPoolExecutor.getCachedThreadPool().submit(new OutHandlerWorker(gfac, completedJob, publisher));
                 CommonUtils.removeMonitorFromQueue(queue, completedJob);
                 if (zk == null) {
                     zk = completedJob.getJobExecutionContext().getZk();
@@ -337,8 +344,6 @@ public class HPCPullMonitor extends PullMonitor {
             }
             throw new AiravataMonitorException("Error retrieving the job status", e);
         }
-
-
         return true;
     }
 

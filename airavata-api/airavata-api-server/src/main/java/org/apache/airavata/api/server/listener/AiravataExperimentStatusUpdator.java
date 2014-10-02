@@ -75,7 +75,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	                state = ExperimentState.CANCELING; updateExperimentStatus = true;
 	                break;
 	            default:
-	                break;
+	                return;
 	        }
 	        if (!updateExperimentStatus){
 				ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getIdentity().getExperimentID()));
