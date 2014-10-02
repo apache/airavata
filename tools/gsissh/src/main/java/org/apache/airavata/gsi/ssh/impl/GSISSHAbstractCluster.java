@@ -523,15 +523,13 @@ public class GSISSHAbstractCluster implements Cluster {
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
-                    throw new SSHApiException("Failed during creating directory:" + directoryPath + " to remote file "
-                            + serverInfo.getHost() + ":rFile", e);
+                    throw new SSHApiException("Failed during listing directory:" + directoryPath + " to remote file ", e);
                 }
             } catch (JSchException e) {
                 retry--;
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
-                    throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
-                            + serverInfo.getHost() + ":rFile", e);
+                    throw new SSHApiException("Failed during listing directory :" + directoryPath + " to remote file ", e);
                 }
             }catch (SSHApiException e) {
                 retry--;
@@ -542,7 +540,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
-                    throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
+                    throw new SSHApiException("Failed during listing directory :" + directoryPath + " to remote file "
                             + serverInfo.getHost() + ":rFile", e);
                 }
             }
