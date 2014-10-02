@@ -244,10 +244,11 @@ public class HPCPullMonitor extends PullMonitor {
                                     " 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             JobDescriptor jobDescriptor = JobDescriptor.fromXML(iMonitorID.getJobExecutionContext().getJobDetails().getJobDescription());
-                            List<String> stdErr = connection.getCluster().listDirectory(jobDescriptor.getStandardErrorFile());
-                            List<String> stdOut = connection.getCluster().listDirectory(jobDescriptor.getStandardOutFile());
-                            if (stdErr.size() > 0 && stdOut.size() > 0) {
-                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
+                            List<String> stdOut = connection.getCluster().listDirectory(jobDescriptor.getOutputDirectory());
+                            if (stdOut.size() > 0) {
+                                if(stdOut.contains(jobDescriptor.getStandardErrorFile())&&stdOut.contains(jobDescriptor.getStandardOutFile())) {
+                                    completedJobs.put(iMonitorID.getJobName(), iMonitorID);
+                                }
                             }
                             } else {
                             // Evey
