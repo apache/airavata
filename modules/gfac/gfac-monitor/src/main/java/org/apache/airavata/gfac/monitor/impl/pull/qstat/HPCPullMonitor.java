@@ -194,14 +194,14 @@ public class HPCPullMonitor extends PullMonitor {
                                 logger.info("ExperimentID: " + cancelMId.split("\\+")[0] + ",TaskID: " + cancelMId.split("\\+")[1] + "JobID" + iMonitorID.getJobID());
                                 iMonitorID.setStatus(JobState.CANCELED);
                                 completedJobs.put(iMonitorID.getJobName(), iMonitorID);
-                                cancelJobList.remove(cancelMId);
+                                iterator1.remove();
                                 break;
                             }
                         }
                         iterator1 = cancelJobList.iterator();
                     }
                     synchronized (completedJobsFromPush) {
-                        Iterator<String> iterator = completedJobsFromPush.iterator();
+                        ListIterator<String> iterator = completedJobsFromPush.listIterator();
                         for (MonitorID iMonitorID : monitorID) {
                             String completeId = null;
                             while (iterator.hasNext()) {
@@ -210,8 +210,7 @@ public class HPCPullMonitor extends PullMonitor {
                                     logger.info("This job is finished because push notification came with <username,jobName> " + completeId);
                                     completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                     iMonitorID.setStatus(JobState.COMPLETE);
-                                    completedJobsFromPush.remove(completeId);//we have to make this empty everytime we iterate, otherwise this list will accumulate and will
-                                    // lead to a memory leak
+                                    iterator.remove();//we have to make this empty everytime we iterate, otherwise this list will accumulate and will lead to a memory leak
                                     break;
                                 }
                             }

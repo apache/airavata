@@ -312,7 +312,6 @@ public class GSISSHAbstractCluster implements Cluster {
                         e1.printStackTrace();
                     }
                     reconnect(serverInfo, authenticationInfo);
-                    reconnect(serverInfo,authenticationInfo);
                     if(retry==0) {
                         throw e;
                     }
@@ -398,7 +397,6 @@ public class GSISSHAbstractCluster implements Cluster {
                 } catch (InterruptedException e1) {
                     e1.printStackTrace();
                 }
-                reconnect(serverInfo, authenticationInfo);
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
@@ -603,8 +601,7 @@ public class GSISSHAbstractCluster implements Cluster {
         String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
         log.info("StandardOutput Returned:" + stdOutputString);
         log.info("StandardError  Returned:" +stdErrorString);
-        
-        // We are checking for stderr containing the command issued. Thus ignores the verbose logs in stderr.  
+        // We are checking for stderr containing the command issued. Thus ignores the verbose logs in stderr.
         if (stdErrorString != null && stdErrorString.contains(command)) {
             log.error("Standard Error output : " + stdErrorString);
             throw new SSHApiException(errorMsg + "\n\r StandardOutput: "+ stdOutputString + "\n\r StandardError: "+ stdErrorString);
