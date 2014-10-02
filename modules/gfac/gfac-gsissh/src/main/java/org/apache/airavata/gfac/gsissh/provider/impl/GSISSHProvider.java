@@ -106,14 +106,14 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
                 jobDetails.setJobID("none");
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
             } else {
-                jobDetails.setJobID(jobID);
+                jobDetails.setJobID(jobID.split("\\.")[0]);
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
             }
             data.append(",jobId=").append(jobDetails.getJobID());
 
             // Now job has submitted to the resource, its up to the Provider to parse the information to daemon handler
             // to perform monitoring, daemon handlers can be accessed from anywhere
-            delegateToMonitorHandlers(jobExecutionContext, (GsisshHostType) host, jobID);
+            delegateToMonitorHandlers(jobExecutionContext, (GsisshHostType) host, jobDetails.getJobID());
             // we know this host is type GsiSSHHostType
         } catch (Exception e) {
 		    String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
