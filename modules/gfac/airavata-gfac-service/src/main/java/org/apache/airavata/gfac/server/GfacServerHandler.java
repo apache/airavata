@@ -196,9 +196,13 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
     public boolean submitJob(String experimentId, String taskId, String gatewayId) throws TException {
         logger.info("GFac Recieved the Experiment: " + experimentId + " TaskId: " + taskId);
         GFac gfac = getGfac();
-        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
-        inHandlerFutures.add(GFacThreadPoolExecutor.getCachedThreadPool().submit(inputHandlerWorker));
-        return true;
+//        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
+        try {
+            return gfac.submitJob(experimentId, taskId, gatewayId);
+        } catch (GFacException e) {
+            throw new TException("Error launching the experiment : " + e.getMessage(), e);
+        }
+//        inHandlerFutures.add(GFacThreadPoolExecutor.getCachedThreadPool().submit(inputHandlerWorker));
     }
 
     public boolean cancelJob(String experimentId, String taskId) throws TException {
