@@ -297,25 +297,12 @@ public class GSISSHAbstractCluster implements Cluster {
             FileUtils.writeStringToFile(tempPBSFile, scriptContent);
 
             //reusing submitBatchJobWithScript method to submit a job
-            int retry = 3;
             String jobID = null;
-            while (retry > 0) {
-                try {
-                     jobID = this.submitBatchJobWithScript(tempPBSFile.getAbsolutePath(),
-                            jobDescriptor.getWorkingDirectory());
-                     retry = 0;
-                } catch (SSHApiException e) {
-                    retry--;
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                    reconnect(serverInfo, authenticationInfo);
-                    if(retry==0) {
-                        throw e;
-                    }
-                }
+            try {
+                jobID = this.submitBatchJobWithScript(tempPBSFile.getAbsolutePath(),
+                        jobDescriptor.getWorkingDirectory());
+            } catch (SSHApiException e) {
+                throw e;
             }
             log.debug("Job has successfully submitted, JobID : " + jobID);
             if (jobID != null) {
