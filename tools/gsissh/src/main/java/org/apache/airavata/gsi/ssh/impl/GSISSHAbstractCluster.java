@@ -588,6 +588,8 @@ public class GSISSHAbstractCluster implements Cluster {
         String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
         log.info("StandardOutput Returned:" + stdOutputString);
         log.info("StandardError  Returned:" +stdErrorString);
+        String[] list = command.split(File.separator);
+        command = list[list.length - 1];
         // We are checking for stderr containing the command issued. Thus ignores the verbose logs in stderr.
         if (stdErrorString != null && stdErrorString.contains(command) && !stdErrorString.contains("Warning")) {
             log.error("Standard Error output : " + stdErrorString);
