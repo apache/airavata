@@ -75,7 +75,7 @@ public class CommandExecutor {
             channel.connect();
         } catch (JSchException e) {
 
-            channel.disconnect();
+//            channel.disconnect();
 //            session.disconnect();
             throw new SSHApiException("Unable to retrieve command output. Command - " + command, e);
         }
@@ -83,7 +83,7 @@ public class CommandExecutor {
 
         commandOutput.onOutput(channel);
         //Only disconnecting the channel, session can be reused
-        channel.disconnect();
+//        channel.disconnect();
         return session;
     }
 
@@ -253,7 +253,7 @@ public class CommandExecutor {
             channel.connect();
         } catch (JSchException e) {
 
-            channel.disconnect();
+//            channel.disconnect();
 //            session.disconnect();
 
             throw new SSHApiException("Unable to retrieve command output. Command - " + command +
@@ -264,7 +264,7 @@ public class CommandExecutor {
 
         commandOutput.onOutput(channel);
 
-        channel.disconnect();
+//        channel.disconnect();
 //        session.disconnect();
     }
 
