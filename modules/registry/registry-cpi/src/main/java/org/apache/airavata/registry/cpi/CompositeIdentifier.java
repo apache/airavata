@@ -41,4 +41,16 @@ public class CompositeIdentifier {
     public Object getSecondLevelIdentifier() {
         return secondLevelIdentifier;
     }
+
+    @Override
+    public String toString() {
+        if (topLevelIdentifier instanceof String && secondLevelIdentifier instanceof String) {
+            return topLevelIdentifier + "," + secondLevelIdentifier;
+        }else if (topLevelIdentifier instanceof String ) {
+            return topLevelIdentifier.toString();
+        } else {
+            return secondLevelIdentifier.toString();
+        }
+
+    }
 }
