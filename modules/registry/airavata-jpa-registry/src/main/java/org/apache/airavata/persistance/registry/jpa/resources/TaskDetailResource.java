@@ -26,11 +26,10 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.registry.cpi.RegistryException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -179,6 +178,7 @@ public class TaskDetailResource extends AbstractResource {
                 case STATUS:
                     generator = new QueryGenerator(STATUS);
                     generator.setParameter(StatusConstants.TASK_ID, name);
+                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.TASK.toString());
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -283,6 +283,7 @@ public class TaskDetailResource extends AbstractResource {
                 case STATUS:
                     generator = new QueryGenerator(STATUS);
                     generator.setParameter(StatusConstants.TASK_ID, name);
+                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.TASK.toString());
                     q = generator.selectQuery(em);
                     Status status = (Status) q.getSingleResult();
                     StatusResource statusResource = (StatusResource) Utils.getResource(ResourceType.STATUS, status);
