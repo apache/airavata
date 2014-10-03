@@ -21,18 +21,14 @@
 package org.apache.airavata.gfac.monitor.impl.pull.qstat;
 
 import com.google.common.eventbus.EventBus;
+import org.apache.airavata.common.logger.AiravataLogger;
+import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.monitor.TaskIdentity;
 import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
-import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
-import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
-import org.apache.airavata.gfac.core.utils.OutHandlerWorker;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.core.PullMonitor;
@@ -43,12 +39,9 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.zookeeper.ZooKeeper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -61,7 +54,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * in grid resources and retrieve the job status.
  */
 public class HPCPullMonitor extends PullMonitor {
-    private final static Logger logger = LoggerFactory.getLogger(HPCPullMonitor.class);
+
+    private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(HPCPullMonitor.class);
     public static final int FAILED_COUNT = 1;
 
     // I think this should use DelayedBlocking Queue to do the monitoring*/
@@ -190,11 +184,12 @@ public class HPCPullMonitor extends PullMonitor {
                         while(iterator1.hasNext()) {
                             String cancelMId = iterator1.next();
                             if (cancelMId.equals(iMonitorID.getExperimentID() + "+" + iMonitorID.getTaskID())) {
-                                logger.info("Found a match in monitoring Queue, so marking this job to remove from monitor queue " + cancelMId);
-                                logger.info("ExperimentID: " + cancelMId.split("\\+")[0] + ",TaskID: " + cancelMId.split("\\+")[1] + "JobID" + iMonitorID.getJobID());
                                 iMonitorID.setStatus(JobState.CANCELED);
                                 completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                 iterator1.remove();
+                                logger.debugId(cancelMId, "Found a match in cancel monitor queue, hence moved to the " +
+                                                "completed job queue, experiment {}, task {} , job {}",
+                                        iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobID());
                                 break;
                             }
                         }
@@ -211,6 +206,9 @@ public class HPCPullMonitor extends PullMonitor {
                                     completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                     iMonitorID.setStatus(JobState.COMPLETE);
                                     iterator.remove();//we have to make this empty everytime we iterate, otherwise this list will accumulate and will lead to a memory leak
+                                    logger.debugId(completeId, "Push notification updated job {} status to {}. " +
+                                                    "experiment {} , task {}.", iMonitorID.getJobID(), JobState.COMPLETE.toString(),
+                                            iMonitorID.getExperimentID(), iMonitorID.getTaskID());
                                     break;
                                 }
                             }
@@ -227,26 +225,31 @@ public class HPCPullMonitor extends PullMonitor {
                             iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID() + "," + iMonitorID.getJobName()));    //IMPORTANT this is NOT a simple setter we have a logic
                         }else if(JobState.COMPLETE.equals(iMonitorID.getStatus())){
                             completedJobs.put(iMonitorID.getJobName(), iMonitorID);
+                            logger.debugId(iMonitorID.getJobID(), "Moved job {} to completed jobs map, experiment {}, " +
+                                    "task {}", iMonitorID.getJobID(), iMonitorID.getExperimentID(), iMonitorID.getTaskID());
                         }
                         jobStatus = new JobStatusChangeRequest(iMonitorID);
                         // we have this JobStatus class to handle amqp monitoring
 
                         publisher.publish(jobStatus);
+                        logger.debugId(jobStatus.getIdentity().getJobId(), "Published job status change request, " +
+                                        "experiment {} , task {}", jobStatus.getIdentity().getExperimentID(),
+                                jobStatus.getIdentity().getTaskId());
                         // if the job is completed we do not have to put the job to the queue again
                         iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
 
                         if (iMonitorID.getFailedCount() > FAILED_COUNT) {
-                            logger.error("Tried to monitor the job with ID " + iMonitorID.getJobID() + " But failed" + iMonitorID.getFailedCount() +
-                                    " 3 times, so skip this Job from Monitor");
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             JobDescriptor jobDescriptor = JobDescriptor.fromXML(iMonitorID.getJobExecutionContext().getJobDetails().getJobDescription());
                             List<String> stdOut = connection.getCluster().listDirectory(jobDescriptor.getOutputDirectory()); // check the outputs directory
                             if (stdOut.size() > 0) { // have to be careful with this
                                 completedJobs.put(iMonitorID.getJobName(), iMonitorID);
+                                logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, removed job {} from " +
+                                                "monitor queue. Experiment {} , task {}", iMonitorID.getFailedCount(),
+                                        iMonitorID.getExperimentID(), iMonitorID.getTaskID());
                             } else {
                                 iMonitorID.setFailedCount(0);
                             }
-
                         } else {
                             // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
@@ -255,7 +258,8 @@ public class HPCPullMonitor extends PullMonitor {
                         }
                     }
                 } else {
-                    logger.debug("Qstat Monitor doesn't handle non-gsissh hosts");
+                    logger.debug("Qstat Monitor doesn't handle non-gsissh hosts , host {}", iHostMonitorData.getHost()
+                            .getType().getHostAddress());
                 }
             }
             // We have finished all the HostMonitorData object in userMonitorData, now we need to put it back
