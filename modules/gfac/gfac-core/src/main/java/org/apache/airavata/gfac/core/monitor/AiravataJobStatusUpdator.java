@@ -87,7 +87,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
         details.setJobStatus(status);
         details.setJobID(jobID);
         logger.debug("Updating job status for "+jobID+":"+details.getJobStatus().toString());
-        airavataRegistry.update(RegistryModelType.JOB_DETAIL, details, ids);
+        airavataRegistry.update(RegistryModelType.JOB_STATUS, status, ids);
     }
 
 	@SuppressWarnings("unchecked")

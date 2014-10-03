@@ -99,8 +99,8 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     public  TaskState updateTaskStatus(String taskId, TaskState state) throws Exception {
     	TaskDetails details = (TaskDetails)airavataRegistry.get(RegistryModelType.TASK_DETAIL, taskId);
         if(details == null) {
-            details = new TaskDetails();
-            details.setTaskID(taskId);
+            logger.error("Task details cannot be null at this point");
+            throw new Exception("Task details cannot be null at this point");
         }
         org.apache.airavata.model.workspace.experiment.TaskStatus status = new org.apache.airavata.model.workspace.experiment.TaskStatus();
         if(!TaskState.CANCELED.equals(details.getTaskStatus().getExecutionState())
@@ -113,8 +113,8 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
         details.setTaskStatus(status);
         logger.debug("Updating task status for "+taskId+":"+details.getTaskStatus().toString());
 
-        airavataRegistry.update(RegistryModelType.TASK_DETAIL, details, taskId);
-        return details.getTaskStatus().getExecutionState();
+        airavataRegistry.update(RegistryModelType.TASK_STATUS, status, taskId);
+        return status.getExecutionState();
     }
 
 	public void setup(Object... configurations) {
