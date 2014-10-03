@@ -176,9 +176,18 @@ public class SSHOutputHandler extends AbstractHandler {
             for (String paramName : keys) {
                 ActualParameter actualParameter = (ActualParameter) output.get(paramName);
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
-
-                    List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
-                    if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
+                    List<String> outputList = null;
+                    int retry=3;
+                    while(retry>0){
+                    	 outputList = cluster.listDirectory(app.getOutputDataDirectory());
+                    	 if(outputList.size() > 0){
+                    		 break;
+                    	 }	
+                    	 retry--;
+                    	 Thread.sleep(2000);
+                    }
+                  
+                    if (outputList.size() == 0 || outputList.get(0).isEmpty() || outputList.size() > 0) {
                         OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr,outputArray);
                         Set<String> strings = output.keySet();
                         outputArray.clear();
@@ -200,7 +209,7 @@ public class SSHOutputHandler extends AbstractHandler {
                         }
                     
                         break;
-                    } else {
+                    } else if( outputList.size() == 0) {//FIXME: Ultrascan case
                         String valueList = outputList.get(0);
                         cluster.scpFrom(app.getOutputDataDirectory() + File.separator + valueList, outputDataDir);
                         String outputPath = outputDataDir + File.separator + valueList;
