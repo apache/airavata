@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 public class SlurmOutputParser implements OutputParser {
-    private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
+    private static final Logger log = LoggerFactory.getLogger(SlurmOutputParser.class);
 
     public void parse(JobDescriptor descriptor, String rawOutput) throws SSHApiException {
         log.info(rawOutput);

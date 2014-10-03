@@ -592,6 +592,8 @@ public class GSISSHAbstractCluster implements Cluster {
         if (stdErrorString != null && stdErrorString.contains(command) && !stdErrorString.contains("Warning")) {
             log.error("Standard Error output : " + stdErrorString);
             throw new SSHApiException(errorMsg + "\n\r StandardOutput: "+ stdOutputString + "\n\r StandardError: "+ stdErrorString);
+        }else if(stdOutputString.contains("error")){
+            throw new SSHApiException(errorMsg + "\n\r StandardOutput: "+ stdOutputString + "\n\r StandardError: "+ stdErrorString);
         }
         return stdOutputString;
     }
