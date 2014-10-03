@@ -21,6 +21,8 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
+import org.apache.airavata.common.logger.AiravataLogger;
+import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.Resource;
@@ -33,9 +35,6 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.StatusType;
-import org.apache.airavata.schemas.gfac.IntegerArrayType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -43,7 +42,7 @@ import java.util.*;
 public class ExperimentRegistry {
     private GatewayResource gatewayResource;
     private WorkerResource workerResource;
-    private final static Logger logger = LoggerFactory.getLogger(ExperimentRegistry.class);
+    private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(ExperimentRegistry.class);
 
     public ExperimentRegistry(GatewayResource gateway, UserResource user) throws RegistryException {
         gatewayResource = gateway;
@@ -431,8 +430,9 @@ public class ExperimentRegistry {
             }
             status.setStatusType(StatusType.EXPERIMENT.toString());
             status.save();
+            logger.debugId(expId, "Updated experiment {} status to {}.", expId, experimentStatus.toString());
         } catch (Exception e) {
-            logger.error("Error while updating experiment status...", e);
+            logger.errorId(expId, "Error while updating experiment status...", e);
             throw new RegistryException(e);
         }
         return expId;
@@ -474,9 +474,10 @@ public class ExperimentRegistry {
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getWorkflowNodeState().toString());
             statusResource.save();
+            logger.debugId(nodeId, "Updated workflow node {} status to {}.", nodeId, status.toString());
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
-            logger.error("Error whilw updating workflow node status...", e);
+            logger.errorId(nodeId, "Error while updating workflow node status to " + status.toString() + "...", e);
             throw new RegistryException(e);
         }
     }
@@ -523,8 +524,9 @@ public class ExperimentRegistry {
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getExecutionState().toString());
             statusResource.save();
+            logger.infoId(taskId, "Updated task {} status to {}.", taskId, status.toString());
         } catch (Exception e) {
-            logger.error("Error while updating task status...", e);
+            logger.errorId(taskId, "Error while updating task status to " + status.toString() + "...", e);
             throw new RegistryException(e);
         }
     }
@@ -575,9 +577,10 @@ public class ExperimentRegistry {
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getJobState().toString());
             statusResource.save();
+            logger.infoId(ids.toString(), "Updated job status to {}", status.toString());
             return String.valueOf(statusResource.getStatusId());
         } catch (Exception e) {
-            logger.error("Error while updating job status...", e);
+            logger.errorId(ids.toString(), "Error while updating job status to " + status.toString() + " ...", e);
             throw new RegistryException(e);
         }
     }
