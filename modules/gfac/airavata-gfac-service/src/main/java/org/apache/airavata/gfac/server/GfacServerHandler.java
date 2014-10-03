@@ -28,6 +28,7 @@ import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
@@ -193,13 +194,23 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
      * @param gatewayId
      */
     public boolean submitJob(String experimentId, String taskId, String gatewayId) throws TException {
-        logger.infoId(experimentId, "GFac Received the Experiment: {} TaskId: {}", experimentId, taskId);
+        logger.infoId(experimentId, "GFac Received submit jog request for the Experiment: {} TaskId: {}", experimentId, taskId);
         GFac gfac = getGfac();
-        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
-        inHandlerFutures.add(GFacThreadPoolExecutor.getCachedThreadPool().submit(inputHandlerWorker));
-        logger.infoId(experimentId, "Invoked in handle worker for the experiment {} , task {} and gateway {}",
-                experimentId, taskId, gatewayId);
-        return true;
+//        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
+        try {
+            if( gfac.submitJob(experimentId, taskId, gatewayId)){
+                logger.debugId(experimentId, "Submitted jog to the Gfac Implementation, experiment {}, task {}, gateway " +
+                        "{}", experimentId, taskId, gatewayId);
+                return true;
+            }else{
+                logger.error(experimentId, "Failed to submit job to the GFac implementation, experiment {}, task {}, " +
+                        "gateway {}", experimentId, taskId, gatewayId);
+                return false;
+            }
+        } catch (GFacException e) {
+            throw new TException("Error launching the experiment : " + e.getMessage(), e);
+        }
+//        inHandlerFutures.add(GFacThreadPoolExecutor.getCachedThreadPool().submit(inputHandlerWorker));
     }
 
     public boolean cancelJob(String experimentId, String taskId) throws TException {

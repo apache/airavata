@@ -54,8 +54,9 @@ import java.util.concurrent.LinkedBlockingQueue;
  * in grid resources and retrieve the job status.
  */
 public class HPCPullMonitor extends PullMonitor {
+
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(HPCPullMonitor.class);
-    public static final int FAILED_COUNT = 3;
+    public static final int FAILED_COUNT = 1;
 
     // I think this should use DelayedBlocking Queue to do the monitoring*/
     private BlockingQueue<UserMonitorData> queue;
@@ -195,7 +196,7 @@ public class HPCPullMonitor extends PullMonitor {
                         iterator1 = cancelJobList.iterator();
                     }
                     synchronized (completedJobsFromPush) {
-                        Iterator<String> iterator = completedJobsFromPush.iterator();
+                        ListIterator<String> iterator = completedJobsFromPush.listIterator();
                         for (MonitorID iMonitorID : monitorID) {
                             String completeId = null;
                             while (iterator.hasNext()) {
@@ -204,16 +205,12 @@ public class HPCPullMonitor extends PullMonitor {
                                     logger.info("This job is finished because push notification came with <username,jobName> " + completeId);
                                     completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                     iMonitorID.setStatus(JobState.COMPLETE);
+                                    iterator.remove();//we have to make this empty everytime we iterate, otherwise this list will accumulate and will lead to a memory leak
                                     logger.debugId(completeId, "Push notification updated job {} status to {}. " +
                                                     "experiment {} , task {}.", iMonitorID.getJobID(), JobState.COMPLETE.toString(),
                                             iMonitorID.getExperimentID(), iMonitorID.getTaskID());
                                     break;
                                 }
-                                //we have to make this empty everytime we iterate, otherwise this list will accumulate and will
-                                // lead to a memory leak
-                            }
-                            if(completeId!=null) {
-                                completedJobsFromPush.remove(completeId);
                             }
                             iterator = completedJobsFromPush.listIterator();
                         }
@@ -244,13 +241,14 @@ public class HPCPullMonitor extends PullMonitor {
                         if (iMonitorID.getFailedCount() > FAILED_COUNT) {
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             JobDescriptor jobDescriptor = JobDescriptor.fromXML(iMonitorID.getJobExecutionContext().getJobDetails().getJobDescription());
-                            List<String> stdErr = connection.getCluster().listDirectory(jobDescriptor.getStandardErrorFile());
-                            List<String> stdOut = connection.getCluster().listDirectory(jobDescriptor.getStandardOutFile());
-                            if (stdErr.size() > 0 && stdOut.size() > 0) {
+                            List<String> stdOut = connection.getCluster().listDirectory(jobDescriptor.getOutputDirectory()); // check the outputs directory
+                            if (stdOut.size() > 0) { // have to be careful with this
+                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                 logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, removed job {} from " +
                                                 "monitor queue. Experiment {} , task {}", iMonitorID.getFailedCount(),
                                         iMonitorID.getExperimentID(), iMonitorID.getTaskID());
-                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
+                            } else {
+                                iMonitorID.setFailedCount(0);
                             }
                         } else {
                             // Evey
@@ -309,42 +307,19 @@ public class HPCPullMonitor extends PullMonitor {
                 publisher.publish(jobStatus);
             } else if (e.getMessage().contains("illegally formed job identifier")) {
                 logger.error("Wrong job ID is given so dropping the job from monitoring system");
-            } else if (!this.queue.contains(take)) {   // we put the job back to the queue only if its state is not unknown
-                if (currentMonitorID == null) {
-                    logger.error("Monitoring the jobs failed, for user: " + take.getUserName()
-                            + " in Host: " + currentHostDescription.getType().getHostAddress());
-                } else {
-                    if (currentMonitorID != null) {
-                        if (currentMonitorID.getFailedCount() < 2) {
-                            try {
-                                currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
-                                this.queue.put(take);
-                            } catch (InterruptedException e1) {
-                                e1.printStackTrace();
-                            }
-                        } else {
-                            logger.error(e.getMessage());
-                            logger.error("Tried to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
-                        }
-                    }
+            } else if (!this.queue.contains(take)) {
+                try {
+                    queue.put(take);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
                 }
             }
             throw new AiravataMonitorException("Error retrieving the job status", e);
         } catch (Exception e) {
-            if (currentMonitorID != null) {
-                if (currentMonitorID.getFailedCount() < 3) {
-                    try {
-                        currentMonitorID.setFailedCount(currentMonitorID.getFailedCount() + 1);
-                        this.queue.put(take);
-                        // if we get a wrong status we wait for a while and request again
-                        Thread.sleep(10000);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                } else {
-                    logger.error(e.getMessage());
-                    logger.error("Tryied to monitor the job 3 times, so dropping of the the Job with ID: " + currentMonitorID.getJobID());
-                }
+            try {
+                queue.put(take);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
             }
             throw new AiravataMonitorException("Error retrieving the job status", e);
         }
