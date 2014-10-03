@@ -966,6 +966,10 @@ public class BetterGfacImpl implements GFac,Watcher {
                     handler.invoke(jobExecutionContext);
                     GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
                 } catch (Exception e) {
+                    monitorPublisher.publish(new TaskStatusChangeRequest(
+                            new TaskIdentity(jobExecutionContext.getExperimentID(),
+                                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                                    jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED));
                     throw new GFacException(e);
                 }
             }else{
