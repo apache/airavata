@@ -1340,7 +1340,7 @@ public class ExperimentRegistry {
                     workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     taskDetail = workflowNode.getTaskDetail((String) id);
                     errorResource = (ErrorDetailResource) taskDetail.create(ResourceType.ERROR_DETAIL);
-                    if (error.getErrorID() != null){
+                    if (error.getErrorID() != null &&  !error.getErrorID().equals(experimentModelConstants.DEFAULT_ID)){
                         List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
                         if (errorDetailList != null && !errorDetailList.isEmpty()){
                             for (ErrorDetailResource errorDetailResource : errorDetailList){
@@ -1364,7 +1364,7 @@ public class ExperimentRegistry {
                     taskDetail = workflowNode.getTaskDetail((String) cid.getTopLevelIdentifier());
                     JobDetailResource jobDetail = taskDetail.getJobDetail((String) cid.getSecondLevelIdentifier());
                     errorResource = (ErrorDetailResource) jobDetail.create(ResourceType.ERROR_DETAIL);
-                    if (error.getErrorID() != null){
+                    if (error.getErrorID() != null &&  !error.getErrorID().equals(experimentModelConstants.DEFAULT_ID)){
                         List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
                         if (errorDetailList != null && !errorDetailList.isEmpty()){
                             for (ErrorDetailResource errorDetailResource : errorDetailList){
