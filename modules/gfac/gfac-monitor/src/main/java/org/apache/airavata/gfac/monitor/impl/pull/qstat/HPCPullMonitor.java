@@ -240,8 +240,9 @@ public class HPCPullMonitor extends PullMonitor {
 
                         if (iMonitorID.getFailedCount() > FAILED_COUNT) {
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
-                            JobDescriptor jobDescriptor = JobDescriptor.fromXML(iMonitorID.getJobExecutionContext().getJobDetails().getJobDescription());
-                            List<String> stdOut = connection.getCluster().listDirectory(jobDescriptor.getOutputDirectory()); // check the outputs directory
+                            String outputDir = iMonitorID.getJobExecutionContext().getApplicationContext()
+                                    .getApplicationDeploymentDescription().getType().getOutputDataDirectory();
+                            List<String> stdOut = connection.getCluster().listDirectory(outputDir); // check the outputs directory
                             if (stdOut.size() > 0) { // have to be careful with this
                                 completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                 logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, removed job {} from " +
