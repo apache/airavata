@@ -273,9 +273,9 @@ public class HPCPullMonitor extends PullMonitor {
             Set<String> keys = completedJobs.keySet();
             for (String jobName: keys) {
                 MonitorID completedJob = completedJobs.get(jobName);
+                CommonUtils.removeMonitorFromQueue(queue, completedJob);
                 gfac.invokeOutFlowHandlers(completedJob.getJobExecutionContext());
 //                GFacThreadPoolExecutor.getCachedThreadPool().submit(new OutHandlerWorker(gfac, completedJob, publisher));
-                CommonUtils.removeMonitorFromQueue(queue, completedJob);
                 if (zk == null) {
                     zk = completedJob.getJobExecutionContext().getZk();
                 }
