@@ -244,6 +244,16 @@ public class HPCPullMonitor extends PullMonitor {
                                     .getApplicationDeploymentDescription().getType().getOutputDataDirectory();
                             List<String> stdOut = connection.getCluster().listDirectory(outputDir); // check the outputs directory
                             if (stdOut.size() > 0) { // have to be careful with this
+                                for(int i=0;i<stdOut.size();i++) {
+                                    logger.info("--------------------------------------------------------------------------------------------");
+                                    logger.info("--------------------------------------------------------------------------------------------");
+                                    logger.info("--------------------------------------------------------------------------------------------");
+                                    logger.info("--------------------------------------------------------------------------------------------");
+                                    logger.info("--------------------------------------------------------------------------------------------");
+                                    logger.info("--------------------------------------------------------------------------------------------");
+                                    logger.info("--------------------------------------------------------------------------------------------");
+                                    logger.info(stdOut.get(i));
+                                }
                                 completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                 logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, removed job {} from " +
                                                 "monitor queue. Experiment {} , task {}", iMonitorID.getFailedCount(),
