@@ -46,9 +46,9 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
-    private static String echoAppId = "Echo_f99c94a4-a663-492e-bce6-266e77c06978";
-    private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
-    private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
+    private static String echoAppId = "Echo_89831769-edf5-4f27-a8c9-fe0ef96fd355";
+    private static String wrfAppId = "WRF_15ae6599-a48f-4134-95b8-98e109ac6f88";
+    private static String amberAppId = "Amber_a7b18a3a-31b3-4dc7-8faf-7c3144f14201";
 
     private static String localHost = "localhost";
     private static String trestlesHostName = "trestles.sdsc.xsede.org";
@@ -60,7 +60,7 @@ public class CreateLaunchExperiment {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
 //            registerApplications(); // run this only the first time
-                for (int i = 0; i < 100; i++) {
+//                for (int i = 0; i < 100; i++) {
 //            final String expId = createExperimentForSSHHost(airavata);
                     final String expId = createEchoExperimentForTrestles(airavataClient);
 //            final String expId = createEchoExperimentForStampede(airavataClient);
@@ -72,10 +72,10 @@ public class CreateLaunchExperiment {
 //            final String expId = createExperimentForStampedeAmber(airavataClient);
 //            final String expId = createExperimentForTrestlesAmber(airavataClient);
 
-//            System.out.println("Experiment ID : " + expId);
+            System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
                     launchExperiment(airavataClient, expId);
-                }
+//                }
             } catch (Exception e) {
                 logger.error("Error while connecting with server", e.getMessage());
                 e.printStackTrace();
