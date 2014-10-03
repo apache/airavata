@@ -601,6 +601,6 @@ public class GSISSHAbstractCluster implements Cluster {
     }
 
     public void disconnect() throws SSHApiException {
-        getSession().disconnect();
+//        getSession().disconnect();
     }
 }
