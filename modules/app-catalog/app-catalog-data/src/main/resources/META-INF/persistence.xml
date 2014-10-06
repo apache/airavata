@@ -57,6 +57,8 @@
         <class>org.apache.aiaravata.application.catalog.data.model.LocalSubmission</class>
         <class>org.apache.aiaravata.application.catalog.data.model.LocalDataMovement</class>
         <class>org.apache.aiaravata.application.catalog.data.model.Workflow</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.WorkflowInput</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.WorkflowOutput</class>
         <class>org.apache.aiaravata.application.catalog.data.model.Configuration</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>

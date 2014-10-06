@@ -55,6 +55,9 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField TEMPLATE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("templateId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField GRAPH_FIELD_DESC = new org.apache.thrift.protocol.TField("graph", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField IMAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("image", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField WORKFLOW_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowInputs", org.apache.thrift.protocol.TType.LIST, (short)5);
+  private static final org.apache.thrift.protocol.TField WORKFLOW_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowOutputs", org.apache.thrift.protocol.TType.LIST, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -65,12 +68,18 @@ import org.slf4j.LoggerFactory;
   private String templateId; // required
   private String name; // required
   private String graph; // optional
+  private ByteBuffer image; // optional
+  private List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> workflowInputs; // optional
+  private List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> workflowOutputs; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     TEMPLATE_ID((short)1, "templateId"),
     NAME((short)2, "name"),
-    GRAPH((short)3, "graph");
+    GRAPH((short)3, "graph"),
+    IMAGE((short)4, "image"),
+    WORKFLOW_INPUTS((short)5, "workflowInputs"),
+    WORKFLOW_OUTPUTS((short)6, "workflowOutputs");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -91,6 +100,12 @@ import org.slf4j.LoggerFactory;
           return NAME;
         case 3: // GRAPH
           return GRAPH;
+        case 4: // IMAGE
+          return IMAGE;
+        case 5: // WORKFLOW_INPUTS
+          return WORKFLOW_INPUTS;
+        case 6: // WORKFLOW_OUTPUTS
+          return WORKFLOW_OUTPUTS;
         default:
           return null;
       }
@@ -131,7 +146,7 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.GRAPH};
+  private _Fields optionals[] = {_Fields.GRAPH,_Fields.IMAGE,_Fields.WORKFLOW_INPUTS,_Fields.WORKFLOW_OUTPUTS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -141,6 +156,14 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GRAPH, new org.apache.thrift.meta_data.FieldMetaData("graph", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.IMAGE, new org.apache.thrift.meta_data.FieldMetaData("image", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING        , true)));
+    tmpMap.put(_Fields.WORKFLOW_INPUTS, new org.apache.thrift.meta_data.FieldMetaData("workflowInputs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType.class))));
+    tmpMap.put(_Fields.WORKFLOW_OUTPUTS, new org.apache.thrift.meta_data.FieldMetaData("workflowOutputs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Workflow.class, metaDataMap);
   }
@@ -172,6 +195,24 @@ import org.slf4j.LoggerFactory;
     if (other.isSetGraph()) {
       this.graph = other.graph;
     }
+    if (other.isSetImage()) {
+      this.image = org.apache.thrift.TBaseHelper.copyBinary(other.image);
+;
+    }
+    if (other.isSetWorkflowInputs()) {
+      List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> __this__workflowInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(other.workflowInputs.size());
+      for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType other_element : other.workflowInputs) {
+        __this__workflowInputs.add(new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType(other_element));
+      }
+      this.workflowInputs = __this__workflowInputs;
+    }
+    if (other.isSetWorkflowOutputs()) {
+      List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> __this__workflowOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(other.workflowOutputs.size());
+      for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType other_element : other.workflowOutputs) {
+        __this__workflowOutputs.add(new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType(other_element));
+      }
+      this.workflowOutputs = __this__workflowOutputs;
+    }
   }
 
   public Workflow deepCopy() {
@@ -184,6 +225,9 @@ import org.slf4j.LoggerFactory;
 
     this.name = null;
     this.graph = null;
+    this.image = null;
+    this.workflowInputs = null;
+    this.workflowOutputs = null;
   }
 
   public String getTemplateId() {
@@ -255,6 +299,114 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public byte[] getImage() {
+    setImage(org.apache.thrift.TBaseHelper.rightSize(image));
+    return image == null ? null : image.array();
+  }
+
+  public ByteBuffer bufferForImage() {
+    return image;
+  }
+
+  public void setImage(byte[] image) {
+    setImage(image == null ? (ByteBuffer)null : ByteBuffer.wrap(image));
+  }
+
+  public void setImage(ByteBuffer image) {
+    this.image = image;
+  }
+
+  public void unsetImage() {
+    this.image = null;
+  }
+
+  /** Returns true if field image is set (has been assigned a value) and false otherwise */
+  public boolean isSetImage() {
+    return this.image != null;
+  }
+
+  public void setImageIsSet(boolean value) {
+    if (!value) {
+      this.image = null;
+    }
+  }
+
+  public int getWorkflowInputsSize() {
+    return (this.workflowInputs == null) ? 0 : this.workflowInputs.size();
+  }
+
+  public java.util.Iterator<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> getWorkflowInputsIterator() {
+    return (this.workflowInputs == null) ? null : this.workflowInputs.iterator();
+  }
+
+  public void addToWorkflowInputs(org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType elem) {
+    if (this.workflowInputs == null) {
+      this.workflowInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>();
+    }
+    this.workflowInputs.add(elem);
+  }
+
+  public List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> getWorkflowInputs() {
+    return this.workflowInputs;
+  }
+
+  public void setWorkflowInputs(List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> workflowInputs) {
+    this.workflowInputs = workflowInputs;
+  }
+
+  public void unsetWorkflowInputs() {
+    this.workflowInputs = null;
+  }
+
+  /** Returns true if field workflowInputs is set (has been assigned a value) and false otherwise */
+  public boolean isSetWorkflowInputs() {
+    return this.workflowInputs != null;
+  }
+
+  public void setWorkflowInputsIsSet(boolean value) {
+    if (!value) {
+      this.workflowInputs = null;
+    }
+  }
+
+  public int getWorkflowOutputsSize() {
+    return (this.workflowOutputs == null) ? 0 : this.workflowOutputs.size();
+  }
+
+  public java.util.Iterator<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getWorkflowOutputsIterator() {
+    return (this.workflowOutputs == null) ? null : this.workflowOutputs.iterator();
+  }
+
+  public void addToWorkflowOutputs(org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType elem) {
+    if (this.workflowOutputs == null) {
+      this.workflowOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>();
+    }
+    this.workflowOutputs.add(elem);
+  }
+
+  public List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getWorkflowOutputs() {
+    return this.workflowOutputs;
+  }
+
+  public void setWorkflowOutputs(List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> workflowOutputs) {
+    this.workflowOutputs = workflowOutputs;
+  }
+
+  public void unsetWorkflowOutputs() {
+    this.workflowOutputs = null;
+  }
+
+  /** Returns true if field workflowOutputs is set (has been assigned a value) and false otherwise */
+  public boolean isSetWorkflowOutputs() {
+    return this.workflowOutputs != null;
+  }
+
+  public void setWorkflowOutputsIsSet(boolean value) {
+    if (!value) {
+      this.workflowOutputs = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case TEMPLATE_ID:
@@ -281,6 +433,30 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case IMAGE:
+      if (value == null) {
+        unsetImage();
+      } else {
+        setImage((ByteBuffer)value);
+      }
+      break;
+
+    case WORKFLOW_INPUTS:
+      if (value == null) {
+        unsetWorkflowInputs();
+      } else {
+        setWorkflowInputs((List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>)value);
+      }
+      break;
+
+    case WORKFLOW_OUTPUTS:
+      if (value == null) {
+        unsetWorkflowOutputs();
+      } else {
+        setWorkflowOutputs((List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>)value);
+      }
+      break;
+
     }
   }
 
@@ -294,6 +470,15 @@ import org.slf4j.LoggerFactory;
 
     case GRAPH:
       return getGraph();
+
+    case IMAGE:
+      return getImage();
+
+    case WORKFLOW_INPUTS:
+      return getWorkflowInputs();
+
+    case WORKFLOW_OUTPUTS:
+      return getWorkflowOutputs();
 
     }
     throw new IllegalStateException();
@@ -312,6 +497,12 @@ import org.slf4j.LoggerFactory;
       return isSetName();
     case GRAPH:
       return isSetGraph();
+    case IMAGE:
+      return isSetImage();
+    case WORKFLOW_INPUTS:
+      return isSetWorkflowInputs();
+    case WORKFLOW_OUTPUTS:
+      return isSetWorkflowOutputs();
     }
     throw new IllegalStateException();
   }
@@ -353,6 +544,33 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_graph && that_present_graph))
         return false;
       if (!this.graph.equals(that.graph))
+        return false;
+    }
+
+    boolean this_present_image = true && this.isSetImage();
+    boolean that_present_image = true && that.isSetImage();
+    if (this_present_image || that_present_image) {
+      if (!(this_present_image && that_present_image))
+        return false;
+      if (!this.image.equals(that.image))
+        return false;
+    }
+
+    boolean this_present_workflowInputs = true && this.isSetWorkflowInputs();
+    boolean that_present_workflowInputs = true && that.isSetWorkflowInputs();
+    if (this_present_workflowInputs || that_present_workflowInputs) {
+      if (!(this_present_workflowInputs && that_present_workflowInputs))
+        return false;
+      if (!this.workflowInputs.equals(that.workflowInputs))
+        return false;
+    }
+
+    boolean this_present_workflowOutputs = true && this.isSetWorkflowOutputs();
+    boolean that_present_workflowOutputs = true && that.isSetWorkflowOutputs();
+    if (this_present_workflowOutputs || that_present_workflowOutputs) {
+      if (!(this_present_workflowOutputs && that_present_workflowOutputs))
+        return false;
+      if (!this.workflowOutputs.equals(that.workflowOutputs))
         return false;
     }
 
@@ -402,6 +620,36 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetImage()).compareTo(other.isSetImage());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetImage()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.image, other.image);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetWorkflowInputs()).compareTo(other.isSetWorkflowInputs());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetWorkflowInputs()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.workflowInputs, other.workflowInputs);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetWorkflowOutputs()).compareTo(other.isSetWorkflowOutputs());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetWorkflowOutputs()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.workflowOutputs, other.workflowOutputs);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -444,6 +692,36 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.graph);
+      }
+      first = false;
+    }
+    if (isSetImage()) {
+      if (!first) sb.append(", ");
+      sb.append("image:");
+      if (this.image == null) {
+        sb.append("null");
+      } else {
+        org.apache.thrift.TBaseHelper.toString(this.image, sb);
+      }
+      first = false;
+    }
+    if (isSetWorkflowInputs()) {
+      if (!first) sb.append(", ");
+      sb.append("workflowInputs:");
+      if (this.workflowInputs == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.workflowInputs);
+      }
+      first = false;
+    }
+    if (isSetWorkflowOutputs()) {
+      if (!first) sb.append(", ");
+      sb.append("workflowOutputs:");
+      if (this.workflowOutputs == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.workflowOutputs);
       }
       first = false;
     }
@@ -522,6 +800,52 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // IMAGE
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.image = iprot.readBinary();
+              struct.setImageIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // WORKFLOW_INPUTS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
+                struct.workflowInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list0.size);
+                for (int _i1 = 0; _i1 < _list0.size; ++_i1)
+                {
+                  org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem2;
+                  _elem2 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
+                  _elem2.read(iprot);
+                  struct.workflowInputs.add(_elem2);
+                }
+                iprot.readListEnd();
+              }
+              struct.setWorkflowInputsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // WORKFLOW_OUTPUTS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
+                struct.workflowOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list3.size);
+                for (int _i4 = 0; _i4 < _list3.size; ++_i4)
+                {
+                  org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem5;
+                  _elem5 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
+                  _elem5.read(iprot);
+                  struct.workflowOutputs.add(_elem5);
+                }
+                iprot.readListEnd();
+              }
+              struct.setWorkflowOutputsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -552,6 +876,41 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.image != null) {
+        if (struct.isSetImage()) {
+          oprot.writeFieldBegin(IMAGE_FIELD_DESC);
+          oprot.writeBinary(struct.image);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.workflowInputs != null) {
+        if (struct.isSetWorkflowInputs()) {
+          oprot.writeFieldBegin(WORKFLOW_INPUTS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.workflowInputs.size()));
+            for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter6 : struct.workflowInputs)
+            {
+              _iter6.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.workflowOutputs != null) {
+        if (struct.isSetWorkflowOutputs()) {
+          oprot.writeFieldBegin(WORKFLOW_OUTPUTS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.workflowOutputs.size()));
+            for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter7 : struct.workflowOutputs)
+            {
+              _iter7.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -575,9 +934,39 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetGraph()) {
         optionals.set(0);
       }
-      oprot.writeBitSet(optionals, 1);
+      if (struct.isSetImage()) {
+        optionals.set(1);
+      }
+      if (struct.isSetWorkflowInputs()) {
+        optionals.set(2);
+      }
+      if (struct.isSetWorkflowOutputs()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetGraph()) {
         oprot.writeString(struct.graph);
+      }
+      if (struct.isSetImage()) {
+        oprot.writeBinary(struct.image);
+      }
+      if (struct.isSetWorkflowInputs()) {
+        {
+          oprot.writeI32(struct.workflowInputs.size());
+          for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter8 : struct.workflowInputs)
+          {
+            _iter8.write(oprot);
+          }
+        }
+      }
+      if (struct.isSetWorkflowOutputs()) {
+        {
+          oprot.writeI32(struct.workflowOutputs.size());
+          for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter9 : struct.workflowOutputs)
+          {
+            _iter9.write(oprot);
+          }
+        }
       }
     }
 
@@ -588,10 +977,42 @@ import org.slf4j.LoggerFactory;
       struct.setTemplateIdIsSet(true);
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.graph = iprot.readString();
         struct.setGraphIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.image = iprot.readBinary();
+        struct.setImageIsSet(true);
+      }
+      if (incoming.get(2)) {
+        {
+          org.apache.thrift.protocol.TList _list10 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.workflowInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list10.size);
+          for (int _i11 = 0; _i11 < _list10.size; ++_i11)
+          {
+            org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem12;
+            _elem12 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
+            _elem12.read(iprot);
+            struct.workflowInputs.add(_elem12);
+          }
+        }
+        struct.setWorkflowInputsIsSet(true);
+      }
+      if (incoming.get(3)) {
+        {
+          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.workflowOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list13.size);
+          for (int _i14 = 0; _i14 < _list13.size; ++_i14)
+          {
+            org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem15;
+            _elem15 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
+            _elem15.read(iprot);
+            struct.workflowOutputs.add(_elem15);
+          }
+        }
+        struct.setWorkflowOutputsIsSet(true);
       }
     }
   }
