@@ -46,7 +46,9 @@ public abstract class AbstractResource implements Resource {
     public static final String APPLICATION_INTERFACE = "ApplicationInterface";
     public static final String APP_MODULE_MAPPING = "AppModuleMapping";
     public static final String APPLICATION_INPUT = "ApplicationInput";
+    public static final String WORKFLOW_INPUT = "WorkflowInput";
     public static final String APPLICATION_OUTPUT = "ApplicationOutput";
+    public static final String WORKFLOW_OUTPUT = "WorkflowOutput";
     public static final String GATEWAY_PROFILE = "GatewayProfile";
     public static final String COMPUTE_RESOURCE_PREFERENCE = "ComputeResourcePreference";
 	public static final String BATCH_QUEUE = "BatchQueue";
@@ -218,6 +220,24 @@ public abstract class AbstractResource implements Resource {
 
     public final class AppOutputConstants {
         public static final String INTERFACE_ID = "interfaceID";
+        public static final String OUTPUT_KEY = "outputKey";
+        public static final String OUTPUT_VALUE = "outputVal";
+        public static final String DATA_TYPE = "dataType";
+    }
+
+    public final class WFInputConstants {
+        public static final String WF_TEMPLATE_ID = "wfTemplateId";
+        public static final String INPUT_KEY = "inputKey";
+        public static final String INPUT_VALUE = "inputVal";
+        public static final String DATA_TYPE = "dataType";
+        public static final String METADATA = "metadata";
+        public static final String APP_ARGUMENT = "appArgument";
+        public static final String USER_FRIENDLY_DESC = "userFriendlyDesc";
+        public static final String STANDARD_INPUT = "standardInput";
+    }
+
+    public final class WFOutputConstants {
+        public static final String WF_TEMPLATE_ID = "wfTemplateId";
         public static final String OUTPUT_KEY = "outputKey";
         public static final String OUTPUT_VALUE = "outputVal";
         public static final String DATA_TYPE = "dataType";

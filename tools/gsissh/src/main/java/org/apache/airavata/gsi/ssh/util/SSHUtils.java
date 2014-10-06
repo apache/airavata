@@ -212,8 +212,7 @@ public class SSHUtils {
         if (stdOutReader.getStdErrorString().contains("scp:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
-        channel.disconnect();
-        session.disconnect();
+//        channel.disconnect();
     }
 
     /**
@@ -313,7 +312,7 @@ public class SSHUtils {
         stdOutReader.onOutput(channel);
 
 
-        channel.disconnect();
+//        channel.disconnect();
         if (stdOutReader.getStdErrorString().contains("scp:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
@@ -567,7 +566,7 @@ public class SSHUtils {
                 out.flush();
             }
 
-            session.disconnect();
+//            session.disconnect();
 
             stdOutReader.onOutput(channel);
             if (stdOutReader.getStdErrorString().contains("scp:")) {
@@ -715,8 +714,8 @@ public class SSHUtils {
             channel.connect();
         } catch (JSchException e) {
 
-            channel.disconnect();
-            session.disconnect();
+//            channel.disconnect();
+//            session.disconnect();
 
             throw new SSHApiException("Unable to retrieve command output. Command - " + command +
                     " on server - " + session.getHost() + ":" + session.getPort() +
@@ -728,7 +727,7 @@ public class SSHUtils {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
 
-        channel.disconnect();
+//        channel.disconnect();
     }
 
     public static List<String> listDirectory(String path, Session session) throws IOException, JSchException, SSHApiException {
@@ -746,8 +745,8 @@ public class SSHUtils {
             channel.connect();
         } catch (JSchException e) {
 
-            channel.disconnect();
-            session.disconnect();
+//            channel.disconnect();
+//            session.disconnect();
 
             throw new SSHApiException("Unable to retrieve command output. Command - " + command +
                     " on server - " + session.getHost() + ":" + session.getPort() +
@@ -759,7 +758,7 @@ public class SSHUtils {
         if (stdOutReader.getStdErrorString().contains("ls:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
-        channel.disconnect();
+//        channel.disconnect();
         return Arrays.asList(stdOutReader.getStdOutputString().split("\n"));
     }
 

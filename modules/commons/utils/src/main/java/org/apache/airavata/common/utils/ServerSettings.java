@@ -69,7 +69,9 @@ public class ServerSettings extends ApplicationSettings {
     private static final String MY_PROXY_USER = "myproxy.user";
     private static final String MY_PROXY_PASSWORD = "myproxy.password";
     private static final String MY_PROXY_LIFETIME = "myproxy.life";
+    private static final String ACTIVITY_PUBLISHER = "activity.publisher";
     private static final String ACTIVITY_LISTENERS = "activity.listeners";
+    public static final String PUBLISH_RABBITMQ = "publish.rabbitmq";
 
     private static boolean stopAllThreads = false;
 
@@ -226,6 +228,16 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String[] getActivityListeners() throws ApplicationSettingsException {
         return getSetting(ACTIVITY_LISTENERS).split(",");
+    }
+
+
+    public static String getActivityPublisher() throws ApplicationSettingsException{
+        return getSetting(ACTIVITY_PUBLISHER);
+    }
+
+    public static boolean isRabbitMqPublishEnabled() throws ApplicationSettingsException{
+        String setting = getSetting(PUBLISH_RABBITMQ);
+        return Boolean.parseBoolean(setting);
     }
 
     public static boolean isEmbeddedZK() {

@@ -103,6 +103,7 @@ public class DataTransferDetailResource extends AbstractResource {
                 case STATUS:
                     generator = new QueryGenerator(STATUS);
                     generator.setParameter(StatusConstants.TRANSFER_ID, name);
+                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.DATA_TRANSFER);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -137,6 +138,7 @@ public class DataTransferDetailResource extends AbstractResource {
                 case STATUS:
                     generator = new QueryGenerator(STATUS);
                     generator.setParameter(StatusConstants.TRANSFER_ID, name);
+                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.DATA_TRANSFER);
                     q = generator.selectQuery(em);
                     Status status = (Status) q.getSingleResult();
                     StatusResource statusResource = (StatusResource) Utils.getResource(ResourceType.STATUS, status);
