@@ -23,9 +23,9 @@ package org.apache.airavata.gfac.monitor.impl.push.amqp;
 import com.google.common.eventbus.Subscribe;
 import com.rabbitmq.client.Channel;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,8 +42,7 @@ public class UnRegisterWorker{
     }
 
     @Subscribe
-    private boolean unRegisterListener(JobStatusChangeRequest jobStatus) throws AiravataMonitorException {
-        MonitorID monitorID = jobStatus.getMonitorID();
+    private boolean unRegisterListener(JobStatusChangeEvent jobStatus, MonitorID monitorID) throws AiravataMonitorException {
         String channelID = CommonUtils.getChannelID(monitorID);
         if (JobState.FAILED.equals(jobStatus.getState()) || JobState.COMPLETE.equals(jobStatus.getState())){
             Channel channel = availableChannels.get(channelID);
