@@ -212,7 +212,7 @@ public class SSHUtils {
         if (stdOutReader.getStdErrorString().contains("scp:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
-//        channel.disconnect();
+        channel.disconnect();
     }
 
     /**
@@ -312,7 +312,7 @@ public class SSHUtils {
         stdOutReader.onOutput(channel);
 
 
-//        channel.disconnect();
+        channel.disconnect();
         if (stdOutReader.getStdErrorString().contains("scp:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
@@ -714,7 +714,7 @@ public class SSHUtils {
             channel.connect();
         } catch (JSchException e) {
 
-//            channel.disconnect();
+            channel.disconnect();
 //            session.disconnect();
 
             throw new SSHApiException("Unable to retrieve command output. Command - " + command +
@@ -727,7 +727,7 @@ public class SSHUtils {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
 
-//        channel.disconnect();
+        channel.disconnect();
     }
 
     public static List<String> listDirectory(String path, Session session) throws IOException, JSchException, SSHApiException {
@@ -745,7 +745,7 @@ public class SSHUtils {
             channel.connect();
         } catch (JSchException e) {
 
-//            channel.disconnect();
+            channel.disconnect();
 //            session.disconnect();
 
             throw new SSHApiException("Unable to retrieve command output. Command - " + command +
@@ -758,7 +758,7 @@ public class SSHUtils {
         if (stdOutReader.getStdErrorString().contains("ls:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
-//        channel.disconnect();
+        channel.disconnect();
         return Arrays.asList(stdOutReader.getStdOutputString().split("\n"));
     }
 

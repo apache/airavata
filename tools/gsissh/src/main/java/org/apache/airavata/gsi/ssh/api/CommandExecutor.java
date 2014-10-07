@@ -37,7 +37,7 @@ public class CommandExecutor {
     static {
         JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gsi.ssh.GSSContextX509");
         JSch.setConfig("userauth.gssapi-with-mic", "com.jcraft.jsch.UserAuthGSSAPIWithMICGSSCredentials");
-
+        JSch jSch = new JSch();
     }
 
     private static final Logger log = LoggerFactory.getLogger(CommandExecutor.class);
@@ -75,7 +75,7 @@ public class CommandExecutor {
             channel.connect();
         } catch (JSchException e) {
 
-//            channel.disconnect();
+            channel.disconnect();
 //            session.disconnect();
             throw new SSHApiException("Unable to retrieve command output. Command - " + command, e);
         }
@@ -83,7 +83,7 @@ public class CommandExecutor {
 
         commandOutput.onOutput(channel);
         //Only disconnecting the channel, session can be reused
-//        channel.disconnect();
+        channel.disconnect();
         return session;
     }
 
@@ -253,7 +253,7 @@ public class CommandExecutor {
             channel.connect();
         } catch (JSchException e) {
 
-//            channel.disconnect();
+            channel.disconnect();
 //            session.disconnect();
 
             throw new SSHApiException("Unable to retrieve command output. Command - " + command +
@@ -264,7 +264,7 @@ public class CommandExecutor {
 
         commandOutput.onOutput(channel);
 
-//        channel.disconnect();
+        channel.disconnect();
 //        session.disconnect();
     }
 

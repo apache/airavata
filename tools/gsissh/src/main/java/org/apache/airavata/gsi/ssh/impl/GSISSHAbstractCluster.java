@@ -298,11 +298,26 @@ public class GSISSHAbstractCluster implements Cluster {
 
             //reusing submitBatchJobWithScript method to submit a job
             String jobID = null;
-            try {
-                jobID = this.submitBatchJobWithScript(tempPBSFile.getAbsolutePath(),
-                        jobDescriptor.getWorkingDirectory());
-            } catch (SSHApiException e) {
-                throw e;
+            int retry = 3;
+            while(retry>0) {
+                try {
+                    jobID = this.submitBatchJobWithScript(tempPBSFile.getAbsolutePath(),
+                            jobDescriptor.getWorkingDirectory());
+                    retry=0;
+                } catch (SSHApiException e) {
+                    retry--;
+                    if(retry==0) {
+                        throw e;
+                    }else{
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                        log.error("Error occured during job submission but doing a retry");
+                        e.printStackTrace();
+                    }
+                }
             }
             log.debug("Job has successfully submitted, JobID : " + jobID);
             if (jobID != null) {
@@ -414,6 +429,8 @@ public class GSISSHAbstractCluster implements Cluster {
                 if (retry == 0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
                             + serverInfo.getHost() + ":rFile", e);
+                }else{
+                    log.error("Error performing scp but doing a retry");
                 }
             } catch (JSchException e) {
                 retry--;
@@ -426,6 +443,8 @@ public class GSISSHAbstractCluster implements Cluster {
                 if(retry==0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
                             + serverInfo.getHost() + ":rFile", e);
+                }else{
+                    log.error("Error performing scp but doing a retry");
                 }
             }
         }
@@ -500,6 +519,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 files = SSHUtils.listDirectory(directoryPath, session);
                 retry=0;
             } catch (IOException e) {
+                e.printStackTrace();
                 retry--;
                 try {
                     Thread.sleep(5000);
