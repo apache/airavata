@@ -19,10 +19,7 @@
  *
  */
 
-package org.apache.airavata.client.tools;
-
-import java.util.Map;
-import java.util.Set;
+package org.apache.airavata.integration.tools;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -40,10 +37,9 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 
-/**
- * This class has been moved to integration-tests module, use that instead of this
- */
-@Deprecated
+import java.util.Map;
+import java.util.Set;
+
 public class DocumentCreatorUtils {
 
 	public static ComputeResourcePreference createComputeResourcePreference(String computeResourceId, String scratchLocation,

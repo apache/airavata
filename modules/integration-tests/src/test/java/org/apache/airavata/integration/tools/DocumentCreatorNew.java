@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.client.tools;
+package org.apache.airavata.integration.tools;
 
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
@@ -29,7 +29,15 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
@@ -38,12 +46,13 @@ import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.thrift.TException;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.UUID;
 
-/**
- * This class has been moved to integration-tests module, use that instead of this
- */
-@Deprecated
 public class DocumentCreatorNew {
 
     private AppCatalog appcatalog = null;
