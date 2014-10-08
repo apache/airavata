@@ -277,10 +277,10 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
                     }
                 }
 
-                if (this.window == null) {
-                    this.window = new WorkflowInterpreterLaunchWindow(engine);
-                }
                 try {
+                    if (this.window == null) {
+                        this.window = new WorkflowInterpreterLaunchWindow(engine);
+                    }
                     this.window.show();
                 } catch (Exception e1) {
                     engine.getGUI().getErrorWindow().error(e1);

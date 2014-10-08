@@ -21,7 +21,9 @@
 
 package org.apache.airavata.xbaya.ui.experiment;
 
+import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.Airavata.Client;
+import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.error.AiravataClientConnectException;
@@ -61,7 +63,10 @@ import javax.xml.namespace.QName;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 //import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -90,7 +95,11 @@ public class WorkflowInterpreterLaunchWindow {
 
 	private XBayaTextField instanceNameTextField;
 
-//    protected final static XmlInfosetBuilder builder = XmlConstants.BUILDER;
+    private Airavata.Client airavataClient;
+
+    private JComboBox host;
+    private HashMap<String, String> hostNames;
+    //    protected final static XmlInfosetBuilder builder = XmlConstants.BUILDER;
 
     /**
      * Constructs a WorkflowInterpreterLaunchWindow.
@@ -98,8 +107,9 @@ public class WorkflowInterpreterLaunchWindow {
      * @param engine
      * 
      */
-    public WorkflowInterpreterLaunchWindow(XBayaEngine engine) {
+    public WorkflowInterpreterLaunchWindow(XBayaEngine engine) throws AiravataClientConnectException {
         this.engine = engine;
+        airavataClient = AiravataClientFactory.createAiravataClient("127.0.0.1", 8930);
 //        if (XBayaUtil.acquireJCRRegistry(engine)) {
             initGUI();
 //        }
@@ -145,6 +155,49 @@ public class WorkflowInterpreterLaunchWindow {
             this.parameterPanel.add(paramField);
             this.parameterTextFields.add(paramField);
         }
+
+        Map<String, String> hosts = null;
+
+        try {
+            hosts = airavataClient.getAllComputeResourceNames();
+        } catch (InvalidRequestException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        } catch (AiravataClientException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        } catch (AiravataSystemException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        } catch (TException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
+
+
+        hostNames = new HashMap<String, String>();
+
+        Iterator it=hosts.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry pairs=(Map.Entry)it.next();
+            String key = (String) pairs.getKey();
+            String value = (String) pairs.getValue();
+            if(!hostNames.containsKey(value)){
+                hostNames.put(value, key);
+            }
+        }
+        host = new JComboBox();
+        it= hostNames.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry pairs=(Map.Entry)it.next();
+            String key = (String) pairs.getKey();
+            host.addItem(key);
+        }
+        host.setSelectedIndex(0);
+
+        XBayaLabel hostLabel = new XBayaLabel("Host", host);
+        this.parameterPanel.add(hostLabel);
+        this.parameterPanel.add(host);
         this.parameterPanel.layout(inputNodes.size(), 3, GridPanel.WEIGHT_NONE, 2);
 //        this.instanceNameTextField.setText(workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
 //        this.topicTextField.setText(UUID.randomUUID().toString());
@@ -313,15 +366,35 @@ public class WorkflowInterpreterLaunchWindow {
         }
 
         // Add scheduling configurations
-        String computeResouceId = airavataClient.getAllComputeResourceNames().get("localhost");
-
-        UserConfigurationData userConfigurationData = new UserConfigurationData();
-        ComputationalResourceScheduling computationalResourceScheduling = ExperimentModelUtil.createComputationResourceScheduling(
-                computeResouceId, 1, 1, 1, "normal", 1, 0, 1, "test");
-        userConfigurationData.setAiravataAutoSchedule(false);
-        userConfigurationData.setOverrideManualScheduledParams(false);
-        userConfigurationData.setComputationalResourceScheduling(computationalResourceScheduling);
-        experiment.setUserConfigurationData(userConfigurationData);
+        if (host != null && host.getSelectedIndex() >= 0) {
+            String selectedHostName = host.getSelectedItem().toString();
+            String computeResouceId = hostNames.get(selectedHostName);
+            ComputationalResourceScheduling computationalResourceScheduling;
+            if (selectedHostName.equals("localhost")) {
+                computationalResourceScheduling = ExperimentModelUtil.createComputationResourceScheduling(
+                        computeResouceId, 1, 1, 1, "normal", 1, 0, 1, "test");
+            }else if (selectedHostName.equals("trestles.sdsc.xsede.org")) {
+                computationalResourceScheduling = ExperimentModelUtil.createComputationResourceScheduling(
+                        computeResouceId,1,1,1,"normal", 1,0,1, "sds128");
+            }else if (selectedHostName.equals("stampede.tacc.xsede.org")) {
+                computationalResourceScheduling = ExperimentModelUtil.createComputationResourceScheduling(
+                        computeResouceId, 2, 32, 1, "development", 90, 0, 1, "TG-STA110014S");
+            } else if (selectedHostName.equals("bigred2.uits.iu.edu")) {
+                computationalResourceScheduling = ExperimentModelUtil.createComputationResourceScheduling(
+                        computeResouceId, 1, 1, 1, "normal", 1, 0, 1, null);
+            } else {
+                // TODO handle for other computer resources too.
+                throw new IllegalArgumentException("Computational resource scheduling is not configured for host :" +
+                        computeResouceId);
+            }
+            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            userConfigurationData.setAiravataAutoSchedule(false);
+            userConfigurationData.setOverrideManualScheduledParams(false);
+            userConfigurationData.setComputationalResourceScheduling(computationalResourceScheduling);
+            experiment.setUserConfigurationData(userConfigurationData);
+        }else {
+            throw new RuntimeException("Resource scheduling failed, target computer resource host name is not defined");
+        }
 
         experiment.setExperimentID(airavataClient.createExperiment(experiment));
         airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
