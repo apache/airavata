@@ -28,10 +28,12 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.ssh.context.SSHAuthWrapper;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
@@ -84,7 +86,9 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
     private String hostName;
 
     private String outputPath;
-    
+
+    public static final String ADVANCED_SSH_AUTH = "advanced.ssh.auth";
+
 
     public void initProperties(Properties properties) throws GFacHandlerException {
         password = (String)properties.get("password");
@@ -98,7 +102,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
 
     @Override
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-    	  Cluster pbsCluster = null;
+    	Cluster pbsCluster = null;
         AuthenticationInfo authenticationInfo = null;
         if (password != null) {
             authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
@@ -106,6 +110,9 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
                     this.passPhrase);
         }
+        ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
+        String key = this.userName + this.hostName;
+        jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,new SSHAuthWrapper(serverInfo,authenticationInfo,key));
         try {
             if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
                 try {

@@ -33,6 +33,7 @@ import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.ssh.context.SSHAuthWrapper;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.security.TokenizedSSHAuthInfo;
 import org.apache.airavata.gsi.ssh.api.Cluster;
@@ -76,7 +77,7 @@ public class GFACSSHUtils {
             requestData.setTokenId(credentialStoreToken);
 
             ServerInfo serverInfo = new ServerInfo(null, registeredHost.getType().getHostAddress());
-            AuthenticationInfo info = (AuthenticationInfo) jobExecutionContext.getProperty(ADVANCED_SSH_AUTH);
+            SSHAuthWrapper sshAuth = (SSHAuthWrapper) jobExecutionContext.getProperty(ADVANCED_SSH_AUTH);
 
             Cluster pbsCluster = null;
             try {
@@ -94,6 +95,9 @@ public class GFACSSHUtils {
 
                 String key = credentials.getPortalUserName() + registeredHost.getType().getHostAddress() +
                         serverInfo.getPort();
+                if(sshAuth!=null){
+                    key=sshAuth.getKey();
+                }
                 boolean recreate = false;
                 synchronized (clusters) {
                     if (clusters.containsKey(key) && clusters.get(key).size() < maxClusterCount) {
@@ -121,10 +125,11 @@ public class GFACSSHUtils {
                         recreate = true;
                     }
                     if (recreate) {
-                        if (info != null) {
-                            pbsCluster = new PBSCluster(serverInfo, info,
+                        if (sshAuth != null) {
+                            pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),
                                     CommonUtils.getPBSJobManager(installedParentPath));
                             jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,null); // some other provider might fail
+                            key = sshAuth.getKey();
                         } else {
                             pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
                                     CommonUtils.getPBSJobManager(installedParentPath));
