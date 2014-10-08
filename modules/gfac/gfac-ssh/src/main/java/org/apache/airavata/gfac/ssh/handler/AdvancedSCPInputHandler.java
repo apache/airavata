@@ -70,6 +70,7 @@ import java.util.*;
  */
 public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
     private static final Logger log = LoggerFactory.getLogger(AdvancedSCPInputHandler.class);
+    public static final String ADVANCED_SSH_AUTH = "advanced.ssh.auth";
 
     private String password = null;
 
@@ -120,6 +121,15 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
                     log.error("Previously stored data " + pluginData + " is wrong so we continue the operations");
                 }
             }
+
+            AuthenticationInfo authenticationInfo = null;
+            if (password != null) {
+                authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
+            } else {
+                authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
+                        this.passPhrase);
+            }
+            jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,authenticationInfo);
             if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
                 try {
                     GFACSSHUtils.addSecurityContext(jobExecutionContext);

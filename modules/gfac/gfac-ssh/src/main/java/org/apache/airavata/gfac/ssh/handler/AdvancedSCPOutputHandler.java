@@ -99,6 +99,13 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
     @Override
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
     	  Cluster pbsCluster = null;
+        AuthenticationInfo authenticationInfo = null;
+        if (password != null) {
+            authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
+        } else {
+            authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
+                    this.passPhrase);
+        }
         try {
             if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
                 try {
