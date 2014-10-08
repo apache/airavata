@@ -24,8 +24,8 @@ import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.monitor.TaskIdentity;
-import org.apache.airavata.gfac.core.monitor.state.TaskStatusChangeRequest;
+import org.apache.airavata.model.messaging.event.TaskIdentifier;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeRequestEvent;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +50,8 @@ public class OutHandlerWorker implements Runnable {
         try {
             gfac.invokeOutFlowHandlers(monitorID.getJobExecutionContext());
         } catch (GFacException e) {
-            monitorPublisher.publish(new TaskStatusChangeRequest(new TaskIdentity(monitorID.getExperimentID(), monitorID.getWorkflowNodeID(),
-                    monitorID.getTaskID()), TaskState.FAILED));
+            TaskIdentifier taskIdentifier = new TaskIdentifier(monitorID.getTaskID(), monitorID.getWorkflowNodeID(),monitorID.getExperimentID());
+            monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentifier));
             //FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status
             logger.info(e.getLocalizedMessage(), e);
         }
