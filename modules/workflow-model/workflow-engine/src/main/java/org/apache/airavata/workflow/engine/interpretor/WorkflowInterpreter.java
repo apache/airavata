@@ -40,7 +40,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
@@ -147,11 +146,13 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 
     private String credentialStoreToken;
     /**
-     *
+     * @param experiment
+     * @param credentialStoreToken
      * @param config
-     * @param interactor
+     * @param orchestratorClient
      */
-	public WorkflowInterpreter(Experiment experiment, String credentialStoreToken, WorkflowInterpreterConfiguration config, OrchestratorService.Client orchestratorClient) {
+	public WorkflowInterpreter(Experiment experiment, String credentialStoreToken,
+                               WorkflowInterpreterConfiguration config, OrchestratorService.Client orchestratorClient) {
 		this.setConfig(config);
 		this.setExperiment(experiment);
 		this.setCredentialStoreToken(credentialStoreToken);
@@ -204,9 +205,9 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		try {
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.RUNNING);
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
-			List<DataObjectType> experimentOutputs = experiment.getExperimentInputs();
+			List<DataObjectType> experimentInputs = experiment.getExperimentInputs();
 			Map<String,String> inputDataStrings=new HashMap<String, String>();
-			for (DataObjectType dataObjectType : experimentOutputs) {
+			for (DataObjectType dataObjectType : experimentInputs) {
 				inputDataStrings.put(dataObjectType.getKey(), dataObjectType.getValue());
 			}
 			for (Node node : inputNodes) {
@@ -232,7 +233,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNode, workflowNode.getNodeInstanceId());
 				updateWorkflowNodeStatus(workflowNode, WorkflowNodeState.COMPLETED);
 			}
-			
+
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
                 ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
                 ArrayList<Thread> threadList = new ArrayList<Thread>();
@@ -364,9 +365,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			// we reset all the state
 			cleanup();
         	raiseException(e);
-		} catch (AiravataAPIInvocationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }finally{
+		} finally{
         	cleanup();
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
 	    }
@@ -417,7 +416,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_CLEANUP, null);
 	}
 
-	private void sendOutputsDynamically() throws WorkflowException, AiravataAPIInvocationException, RegistryException {
+	private void sendOutputsDynamically() throws WorkflowException, RegistryException {
 		ArrayList<Node> outputNodes = getReadyOutputNodesDynamically();
 		if (outputNodes.size() != 0) {
             LinkedList<Object> outputValues = new LinkedList<Object>();
@@ -633,6 +632,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	
 	protected void handleWSComponent(Node node) throws WorkflowException, TException, RegistryException {
         TaskDetails taskDetails = createTaskDetails(node);
+        log.debug("Launching task , node = " + node.getName() + " node id = " + node.getID());
         getOrchestratorClient().launchTask(taskDetails.getTaskID(), getCredentialStoreToken());
 	}
 	
@@ -998,7 +998,10 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				portInputValue = (String) ((InputNode) fromNode).getDefaultValue();			
 			} else if (fromNode instanceof WSNode){
 				Map<String, String> outputData = nodeOutputData.get(fromNode);
-				portInputValue = outputData.get(dataPort.getName());				
+                portInputValue = outputData.get(dataPort.getName());
+                if (portInputValue == null) {
+                    portInputValue = outputData.get(dataPort.getEdge(0).getFromPort().getName());
+                }
 			}
 			DataObjectType elem = new DataObjectType();
 			elem.setKey(dataPort.getName());

@@ -21,23 +21,6 @@
 
 package org.apache.airavata.xbaya.ui.experiment;
 
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
-//import org.apache.airavata.registry.api.AiravataRegistry2;
-
-
-import javax.swing.AbstractAction;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -45,16 +28,15 @@ import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.workflow.engine.interpretor.WorkflowInterpreter;
-import org.apache.airavata.workflow.engine.interpretor.WorkflowInterpreterConfiguration;
-import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -72,6 +54,17 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
+
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import javax.xml.namespace.QName;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.UUID;
+
+//import org.apache.airavata.registry.api.AiravataRegistry2;
 
 public class WorkflowInterpreterLaunchWindow {
 
@@ -318,7 +311,18 @@ public class WorkflowInterpreterLaunchWindow {
             elem.setValue(value);
 			experiment.addToExperimentInputs(elem );
         }
-  
+
+        // Add scheduling configurations
+        String computeResouceId = airavataClient.getAllComputeResourceNames().get("localhost");
+
+        UserConfigurationData userConfigurationData = new UserConfigurationData();
+        ComputationalResourceScheduling computationalResourceScheduling = ExperimentModelUtil.createComputationResourceScheduling(
+                computeResouceId, 1, 1, 1, "normal", 1, 0, 1, "test");
+        userConfigurationData.setAiravataAutoSchedule(false);
+        userConfigurationData.setOverrideManualScheduledParams(false);
+        userConfigurationData.setComputationalResourceScheduling(computationalResourceScheduling);
+        experiment.setUserConfigurationData(userConfigurationData);
+
         experiment.setExperimentID(airavataClient.createExperiment(experiment));
         airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
 //        final String workflowInterpreterUrl = this.workflowInterpreterTextField.getText();
