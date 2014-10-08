@@ -21,6 +21,7 @@
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
+include "applicationInterfaceModel.thrift"
 
 /*
  * This file describes the definitions of the Airavata Execution Data Structures. Each of the
@@ -33,5 +34,8 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 struct Workflow {
     1: required string templateId = DEFAULT_ID,
     2: required string name,
-    3: optional string graph
+    3: optional string graph,
+    4: optional binary image,
+    5: optional list<applicationInterfaceModel.InputDataObjectType> workflowInputs,
+    6: optional list<applicationInterfaceModel.OutputDataObjectType> workflowOutputs
 }

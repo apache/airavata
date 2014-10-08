@@ -30,7 +30,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
@@ -39,6 +38,7 @@ import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Assert;
 import org.junit.Before;
@@ -162,7 +162,7 @@ public class AMQPMonitorTest {
         }
         class InnerClassAMQP{
             @Subscribe
-            private void getStatus(JobStatusChangeRequest status){
+            private void getStatus(JobStatusChangeEvent status){
                 Assert.assertNotNull(status);
                 pushThread.interrupt();
             }

@@ -65,8 +65,9 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
 
 	}
 	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        try{
-        Cluster cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+		Cluster cluster = null;
+		try{
+        cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
         if (cluster == null) {
             throw new GFacHandlerException("Security context is not set properly");
         } else {
@@ -86,7 +87,7 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
         } catch (Exception e) {
-            DataTransferDetails detail = new DataTransferDetails();
+			DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();
             status.setTransferState(TransferState.FAILED);
             detail.setTransferStatus(status);
@@ -98,6 +99,7 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
             }
             throw new GFacHandlerException("Error executing the Handler: " + SSHDirectorySetupHandler.class, e);
         }
+        
 	}
 
     public void initProperties(Properties properties) throws GFacHandlerException {

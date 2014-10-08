@@ -64,7 +64,7 @@ public class CommandExecutor {
             channel = session.openChannel("exec");
             ((ChannelExec) channel).setCommand(command);
         } catch (JSchException e) {
-            session.disconnect();
+//            session.disconnect();
 
             throw new SSHApiException("Unable to execute command - ", e);
         }
@@ -75,15 +75,15 @@ public class CommandExecutor {
             channel.connect();
         } catch (JSchException e) {
 
-            channel.disconnect();
-            session.disconnect();
+//            channel.disconnect();
+//            session.disconnect();
             throw new SSHApiException("Unable to retrieve command output. Command - " + command, e);
         }
 
 
         commandOutput.onOutput(channel);
         //Only disconnecting the channel, session can be reused
-        channel.disconnect();
+//        channel.disconnect();
         return session;
     }
 
@@ -237,7 +237,7 @@ public class CommandExecutor {
             channel = session.openChannel("exec");
             ((ChannelExec) channel).setCommand(command);
         } catch (JSchException e) {
-            session.disconnect();
+//            session.disconnect();
 
             throw new SSHApiException("Unable to execute command - " + command +
                     " on server - " + serverInfo.getHost() + ":" + serverInfo.getPort() +
@@ -253,8 +253,8 @@ public class CommandExecutor {
             channel.connect();
         } catch (JSchException e) {
 
-            channel.disconnect();
-            session.disconnect();
+//            channel.disconnect();
+//            session.disconnect();
 
             throw new SSHApiException("Unable to retrieve command output. Command - " + command +
                     " on server - " + serverInfo.getHost() + ":" + serverInfo.getPort() +
@@ -264,8 +264,8 @@ public class CommandExecutor {
 
         commandOutput.onOutput(channel);
 
-        channel.disconnect();
-        session.disconnect();
+//        channel.disconnect();
+//        session.disconnect();
     }
 
     private static void logDebug(String message) {

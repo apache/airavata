@@ -85,6 +85,8 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
 
     private String inputPath;
 
+    public static Map<String, Cluster> clusters = new HashMap<String, Cluster>();
+
     public void initProperties(Properties properties) throws GFacHandlerException {
         password = (String) properties.get("password");
         passPhrase = (String) properties.get("passPhrase");
@@ -102,6 +104,8 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
         List<String> oldFiles = new ArrayList<String>();
         MessageContext inputNew = new MessageContext();
         StringBuffer data = new StringBuffer("|");
+        Cluster pbsCluster = null;
+        
         try {
             String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
             if (pluginData != null) {
@@ -153,7 +157,6 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
             }
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();
-            Cluster pbsCluster = null;
             // here doesn't matter what the job manager is because we are only doing some file handling
             // not really dealing with monitoring or job submission, so we pa
             String lastHost = null;
@@ -173,13 +176,27 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
 					} catch (MalformedURLException e) {
 						log.error(e.getLocalizedMessage(),e);
 					}
-					ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-					if (pbsCluster == null && (lastHost == null || !lastHost.equals(hostName))) {
-						pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
-					}
-					lastHost = hostName;
-
-					if (index < oldIndex) {
+					 ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
+					 String key = this.userName + this.hostName;
+			            boolean recreate = false;
+			            if (clusters.containsKey(key) && clusters.get(key).getSession().isConnected()) {
+			                pbsCluster = (PBSCluster) clusters.get(key);
+			                try {
+			                    pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+			                	log.info("Reusing existing connection for ---- : " + this.hostName);
+			                } catch (Exception e) {
+			                    log.info("Connection found the connection map is expired, so we create from the scratch");
+			                    recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+			                }
+			            } else{
+			            	recreate = true;
+			            }
+			            if(recreate){
+			            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+			            log.info("Connection created for ---- : " + this.hostName);
+			            clusters.put(key, pbsCluster);
+			            }
+			            if (index < oldIndex) {
 						log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
 						((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
 						data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
@@ -207,11 +224,26 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
 							log.error(e.getLocalizedMessage(),e);
 						}
 						ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-						if (pbsCluster == null && (lastHost == null || !lastHost.equals(hostName))) {
-							pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
-						}
-						lastHost = hostName;
-
+						String key = this.userName + this.hostName;
+			            boolean recreate = false;
+			            if (clusters.containsKey(key) && clusters.get(key).getSession().isConnected()) {
+			                pbsCluster = (PBSCluster) clusters.get(key);
+			                try {
+			                    pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+			                	log.info("Reusing existing connection for ---- : " + this.hostName);
+			                } catch (Exception e) {
+			                    log.info("Connection found the connection map is expired, so we create from the scratch");
+			                    recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+			                }
+			            } else{
+			            	recreate = true;
+			            }
+			            if(recreate){
+			            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+			            log.info("Connection created for ---- : " + this.hostName);
+			            clusters.put(key, pbsCluster);
+			            }
+			         
 						if (index < oldIndex) {
 							log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
 							newFiles.add(oldFiles.get(index));

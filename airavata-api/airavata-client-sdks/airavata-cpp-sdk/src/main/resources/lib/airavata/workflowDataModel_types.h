@@ -30,22 +30,26 @@
 #include <thrift/transport/TTransport.h>
 
 #include <thrift/cxxfunctional.h>
+#include "applicationInterfaceModel_types.h"
 
 
 
 
 typedef struct _Workflow__isset {
-  _Workflow__isset() : graph(false) {}
+  _Workflow__isset() : graph(false), image(false), workflowInputs(false), workflowOutputs(false) {}
   bool graph;
+  bool image;
+  bool workflowInputs;
+  bool workflowOutputs;
 } _Workflow__isset;
 
 class Workflow {
  public:
 
-  static const char* ascii_fingerprint; // = "F4A50F0EC638C7F66026F9B6678FD89B";
-  static const uint8_t binary_fingerprint[16]; // = {0xF4,0xA5,0x0F,0x0E,0xC6,0x38,0xC7,0xF6,0x60,0x26,0xF9,0xB6,0x67,0x8F,0xD8,0x9B};
+  static const char* ascii_fingerprint; // = "0F4DE03295CE4C20055DE0E68CFA7A65";
+  static const uint8_t binary_fingerprint[16]; // = {0x0F,0x4D,0xE0,0x32,0x95,0xCE,0x4C,0x20,0x05,0x5D,0xE0,0xE6,0x8C,0xFA,0x7A,0x65};
 
-  Workflow() : templateId("DO_NOT_SET_AT_CLIENTS"), name(), graph() {
+  Workflow() : templateId("DO_NOT_SET_AT_CLIENTS"), name(), graph(), image() {
   }
 
   virtual ~Workflow() throw() {}
@@ -53,6 +57,9 @@ class Workflow {
   std::string templateId;
   std::string name;
   std::string graph;
+  std::string image;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType>  workflowInputs;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  workflowOutputs;
 
   _Workflow__isset __isset;
 
@@ -69,6 +76,21 @@ class Workflow {
     __isset.graph = true;
   }
 
+  void __set_image(const std::string& val) {
+    image = val;
+    __isset.image = true;
+  }
+
+  void __set_workflowInputs(const std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & val) {
+    workflowInputs = val;
+    __isset.workflowInputs = true;
+  }
+
+  void __set_workflowOutputs(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val) {
+    workflowOutputs = val;
+    __isset.workflowOutputs = true;
+  }
+
   bool operator == (const Workflow & rhs) const
   {
     if (!(templateId == rhs.templateId))
@@ -78,6 +100,18 @@ class Workflow {
     if (__isset.graph != rhs.__isset.graph)
       return false;
     else if (__isset.graph && !(graph == rhs.graph))
+      return false;
+    if (__isset.image != rhs.__isset.image)
+      return false;
+    else if (__isset.image && !(image == rhs.image))
+      return false;
+    if (__isset.workflowInputs != rhs.__isset.workflowInputs)
+      return false;
+    else if (__isset.workflowInputs && !(workflowInputs == rhs.workflowInputs))
+      return false;
+    if (__isset.workflowOutputs != rhs.__isset.workflowOutputs)
+      return false;
+    else if (__isset.workflowOutputs && !(workflowOutputs == rhs.workflowOutputs))
       return false;
     return true;
   }

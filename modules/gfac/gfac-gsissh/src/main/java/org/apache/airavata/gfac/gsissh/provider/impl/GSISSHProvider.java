@@ -81,8 +81,9 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().
                 getApplicationDeploymentDescription().getType();
         JobDetails jobDetails = new JobDetails();
+        Cluster cluster = null;
+        
         try {
-            Cluster cluster = null;
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
                 cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
             }
@@ -105,17 +106,17 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
                 jobDetails.setJobID("none");
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
             } else {
-                jobDetails.setJobID(jobID);
+                jobDetails.setJobID(jobID.split("\\.")[0]);
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
             }
             data.append(",jobId=").append(jobDetails.getJobID());
 
             // Now job has submitted to the resource, its up to the Provider to parse the information to daemon handler
             // to perform monitoring, daemon handlers can be accessed from anywhere
-            delegateToMonitorHandlers(jobExecutionContext, (GsisshHostType) host, jobID);
+            delegateToMonitorHandlers(jobExecutionContext, (GsisshHostType) host, jobDetails.getJobID());
             // we know this host is type GsiSSHHostType
         } catch (Exception e) {
-            String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+		    String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
@@ -125,7 +126,8 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             log.info("Saving data for future recovery: ");
             log.info(data.toString());
             GFacUtils.savePluginData(jobExecutionContext, data, this.getClass().getName());
-        }
+        } 
+          
     }
 
     public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext, GsisshHostType host, String jobID) throws GFacHandlerException {

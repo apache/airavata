@@ -79,6 +79,10 @@ public class GSISSHAbstractCluster implements Cluster {
 
     public  GSISSHAbstractCluster(ServerInfo serverInfo, AuthenticationInfo authenticationInfo) throws SSHApiException {
 
+        reconnect(serverInfo, authenticationInfo);
+    }
+
+    private void reconnect(ServerInfo serverInfo, AuthenticationInfo authenticationInfo) throws SSHApiException {
         this.serverInfo = serverInfo;
 
         this.authenticationInfo = authenticationInfo;
@@ -293,12 +297,20 @@ public class GSISSHAbstractCluster implements Cluster {
             FileUtils.writeStringToFile(tempPBSFile, scriptContent);
 
             //reusing submitBatchJobWithScript method to submit a job
-
-            String jobID = this.submitBatchJobWithScript(tempPBSFile.getAbsolutePath(),
-                    jobDescriptor.getWorkingDirectory());
+            String jobID = null;
+            try {
+                jobID = this.submitBatchJobWithScript(tempPBSFile.getAbsolutePath(),
+                        jobDescriptor.getWorkingDirectory());
+            } catch (SSHApiException e) {
+                throw e;
+            }
             log.debug("Job has successfully submitted, JobID : " + jobID);
-            return jobID.replace("\n", "");
-        } catch (TransformerConfigurationException e) {
+            if (jobID != null) {
+                return jobID.replace("\n", "");
+            } else {
+                return null;
+            }
+            } catch (TransformerConfigurationException e) {
             throw new SSHApiException("Error parsing PBS transformation", e);
         } catch (TransformerException e) {
             throw new SSHApiException("Error generating PBS script", e);
@@ -349,34 +361,73 @@ public class GSISSHAbstractCluster implements Cluster {
     }
 
     public void scpTo(String remoteFile, String localFile) throws SSHApiException {
-        try {
-            if(!session.isConnected()){
-                session.connect();
+        int retry = 3;
+        while (retry > 0) {
+            try {
+                if (!session.isConnected()) {
+                    session.connect();
+                }
+                log.info("Transfering file:/" + localFile + " To:" + serverInfo.getHost() + ":" + remoteFile);
+                SSHUtils.scpTo(remoteFile, localFile, session);
+                retry = 0;
+            } catch (IOException e) {
+                retry--;
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
+                            + serverInfo.getHost() + ":rFile", e);
+                }
+            } catch (JSchException e) {
+                retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
+                            + serverInfo.getHost() + ":rFile", e);
+                }
             }
-            log.info("Transfering file:/" + localFile + " To:" + serverInfo.getHost() + ":" + remoteFile);
-            SSHUtils.scpTo(remoteFile, localFile, session);
-        } catch (IOException e) {
-            throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
-                    + serverInfo.getHost() + ":rFile", e);
-        } catch (JSchException e) {
-            throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
-                    + serverInfo.getHost() + ":rFile", e);
         }
     }
 
     public void scpFrom(String remoteFile, String localFile) throws SSHApiException {
-        try {
-            if(!session.isConnected()){
-                session.connect();
+        int retry = 3;
+        while(retry>0) {
+            try {
+                if (!session.isConnected()) {
+                    session.connect();
+                }
+                log.info("Transfering from:" + serverInfo.getHost() + ":" + remoteFile + " To:" + "file:/" + localFile);
+                SSHUtils.scpFrom(remoteFile, localFile, session);
+                retry=0;
+            } catch (IOException e) {
+                retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
+                            + serverInfo.getHost() + ":rFile", e);
+                }
+            } catch (JSchException e) {
+                retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                reconnect(serverInfo, authenticationInfo);
+                if(retry==0) {
+                    throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
+                            + serverInfo.getHost() + ":rFile", e);
+                }
             }
-            log.info("Transfering from:"+ serverInfo.getHost() + ":" + remoteFile + " To:" + "file:/" + localFile);
-            SSHUtils.scpFrom(remoteFile, localFile, session);
-        } catch (IOException e) {
-            throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
-                    + serverInfo.getHost() + ":rFile", e);
-        } catch (JSchException e) {
-            throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
-                    + serverInfo.getHost() + ":rFile", e);
         }
     }
     
@@ -397,41 +448,112 @@ public class GSISSHAbstractCluster implements Cluster {
     }
 
     public void makeDirectory(String directoryPath) throws SSHApiException {
-        try {
-            if(!session.isConnected()){
-                session.connect();
+        int retry = 3;
+        while (retry > 0) {
+            try {
+                if (!session.isConnected()) {
+                    session.connect();
+                }
+                log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
+                SSHUtils.makeDirectory(directoryPath, session);
+                retry = 0;
+            } catch (IOException e) {
+                throw new SSHApiException("Failed during creating directory:" + directoryPath + " to remote file "
+                        + serverInfo.getHost() + ":rFile", e);
+            } catch (JSchException e) {
+                retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
+                            + serverInfo.getHost() + ":rFile", e);
+                }
+            } catch (SSHApiException e) {
+                retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
+                            + serverInfo.getHost() + ":rFile", e);
+                }
             }
-            log.info("Creating directory: " + serverInfo.getHost() + ":" + directoryPath);
-            SSHUtils.makeDirectory(directoryPath, session);
-        } catch (IOException e) {
-            throw new SSHApiException("Failed during creating directory:" + directoryPath + " to remote file "
-                    + serverInfo.getHost() + ":rFile", e);
-        } catch (JSchException e) {
-            throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
-                    + serverInfo.getHost() + ":rFile", e);
         }
     }
 
     public List<String> listDirectory(String directoryPath) throws SSHApiException {
-        try {
-            if(!session.isConnected()){
-                session.connect();
+        int retry = 3;
+        List<String> files = null;
+        while (retry > 0) {
+            try {
+                if (!session.isConnected()) {
+                    session.connect();
+                }
+                log.info("Listing directory: " + serverInfo.getHost() + ":" + directoryPath);
+                files = SSHUtils.listDirectory(directoryPath, session);
+                retry=0;
+            } catch (IOException e) {
+                retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during listing directory:" + directoryPath + " to remote file ", e);
+                }
+            } catch (JSchException e) {
+                retry--;
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during listing directory :" + directoryPath + " to remote file ", e);
+                }
+            }catch (SSHApiException e) {
+                retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during listing directory :" + directoryPath + " to remote file "
+                            + serverInfo.getHost() + ":rFile", e);
+                }
             }
-            log.info("Listing directory: " + serverInfo.getHost() + ":" + directoryPath);
-            return SSHUtils.listDirectory(directoryPath, session);
-        } catch (IOException e) {
-            throw new SSHApiException("Failed during creating directory:" + directoryPath + " to remote file "
-                    + serverInfo.getHost() + ":rFile", e);
-        } catch (JSchException e) {
-            throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
-                    + serverInfo.getHost() + ":rFile", e);
         }
+        return files;
     }
 
     public void getJobStatuses(String userName, Map<String,JobStatus> jobIDs)throws SSHApiException {
+        int retry = 3;
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getUserBasedMonitorCommand(userName);
         StandardOutReader stdOutReader = new StandardOutReader();
-        CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
+        while (retry > 0){
+            try {
+                CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
+                retry=0;
+            } catch (SSHApiException e) {
+                retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed Getting statuses  to remote file", e);
+                }
+            }
+        }
         String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
         jobManagerConfiguration.getParser().parse(userName,jobIDs, result);
     }
@@ -466,16 +588,19 @@ public class GSISSHAbstractCluster implements Cluster {
         String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
         log.info("StandardOutput Returned:" + stdOutputString);
         log.info("StandardError  Returned:" +stdErrorString);
-        
-        // We are checking for stderr containing the command issued. Thus ignores the verbose logs in stderr.  
-        if (stdErrorString != null && stdErrorString.contains(command)) {
+        String[] list = command.split(File.separator);
+        command = list[list.length - 1];
+        // We are checking for stderr containing the command issued. Thus ignores the verbose logs in stderr.
+        if (stdErrorString != null && stdErrorString.contains(command) && !stdErrorString.contains("Warning")) {
             log.error("Standard Error output : " + stdErrorString);
+            throw new SSHApiException(errorMsg + "\n\r StandardOutput: "+ stdOutputString + "\n\r StandardError: "+ stdErrorString);
+        }else if(stdOutputString.contains("error")){
             throw new SSHApiException(errorMsg + "\n\r StandardOutput: "+ stdOutputString + "\n\r StandardError: "+ stdErrorString);
         }
         return stdOutputString;
     }
 
     public void disconnect() throws SSHApiException {
-        getSession().disconnect();
+//        getSession().disconnect();
     }
 }

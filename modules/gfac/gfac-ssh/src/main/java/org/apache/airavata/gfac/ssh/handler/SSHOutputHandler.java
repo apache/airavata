@@ -42,6 +42,7 @@ import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -110,8 +111,9 @@ public class SSHOutputHandler extends AbstractHandler {
 
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription().getType();
+        Cluster cluster = null;
         try {
-            Cluster cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+             cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
             if (cluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
             } else {
@@ -142,8 +144,13 @@ public class SSHOutputHandler extends AbstractHandler {
             int i = 0;
             String stdOutStr = "";
             while(stdOutStr.isEmpty()){ 		
-            cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
-            stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+            try {
+            	cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
+                stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+			} catch (Exception e) {
+				log.error(e.getLocalizedMessage());
+				Thread.sleep(2000);
+			}
             i++;
             if(i == 3) break;
             }
@@ -169,9 +176,18 @@ public class SSHOutputHandler extends AbstractHandler {
             for (String paramName : keys) {
                 ActualParameter actualParameter = (ActualParameter) output.get(paramName);
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
-
-                    List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
-                    if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
+                    List<String> outputList = null;
+                    int retry=3;
+                    while(retry>0){
+                    	 outputList = cluster.listDirectory(app.getOutputDataDirectory());
+                    	 if(outputList.size() > 0){
+                    		 break;
+                    	 }	
+                    	 retry--;
+                    	 Thread.sleep(2000);
+                    }
+                  
+                    if (outputList.size() == 0 || outputList.get(0).isEmpty() || outputList.size() > 0) {
                         OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr,outputArray);
                         Set<String> strings = output.keySet();
                         outputArray.clear();
@@ -193,7 +209,7 @@ public class SSHOutputHandler extends AbstractHandler {
                         }
                     
                         break;
-                    } else {
+                    } else if( outputList.size() == 0) {//FIXME: Ultrascan case
                         String valueList = outputList.get(0);
                         cluster.scpFrom(app.getOutputDataDirectory() + File.separator + valueList, outputDataDir);
                         String outputPath = outputDataDir + File.separator + valueList;

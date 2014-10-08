@@ -141,6 +141,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
                 case STATUS:
                     generator = new QueryGenerator(STATUS);
                     generator.setParameter(StatusConstants.NODE_INSTANCE_ID, name);
+                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.WORKFLOW_NODE.toString());
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -210,6 +211,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
                 case STATUS:
                     generator = new QueryGenerator(STATUS);
                     generator.setParameter(StatusConstants.NODE_INSTANCE_ID, name);
+                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.WORKFLOW_NODE.toString());
                     q = generator.selectQuery(em);
                     Status status = (Status) q.getSingleResult();
                     StatusResource statusResource = (StatusResource) Utils.getResource(ResourceType.STATUS, status);

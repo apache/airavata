@@ -21,6 +21,8 @@
 package org.apache.airavata.gfac.monitor.handlers;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.logger.AiravataLogger;
+import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
@@ -39,8 +41,6 @@ import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.Properties;
@@ -52,7 +52,7 @@ import java.util.Properties;
  * which is a slight variation of qstat monitoring.
  */
 public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
-    private final static Logger logger = LoggerFactory.getLogger(GridPullMonitorHandler.class);
+    private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GridPullMonitorHandler.class);
 
     private HPCPullMonitor hpcPullMonitor;
 
@@ -102,7 +102,8 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
             CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID);
             CommonUtils.increaseZkJobCount(monitorID); // update change job count to zookeeper
         } catch (AiravataMonitorException e) {
-            logger.error("Error adding monitorID object to the queue with experiment ", monitorID.getExperimentID());
+            logger.errorId(monitorID.getJobID(), "Error adding job {} monitorID object to the queue with experiment {}",
+                    monitorID.getJobID(),  monitorID.getExperimentID());
         }
     }
     public AuthenticationInfo getAuthenticationInfo() {

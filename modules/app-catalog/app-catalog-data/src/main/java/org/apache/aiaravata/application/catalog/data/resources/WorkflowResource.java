@@ -45,6 +45,7 @@ public class WorkflowResource extends AbstractResource {
     private String wfTemplateId;
     private Timestamp createdTime;
     private Timestamp updatedTime;
+    private String image;
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -60,6 +61,14 @@ public class WorkflowResource extends AbstractResource {
 
     public void setUpdatedTime(Timestamp updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     @Override
@@ -281,6 +290,9 @@ public class WorkflowResource extends AbstractResource {
             workflow.setCreatedUser(getCreatedUser());
             if (getGraph() != null){
                 workflow.setGraph(getGraph().toCharArray());
+            }
+            if (image != null){
+                workflow.setImage(image.getBytes());
             }
             workflow.setWfTemplateId(getWfTemplateId());
             if (existingWorkflow == null) {
