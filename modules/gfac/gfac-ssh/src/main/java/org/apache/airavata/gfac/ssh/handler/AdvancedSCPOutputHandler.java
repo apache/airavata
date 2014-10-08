@@ -51,6 +51,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -86,6 +87,10 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
     private String hostName;
 
     private String outputPath;
+    
+    public static Map<String, Cluster> clusters = new HashMap<String, Cluster>();
+    
+    
 
     public void initProperties(Properties properties) throws GFacHandlerException {
         password = (String)properties.get("password");
@@ -99,6 +104,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
 
     @Override
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+    	  Cluster pbsCluster = null;
         try {
             if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
                 try {
@@ -138,8 +144,25 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
 				}
             }
             ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-
-            Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+            String key = this.userName + this.hostName;
+            boolean recreate = false;
+            if (clusters.containsKey(key) && clusters.get(key).getSession().isConnected()) {
+                pbsCluster = (PBSCluster) clusters.get(key);
+                try {
+                    pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+                	log.info("Reusing existing connection for ---- : " + this.hostName);
+                } catch (Exception e) {
+                    log.info("Connection found the connection map is expired, so we create from the scratch");
+                    recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+                }
+            } else{
+            	recreate = true;
+            }
+            if(recreate){
+            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+            log.info("Connection created for ---- : " + this.hostName);
+            clusters.put(key, pbsCluster);
+            }
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && !jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().isPersistOutputData()){
             outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
                     + File.separator;

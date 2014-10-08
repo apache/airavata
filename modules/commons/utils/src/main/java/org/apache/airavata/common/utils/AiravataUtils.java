@@ -23,6 +23,7 @@ package org.apache.airavata.common.utils;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.UUID;
 
 public class AiravataUtils {
 	public static final String EXECUTION_MODE="application.execution.mode";
@@ -65,5 +66,10 @@ public class AiravataUtils {
             return getCurrentTimestamp();
         }
         return new Timestamp(time);
+    }
+
+    public static String getId (String name){
+        String id = name.replaceAll("\\s", "");
+        return id + "_" + UUID.randomUUID();
     }
 }

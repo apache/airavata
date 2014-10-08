@@ -43,6 +43,7 @@ import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -112,8 +113,9 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
 
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription().getType();
+        Cluster cluster = null;
+        
         try {
-            Cluster cluster = null;
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
                 cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
             } else {
@@ -168,8 +170,13 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             	int i = 0;
                 localStdOutFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stdout");
                 while(stdOutStr.isEmpty()){
-                cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
-                stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+                try {
+                	cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
+                	stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+				} catch (Exception e) {
+					log.error(e.getLocalizedMessage());
+					  Thread.sleep(2000);
+		        }
                 i++;
                 if(i==3)break;
                 }
@@ -206,8 +213,17 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 ActualParameter actualParameter = (ActualParameter) output.get(paramName);
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
 
-                    List<String> outputList = cluster.listDirectory(app.getOutputDataDirectory());
-                    if (outputList.size() == 0 || outputList.get(0).isEmpty()) {
+                    List<String> outputList = null;
+                    int retry=3;
+                    while(retry>0){
+                    	 outputList = cluster.listDirectory(app.getOutputDataDirectory());
+                    	 if(outputList.size() > 0){
+                    		 break;
+                    	 }	
+                    	 retry--;
+                    	 Thread.sleep(2000);
+                    }
+                    if (outputList.size() == 0 || outputList.get(0).isEmpty() || outputList.size() > 1) {
                         OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
                         Set<String> strings = output.keySet();
                         outputArray.clear();
@@ -236,7 +252,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                             }
                         }
                         break;
-                    } else {
+                    } else if(outputList.size() == 1) { //FIXME: this is ultrascan specific
                         String valueList = outputList.get(0);
                         String outputFile;
                         if (index < oldIndex) {
@@ -290,8 +306,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             }
             throw new GFacHandlerException("Error in retrieving results", e);
         }
-
-    }
+     }
 
     public void initProperties(Properties properties) throws GFacHandlerException {
 

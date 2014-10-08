@@ -22,6 +22,8 @@ package org.apache.airavata.gfac.server;
 
 import com.google.common.eventbus.EventBus;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.logger.AiravataLogger;
+import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.MonitorPublisher;
@@ -38,8 +40,6 @@ import org.apache.airavata.registry.cpi.Registry;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +49,7 @@ import java.util.concurrent.Future;
 
 
 public class GfacServerHandler implements GfacService.Iface, Watcher{
-    private final static Logger logger = LoggerFactory.getLogger(GfacServerHandler.class);
+    private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GfacServerHandler.class);
 
     private Registry registry;
 
@@ -194,20 +194,39 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
      * @param gatewayId
      */
     public boolean submitJob(String experimentId, String taskId, String gatewayId) throws TException {
-        logger.info("GFac Recieved the Experiment: " + experimentId + " TaskId: " + taskId);
+        logger.infoId(experimentId, "GFac Received submit jog request for the Experiment: {} TaskId: {}", experimentId, taskId);
         GFac gfac = getGfac();
-        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
-        inHandlerFutures.add(GFacThreadPoolExecutor.getCachedThreadPool().submit(inputHandlerWorker));
-        return true;
+//        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
+        try {
+            if( gfac.submitJob(experimentId, taskId, gatewayId)){
+                logger.debugId(experimentId, "Submitted jog to the Gfac Implementation, experiment {}, task {}, gateway " +
+                        "{}", experimentId, taskId, gatewayId);
+                return true;
+            }else{
+                logger.error(experimentId, "Failed to submit job to the GFac implementation, experiment {}, task {}, " +
+                        "gateway {}", experimentId, taskId, gatewayId);
+                return false;
+            }
+        } catch (GFacException e) {
+            throw new TException("Error launching the experiment : " + e.getMessage(), e);
+        }
+//        inHandlerFutures.add(GFacThreadPoolExecutor.getCachedThreadPool().submit(inputHandlerWorker));
     }
 
     public boolean cancelJob(String experimentId, String taskId) throws TException {
-        logger.info("GFac Recieved the Experiment: " + experimentId + " TaskId: " + taskId);
+        logger.infoId(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
         GFac gfac = getGfac();
         try {
-            return gfac.cancel(experimentId, taskId, ServerSettings.getSetting(Constants.GATEWAY_NAME));
+            if (gfac.cancel(experimentId, taskId, ServerSettings.getSetting(Constants.GATEWAY_NAME))) {
+                logger.debugId(experimentId, "Successfully cancelled job, experiment {} , task {}", experimentId, taskId);
+                return true;
+            } else {
+                logger.errorId(experimentId, "Job cancellation failed, experiment {} , task {}", experimentId, taskId);
+                return false;
+            }
         } catch (Exception e) {
-            throw new TException("Error launching the experiment : " + e.getMessage(), e);
+            logger.errorId(experimentId, "Error cancelling the experiment {}.", experimentId);
+            throw new TException("Error cancelling the experiment : " + e.getMessage(), e);
         }
     }
 

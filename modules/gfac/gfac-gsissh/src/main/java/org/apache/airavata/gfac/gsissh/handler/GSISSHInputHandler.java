@@ -64,8 +64,21 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
         DataTransferDetails detail = new DataTransferDetails();
         TransferStatus status = new TransferStatus();
         StringBuffer data = new StringBuffer("|");
+        Cluster cluster = null;
+        
         try {
-            String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
+        	if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
+                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
+            } else {
+                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
+            }
+            if (cluster == null) {
+                throw new GFacException("Security context is not set properly");
+            } else {
+                log.info("Successfully retrieved the Security Context");
+            }
+           
+        	String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
             if (pluginData != null) {
                 try {
                     oldIndex = Integer.parseInt(pluginData.split("\\|")[0].trim());
@@ -107,7 +120,7 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                         ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
                     } else {
-                        String stageInputFile = stageInputFiles(jobExecutionContext, paramValue);
+                        String stageInputFile = stageInputFiles(cluster, jobExecutionContext, paramValue);
                         ((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
                         StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
                         status.setTransferState(TransferState.UPLOAD);
@@ -126,7 +139,7 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                             newFiles.add(oldFiles.get(index));
                             data.append(oldFiles.get(index++)).append(",");
                         } else {
-                            String stageInputFiles = stageInputFiles(jobExecutionContext, paramValueEach);
+                            String stageInputFiles = stageInputFiles(cluster, jobExecutionContext, paramValueEach);
                             status.setTransferState(TransferState.UPLOAD);
                             detail.setTransferStatus(status);
                             detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
@@ -142,7 +155,7 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                 inputNew.getParameters().put(paramName, actualParameter);
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
+			log.error(e.getMessage());
             status.setTransferState(TransferState.FAILED);
             detail.setTransferDescription(e.getLocalizedMessage());
             detail.setTransferStatus(status);
@@ -157,18 +170,7 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
         jobExecutionContext.setInMessageContext(inputNew);
     }
 
-    private static String stageInputFiles(JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
-        Cluster cluster = null;
-        if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
-            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
-        } else {
-            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
-        }
-        if (cluster == null) {
-            throw new GFacException("Security context is not set properly");
-        } else {
-            log.info("Successfully retrieved the Security Context");
-        }
+    private static String stageInputFiles(Cluster cluster, JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
         int i = paramValue.lastIndexOf(File.separator);
         String substring = paramValue.substring(i + 1);
@@ -177,9 +179,23 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
             if (paramValue.startsWith("file")) {
                 paramValue = paramValue.substring(paramValue.indexOf(":") + 1, paramValue.length());
             }
-            cluster.scpTo(targetFile, paramValue);
+            boolean success = false;
+            int j = 1;
+            while(!success){
+            try {
+				cluster.scpTo(targetFile, paramValue);
+				success = true;
+			} catch (Exception e) {
+				log.info(e.getLocalizedMessage());
+				Thread.sleep(2000);
+				 if(j==3) {
+					throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
+				 }
+            }
+            j++;
+            }
             return targetFile;
-        } catch (SSHApiException e) {
+        } catch (Exception e) {
             throw new GFacHandlerException("Error while input File Staging", e, e.getLocalizedMessage());
         }
     }
