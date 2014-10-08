@@ -61,6 +61,8 @@ public class GFACSSHUtils {
 
     public static int maxClusterCount = 5;
 
+    public static final String ADVANCED_SSH_AUTH = "advanced.ssh.auth";
+
 
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
         HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
@@ -74,15 +76,17 @@ public class GFACSSHUtils {
             requestData.setTokenId(credentialStoreToken);
 
             ServerInfo serverInfo = new ServerInfo(null, registeredHost.getType().getHostAddress());
+            AuthenticationInfo info = (AuthenticationInfo) jobExecutionContext.getProperty(ADVANCED_SSH_AUTH);
 
             Cluster pbsCluster = null;
             try {
                 TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
                 String installedParentPath = ((HpcApplicationDeploymentType)
-                            jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
-                if(installedParentPath== null) {
+                        jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
+                if (installedParentPath == null) {
                     installedParentPath = "/";
                 }
+
                 SSHCredential credentials = tokenizedSSHAuthInfo.getCredentials();// this is just a call to get and set credentials in to this object,data will be used
                 serverInfo.setUserName(credentials.getPortalUserName());
                 jobExecutionContext.getExperiment().setUserName(credentials.getPortalUserName());
@@ -102,7 +106,7 @@ public class GFACSSHUtils {
                             clusters.get(key).remove(i);
                             recreate = true;
                         }
-                        if(!recreate) {
+                        if (!recreate) {
                             try {
                                 pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
                             } catch (Exception e) {
@@ -117,8 +121,14 @@ public class GFACSSHUtils {
                         recreate = true;
                     }
                     if (recreate) {
-                        pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
-                                CommonUtils.getPBSJobManager(installedParentPath));
+                        if (info != null) {
+                            pbsCluster = new PBSCluster(serverInfo, info,
+                                    CommonUtils.getPBSJobManager(installedParentPath));
+                            jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,null); // some other provider might fail
+                        } else {
+                            pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
+                                    CommonUtils.getPBSJobManager(installedParentPath));
+                        }
                         List<Cluster> pbsClusters = null;
                         if (!(clusters.containsKey(key))) {
                             pbsClusters = new ArrayList<Cluster>();
@@ -150,7 +160,7 @@ public class GFACSSHUtils {
         jobDescriptor.setStandardErrorFile(app.getStandardError());
         Random random = new Random();
         int i = random.nextInt(Integer.MAX_VALUE);
-        jobDescriptor.setJobName(String.valueOf(i+99999999));
+        jobDescriptor.setJobName(String.valueOf(i + 99999999));
         jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
 
 
