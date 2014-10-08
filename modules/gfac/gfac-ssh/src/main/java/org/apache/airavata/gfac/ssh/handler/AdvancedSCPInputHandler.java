@@ -31,6 +31,7 @@ import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.ssh.context.SSHAuthWrapper;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
@@ -129,7 +130,9 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
                 authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
                         this.passPhrase);
             }
-            jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,authenticationInfo);
+            ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
+            String key = this.userName + this.hostName;
+            jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,new SSHAuthWrapper(serverInfo,authenticationInfo,key));
             if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
                 try {
                     GFACSSHUtils.addSecurityContext(jobExecutionContext);
