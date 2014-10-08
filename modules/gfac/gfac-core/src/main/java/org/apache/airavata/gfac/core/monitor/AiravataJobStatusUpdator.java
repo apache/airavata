@@ -20,12 +20,17 @@
 */
 package org.apache.airavata.gfac.core.monitor;
 
-import java.util.Calendar;
-
+import com.google.common.eventbus.Subscribe;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangedEvent;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
@@ -34,14 +39,14 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.eventbus.Subscribe;
+import java.util.Calendar;
 
 public class AiravataJobStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataJobStatusUpdator.class);
-
     private Registry airavataRegistry;
 
     private MonitorPublisher monitorPublisher;
+    private Publisher publisher;
 
 
     public Registry getAiravataRegistry() {
@@ -54,25 +59,34 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
 
 
     @Subscribe
-    public void updateRegistry(JobStatusChangeRequest jobStatus) {
+    public void updateRegistry(JobStatusChangeRequestEvent jobStatus) throws Exception{
         /* Here we need to parse the jobStatus message and update
                 the registry accordingly, for now we are just printing to standard Out
                  */
         JobState state = jobStatus.getState();
         if (state != null) {
             try {
-                String taskID = jobStatus.getIdentity().getTaskId();
-                String jobID = jobStatus.getIdentity().getJobId();
+                String taskID = jobStatus.getJobIdentity().getTaskId();
+                String jobID = jobStatus.getJobIdentity().getJobId();
                 updateJobStatus(taskID, jobID, state);
-    			logger.debug("Publishing job status for "+jobStatus.getIdentity().getJobId()+":"+state.toString());
-            	monitorPublisher.publish(new JobStatusChangedEvent(jobStatus.getMonitorID(),jobStatus.getIdentity(),state));
+    			logger.debug("Publishing job status for "+jobStatus.getJobIdentity().getJobId()+":"+state.toString());
+                JobStatusChangeEvent event = new JobStatusChangeEvent(jobStatus.getState(), jobStatus.getJobIdentity());
+                monitorPublisher.publish(event);
+                String messageId = AiravataUtils.getId("JOB");
+                MessageContext msgCntxt = new MessageContext(event, MessageType.JOB, messageId);
+                msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                if ( ServerSettings.isRabbitMqPublishEnabled()){
+                    publisher.publish(msgCntxt);
+                }
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+                throw new Exception("Error persisting job status..", e);
             }
         }
     }
 
     public  void updateJobStatus(String taskId, String jobID, JobState state) throws Exception {
+		logger.info("Updating job status for " + jobID + ":" + state.toString());
         CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
         JobDetails details = (JobDetails)airavataRegistry.get(RegistryModelType.JOB_DETAIL, ids);
         if(details == null) {
@@ -97,7 +111,9 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
 				this.airavataRegistry=(Registry)configuration;
 			} else if (configuration instanceof MonitorPublisher){
 				this.monitorPublisher=(MonitorPublisher) configuration;
-			} 
+			} else if (configuration instanceof Publisher){
+                this.publisher=(Publisher) configuration;
+            }
 		}
 	}
 }

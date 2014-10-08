@@ -31,13 +31,13 @@ import java.util.concurrent.BlockingQueue;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.core.monitor.JobIdentity;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.monitor.core.PushMonitor;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.gfac.monitor.util.AMQPConnectionUtil;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,7 +202,9 @@ public class AMQPMonitor extends PushMonitor {
             }
         }
         next.setStatus(monitorID.getStatus());
-        publisher.publish(new JobStatusChangeRequest(next, new JobIdentity(next.getExperimentID(), next.getWorkflowNodeID(), next.getTaskID(), next.getJobID()),next.getStatus()));
+        JobIdentifier jobIdentity = new JobIdentifier(next.getJobID(),
+                                                                            next.getTaskID(), next.getWorkflowNodeID(), next.getExperimentID());
+        publisher.publish(new JobStatusChangeEvent(next.getStatus(),jobIdentity));
         return true;
     }
     @Override

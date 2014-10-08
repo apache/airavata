@@ -28,7 +28,6 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.utils.OutHandlerWorker;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
@@ -39,7 +38,8 @@ import org.apache.airavata.gfac.monitor.impl.push.amqp.SimpleJobFinishConsumer;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
+import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.SSHHostType;
@@ -152,7 +152,7 @@ public class HPCPullMonitor extends PullMonitor {
         //todo this polling will not work with multiple usernames but with single user
         // and multiple hosts, currently monitoring will work
         UserMonitorData take = null;
-        JobStatusChangeRequest jobStatus = new JobStatusChangeRequest();
+        JobStatusChangeRequestEvent jobStatus = new JobStatusChangeRequestEvent();
         MonitorID currentMonitorID = null;
         HostDescription currentHostDescription = null;
         try {
@@ -230,13 +230,17 @@ public class HPCPullMonitor extends PullMonitor {
                             logger.debugId(iMonitorID.getJobID(), "Moved job {} to completed jobs map, experiment {}, " +
                                     "task {}", iMonitorID.getJobID(), iMonitorID.getExperimentID(), iMonitorID.getTaskID());
                         }
-                        jobStatus = new JobStatusChangeRequest(iMonitorID);
+                        jobStatus = new JobStatusChangeRequestEvent();
+                        iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()+","+iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
+                        JobIdentifier jobIdentity = new JobIdentifier(iMonitorID.getJobID(), iMonitorID.getTaskID(), iMonitorID.getWorkflowNodeID(), iMonitorID.getExperimentID());
+                        jobStatus.setJobIdentity(jobIdentity);
+                        jobStatus.setState(iMonitorID.getStatus());
                         // we have this JobStatus class to handle amqp monitoring
 
                         publisher.publish(jobStatus);
-                        logger.debugId(jobStatus.getIdentity().getJobId(), "Published job status change request, " +
-                                        "experiment {} , task {}", jobStatus.getIdentity().getExperimentID(),
-                                jobStatus.getIdentity().getTaskId());
+                        logger.debugId(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
+                                        "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
+                                jobStatus.getJobIdentity().getTaskId());
                         // if the job is completed we do not have to put the job to the queue again
                         iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
 
@@ -317,6 +321,14 @@ public class HPCPullMonitor extends PullMonitor {
             if (e.getMessage().contains("Unknown Job Id Error")) {
                 // in this case job is finished or may be the given job ID is wrong
                 jobStatus.setState(JobState.UNKNOWN);
+                JobIdentifier jobIdentifier = new JobIdentifier("UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN");
+                if (currentMonitorID != null){
+                    jobIdentifier.setExperimentId(currentMonitorID.getExperimentID());
+                    jobIdentifier.setTaskId(currentMonitorID.getTaskID());
+                    jobIdentifier.setWorkflowNodeId(currentMonitorID.getWorkflowNodeID());
+                    jobIdentifier.setJobId(currentMonitorID.getJobID());
+                }
+                jobStatus.setJobIdentity(jobIdentifier);
                 publisher.publish(jobStatus);
             } else if (e.getMessage().contains("illegally formed job identifier")) {
                 logger.error("Wrong job ID is given so dropping the job from monitoring system");
