@@ -217,7 +217,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                     int retry=3;
                     while(retry>0){
                     	 outputList = cluster.listDirectory(app.getOutputDataDirectory());
-                    	 if(outputList.size() > 0){
+                    	 if(!outputList.get(0).isEmpty() && outputList.size() > 0){
                     		 break;
                     	 }	
                     	 retry--;
