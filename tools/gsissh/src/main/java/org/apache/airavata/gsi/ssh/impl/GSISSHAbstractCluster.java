@@ -82,7 +82,7 @@ public class GSISSHAbstractCluster implements Cluster {
         reconnect(serverInfo, authenticationInfo);
     }
 
-    private void reconnect(ServerInfo serverInfo, AuthenticationInfo authenticationInfo) throws SSHApiException {
+    private synchronized void reconnect(ServerInfo serverInfo, AuthenticationInfo authenticationInfo) throws SSHApiException {
         this.serverInfo = serverInfo;
 
         this.authenticationInfo = authenticationInfo;
@@ -221,7 +221,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
-    public JobDescriptor cancelJob(String jobID) throws SSHApiException {
+    public synchronized JobDescriptor cancelJob(String jobID) throws SSHApiException {
        RawCommandInfo rawCommandInfo = jobManagerConfiguration.getCancelCommand(jobID);
 
         StandardOutReader stdOutReader = new StandardOutReader();
@@ -244,7 +244,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
-    public String submitBatchJobWithScript(String scriptPath, String workingDirectory) throws SSHApiException {
+    public synchronized String submitBatchJobWithScript(String scriptPath, String workingDirectory) throws SSHApiException {
         this.scpTo(workingDirectory, scriptPath);
 
         // since this is a constant we do not ask users to fill this
@@ -264,7 +264,7 @@ public class GSISSHAbstractCluster implements Cluster {
         return  outputParser.parse(outputifAvailable);
     }
 
-    public String submitBatchJob(JobDescriptor jobDescriptor) throws SSHApiException {
+    public synchronized String submitBatchJob(JobDescriptor jobDescriptor) throws SSHApiException {
         TransformerFactory factory = TransformerFactory.newInstance();
         URL resource = this.getClass().getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());
 
@@ -343,7 +343,7 @@ public class GSISSHAbstractCluster implements Cluster {
 
 
 
-    public JobDescriptor getJobDescriptorById(String jobID) throws SSHApiException {
+    public synchronized JobDescriptor getJobDescriptorById(String jobID) throws SSHApiException {
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
@@ -353,7 +353,7 @@ public class GSISSHAbstractCluster implements Cluster {
         return jobDescriptor;
     }
 
-    public JobStatus getJobStatus(String jobID) throws SSHApiException {
+    public synchronized JobStatus getJobStatus(String jobID) throws SSHApiException {
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
@@ -375,7 +375,7 @@ public class GSISSHAbstractCluster implements Cluster {
         this.jobManagerConfiguration = jobManagerConfiguration;
     }
 
-    public void scpTo(String remoteFile, String localFile) throws SSHApiException {
+    public synchronized void scpTo(String remoteFile, String localFile) throws SSHApiException {
         int retry = 3;
         while (retry > 0) {
             try {
@@ -408,7 +408,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
-    public void scpFrom(String remoteFile, String localFile) throws SSHApiException {
+    public synchronized void scpFrom(String remoteFile, String localFile) throws SSHApiException {
         int retry = 3;
         while(retry>0) {
             try {
@@ -450,7 +450,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
     
-    public void scpThirdParty(String remoteFileSource, String remoteFileTarget) throws SSHApiException {
+    public synchronized void scpThirdParty(String remoteFileSource, String remoteFileTarget) throws SSHApiException {
         try {
             if(!session.isConnected()){
                 session.connect();
@@ -466,7 +466,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
-    public void makeDirectory(String directoryPath) throws SSHApiException {
+    public synchronized void makeDirectory(String directoryPath) throws SSHApiException {
         int retry = 3;
         while (retry > 0) {
             try {
@@ -507,7 +507,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
-    public List<String> listDirectory(String directoryPath) throws SSHApiException {
+    public synchronized List<String> listDirectory(String directoryPath) throws SSHApiException {
         int retry = 3;
         List<String> files = null;
         while (retry > 0) {
@@ -553,7 +553,7 @@ public class GSISSHAbstractCluster implements Cluster {
         return files;
     }
 
-    public void getJobStatuses(String userName, Map<String,JobStatus> jobIDs)throws SSHApiException {
+    public synchronized void getJobStatuses(String userName, Map<String,JobStatus> jobIDs)throws SSHApiException {
         int retry = 3;
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getUserBasedMonitorCommand(userName);
         StandardOutReader stdOutReader = new StandardOutReader();
