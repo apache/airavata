@@ -32,12 +32,10 @@ import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
-import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.DataType;
@@ -51,7 +49,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -88,9 +85,6 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
 
     private String outputPath;
     
-    public static Map<String, Cluster> clusters = new HashMap<String, Cluster>();
-    
-    
 
     public void initProperties(Properties properties) throws GFacHandlerException {
         password = (String)properties.get("password");
@@ -119,19 +113,12 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
                 }
             }
+            pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
             ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                     .getApplicationDeploymentDescription().getType();
             String standardError = app.getStandardError();
             String standardOutput = app.getStandardOutput();
-            String outputDataDirectory = app.getOutputDataDirectory();
             super.invoke(jobExecutionContext);
-            AuthenticationInfo authenticationInfo = null;
-            if (password != null) {
-                authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
-            } else {
-                authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
-                        this.passPhrase);
-            }
             // Server info
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir() != null){
             	try{
@@ -143,30 +130,10 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
 					log.error(e.getLocalizedMessage(),e);
 				}
             }
-            ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-            String key = this.userName + this.hostName;
-            boolean recreate = false;
-            if (clusters.containsKey(key) && clusters.get(key).getSession().isConnected()) {
-                pbsCluster = (PBSCluster) clusters.get(key);
-                try {
-                    pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
-                	log.info("Reusing existing connection for ---- : " + this.hostName);
-                } catch (Exception e) {
-                    log.info("Connection found the connection map is expired, so we create from the scratch");
-                    recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
-                }
-            } else{
-            	recreate = true;
-            }
-            if(recreate){
-            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
-            log.info("Connection created for ---- : " + this.hostName);
-            clusters.put(key, pbsCluster);
-            }
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && !jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().isPersistOutputData()){
             outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
                     + File.separator;
-            pbsCluster.makeDirectory(outputPath);
+                pbsCluster.makeDirectory(outputPath);
             }
             pbsCluster.scpTo(outputPath, standardError);
             pbsCluster.scpTo(outputPath, standardOutput);

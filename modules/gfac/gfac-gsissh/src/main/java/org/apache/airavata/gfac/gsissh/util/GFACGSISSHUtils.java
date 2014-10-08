@@ -95,16 +95,18 @@ public class GFACGSISSHUtils {
                             clusters.get(key).remove(i);
                             recreate = true;
                         }
-                        try {
-                            pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
-                        } catch (Exception e) {
-                            clusters.get(key).remove(i);
-                            logger.info("Connection found the connection map is expired, so we create from the scratch");
-                            maxClusterCount++;
-                            recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+                        if(!recreate) {
+                            try {
+                                pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+                            } catch (Exception e) {
+                                clusters.get(key).remove(i);
+                                logger.info("Connection found the connection map is expired, so we create from the scratch");
+                                maxClusterCount++;
+                                recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+                            }
+                            logger.info("Re-using the same connection used with the connection string:" + key);
+                            context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, pbsCluster);
                         }
-                        logger.info("Re-using the same connection used with the connection string:" + key);
-                        context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, pbsCluster);
                     } else {
                         recreate = true;
                     }
