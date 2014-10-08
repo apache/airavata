@@ -21,10 +21,10 @@
 
 package org.apache.airavata.orchestrator.client.sample;
 
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreator;
+//import org.apache.airavata.client.AiravataAPIFactory;
+//import org.apache.airavata.client.api.AiravataAPI;
+//import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+//import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ClientSettings;
@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OrchestratorClientSample {
-    private static DocumentCreator documentCreator;
+//    private static DocumentCreator documentCreator;
     private static OrchestratorService.Client orchestratorClient;
     private static Registry registry;
     private static int NUM_CONCURRENT_REQUESTS = 1;
@@ -52,6 +52,7 @@ public class OrchestratorClientSample {
     private static String sysUser;
     private static String sysUserPwd;
     private static String gateway;
+/*
 
     public static void main(String[] args) {
         try {
@@ -83,6 +84,7 @@ public class OrchestratorClientSample {
             }
         return airavataAPI;
     }
+*/
 
     public static void storeExperimentDetail() {
         for (int i = 0; i < NUM_CONCURRENT_REQUESTS; i++) {
