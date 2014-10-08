@@ -21,10 +21,10 @@
 
 package org.apache.airavata.gfac.client;
 
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.AiravataAPI;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreator;
+//import org.apache.airavata.client.AiravataAPIFactory;
+//import org.apache.airavata.client.api.AiravataAPI;
+//import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+//import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.AiravataZKUtils;
@@ -46,14 +46,14 @@ import java.net.URL;
 
 public class GfacClientFactoryTest {
     private final static Logger logger = LoggerFactory.getLogger(GfacClientFactoryTest.class);
-    private DocumentCreator documentCreator;
+//    private DocumentCreator documentCreator;
     private GfacService.Client gfacClient;
     private Registry registry;
     private int NUM_CONCURRENT_REQUESTS = 1;
     Initialize initialize;
     GfacServer service;
     private static ServerCnxnFactory cnxnFactory;
-
+/*
     @Test
     public void setUp() {
     	AiravataUtils.setExecutionAsServer();
@@ -93,6 +93,7 @@ public class GfacClientFactoryTest {
             }
         return airavataAPI;
     }
+*/
 
     private void storeDescriptors() {
 
