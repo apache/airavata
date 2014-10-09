@@ -263,6 +263,16 @@ public class InterpreterUtil {
         return getNodesWithBodyColor(NodeExecutionState.FINISHED, graph);
     }
 
+    public static List<String> getFinishedNodesIds(WSGraph graph) {
+        List<String> finishedNodeIds = new ArrayList<String>();
+        for (Node node : graph.getNodes()) {
+            if (node.getState() == NodeExecutionState.FINISHED) {
+                finishedNodeIds.add(node.getID());
+            }
+        }
+        return finishedNodeIds;
+    }
+
     public static ArrayList<Node> getFailedNodesDynamically(WSGraph graph) {
         return getNodesWithBodyColor(NodeExecutionState.FAILED, graph);
     }
