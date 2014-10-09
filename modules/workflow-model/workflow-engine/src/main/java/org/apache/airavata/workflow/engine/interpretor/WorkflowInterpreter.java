@@ -211,8 +211,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				inputDataStrings.put(dataObjectType.getKey(), dataObjectType.getValue());
 			}
 			for (Node node : inputNodes) {
-				if (inputDataStrings.containsKey(node.getName())){
-					((InputNode)node).setDefaultValue(inputDataStrings.get(node.getName()));
+				if (inputDataStrings.containsKey(node.getID())){
+					((InputNode)node).setDefaultValue(inputDataStrings.get(node.getID()));
 				} else {
 					log.warn("value for node not found "+node.getName());
 				}
@@ -222,12 +222,12 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				invokedNode.add(node);
 				node.setState(NodeExecutionState.FINISHED);
 				notifyViaInteractor(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
-				String portName = ((InputNode) node).getName();
+				String portId= ((InputNode) node).getID();
 				Object portValue = ((InputNode) node).getDefaultValue();
                 //Saving workflow input Node data before running the workflow
 				WorkflowNodeDetails workflowNode = createWorkflowNodeDetails(node);
 				DataObjectType elem = new DataObjectType();
-				elem.setKey(portName);
+				elem.setKey(portId);
 				elem.setValue(portValue==null?null:portValue.toString());
 				workflowNode.addToNodeInputs(elem);
 				getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNode, workflowNode.getNodeInstanceId());
@@ -235,7 +235,6 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			}
 
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
-                ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
                 ArrayList<Thread> threadList = new ArrayList<Thread>();
                 if (getRemainNodesDynamically() == 0) {
                     notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.STOPPED);
@@ -256,6 +255,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	                log.info("Workflow execution "+experiment.getExperimentID()+" is resumed.");
                 }
                 // get task list and execute them
+                ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
 				for (final Node node : readyNodes) {
 					if (node.isBreak()) {
 						this.notifyPause();
@@ -1228,8 +1228,10 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	private ArrayList<Node> getReadyNodesDynamically() {
 		ArrayList<Node> list = new ArrayList<Node>();
 		ArrayList<Node> waiting = InterpreterUtil.getWaitingNodesDynamically(this.getGraph());
-		ArrayList<Node> finishedNodes = InterpreterUtil.getFinishedNodesDynamically(this.getGraph());
-		for (Node node : waiting) {
+//		ArrayList<Node> finishedNodes = InterpreterUtil.getFinishedNodesDynamically(this.getGraph());
+        // This is to support repeat the same application in the workflow.
+        List<String> finishedNodeIds = InterpreterUtil.getFinishedNodesIds(this.getGraph());
+        for (Node node : waiting) {
 			Component component = node.getComponent();
 			if (component instanceof WSComponent
 					|| component instanceof DynamicComponent
@@ -1246,14 +1248,14 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				boolean controlDone = true;
 				if (control != null) {
 					for (EdgeImpl edge : control.getEdges()) {
-						controlDone = controlDone && (finishedNodes.contains(edge.getFromPort().getNode())
-						// amazon component use condition met to check
-						// whether the control port is done
-						// FIXME I changed the "||" to a "&&" in the following since thats the only this
-						// that makes sense and if anyone found a scenario it should be otherwise pls fix
-								|| ((ControlPort) edge.getFromPort()).isConditionMet());
-					}
-				}
+                        controlDone = controlDone && (finishedNodeIds.contains(edge.getFromPort().getNode().getID())
+                                // amazon component use condition met to check
+                                // whether the control port is done
+                                // FIXME I changed the "||" to a "&&" in the following since thats the only this
+                                // that makes sense and if anyone found a scenario it should be otherwise pls fix
+                                || ((ControlPort) edge.getFromPort()).isConditionMet());
+                    }
+                }
 
 				/*
 				 * Check for input ports
@@ -1261,7 +1263,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				List<DataPort> inputPorts = node.getInputPorts();
 				boolean inputsDone = true;
 				for (DataPort dataPort : inputPorts) {
-					inputsDone = inputsDone && finishedNodes.contains(dataPort.getFromNode());
+					inputsDone = inputsDone && finishedNodeIds.contains(dataPort.getFromNode().getID());
 				}
 				if (inputsDone && controlDone) {
 					list.add(node);
@@ -1275,7 +1277,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				int actualInput = 0;
 				List<DataPort> inputPorts = node.getInputPorts();
 				for (DataPort dataPort : inputPorts) {
-					if (finishedNodes.contains(dataPort.getFromNode()))
+					if (finishedNodeIds.contains(dataPort.getFromNode().getID()))
 						actualInput++;
 				}
 
@@ -1290,7 +1292,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				boolean controlDone = true;
 				if (control != null) {
 					for (EdgeImpl edge : control.getEdges()) {
-						controlDone = controlDone && finishedNodes.contains(edge.getFromPort().getFromNode());
+						controlDone = controlDone && finishedNodeIds.contains(edge.getFromPort().getFromNode().getID());
 					}
 				}
 
@@ -1300,7 +1302,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				List<DataPort> inputPorts = node.getInputPorts();
 				boolean inputsDone = true;
 				for (DataPort dataPort : inputPorts) {
-					inputsDone = inputsDone && finishedNodes.contains(dataPort.getFromNode());
+					inputsDone = inputsDone && finishedNodeIds.contains(dataPort.getFromNode().getID());
 				}
 				if (inputsDone && controlDone) {
 					list.add(node);
@@ -1318,7 +1320,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				boolean controlDone = true;
 				if (control != null) {
 					for (EdgeImpl edge : control.getEdges()) {
-						controlDone = controlDone && finishedNodes.contains(edge.getFromPort().getFromNode());
+						controlDone = controlDone && finishedNodeIds.contains(edge.getFromPort().getFromNode().getID());
 					}
 				}
 
