@@ -145,7 +145,8 @@ public class CommonUtils {
         }
         return true;
     }
-    public static void removeMonitorFromQueue(BlockingQueue<UserMonitorData> queue,MonitorID monitorID) throws AiravataMonitorException {
+
+    public static void removeMonitorFromQueue(BlockingQueue<UserMonitorData> queue, MonitorID monitorID) throws AiravataMonitorException {
         synchronized (queue) {
             Iterator<UserMonitorData> iterator = queue.iterator();
             while (iterator.hasNext()) {
@@ -153,19 +154,22 @@ public class CommonUtils {
                 if (next.getUserName().equals(monitorID.getUserName())) {
                     // then this is the right place to update
                     List<HostMonitorData> hostMonitorData = next.getHostMonitorData();
-                    for (HostMonitorData iHostMonitorID : hostMonitorData) {
+                    Iterator<HostMonitorData> iterator1 = hostMonitorData.iterator();
+                    while (iterator1.hasNext()) {
+                        HostMonitorData iHostMonitorID = iterator1.next();
                         if (iHostMonitorID.getHost().toXML().equals(monitorID.getHost().toXML())) {
-                            List<MonitorID> monitorIDs = iHostMonitorID.getMonitorIDs();
-                            for (MonitorID iMonitorID : monitorIDs) {
+                            Iterator<MonitorID> iterator2 = iHostMonitorID.getMonitorIDs().iterator();
+                            while (iterator2.hasNext()) {
+                                MonitorID iMonitorID = iterator2.next();
                                 if (iMonitorID.getJobID().equals(monitorID.getJobID())
                                         || iMonitorID.getJobName().equals(monitorID.getJobName())) {
                                     // OK we found the object, we cannot do list.remove(object) states of two objects
                                     // could be different, thats why we check the jobID
-                                    monitorIDs.remove(iMonitorID);
-                                    logger.infoId(monitorID.getJobID(), "Removed the job: {} from monitoring last " +
-                                            "status:{}", monitorID.getJobID(), monitorID.getStatus().toString());
-                                    if (monitorIDs.size() == 0) {
-                                        hostMonitorData.remove(iHostMonitorID);
+                                    iterator2.remove();
+                                    logger.infoId(monitorID.getJobID(), "Removed the jobId: {} JobName: {} from monitoring last " +
+                                            "status:{}", monitorID.getJobID(),monitorID.getJobName(), monitorID.getStatus().toString());
+                                    if (iHostMonitorID.getMonitorIDs().size() == 0) {
+                                        iterator1.remove();
                                         logger.debug("Removed host {} from monitoring queue", iHostMonitorID.getHost()
                                                 .getType().getHostAddress());
                                         if (hostMonitorData.size() == 0) {

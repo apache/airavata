@@ -51,7 +51,10 @@ public class XBayaEngine {
 
     private WorkflowClient workflowClient;
 
+    //FIXME: use rabbit mq producer instead of WS-Messanger producer
     private Monitor monitor;
+
+
 
     private boolean exitOnClose = true;
 

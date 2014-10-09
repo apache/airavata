@@ -23,13 +23,14 @@
 package com.jcraft.jsch;
 
 import java.io.*;
+import com.jcraft.jsch.*;
 
 /**
  * NOTE : This is class is directly created using com.jcraft.jsch.IdentityFile
  * IdentityFile has private access. Therefore to suit our requirements we modify IdentityFile
  * with public access.
  */
-public class GSISSHIdentityFile implements Identity{
+public class GSISSHIdentityFile implements Identity {
     private JSch jsch;
     private KeyPair kpair;
     private String identity;

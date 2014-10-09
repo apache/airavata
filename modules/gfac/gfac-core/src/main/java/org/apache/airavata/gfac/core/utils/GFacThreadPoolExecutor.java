@@ -32,4 +32,11 @@ public class GFacThreadPoolExecutor {
         }
         return cachedThreadPool;
     }
+
+    public static ExecutorService getFixedThreadPool() {
+        if(cachedThreadPool==null){
+            cachedThreadPool = Executors.newFixedThreadPool(500);
+        }
+        return cachedThreadPool;
+    }
 }
