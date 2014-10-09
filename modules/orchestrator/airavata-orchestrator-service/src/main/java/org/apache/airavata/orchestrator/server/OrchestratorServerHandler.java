@@ -354,7 +354,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 						// we recover one gfac node at a time
 						final WatchedEvent event = watchedEvent;
 						final OrchestratorServerHandler handler = this;
-						(new Thread() {
+						/*(new Thread() {  // disabling ft implementation with zk
 							public void run() {
 								int retry = 0;
 								while (retry < 3) {
@@ -373,7 +373,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 								}
 
 							}
-						}).start();
+						}).start();*/
 						break;
 					}
 

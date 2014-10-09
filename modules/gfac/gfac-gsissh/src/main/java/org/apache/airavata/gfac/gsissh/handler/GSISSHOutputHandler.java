@@ -217,11 +217,16 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                     int retry=3;
                     while(retry>0){
                     	 outputList = cluster.listDirectory(app.getOutputDataDirectory());
-                    	 if(outputList.size() > 0){
-                    		 break;
-                    	 }	
-                    	 retry--;
-                    	 Thread.sleep(2000);
+                        if (outputList.size() == 1 && outputList.get(0).isEmpty()) {
+                            continue;
+                        } else if (outputList.size() > 0) {
+                            break;
+                        }
+                        retry--;
+                        if(retry==0){
+                            log.info("Ohhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shittttttt");
+                        }
+                    	 Thread.sleep(10000);
                     }
                     if (outputList.size() == 0 || outputList.get(0).isEmpty() || outputList.size() > 1) {
                         OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);

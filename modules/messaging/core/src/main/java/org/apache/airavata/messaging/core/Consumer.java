@@ -22,17 +22,11 @@
 package org.apache.airavata.messaging.core;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.model.messaging.event.*;
 
 /**
- * This is the basic publisher interface.
+ * This is the basic consumer
  */
-public interface Publisher {
+public interface Consumer {
+    public void listen (String routingKey) throws AiravataException;
 
-    /**
-     *
-     * @param message object of message context which will include actual event and other information
-     * @throws AiravataException
-     */
-    public void publish(MessageContext message) throws AiravataException;
 }

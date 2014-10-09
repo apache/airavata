@@ -17,22 +17,34 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
+*/
+package org.apache.airavata.gfac.ssh.context;
 
-package org.apache.airavata.messaging.core;
+import org.apache.airavata.gsi.ssh.api.ServerInfo;
+import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.model.messaging.event.*;
+public class SSHAuthWrapper {
+    private ServerInfo serverInfo;
 
-/**
- * This is the basic publisher interface.
- */
-public interface Publisher {
+    private AuthenticationInfo authenticationInfo;
 
-    /**
-     *
-     * @param message object of message context which will include actual event and other information
-     * @throws AiravataException
-     */
-    public void publish(MessageContext message) throws AiravataException;
+    private String key;
+
+    public SSHAuthWrapper(ServerInfo serverInfo, AuthenticationInfo authenticationInfo, String key) {
+        this.serverInfo = serverInfo;
+        this.authenticationInfo = authenticationInfo;
+        this.key = key;
+    }
+
+    public ServerInfo getServerInfo() {
+        return serverInfo;
+    }
+
+    public AuthenticationInfo getAuthenticationInfo() {
+        return authenticationInfo;
+    }
+
+    public String getKey() {
+        return key;
+    }
 }

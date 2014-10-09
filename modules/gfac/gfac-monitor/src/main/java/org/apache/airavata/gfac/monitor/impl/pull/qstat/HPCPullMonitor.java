@@ -28,6 +28,8 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
+import org.apache.airavata.gfac.core.utils.OutHandlerWorker;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.core.PullMonitor;
@@ -246,26 +248,26 @@ public class HPCPullMonitor extends PullMonitor {
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             String outputDir = iMonitorID.getJobExecutionContext().getApplicationContext()
                                     .getApplicationDeploymentDescription().getType().getOutputDataDirectory();
-                            List<String> stdOut = connection.getCluster().listDirectory(outputDir); // check the outputs directory
-                            if (stdOut.size() > 0) { // have to be careful with this
-                                for(int i=0;i<stdOut.size();i++) {
-                                    logger.info("--------------------------------------------------------------------------------------------");
-                                    logger.info("--------------------------------------------------------------------------------------------");
-                                    logger.info("--------------------------------------------------------------------------------------------");
-                                    logger.info("--------------------------------------------------------------------------------------------");
-                                    logger.info("--------------------------------------------------------------------------------------------");
-                                    logger.info("--------------------------------------------------------------------------------------------");
-                                    logger.info("--------------------------------------------------------------------------------------------");
-                                    logger.info(stdOut.get(i));
+                            List<String> stdOut = null;
+                            try {
+                                stdOut = connection.getCluster().listDirectory(outputDir); // check the outputs directory
+                            } catch (SSHApiException e) {
+                                if (e.getMessage().contains("No such file or directory")) {
+                                    // this is because while we run output handler something failed and during exception
+                                    // we store all the jobs in the monitor queue again
+                                    logger.error("We know this  job is already attempted to run out-handlers");
+                                    CommonUtils.removeMonitorFromQueue(queue, iMonitorID);
                                 }
-                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
-                                logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, removed job {} from " +
-                                                "monitor queue. Experiment {} , task {}", iMonitorID.getFailedCount(),
-                                        iMonitorID.getExperimentID(), iMonitorID.getTaskID());
-                            } else {
-                                iMonitorID.setFailedCount(0);
                             }
-                        } else {
+                                if (stdOut !=null && stdOut.size() > 0 && !stdOut.get(0).isEmpty()) { // have to be careful with this
+                                    completedJobs.put(iMonitorID.getJobName(), iMonitorID);
+                                    logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, removed job {} from " +
+                                                    "monitor queue. Experiment {} , task {}", iMonitorID.getFailedCount(),
+                                            iMonitorID.getExperimentID(), iMonitorID.getTaskID());
+                                } else {
+                                    iMonitorID.setFailedCount(0);
+                                }
+                            } else {
                             // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             // if the job is complete we remove it from the Map, if any of these maps
@@ -288,8 +290,8 @@ public class HPCPullMonitor extends PullMonitor {
             for (String jobName: keys) {
                 MonitorID completedJob = completedJobs.get(jobName);
                 CommonUtils.removeMonitorFromQueue(queue, completedJob);
-                gfac.invokeOutFlowHandlers(completedJob.getJobExecutionContext());
-//                GFacThreadPoolExecutor.getCachedThreadPool().submit(new OutHandlerWorker(gfac, completedJob, publisher));
+                    gfac.invokeOutFlowHandlers(completedJob.getJobExecutionContext());
+//                  GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, completedJob, publisher));
                 if (zk == null) {
                     zk = completedJob.getJobExecutionContext().getZk();
                 }
