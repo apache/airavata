@@ -59,10 +59,10 @@ public class CreateLaunchExperiment {
             try {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-            registerApplications(); // run this only the first time
-//                for (int i = 0; i < 1; i++) {
+//            registerApplications(); // run this only the first time
+                for (int i = 0; i < 1; i++) {
 //            final String expId = createExperimentForSSHHost(airavata);
-//                    final String expId = createEchoExperimentForTrestles(airavataClient);
+                    final String expId = createEchoExperimentForTrestles(airavataClient);
 //            final String expId = createEchoExperimentForStampede(airavataClient);
 //            final String expId = createExperimentEchoForLocalHost(airavataClient);
 //            final String expId = createExperimentWRFTrestles(airavataClient);
@@ -74,8 +74,8 @@ public class CreateLaunchExperiment {
 
 //            System.out.println("Experiment ID : " + expId);
 //            updateExperiment(airavata, expId);
-//                    launchExperiment(airavataClient, expId);
-//                }
+                    launchExperiment(airavataClient, expId);
+                }
             } catch (Exception e) {
                 logger.error("Error while connecting with server", e.getMessage());
                 e.printStackTrace();

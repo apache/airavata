@@ -84,12 +84,12 @@ public class GFACGSISSHUtils {
             GSISecurityContext context = null;
             try {
                 TokenizedMyProxyAuthInfo tokenizedMyProxyAuthInfo = new TokenizedMyProxyAuthInfo(requestData);
-                CredentialReader credentialReader = GFacUtils.getCredentialReader();
-                if(credentialReader != null){
-                	CertificateCredential credential = (CertificateCredential)credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
-                		requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
-                }
-				
+//                CredentialReader credentialReader = GFacUtils.getCredentialReader();
+//                if(credentialReader != null){
+//                	CertificateCredential credential = (CertificateCredential)credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
+//                		requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
+//                }
+
                 GsisshHostType gsisshHostType = (GsisshHostType) registeredHost.getType();
                 String key = requestData.getMyProxyUserName() + registeredHost.getType().getHostAddress() +
                         gsisshHostType.getPort();
@@ -115,7 +115,7 @@ public class GFACGSISSHUtils {
                                 recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
                             }
                             logger.info("Re-using the same connection used with the connection string:" + key);
-                          context = new GSISecurityContext(credentialReader, requestData, pbsCluster);
+                            context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, pbsCluster);
                         }
                     } else {
                         recreate = true;
