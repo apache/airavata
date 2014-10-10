@@ -197,20 +197,21 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         logger.infoId(experimentId, "GFac Received submit jog request for the Experiment: {} TaskId: {}", experimentId, taskId);
         GFac gfac = getGfac();
         InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
-        try {
-            if( gfac.submitJob(experimentId, taskId, gatewayId)){
-                logger.debugId(experimentId, "Submitted jog to the Gfac Implementation, experiment {}, task {}, gateway " +
+//        try {
+//            if( gfac.submitJob(experimentId, taskId, gatewayId)){
+        logger.debugId(experimentId, "Submitted jog to the Gfac Implementation, experiment {}, task {}, gateway " +
                 "{}", experimentId, taskId, gatewayId);
-//                 inHandlerFutures.add(GFacThreadPoolExecutor.getFixedThreadPool().submit(inputHandlerWorker));
-                return true;
-            }else{
-                logger.error(experimentId, "Failed to submit job to the GFac implementation, experiment {}, task {}, " +
-                        "gateway {}", experimentId, taskId, gatewayId);
-                return false;
-            }
-        } catch (GFacException e) {
-            throw new TException("Error launching the experiment : " + e.getMessage(), e);
-        }
+        inHandlerFutures.add(GFacThreadPoolExecutor.getFixedThreadPool().submit(inputHandlerWorker));
+        // we immediately return when we have a threadpool
+        return true;
+//            }else{
+//                logger.error(experimentId, "Failed to submit job to the GFac implementation, experiment {}, task {}, " +
+//                        "gateway {}", experimentId, taskId, gatewayId);
+//                return false;
+//            }
+//        } catch (GFacException e) {
+//            throw new TException("Error launching the experiment : " + e.getMessage(), e);
+//        }
     }
 
     public boolean cancelJob(String experimentId, String taskId) throws TException {
