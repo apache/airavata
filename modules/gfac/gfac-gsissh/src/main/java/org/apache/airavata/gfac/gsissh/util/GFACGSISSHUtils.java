@@ -28,11 +28,15 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
+import org.apache.airavata.credential.store.credential.Credential;
+import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
+import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.security.TokenizedMyProxyAuthInfo;
 import org.apache.airavata.gsi.ssh.api.Cluster;
@@ -80,6 +84,12 @@ public class GFACGSISSHUtils {
             GSISecurityContext context = null;
             try {
                 TokenizedMyProxyAuthInfo tokenizedMyProxyAuthInfo = new TokenizedMyProxyAuthInfo(requestData);
+                CredentialReader credentialReader = GFacUtils.getCredentialReader();
+                if(credentialReader != null){
+                	CertificateCredential credential = (CertificateCredential)credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
+                		requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
+                }
+				
                 GsisshHostType gsisshHostType = (GsisshHostType) registeredHost.getType();
                 String key = requestData.getMyProxyUserName() + registeredHost.getType().getHostAddress() +
                         gsisshHostType.getPort();
@@ -105,7 +115,7 @@ public class GFACGSISSHUtils {
                                 recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
                             }
                             logger.info("Re-using the same connection used with the connection string:" + key);
-                            context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, pbsCluster);
+                          context = new GSISecurityContext(credentialReader, requestData, pbsCluster);
                         }
                     } else {
                         recreate = true;
