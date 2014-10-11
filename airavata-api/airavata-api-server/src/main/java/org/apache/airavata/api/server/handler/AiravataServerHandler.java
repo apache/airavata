@@ -1211,7 +1211,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
                     registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
                     registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskID());
                     //launching the experiment
-                    orchestratorClient.launchTask(taskData.getTaskID(),airavataCredStoreToken);
+                    orchestratorClient.launchTask(taskData.getTaskID(), airavataCredStoreToken);
                 }
             }
 
@@ -1232,6 +1232,8 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             }
             logger.errorId(experimentId, "Error while updating task status, hence updated experiment status to " + status.toString(), e);
             throw new TException(e);
+        }finally {
+            orchestratorClient.getInputProtocol().getTransport().close();
         }
         return true;
     }
