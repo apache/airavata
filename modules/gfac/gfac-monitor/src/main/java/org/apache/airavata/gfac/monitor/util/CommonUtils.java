@@ -146,8 +146,13 @@ public class CommonUtils {
         return true;
     }
 
+    /**
+     * This method doesn't have to be synchronized because it will be invoked by HPCPullMonitor which already synchronized
+     * @param queue
+     * @param monitorID
+     * @throws AiravataMonitorException
+     */
     public static void removeMonitorFromQueue(BlockingQueue<UserMonitorData> queue, MonitorID monitorID) throws AiravataMonitorException {
-        synchronized (queue) {
             Iterator<UserMonitorData> iterator = queue.iterator();
             while (iterator.hasNext()) {
                 UserMonitorData next = iterator.next();
@@ -185,7 +190,6 @@ public class CommonUtils {
                     }
                 }
             }
-        }
         logger.info("Cannot find the given MonitorID in the queue with userName " +
                 monitorID.getUserName() + "  and jobID " + monitorID.getJobID());
         logger.info("This might not be an error because someone else removed this job from the queue");

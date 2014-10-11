@@ -113,12 +113,12 @@ public class HPCPullMonitor extends PullMonitor {
         this.startPulling = true;
         while (this.startPulling && !ServerSettings.isStopAllThreads()) {
             try {
-                if (this.queue.size() > 0) {
-                    synchronized (this.queue) {
-                        startPulling();
-                    }
-                }
                 // After finishing one iteration of the full queue this thread sleeps 1 second
+                synchronized (this.queue) {
+                    if (this.queue.size() > 0) {
+                        startPulling();
+                }
+            }
                 Thread.sleep(10000);
             } catch (Exception e) {
                 // we catch all the exceptions here because no matter what happens we do not stop running this
@@ -290,8 +290,8 @@ public class HPCPullMonitor extends PullMonitor {
             for (String jobName: keys) {
                 MonitorID completedJob = completedJobs.get(jobName);
                 CommonUtils.removeMonitorFromQueue(queue, completedJob);
-//                    gfac.invokeOutFlowHandlers(completedJob.getJobExecutionContext());
-                  GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, completedJob, publisher));
+                    gfac.invokeOutFlowHandlers(completedJob.getJobExecutionContext());
+//                  GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, completedJob, publisher));
                 if (zk == null) {
                     zk = completedJob.getJobExecutionContext().getZk();
                 }
