@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.gsissh.util;
 
+import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -57,6 +58,7 @@ import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.openjpa.lib.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,11 +86,16 @@ public class GFACGSISSHUtils {
             GSISecurityContext context = null;
             try {
                 TokenizedMyProxyAuthInfo tokenizedMyProxyAuthInfo = new TokenizedMyProxyAuthInfo(requestData);
-//                CredentialReader credentialReader = GFacUtils.getCredentialReader();
-//                if(credentialReader != null){
-//                	CertificateCredential credential = (CertificateCredential)credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
-//                		requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
-//                }
+                CredentialReader credentialReader = GFacUtils.getCredentialReader();
+                if(credentialReader != null){
+                	CertificateCredential credential = null;
+					try {
+						credential = (CertificateCredential)credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
+			      		requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
+					} catch (Exception e) {
+						logger.error(e.getLocalizedMessage());
+					}
+                }
 
                 GsisshHostType gsisshHostType = (GsisshHostType) registeredHost.getType();
                 String key = requestData.getMyProxyUserName() + registeredHost.getType().getHostAddress() +
