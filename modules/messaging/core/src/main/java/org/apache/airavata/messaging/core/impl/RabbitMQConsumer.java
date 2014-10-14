@@ -45,7 +45,7 @@ public class RabbitMQConsumer implements Consumer {
         this.url = brokerUrl;
     }
 
-    public void listen(String routingKey) throws AiravataException {
+    public Message listen(String routingKey) throws AiravataException {
         try {
             connection = createConnection();
             channel = connection.createChannel();
@@ -82,6 +82,7 @@ public class RabbitMQConsumer implements Consumer {
                     System.out.println(" Message Received with message id '" + message.getMessageId()
                             + "' and with message type '" + message.getMessageType() + "'  with status " + jobStatusChangeEvent.getState());
                 }
+                return message;
             }
         } catch (Exception e) {
             reset();

@@ -22,11 +22,12 @@
 package org.apache.airavata.messaging.core;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.model.messaging.event.Message;
 
 /**
  * This is the basic consumer
  */
 public interface Consumer {
-    public void listen (String routingKey) throws AiravataException;
+    public Message listen (String routingKey) throws AiravataException;
 
 }
