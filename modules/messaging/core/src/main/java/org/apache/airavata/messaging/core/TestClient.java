@@ -25,6 +25,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.impl.RabbitMQConsumer;
+import org.apache.airavata.model.messaging.event.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +40,13 @@ public class TestClient {
             AiravataUtils.setExecutionAsServer();
             String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
             String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
-            RabbitMQConsumer consumer = new RabbitMQConsumer(brokerUrl, exchangeName);
-            consumer.listen(experimentId);
+            RabbitMQConsumer consumer = new RabbitMQConsumer(brokerUrl, exchangeName, experimentId);
+            consumer.listen(new MessageHandler() {
+                @Override
+                public void onMessage(Message message) {
+                    System.out.println("message received: " + message);
+                }
+            });
         } catch (ApplicationSettingsException e) {
             logger.error("Error reading airavata server properties", e);
         }catch (Exception e) {

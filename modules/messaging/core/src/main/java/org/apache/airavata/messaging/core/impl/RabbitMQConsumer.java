@@ -26,7 +26,9 @@ import com.rabbitmq.client.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.Consumer;
+import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.messaging.event.*;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,51 +41,59 @@ public class RabbitMQConsumer implements Consumer {
     private Channel channel;
     private String consumerTag;
     private static Logger log = LoggerFactory.getLogger(RabbitMQConsumer.class);
+    private String routingKey;
 
-    public RabbitMQConsumer(String brokerUrl, String exchangeName){
+    public RabbitMQConsumer(String brokerUrl, String exchangeName, String routingKey) {
         this.exchangeName = exchangeName;
         this.url = brokerUrl;
+        this.routingKey = routingKey;
     }
 
-    public Message listen(String routingKey) throws AiravataException {
+    public void listen(MessageHandler handler) throws AiravataException {
         try {
             connection = createConnection();
             channel = connection.createChannel();
 
             channel.exchangeDeclare(exchangeName, "fanout", false);
-            String queueName = channel.queueDeclare().getQueue();
+            final String queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, exchangeName, routingKey);
-            QueueingConsumer consumer = new QueueingConsumer(channel);
-            channel.basicConsume(queueName, true, consumer);
 
-            while (true) {
-                QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-                byte[] body = delivery.getBody();
-                Message message = new Message();
-                ThriftUtils.createThriftFromBytes(body, message);
-                ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
-                WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
-                TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
-                JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent();
-                if (message.getMessageType().equals(MessageType.EXPERIMENT)){
-                    ThriftUtils.createThriftFromBytes(message.getEvent(), experimentStatusChangeEvent);
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getMessageType() + "'  with status " + experimentStatusChangeEvent.getState());
-                }else if (message.getMessageType().equals(MessageType.WORKFLOWNODE)){
-                    ThriftUtils.createThriftFromBytes(message.getEvent(), wfnStatusChangeEvent);
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getMessageType() + "'  with status " + wfnStatusChangeEvent.getState());
-                }else if (message.getMessageType().equals(MessageType.TASK)){
-                    ThriftUtils.createThriftFromBytes(message.getEvent(), taskStatusChangeEvent);
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getMessageType() + "'  with status " + taskStatusChangeEvent.getState());
-                }else if (message.getMessageType().equals(MessageType.JOB)){
-                    ThriftUtils.createThriftFromBytes(message.getEvent(), jobStatusChangeEvent);
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getMessageType() + "'  with status " + jobStatusChangeEvent.getState());
+            channel.basicConsume(queueName, true, consumerTag, new DefaultConsumer(channel) {
+                @Override
+                public void handleDelivery(String consumerTag,
+                                           Envelope envelope,
+                                           AMQP.BasicProperties properties,
+                                           byte[] body) {
+                    Message message = new Message();
+                    try {
+                        ThriftUtils.createThriftFromBytes(body, message);
+                        ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
+                        WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
+                        TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
+                        JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent();
+                        if (message.getMessageType().equals(MessageType.EXPERIMENT)) {
+                            ThriftUtils.createThriftFromBytes(message.getEvent(), experimentStatusChangeEvent);
+                            log.debug(" Message Received with message id '" + message.getMessageId()
+                                    + "' and with message type '" + message.getMessageType() + "'  with status " + experimentStatusChangeEvent.getState());
+                        } else if (message.getMessageType().equals(MessageType.WORKFLOWNODE)) {
+                            ThriftUtils.createThriftFromBytes(message.getEvent(), wfnStatusChangeEvent);
+                            log.debug(" Message Received with message id '" + message.getMessageId()
+                                    + "' and with message type '" + message.getMessageType() + "'  with status " + wfnStatusChangeEvent.getState());
+                        } else if (message.getMessageType().equals(MessageType.TASK)) {
+                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskStatusChangeEvent);
+                            log.debug(" Message Received with message id '" + message.getMessageId()
+                                    + "' and with message type '" + message.getMessageType() + "'  with status " + taskStatusChangeEvent.getState());
+                        } else if (message.getMessageType().equals(MessageType.JOB)) {
+                            ThriftUtils.createThriftFromBytes(message.getEvent(), jobStatusChangeEvent);
+                            log.debug(" Message Received with message id '" + message.getMessageId()
+                                    + "' and with message type '" + message.getMessageType() + "'  with status " + jobStatusChangeEvent.getState());
+                        }
+                    } catch (TException e) {
+                        String msg = "Failed to de-serialize the thrift message, exchange: " + exchangeName + " routingKey: " + routingKey + " queue: " + queueName;
+                        log.warn(msg, e);
+                    }
                 }
-                return message;
-            }
+            });
         } catch (Exception e) {
             reset();
             String msg = "could not open channel for exchange " + exchangeName;
@@ -112,6 +122,4 @@ public class RabbitMQConsumer implements Consumer {
             return null;
         }
     }
-
-
 }
