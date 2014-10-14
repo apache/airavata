@@ -39,7 +39,7 @@ public class RabbitMQConsumer implements Consumer {
     private String url;
     private Connection connection;
     private Channel channel;
-    private String consumerTag;
+    private String consumerTag = "hhh";
     private static Logger log = LoggerFactory.getLogger(RabbitMQConsumer.class);
     private String routingKey;
 
@@ -49,7 +49,7 @@ public class RabbitMQConsumer implements Consumer {
         this.routingKey = routingKey;
     }
 
-    public void listen(MessageHandler handler) throws AiravataException {
+    public void listen(final MessageHandler handler) throws AiravataException {
         try {
             connection = createConnection();
             channel = connection.createChannel();
@@ -57,6 +57,7 @@ public class RabbitMQConsumer implements Consumer {
             channel.exchangeDeclare(exchangeName, "fanout", false);
             final String queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, exchangeName, routingKey);
+
 
             channel.basicConsume(queueName, true, consumerTag, new DefaultConsumer(channel) {
                 @Override
@@ -88,6 +89,7 @@ public class RabbitMQConsumer implements Consumer {
                             log.debug(" Message Received with message id '" + message.getMessageId()
                                     + "' and with message type '" + message.getMessageType() + "'  with status " + jobStatusChangeEvent.getState());
                         }
+                        handler.onMessage(message);
                     } catch (TException e) {
                         String msg = "Failed to de-serialize the thrift message, exchange: " + exchangeName + " routingKey: " + routingKey + " queue: " + queueName;
                         log.warn(msg, e);
