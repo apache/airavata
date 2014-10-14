@@ -75,6 +75,7 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
 
 	public boolean submit(String experimentID, String taskID, String tokenId) throws OrchestratorException {
 		ZooKeeper zk = orchestratorContext.getZk();
+        GfacService.Client gfacClient = null;
 		try {
 			if (zk == null || !zk.getState().isConnected()) {
 				String zkhostPort = AiravataZKUtils.getZKhostPort();
@@ -96,12 +97,12 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
 				String gfacNodeData = new String(zk.getData(gfacServer + File.separator + pickedChild, false, null));
 				logger.info("GFAC instance node data: " + gfacNodeData);
 				String[] split = gfacNodeData.split(":");
-				GfacService.Client localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
+				gfacClient = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
 				if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
 					// before submitting the job we check again the state of the node
 					if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild, tokenId)) {
 						// FIXME:: The GatewayID is temporarily read from properties file. It should instead be inferred from the token.
-						return localhost.submitJob(experimentID, taskID, ServerSettings.getSetting(Constants.GATEWAY_NAME));
+						return gfacClient.submitJob(experimentID, taskID, ServerSettings.getSetting(Constants.GATEWAY_NAME));
 					}
 				}
 			}
@@ -117,12 +118,15 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		return false;
+		}finally {
+            gfacClient.getOutputProtocol().getTransport().close();
+        }
+        return false;
 	}
 
     public boolean terminate(String experimentID, String taskID) throws OrchestratorException {
         ZooKeeper zk = orchestratorContext.getZk();
+        GfacService.Client localhost = null;
         try {
             if (zk == null || !zk.getState().isConnected()) {
                 String zkhostPort = AiravataZKUtils.getZKhostPort();
@@ -144,7 +148,7 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
                 String gfacNodeData = new String(zk.getData(gfacServer + File.separator + pickedChild, false, null));
                 logger.info("GFAC instance node data: " + gfacNodeData);
                 String[] split = gfacNodeData.split(":");
-                GfacService.Client localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
+                localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
                 if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
                     // before submitting the job we check again the state of the node
                     if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild, null)) {
@@ -164,6 +168,8 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+
         }
         return false;
     }
