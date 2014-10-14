@@ -28,6 +28,6 @@ import org.apache.airavata.model.messaging.event.Message;
  * This is the basic consumer
  */
 public interface Consumer {
-    public Message listen (String routingKey) throws AiravataException;
+    public void listen(MessageHandler handler) throws AiravataException;
 
 }
