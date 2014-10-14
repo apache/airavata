@@ -29,11 +29,12 @@ import org.apache.airavata.model.messaging.event.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 public class TestClient {
     public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
     public static final String RABBITMQ_EXCHANGE_NAME = "rabbitmq.exchange.name";
     private final static Logger logger = LoggerFactory.getLogger(TestClient.class);
-    private final static String experimentId = "echoExperiment_825d89fa-179a-4da0-ae1e-e7fa0e58bdb2";
+    private final static String experimentId = "echoExperiment_cc733586-2bf8-4ee2-8a25-6521db135e7f";
 
     public static void main(String[] args) {
         try {
@@ -44,6 +45,8 @@ public class TestClient {
             consumer.listen(new MessageHandler() {
                 @Override
                 public void onMessage(Message message) {
+                    System.out.println(" Message Received with message id '" + message.getMessageId()
+                            + "' and with message type '" + message.getMessageType());
                     System.out.println("message received: " + message);
                 }
             });
