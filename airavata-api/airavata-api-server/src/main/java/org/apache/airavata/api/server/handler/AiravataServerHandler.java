@@ -900,13 +900,21 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
  	            throw exception;
  		}
 
-        if (getOrchestratorClient().validateExperiment(airavataExperimentId)) {
+        Client orchestratorClient = getOrchestratorClient();
+        try{
+        if (orchestratorClient.validateExperiment(airavataExperimentId)) {
             logger.infoId(airavataExperimentId, "Experiment validation succeed.");
             return true;
         } else {
             logger.infoId(airavataExperimentId, "Experiment validation failed.");
             return false;
+        }}catch (TException e){
+            throw e;
+        }finally {
+            orchestratorClient.getOutputProtocol().getTransport().close();
         }
+
+
     }
 
     /**
@@ -1233,7 +1241,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
             logger.errorId(experimentId, "Error while updating task status, hence updated experiment status to " + status.toString(), e);
             throw new TException(e);
         }finally {
-            orchestratorClient.getInputProtocol().getTransport().close();
+            orchestratorClient.getOutputProtocol().getTransport().close();
         }
         return true;
     }
