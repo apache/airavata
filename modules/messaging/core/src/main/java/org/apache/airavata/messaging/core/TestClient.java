@@ -44,9 +44,9 @@ public class TestClient {
             RabbitMQConsumer consumer = new RabbitMQConsumer(brokerUrl, exchangeName, experimentId);
             consumer.listen(new MessageHandler() {
                 @Override
-                public void onMessage(Message message) {
+                public void onMessage(MessageContext message) {
                     System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getMessageType());
+                            + "' and with message type '" + message.getType());
                     System.out.println("message received: " + message);
                 }
             });
