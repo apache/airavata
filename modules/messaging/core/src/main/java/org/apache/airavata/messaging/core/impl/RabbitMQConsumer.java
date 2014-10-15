@@ -56,7 +56,7 @@ public class RabbitMQConsumer implements Consumer {
             connection = createConnection();
             channel = connection.createChannel();
 
-            channel.exchangeDeclare(exchangeName, "fanout", false);
+            channel.exchangeDeclare(exchangeName, "direct", false);
             final String queueName = channel.queueDeclare().getQueue();
             channel.queueBind(queueName, exchangeName, routingKey);
 
