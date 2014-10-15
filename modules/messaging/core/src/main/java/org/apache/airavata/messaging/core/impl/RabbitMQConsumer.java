@@ -26,8 +26,10 @@ import com.rabbitmq.client.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.Consumer;
+import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.model.messaging.event.*;
+import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,30 +68,38 @@ public class RabbitMQConsumer implements Consumer {
                                            AMQP.BasicProperties properties,
                                            byte[] body) {
                     Message message = new Message();
+
                     try {
                         ThriftUtils.createThriftFromBytes(body, message);
-                        ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
-                        WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
-                        TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
-                        JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent();
+                        TBase event = null;
                         if (message.getMessageType().equals(MessageType.EXPERIMENT)) {
+                            ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), experimentStatusChangeEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()
                                     + "' and with message type '" + message.getMessageType() + "'  with status " + experimentStatusChangeEvent.getState());
+                            event = experimentStatusChangeEvent;
                         } else if (message.getMessageType().equals(MessageType.WORKFLOWNODE)) {
+                            WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), wfnStatusChangeEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()
                                     + "' and with message type '" + message.getMessageType() + "'  with status " + wfnStatusChangeEvent.getState());
+                            event = wfnStatusChangeEvent;
                         } else if (message.getMessageType().equals(MessageType.TASK)) {
+                            TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), taskStatusChangeEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()
                                     + "' and with message type '" + message.getMessageType() + "'  with status " + taskStatusChangeEvent.getState());
+                            event = taskStatusChangeEvent;
                         } else if (message.getMessageType().equals(MessageType.JOB)) {
+                            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), jobStatusChangeEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()
                                     + "' and with message type '" + message.getMessageType() + "'  with status " + jobStatusChangeEvent.getState());
+                            event = jobStatusChangeEvent;
                         }
-                        handler.onMessage(message);
+
+                        MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId());
+                        handler.onMessage(messageContext);
                     } catch (TException e) {
                         String msg = "Failed to de-serialize the thrift message, exchange: " + exchangeName + " routingKey: " + routingKey + " queue: " + queueName;
                         log.warn(msg, e);
