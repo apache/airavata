@@ -21,7 +21,13 @@
 
 package org.apache.airavata.xbaya.messaging;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.messaging.core.Consumer;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingConstants;
+import org.apache.airavata.messaging.core.impl.RabbitMQConsumer;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
@@ -39,10 +45,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 //import org.xmlpull.infoset.XmlElement;
 
 public class Monitor extends EventProducer {
@@ -53,7 +56,7 @@ public class Monitor extends EventProducer {
 
     protected Map<String, EventDataRepository> eventDataMap = new HashMap<String, EventDataRepository>();
 
-    protected MessageClient messageClient;
+    protected Consumer messageClient;
 
     protected boolean printRawMessages;
 
@@ -66,6 +69,8 @@ public class Monitor extends EventProducer {
     private boolean monitoringFailed=false;
 
     private String lastTerminatedWorkflowExecutionId=null;
+
+    private Map<String, String> expIdToSubscribers = new HashMap<String, String>();
 
     public Monitor() {
         // First one keeps all event data & it doesn't have filters
@@ -103,7 +108,13 @@ public class Monitor extends EventProducer {
 
     	//Notify listeners that the monitoring is about to start
     	getEventDataRepository().triggerListenerForPreMonitorStart();
-        this.messageClient = new MessageClient(this);
+        try {
+            this.messageClient = new RabbitMQConsumer();
+        } catch (AiravataException e) {
+            String msg = "Failed to start the consumer";
+            logger.error(msg, e);
+            throw new MonitorException(msg, e);
+        }
         setMonitoring(true);
         // Enable/disable some menu items and show the monitor panel.
         sendSafeEvent(new Event(Event.Type.MONITOR_STARTED));
@@ -179,71 +190,35 @@ public class Monitor extends EventProducer {
         for (String key : keysToBeRemoved) {
             this.eventDataMap.remove(key);
         }
-
     }
 
-    /**
-     * @param event
-     */
-    protected synchronized void handleNotification(Message event) {
-        EventData eventData = null;
-        boolean unsubscribeConsumer = false;
-        try {
-            eventData = new EventData(event);
-        } catch (TException e) {
-            logger.error("Error while adding new message event", e);
-            System.out.println("Error while adding new message event");
-            return;
-        }
-        Set<String> keys = this.eventDataMap.keySet();
-        // Remove everthing leaving only the last one
-        if(printRawMessages) {
-            try {
-                if (event.getMessageType() == MessageType.EXPERIMENT) {
-                    ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
-                    ThriftUtils.createThriftFromBytes(event.getEvent(), experimentStatusChangeEvent);
-                    logger.info("Received experiment event , expId : {} , status : {} ",
-                            experimentStatusChangeEvent.getExperimentId(), experimentStatusChangeEvent.getState().toString());
-                    System.out.println("Received experiment event");
+    private class NotificationMessageHandler implements MessageHandler {
+        private String experimentId;
 
-                }   else if (event.getMessageType() == MessageType.WORKFLOWNODE) {
-                    WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
-                    ThriftUtils.createThriftFromBytes(event.getEvent(), wfnStatusChangeEvent);
-                    WorkflowIdentifier wfIdentifier = wfnStatusChangeEvent.getWorkflowNodeIdentity();
-                    logger.info("Received workflow status change event, expId : {}, nodeId : {}, status : {} ",
-                            new String[]{wfIdentifier.getExperimentId(), wfIdentifier.getWorkflowNodeId(),
-                                    wfnStatusChangeEvent.getState().toString()});
-                    System.out.println("Received a workflow change event");
-                }else if (event.getMessageType() == MessageType.TASK) {
-                    TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
-                    ThriftUtils.createThriftFromBytes(event.getEvent(), taskStatusChangeEvent);
-                    TaskIdentifier taskIdentifier = taskStatusChangeEvent.getTaskIdentity();
-                    logger.info("Received task event , expId : {} ,taskId : {}, wfNodeId : {}, status : {} ",
-                            new String[]{taskIdentifier.getExperimentId(), taskIdentifier.getTaskId(),
-                                    taskIdentifier.getWorkflowNodeId(), taskStatusChangeEvent.getState().toString()});
-                    System.out.printf("Received a task change event");
-                } else if (event.getMessageType() == MessageType.JOB) {
-                    JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent();
-                    ThriftUtils.createThriftFromBytes(event.getEvent(), jobStatusChangeEvent);
-                    JobIdentifier jobIdentifier = jobStatusChangeEvent.getJobIdentity();
-                    logger.info("Received job event , expId : {}, taskId : {}, jobId : {}, wfNodeId : {}, status : {} ",
-                            new String[]{jobIdentifier.getExperimentId(), jobIdentifier.getTaskId(), jobIdentifier.getJobId(),
-                                    jobIdentifier.getWorkflowNodeId(), jobStatusChangeEvent.getState().toString()});
-                    System.out.println("Received a job change event");
-                } else {
-                    logger.info("Received UNKNOWN event");
-                    System.out.println("Received an UNKOWN event");
-                }
-            } catch (TException e) {
-                logger.error("Error while printing thrift message ");
-                System.out.println("Error while printing thrift message");
+        private NotificationMessageHandler(String experimentId) {
+            this.experimentId = experimentId;
+        }
+
+        public Map<String, Object> getProperties() {
+            Map<String, Object> props = new HashMap<String, Object>();
+            List<String> routingKeys = new ArrayList<String>();
+            routingKeys.add(experimentId);
+            routingKeys.add(experimentId + ".*.*");
+            props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
+            return props;
+        }
+
+        public void onMessage(MessageContext message) {
+            EventData eventData = null;
+            boolean unsubscribeConsumer = false;
+            eventData = new EventData(message);
+            Set<String> keys = eventDataMap.keySet();
+            for (String key : keys) {
+                eventDataMap.get(key).addEvent(eventData);
             }
-        }
-        for (String key : keys) {
-            this.eventDataMap.get(key).addEvent(eventData);
-        }
-        if (eventData.getType() == MessageType.EXPERIMENT && eventData.getStatus().equals(ExperimentState.LAUNCHED.toString())) {
-            unsubscribe(eventData.getExperimentId());
+            if (eventData.getType() == MessageType.EXPERIMENT && eventData.getStatus().equals(ExperimentState.LAUNCHED.toString())) {
+                unsubscribe(eventData.getExperimentId());
+            }
         }
     }
 
@@ -252,7 +227,14 @@ public class Monitor extends EventProducer {
      * @throws MonitorException
      */
     public void subscribe(String experimentID) throws MonitorException {
-        messageClient.subscribe(experimentID);
+        try {
+            String id = messageClient.listen(new NotificationMessageHandler(experimentID));
+            expIdToSubscribers.put(experimentID, id);
+        } catch (AiravataException e) {
+            String msg = "Failed to listen to experiment: " + experimentID;
+            logger.error(msg);
+            throw new MonitorException(msg, e);
+        }
     }
 
     /**
@@ -262,7 +244,14 @@ public class Monitor extends EventProducer {
     public void unsubscribe(String experimentId){
         // Enable/disable some menu items.
         sendSafeEvent(new Event(Event.Type.MONITOR_STOPED));
-        messageClient.unsubscribe(experimentId);
+        String id = expIdToSubscribers.remove(experimentId);
+        if (id != null) {
+            try {
+                messageClient.stopListen(experimentId);
+            } catch (AiravataException e) {
+                logger.warn("Failed to find the subscriber for experiment id: " + id, e);
+            }
+        }
         setMonitoring(false);
     }
 
