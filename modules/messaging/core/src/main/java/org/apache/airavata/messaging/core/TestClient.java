@@ -29,6 +29,9 @@ import org.apache.airavata.model.messaging.event.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class TestClient {
     public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
@@ -41,8 +44,15 @@ public class TestClient {
             AiravataUtils.setExecutionAsServer();
             String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
             String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
-            RabbitMQConsumer consumer = new RabbitMQConsumer(brokerUrl, exchangeName, experimentId);
+            RabbitMQConsumer consumer = new RabbitMQConsumer(brokerUrl, exchangeName);
             consumer.listen(new MessageHandler() {
+                @Override
+                public Map<String, String> getProperties() {
+                    Map<String, String> props = new HashMap<String, String>();
+                    props.put(MessagingConstants.RABBIT_ROUTING_KEY, experimentId);
+                    return props;
+                }
+
                 @Override
                 public void onMessage(MessageContext message) {
                     System.out.println(" Message Received with message id '" + message.getMessageId()

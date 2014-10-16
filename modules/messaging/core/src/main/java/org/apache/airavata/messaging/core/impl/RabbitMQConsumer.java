@@ -28,6 +28,7 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.Consumer;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
@@ -35,32 +36,54 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RabbitMQConsumer implements Consumer {
+    private static Logger log = LoggerFactory.getLogger(RabbitMQConsumer.class);
+
     private String exchangeName;
     private String url;
     private Connection connection;
     private Channel channel;
-    private String consumerTag = "hhh";
-    private static Logger log = LoggerFactory.getLogger(RabbitMQConsumer.class);
-    private String routingKey;
+    private Map<String, QueueDetails> queueDetailsMap = new HashMap<String, QueueDetails>();
 
-    public RabbitMQConsumer(String brokerUrl, String exchangeName, String routingKey) {
+    public RabbitMQConsumer(String brokerUrl, String exchangeName) throws AiravataException {
         this.exchangeName = exchangeName;
         this.url = brokerUrl;
-        this.routingKey = routingKey;
-    }
 
-    public void listen(final MessageHandler handler) throws AiravataException {
         try {
             connection = createConnection();
             channel = connection.createChannel();
 
             channel.exchangeDeclare(exchangeName, "direct", false);
-            final String queueName = channel.queueDeclare().getQueue();
+        } catch (Exception e) {
+            String msg = "could not open channel for exchange " + exchangeName;
+            log.error(msg);
+            throw new AiravataException(msg, e);
+        }
+    }
+
+    public String listen(final MessageHandler handler) throws AiravataException {
+        try {
+            Map<String, String> props = handler.getProperties();
+            final String routingKey = props.get(MessagingConstants.RABBIT_ROUTING_KEY);
+            if (routingKey == null) {
+                throw new IllegalArgumentException("The routing key must be present");
+            }
+
+            String queueName = props.get(MessagingConstants.RABBIT_QUEUE);
+            String consumerTag = props.get(MessagingConstants.RABBIT_CONSUMER_TAG);
+            if (queueName == null) {
+                queueName = channel.queueDeclare().getQueue();
+            } else {
+                channel.queueDeclare(queueName, true, false, false, null);
+            }
+            if (consumerTag == null) {
+                consumerTag = "default";
+            }
+            String id = routingKey + "." + queueName;
             channel.queueBind(queueName, exchangeName, routingKey);
-
-
             channel.basicConsume(queueName, true, consumerTag, new DefaultConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag,
@@ -101,21 +124,33 @@ public class RabbitMQConsumer implements Consumer {
                         MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId());
                         handler.onMessage(messageContext);
                     } catch (TException e) {
-                        String msg = "Failed to de-serialize the thrift message, exchange: " + exchangeName + " routingKey: " + routingKey + " queue: " + queueName;
+                        String msg = "Failed to de-serialize the thrift message, exchange: " + exchangeName + " routingKey: " + routingKey;
                         log.warn(msg, e);
                     }
                 }
             });
+            // save the name for deleting the queue
+            queueDetailsMap.put(id, new QueueDetails(queueName, routingKey));
+            return id;
         } catch (Exception e) {
-            reset();
             String msg = "could not open channel for exchange " + exchangeName;
             log.error(msg);
             throw new AiravataException(msg, e);
         }
     }
 
-    private void reset() {
-        consumerTag = null;
+    public void stopListen(final String id) throws AiravataException {
+        QueueDetails details = queueDetailsMap.get(id);
+        if (details != null) {
+            try {
+                channel.queueUnbind(details.getQueueName(), exchangeName, details.getRoutingKey());
+                channel.queueDelete(details.getQueueName(), true, true);
+            } catch (IOException e) {
+                String msg = "could not un-bind queue: " + details.getQueueName() + " for exchange " + exchangeName;
+                log.error(msg);
+                throw new AiravataException(msg, e);
+            }
+        }
     }
 
     private Connection createConnection() throws IOException {
@@ -132,6 +167,28 @@ public class RabbitMQConsumer implements Consumer {
         } catch (Exception e) {
             log.info("connection failed to rabbitmq: " + connection + " for " + exchangeName);
             return null;
+        }
+    }
+
+    /**
+     * Private class for holding some information about the consumers registered
+     */
+    private class QueueDetails {
+        String queueName;
+
+        String routingKey;
+
+        private QueueDetails(String queueName, String routingKey) {
+            this.queueName = queueName;
+            this.routingKey = routingKey;
+        }
+
+        public String getQueueName() {
+            return queueName;
+        }
+
+        public String getRoutingKey() {
+            return routingKey;
         }
     }
 }
