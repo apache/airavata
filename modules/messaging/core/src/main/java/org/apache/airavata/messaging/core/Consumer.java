@@ -27,6 +27,14 @@ import org.apache.airavata.common.exception.AiravataException;
  * This is the basic consumer
  */
 public interface Consumer {
-    public void listen(MessageHandler handler) throws AiravataException;
+    /**
+     * Start listening for messages, The binding properties are specified in the handler.
+     * Returns and unique id to this Consumer. This id can be used to stop the listening
+     * @param handler
+     * @return
+     * @throws AiravataException
+     */
+    public String listen(MessageHandler handler) throws AiravataException;
 
+    public void stopListen(final String id) throws AiravataException;
 }
