@@ -84,9 +84,9 @@ public class RegistryInitUtil {
                 logger.info("Database already created for Registry!");
             }
             try{
-                GatewayResource gateway = (GatewayResource)ResourceUtils.createGateway(ServerSettings.getSystemUserGateway());
+                GatewayResource gateway = (GatewayResource)ResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
                 gateway.save();
-                UserResource user = ResourceUtils.createUser(ServerSettings.getSystemUser(), ServerSettings.getSystemUserPassword());
+                UserResource user = ResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword());
                 user.save();
                 WorkerResource workerResource = (WorkerResource)gateway.create(ResourceType.GATEWAY_WORKER);
                 workerResource.setUser(user.getUserName());

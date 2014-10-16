@@ -91,8 +91,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 					+ ":"
 					+ ServerSettings
 							.getSetting(Constants.ORCHESTRATOR_SERVER_PORT);
-            setGatewayName(ServerSettings.getSystemUserGateway());
-            setAiravataUserName(ServerSettings.getSystemUser());
+            setGatewayName(ServerSettings.getDefaultUserGateway());
+            setAiravataUserName(ServerSettings.getDefaultUser());
 			try {
 				zk = new ZooKeeper(zkhostPort, 6000, this); // no watcher is
 															// required, this

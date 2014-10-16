@@ -218,7 +218,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         logger.infoId(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
         GFac gfac = getGfac();
         try {
-            if (gfac.cancel(experimentId, taskId, ServerSettings.getSetting(Constants.GATEWAY_NAME))) {
+            if (gfac.cancel(experimentId, taskId, ServerSettings.getDefaultUserGateway())) {
                 logger.debugId(experimentId, "Successfully cancelled job, experiment {} , task {}", experimentId, taskId);
                 return true;
             } else {
@@ -239,14 +239,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         this.registry = registry;
     }
 
-    public String getRegistryURL() {
-        return registryURL;
-    }
-
-    public void setRegistryURL(String registryURL) {
-        this.registryURL = registryURL;
-    }
-
     public String getGatewayName() {
         return gatewayName;
     }
@@ -263,9 +255,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         this.airavataUserName = airavataUserName;
     }
     protected void setGatewayProperties() throws ApplicationSettingsException {
-         setAiravataUserName(ServerSettings.getSetting("system.user"));
-         setGatewayName(ServerSettings.getSetting("system.gateway"));
-         setRegistryURL(ServerSettings.getSetting("airavata.server.url"));
+         setAiravataUserName(ServerSettings.getDefaultUser());
+         setGatewayName(ServerSettings.getDefaultUserGateway());
      }
 
     private GFac getGfac()throws TException{
