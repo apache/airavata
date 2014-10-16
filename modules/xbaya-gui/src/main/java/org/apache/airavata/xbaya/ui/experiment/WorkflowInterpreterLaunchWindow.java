@@ -42,10 +42,10 @@ import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.ThriftClientData;
 import org.apache.airavata.xbaya.ThriftServiceType;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.messaging.MonitorException;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -121,11 +121,11 @@ public class WorkflowInterpreterLaunchWindow {
     public void show() {
         this.workflow = this.engine.getGUI().getWorkflow();
 
-        MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
-        if (notifConfig.getBrokerURL() == null) {
-            this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
-            return;
-        }
+//        MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
+//        if (notifConfig.getBrokerURL() == null) {
+//            this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
+//            return;
+//        }
 
         // Create input fields
         Collection<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
@@ -397,7 +397,15 @@ public class WorkflowInterpreterLaunchWindow {
         }
 
         experiment.setExperimentID(airavataClient.createExperiment(experiment));
+
+        try {
+            this.engine.getMonitor().subscribe(experiment.getExperimentID());
+            this.engine.getMonitor().fireStartMonitoring(workflow.getName());
+        } catch (MonitorException e) {
+            logger.error("Error while subscribing with experiment Id : " + experiment.getExperimentID(), e);
+        }
         airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
+
 //        final String workflowInterpreterUrl = this.workflowInterpreterTextField.getText();
 //        if (null != workflowInterpreterUrl && !"".equals(workflowInterpreterUrl)) {
 //            try {

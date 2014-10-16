@@ -224,7 +224,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                         }
                         retry--;
                         if(retry==0){
-                            log.info("Ohhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shittttttt");
+//                            log.info("Ohhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shittttttt");
                         }
                     	 Thread.sleep(10000);
                     }

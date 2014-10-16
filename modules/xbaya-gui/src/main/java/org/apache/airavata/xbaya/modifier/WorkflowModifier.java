@@ -44,12 +44,10 @@ import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.EventData;
-import org.apache.airavata.ws.monitor.EventDataRepository;
-import org.apache.airavata.ws.monitor.MonitorException;
-import org.apache.airavata.ws.monitor.MonitorUtil;
-import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.messaging.EventData;
+import org.apache.airavata.xbaya.messaging.EventDataRepository;
+import org.apache.airavata.xbaya.messaging.MonitorException;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -197,31 +195,31 @@ public class WorkflowModifier {
         logger.debug("Node:" + nodeID);
         List<EventData> events = this.eventData.getEvents();
         for (EventData event : events) {
-            EventType type = event.getType();
-            // TODO change this to read from the notification from GPEL.
-            if (type != EventType.INVOKING_SERVICE) {
-                continue;
-            }
-            String id = event.getNodeID();
-            if (!"".equals(id)) {
-                continue;
-            }
-            // TODO null check
-            XmlElement eventElement = event.getEvent();
-            XmlElement result = eventElement.element(MonitorUtil.REQUEST);
-            XmlElement body = result.element(MonitorUtil.BODY);
-            XmlElement soapBody = body.element(XmlConstants.S_BODY);
-            WsdlPortTypeOperation wsdlPortTypeOperation;
-            try {
-                wsdlPortTypeOperation = WSDLUtil.getFirstOperation(this.modifiedWorkflow.getWorkflowWSDL());
-            } catch (UtilsException e) {
-                throw new MonitorException(e);
-            }
-            XmlElement part = soapBody.element(wsdlPortTypeOperation.getName());
-            XmlElement parameter = part.element(nodeID);
-            // TODO support complex type.
-            String value = parameter.requiredText();
-            return value;
+//            EventType type = event.getType();
+//            // TODO change this to read from the notification from GPEL.
+//            if (type != EventType.INVOKING_SERVICE) {
+//                continue;
+//            }
+//            String id = event.getNodeID();
+//            if (!"".equals(id)) {
+//                continue;
+//            }
+//            // TODO null check
+//            XmlElement eventElement = event.getEvent();
+//            XmlElement result = eventElement.element(MonitorUtil.REQUEST);
+//            XmlElement body = result.element(MonitorUtil.BODY);
+//            XmlElement soapBody = body.element(XmlConstants.S_BODY);
+//            WsdlPortTypeOperation wsdlPortTypeOperation;
+//            try {
+//                wsdlPortTypeOperation = WSDLUtil.getFirstOperation(this.modifiedWorkflow.getWorkflowWSDL());
+//            } catch (UtilsException e) {
+//                throw new MonitorException(e);
+//            }
+//            XmlElement part = soapBody.element(wsdlPortTypeOperation.getName());
+//            XmlElement parameter = part.element(nodeID);
+//            // TODO support complex type.
+//            String value = parameter.requiredText();
+            return event.getMessage();
         }
         // TODO
         String message = "Couldn't find a notification of about the input with nodeID, " + nodeID;
@@ -231,26 +229,26 @@ public class WorkflowModifier {
     private String getOutput(String nodeID, String messageName, String parameterName) throws MonitorException {
         List<EventData> events = this.eventData.getEvents();
         for (EventData event : events) {
-            // We need to find the notification that contains the output of the
-            // service invocation.
-            EventType type = event.getType();
-            if (!(type == EventType.SENDING_RESULT || type == EventType.RECEIVED_RESULT)) {
-                continue;
-            }
-            String id = event.getNodeID();
-            if (!nodeID.equals(id)) {
-                continue;
-            }
-            // TODO null check
-            XmlElement eventElement = event.getEvent();
-            XmlElement result = eventElement.element(MonitorUtil.RESULT);
-            XmlElement body = result.element(MonitorUtil.BODY);
-            XmlElement soapBody = body.element(XmlConstants.S_BODY);
-            XmlElement part = soapBody.element(messageName);
-            XmlElement parameter = part.element(parameterName);
-            // TODO support complex type.
-            String value = parameter.requiredText();
-            return value;
+//            // We need to find the notification that contains the output of the
+//            // service invocation.
+//            EventType type = event.getType();
+//            if (!(type == EventType.SENDING_RESULT || type == EventType.RECEIVED_RESULT)) {
+//                continue;
+//            }
+//            String id = event.getNodeID();
+//            if (!nodeID.equals(id)) {
+//                continue;
+//            }
+//            // TODO null check
+//            XmlElement eventElement = event.getEvent();
+//            XmlElement result = eventElement.element(MonitorUtil.RESULT);
+//            XmlElement body = result.element(MonitorUtil.BODY);
+//            XmlElement soapBody = body.element(XmlConstants.S_BODY);
+//            XmlElement part = soapBody.element(messageName);
+//            XmlElement parameter = part.element(parameterName);
+//            // TODO support complex type.
+//            String value = parameter.requiredText();
+            return event.getMessage();
         }
         // TODO
         String message = "Couldn't find a notification of the output from the service with nodeID, " + nodeID;

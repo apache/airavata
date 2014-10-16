@@ -17,16 +17,12 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
-package org.apache.airavata.xbaya.interpreter;
+ */
 
+package org.apache.airavata.xbaya.messaging;
 
-import org.apache.airavata.xbaya.messaging.NotificationHandler;
+import org.apache.axis2.AxisFault;
 
-public class Listener implements NotificationHandler {
-
-    public void handleNotification(String message) {
-       System.out.println("MessageRecieved: " + message);
-   }
-
+public interface NotificationHandler {
+    public void handleNotification(String message) throws AxisFault;
 }

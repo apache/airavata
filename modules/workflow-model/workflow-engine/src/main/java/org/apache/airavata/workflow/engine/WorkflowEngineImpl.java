@@ -22,7 +22,10 @@
 package org.apache.airavata.workflow.engine;
 
 import org.airavata.appcatalog.cpi.WorkflowCatalog;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
@@ -40,6 +43,14 @@ import org.slf4j.LoggerFactory;
 
 public class WorkflowEngineImpl implements WorkflowEngine {
     private static final Logger logger = LoggerFactory.getLogger(WorkflowEngineImpl.class);
+    private Publisher rabbitMQPublisher;
+    WorkflowEngineImpl() {
+        try {
+            rabbitMQPublisher = new RabbitMQPublisher();
+        } catch (Exception e) {
+            logger.error("Failed to instantiate RabbitMQPublisher", e);
+        }
+    }
 
 	@Override
 	public void launchExperiment(String experimentId, String token)
@@ -49,7 +60,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
             Experiment experiment = (Experiment)registry.get(RegistryModelType.EXPERIMENT, experimentId);
             WorkflowCatalog workflowCatalog = WorkflowCatalogFactory.getWorkflowCatalog();
 			WorkflowInterpreterConfiguration config = new WorkflowInterpreterConfiguration(new Workflow(workflowCatalog.getWorkflow(experiment.getApplicationId()).getGraph()));
-			final WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(experiment, token, config , getOrchestratorClient());
+			final WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(experiment, token, config , getOrchestratorClient(), rabbitMQPublisher);
 			new Thread(){
 				public void run() {
 					try {
@@ -58,8 +69,10 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 						e.printStackTrace();
 					} catch (RegistryException e) {
 						e.printStackTrace();
-					}
-				};
+					} catch (AiravataException e) {
+                        e.printStackTrace();
+                    }
+                };
 			}.start();
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment", e);

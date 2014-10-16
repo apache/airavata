@@ -28,9 +28,8 @@ import org.apache.airavata.workflow.model.component.amazon.AmazonComponentRegist
 import org.apache.airavata.workflow.model.component.local.LocalComponentRegistry;
 import org.apache.airavata.workflow.model.component.system.SystemComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
-import org.apache.airavata.ws.monitor.Monitor;
-import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.component.registry.ComponentController;
+import org.apache.airavata.xbaya.messaging.Monitor;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.monitor.MonitorStarter;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
@@ -71,12 +70,8 @@ public class XBayaEngine {
      */
     public XBayaEngine(XBayaConfiguration configuration) {
         this.configuration = configuration;
-
-        // Creates some essential objects.
-
-        MonitorConfiguration monitorConfiguration = new MonitorConfiguration(configuration.getBrokerURL(),
-                configuration.getTopic(), configuration.isPullMode(), configuration.getMessageBoxURL());
-        this.monitor = new Monitor(monitorConfiguration);
+        // initiate monitor to monitor the events
+        this.monitor = new Monitor();
 
         // Set up the GUI.
         XBayaEngine.this.gui = new XBayaGUI(XBayaEngine.this);
