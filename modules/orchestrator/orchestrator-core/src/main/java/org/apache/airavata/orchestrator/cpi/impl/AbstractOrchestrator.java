@@ -116,9 +116,8 @@ public abstract class AbstractOrchestrator implements Orchestrator {
 	//get the registry URL and the credentials from the property file
     protected void setGatewayProperties() {
         try {
-            setAiravataUserName(ServerSettings.getSetting("system.user"));
-            setGatewayName(ServerSettings.getSetting("system.gateway"));
-            setRegistryURL(ServerSettings.getSetting("airavata.server.url"));
+            setAiravataUserName(ServerSettings.getDefaultUser());
+            setGatewayName(ServerSettings.getDefaultUserGateway());
         }  catch (ApplicationSettingsException e) {
             e.printStackTrace();
         }
