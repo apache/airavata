@@ -29,7 +29,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 
 public class GatewayRegistry {
     public GatewayResource getDefaultGateway () throws ApplicationSettingsException, RegistryException {
-        return (GatewayResource)ResourceUtils.getGateway(ServerSettings.getSystemUserGateway());
+        return (GatewayResource)ResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
     }
 
     public GatewayResource getExistingGateway (String gatewayName) throws RegistryException {

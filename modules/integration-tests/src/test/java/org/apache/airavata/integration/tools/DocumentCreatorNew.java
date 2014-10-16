@@ -119,7 +119,7 @@ public class DocumentCreatorNew {
                 null, null);
         gatewayResourceProfile = new GatewayResourceProfile();
 //		gatewayResourceProfile.setGatewayID("default");
-        gatewayResourceProfile.setGatewayName(ClientSettings.getSetting("gateway_id", "php_reference_gateway"));
+        gatewayResourceProfile.setGatewayName(ClientSettings.getSetting("default.registry.gateway", "php_reference_gateway"));
         gatewayResourceProfile.addToComputeResourcePreferences(computeResourcePreference);
         String gatewayId = client.registerGatewayResourceProfile(gatewayResourceProfile);
         gatewayResourceProfile.setGatewayID(gatewayId);
