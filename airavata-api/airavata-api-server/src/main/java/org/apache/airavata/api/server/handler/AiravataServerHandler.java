@@ -1177,16 +1177,7 @@ public class AiravataServerHandler implements Airavata.Iface, Watcher {
                 logger.debugId(airavataExperimentId, "Launching single application experiment {}.", airavataExperimentId);
                 final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
                 if (orchestratorClient.validateExperiment(expID)) {
-                    thread = new Thread() {
-                        public void run() {
-                            try {
-                                launchSingleAppExperiment(expID, token, orchestratorClient);
-                            } catch (TException e) {
-                                // throwing exception from here useless, just print the error log
-                                logger.errorId(airavataExperimentId, "Error while launching single application experiment.", e);
-                            }
-                        }
-                    };
+                   launchSingleAppExperiment(expID, token, orchestratorClient);
                 } else {
                     logger.errorId(airavataExperimentId, "Experiment validation failed. Please check the configurations.");
                     throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
