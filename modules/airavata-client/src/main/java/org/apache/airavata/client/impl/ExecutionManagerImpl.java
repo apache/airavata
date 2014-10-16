@@ -142,9 +142,9 @@ public class ExecutionManagerImpl implements ExecutionManager {
 				monitor.getEventDataRepository().registerEventListener(new EventDataListenerAdapter() {
 					@Override
 					public void notify(EventDataRepository eventDataRepo, EventData eventData) {
-						if (eventData.getType()==EventType.WORKFLOW_TERMINATED || eventData.getType()==EventType.SENDING_FAULT){
-							monitor.stopMonitoring();
-						} 
+//						if (eventData.getType()==EventType.WORKFLOW_TERMINATED || eventData.getType()==EventType.SENDING_FAULT){
+//							monitor.stopMonitoring();
+//						}
 					}
 				});
 			}

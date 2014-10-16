@@ -17,16 +17,19 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
-package org.apache.airavata.xbaya.interpreter;
+ */
 
+package org.apache.airavata.xbaya.messaging.event;
 
-import org.apache.airavata.xbaya.messaging.NotificationHandler;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
-public class Listener implements NotificationHandler {
+public interface EventListener {
 
-    public void handleNotification(String message) {
-       System.out.println("MessageRecieved: " + message);
-   }
-
+    /**
+     * Called when an event is received.
+     * 
+     * @param event
+     * @throws org.apache.airavata.workflow.model.exceptions.WorkflowException
+     */
+    public void eventReceived(Event event) throws WorkflowException;
 }

@@ -21,7 +21,32 @@
 
 package org.apache.airavata.xbaya.ui.monitor;
 
-import java.awt.Color;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
+import org.apache.airavata.workflow.model.graph.EPRPort;
+import org.apache.airavata.workflow.model.graph.Edge;
+import org.apache.airavata.workflow.model.graph.Graph;
+import org.apache.airavata.workflow.model.graph.Node;
+import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
+import org.apache.airavata.workflow.model.graph.Port;
+import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
+import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.system.OutputNode;
+import org.apache.airavata.workflow.model.graph.util.GraphUtil;
+import org.apache.airavata.workflow.model.graph.ws.WSGraph;
+import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.xbaya.graph.controller.NodeController;
+import org.apache.airavata.xbaya.messaging.EventData;
+import org.apache.airavata.xbaya.messaging.EventDataRepository;
+import org.apache.airavata.xbaya.ui.XBayaGUI;
+import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
+import org.apache.airavata.xbaya.ui.graph.NodeGUI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,35 +55,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import org.apache.airavata.workflow.model.graph.ControlPort;
-import org.apache.airavata.workflow.model.graph.EPRPort;
-import org.apache.airavata.workflow.model.graph.Edge;
-import org.apache.airavata.workflow.model.graph.Graph;
-import org.apache.airavata.workflow.model.graph.Node;
-import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
-import org.apache.airavata.workflow.model.graph.Port;
-import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
-import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
-import org.apache.airavata.workflow.model.graph.system.InputNode;
-import org.apache.airavata.workflow.model.graph.system.OutputNode;
-import org.apache.airavata.workflow.model.graph.util.GraphUtil;
-import org.apache.airavata.workflow.model.graph.ws.WSGraph;
-import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.EventData;
-import org.apache.airavata.ws.monitor.EventDataRepository;
-import org.apache.airavata.ws.monitor.MonitorUtil;
-import org.apache.airavata.ws.monitor.MonitorUtil.EventType;
-import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.ui.XBayaGUI;
-import org.apache.airavata.xbaya.ui.graph.GraphCanvas;
-import org.apache.airavata.xbaya.ui.graph.NodeGUI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlElement;
 
 public class MonitorEventHandler implements ChangeListener {
 
@@ -148,11 +144,37 @@ public class MonitorEventHandler implements ChangeListener {
             Object source = event.getSource();
             if (source instanceof EventDataRepository) {
                 handleChange((EventDataRepository) source);
+            }else if (source instanceof EventData) {
+                EventData eventData = (EventData) source;
+                if (eventData.getType() == MessageType.WORKFLOWNODE && eventData.getMessageId().startsWith("NODE")) {
+                   handleEvent(eventData, true);
+                }
+            }else if (source instanceof String) {
+                handleNewWorkflowStartEvent((String) source);
+
             }
         } catch (RuntimeException e) {
             // Don't want to pop up an error dialog every time XBaya received an
             // ill-formatted notification.
             logger.error(e.getMessage(), e);
+        }
+    }
+
+    private void handleNewWorkflowStartEvent(String workflowName) {
+        Workflow workflow;
+        for (GraphCanvas graphCanvas : this.xbayaGUI.getGraphCanvases()) {
+            workflow = graphCanvas.getWorkflow();
+            if (workflow.getName().equals(workflowName)) {
+                resetAllNode(workflow);
+            }
+        }
+
+    }
+
+    private void resetAllNode(Workflow workflow) {
+        Graph graph = workflow.getGraph();
+        for (Node node : graph.getNodes()) {
+            resetNode(node);
         }
     }
 
@@ -185,12 +207,10 @@ public class MonitorEventHandler implements ChangeListener {
     }
 
     private void handleEvent(EventData event, boolean forward) {
-        EventType type = event.getType();
+//        EventType type = event.getType();
         //todo currrently we do not set the workflowID properly its just node ID
-        URI workflowID = event.getWorkflowID();
-
+//        URI workflowID = event.getWorkflowID();
         List<GraphCanvas> graphCanvases = this.xbayaGUI.getGraphCanvases();
-        boolean found = false;
         for (GraphCanvas graphCanvas : graphCanvases) {
             Workflow workflow = graphCanvas.getWorkflow();
 //            URI instanceID = workflow.getGPELInstanceID();
@@ -200,6 +220,7 @@ public class MonitorEventHandler implements ChangeListener {
             // monitor a workflow too.
             // This is also needed in the case of jython workflow.
             handleEvent(event, forward, workflow.getGraph());
+            graphCanvas.repaint();
 //            } else if (instanceID.equals(workflowID)) {
 //                This is the regular case.
 //                found = true;
@@ -210,61 +231,61 @@ public class MonitorEventHandler implements ChangeListener {
 //            }
         }
 
-        // Load a sub-workflow.
-        if (type == MonitorUtil.EventType.WORKFLOW_INITIALIZED) {
-            if (forward) {
-                // Check if the workflow instance is already open.
-                for (GraphCanvas graphCanvas : graphCanvases) {
-                    Workflow workflow = graphCanvas.getWorkflow();
-                    URI instanceID = workflow.getGPELInstanceID();
-                    if (workflowID.equals(instanceID)) {
-                        // The workflow instance is already loaded.
-                        return;
-                    }
-                }
-                loadWorkflow(workflowID);
-            } else {
-                // Don't need to close the workflow when it's opened.
-            }
-        }
-
-        if (found == false && workflowID != null) {
-            // Loads the workflow instance ID in case a user started to monitor
-            // in the middle.
-            loadWorkflow(workflowID);
-        }
-
-        /*
-         * Handle resource mapping message which contains resource from Amazon EC2 Since workflowID (workflowName) from
-         * message and instanceID do not equal, so we have to handle it explicitly
-         */
-        if (type == EventType.RESOURCE_MAPPING && event.getMessage().contains("i-")) {
-            String nodeID = event.getNodeID();
-            for (GraphCanvas graphCanvas : graphCanvases) {
-                Node node = graphCanvas.getWorkflow().getGraph().getNode(nodeID);
-                if (node != null) {
-                    ControlPort control = node.getControlInPort();
-                    if (control != null) {
-                        Node fromNode = control.getFromNode();
-                        if (fromNode instanceof InstanceNode) {
-                            InstanceNode ec2Node = (InstanceNode) fromNode;
-
-                            /*
-                             * parse message and set output to InstanceNode
-                             */
-                            int start = event.getMessage().indexOf("i-");
-                            String instanceId = event.getMessage().substring(start, start + 10);
-                            ec2Node.setOutputInstanceId(instanceId);
-
-                            // make this node to not start a new instance
-                            ec2Node.setStartNewInstance(false);
-                            ec2Node.setInstanceId(instanceId);
-                            ec2Node.setAmiId(null);
-                        }
-                    }
-                }
-            }
-        }
+//        // Load a sub-workflow.
+//        if (type == MonitorUtil.EventType.WORKFLOW_INITIALIZED) {
+//            if (forward) {
+//                // Check if the workflow instance is already open.
+//                for (GraphCanvas graphCanvas : graphCanvases) {
+//                    Workflow workflow = graphCanvas.getWorkflow();
+//                    URI instanceID = workflow.getGPELInstanceID();
+//                    if (workflowID.equals(instanceID)) {
+//                        // The workflow instance is already loaded.
+//                        return;
+//                    }
+//                }
+//                loadWorkflow(workflowID);
+//            } else {
+//                // Don't need to close the workflow when it's opened.
+//            }
+//        }
+//
+//        if (found == false && workflowID != null) {
+//            // Loads the workflow instance ID in case a user started to monitor
+//            // in the middle.
+//            loadWorkflow(workflowID);
+//        }
+//
+//        /*
+//         * Handle resource mapping message which contains resource from Amazon EC2 Since workflowID (workflowName) from
+//         * message and instanceID do not equal, so we have to handle it explicitly
+//         */
+//        if (type == EventType.RESOURCE_MAPPING && event.getMessage().contains("i-")) {
+//            String nodeID = event.getNodeID();
+//            for (GraphCanvas graphCanvas : graphCanvases) {
+//                Node node = graphCanvas.getWorkflow().getGraph().getNode(nodeID);
+//                if (node != null) {
+//                    ControlPort control = node.getControlInPort();
+//                    if (control != null) {
+//                        Node fromNode = control.getFromNode();
+//                        if (fromNode instanceof InstanceNode) {
+//                            InstanceNode ec2Node = (InstanceNode) fromNode;
+//
+//                            /*
+//                             * parse message and set output to InstanceNode
+//                             */
+//                            int start = event.getMessage().indexOf("i-");
+//                            String instanceId = event.getMessage().substring(start, start + 10);
+//                            ec2Node.setOutputInstanceId(instanceId);
+//
+//                            // make this node to not start a new instance
+//                            ec2Node.setStartNewInstance(false);
+//                            ec2Node.setInstanceId(instanceId);
+//                            ec2Node.setAmiId(null);
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         // TODO There is a possibility that XBaya misses to handle some
         // notification while a workflow is being loaded. Create a thread for
@@ -303,55 +324,20 @@ public class MonitorEventHandler implements ChangeListener {
      * @param graph
      */
     private void handleEvent(EventData event, boolean forward, Graph graph) {
-        EventType type = event.getType();
-        String nodeID = event.getNodeID();
+//        EventType type = event.getType();
+        String nodeID = event.getWorkflowNodeId();
         Node node = graph.getNode(nodeID);
-        System.out.println(type);
-        ;
-        // logger.info("type: " + type);
-        if (type == MonitorUtil.EventType.WORKFLOW_INVOKED) {
-            workflowStarted(graph, forward);
+        if (event.getStatus().equals(WorkflowNodeState.INVOKED.toString())) {
+            invokeNode(node);
+//            workflowStarted(graph, forward);
 //            workflowStatusUpdater.workflowStarted(event.getExperimentID());
-        } else if (type == MonitorUtil.EventType.WORKFLOW_TERMINATED) {
-            workflowFinished(graph, forward);
+        } else if (event.getStatus().equals(WorkflowNodeState.COMPLETED.toString())) {
+            nodeFinished(node, true);
+//            workflowFinished(graph, forward);
 //            workflowStatusUpdater.workflowFinished(event.getExperimentID());
-        } else if (type == EventType.INVOKING_SERVICE
-                // TODO this should be removed when GPEL sends all notification
-                // correctly.
-                || type == EventType.SERVICE_INVOKED) {
-            if (node == null) {
-                logger.warn("There is no node that has ID, " + nodeID);
-            } else {
-                nodeStarted(node, forward);
+        } else if (event.getStatus().equals(WorkflowNodeState.EXECUTING.toString())) {
+            nodeStarted(node, forward);
 //                workflowNodeStatusUpdater.workflowStarted(event.getExperimentID(), event.getNodeID());
-            }
-        } else if (type == MonitorUtil.EventType.RECEIVED_RESULT
-                // TODO this should be removed when GPEL sends all notification
-                // correctly.
-                || type == EventType.SENDING_RESULT) {
-            if (node == null) {
-                logger.warn("There is no node that has ID, " + nodeID);
-            } else {
-                nodeFinished(node, forward);
-//                workflowNodeStatusUpdater.workflowFinished(event.getExperimentID(), event.getNodeID());
-            }
-
-        } else if (type == EventType.INVOKING_SERVICE_FAILED || type == EventType.RECEIVED_FAULT
-                // TODO
-                || type == EventType.SENDING_FAULT || type == EventType.SENDING_RESPONSE_FAILED) {
-            if (node == null) {
-                logger.warn("There is no node that has ID, " + nodeID);
-            } else {
-                nodeFailed(node, forward);
-//                workflowNodeStatusUpdater.workflowFailed(event.getExperimentID(), event.getNodeID());
-            }
-        } else if (type == MonitorUtil.EventType.RESOURCE_MAPPING) {
-            if (node == null) {
-                logger.warn("There is no node that has ID, " + nodeID);
-            } else {
-                nodeResourceMapped(node, event.getEvent(), forward);
-//                workflowNodeStatusUpdater.workflowRunning(event.getExperimentID(), event.getNodeID());
-            }
         } else {
             // Ignore the rest.
         }
@@ -452,43 +438,6 @@ public class MonitorEventHandler implements ChangeListener {
         }
     }
 
-    private void nodeResourceMapped(Node node, XmlElement event, boolean forward) {
-        String resource = MonitorUtil.getMappedResource(event);
-        String retryCount = MonitorUtil.getRetryCount(event);
-        NodeGUI nodeGUI = NodeController.getGUI(node);
-        if (forward) {
-            LinkedList<ResourcePaintable> paintables = this.resourcePaintableMap.get(node);
-            if (paintables == null) {
-                paintables = new LinkedList<ResourcePaintable>();
-                this.resourcePaintableMap.put(node, paintables);
-            }
-            if (paintables.size() > 0) {
-                // Remove the previous one.
-                ResourcePaintable previousPaintable = paintables.getLast();
-                nodeGUI.removePaintable(previousPaintable);
-            }
-            ResourcePaintable paintable = new ResourcePaintable(resource, retryCount);
-            paintables.addLast(paintable);
-            nodeGUI.addPaintable(paintable);
-        } else {
-            LinkedList<ResourcePaintable> paintables = this.resourcePaintableMap.get(node);
-            if (paintables == null) {
-                paintables = new LinkedList<ResourcePaintable>();
-                this.resourcePaintableMap.put(node, paintables);
-            }
-            if (paintables.size() > 0) {
-                // Remove the last one.
-                ResourcePaintable lastPaintable = paintables.removeLast();
-                nodeGUI.removePaintable(lastPaintable);
-            }
-            if (paintables.size() > 0) {
-                // Add the previous one.
-                ResourcePaintable previousPaintable = paintables.getLast();
-                nodeGUI.addPaintable(previousPaintable);
-            }
-        }
-    }
-
     private void resetAll() {
         List<GraphCanvas> graphCanvases = this.xbayaGUI.getGraphCanvases();
         for (GraphCanvas graphCanvas : graphCanvases) {
@@ -501,6 +450,10 @@ public class MonitorEventHandler implements ChangeListener {
 
     private void executeNode(Node node) {
         node.setState(NodeExecutionState.EXECUTING);
+    }
+
+    private void invokeNode(Node node) {
+        node.setState(NodeExecutionState.WAITING);
     }
 
     private void finishNode(Node node) {

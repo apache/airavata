@@ -21,8 +21,8 @@
 
 package org.apache.airavata.xbaya.ui.monitor;
 
-import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.messaging.MonitorException;
 import org.apache.airavata.xbaya.ui.dialogs.WaitDialog;
 import org.apache.airavata.xbaya.ui.utils.Cancelable;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
@@ -58,7 +58,7 @@ public class MonitorStarter implements Cancelable {
      */
     public void cancel() {
         this.canceled = true;
-        this.subscribingThread.interrupt();
+//        this.subscribingThread.interrupt();
     }
 
     /**

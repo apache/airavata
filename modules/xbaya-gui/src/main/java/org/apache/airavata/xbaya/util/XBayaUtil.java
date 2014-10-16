@@ -46,7 +46,6 @@ import org.apache.airavata.workflow.model.graph.system.EndifNode;
 import org.apache.airavata.workflow.model.graph.system.ForEachNode;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.ThriftClientData;
 import org.apache.airavata.xbaya.ThriftServiceType;
 import org.apache.airavata.xbaya.XBayaConfiguration;
@@ -70,13 +69,13 @@ public class XBayaUtil {
     public static final String JCR_URL = "jcr.url";
 
     public static LeadContextHeader buildLeadContextHeader(final XBayaEngine engine,
-            MonitorConfiguration monitorConfiguration, String nodeId, LeadResourceMapping resourceMapping)
+           String nodeId, LeadResourceMapping resourceMapping)
             throws URISyntaxException {
 
         XBayaConfiguration configuration = engine.getConfiguration();
         Workflow workflow = engine.getGUI().getWorkflow();
 
-        LeadContextHeader leadContext = buildLeadContextHeader(workflow, configuration, monitorConfiguration, nodeId,
+        LeadContextHeader leadContext = buildLeadContextHeader(workflow, configuration, nodeId,
                 resourceMapping);
 
         return leadContext;
@@ -87,14 +86,13 @@ public class XBayaUtil {
      * 
      * @param workflow
      * @param configuration
-     * @param monitorConfiguration
      * @param nodeId
      * @param resourceMapping
      * @return
      * @throws URISyntaxException
      */
     public static LeadContextHeader buildLeadContextHeader(Workflow workflow, XBayaConfiguration configuration,
-            MonitorConfiguration monitorConfiguration, String nodeId, LeadResourceMapping resourceMapping)
+            String nodeId, LeadResourceMapping resourceMapping)
             throws URISyntaxException {
         LeadContextHeaderHelper leadContextHelper = new LeadContextHeaderHelper();
         leadContextHelper.setXBayaConfiguration(configuration);
@@ -102,7 +100,7 @@ public class XBayaUtil {
         leadContextHelper.setWorkflowInstanceID(workflow.getGPELInstanceID());
         leadContextHelper.setWorkflowTemplateID(workflow.getUniqueWorkflowName());
 
-        leadContextHelper.setMonitorConfiguration(monitorConfiguration);
+//        leadContextHelper.setMonitorConfiguration(monitorConfiguration);
 
         LeadContextHeader leadContext = leadContextHelper.getLeadContextHeader();
 

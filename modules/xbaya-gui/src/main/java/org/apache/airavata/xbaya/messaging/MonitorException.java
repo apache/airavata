@@ -17,16 +17,46 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
-package org.apache.airavata.xbaya.interpreter;
+ */
 
+package org.apache.airavata.xbaya.messaging;
 
-import org.apache.airavata.xbaya.messaging.NotificationHandler;
+import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
-public class Listener implements NotificationHandler {
+public class MonitorException extends WorkflowException {
 
-    public void handleNotification(String message) {
-       System.out.println("MessageRecieved: " + message);
-   }
+    /**
+     * Constructs a MonitorException.
+     */
+    public MonitorException() {
+        super();
+    }
 
+    /**
+     * Constructs a MonitorException.
+     * 
+     * @param message
+     */
+    public MonitorException(String message) {
+        super(message);
+    }
+
+    /**
+     * Constructs a MonitorException.
+     * 
+     * @param cause
+     */
+    public MonitorException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * Constructs a MonitorException.
+     * 
+     * @param message
+     * @param cause
+     */
+    public MonitorException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

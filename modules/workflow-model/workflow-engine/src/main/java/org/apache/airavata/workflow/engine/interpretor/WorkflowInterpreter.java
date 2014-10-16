@@ -22,7 +22,9 @@
 package org.apache.airavata.workflow.engine.interpretor;
 
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,11 +42,20 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.apache.airavata.api.Airavata;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.WorkflowIdentifier;
+import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.ExecutionUnit;
@@ -122,8 +133,9 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 
 	public static final String WORKFLOW_STARTED = "Workflow Running";
 	public static final String WORKFLOW_FINISHED = "Workflow Finished";
+    private final Publisher publisher;
 
-	private WorkflowInterpreterConfiguration config;
+    private WorkflowInterpreterConfiguration config;
 
 	private Map<Node, Invoker> invokerMap = new HashMap<Node, Invoker>();
 
@@ -152,12 +164,13 @@ public class WorkflowInterpreter implements AbstractActivityListener{
      * @param orchestratorClient
      */
 	public WorkflowInterpreter(Experiment experiment, String credentialStoreToken,
-                               WorkflowInterpreterConfiguration config, OrchestratorService.Client orchestratorClient) {
+                               WorkflowInterpreterConfiguration config, OrchestratorService.Client orchestratorClient, Publisher publisher) {
 		this.setConfig(config);
 		this.setExperiment(experiment);
 		this.setCredentialStoreToken(credentialStoreToken);
 		this.interactor = new SSWorkflowInterpreterInteractorImpl();
 		this.orchestratorClient = orchestratorClient;
+        this.publisher = publisher;
 		//TODO set act of provenance
 		nodeInstanceList=new HashMap<Node, WorkflowNodeDetails>();
         setWorkflowInterpreterConfigurationThreadLocal(config);
@@ -201,7 +214,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	 * @throws WorkflowException
 	 * @throws RegistryException 
 	 */
-	public void scheduleDynamically() throws WorkflowException, RegistryException {
+	public void scheduleDynamically() throws WorkflowException, RegistryException, AiravataException {
 		try {
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.RUNNING);
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
@@ -211,6 +224,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				inputDataStrings.put(dataObjectType.getKey(), dataObjectType.getValue());
 			}
 			for (Node node : inputNodes) {
+                publishNodeStatusChange(WorkflowNodeState.EXECUTING,node.getID(),experiment.getExperimentID());
 				if (inputDataStrings.containsKey(node.getID())){
 					((InputNode)node).setDefaultValue(inputDataStrings.get(node.getID()));
 				} else {
@@ -221,6 +235,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				Node node = inputNodes.get(i);
 				invokedNode.add(node);
 				node.setState(NodeExecutionState.FINISHED);
+                publishNodeStatusChange(WorkflowNodeState.INVOKED, node.getID(), experiment.getExperimentID());
 				notifyViaInteractor(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
 				String portId= ((InputNode) node).getID();
 				Object portValue = ((InputNode) node).getDefaultValue();
@@ -232,6 +247,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				workflowNode.addToNodeInputs(elem);
 				getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNode, workflowNode.getNodeInstanceId());
 				updateWorkflowNodeStatus(workflowNode, WorkflowNodeState.COMPLETED);
+                publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentID());
 			}
 
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
@@ -280,10 +296,13 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 							} catch (RegistryException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
-							}
+							} catch (AiravataException e) {
+                                e.printStackTrace();
+                            }
                         }
                     };
                 	updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.INVOKED);
+                    publishNodeStatusChange(WorkflowNodeState.INVOKED, node.getID(), experiment.getExperimentID());
                     threadList.add(th);
                     th.start();
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
@@ -368,7 +387,23 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		} finally{
         	cleanup();
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
-	    }
+            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED, experiment.getExperimentID());
+            MessageContext msgCtx = new MessageContext(event, MessageType.EXPERIMENT, AiravataUtils.getId("EXPERIMENT"));
+            msgCtx.setUpdatedTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+            publisher.publish(msgCtx);
+        }
+    }
+
+    private void publishNodeStatusChange(WorkflowNodeState state, String nodeId , String expId)
+            throws AiravataException {
+        if (publisher != null) {
+            MessageContext msgCtx = new MessageContext(new WorkflowNodeStatusChangeEvent(state, new WorkflowIdentifier(nodeId,
+                    expId)), MessageType.WORKFLOWNODE, AiravataUtils.getId("NODE"));
+            msgCtx.setUpdatedTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+            publisher.publish(msgCtx);
+        } else {
+            log.warn("Failed to publish workflow status change, publisher is null");
+        }
     }
 
 	private WorkflowNodeDetails createWorkflowNodeDetails(Node node) throws RegistryException {
@@ -416,7 +451,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_CLEANUP, null);
 	}
 
-	private void sendOutputsDynamically() throws WorkflowException, RegistryException {
+	private void sendOutputsDynamically() throws WorkflowException, RegistryException, AiravataException {
 		ArrayList<Node> outputNodes = getReadyOutputNodesDynamically();
 		if (outputNodes.size() != 0) {
             LinkedList<Object> outputValues = new LinkedList<Object>();
@@ -429,6 +464,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 //				workflowNodeDetails.setNodeInstanceId((String)getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, getExperiment().getExperimentID()));
 				node.setState(NodeExecutionState.EXECUTING);
 				updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.EXECUTING);
+                publishNodeStatusChange(WorkflowNodeState.EXECUTING, node.getID(), experiment.getExperimentID());
 				// OutputNode node = (OutputNode) outputNode;
 				List<DataPort> inputPorts = node.getInputPorts();
 
@@ -481,7 +517,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 					}
 				}
 				node.setState(NodeExecutionState.FINISHED);
-				updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.COMPLETED);
+                publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentID());
+                updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.COMPLETED);
 				notifyViaInteractor(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
 			}
 
@@ -530,11 +567,12 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		}
 	}
 
-	private void executeDynamically(final Node node) throws WorkflowException, TException, RegistryException {
+	private void executeDynamically(final Node node) throws WorkflowException, TException, RegistryException, AiravataException {
 		node.setState(NodeExecutionState.EXECUTING);
-		invokedNode.add(node);
-		updateWorkflowNodeStatus(nodeInstanceList.get(node), WorkflowNodeState.EXECUTING);
-		Component component = node.getComponent();
+        invokedNode.add(node);
+        updateWorkflowNodeStatus(nodeInstanceList.get(node), WorkflowNodeState.EXECUTING);
+        publishNodeStatusChange(WorkflowNodeState.EXECUTING, node.getID(), experiment.getExperimentID());
+        Component component = node.getComponent();
 		if (component instanceof SubWorkflowComponent) {
 			handleSubWorkComponent(node);
 		} else if (component instanceof WSComponent) {
@@ -1422,11 +1460,14 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			setupNodeDetailsOutput(node);
 			node.setState(NodeExecutionState.FINISHED);
         	try {
-				updateWorkflowNodeStatus(nodeInstanceList.get(node), state);
+                publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentID());
+                updateWorkflowNodeStatus(nodeInstanceList.get(node), state);
 			} catch (RegistryException e) {
 				e.printStackTrace();
-			}
-		}
+			} catch (AiravataException e) {
+                e.printStackTrace();
+            }
+        }
 	}
 	
     @Subscribe
