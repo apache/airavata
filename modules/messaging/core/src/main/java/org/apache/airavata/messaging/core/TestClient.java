@@ -39,7 +39,7 @@ public class TestClient {
     public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
     public static final String RABBITMQ_EXCHANGE_NAME = "rabbitmq.exchange.name";
     private final static Logger logger = LoggerFactory.getLogger(TestClient.class);
-    private final static String experimentId = "echoExperiment_cc733586-2bf8-4ee2-8a25-6521db135e7f.*";
+    private final static String experimentId = "echoExperiment_febc8b78-a66a-4c05-9b1f-1a6ebb0089d8";
 
     public static void main(String[] args) {
         try {
@@ -53,7 +53,7 @@ public class TestClient {
                     Map<String, Object> props = new HashMap<String, Object>();
                     List<String> routingKeys = new ArrayList<String>();
                     routingKeys.add(experimentId);
-                    routingKeys.add(experimentId + ".*.*");
+                    routingKeys.add(experimentId + ".*");
                     props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
                     return props;
                 }

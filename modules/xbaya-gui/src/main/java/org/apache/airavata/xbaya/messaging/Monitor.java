@@ -22,26 +22,17 @@
 package org.apache.airavata.xbaya.messaging;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.core.Consumer;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.impl.RabbitMQConsumer;
-import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.JobIdentifier;
-import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.Message;
 import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.TaskIdentifier;
-import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.WorkflowIdentifier;
-import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.messaging.event.Event;
 import org.apache.airavata.xbaya.messaging.event.EventProducer;
-import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,7 +100,8 @@ public class Monitor extends EventProducer {
     	//Notify listeners that the monitoring is about to start
     	getEventDataRepository().triggerListenerForPreMonitorStart();
         try {
-            this.messageClient = new RabbitMQConsumer();
+//            AiravataUtils.setExecutionAsServer();
+            this.messageClient = new RabbitMQConsumer("amqp://localhost:5672", "airavata_rabbitmq_exchange");
         } catch (AiravataException e) {
             String msg = "Failed to start the consumer";
             logger.error(msg, e);
@@ -203,7 +195,7 @@ public class Monitor extends EventProducer {
             Map<String, Object> props = new HashMap<String, Object>();
             List<String> routingKeys = new ArrayList<String>();
             routingKeys.add(experimentId);
-            routingKeys.add(experimentId + ".*.*");
+            routingKeys.add(experimentId + ".*");
             props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
             return props;
         }
