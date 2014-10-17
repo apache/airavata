@@ -27,6 +27,7 @@ import java.io.RandomAccessFile;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.*;
@@ -57,11 +58,10 @@ public class ServerMain {
 		servers = new ArrayList<IServer>();
     }
     
-	private static void loadServers() {
+	private static void loadServers(String serverNames) {
 		try {
-			String serversString = ServerSettings.getSetting(SERVERS_KEY);
-			if (serversString!=null){
-				String[] serversList = serversString.split(",");
+			if (serverNames !=null){
+				String[] serversList = serverNames.split(",");
 				for (String serverString : serversList) {
 					serverString=serverString.trim();
 					String serverClassName = ServerSettings.getSetting(serverString);
@@ -120,8 +120,7 @@ public class ServerMain {
 //		if (true){
 //			return;
 //		}
-
-        AiravataUtils.setExecutionAsServer();
+		AiravataUtils.setExecutionAsServer();
         CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
         if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
             performServerStopRequest(commandLineParameters);
@@ -137,8 +136,17 @@ public class ServerMain {
     private static void performServerStart(String[] args) {
 		setServerStarted();
 		logger.info("Airavata server instance starting...");
+		for (String string : args) {
+			logger.info("Server Arguments: " + string);
+		}
 		ServerSettings.mergeSettingsCommandLineArgs(args);
-		startAllServers();
+		String serverNames;
+		try {
+			serverNames = ApplicationSettings.getSetting(SERVERS_KEY);
+			startAllServers(serverNames);
+		} catch (ApplicationSettingsException e1) {
+			logger.error("Error finding servers property");
+		}
 		while(!hasStopRequested()){
 			try {
 				Thread.sleep(2000);
@@ -279,9 +287,9 @@ public class ServerMain {
 		}
 	}
 
-	public static void startAllServers() {
+	public static void startAllServers(String serversNames) {
 		if (!serversLoaded){
-			loadServers();
+			loadServers(serversNames);
 		}
 		for (IServer server : servers) {
 			try {
