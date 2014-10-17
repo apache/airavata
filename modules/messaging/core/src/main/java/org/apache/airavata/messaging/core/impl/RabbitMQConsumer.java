@@ -114,6 +114,10 @@ public class RabbitMQConsumer implements Consumer {
             String queueName = (String) props.get(MessagingConstants.RABBIT_QUEUE);
             String consumerTag = (String) props.get(MessagingConstants.RABBIT_CONSUMER_TAG);
             if (queueName == null) {
+                if (!channel.isOpen()) {
+                    channel = connection.createChannel();
+                    channel.exchangeDeclare(exchangeName, "topic", false);
+                }
                 queueName = channel.queueDeclare().getQueue();
             } else {
                 channel.queueDeclare(queueName, true, false, false, null);
