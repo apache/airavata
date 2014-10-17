@@ -35,7 +35,6 @@ import org.apache.airavata.xbaya.ui.monitor.MonitorStarter;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentSelector;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
-import org.apache.airavata.xbaya.workflow.WorkflowClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
@@ -48,12 +47,7 @@ public class XBayaEngine {
 
     private XBayaGUI gui;
 
-    private WorkflowClient workflowClient;
-
-    //FIXME: use rabbit mq producer instead of WS-Messanger producer
     private Monitor monitor;
-
-
 
     private boolean exitOnClose = true;
 
@@ -103,16 +97,6 @@ public class XBayaEngine {
     public XBayaGUI getGUI() {
         return this.gui;
     }
-
-    /**
-     * Returns the Workflow Client.
-     *
-     * @return the Workflow Client
-     */
-    public WorkflowClient getWorkflowClient() {
-        return this.workflowClient;
-    }
-
 
     /**
      * Returns the monitor.
@@ -190,10 +174,8 @@ public class XBayaEngine {
      */
     private void initMonitor() {
         try {
-            if (this.configuration.isStartMonitor()) {
-                MonitorStarter starter = new MonitorStarter(this);
-                starter.start();
-            }
+            MonitorStarter starter = new MonitorStarter(this);
+            starter.start();
         } catch (RuntimeException e) {
             getGUI().getErrorWindow().error(ErrorMessages.MONITOR_SUBSCRIPTION_ERROR, e);
         } catch (Error e) {
