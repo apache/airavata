@@ -25,6 +25,7 @@ package org.apache.airavata.messaging.core.impl;
 import com.rabbitmq.client.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.Consumer;
@@ -175,6 +176,7 @@ public class RabbitMQConsumer implements Consumer {
                         }
 
                         MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId());
+                        messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
                         handler.onMessage(messageContext);
                     } catch (TException e) {
                         String msg = "Failed to de-serialize the thrift message, from routing keys and queueName " + id;
