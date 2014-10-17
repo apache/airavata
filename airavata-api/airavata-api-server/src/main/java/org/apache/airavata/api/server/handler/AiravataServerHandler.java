@@ -21,31 +21,16 @@
 
 package org.apache.airavata.api.server.handler;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.ApplicationDeployment;
-import org.airavata.appcatalog.cpi.ComputeResource;
-import org.airavata.appcatalog.cpi.GwyResourceProfile;
+import org.airavata.appcatalog.cpi.*;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.api.server.util.DataModelUtils;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
@@ -55,12 +40,7 @@ import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataErrorType;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
-import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -69,11 +49,7 @@ import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.ParentDataType;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
@@ -81,113 +57,103 @@ import org.apache.airavata.workflow.engine.WorkflowEngine;
 import org.apache.airavata.workflow.engine.WorkflowEngineException;
 import org.apache.airavata.workflow.engine.WorkflowEngineFactory;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.data.Stat;
 
-public class AiravataServerHandler implements Airavata.Iface, Watcher {
+import java.util.*;
+
+public class AiravataServerHandler implements Airavata.Iface {
     private static final AiravataLogger logger = AiravataLoggerFactory.getLogger(AiravataServerHandler.class);
     private Registry registry;
     private AppCatalog appCatalog;
 
-    private ZooKeeper zk;
-
-    private static Integer mutex = -1;
-
-
     public AiravataServerHandler() {
-        try {
-            storeServerConfig();
-        } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            storeServerConfig();
+//        } catch (ApplicationSettingsException e) {
+//            e.printStackTrace();
+//        }
     }
 
-    private void storeServerConfig() throws ApplicationSettingsException {
-        String zkhostPort = AiravataZKUtils.getZKhostPort();
-        String airavataServerHostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_HOST)
-                            + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_PORT);
-
-        try {
-            zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
-            String apiServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_API_SERVER_NODE,"/airavata-server");
-            String OrchServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE,"/orchestrator-server");
-            String gfacServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_SERVER_NODE,"/gfac-server");
-            String gfacExperiments = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE,"/gfac-experiments");
-
-            synchronized (mutex) {
-                mutex.wait();  // waiting for the syncConnected event
-            }
-            Stat zkStat = zk.exists(apiServer, false);
-            if (zkStat == null) {
-                zk.create(apiServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
-            }
-            String instantNode = apiServer + File.separator + String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-            zkStat = zk.exists(instantNode, false);
-            if (zkStat == null) {
-                zk.create(instantNode,
-                        airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
-                logger.info("Successfully created airavata-server node");
-            }
-
-            zkStat = zk.exists(OrchServer, false);
-            if (zkStat == null) {
-                zk.create(OrchServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
-                logger.info("Successfully created orchestrator-server node");
-            }
-            zkStat = zk.exists(gfacServer, false);
-            if (zkStat == null) {
-                zk.create(gfacServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
-                logger.info("Successfully created gfac-server node");
-            }
-            zkStat = zk.exists(gfacServer, false);
-            if (zkStat == null) {
-                zk.create(gfacExperiments, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
-                logger.info("Successfully created gfac-server node");
-            }
-            logger.info("Finished starting ZK: " + zk);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (KeeperException e) {
-            e.printStackTrace();
-        }
-    }
-    synchronized public void process(WatchedEvent watchedEvent) {
-        synchronized (mutex) {
-            Event.KeeperState state = watchedEvent.getState();
-            logger.info(state.name());
-            if (state == Event.KeeperState.SyncConnected) {
-                mutex.notify();
-            } else if(state == Event.KeeperState.Expired ||
-                    state == Event.KeeperState.Disconnected){
-                try {
-                    mutex = -1;
-                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
-                    synchronized (mutex) {
-                        mutex.wait();  // waiting for the syncConnected event
-                    }
-                    storeServerConfig();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (ApplicationSettingsException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+//    private void storeServerConfig() throws ApplicationSettingsException {
+//        String zkhostPort = AiravataZKUtils.getZKhostPort();
+//        String airavataServerHostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_HOST)
+//                            + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_PORT);
+//
+//        try {
+//            zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
+//            String apiServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_API_SERVER_NODE,"/airavata-server");
+//            String OrchServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE,"/orchestrator-server");
+//            String gfacServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_SERVER_NODE,"/gfac-server");
+//            String gfacExperiments = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE,"/gfac-experiments");
+//
+//            synchronized (mutex) {
+//                mutex.wait();  // waiting for the syncConnected event
+//            }
+//            Stat zkStat = zk.exists(apiServer, false);
+//            if (zkStat == null) {
+//                zk.create(apiServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+//                        CreateMode.PERSISTENT);
+//            }
+//            String instantNode = apiServer + File.separator + String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+//            zkStat = zk.exists(instantNode, false);
+//            if (zkStat == null) {
+//                zk.create(instantNode,
+//                        airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+//                        CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
+//                logger.info("Successfully created airavata-server node");
+//            }
+//
+//            zkStat = zk.exists(OrchServer, false);
+//            if (zkStat == null) {
+//                zk.create(OrchServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+//                        CreateMode.PERSISTENT);
+//                logger.info("Successfully created orchestrator-server node");
+//            }
+//            zkStat = zk.exists(gfacServer, false);
+//            if (zkStat == null) {
+//                zk.create(gfacServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+//                        CreateMode.PERSISTENT);
+//                logger.info("Successfully created gfac-server node");
+//            }
+//            zkStat = zk.exists(gfacServer, false);
+//            if (zkStat == null) {
+//                zk.create(gfacExperiments, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+//                        CreateMode.PERSISTENT);
+//                logger.info("Successfully created gfac-server node");
+//            }
+//            logger.info("Finished starting ZK: " + zk);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        } catch (KeeperException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//    synchronized public void process(WatchedEvent watchedEvent) {
+//        synchronized (mutex) {
+//            Event.KeeperState state = watchedEvent.getState();
+//            logger.info(state.name());
+//            if (state == Event.KeeperState.SyncConnected) {
+//                mutex.notify();
+//            } else if(state == Event.KeeperState.Expired ||
+//                    state == Event.KeeperState.Disconnected){
+//                try {
+//                    mutex = -1;
+//                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+//                    synchronized (mutex) {
+//                        mutex.wait();  // waiting for the syncConnected event
+//                    }
+//                    storeServerConfig();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (ApplicationSettingsException e) {
+//                    e.printStackTrace();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//    }
 
     /**
      * Query Airavata to fetch the API version
