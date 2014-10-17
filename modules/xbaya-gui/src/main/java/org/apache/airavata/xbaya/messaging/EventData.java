@@ -21,7 +21,9 @@
 
 package org.apache.airavata.xbaya.messaging;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
@@ -38,7 +40,7 @@ import java.util.Date;
 
 public class EventData {
 
-    private Message  messageEvent;
+    private MessageContext  messageEvent;
 
     private Date updateDate;
 
@@ -47,7 +49,6 @@ public class EventData {
     private String workflowNodeId;
 
     private String message;
-    private MessageLevel messageLevel;
     private String messageId;
 
     /**
@@ -55,35 +56,31 @@ public class EventData {
      * 
      * @param event
      */
-    public EventData(Message event) throws TException {
+    public EventData(MessageContext event) {
         this.messageEvent = event;
         process(event);
     }
 
-    private void process(Message event) throws TException {
+    private void process(MessageContext event) {
         this.messageId = event.getMessageId();
-        this.messageLevel = event.getMessageLevel();
-        if (event.getMessageType() == MessageType.EXPERIMENT) {
-            ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
-            ThriftUtils.createThriftFromBytes(event.getEvent(), experimentStatusChangeEvent);
+        if (event.getType() == MessageType.EXPERIMENT) {
+            ExperimentStatusChangeEvent experimentStatusChangeEvent = (ExperimentStatusChangeEvent) event.getEvent();
             this.status = experimentStatusChangeEvent.getState().toString();
             this.experimentId = experimentStatusChangeEvent.getExperimentId();
             this.workflowNodeId = "";
             this.message = "Received experiment event , expId : " + experimentStatusChangeEvent.getExperimentId() +
                     ", status : " + experimentStatusChangeEvent.getState().toString();
-        }   else if (event.getMessageType() == MessageType.WORKFLOWNODE) {
-            WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
-            ThriftUtils.createThriftFromBytes(event.getEvent(), wfnStatusChangeEvent);
+        } else if (event.getType() == MessageType.WORKFLOWNODE) {
+            WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = (WorkflowNodeStatusChangeEvent) event.getEvent();
             WorkflowIdentifier wfIdentifier = wfnStatusChangeEvent.getWorkflowNodeIdentity();
             this.status = wfnStatusChangeEvent.getState().toString();
             this.experimentId = wfIdentifier.getExperimentId();
             this.workflowNodeId = wfIdentifier.getWorkflowNodeId();
-            this.message = "Received workflow status change event, expId : " +  wfIdentifier.getExperimentId() +
+            this.message = "Received workflow status change event, expId : " + wfIdentifier.getExperimentId() +
                     ", nodeId : " + wfIdentifier.getWorkflowNodeId() + " , status : " + wfnStatusChangeEvent.getState().toString();
 
-        }else if (event.getMessageType() == MessageType.TASK) {
-            TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
-            ThriftUtils.createThriftFromBytes(event.getEvent(), taskStatusChangeEvent);
+        } else if (event.getType() == MessageType.TASK) {
+            TaskStatusChangeEvent taskStatusChangeEvent = (TaskStatusChangeEvent) event.getEvent();
             TaskIdentifier taskIdentifier = taskStatusChangeEvent.getTaskIdentity();
             this.status = taskStatusChangeEvent.getState().toString();
             this.experimentId = taskIdentifier.getExperimentId();
@@ -91,11 +88,10 @@ public class EventData {
             this.message = "Received task event , expId : " + taskIdentifier.getExperimentId() + ",taskId : " +
                     taskIdentifier.getTaskId() + ", wfNodeId : " + taskIdentifier.getWorkflowNodeId() + ", status : " +
                     taskStatusChangeEvent.getState().toString();
-        } else if (event.getMessageType() == MessageType.JOB) {
-            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent();
-            ThriftUtils.createThriftFromBytes(event.getEvent(), jobStatusChangeEvent);
+        } else if (event.getType() == MessageType.JOB) {
+            JobStatusChangeEvent jobStatusChangeEvent = (JobStatusChangeEvent) event.getEvent();
             JobIdentifier jobIdentifier = jobStatusChangeEvent.getJobIdentity();
-            this.status  = jobStatusChangeEvent.getState().toString();
+            this.status = jobStatusChangeEvent.getState().toString();
             this.experimentId = jobIdentifier.getExperimentId();
             this.workflowNodeId = jobIdentifier.getWorkflowNodeId();
             this.message = "Received task event , expId : " + jobIdentifier.getExperimentId() + " ,taskId : " +
@@ -109,7 +105,7 @@ public class EventData {
      * 
      * @return The event
      */
-    public Message getEvent() {
+    public MessageContext getEvent() {
         return this.messageEvent;
     }
 
@@ -119,12 +115,12 @@ public class EventData {
      * @return The type
      */
     public MessageType getType() {
-        return this.messageEvent.getMessageType();
+        return this.messageEvent.getType();
     }
 
 	public Date getUpdateTime() {
         if (updateDate == null) {
-            updateDate = new Date(this.messageEvent.getUpdatedTime());
+            updateDate = new Date(this.messageEvent.getUpdatedTime().getTime());
         }
         return updateDate;
     }
@@ -139,10 +135,6 @@ public class EventData {
 
     public String getMessage() {
         return message;
-    }
-
-    public MessageLevel getMessageLevel() {
-        return messageLevel;
     }
 
     public String getMessageId() {

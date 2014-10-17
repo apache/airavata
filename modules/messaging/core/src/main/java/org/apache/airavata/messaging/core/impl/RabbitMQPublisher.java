@@ -26,6 +26,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.thrift.TException;
@@ -33,8 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RabbitMQPublisher implements Publisher {
-    public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
-    public static final String RABBITMQ_EXCHANGE_NAME = "rabbitmq.exchange.name";
+
     private static Logger log = LoggerFactory.getLogger(RabbitMQPublisher.class);
 
     private RabbitMQProducer rabbitMQProducer;
@@ -44,8 +44,8 @@ public class RabbitMQPublisher implements Publisher {
         String brokerUrl;
         String exchangeName;
         try {
-            brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
-            exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
+            brokerUrl = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
+            exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_EXCHANGE_NAME);
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
             log.error(message, e);

@@ -29,7 +29,9 @@ import org.apache.airavata.model.messaging.event.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -37,19 +39,22 @@ public class TestClient {
     public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
     public static final String RABBITMQ_EXCHANGE_NAME = "rabbitmq.exchange.name";
     private final static Logger logger = LoggerFactory.getLogger(TestClient.class);
-    private final static String experimentId = "echoExperiment_cc733586-2bf8-4ee2-8a25-6521db135e7f";
+    private final static String experimentId = "echoExperiment_febc8b78-a66a-4c05-9b1f-1a6ebb0089d8";
 
     public static void main(String[] args) {
         try {
             AiravataUtils.setExecutionAsServer();
             String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
-            String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
+            final String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
             RabbitMQConsumer consumer = new RabbitMQConsumer(brokerUrl, exchangeName);
             consumer.listen(new MessageHandler() {
                 @Override
-                public Map<String, String> getProperties() {
-                    Map<String, String> props = new HashMap<String, String>();
-                    props.put(MessagingConstants.RABBIT_ROUTING_KEY, experimentId);
+                public Map<String, Object> getProperties() {
+                    Map<String, Object> props = new HashMap<String, Object>();
+                    List<String> routingKeys = new ArrayList<String>();
+                    routingKeys.add(experimentId);
+                    routingKeys.add(experimentId + ".*");
+                    props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
                     return props;
                 }
 

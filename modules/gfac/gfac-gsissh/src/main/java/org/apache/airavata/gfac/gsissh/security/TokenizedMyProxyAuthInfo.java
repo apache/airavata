@@ -160,7 +160,10 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
     public GSSCredential getCredentialsFromStore() throws Exception {
 
         if (getCredentialReader() == null) {
-            setCredentialReader(GFacUtils.getCredentialReader());
+        	credentialReader = GFacUtils.getCredentialReader();
+        	if(credentialReader == null){
+        		return null;
+        	}
         }
 
         Credential credential = getCredentialReader().getCredential(getRequestData().getGatewayId(),
