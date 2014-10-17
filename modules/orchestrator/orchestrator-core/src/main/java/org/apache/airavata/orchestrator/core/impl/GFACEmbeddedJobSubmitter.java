@@ -59,7 +59,7 @@ public class GFACEmbeddedJobSubmitter implements JobSubmitter {
 
     public boolean submit(String experimentID, String taskID) throws OrchestratorException {
         try {
-            return gfac.submitJob(experimentID, taskID, ServerSettings.getSetting(Constants.GATEWAY_NAME));
+            return gfac.submitJob(experimentID, taskID, ServerSettings.getDefaultUserGateway());
         } catch (Exception e) {
             String error = "Error launching the job : " + experimentID;
             logger.error(error);

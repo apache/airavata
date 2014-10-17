@@ -115,6 +115,9 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
 
         if (getCredentialReader() == null) {
             credentialReader = GFacUtils.getCredentialReader();
+            if(credentialReader == null){
+            	 return null;
+            }
         }
 
         Credential credential = getCredentialReader().getCredential(getRequestData().getGatewayId(),

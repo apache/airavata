@@ -101,13 +101,7 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
         this.tableModelChangeEvent = new ChangeEvent(this); // We only need one.
         this.events = new ArrayList<EventData>();
     }
-    public void addEvent(Message message) {
-        try {
-            addEvent(new EventData(message));
-        } catch (TException e) {
-            logger.error("Error while adding new message event", e);
-        }
-    }
+
     /**
      * @param event
      */

@@ -27,13 +27,13 @@ IS_DAEMON_MODE=false
 LOGO=true
 STOP=false
 FORCE=false
-SERVERS="--servers=apiserver,orchestrator,gfac,workflowserver"
+SERVERS="--servers=apiserver"
 for var in "$@"
 do
     case $var in
         -xdebug)
-        	AIRAVATA_COMMAND="$AIRAVATA_COMMAND $SERVERS"
             JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
+	    AIRAVATA_COMMAND="$AIRAVATA_COMMAND $SERVERS"
             shift
         ;;
         -security)
@@ -41,8 +41,8 @@ do
             shift
         ;;
 	start)
-		AIRAVATA_COMMAND="$AIRAVATA_COMMAND $SERVERS"
-	    IS_DAEMON_MODE=true
+	   AIRAVATA_COMMAND="$AIRAVATA_COMMAND $SERVERS"
+	   IS_DAEMON_MODE=true
             shift
         ;;
 	stop)
@@ -73,7 +73,7 @@ do
             exit 0
         ;;
 	*)
-	    AIRAVATA_COMMAND="$AIRAVATA_COMMAND $SERVERS $var"
+	    AIRAVATA_COMMAND="$AIRAVATA_COMMAND $SERVERS $var"	    
             shift
     esac
 done
@@ -108,7 +108,7 @@ else
 		echo "Starting airavata server in daemon mode..."
 		nohup java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
 		    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
-		    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $* > airavata-server.out & 
+		    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $* > api-server.out & 
  	else
 		java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
 		    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \

@@ -104,7 +104,7 @@ public class RabbitMQProducer {
                 log.info("setting basic.qos / prefetch count to " + prefetchCount + " for " + exchangeName);
                 channel.basicQos(prefetchCount);
             }
-            channel.exchangeDeclare(exchangeName, "direct", false);
+            channel.exchangeDeclare(exchangeName, "topic", false);
         } catch (Exception e) {
             reset();
             String msg = "could not open channel for exchange " + exchangeName;

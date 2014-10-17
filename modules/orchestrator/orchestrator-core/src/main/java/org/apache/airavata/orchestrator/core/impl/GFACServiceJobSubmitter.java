@@ -102,7 +102,7 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
 					// before submitting the job we check again the state of the node
 					if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild, tokenId)) {
 						// FIXME:: The GatewayID is temporarily read from properties file. It should instead be inferred from the token.
-						return gfacClient.submitJob(experimentID, taskID, ServerSettings.getSetting(Constants.GATEWAY_NAME));
+						return gfacClient.submitJob(experimentID, taskID, ServerSettings.getDefaultUserGateway());
 					}
 				}
 			}
