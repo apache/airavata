@@ -33,10 +33,17 @@ public final class Constants {
     public static final String PULL = "pull";
     public static final String API_SERVER_PORT = "apiserver.server.port";
     public static final String API_SERVER_HOST = "apiserver.server.host";
+    public static final String REGISTRY_JDBC_URL = "registry.jdbc.url";
+    public static final String APPCATALOG_JDBC_URL = "appcatalog.jdbc.url";
+    public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
+    public static final String RABBITMQ_EXCHANGE = "rabbitmq.exchange.name";
     public static final String ORCHESTRATOR_SERVER_HOST = "orchestrator.server.host";
     public static final String ORCHESTRATOR_SERVER_PORT = "orchestrator.server.port";
     public static final String GFAC_SERVER_HOST = "gfac.server.host";
     public static final String GFAC_SERVER_PORT = "gfac.server.port";
+    public static final String ZOOKEEPER_EXPERIMENT_CATALOG = "experiment-catalog";
+    public static final String ZOOKEEPER_APPCATALOG = "app-catalog";
+    public static final String ZOOKEEPER_RABBITMQ = "rabbit-mq";
     public static final String ZOOKEEPER_SERVER_HOST = "zookeeper.server.host";
     public static final String ZOOKEEPER_SERVER_PORT = "zookeeper.server.port";
     public static final String ZOOKEEPER_API_SERVER_NODE = "airavata-server";

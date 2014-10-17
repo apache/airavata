@@ -58,7 +58,7 @@ public class WorkflowServer implements IServer{
     public void StartAiravataServer(Workflow.Processor<Workflow.Iface> appCatalogServerHandler) throws AiravataSystemException {
         try {
             AiravataUtils.setExecutionAsServer();
-            AppCatalogInitUtil.initializeDB();
+//            AppCatalogInitUtil.initializeDB();
             final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.WORKFLOW_SERVER_PORT,"8931"));
             final String serverHost = ServerSettings.getSetting(Constants.WORKFLOW_SERVER_HOST, null);
             
