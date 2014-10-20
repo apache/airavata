@@ -232,7 +232,21 @@ public class AppCatalogThriftConversion {
         resource.setSshPort(submission.getSshPort());
         return resource;
     }
+    
+    
+    public static UnicoreJobSubmissionResource getUnicoreJobSubmission (UnicoreJobSubmission submission){
+    	UnicoreJobSubmissionResource resource = new UnicoreJobSubmissionResource();
+        
+        resource.setjobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
+        
+        if (submission.getSecurityProtocol() != null){
+            resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
+        }
+        resource.setUnicoreEndpointUrl(submission.getUnicoreEndPointURL());
+        return resource;
+    }
 
+    
     public static CloudSubmissionResource getCloudJobSubmission (CloudJobSubmission submission){
         CloudSubmissionResource resource = new CloudSubmissionResource();
         resource.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
@@ -314,7 +328,16 @@ public class AppCatalogThriftConversion {
     	sshJobSubmission.setSshPort(submission.getSshPort());
         return sshJobSubmission;
     }
+    
+    public static UnicoreJobSubmission getUnicoreJobSubmissionDescription (UnicoreJobSubmissionResource submission) throws AppCatalogException {
+    	UnicoreJobSubmission unicoreJobSubmission = new UnicoreJobSubmission();
+    	unicoreJobSubmission.setUnicoreEndPointURL(submission.getUnicoreEndpointUrl());
+    	unicoreJobSubmission.setJobSubmissionInterfaceId(submission.getjobSubmissionInterfaceId());
+    	unicoreJobSubmission.setSecurityProtocol(SecurityProtocol.GSI);
+        return unicoreJobSubmission;
+    }
 
+    
     public static CloudJobSubmission getCloudJobSubmissionDescription (CloudSubmissionResource submission) throws AppCatalogException {
         CloudJobSubmission cloudJobSubmission = new CloudJobSubmission();
         cloudJobSubmission.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());

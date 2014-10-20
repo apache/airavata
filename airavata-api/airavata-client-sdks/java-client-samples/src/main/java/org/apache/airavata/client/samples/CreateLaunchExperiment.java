@@ -24,6 +24,12 @@ package org.apache.airavata.client.samples;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.tools.RegisterSampleApplications;
+import org.apache.airavata.client.tools.RegisterSampleApplicationsUtils;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
@@ -46,42 +52,57 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
-    private static String echoAppId = "Echo_f99c94a4-a663-492e-bce6-266e77c06978";
+    private static String echoAppId = "Echo_56c6e26c-ca77-45fe-91d1-58fa59676879";
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
     private static String localHost = "localhost";
     private static String trestlesHostName = "trestles.sdsc.xsede.org";
+    private static String unicoreHostName = "fsd-cloud15.zam.kfa-juelich.de";
     private static String stampedeHostName = "stampede.tacc.xsede.org";
     private static String br2HostName = "bigred2.uits.iu.edu";
-
-    public static void main(String[] args) {
-            try {
+    
+ // unicore service endpoint url
+    private static final String unicoreEndPointURL = "https://fsd-cloud15.zam.kfa-juelich.de:7000/INTEROP1/services/BESFactory?res=default_bes_factory";
+    
+    
+    public static void main(String[] args) throws Exception {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-//            registerApplications(); // run this only the first time
-                for (int i = 0; i < 100; i++) {
-//            final String expId = createExperimentForSSHHost(airavata);
-                    final String expId = createEchoExperimentForTrestles(airavataClient);
-//            final String expId = createEchoExperimentForStampede(airavataClient);
-//            final String expId = createExperimentEchoForLocalHost(airavataClient);
-//            final String expId = createExperimentWRFTrestles(airavataClient);
-//            final String expId = createExperimentForBR2(airavataClient);
-//            final String expId = createExperimentForBR2Amber(airavataClient);
-//            final String expId = createExperimentWRFStampede(airavataClient);
-//            final String expId = createExperimentForStampedeAmber(airavataClient);
-//            final String expId = createExperimentForTrestlesAmber(airavataClient);
+//                registerApplications(); // run this only the first time
+                createAndLaunchExp();
+    }
+    
+    private static String fsdResourceId;
+    
+    
+    
+    public static void createAndLaunchExp() {
+    	try {
+        for (int i = 0; i < 2; i++) {
+//    final String expId = createExperimentForSSHHost(airavata);
+            final String expId = createEchoExperimentForFSD(airavataClient);
+//    final String expId = createEchoExperimentForStampede(airavataClient);
+//    final String expId = createExperimentEchoForLocalHost(airavataClient);
+//    final String expId = createExperimentWRFTrestles(airavataClient);
+//    final String expId = createExperimentForBR2(airavataClient);
+//    final String expId = createExperimentForBR2Amber(airavataClient);
+//    final String expId = createExperimentWRFStampede(airavataClient);
+//    final String expId = createExperimentForStampedeAmber(airavataClient);
+//    final String expId = createExperimentForTrestlesAmber(airavataClient);
 
-//            System.out.println("Experiment ID : " + expId);
-//            updateExperiment(airavata, expId);
-                    launchExperiment(airavataClient, expId);
-                }
-            } catch (Exception e) {
-                logger.error("Error while connecting with server", e.getMessage());
-                e.printStackTrace();
-            }
+//    System.out.println("Experiment ID : " + expId);
+//    updateExperiment(airavata, expId);
+            launchExperiment(airavataClient, expId);
+        }
+    } catch (Exception e) {
+        logger.error("Error while connecting with server", e.getMessage());
+        e.printStackTrace();
     }
 
+    }
+   
+    
     public static void registerApplications() {
         RegisterSampleApplications registerSampleApplications = new RegisterSampleApplications(airavataClient);
 
@@ -104,6 +125,27 @@ public class CreateLaunchExperiment {
         registerSampleApplications.registerAppInterfaces();
     }
 
+    public static String registerUnicoreEndpoint(String hostName, String hostDesc, JobSubmissionProtocol protocol, SecurityProtocol securityProtocol) throws TException {
+		
+		ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils
+				.createComputeResourceDescription(hostName, hostDesc, null, null);
+		
+		fsdResourceId = airavataClient.registerComputeResource(computeResourceDescription);
+		
+		if (fsdResourceId.isEmpty())
+			throw new AiravataClientException();
+		
+		System.out.println("FSD Compute ResourceID: "+fsdResourceId);
+		
+		JobSubmissionInterface jobSubmission = RegisterSampleApplicationsUtils.createJobSubmissionInterface(fsdResourceId, protocol, 2);
+		UnicoreJobSubmission ucrJobSubmission = new UnicoreJobSubmission();
+		ucrJobSubmission.setSecurityProtocol(securityProtocol);
+		ucrJobSubmission.setUnicoreEndPointURL(unicoreEndPointURL);
+		
+		
+		return jobSubmission.getJobSubmissionInterfaceId();
+	}
+    
     public static String createEchoExperimentForTrestles(Airavata.Client client) throws TException {
         try {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
@@ -154,7 +196,65 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+    
+    
+    public static String createEchoExperimentForFSD(Airavata.Client client) throws TException {
+        try {
+            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
+            DataObjectType input = new DataObjectType();
+            input.setKey("Input_to_Echo");
+            input.setType(DataType.STRING);
+            input.setValue("Echoed_Output=Hello World");
+            exInputs.add(input);
 
+            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
+            DataObjectType output = new DataObjectType();
+            output.setKey("echo_output");
+            output.setType(DataType.STRING);
+            output.setValue("");
+            exOut.add(output);
+            
+            echoAppId = "Echo_bdfe6dc3-0e80-41af-adb6-f89b1b05c3e8";
+            
+            Experiment simpleExperiment = 
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", echoAppId, exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+            
+            
+            
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(unicoreHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 1, 1, "normal", 1, 0, 1, "sds128");
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        return client.createExperiment(simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+        return null;
+    }
+
+    
+    
     public static String createExperimentWRFStampede(Airavata.Client client) throws TException {
         try {
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();

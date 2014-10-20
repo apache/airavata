@@ -53,7 +53,7 @@ public class UNICORESecurityContext extends GSISecurityContext {
 	private DefaultClientConfiguration secProperties;
 	protected static DirectoryCertChainValidator dcValidator;
 	
-	public static final String UNICORE_SECURITY_CONTEXT = "unicore";
+	public static final String UNICORE_SECURITY_CONTEXT = "unicore.security.context";
 	
 	public UNICORESecurityContext(CredentialReader credentialReader, RequestData requestData) {
 		super(credentialReader, requestData);

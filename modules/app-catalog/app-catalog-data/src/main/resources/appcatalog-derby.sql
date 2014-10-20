@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -86,6 +86,15 @@ CREATE TABLE GLOBUS_SUBMISSION
          SECURITY_PROTOCAL VARCHAR(255),
          PRIMARY KEY(SUBMISSION_ID)
 );
+
+CREATE TABLE UNICORE_SUBMISSION
+(
+         SUBMISSION_ID VARCHAR(255),
+         SECURITY_PROTOCAL VARCHAR(255),
+         UNICORE_ENDPOINT_URL VARCHAR(255),
+         PRIMARY KEY(SUBMISSION_ID)
+);
+
 
 CREATE TABLE GLOBUS_GK_ENDPOINT
 (
