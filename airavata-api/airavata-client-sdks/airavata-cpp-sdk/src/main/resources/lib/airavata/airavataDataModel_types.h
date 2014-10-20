@@ -32,6 +32,7 @@
 #include <thrift/cxxfunctional.h>
 #include "workspaceModel_types.h"
 #include "airavataErrors_types.h"
+#include "messagingEvents_types.h"
 
 
 namespace apache { namespace airavata { namespace model {

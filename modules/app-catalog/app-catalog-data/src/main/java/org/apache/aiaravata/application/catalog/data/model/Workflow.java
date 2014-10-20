@@ -52,6 +52,11 @@ public class Workflow implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @Lob
+    @Column(name = "IMAGE")
+    private byte[] image;
+
+
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -98,6 +103,14 @@ public class Workflow implements Serializable {
 
     public void setWfTemplateId(String wfTemplateId) {
         this.wfTemplateId=wfTemplateId;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 }
 

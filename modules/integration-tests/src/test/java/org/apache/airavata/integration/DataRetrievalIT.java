@@ -23,9 +23,8 @@ package org.apache.airavata.integration;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.api.Airavata.Client;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreatorNew;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.integration.tools.DocumentCreatorNew;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
@@ -174,8 +173,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 		return getClient().getAllUserProjects(user);
 	}
 
-	public String runExperiment(String user, String project) throws AiravataAPIInvocationException,
-			ApplicationSettingsException, AiravataClientConnectException,
+	public String runExperiment(String user, String project) throws ApplicationSettingsException, AiravataClientConnectException,
 			InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException, ExperimentNotFoundException {
 		List<DataObjectType> exInputs = new ArrayList<DataObjectType>();

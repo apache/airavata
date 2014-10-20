@@ -20,7 +20,8 @@
 */
 package org.apache.airavata.xbaya.interpreter;
 
-import org.apache.airavata.wsmg.client.NotificationHandler;
+
+import org.apache.airavata.xbaya.messaging.NotificationHandler;
 
 public class Listener implements NotificationHandler {
 

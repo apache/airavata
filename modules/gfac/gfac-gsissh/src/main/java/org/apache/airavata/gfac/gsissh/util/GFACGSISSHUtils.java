@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.gsissh.util;
 
+import java.sql.SQLException;
 import java.util.*;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -28,11 +29,15 @@ import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
+import org.apache.airavata.credential.store.credential.Credential;
+import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
+import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.security.TokenizedMyProxyAuthInfo;
 import org.apache.airavata.gsi.ssh.api.Cluster;
@@ -53,8 +58,11 @@ import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.openjpa.lib.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.validation.constraints.Max;
 
 
 public class GFACGSISSHUtils {
@@ -63,7 +71,8 @@ public class GFACGSISSHUtils {
     public static final String PBS_JOB_MANAGER = "pbs";
     public static final String SLURM_JOB_MANAGER = "slurm";
     public static final String SUN_GRID_ENGINE_JOB_MANAGER = "UGE";
-    public static Map<String, Cluster> clusters = new HashMap<String, Cluster>();
+    public static int maxClusterCount = 5;
+    public static Map<String, List<Cluster>> clusters = new HashMap<String, List<Cluster>>();
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
         HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
         if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
@@ -77,46 +86,79 @@ public class GFACGSISSHUtils {
             GSISecurityContext context = null;
             try {
                 TokenizedMyProxyAuthInfo tokenizedMyProxyAuthInfo = new TokenizedMyProxyAuthInfo(requestData);
+                CredentialReader credentialReader = GFacUtils.getCredentialReader();
+                if(credentialReader != null){
+                	CertificateCredential credential = null;
+					try {
+						credential = (CertificateCredential)credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
+			      		requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
+					} catch (Exception e) {
+						logger.error(e.getLocalizedMessage());
+					}
+                }
+
                 GsisshHostType gsisshHostType = (GsisshHostType) registeredHost.getType();
                 String key = requestData.getMyProxyUserName() + registeredHost.getType().getHostAddress() +
                         gsisshHostType.getPort();
                 boolean recreate = false;
-                if (clusters.containsKey(key) && clusters.get(key).getSession().isConnected()) {
-                    pbsCluster = (PBSCluster) clusters.get(key);
-                    try {
-                        pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
-                    } catch (Exception e) {
-                        logger.info("Connection found the connection map is expired, so we create from the scratch");
-                        recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
-                    }
-                    logger.info("Re-using the same connection used with the connection string:" + key);
-                    context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, pbsCluster);
-                } else {
-                    recreate = true;
-                }
-                if(recreate) {
-                    ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress(),
-                            gsisshHostType.getPort());
-
-                    JobManagerConfiguration jConfig = null;
-                    String installedParentPath = ((HpcApplicationDeploymentType)
-                            jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
-                    String jobManager = ((GsisshHostType) registeredHost.getType()).getJobManager();
-                    if (jobManager == null) {
-                        logger.error("No Job Manager is configured, so we are picking pbs as the default job manager");
-                        jConfig = CommonUtils.getPBSJobManager(installedParentPath);
-                    } else {
-                        if (PBS_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
-                            jConfig = CommonUtils.getPBSJobManager(installedParentPath);
-                        } else if (SLURM_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
-                            jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
-                        } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
-                            jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+                synchronized (clusters) {
+                    if (clusters.containsKey(key) && clusters.get(key).size() < maxClusterCount) {
+                        recreate = true;
+                    } else if (clusters.containsKey(key)) {
+                        int i = new Random().nextInt(Integer.MAX_VALUE) % maxClusterCount;
+                        if (clusters.get(key).get(i).getSession().isConnected()) {
+                            pbsCluster = (PBSCluster) clusters.get(key).get(i);
+                        } else {
+                            clusters.get(key).remove(i);
+                            recreate = true;
                         }
+                        if(!recreate) {
+                            try {
+                                pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+                            } catch (Exception e) {
+                                clusters.get(key).remove(i);
+                                logger.info("Connection found the connection map is expired, so we create from the scratch");
+                                maxClusterCount++;
+                                recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+                            }
+                            logger.info("Re-using the same connection used with the connection string:" + key);
+                            context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, pbsCluster);
+                        }
+                    } else {
+                        recreate = true;
                     }
-                    pbsCluster = new PBSCluster(serverInfo, tokenizedMyProxyAuthInfo, jConfig);
-                    context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, pbsCluster);
-                    clusters.put(key, pbsCluster);
+
+                    if (recreate) {
+                        ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress(),
+                                gsisshHostType.getPort());
+
+                        JobManagerConfiguration jConfig = null;
+                        String installedParentPath = ((HpcApplicationDeploymentType)
+                                jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
+                        String jobManager = ((GsisshHostType) registeredHost.getType()).getJobManager();
+                        if (jobManager == null) {
+                            logger.error("No Job Manager is configured, so we are picking pbs as the default job manager");
+                            jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+                        } else {
+                            if (PBS_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                                jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+                            } else if (SLURM_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                                jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
+                            } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                                jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+                            }
+                        }
+                        pbsCluster = new PBSCluster(serverInfo, tokenizedMyProxyAuthInfo, jConfig);
+                        context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, pbsCluster);
+                        List<Cluster> pbsClusters = null;
+                        if (!(clusters.containsKey(key))) {
+                            pbsClusters = new ArrayList<Cluster>();
+                        } else {
+                            pbsClusters = clusters.get(key);
+                        }
+                        pbsClusters.add(pbsCluster);
+                        clusters.put(key, pbsClusters);
+                    }
                 }
             } catch (Exception e) {
                 throw new GFacException("An error occurred while creating GSI security context", e);

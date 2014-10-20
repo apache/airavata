@@ -29,7 +29,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.monitor.state.JobStatusChangeRequest;
 import org.apache.airavata.gfac.monitor.HPCMonitorID;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.impl.pull.qstat.HPCPullMonitor;
@@ -41,6 +40,7 @@ import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Assert;
 import org.testng.annotations.Test;
@@ -80,7 +80,7 @@ public class QstatMonitorTestWithMyProxyAuth {
         class InnerClassQstat {
 
             @Subscribe
-            private void getStatus(JobStatusChangeRequest status) {
+            private void getStatus(JobStatusChangeEvent status) {
                 Assert.assertNotNull(status);
                 System.out.println(status.getState().toString());
                 monitorThread.interrupt();
@@ -165,7 +165,7 @@ public class QstatMonitorTestWithMyProxyAuth {
     }
 
     @Subscribe
-    public void testCaseShutDown(JobStatusChangeRequest status) {
+    public void testCaseShutDown(JobStatusChangeEvent status) {
         Assert.assertNotNull(status.getState());
         monitorThread.stop();
     }

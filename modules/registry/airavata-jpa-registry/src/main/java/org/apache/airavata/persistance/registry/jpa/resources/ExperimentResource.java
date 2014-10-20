@@ -220,6 +220,7 @@ public class ExperimentResource extends AbstractResource {
                 case STATUS:
                     generator = new QueryGenerator(STATUS);
                     generator.setParameter(StatusConstants.EXPERIMENT_ID, name);
+                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.EXPERIMENT.toString());
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -325,6 +326,7 @@ public class ExperimentResource extends AbstractResource {
                 case STATUS:
                     generator = new QueryGenerator(STATUS);
                     generator.setParameter(StatusConstants.EXPERIMENT_ID, name);
+                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.EXPERIMENT.toString());
                     q = generator.selectQuery(em);
                     Status status = (Status) q.getSingleResult();
                     StatusResource statusResource = (StatusResource) Utils.getResource(ResourceType.STATUS, status);

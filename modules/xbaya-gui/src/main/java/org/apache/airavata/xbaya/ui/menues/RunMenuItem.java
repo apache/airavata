@@ -34,19 +34,15 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-import org.apache.airavata.ws.monitor.Monitor;
-import org.apache.airavata.ws.monitor.MonitorConfiguration;
-import org.apache.airavata.ws.monitor.MonitorException;
-import org.apache.airavata.ws.monitor.event.Event;
-import org.apache.airavata.ws.monitor.event.Event.Type;
-import org.apache.airavata.ws.monitor.event.EventListener;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
+import org.apache.airavata.xbaya.messaging.Monitor;
+import org.apache.airavata.xbaya.messaging.event.Event;
+import org.apache.airavata.xbaya.messaging.event.EventListener;
 import org.apache.airavata.xbaya.ui.dialogs.monitor.MonitorConfigurationWindow;
-import org.apache.airavata.xbaya.ui.experiment.LaunchApplicationWindow;
-//import org.apache.airavata.xbaya.ui.experiment.WorkflowInterpreterLaunchWindow;
+import org.apache.airavata.xbaya.ui.experiment.WorkflowInterpreterLaunchWindow;
 import org.apache.airavata.xbaya.ui.monitor.MonitorStarter;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.ToolbarButton;
@@ -100,7 +96,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         createWorkflowMenu();
         Monitor monitor = this.engine.getMonitor();
         monitor.addEventListener(this);
-        monitor.getConfiguration().addEventListener(this);
+//        monitor.getConfiguration().addEventListener(this);
         engine.getConfiguration().registerExecutionModeChangeListener(this);
         XBayaToolBar.setGroupOrder(EXECUTE_ACTIONS, 5);
         XBayaToolBar.setGroupOrder(EXECUTE_MONITOR_ACTIONS, 6);
@@ -206,8 +202,8 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
             }
         };
 		item.addActionListener(action);
-        boolean valid = this.engine.getMonitor().getConfiguration().isValid();
-        item.setVisible(valid);
+//        boolean valid = this.engine.getMonitor().getConfiguration().isValid();
+//        item.setVisible(valid);
         toolbarButtonResumeMonitor = getToolBar().addToolbarButton(EXECUTE_MONITOR_ACTIONS,item.getText(), MenuIcons.MONITOR_RESUME_ICON, "Resume monitoring", action,4);
         toolbarButtonResumeMonitor.setEnabled(false);
         return item;
@@ -268,21 +264,21 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
     private void createLaunchXBayaInterpreterItem() {
         this.launchXBayaInterpreterItem = new JMenuItem("Run on Interpreter Server...", MenuIcons.RUN_ICON);
         AbstractAction action = new AbstractAction() {
-        	//private WorkflowInterpreterLaunchWindow window;
-            private LaunchApplicationWindow window;
+        	private WorkflowInterpreterLaunchWindow window;
             public void actionPerformed(ActionEvent e) {
-                if(!engine.getMonitor().hasCurrentExecutionTerminatedNotificationReceived() && engine.getMonitor().isMonitoring()){
+//                if(!engine.getMonitor().hasCurrentExecutionTerminatedNotificationReceived() && engine.getMonitor().isMonitoring()){
+                if(engine.getMonitor().isMonitoring()){
                     if (JOptionPane.showConfirmDialog(null,
                             "A previous workflow execution data needs to be cleared before launching another workflow. Do you wish to continue?",
                             "Run Workflow", JOptionPane.YES_NO_OPTION)!=JOptionPane.YES_OPTION){
                         return;
                     }
                 }
-//                if (this.window == null) {
-                //this.window = new WorkflowInterpreterLaunchWindow(engine);
-                this.window = new LaunchApplicationWindow(engine);
-//                }
+
                 try {
+                    if (this.window == null) {
+                        this.window = new WorkflowInterpreterLaunchWindow(engine);
+                    }
                     this.window.show();
                 } catch (Exception e1) {
                     engine.getGUI().getErrorWindow().error(e1);
@@ -296,21 +292,22 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
     }
     
     /**
-     * @see org.apache.airavata.ws.monitor.event.EventListener#eventReceived(org.apache.airavata.ws.monitor.event.Event)
+     * @see EventListener#eventReceived(Event)
      */
     public void eventReceived(Event event) {
-        Type type = event.getType();
-        if (type.equals(Type.MONITOR_CONFIGURATION_CHANGED)) {
-            MonitorConfiguration configuration = this.engine.getMonitor().getConfiguration();
-            boolean valid = configuration.isValid();
+        Event.Type type = event.getType();
+        if (type.equals(Event.Type.MONITOR_CONFIGURATION_CHANGED)) {
+//            MonitorConfiguration configuration = this.engine.getMonitor().getConfiguration();
+//            boolean valid = configuration.isValid();
+            boolean valid = true;
             resumeMonitoringItem.setVisible(valid);
             pauseMonitoringItem.setVisible(false);
             resetMonitoringItem.setVisible(false);
-        } else if (type.equals(Type.MONITOR_STARTED)) {
+        } else if (type.equals(Event.Type.MONITOR_STARTED)) {
             resumeMonitoringItem.setVisible(false);
             pauseMonitoringItem.setVisible(true);
             resetMonitoringItem.setVisible(true);
-        } else if (type.equals(Type.MONITOR_STOPED)) {
+        } else if (type.equals(Event.Type.MONITOR_STOPED)) {
             resumeMonitoringItem.setVisible(true);
             pauseMonitoringItem.setVisible(false);
             resetMonitoringItem.setVisible(false);

@@ -20,7 +20,9 @@
 
 package org.apache.airavata.credentialstore.basic;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credentialstore.session.ServletRequestHelper;
 import org.apache.airavata.security.AbstractAuthenticator;
 import org.apache.airavata.security.AuthenticationException;
@@ -166,9 +168,16 @@ public class BasicAccessAuthenticator extends AbstractAuthenticator {
         boolean seenInSession = false;
 
         if (httpSession != null) {
-            String user = (String)httpSession.getAttribute(Constants.USER_IN_SESSION);
-            String gateway = (String)httpSession.getAttribute(Constants.GATEWAY_NAME);
-
+        	 String user = null;
+        	 String gateway = null;
+        	try{
+             user = (String)httpSession.getAttribute(Constants.USER_IN_SESSION);
+             gateway = (String)httpSession.getAttribute(ServerSettings.getDefaultUserGateway());
+             }
+            catch (ApplicationSettingsException e1) {
+    			// TODO Auto-generated catch block
+    			e1.printStackTrace();
+    		}
             if (user != null && gateway != null) {
                 servletRequestHelper.addToContext(user, gateway);
                 seenInSession = true;

@@ -17,21 +17,34 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
+*/
+package org.apache.airavata.gfac.ssh.context;
 
-package org.apache.airavata.workflow.engine.interpretor;
+import org.apache.airavata.gsi.ssh.api.ServerInfo;
+import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 
-import java.util.List;
+public class SSHAuthWrapper {
+    private ServerInfo serverInfo;
 
-public class ExperimentTemplate {
-	private List<WorkflowExecutionTemplate> workflowExecutionTemplates;
+    private AuthenticationInfo authenticationInfo;
 
-	public List<WorkflowExecutionTemplate> getWorkflowExecutionTemplates() {
-		return workflowExecutionTemplates;
-	}
+    private String key;
 
-	public void setWorkflowExecutionTemplates(
-			List<WorkflowExecutionTemplate> workflowExecutionTemplates) {
-		this.workflowExecutionTemplates = workflowExecutionTemplates;
-	}
+    public SSHAuthWrapper(ServerInfo serverInfo, AuthenticationInfo authenticationInfo, String key) {
+        this.serverInfo = serverInfo;
+        this.authenticationInfo = authenticationInfo;
+        this.key = key;
+    }
+
+    public ServerInfo getServerInfo() {
+        return serverInfo;
+    }
+
+    public AuthenticationInfo getAuthenticationInfo() {
+        return authenticationInfo;
+    }
+
+    public String getKey() {
+        return key;
+    }
 }

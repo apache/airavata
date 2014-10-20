@@ -42,9 +42,9 @@ import javax.swing.table.TableColumnModel;
 
 import org.apache.airavata.common.utils.BrowserLauncher;
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.ws.monitor.Monitor;
-import org.apache.airavata.ws.monitor.EventDataRepository;
-import org.apache.airavata.ws.monitor.MonitorUtil;
+import org.apache.airavata.xbaya.messaging.EventData;
+import org.apache.airavata.xbaya.messaging.EventDataRepository;
+import org.apache.airavata.xbaya.messaging.Monitor;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.monitor.MonitorWindow;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler;
@@ -74,7 +74,8 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
      * 
      * Constructs a MonitorPanel.
      * 
-     * @param engine
+     * @param xbayaGUI
+     * @param monitor
      */
     public MonitorPanel(XBayaGUI xbayaGUI, Monitor monitor) {
         this(xbayaGUI, null, monitor);
@@ -83,8 +84,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
     /**
      * Constructs a NotificationPane.
      * 
-     * @param engine
-     *            The XBayaEngine.
+     * @param xbayaGUI The XBayaEngine.
      */
     public MonitorPanel(XBayaGUI xbayaGUI, String nodeID, Monitor monitor) {
         this.xbayaGUI=xbayaGUI;
@@ -188,11 +188,11 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
                 Point point = event.getPoint();
                 int row = MonitorPanel.this.table.rowAtPoint(point);
                 if (row >= 0 && row < MonitorPanel.this.table.getRowCount()) {
-                    XmlElement message = MonitorPanel.this.tableSliderModel.getEvent(row).getEvent();
+                    EventData message = MonitorPanel.this.tableSliderModel.getEvent(row);
 
                     int clickCount = event.getClickCount();
                     if (clickCount == 1) {
-                        if (MonitorUtil.getType(message) == MonitorUtil.EventType.PUBLISH_URL) {
+   /*                     if (MonitorUtil.getType(message) == MonitorUtil.EventType.PUBLISH_URL) {
                             int column = MonitorPanel.this.table.columnAtPoint(point);
                             if (column == EventDataRepository.Column.MESSAGE.ordinal()) {
                                 String url = MonitorUtil.getLocation(message);
@@ -230,7 +230,7 @@ public class MonitorPanel implements XBayaComponent, TableModelListener {
                                 //
                                 // }
                             }
-                        }
+                        }*/
                     } else if (clickCount >= 2) {
                         // Handle double clicks to pop up a window.
                         if (this.window == null) {

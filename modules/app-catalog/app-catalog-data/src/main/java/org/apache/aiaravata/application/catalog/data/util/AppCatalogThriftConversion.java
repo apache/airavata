@@ -21,13 +21,6 @@
 
 package org.apache.aiaravata.application.catalog.data.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.airavata.model.Workflow;
@@ -43,6 +36,8 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 
+import java.util.*;
+
 public class AppCatalogThriftConversion {
     public static ComputeResourceResource getComputeHostResource (ComputeResourceDescription description){
         ComputeResourceResource resource = new ComputeResourceResource();
@@ -52,7 +47,7 @@ public class AppCatalogThriftConversion {
         return resource;
     }
 
-    public static ComputeResourceDescription getComputeHostDescription (ComputeResourceResource resource) throws AppCatalogException{
+    public static ComputeResourceDescription getComputeHostDescription (ComputeResourceResource resource) throws AppCatalogException {
         ComputeResourceDescription description = new ComputeResourceDescription();
         description.setComputeResourceId(resource.getResourceId());
         description.setHostName(resource.getHostName());
@@ -262,20 +257,20 @@ public class AppCatalogThriftConversion {
         return resource;
     }
 
-    public static LocalDataMovementResource getLocalDataMovement(LOCALDataMovement localSubmission)throws AppCatalogException{
+    public static LocalDataMovementResource getLocalDataMovement(LOCALDataMovement localSubmission)throws AppCatalogException {
     	LocalDataMovementResource submission = new LocalDataMovementResource();
     	submission.setDataMovementInterfaceId(localSubmission.getDataMovementInterfaceId());
     	return submission;
     }
     
-    public static LOCALDataMovement getLocalDataMovement(LocalDataMovementResource localSubmission)throws AppCatalogException{
+    public static LOCALDataMovement getLocalDataMovement(LocalDataMovementResource localSubmission)throws AppCatalogException {
     	LOCALDataMovement submission = new LOCALDataMovement();
     	submission.setDataMovementInterfaceId(localSubmission.getDataMovementInterfaceId());
     	return submission;
     }
     
     
-    public static LocalSubmissionResource getLocalJobSubmission(LOCALSubmission localSubmission)throws AppCatalogException{
+    public static LocalSubmissionResource getLocalJobSubmission(LOCALSubmission localSubmission)throws AppCatalogException {
     	LocalSubmissionResource submission = new LocalSubmissionResource();
     	submission.setJobSubmissionInterfaceId(localSubmission.getJobSubmissionInterfaceId());
     	ResourceJobManagerResource resourceJobManager = getResourceJobManager(localSubmission.getResourceJobManager());
@@ -284,7 +279,7 @@ public class AppCatalogThriftConversion {
     	return submission;
     }
     
-    public static LOCALSubmission getLocalJobSubmission(LocalSubmissionResource localSubmission)throws AppCatalogException{
+    public static LOCALSubmission getLocalJobSubmission(LocalSubmissionResource localSubmission)throws AppCatalogException {
     	LOCALSubmission submission = new LOCALSubmission();
     	submission.setJobSubmissionInterfaceId(localSubmission.getJobSubmissionInterfaceId());
     	submission.setResourceJobManager(getResourceJobManager(localSubmission.getResourceJobManagerResource()));
@@ -300,7 +295,7 @@ public class AppCatalogThriftConversion {
     	return r;
     }
     
-    public static ResourceJobManager getResourceJobManager(ResourceJobManagerResource manager) throws AppCatalogException{
+    public static ResourceJobManager getResourceJobManager(ResourceJobManagerResource manager) throws AppCatalogException {
     	ResourceJobManager r = new ResourceJobManager();
     	r.setResourceJobManagerId(manager.getResourceJobManagerId());
     	r.setJobManagerBinPath(manager.getJobManagerBinPath());
@@ -693,6 +688,26 @@ public class AppCatalogThriftConversion {
         return preferences;
     }
 
+    public static InputDataObjectType getWorkflowInput (WorkflowInputResource resource){
+        InputDataObjectType input = new InputDataObjectType();
+        input.setName(resource.getInputKey());
+        input.setApplicationArgument(resource.getAppArgument());
+        input.setType(DataType.valueOf(resource.getDataType()));
+        input.setMetaData(resource.getMetadata());
+        input.setUserFriendlyDescription(resource.getUserFriendlyDesc());
+        return input;
+    }
+
+    public static List<InputDataObjectType> getWFInputs(List<Resource> resources){
+        List<InputDataObjectType> inputResources = new ArrayList<InputDataObjectType>();
+        if (resources != null && !resources.isEmpty()){
+            for (Resource resource : resources){
+                inputResources.add(getWorkflowInput((WorkflowInputResource) resource));
+            }
+        }
+        return inputResources;
+    }
+
     public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences){
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
@@ -702,11 +717,18 @@ public class AppCatalogThriftConversion {
         return gatewayProfile;
     }
 
-    public static Workflow getWorkflow (WorkflowResource resource){
+    public static Workflow getWorkflow (WorkflowResource resource) throws AppCatalogException {
         Workflow workflow = new Workflow();
         workflow.setTemplateId(resource.getWfTemplateId());
         workflow.setGraph(resource.getGraph());
         workflow.setName(resource.getWfName());
+        if (resource.getImage() != null){
+            workflow.setImage(resource.getImage().getBytes());
+        }
+        WorkflowInputResource inputResource = new WorkflowInputResource();
+        List<Resource> resources = inputResource.get(AbstractResource.WFInputConstants.WF_TEMPLATE_ID, resource.getWfTemplateId());
+        workflow.setWorkflowInputs(getWFInputs(resources));
+
         return workflow;
     }
 }

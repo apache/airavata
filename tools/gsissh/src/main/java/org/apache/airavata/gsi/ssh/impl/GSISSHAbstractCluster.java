@@ -82,7 +82,7 @@ public class GSISSHAbstractCluster implements Cluster {
         reconnect(serverInfo, authenticationInfo);
     }
 
-    private void reconnect(ServerInfo serverInfo, AuthenticationInfo authenticationInfo) throws SSHApiException {
+    private synchronized void reconnect(ServerInfo serverInfo, AuthenticationInfo authenticationInfo) throws SSHApiException {
         this.serverInfo = serverInfo;
 
         this.authenticationInfo = authenticationInfo;
@@ -221,7 +221,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
-    public JobDescriptor cancelJob(String jobID) throws SSHApiException {
+    public synchronized JobDescriptor cancelJob(String jobID) throws SSHApiException {
        RawCommandInfo rawCommandInfo = jobManagerConfiguration.getCancelCommand(jobID);
 
         StandardOutReader stdOutReader = new StandardOutReader();
@@ -244,7 +244,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
-    public String submitBatchJobWithScript(String scriptPath, String workingDirectory) throws SSHApiException {
+    public synchronized String submitBatchJobWithScript(String scriptPath, String workingDirectory) throws SSHApiException {
         this.scpTo(workingDirectory, scriptPath);
 
         // since this is a constant we do not ask users to fill this
@@ -264,7 +264,7 @@ public class GSISSHAbstractCluster implements Cluster {
         return  outputParser.parse(outputifAvailable);
     }
 
-    public String submitBatchJob(JobDescriptor jobDescriptor) throws SSHApiException {
+    public synchronized String submitBatchJob(JobDescriptor jobDescriptor) throws SSHApiException {
         TransformerFactory factory = TransformerFactory.newInstance();
         URL resource = this.getClass().getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());
 
@@ -297,24 +297,25 @@ public class GSISSHAbstractCluster implements Cluster {
             FileUtils.writeStringToFile(tempPBSFile, scriptContent);
 
             //reusing submitBatchJobWithScript method to submit a job
-            int retry = 3;
             String jobID = null;
-            while (retry > 0) {
+            int retry = 3;
+            while(retry>0) {
                 try {
-                     jobID = this.submitBatchJobWithScript(tempPBSFile.getAbsolutePath(),
+                    jobID = this.submitBatchJobWithScript(tempPBSFile.getAbsolutePath(),
                             jobDescriptor.getWorkingDirectory());
-                     retry = 0;
+                    retry=0;
                 } catch (SSHApiException e) {
                     retry--;
-                    try {
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
-                    reconnect(serverInfo, authenticationInfo);
-                    reconnect(serverInfo,authenticationInfo);
                     if(retry==0) {
                         throw e;
+                    }else{
+                        try {
+                            Thread.sleep(5000);
+                        } catch (InterruptedException e1) {
+                            e1.printStackTrace();
+                        }
+                        log.error("Error occured during job submission but doing a retry");
+                        e.printStackTrace();
                     }
                 }
             }
@@ -342,7 +343,7 @@ public class GSISSHAbstractCluster implements Cluster {
 
 
 
-    public JobDescriptor getJobDescriptorById(String jobID) throws SSHApiException {
+    public synchronized JobDescriptor getJobDescriptorById(String jobID) throws SSHApiException {
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
@@ -352,7 +353,7 @@ public class GSISSHAbstractCluster implements Cluster {
         return jobDescriptor;
     }
 
-    public JobStatus getJobStatus(String jobID) throws SSHApiException {
+    public synchronized JobStatus getJobStatus(String jobID) throws SSHApiException {
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
@@ -374,7 +375,7 @@ public class GSISSHAbstractCluster implements Cluster {
         this.jobManagerConfiguration = jobManagerConfiguration;
     }
 
-    public void scpTo(String remoteFile, String localFile) throws SSHApiException {
+    public synchronized void scpTo(String remoteFile, String localFile) throws SSHApiException {
         int retry = 3;
         while (retry > 0) {
             try {
@@ -399,7 +400,6 @@ public class GSISSHAbstractCluster implements Cluster {
                     e1.printStackTrace();
                 }
                 reconnect(serverInfo, authenticationInfo);
-                reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
                             + serverInfo.getHost() + ":rFile", e);
@@ -408,7 +408,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
-    public void scpFrom(String remoteFile, String localFile) throws SSHApiException {
+    public synchronized void scpFrom(String remoteFile, String localFile) throws SSHApiException {
         int retry = 3;
         while(retry>0) {
             try {
@@ -429,6 +429,8 @@ public class GSISSHAbstractCluster implements Cluster {
                 if (retry == 0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
                             + serverInfo.getHost() + ":rFile", e);
+                }else{
+                    log.error("Error performing scp but doing a retry");
                 }
             } catch (JSchException e) {
                 retry--;
@@ -441,12 +443,14 @@ public class GSISSHAbstractCluster implements Cluster {
                 if(retry==0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
                             + serverInfo.getHost() + ":rFile", e);
+                }else{
+                    log.error("Error performing scp but doing a retry");
                 }
             }
         }
     }
     
-    public void scpThirdParty(String remoteFileSource, String remoteFileTarget) throws SSHApiException {
+    public synchronized void scpThirdParty(String remoteFileSource, String remoteFileTarget) throws SSHApiException {
         try {
             if(!session.isConnected()){
                 session.connect();
@@ -462,7 +466,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
-    public void makeDirectory(String directoryPath) throws SSHApiException {
+    public synchronized void makeDirectory(String directoryPath) throws SSHApiException {
         int retry = 3;
         while (retry > 0) {
             try {
@@ -503,7 +507,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
     }
 
-    public List<String> listDirectory(String directoryPath) throws SSHApiException {
+    public synchronized List<String> listDirectory(String directoryPath) throws SSHApiException {
         int retry = 3;
         List<String> files = null;
         while (retry > 0) {
@@ -515,6 +519,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 files = SSHUtils.listDirectory(directoryPath, session);
                 retry=0;
             } catch (IOException e) {
+                e.printStackTrace();
                 retry--;
                 try {
                     Thread.sleep(5000);
@@ -523,15 +528,13 @@ public class GSISSHAbstractCluster implements Cluster {
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
-                    throw new SSHApiException("Failed during creating directory:" + directoryPath + " to remote file "
-                            + serverInfo.getHost() + ":rFile", e);
+                    throw new SSHApiException("Failed during listing directory:" + directoryPath + " to remote file ", e);
                 }
             } catch (JSchException e) {
                 retry--;
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
-                    throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
-                            + serverInfo.getHost() + ":rFile", e);
+                    throw new SSHApiException("Failed during listing directory :" + directoryPath + " to remote file ", e);
                 }
             }catch (SSHApiException e) {
                 retry--;
@@ -542,7 +545,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
-                    throw new SSHApiException("Failed during creating directory :" + directoryPath + " to remote file "
+                    throw new SSHApiException("Failed during listing directory :" + directoryPath + " to remote file "
                             + serverInfo.getHost() + ":rFile", e);
                 }
             }
@@ -550,7 +553,7 @@ public class GSISSHAbstractCluster implements Cluster {
         return files;
     }
 
-    public void getJobStatuses(String userName, Map<String,JobStatus> jobIDs)throws SSHApiException {
+    public synchronized void getJobStatuses(String userName, Map<String,JobStatus> jobIDs)throws SSHApiException {
         int retry = 3;
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getUserBasedMonitorCommand(userName);
         StandardOutReader stdOutReader = new StandardOutReader();
@@ -605,16 +608,19 @@ public class GSISSHAbstractCluster implements Cluster {
         String stdErrorString = jobIDReaderCommandOutput.getStdErrorString();
         log.info("StandardOutput Returned:" + stdOutputString);
         log.info("StandardError  Returned:" +stdErrorString);
-        
-        // We are checking for stderr containing the command issued. Thus ignores the verbose logs in stderr.  
-        if (stdErrorString != null && stdErrorString.contains(command)) {
+        String[] list = command.split(File.separator);
+        command = list[list.length - 1];
+        // We are checking for stderr containing the command issued. Thus ignores the verbose logs in stderr.
+        if (stdErrorString != null && stdErrorString.contains(command) && !stdErrorString.contains("Warning")) {
             log.error("Standard Error output : " + stdErrorString);
+            throw new SSHApiException(errorMsg + "\n\r StandardOutput: "+ stdOutputString + "\n\r StandardError: "+ stdErrorString);
+        }else if(stdOutputString.contains("error")){
             throw new SSHApiException(errorMsg + "\n\r StandardOutput: "+ stdOutputString + "\n\r StandardError: "+ stdErrorString);
         }
         return stdOutputString;
     }
 
     public void disconnect() throws SSHApiException {
-        getSession().disconnect();
+//        getSession().disconnect();
     }
 }

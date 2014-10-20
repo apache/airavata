@@ -24,7 +24,7 @@ package org.apache.airavata.integration;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.client.tools.DocumentCreatorNew;
+import org.apache.airavata.integration.tools.DocumentCreatorNew;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;

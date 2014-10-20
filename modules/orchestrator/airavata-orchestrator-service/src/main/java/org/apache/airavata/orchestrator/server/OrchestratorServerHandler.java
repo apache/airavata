@@ -27,6 +27,8 @@ import org.airavata.appcatalog.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.logger.AiravataLogger;
+import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -51,8 +53,6 @@ import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowN
 import org.apache.thrift.TException;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,7 +60,7 @@ import java.util.*;
 
 public class OrchestratorServerHandler implements OrchestratorService.Iface,
 		Watcher {
-	private static Logger log = LoggerFactory
+	private static AiravataLogger log = AiravataLoggerFactory
 			.getLogger(OrchestratorServerHandler.class);
 
 	private SimpleOrchestratorImpl orchestrator = null;
@@ -91,8 +91,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 					+ ":"
 					+ ServerSettings
 							.getSetting(Constants.ORCHESTRATOR_SERVER_PORT);
-            setGatewayName(ServerSettings.getSystemUserGateway());
-            setAiravataUserName(ServerSettings.getSystemUser());
+            setGatewayName(ServerSettings.getDefaultUserGateway());
+            setAiravataUserName(ServerSettings.getDefaultUser());
 			try {
 				zk = new ZooKeeper(zkhostPort, 6000, this); // no watcher is
 															// required, this
@@ -166,8 +166,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
             experiment = (Experiment) registry.get(
                     RegistryModelType.EXPERIMENT, experimentId);
             if (experiment == null) {
-                log.error("Error retrieving the Experiment by the given experimentID: "
-                        + experimentId);
+                log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
             }
             List<String> ids = registry.getIds(
@@ -213,12 +212,15 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			try {
 				registry.update(RegistryModelType.EXPERIMENT, experiment,
 						experimentId);
-			} catch (RegistryException e1) {
+            } catch (RegistryException e1) {
+                log.errorId(experimentId, "Couldn't update the status {} of the experiment {}.",
+                        ExperimentState.FAILED.toString(), experimentId);
 				throw new TException(e);
 			}
-
-			throw new TException(e);
+            log.errorId(experimentId, "Error while launching experiment {}.", experimentId);
+            throw new TException(e);
 		}
+        log.infoId(experimentId, "Successfully launched experiment {}.", experimentId);
 		return true;
 	}
 
@@ -256,8 +258,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 					Experiment experiment = (Experiment) registry.get(
 							RegistryModelType.EXPERIMENT, experimentId);
 					if (experiment == null) {
-						log.error("Error retrieving the Experiment by the given experimentID: "
-								+ experimentId);
+						log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}.",
+                                experimentId);
 						return false;
 					}
 					return orchestrator.validateExperiment(experiment,
@@ -266,8 +268,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			}
 
 		} catch (OrchestratorException e) {
+            log.errorId(experimentId, "Error while validating experiment", e);
 			throw new TException(e);
 		} catch (RegistryException e) {
+            log.errorId(experimentId, "Error while validating experiment", e);
 			throw new TException(e);
 		}
 		return false;
@@ -282,7 +286,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	 * @throws TException
 	 */
 	public boolean terminateExperiment(String experimentId) throws TException {
-        log.info("Experiment: " + experimentId + " is cancelling  !!!!!");
+        log.infoId(experimentId, "Experiment: {} is cancelling  !!!!!", experimentId);
         return validateStatesAndCancel(experimentId);
 	}
 
@@ -350,7 +354,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 						// we recover one gfac node at a time
 						final WatchedEvent event = watchedEvent;
 						final OrchestratorServerHandler handler = this;
-						(new Thread() {
+						/*(new Thread() {  // disabling ft implementation with zk
 							public void run() {
 								int retry = 0;
 								while (retry < 3) {
@@ -369,7 +373,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 								}
 
 							}
-						}).start();
+						}).start();*/
 						break;
 					}
 
@@ -406,9 +410,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 					RegistryModelType.TASK_DETAIL, taskId);
 			String applicationId = taskData.getApplicationId();
 			if (applicationId == null) {
-				throw new OrchestratorException(
-						"Error executing the job because there is no Application Name in this Experiment:  "
-								+ applicationId);
+                log.errorId(taskId, "Application id shouldn't be null.");
+				throw new OrchestratorException("Error executing the job, application id shouldn't be null.");
 			}
 			ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(taskData, applicationId);
             taskData.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
@@ -429,8 +432,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 				}
 			}
 		} catch (Exception e) {
+            log.errorId(taskId, "Error while launching task ", e);
             throw new TException(e);
         }
+        log.infoId(taskId, "No experiment found associated in task {}", taskId);
         return false;
 	}
 
@@ -491,15 +496,15 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
             Experiment experiment = (Experiment) registry.get(
                     RegistryModelType.EXPERIMENT, experimentId);
             if (experiment == null) {
-                log.error("Error retrieving the Experiment by the given experimentID: "
-                        + experimentId);
-                throw new OrchestratorException("Error retrieving the Experiment by the given experimentID:\n" +
-                        experimentId);
+                log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}.", experimentId);
+                throw new OrchestratorException("Error retrieving the Experiment by the given experimentID: " + experimentId);
             }
             ExperimentState experimentState = experiment.getExperimentStatus().getExperimentState();
-            if (experimentState.getValue()> 5 && experimentState.getValue()<10){
-                    throw new OrchestratorException("Unable to mark experiment as Cancelled, because current state is: "
-                    + experiment.getExperimentStatus().getExperimentState().toString());
+            if (experimentState.getValue()> 5 && experimentState.getValue()<10) {
+                log.errorId(experimentId, "Unable to mark experiment as Cancelled, current state {} doesn't allow to cancel the experiment {}.",
+                        experiment.getExperimentStatus().getExperimentState().toString(), experimentId);
+                throw new OrchestratorException("Unable to mark experiment as Cancelled, because current state is: "
+                        + experiment.getExperimentStatus().getExperimentState().toString());
             }else if(experimentState.getValue()<3){
                 // when experiment status is < 3 no jobDetails object is created,
                 // so we don't have to worry, we simply have to change the status and stop the execution

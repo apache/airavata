@@ -213,7 +213,6 @@ public class SSHUtils {
             throw new SSHApiException(stdOutReader.getStdErrorString());
         }
         channel.disconnect();
-        session.disconnect();
     }
 
     /**
@@ -567,7 +566,7 @@ public class SSHUtils {
                 out.flush();
             }
 
-            session.disconnect();
+//            session.disconnect();
 
             stdOutReader.onOutput(channel);
             if (stdOutReader.getStdErrorString().contains("scp:")) {
@@ -716,7 +715,7 @@ public class SSHUtils {
         } catch (JSchException e) {
 
             channel.disconnect();
-            session.disconnect();
+//            session.disconnect();
 
             throw new SSHApiException("Unable to retrieve command output. Command - " + command +
                     " on server - " + session.getHost() + ":" + session.getPort() +
@@ -747,7 +746,7 @@ public class SSHUtils {
         } catch (JSchException e) {
 
             channel.disconnect();
-            session.disconnect();
+//            session.disconnect();
 
             throw new SSHApiException("Unable to retrieve command output. Command - " + command +
                     " on server - " + session.getHost() + ":" + session.getPort() +

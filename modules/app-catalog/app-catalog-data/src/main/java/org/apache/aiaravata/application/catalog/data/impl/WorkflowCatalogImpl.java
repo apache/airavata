@@ -23,17 +23,19 @@ package org.apache.aiaravata.application.catalog.data.impl;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.WorkflowCatalog;
-import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
-import org.apache.aiaravata.application.catalog.data.resources.Resource;
-import org.apache.aiaravata.application.catalog.data.resources.WorkflowResource;
+import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogUtils;
 import org.apache.airavata.model.Workflow;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WorkflowCatalogImpl implements WorkflowCatalog {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowCatalogImpl.class);
@@ -81,8 +83,39 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
             resource.setWfTemplateId(AppCatalogUtils.getID(workflow.getName()));
             resource.setWfName(workflow.getName());
             resource.setGraph(workflow.getGraph());
+            if (workflow.getImage() != null){
+                resource.setImage(new String(workflow.getImage()));
+            }
             resource.save();
             workflow.setTemplateId(resource.getWfTemplateId());
+            List<InputDataObjectType> workflowInputs = workflow.getWorkflowInputs();
+            if (workflowInputs != null && workflowInputs.size() != 0){
+                for (InputDataObjectType input : workflowInputs){
+                    WorkflowInputResource wfInputResource = new WorkflowInputResource();
+                    wfInputResource.setWorkflowResource(resource);
+                    wfInputResource.setInputKey(input.getName());
+                    wfInputResource.setInputVal(input.getValue());
+                    wfInputResource.setWfTemplateId(resource.getWfTemplateId());
+                    wfInputResource.setDataType(input.getType().toString());
+                    wfInputResource.setAppArgument(input.getApplicationArgument());
+                    wfInputResource.setStandareInput(input.isStandardInput());
+                    wfInputResource.setUserFriendlyDesc(input.getUserFriendlyDescription());
+                    wfInputResource.setMetadata(input.getMetaData());
+                    wfInputResource.save();
+                }
+            }
+            List<OutputDataObjectType> workflowOutputs = workflow.getWorkflowOutputs();
+            if (workflowOutputs != null && workflowOutputs.size() != 0){
+                for (OutputDataObjectType output : workflowOutputs){
+                    WorkflowOutputResource outputResource = new WorkflowOutputResource();
+                    outputResource.setWorkflowResource(resource);
+                    outputResource.setOutputKey(output.getName());
+                    outputResource.setOutputVal(output.getValue());
+                    outputResource.setWfTemplateId(resource.getWfTemplateId());
+                    outputResource.setDataType(output.getType().toString());
+                    outputResource.save();
+                }
+            }
             return resource.getWfTemplateId();
         } catch (Exception e) {
             logger.error("Error while saving the workflow...", e);
@@ -97,7 +130,46 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
             WorkflowResource existingWF = (WorkflowResource)resource.get(workflowTemplateId);
             existingWF.setWfName(workflow.getName());
             existingWF.setGraph(workflow.getGraph());
+            if (workflow.getImage() != null){
+                existingWF.setImage(new String(workflow.getImage()));
+            }
             existingWF.save();
+            List<InputDataObjectType> existingwFInputs = workflow.getWorkflowInputs();
+            if (existingwFInputs != null && existingwFInputs.size() != 0){
+                for (InputDataObjectType input : existingwFInputs){
+                    WorkflowInputResource wfInputResource = new WorkflowInputResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.WFInputConstants.WF_TEMPLATE_ID,existingWF.getWfTemplateId());
+                    ids.put(AbstractResource.WFInputConstants.INPUT_KEY,input.getName());
+                    WorkflowInputResource existingInput = (WorkflowInputResource)wfInputResource.get(ids);
+                    existingInput.setWorkflowResource(existingWF);
+                    existingInput.setInputKey(input.getName());
+                    existingInput.setInputVal(input.getValue());
+                    existingInput.setWfTemplateId(existingWF.getWfTemplateId());
+                    existingInput.setDataType(input.getType().toString());
+                    existingInput.setAppArgument(input.getApplicationArgument());
+                    existingInput.setStandareInput(input.isStandardInput());
+                    existingInput.setUserFriendlyDesc(input.getUserFriendlyDescription());
+                    existingInput.setMetadata(input.getMetaData());
+                    existingInput.save();
+                }
+            }
+            List<OutputDataObjectType> workflowOutputs = workflow.getWorkflowOutputs();
+            if (workflowOutputs != null && workflowOutputs.size() != 0){
+                for (OutputDataObjectType output : workflowOutputs){
+                    WorkflowOutputResource outputResource = new WorkflowOutputResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.WFOutputConstants.WF_TEMPLATE_ID,existingWF.getWfTemplateId());
+                    ids.put(AbstractResource.WFOutputConstants.OUTPUT_KEY,output.getName());
+                    WorkflowOutputResource existingOutput = (WorkflowOutputResource)outputResource.get(ids);
+                    existingOutput.setWorkflowResource(existingWF);
+                    existingOutput.setOutputKey(output.getName());
+                    existingOutput.setOutputVal(output.getValue());
+                    existingOutput.setWfTemplateId(existingWF.getWfTemplateId());
+                    existingOutput.setDataType(output.getType().toString());
+                    existingOutput.save();
+                }
+            }
         } catch (Exception e) {
             logger.error("Error while updating the workflow...", e);
             throw new AppCatalogException(e);

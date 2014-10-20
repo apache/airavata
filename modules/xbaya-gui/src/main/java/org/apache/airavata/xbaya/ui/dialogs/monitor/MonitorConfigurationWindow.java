@@ -63,7 +63,7 @@ public class MonitorConfigurationWindow {
      */
     public MonitorConfigurationWindow(XBayaEngine engine) {
         this.engine = engine;
-        this.configuration = engine.getMonitor().getConfiguration();
+//        this.configuration = engine.getMonitor().getConfiguration();
         initGui();
     }
 
