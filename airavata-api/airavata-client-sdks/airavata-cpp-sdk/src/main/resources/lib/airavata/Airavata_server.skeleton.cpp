@@ -309,6 +309,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addSSHJobSubmissionDetails\n");
   }
 
+  bool addUNICOREJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) {
+    // Your implementation goes here
+    printf("addUNICOREJobSubmissionDetails\n");
+  }
+
   bool addCloudJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission) {
     // Your implementation goes here
     printf("addCloudJobSubmissionDetails\n");

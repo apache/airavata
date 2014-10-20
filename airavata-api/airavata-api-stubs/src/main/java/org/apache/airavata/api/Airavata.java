@@ -841,6 +841,29 @@ import org.slf4j.LoggerFactory;
     public boolean addSSHJobSubmissionDetails(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission sshJobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
 
     /**
+     * Add a UNICORE Job Submission details to a compute resource
+     *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+     * 
+     * @param computeResourceId
+     *   The identifier of the compute resource to which JobSubmission protocol to be added
+     * 
+     * @param priorityOrder
+     *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+     * 
+     * @param unicoreJobSubmission
+     *   The UnicoreJobSubmission object to be added to the resource.
+     * 
+     * @return status
+     *   Returns a success/failure of the deletion.
+     * 
+     * 
+     * @param computeResourceId
+     * @param priorityOrder
+     * @param unicoreJobSubmission
+     */
+    public boolean addUNICOREJobSubmissionDetails(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicoreJobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException;
+
+    /**
      *    * Add a Cloud Job Submission details to a compute resource
      *    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
      *    *
@@ -1384,6 +1407,8 @@ import org.slf4j.LoggerFactory;
     public void updateLocalSubmissionDetails(String jobSubmissionInterfaceId, org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission localSubmission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void addSSHJobSubmissionDetails(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission sshJobSubmission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+
+    public void addUNICOREJobSubmissionDetails(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicoreJobSubmission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
     public void addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission cloudSubmission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
@@ -3209,6 +3234,40 @@ import org.slf4j.LoggerFactory;
         throw result.ase;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addSSHJobSubmissionDetails failed: unknown result");
+    }
+
+    public boolean addUNICOREJobSubmissionDetails(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicoreJobSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      send_addUNICOREJobSubmissionDetails(computeResourceId, priorityOrder, unicoreJobSubmission);
+      return recv_addUNICOREJobSubmissionDetails();
+    }
+
+    public void send_addUNICOREJobSubmissionDetails(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicoreJobSubmission) throws org.apache.thrift.TException
+    {
+      addUNICOREJobSubmissionDetails_args args = new addUNICOREJobSubmissionDetails_args();
+      args.setComputeResourceId(computeResourceId);
+      args.setPriorityOrder(priorityOrder);
+      args.setUnicoreJobSubmission(unicoreJobSubmission);
+      sendBase("addUNICOREJobSubmissionDetails", args);
+    }
+
+    public boolean recv_addUNICOREJobSubmissionDetails() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
+    {
+      addUNICOREJobSubmissionDetails_result result = new addUNICOREJobSubmissionDetails_result();
+      receiveBase(result, "addUNICOREJobSubmissionDetails");
+      if (result.isSetSuccess()) {
+        return result.success;
+      }
+      if (result.ire != null) {
+        throw result.ire;
+      }
+      if (result.ace != null) {
+        throw result.ace;
+      }
+      if (result.ase != null) {
+        throw result.ase;
+      }
+      throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addUNICOREJobSubmissionDetails failed: unknown result");
     }
 
     public boolean addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission cloudSubmission) throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException
@@ -5804,6 +5863,44 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public void addUNICOREJobSubmissionDetails(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicoreJobSubmission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+      checkReady();
+      addUNICOREJobSubmissionDetails_call method_call = new addUNICOREJobSubmissionDetails_call(computeResourceId, priorityOrder, unicoreJobSubmission, resultHandler, this, ___protocolFactory, ___transport);
+      this.___currentMethod = method_call;
+      ___manager.call(method_call);
+    }
+
+    public static class addUNICOREJobSubmissionDetails_call extends org.apache.thrift.async.TAsyncMethodCall {
+      private String computeResourceId;
+      private int priorityOrder;
+      private org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicoreJobSubmission;
+      public addUNICOREJobSubmissionDetails_call(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicoreJobSubmission, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+        super(client, protocolFactory, transport, resultHandler, false);
+        this.computeResourceId = computeResourceId;
+        this.priorityOrder = priorityOrder;
+        this.unicoreJobSubmission = unicoreJobSubmission;
+      }
+
+      public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
+        prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("addUNICOREJobSubmissionDetails", org.apache.thrift.protocol.TMessageType.CALL, 0));
+        addUNICOREJobSubmissionDetails_args args = new addUNICOREJobSubmissionDetails_args();
+        args.setComputeResourceId(computeResourceId);
+        args.setPriorityOrder(priorityOrder);
+        args.setUnicoreJobSubmission(unicoreJobSubmission);
+        args.write(prot);
+        prot.writeMessageEnd();
+      }
+
+      public boolean getResult() throws org.apache.airavata.model.error.InvalidRequestException, org.apache.airavata.model.error.AiravataClientException, org.apache.airavata.model.error.AiravataSystemException, org.apache.thrift.TException {
+        if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
+          throw new IllegalStateException("Method call not finished!");
+        }
+        org.apache.thrift.transport.TMemoryInputTransport memoryTransport = new org.apache.thrift.transport.TMemoryInputTransport(getFrameBuffer().array());
+        org.apache.thrift.protocol.TProtocol prot = client.getProtocolFactory().getProtocol(memoryTransport);
+        return (new Client(prot)).recv_addUNICOREJobSubmissionDetails();
+      }
+    }
+
     public void addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder, org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission cloudSubmission, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
       addCloudJobSubmissionDetails_call method_call = new addCloudJobSubmissionDetails_call(computeResourceId, priorityOrder, cloudSubmission, resultHandler, this, ___protocolFactory, ___transport);
@@ -6705,6 +6802,7 @@ import org.slf4j.LoggerFactory;
       processMap.put("addLocalSubmissionDetails", new addLocalSubmissionDetails());
       processMap.put("updateLocalSubmissionDetails", new updateLocalSubmissionDetails());
       processMap.put("addSSHJobSubmissionDetails", new addSSHJobSubmissionDetails());
+      processMap.put("addUNICOREJobSubmissionDetails", new addUNICOREJobSubmissionDetails());
       processMap.put("addCloudJobSubmissionDetails", new addCloudJobSubmissionDetails());
       processMap.put("updateSSHJobSubmissionDetails", new updateSSHJobSubmissionDetails());
       processMap.put("updateCloudJobSubmissionDetails", new updateCloudJobSubmissionDetails());
@@ -8270,6 +8368,35 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public static class addUNICOREJobSubmissionDetails<I extends Iface> extends org.apache.thrift.ProcessFunction<I, addUNICOREJobSubmissionDetails_args> {
+      public addUNICOREJobSubmissionDetails() {
+        super("addUNICOREJobSubmissionDetails");
+      }
+
+      public addUNICOREJobSubmissionDetails_args getEmptyArgsInstance() {
+        return new addUNICOREJobSubmissionDetails_args();
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public addUNICOREJobSubmissionDetails_result getResult(I iface, addUNICOREJobSubmissionDetails_args args) throws org.apache.thrift.TException {
+        addUNICOREJobSubmissionDetails_result result = new addUNICOREJobSubmissionDetails_result();
+        try {
+          result.success = iface.addUNICOREJobSubmissionDetails(args.computeResourceId, args.priorityOrder, args.unicoreJobSubmission);
+          result.setSuccessIsSet(true);
+        } catch (org.apache.airavata.model.error.InvalidRequestException ire) {
+          result.ire = ire;
+        } catch (org.apache.airavata.model.error.AiravataClientException ace) {
+          result.ace = ace;
+        } catch (org.apache.airavata.model.error.AiravataSystemException ase) {
+          result.ase = ase;
+        }
+        return result;
+      }
+    }
+
     public static class addCloudJobSubmissionDetails<I extends Iface> extends org.apache.thrift.ProcessFunction<I, addCloudJobSubmissionDetails_args> {
       public addCloudJobSubmissionDetails() {
         super("addCloudJobSubmissionDetails");
@@ -9029,6 +9156,7 @@ import org.slf4j.LoggerFactory;
       processMap.put("addLocalSubmissionDetails", new addLocalSubmissionDetails());
       processMap.put("updateLocalSubmissionDetails", new updateLocalSubmissionDetails());
       processMap.put("addSSHJobSubmissionDetails", new addSSHJobSubmissionDetails());
+      processMap.put("addUNICOREJobSubmissionDetails", new addUNICOREJobSubmissionDetails());
       processMap.put("addCloudJobSubmissionDetails", new addCloudJobSubmissionDetails());
       processMap.put("updateSSHJobSubmissionDetails", new updateSSHJobSubmissionDetails());
       processMap.put("updateCloudJobSubmissionDetails", new updateCloudJobSubmissionDetails());
@@ -12720,6 +12848,74 @@ import org.slf4j.LoggerFactory;
 
       public void start(I iface, addSSHJobSubmissionDetails_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
         iface.addSSHJobSubmissionDetails(args.computeResourceId, args.priorityOrder, args.sshJobSubmission,resultHandler);
+      }
+    }
+
+    public static class addUNICOREJobSubmissionDetails<I extends AsyncIface> extends org.apache.thrift.AsyncProcessFunction<I, addUNICOREJobSubmissionDetails_args, Boolean> {
+      public addUNICOREJobSubmissionDetails() {
+        super("addUNICOREJobSubmissionDetails");
+      }
+
+      public addUNICOREJobSubmissionDetails_args getEmptyArgsInstance() {
+        return new addUNICOREJobSubmissionDetails_args();
+      }
+
+      public AsyncMethodCallback<Boolean> getResultHandler(final AsyncFrameBuffer fb, final int seqid) {
+        final org.apache.thrift.AsyncProcessFunction fcall = this;
+        return new AsyncMethodCallback<Boolean>() { 
+          public void onComplete(Boolean o) {
+            addUNICOREJobSubmissionDetails_result result = new addUNICOREJobSubmissionDetails_result();
+            result.success = o;
+            result.setSuccessIsSet(true);
+            try {
+              fcall.sendResponse(fb,result, org.apache.thrift.protocol.TMessageType.REPLY,seqid);
+              return;
+            } catch (Exception e) {
+              LOGGER.error("Exception writing to internal frame buffer", e);
+            }
+            fb.close();
+          }
+          public void onError(Exception e) {
+            byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
+            org.apache.thrift.TBase msg;
+            addUNICOREJobSubmissionDetails_result result = new addUNICOREJobSubmissionDetails_result();
+            if (e instanceof org.apache.airavata.model.error.InvalidRequestException) {
+                        result.ire = (org.apache.airavata.model.error.InvalidRequestException) e;
+                        result.setIreIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataClientException) {
+                        result.ace = (org.apache.airavata.model.error.AiravataClientException) e;
+                        result.setAceIsSet(true);
+                        msg = result;
+            }
+            else             if (e instanceof org.apache.airavata.model.error.AiravataSystemException) {
+                        result.ase = (org.apache.airavata.model.error.AiravataSystemException) e;
+                        result.setAseIsSet(true);
+                        msg = result;
+            }
+             else 
+            {
+              msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
+              msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
+            }
+            try {
+              fcall.sendResponse(fb,msg,msgType,seqid);
+              return;
+            } catch (Exception ex) {
+              LOGGER.error("Exception writing to internal frame buffer", ex);
+            }
+            fb.close();
+          }
+        };
+      }
+
+      protected boolean isOneway() {
+        return false;
+      }
+
+      public void start(I iface, addUNICOREJobSubmissionDetails_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
+        iface.addUNICOREJobSubmissionDetails(args.computeResourceId, args.priorityOrder, args.unicoreJobSubmission,resultHandler);
       }
     }
 
@@ -72091,6 +72287,1209 @@ import org.slf4j.LoggerFactory;
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addSSHJobSubmissionDetails_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        BitSet incoming = iprot.readBitSet(4);
+        if (incoming.get(0)) {
+          struct.success = iprot.readBool();
+          struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+          struct.ire.read(iprot);
+          struct.setIreIsSet(true);
+        }
+        if (incoming.get(2)) {
+          struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+          struct.ace.read(iprot);
+          struct.setAceIsSet(true);
+        }
+        if (incoming.get(3)) {
+          struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+          struct.ase.read(iprot);
+          struct.setAseIsSet(true);
+        }
+      }
+    }
+
+  }
+
+  public static class addUNICOREJobSubmissionDetails_args implements org.apache.thrift.TBase<addUNICOREJobSubmissionDetails_args, addUNICOREJobSubmissionDetails_args._Fields>, java.io.Serializable, Cloneable, Comparable<addUNICOREJobSubmissionDetails_args>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addUNICOREJobSubmissionDetails_args");
+
+    private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField PRIORITY_ORDER_FIELD_DESC = new org.apache.thrift.protocol.TField("priorityOrder", org.apache.thrift.protocol.TType.I32, (short)2);
+    private static final org.apache.thrift.protocol.TField UNICORE_JOB_SUBMISSION_FIELD_DESC = new org.apache.thrift.protocol.TField("unicoreJobSubmission", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new addUNICOREJobSubmissionDetails_argsStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new addUNICOREJobSubmissionDetails_argsTupleSchemeFactory());
+    }
+
+    public String computeResourceId; // required
+    public int priorityOrder; // required
+    public org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicoreJobSubmission; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      COMPUTE_RESOURCE_ID((short)1, "computeResourceId"),
+      PRIORITY_ORDER((short)2, "priorityOrder"),
+      UNICORE_JOB_SUBMISSION((short)3, "unicoreJobSubmission");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 1: // COMPUTE_RESOURCE_ID
+            return COMPUTE_RESOURCE_ID;
+          case 2: // PRIORITY_ORDER
+            return PRIORITY_ORDER;
+          case 3: // UNICORE_JOB_SUBMISSION
+            return UNICORE_JOB_SUBMISSION;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __PRIORITYORDER_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.COMPUTE_RESOURCE_ID, new org.apache.thrift.meta_data.FieldMetaData("computeResourceId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.PRIORITY_ORDER, new org.apache.thrift.meta_data.FieldMetaData("priorityOrder", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+      tmpMap.put(_Fields.UNICORE_JOB_SUBMISSION, new org.apache.thrift.meta_data.FieldMetaData("unicoreJobSubmission", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission.class)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addUNICOREJobSubmissionDetails_args.class, metaDataMap);
+    }
+
+    public addUNICOREJobSubmissionDetails_args() {
+    }
+
+    public addUNICOREJobSubmissionDetails_args(
+      String computeResourceId,
+      int priorityOrder,
+      org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicoreJobSubmission)
+    {
+      this();
+      this.computeResourceId = computeResourceId;
+      this.priorityOrder = priorityOrder;
+      setPriorityOrderIsSet(true);
+      this.unicoreJobSubmission = unicoreJobSubmission;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public addUNICOREJobSubmissionDetails_args(addUNICOREJobSubmissionDetails_args other) {
+      __isset_bitfield = other.__isset_bitfield;
+      if (other.isSetComputeResourceId()) {
+        this.computeResourceId = other.computeResourceId;
+      }
+      this.priorityOrder = other.priorityOrder;
+      if (other.isSetUnicoreJobSubmission()) {
+        this.unicoreJobSubmission = new org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission(other.unicoreJobSubmission);
+      }
+    }
+
+    public addUNICOREJobSubmissionDetails_args deepCopy() {
+      return new addUNICOREJobSubmissionDetails_args(this);
+    }
+
+    @Override
+    public void clear() {
+      this.computeResourceId = null;
+      setPriorityOrderIsSet(false);
+      this.priorityOrder = 0;
+      this.unicoreJobSubmission = null;
+    }
+
+    public String getComputeResourceId() {
+      return this.computeResourceId;
+    }
+
+    public addUNICOREJobSubmissionDetails_args setComputeResourceId(String computeResourceId) {
+      this.computeResourceId = computeResourceId;
+      return this;
+    }
+
+    public void unsetComputeResourceId() {
+      this.computeResourceId = null;
+    }
+
+    /** Returns true if field computeResourceId is set (has been assigned a value) and false otherwise */
+    public boolean isSetComputeResourceId() {
+      return this.computeResourceId != null;
+    }
+
+    public void setComputeResourceIdIsSet(boolean value) {
+      if (!value) {
+        this.computeResourceId = null;
+      }
+    }
+
+    public int getPriorityOrder() {
+      return this.priorityOrder;
+    }
+
+    public addUNICOREJobSubmissionDetails_args setPriorityOrder(int priorityOrder) {
+      this.priorityOrder = priorityOrder;
+      setPriorityOrderIsSet(true);
+      return this;
+    }
+
+    public void unsetPriorityOrder() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __PRIORITYORDER_ISSET_ID);
+    }
+
+    /** Returns true if field priorityOrder is set (has been assigned a value) and false otherwise */
+    public boolean isSetPriorityOrder() {
+      return EncodingUtils.testBit(__isset_bitfield, __PRIORITYORDER_ISSET_ID);
+    }
+
+    public void setPriorityOrderIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __PRIORITYORDER_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission getUnicoreJobSubmission() {
+      return this.unicoreJobSubmission;
+    }
+
+    public addUNICOREJobSubmissionDetails_args setUnicoreJobSubmission(org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission unicoreJobSubmission) {
+      this.unicoreJobSubmission = unicoreJobSubmission;
+      return this;
+    }
+
+    public void unsetUnicoreJobSubmission() {
+      this.unicoreJobSubmission = null;
+    }
+
+    /** Returns true if field unicoreJobSubmission is set (has been assigned a value) and false otherwise */
+    public boolean isSetUnicoreJobSubmission() {
+      return this.unicoreJobSubmission != null;
+    }
+
+    public void setUnicoreJobSubmissionIsSet(boolean value) {
+      if (!value) {
+        this.unicoreJobSubmission = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case COMPUTE_RESOURCE_ID:
+        if (value == null) {
+          unsetComputeResourceId();
+        } else {
+          setComputeResourceId((String)value);
+        }
+        break;
+
+      case PRIORITY_ORDER:
+        if (value == null) {
+          unsetPriorityOrder();
+        } else {
+          setPriorityOrder((Integer)value);
+        }
+        break;
+
+      case UNICORE_JOB_SUBMISSION:
+        if (value == null) {
+          unsetUnicoreJobSubmission();
+        } else {
+          setUnicoreJobSubmission((org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case COMPUTE_RESOURCE_ID:
+        return getComputeResourceId();
+
+      case PRIORITY_ORDER:
+        return Integer.valueOf(getPriorityOrder());
+
+      case UNICORE_JOB_SUBMISSION:
+        return getUnicoreJobSubmission();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case COMPUTE_RESOURCE_ID:
+        return isSetComputeResourceId();
+      case PRIORITY_ORDER:
+        return isSetPriorityOrder();
+      case UNICORE_JOB_SUBMISSION:
+        return isSetUnicoreJobSubmission();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof addUNICOREJobSubmissionDetails_args)
+        return this.equals((addUNICOREJobSubmissionDetails_args)that);
+      return false;
+    }
+
+    public boolean equals(addUNICOREJobSubmissionDetails_args that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_computeResourceId = true && this.isSetComputeResourceId();
+      boolean that_present_computeResourceId = true && that.isSetComputeResourceId();
+      if (this_present_computeResourceId || that_present_computeResourceId) {
+        if (!(this_present_computeResourceId && that_present_computeResourceId))
+          return false;
+        if (!this.computeResourceId.equals(that.computeResourceId))
+          return false;
+      }
+
+      boolean this_present_priorityOrder = true;
+      boolean that_present_priorityOrder = true;
+      if (this_present_priorityOrder || that_present_priorityOrder) {
+        if (!(this_present_priorityOrder && that_present_priorityOrder))
+          return false;
+        if (this.priorityOrder != that.priorityOrder)
+          return false;
+      }
+
+      boolean this_present_unicoreJobSubmission = true && this.isSetUnicoreJobSubmission();
+      boolean that_present_unicoreJobSubmission = true && that.isSetUnicoreJobSubmission();
+      if (this_present_unicoreJobSubmission || that_present_unicoreJobSubmission) {
+        if (!(this_present_unicoreJobSubmission && that_present_unicoreJobSubmission))
+          return false;
+        if (!this.unicoreJobSubmission.equals(that.unicoreJobSubmission))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(addUNICOREJobSubmissionDetails_args other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetComputeResourceId()).compareTo(other.isSetComputeResourceId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetComputeResourceId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.computeResourceId, other.computeResourceId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetPriorityOrder()).compareTo(other.isSetPriorityOrder());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetPriorityOrder()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.priorityOrder, other.priorityOrder);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetUnicoreJobSubmission()).compareTo(other.isSetUnicoreJobSubmission());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetUnicoreJobSubmission()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.unicoreJobSubmission, other.unicoreJobSubmission);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("addUNICOREJobSubmissionDetails_args(");
+      boolean first = true;
+
+      sb.append("computeResourceId:");
+      if (this.computeResourceId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.computeResourceId);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("priorityOrder:");
+      sb.append(this.priorityOrder);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("unicoreJobSubmission:");
+      if (this.unicoreJobSubmission == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.unicoreJobSubmission);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      if (computeResourceId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'computeResourceId' was not present! Struct: " + toString());
+      }
+      // alas, we cannot check 'priorityOrder' because it's a primitive and you chose the non-beans generator.
+      if (unicoreJobSubmission == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'unicoreJobSubmission' was not present! Struct: " + toString());
+      }
+      // check for sub-struct validity
+      if (unicoreJobSubmission != null) {
+        unicoreJobSubmission.validate();
+      }
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class addUNICOREJobSubmissionDetails_argsStandardSchemeFactory implements SchemeFactory {
+      public addUNICOREJobSubmissionDetails_argsStandardScheme getScheme() {
+        return new addUNICOREJobSubmissionDetails_argsStandardScheme();
+      }
+    }
+
+    private static class addUNICOREJobSubmissionDetails_argsStandardScheme extends StandardScheme<addUNICOREJobSubmissionDetails_args> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, addUNICOREJobSubmissionDetails_args struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 1: // COMPUTE_RESOURCE_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.computeResourceId = iprot.readString();
+                struct.setComputeResourceIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // PRIORITY_ORDER
+              if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+                struct.priorityOrder = iprot.readI32();
+                struct.setPriorityOrderIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // UNICORE_JOB_SUBMISSION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.unicoreJobSubmission = new org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission();
+                struct.unicoreJobSubmission.read(iprot);
+                struct.setUnicoreJobSubmissionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        if (!struct.isSetPriorityOrder()) {
+          throw new org.apache.thrift.protocol.TProtocolException("Required field 'priorityOrder' was not found in serialized data! Struct: " + toString());
+        }
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, addUNICOREJobSubmissionDetails_args struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.computeResourceId != null) {
+          oprot.writeFieldBegin(COMPUTE_RESOURCE_ID_FIELD_DESC);
+          oprot.writeString(struct.computeResourceId);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldBegin(PRIORITY_ORDER_FIELD_DESC);
+        oprot.writeI32(struct.priorityOrder);
+        oprot.writeFieldEnd();
+        if (struct.unicoreJobSubmission != null) {
+          oprot.writeFieldBegin(UNICORE_JOB_SUBMISSION_FIELD_DESC);
+          struct.unicoreJobSubmission.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class addUNICOREJobSubmissionDetails_argsTupleSchemeFactory implements SchemeFactory {
+      public addUNICOREJobSubmissionDetails_argsTupleScheme getScheme() {
+        return new addUNICOREJobSubmissionDetails_argsTupleScheme();
+      }
+    }
+
+    private static class addUNICOREJobSubmissionDetails_argsTupleScheme extends TupleScheme<addUNICOREJobSubmissionDetails_args> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, addUNICOREJobSubmissionDetails_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        oprot.writeString(struct.computeResourceId);
+        oprot.writeI32(struct.priorityOrder);
+        struct.unicoreJobSubmission.write(oprot);
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, addUNICOREJobSubmissionDetails_args struct) throws org.apache.thrift.TException {
+        TTupleProtocol iprot = (TTupleProtocol) prot;
+        struct.computeResourceId = iprot.readString();
+        struct.setComputeResourceIdIsSet(true);
+        struct.priorityOrder = iprot.readI32();
+        struct.setPriorityOrderIsSet(true);
+        struct.unicoreJobSubmission = new org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission();
+        struct.unicoreJobSubmission.read(iprot);
+        struct.setUnicoreJobSubmissionIsSet(true);
+      }
+    }
+
+  }
+
+  public static class addUNICOREJobSubmissionDetails_result implements org.apache.thrift.TBase<addUNICOREJobSubmissionDetails_result, addUNICOREJobSubmissionDetails_result._Fields>, java.io.Serializable, Cloneable, Comparable<addUNICOREJobSubmissionDetails_result>   {
+    private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addUNICOREJobSubmissionDetails_result");
+
+    private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.BOOL, (short)0);
+    private static final org.apache.thrift.protocol.TField IRE_FIELD_DESC = new org.apache.thrift.protocol.TField("ire", org.apache.thrift.protocol.TType.STRUCT, (short)1);
+    private static final org.apache.thrift.protocol.TField ACE_FIELD_DESC = new org.apache.thrift.protocol.TField("ace", org.apache.thrift.protocol.TType.STRUCT, (short)2);
+    private static final org.apache.thrift.protocol.TField ASE_FIELD_DESC = new org.apache.thrift.protocol.TField("ase", org.apache.thrift.protocol.TType.STRUCT, (short)3);
+
+    private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
+    static {
+      schemes.put(StandardScheme.class, new addUNICOREJobSubmissionDetails_resultStandardSchemeFactory());
+      schemes.put(TupleScheme.class, new addUNICOREJobSubmissionDetails_resultTupleSchemeFactory());
+    }
+
+    public boolean success; // required
+    public org.apache.airavata.model.error.InvalidRequestException ire; // required
+    public org.apache.airavata.model.error.AiravataClientException ace; // required
+    public org.apache.airavata.model.error.AiravataSystemException ase; // required
+
+    /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
+    @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
+      SUCCESS((short)0, "success"),
+      IRE((short)1, "ire"),
+      ACE((short)2, "ace"),
+      ASE((short)3, "ase");
+
+      private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
+
+      static {
+        for (_Fields field : EnumSet.allOf(_Fields.class)) {
+          byName.put(field.getFieldName(), field);
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, or null if its not found.
+       */
+      public static _Fields findByThriftId(int fieldId) {
+        switch(fieldId) {
+          case 0: // SUCCESS
+            return SUCCESS;
+          case 1: // IRE
+            return IRE;
+          case 2: // ACE
+            return ACE;
+          case 3: // ASE
+            return ASE;
+          default:
+            return null;
+        }
+      }
+
+      /**
+       * Find the _Fields constant that matches fieldId, throwing an exception
+       * if it is not found.
+       */
+      public static _Fields findByThriftIdOrThrow(int fieldId) {
+        _Fields fields = findByThriftId(fieldId);
+        if (fields == null) throw new IllegalArgumentException("Field " + fieldId + " doesn't exist!");
+        return fields;
+      }
+
+      /**
+       * Find the _Fields constant that matches name, or null if its not found.
+       */
+      public static _Fields findByName(String name) {
+        return byName.get(name);
+      }
+
+      private final short _thriftId;
+      private final String _fieldName;
+
+      _Fields(short thriftId, String fieldName) {
+        _thriftId = thriftId;
+        _fieldName = fieldName;
+      }
+
+      public short getThriftFieldId() {
+        return _thriftId;
+      }
+
+      public String getFieldName() {
+        return _fieldName;
+      }
+    }
+
+    // isset id assignments
+    private static final int __SUCCESS_ISSET_ID = 0;
+    private byte __isset_bitfield = 0;
+    public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
+    static {
+      Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
+      tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+      tmpMap.put(_Fields.IRE, new org.apache.thrift.meta_data.FieldMetaData("ire", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ACE, new org.apache.thrift.meta_data.FieldMetaData("ace", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      tmpMap.put(_Fields.ASE, new org.apache.thrift.meta_data.FieldMetaData("ase", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
+      metaDataMap = Collections.unmodifiableMap(tmpMap);
+      org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addUNICOREJobSubmissionDetails_result.class, metaDataMap);
+    }
+
+    public addUNICOREJobSubmissionDetails_result() {
+    }
+
+    public addUNICOREJobSubmissionDetails_result(
+      boolean success,
+      org.apache.airavata.model.error.InvalidRequestException ire,
+      org.apache.airavata.model.error.AiravataClientException ace,
+      org.apache.airavata.model.error.AiravataSystemException ase)
+    {
+      this();
+      this.success = success;
+      setSuccessIsSet(true);
+      this.ire = ire;
+      this.ace = ace;
+      this.ase = ase;
+    }
+
+    /**
+     * Performs a deep copy on <i>other</i>.
+     */
+    public addUNICOREJobSubmissionDetails_result(addUNICOREJobSubmissionDetails_result other) {
+      __isset_bitfield = other.__isset_bitfield;
+      this.success = other.success;
+      if (other.isSetIre()) {
+        this.ire = new org.apache.airavata.model.error.InvalidRequestException(other.ire);
+      }
+      if (other.isSetAce()) {
+        this.ace = new org.apache.airavata.model.error.AiravataClientException(other.ace);
+      }
+      if (other.isSetAse()) {
+        this.ase = new org.apache.airavata.model.error.AiravataSystemException(other.ase);
+      }
+    }
+
+    public addUNICOREJobSubmissionDetails_result deepCopy() {
+      return new addUNICOREJobSubmissionDetails_result(this);
+    }
+
+    @Override
+    public void clear() {
+      setSuccessIsSet(false);
+      this.success = false;
+      this.ire = null;
+      this.ace = null;
+      this.ase = null;
+    }
+
+    public boolean isSuccess() {
+      return this.success;
+    }
+
+    public addUNICOREJobSubmissionDetails_result setSuccess(boolean success) {
+      this.success = success;
+      setSuccessIsSet(true);
+      return this;
+    }
+
+    public void unsetSuccess() {
+      __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    /** Returns true if field success is set (has been assigned a value) and false otherwise */
+    public boolean isSetSuccess() {
+      return EncodingUtils.testBit(__isset_bitfield, __SUCCESS_ISSET_ID);
+    }
+
+    public void setSuccessIsSet(boolean value) {
+      __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SUCCESS_ISSET_ID, value);
+    }
+
+    public org.apache.airavata.model.error.InvalidRequestException getIre() {
+      return this.ire;
+    }
+
+    public addUNICOREJobSubmissionDetails_result setIre(org.apache.airavata.model.error.InvalidRequestException ire) {
+      this.ire = ire;
+      return this;
+    }
+
+    public void unsetIre() {
+      this.ire = null;
+    }
+
+    /** Returns true if field ire is set (has been assigned a value) and false otherwise */
+    public boolean isSetIre() {
+      return this.ire != null;
+    }
+
+    public void setIreIsSet(boolean value) {
+      if (!value) {
+        this.ire = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataClientException getAce() {
+      return this.ace;
+    }
+
+    public addUNICOREJobSubmissionDetails_result setAce(org.apache.airavata.model.error.AiravataClientException ace) {
+      this.ace = ace;
+      return this;
+    }
+
+    public void unsetAce() {
+      this.ace = null;
+    }
+
+    /** Returns true if field ace is set (has been assigned a value) and false otherwise */
+    public boolean isSetAce() {
+      return this.ace != null;
+    }
+
+    public void setAceIsSet(boolean value) {
+      if (!value) {
+        this.ace = null;
+      }
+    }
+
+    public org.apache.airavata.model.error.AiravataSystemException getAse() {
+      return this.ase;
+    }
+
+    public addUNICOREJobSubmissionDetails_result setAse(org.apache.airavata.model.error.AiravataSystemException ase) {
+      this.ase = ase;
+      return this;
+    }
+
+    public void unsetAse() {
+      this.ase = null;
+    }
+
+    /** Returns true if field ase is set (has been assigned a value) and false otherwise */
+    public boolean isSetAse() {
+      return this.ase != null;
+    }
+
+    public void setAseIsSet(boolean value) {
+      if (!value) {
+        this.ase = null;
+      }
+    }
+
+    public void setFieldValue(_Fields field, Object value) {
+      switch (field) {
+      case SUCCESS:
+        if (value == null) {
+          unsetSuccess();
+        } else {
+          setSuccess((Boolean)value);
+        }
+        break;
+
+      case IRE:
+        if (value == null) {
+          unsetIre();
+        } else {
+          setIre((org.apache.airavata.model.error.InvalidRequestException)value);
+        }
+        break;
+
+      case ACE:
+        if (value == null) {
+          unsetAce();
+        } else {
+          setAce((org.apache.airavata.model.error.AiravataClientException)value);
+        }
+        break;
+
+      case ASE:
+        if (value == null) {
+          unsetAse();
+        } else {
+          setAse((org.apache.airavata.model.error.AiravataSystemException)value);
+        }
+        break;
+
+      }
+    }
+
+    public Object getFieldValue(_Fields field) {
+      switch (field) {
+      case SUCCESS:
+        return Boolean.valueOf(isSuccess());
+
+      case IRE:
+        return getIre();
+
+      case ACE:
+        return getAce();
+
+      case ASE:
+        return getAse();
+
+      }
+      throw new IllegalStateException();
+    }
+
+    /** Returns true if field corresponding to fieldID is set (has been assigned a value) and false otherwise */
+    public boolean isSet(_Fields field) {
+      if (field == null) {
+        throw new IllegalArgumentException();
+      }
+
+      switch (field) {
+      case SUCCESS:
+        return isSetSuccess();
+      case IRE:
+        return isSetIre();
+      case ACE:
+        return isSetAce();
+      case ASE:
+        return isSetAse();
+      }
+      throw new IllegalStateException();
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      if (that == null)
+        return false;
+      if (that instanceof addUNICOREJobSubmissionDetails_result)
+        return this.equals((addUNICOREJobSubmissionDetails_result)that);
+      return false;
+    }
+
+    public boolean equals(addUNICOREJobSubmissionDetails_result that) {
+      if (that == null)
+        return false;
+
+      boolean this_present_success = true;
+      boolean that_present_success = true;
+      if (this_present_success || that_present_success) {
+        if (!(this_present_success && that_present_success))
+          return false;
+        if (this.success != that.success)
+          return false;
+      }
+
+      boolean this_present_ire = true && this.isSetIre();
+      boolean that_present_ire = true && that.isSetIre();
+      if (this_present_ire || that_present_ire) {
+        if (!(this_present_ire && that_present_ire))
+          return false;
+        if (!this.ire.equals(that.ire))
+          return false;
+      }
+
+      boolean this_present_ace = true && this.isSetAce();
+      boolean that_present_ace = true && that.isSetAce();
+      if (this_present_ace || that_present_ace) {
+        if (!(this_present_ace && that_present_ace))
+          return false;
+        if (!this.ace.equals(that.ace))
+          return false;
+      }
+
+      boolean this_present_ase = true && this.isSetAse();
+      boolean that_present_ase = true && that.isSetAse();
+      if (this_present_ase || that_present_ase) {
+        if (!(this_present_ase && that_present_ase))
+          return false;
+        if (!this.ase.equals(that.ase))
+          return false;
+      }
+
+      return true;
+    }
+
+    @Override
+    public int hashCode() {
+      return 0;
+    }
+
+    @Override
+    public int compareTo(addUNICOREJobSubmissionDetails_result other) {
+      if (!getClass().equals(other.getClass())) {
+        return getClass().getName().compareTo(other.getClass().getName());
+      }
+
+      int lastComparison = 0;
+
+      lastComparison = Boolean.valueOf(isSetSuccess()).compareTo(other.isSetSuccess());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetSuccess()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.success, other.success);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetIre()).compareTo(other.isSetIre());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetIre()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ire, other.ire);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAce()).compareTo(other.isSetAce());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAce()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ace, other.ace);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetAse()).compareTo(other.isSetAse());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetAse()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.ase, other.ase);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      return 0;
+    }
+
+    public _Fields fieldForId(int fieldId) {
+      return _Fields.findByThriftId(fieldId);
+    }
+
+    public void read(org.apache.thrift.protocol.TProtocol iprot) throws org.apache.thrift.TException {
+      schemes.get(iprot.getScheme()).getScheme().read(iprot, this);
+    }
+
+    public void write(org.apache.thrift.protocol.TProtocol oprot) throws org.apache.thrift.TException {
+      schemes.get(oprot.getScheme()).getScheme().write(oprot, this);
+      }
+
+    @Override
+    public String toString() {
+      StringBuilder sb = new StringBuilder("addUNICOREJobSubmissionDetails_result(");
+      boolean first = true;
+
+      sb.append("success:");
+      sb.append(this.success);
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ire:");
+      if (this.ire == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ire);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ace:");
+      if (this.ace == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ace);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("ase:");
+      if (this.ase == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.ase);
+      }
+      first = false;
+      sb.append(")");
+      return sb.toString();
+    }
+
+    public void validate() throws org.apache.thrift.TException {
+      // check for required fields
+      // check for sub-struct validity
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {
+      try {
+        write(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(out)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
+      try {
+        // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+        __isset_bitfield = 0;
+        read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
+      } catch (org.apache.thrift.TException te) {
+        throw new java.io.IOException(te);
+      }
+    }
+
+    private static class addUNICOREJobSubmissionDetails_resultStandardSchemeFactory implements SchemeFactory {
+      public addUNICOREJobSubmissionDetails_resultStandardScheme getScheme() {
+        return new addUNICOREJobSubmissionDetails_resultStandardScheme();
+      }
+    }
+
+    private static class addUNICOREJobSubmissionDetails_resultStandardScheme extends StandardScheme<addUNICOREJobSubmissionDetails_result> {
+
+      public void read(org.apache.thrift.protocol.TProtocol iprot, addUNICOREJobSubmissionDetails_result struct) throws org.apache.thrift.TException {
+        org.apache.thrift.protocol.TField schemeField;
+        iprot.readStructBegin();
+        while (true)
+        {
+          schemeField = iprot.readFieldBegin();
+          if (schemeField.type == org.apache.thrift.protocol.TType.STOP) { 
+            break;
+          }
+          switch (schemeField.id) {
+            case 0: // SUCCESS
+              if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+                struct.success = iprot.readBool();
+                struct.setSuccessIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 1: // IRE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ire = new org.apache.airavata.model.error.InvalidRequestException();
+                struct.ire.read(iprot);
+                struct.setIreIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 2: // ACE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ace = new org.apache.airavata.model.error.AiravataClientException();
+                struct.ace.read(iprot);
+                struct.setAceIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            case 3: // ASE
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.ase = new org.apache.airavata.model.error.AiravataSystemException();
+                struct.ase.read(iprot);
+                struct.setAseIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
+            default:
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+          }
+          iprot.readFieldEnd();
+        }
+        iprot.readStructEnd();
+
+        // check for required fields of primitive type, which can't be checked in the validate method
+        struct.validate();
+      }
+
+      public void write(org.apache.thrift.protocol.TProtocol oprot, addUNICOREJobSubmissionDetails_result struct) throws org.apache.thrift.TException {
+        struct.validate();
+
+        oprot.writeStructBegin(STRUCT_DESC);
+        if (struct.isSetSuccess()) {
+          oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
+          oprot.writeBool(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ire != null) {
+          oprot.writeFieldBegin(IRE_FIELD_DESC);
+          struct.ire.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ace != null) {
+          oprot.writeFieldBegin(ACE_FIELD_DESC);
+          struct.ace.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.ase != null) {
+          oprot.writeFieldBegin(ASE_FIELD_DESC);
+          struct.ase.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        oprot.writeFieldStop();
+        oprot.writeStructEnd();
+      }
+
+    }
+
+    private static class addUNICOREJobSubmissionDetails_resultTupleSchemeFactory implements SchemeFactory {
+      public addUNICOREJobSubmissionDetails_resultTupleScheme getScheme() {
+        return new addUNICOREJobSubmissionDetails_resultTupleScheme();
+      }
+    }
+
+    private static class addUNICOREJobSubmissionDetails_resultTupleScheme extends TupleScheme<addUNICOREJobSubmissionDetails_result> {
+
+      @Override
+      public void write(org.apache.thrift.protocol.TProtocol prot, addUNICOREJobSubmissionDetails_result struct) throws org.apache.thrift.TException {
+        TTupleProtocol oprot = (TTupleProtocol) prot;
+        BitSet optionals = new BitSet();
+        if (struct.isSetSuccess()) {
+          optionals.set(0);
+        }
+        if (struct.isSetIre()) {
+          optionals.set(1);
+        }
+        if (struct.isSetAce()) {
+          optionals.set(2);
+        }
+        if (struct.isSetAse()) {
+          optionals.set(3);
+        }
+        oprot.writeBitSet(optionals, 4);
+        if (struct.isSetSuccess()) {
+          oprot.writeBool(struct.success);
+        }
+        if (struct.isSetIre()) {
+          struct.ire.write(oprot);
+        }
+        if (struct.isSetAce()) {
+          struct.ace.write(oprot);
+        }
+        if (struct.isSetAse()) {
+          struct.ase.write(oprot);
+        }
+      }
+
+      @Override
+      public void read(org.apache.thrift.protocol.TProtocol prot, addUNICOREJobSubmissionDetails_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
