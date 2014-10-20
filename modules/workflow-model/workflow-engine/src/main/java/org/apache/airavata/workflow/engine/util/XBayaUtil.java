@@ -21,22 +21,6 @@
 
 package org.apache.airavata.workflow.engine.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.SocketTimeoutException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.airavata.client.stub.interpretor.NameValue;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.workflow.engine.interpretor.WorkFlowInterpreterException;
 import org.apache.airavata.workflow.engine.invoker.Invoker;
@@ -50,14 +34,22 @@ import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
 import org.apache.airavata.workflow.model.graph.system.EndifNode;
 import org.apache.airavata.workflow.model.graph.system.ForEachNode;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
-import org.apache.axis2.util.XMLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 import org.xmlpull.infoset.XmlElement;
-
 import xsul5.XmlConstants;
+
+import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+//import org.apache.airavata.client.stub.interpretor.NameValue;
 
 public class XBayaUtil {
 
@@ -193,7 +185,7 @@ public class XBayaUtil {
 	}
 	
 	
-	public static List<NameValue> getIOParameterData(String xml) throws ParserConfigurationException, SAXException, IOException{
+/*	public static List<NameValue> getIOParameterData(String xml) throws ParserConfigurationException, SAXException, IOException{
 		List<NameValue> parameters=new ArrayList<NameValue>();
 		Document parameterDocument = XMLUtils.newDocument(new ByteArrayInputStream(xml.getBytes()));
 		org.w3c.dom.NodeList childNodes = parameterDocument.getDocumentElement().getChildNodes();
@@ -205,7 +197,7 @@ public class XBayaUtil {
 			parameters.add(pair);
 		}
 		return parameters;
-	}
+	}*/
 
 //    public static AiravataRegistry2 getRegistry(URL url) throws IOException, RepositoryException, URISyntaxException {
 //        Properties properties = new Properties();

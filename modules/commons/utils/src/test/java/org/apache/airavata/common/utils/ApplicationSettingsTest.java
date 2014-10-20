@@ -31,18 +31,11 @@ import junit.framework.TestCase;
  */
 
 public class ApplicationSettingsTest extends TestCase {
-    public void testGetAbsoluteSetting() throws Exception {
-
-        System.setProperty(AiravataUtils.EXECUTION_MODE, "SERVER");
-        String url = ServerSettings.getSetting("registry.service.wsdl");
-        Assert.assertEquals("http://localhost:8080/airavata-server/services/RegistryService?wsdl", url);
-
-    }
-
+   
     public void testGetAbsoluteSettingWithSpecialCharacters() throws Exception {
 
         System.setProperty(AiravataUtils.EXECUTION_MODE, "SERVER");
-        String url = ServerSettings.getSetting("system.user");
+        String url = ServerSettings.getSetting("default.registry.user");
         Assert.assertEquals("admin", url);
 
     }

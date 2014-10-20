@@ -21,40 +21,25 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.monitor;
 
-import java.awt.Color;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.net.URL;
-import java.util.Date;
-import java.util.regex.Pattern;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JEditorPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.TransferHandler;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkEvent.EventType;
-import javax.swing.event.HyperlinkListener;
-
 import org.apache.airavata.common.utils.BrowserLauncher;
-import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.ws.monitor.EventDataRepository;
-import org.apache.airavata.ws.monitor.MonitorUtil;
+import org.apache.airavata.xbaya.messaging.EventData;
+import org.apache.airavata.xbaya.messaging.EventDataRepository;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.xmlpull.infoset.XmlElement;
-
 import xsul5.XmlConstants;
+
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkEvent.EventType;
+import javax.swing.event.HyperlinkListener;
+import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.net.URL;
+import java.util.Date;
 
 public class MonitorWindow {
 
@@ -75,8 +60,7 @@ public class MonitorWindow {
     /**
      * Constructs a MonitorWindow.
      * 
-     * @param engine
-     *            The XBayaEngine
+     * @param xbayaGUI The XBayaEngine
      */
     public MonitorWindow(XBayaGUI xbayaGUI) {
         this.xbayaGUI=xbayaGUI;
@@ -89,19 +73,19 @@ public class MonitorWindow {
      * @param event
      *            The notification to show
      */
-    public void show(XmlElement event) {
-        Date timestamp = MonitorUtil.getTimestamp(event);
+    public void show(EventData event) {
+        Date timestamp = event.getUpdateTime();
         if (timestamp != null) {
             this.timeTextField.setText(timestamp.toString());
         } else {
             this.timeTextField.setText("");
         }
-        this.idTextField.setText(MonitorUtil.getNodeID(event));
-        this.statusTextField.setText(MonitorUtil.getStatus(event));
+        this.idTextField.setText(event.getMessageId());
+        this.statusTextField.setText(event.getStatus());
         
         // Show the raw XML for now.
-        messageText = XMLUtil.BUILDER.serializeToStringPretty(event);
-		this.messageTextArea.setText(StringUtil.createHTMLUrlTaggedString2(StringEscapeUtils.escapeHtml(messageText),StringUtil.getURLS(messageText)).replaceAll(Pattern.quote(" "), "&nbsp;").replaceAll(Pattern.quote("\n"), "<br />\n"));
+        messageText = event.getMessage();
+		this.messageTextArea.setText(messageText);
 
         this.dialog.show();
         this.dialog.getDialog().setSize(600, 800);

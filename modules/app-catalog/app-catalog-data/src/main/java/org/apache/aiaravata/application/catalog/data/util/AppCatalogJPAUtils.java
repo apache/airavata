@@ -21,19 +21,18 @@
 
 package org.apache.aiaravata.application.catalog.data.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-
 import org.apache.aiaravata.application.catalog.data.model.*;
 import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AppCatalogJPAUtils {
     private final static Logger logger = LoggerFactory.getLogger(AppCatalogJPAUtils.class);
@@ -347,6 +346,20 @@ public class AppCatalogJPAUtils {
                 } else {
                     logger.error("Object should be a Workflow.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Workflow.");
+                }
+            case WORKFLOW_INPUT:
+                if (o instanceof WorkflowInput){
+                    return createWorflowInput((WorkflowInput) o);
+                }else {
+                    logger.error("Object should be a Workflow Input.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Workflow Input.");
+                }
+            case WORKFLOW_OUTPUT:
+                if (o instanceof WorkflowOutput){
+                    return createWorkflowOutput((WorkflowOutput) o);
+                }else {
+                    logger.error("Object should be a Workflow Output.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Workflow Output.");
                 }
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
@@ -753,6 +766,24 @@ public class AppCatalogJPAUtils {
         return resource;
     }
 
+    private static Resource createWorflowInput(WorkflowInput o) {
+        WorkflowInputResource resource = new WorkflowInputResource();
+        if (o != null){
+            resource.setWfTemplateId(o.getWfTemplateId());
+            resource.setInputKey(o.getInputKey());
+            if (o.getInputVal() != null){
+                resource.setInputVal(new String(o.getInputVal()));
+            }
+            resource.setDataType(o.getDataType());
+            resource.setMetadata(o.getMetadata());
+            resource.setAppArgument(o.getAppArgument());
+            resource.setUserFriendlyDesc(o.getUserFriendlyDesc());
+            resource.setStandareInput(o.isStandardInput());
+            resource.setWorkflowResource((WorkflowResource)createWorkflow(o.getWorkflow()));
+        }
+        return resource;
+    }
+
     private static Resource createApplicationOutput(ApplicationOutput o) {
         ApplicationOutputResource resource = new ApplicationOutputResource();
         if (o != null){
@@ -761,6 +792,20 @@ public class AppCatalogJPAUtils {
             resource.setOutputVal(o.getOutputVal());
             resource.setDataType(o.getDataType());
             resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
+        }
+        return resource;
+    }
+
+    private static Resource createWorkflowOutput(WorkflowOutput o) {
+        WorkflowOutputResource resource = new WorkflowOutputResource();
+        if (o != null){
+            resource.setWfTemplateId(o.getWfTemplateId());
+            resource.setOutputKey(o.getOutputKey());
+            if (o.getOutputVal() != null){
+                resource.setOutputVal(new String(o.getOutputVal()));
+            }
+            resource.setDataType(o.getDataType());
+            resource.setWorkflowResource((WorkflowResource)createWorkflow(o.getWorkflow()));
         }
         return resource;
     }
@@ -812,6 +857,9 @@ public class AppCatalogJPAUtils {
         workflowResource.setCreatedUser(o.getCreatedUser());
         if (o.getGraph() != null){
             workflowResource.setGraph(new String(o.getGraph()));
+        }
+        if (o.getImage() != null){
+            workflowResource.setImage(new String(o.getImage()));
         }
         workflowResource.setCreatedTime(o.getCreationTime());
         if (o.getUpdateTime() != null){

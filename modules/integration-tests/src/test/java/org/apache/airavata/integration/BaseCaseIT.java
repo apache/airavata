@@ -28,8 +28,9 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreatorNew;
+//import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+//import org.apache.airavata.client.tools.DocumentCreatorNew;
+import org.apache.airavata.integration.tools.DocumentCreatorNew;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
@@ -40,12 +41,12 @@ import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
 import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
-import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.EventData;
-import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
-import org.apache.airavata.ws.monitor.EventDataRepository;
-import org.apache.airavata.ws.monitor.Monitor;
-import org.apache.airavata.ws.monitor.MonitorUtil;
+//import org.apache.airavata.workflow.model.wf.Workflow;
+//import org.apache.airavata.ws.monitor.EventData;
+//import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
+//import org.apache.airavata.ws.monitor.EventDataRepository;
+//import org.apache.airavata.ws.monitor.Monitor;
+//import org.apache.airavata.ws.monitor.MonitorUtil;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 

@@ -114,6 +114,7 @@ public class JobDetailResource extends AbstractResource {
                 case STATUS:
                     generator = new QueryGenerator(STATUS);
                     generator.setParameter(StatusConstants.JOB_ID, name);
+                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.JOB.toString());
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -154,6 +155,7 @@ public class JobDetailResource extends AbstractResource {
                 case STATUS:
                     generator = new QueryGenerator(STATUS);
                     generator.setParameter(StatusConstants.JOB_ID, name);
+                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.JOB.toString());
                     q = generator.selectQuery(em);
                     Status status = (Status) q.getSingleResult();
                     StatusResource statusResource = (StatusResource) Utils.getResource(ResourceType.STATUS, status);

@@ -1206,13 +1206,18 @@ public class GFacUtils {
 
 	public static CredentialReader getCredentialReader()
 			throws ApplicationSettingsException, IllegalAccessException,
-			ClassNotFoundException, InstantiationException {
+			InstantiationException {
+		try{
 		String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
 		String jdbcUsr = ServerSettings.getCredentialStoreDBUser();
 		String jdbcPass = ServerSettings.getCredentialStoreDBPassword();
 		String driver = ServerSettings.getCredentialStoreDBDriver();
 		return new CredentialReaderImpl(new DBUtil(jdbcUrl, jdbcUsr, jdbcPass,
 				driver));
+		}catch(ClassNotFoundException e){
+			log.error("Not able to find driver: " + e.getLocalizedMessage());
+			return null;	
+		}
 	}
 
 }

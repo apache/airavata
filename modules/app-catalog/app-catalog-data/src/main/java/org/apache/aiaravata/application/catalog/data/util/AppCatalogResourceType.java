@@ -59,5 +59,7 @@ public enum AppCatalogResourceType {
 	LOCAL_DATA_MOVEMENT,
     MODULE_LOAD_CMD,
     ClOUD_SUBMISSION,
-    WORKFLOW
+    WORKFLOW,
+    WORKFLOW_INPUT,
+    WORKFLOW_OUTPUT
 }

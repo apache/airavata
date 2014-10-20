@@ -30,7 +30,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 
 public class UserReg {
     public WorkerResource getSystemUser() throws ApplicationSettingsException, RegistryException {
-        return (WorkerResource)ResourceUtils.getWorker(ServerSettings.getSystemUserGateway(), ServerSettings.getSystemUser());
+        return (WorkerResource)ResourceUtils.getWorker(ServerSettings.getDefaultUserGateway(), ServerSettings.getDefaultUser());
     }
 
     public WorkerResource getExistingUser (String gatewayName, String userName) throws RegistryException {

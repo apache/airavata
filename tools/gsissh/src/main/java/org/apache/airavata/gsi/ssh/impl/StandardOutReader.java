@@ -53,9 +53,6 @@ public class StandardOutReader implements CommandOutput {
                 if (channel.isClosed()) {
                     break;
                 }
-                try {
-                } catch (Exception ignored) {
-                }
             }
             String output = pbsOutput.toString();
             this.setStdOutputString(output);

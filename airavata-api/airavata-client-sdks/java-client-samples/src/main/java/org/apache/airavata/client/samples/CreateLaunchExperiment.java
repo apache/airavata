@@ -52,6 +52,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
+
     private static String echoAppId = "Echo_56c6e26c-ca77-45fe-91d1-58fa59676879";
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
@@ -98,9 +99,10 @@ public class CreateLaunchExperiment {
     } catch (Exception e) {
         logger.error("Error while connecting with server", e.getMessage());
         e.printStackTrace();
-    }
 
     }
+ }
+
    
     
     public static void registerApplications() {

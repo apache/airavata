@@ -27,10 +27,12 @@ IS_DAEMON_MODE=false
 LOGO=true
 STOP=false
 FORCE=false
+SERVERS="--servers=apiserver,orchestrator,gfac,workflowserver"
 for var in "$@"
 do
     case $var in
         -xdebug)
+        	AIRAVATA_COMMAND="$AIRAVATA_COMMAND $SERVERS"
             JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
             shift
         ;;
@@ -39,6 +41,7 @@ do
             shift
         ;;
 	start)
+		AIRAVATA_COMMAND="$AIRAVATA_COMMAND $SERVERS"
 	    IS_DAEMON_MODE=true
             shift
         ;;
@@ -70,7 +73,7 @@ do
             exit 0
         ;;
 	*)
-	    AIRAVATA_COMMAND="$AIRAVATA_COMMAND $var"
+	    AIRAVATA_COMMAND="$AIRAVATA_COMMAND $SERVERS $var"
             shift
     esac
 done

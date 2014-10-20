@@ -45,18 +45,18 @@ public class RegistryImpl implements Registry {
 
     public RegistryImpl() throws RegistryException{
         try {
-            if (!ResourceUtils.isGatewayExist(ServerSettings.getSystemUserGateway())){
-                gatewayResource = (GatewayResource) ResourceUtils.createGateway(ServerSettings.getSystemUserGateway());
+            if (!ResourceUtils.isGatewayExist(ServerSettings.getDefaultUserGateway())){
+                gatewayResource = (GatewayResource) ResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
                 gatewayResource.save();
             }else {
-                gatewayResource = (GatewayResource)ResourceUtils.getGateway(ServerSettings.getSystemUserGateway());
+                gatewayResource = (GatewayResource)ResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
             }
 
-            if (!ResourceUtils.isUserExist(ServerSettings.getSystemUser())){
-                user = ResourceUtils.createUser(ServerSettings.getSystemUser(), ServerSettings.getSystemUserPassword());
+            if (!ResourceUtils.isUserExist(ServerSettings.getDefaultUser())){
+                user = ResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword());
                 user.save();
             }else {
-                user = (UserResource)ResourceUtils.getUser(ServerSettings.getSystemUser());
+                user = (UserResource)ResourceUtils.getUser(ServerSettings.getDefaultUser());
             }
             experimentRegistry = new ExperimentRegistry(gatewayResource, user);
             projectRegistry = new ProjectRegistry(gatewayResource, user);

@@ -20,9 +20,15 @@
 */
 package org.apache.airavata.gfac.local.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 public class InputUtils {
+
+    private static final Logger logger = LoggerFactory.getLogger(InputUtils.class);
+
     private static final String SPACE = " ";
 
     private InputUtils() {
@@ -31,6 +37,7 @@ public class InputUtils {
     public static String buildCommand(List<String> cmdList) {
         StringBuffer buff = new StringBuffer();
         for (String string : cmdList) {
+            logger.debug("Build Command --> " + string);
             buff.append(string);
             buff.append(SPACE);
         }

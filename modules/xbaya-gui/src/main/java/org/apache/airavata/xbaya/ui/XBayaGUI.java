@@ -50,17 +50,11 @@ import javax.swing.event.ChangeListener;
 
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.workflow.model.component.Component;
-import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
-import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.MonitorException;
-import org.apache.airavata.ws.monitor.event.Event;
-import org.apache.airavata.ws.monitor.event.Event.Type;
-import org.apache.airavata.ws.monitor.event.EventListener;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConfiguration.XBayaExecutionMode;
 import org.apache.airavata.xbaya.ThriftServiceType;
@@ -68,6 +62,9 @@ import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.generators.WorkflowFiler;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
+import org.apache.airavata.xbaya.messaging.MonitorException;
+import org.apache.airavata.xbaya.messaging.event.Event;
+import org.apache.airavata.xbaya.messaging.event.EventListener;
 import org.apache.airavata.xbaya.ui.dialogs.ErrorWindow;
 import org.apache.airavata.xbaya.ui.dialogs.registry.RegistryWindow;
 import org.apache.airavata.xbaya.ui.dialogs.workflow.WorkflowPropertyWindow;
@@ -76,7 +73,6 @@ import org.apache.airavata.xbaya.ui.graph.GraphCanvasEvent;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvasEvent.GraphCanvasEventType;
 import org.apache.airavata.xbaya.ui.graph.GraphCanvasListener;
 import org.apache.airavata.xbaya.ui.menues.XBayaMenu;
-import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.views.ComponentViewer;
 import org.apache.airavata.xbaya.ui.views.MonitorPanel;
 import org.apache.airavata.xbaya.ui.views.PortViewer;
@@ -526,11 +522,12 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
     }
 
     /**
-     * @see org.apache.airavata.ws.monitor.event.EventListener#eventReceived(org.apache.airavata.ws.monitor.event.Event)
+     * @see EventListener#eventReceived(Event)
      */
+    @Override
     public void eventReceived(Event event) {
-        Type type = event.getType();
-        if (type == Type.MONITOR_STARTED || type == Type.KARMA_STARTED) {
+        Event.Type type = event.getType();
+        if (type == Event.Type.MONITOR_STARTED || type == Event.Type.KARMA_STARTED) {
             // Show the monitor panel.
             this.rightBottomTabbedPane.setSelectedComponent(this.monitorPane.getSwingComponent());
         }

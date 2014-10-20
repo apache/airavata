@@ -121,12 +121,6 @@ public class LaunchApplicationWindow {
     public void show() {
         this.workflow = this.engine.getGUI().getWorkflow();
 
-        MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
-        if (notifConfig.getBrokerURL() == null) {
-            this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
-            return;
-        }
-
         // Create input fields
 //        Collection<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
 //        for (InputNode node : inputNodes) {

@@ -23,10 +23,10 @@ package org.apache.airavata.orchestrator.client;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.client.AiravataAPIFactory;
-import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-import org.apache.airavata.client.tools.DocumentCreator;
-import org.apache.airavata.client.tools.DocumentCreatorNew;
+//import org.apache.airavata.client.AiravataAPIFactory;
+//import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
+//import org.apache.airavata.client.tools.DocumentCreator;
+//import org.apache.airavata.client.tools.DocumentCreatorNew;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.AiravataZKUtils;
@@ -42,7 +42,7 @@ import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.junit.Test;
 
 public class OrchestratorClientFactoryTest {
-    private DocumentCreatorNew documentCreator;
+/*    private DocumentCreatorNew documentCreator;
     private OrchestratorService.Client orchestratorClient;
     private Registry registry;
     private int NUM_CONCURRENT_REQUESTS = 1;
@@ -88,5 +88,5 @@ public class OrchestratorClientFactoryTest {
 
     private void storeDescriptors() {
 
-    }
+    }*/
 }

@@ -40,6 +40,10 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 
+/**
+ * This class has been moved to integration-tests module, use that instead of this
+ */
+@Deprecated
 public class DocumentCreatorUtils {
 
 	public static ComputeResourcePreference createComputeResourcePreference(String computeResourceId, String scratchLocation,

@@ -20,14 +20,11 @@
 */
 package org.apache.airavata.gfac.core.monitor;
 
+import org.apache.airavata.common.logger.AiravataLogger;
+import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.model.workspace.experiment.JobState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -38,7 +35,7 @@ This is the object which contains the data to identify a particular
 Job to start the monitoring
 */
 public class MonitorID {
-    private final static Logger logger = LoggerFactory.getLogger(MonitorID.class);
+    private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(MonitorID.class);
 
     private String userName;
 
@@ -193,12 +190,12 @@ public class MonitorID {
         // because in some machines job state vanishes quicckly when the job is done
         // during that case job state comes as unknown.so we handle it here.
         if (this.state != null && status.equals(JobState.UNKNOWN)) {
-            int loginfo = getFailedCount() + 1;
-            logger.info("JobId:" + this.getJobID() + " Increasing the failed count to:" + loginfo + "");
-            setFailedCount(getFailedCount() + 1);
+            this.failedCount++;
+            logger.infoId(this.getJobID(), "{} status came for job {}, Increasing the failed count to: {}.",
+                    status.toString(), this.jobID, this.failedCount);
         }else {
             // normal scenario
-            logger.info("Resetting failed count to 0 because correct state came in");
+            logger.infoId(this.getJobID(), "Valid status {} came for job {}, resetting fail count to 0", status.toString(), this.jobID);
             setFailedCount(0);
             this.state = status;
         }

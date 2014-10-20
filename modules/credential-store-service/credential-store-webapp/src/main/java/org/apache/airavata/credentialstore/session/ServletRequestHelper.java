@@ -55,8 +55,13 @@ public class ServletRequestHelper {
         String gatewayId = getGatewayId(servletRequest);
 
         if (servletRequest.getSession() != null) {
-            servletRequest.getSession().setAttribute(Constants.USER_IN_SESSION, userName);
-            servletRequest.getSession().setAttribute(Constants.GATEWAY_NAME, gatewayId);
+			try {
+				servletRequest.getSession().setAttribute(Constants.USER_IN_SESSION, userName);
+				servletRequest.getSession().setAttribute(ServerSettings.getDefaultUserGateway(), gatewayId);
+			} catch (ApplicationSettingsException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
 
         addToContext(userName, gatewayId);
@@ -93,11 +98,17 @@ public class ServletRequestHelper {
     }
 
     String getGatewayId(HttpServletRequest request) throws AuthenticationException {
-        String gatewayId = request.getHeader(Constants.GATEWAY_NAME);
+        String gatewayId = null;
+		try {
+			gatewayId = request.getHeader(ServerSettings.getDefaultUserGateway());
+		} catch (ApplicationSettingsException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
         if (gatewayId == null) {
             try {
-                gatewayId = ServerSettings.getSystemUserGateway();
+                gatewayId = ServerSettings.getDefaultUserGateway();
             } catch (ApplicationSettingsException e) {
                 throw new AuthenticationException("Unable to retrieve default gateway", e);
             }

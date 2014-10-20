@@ -40,6 +40,10 @@ import org.apache.thrift.TException;
 import java.io.File;
 import java.util.*;
 
+/**
+ * This class has been moved to integration-tests module, use that instead of this
+ */
+@Deprecated
 public class DocumentCreatorNew {
 
     private AppCatalog appcatalog = null;
@@ -106,7 +110,7 @@ public class DocumentCreatorNew {
                 null, null);
         gatewayResourceProfile = new GatewayResourceProfile();
 //		gatewayResourceProfile.setGatewayID("default");
-        gatewayResourceProfile.setGatewayName(ClientSettings.getSetting("gateway_id", "php_reference_gateway"));
+        gatewayResourceProfile.setGatewayName(ClientSettings.getSetting("default.registry.gateway", "php_reference_gateway"));
         gatewayResourceProfile.addToComputeResourcePreferences(computeResourcePreference);
         String gatewayId = client.registerGatewayResourceProfile(gatewayResourceProfile);
         gatewayResourceProfile.setGatewayID(gatewayId);
