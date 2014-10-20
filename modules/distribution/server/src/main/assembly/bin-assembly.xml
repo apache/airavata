@@ -234,6 +234,7 @@
 				<include>org.apache.airavata:airavata-workflow-tracking:jar
 				</include>
 				<include>org.apache.airavata:airavata-workflow-engine:jar</include>
+				<include>org.apache.airavata:airavata-messaging-core:jar</include>
 				<include>org.apache.airavata:gsissh:jar</include>
 				<include>org.apache.airavata:airavata-model-utils:jar</include>
 				<include>org.apache.airavata:airavata-api-server:jar</include>
