@@ -196,6 +196,24 @@ public class ComputeResourceImpl implements ComputeResource {
             throw new AppCatalogException(e);
         }
     }
+    
+	@Override
+	public String addUNICOREJobSubmission(UnicoreJobSubmission unicoreJobSubmission)
+			throws AppCatalogException {
+		 try {
+			 	unicoreJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("UNICORE"));
+			 	UnicoreJobSubmissionResource resource = AppCatalogThriftConversion.getUnicoreJobSubmission(unicoreJobSubmission);
+			 	resource.setUnicoreEndpointUrl(unicoreJobSubmission.getUnicoreEndPointURL());
+			 	resource.save();
+	            return resource.getjobSubmissionInterfaceId();
+	        }catch (Exception e){
+	            logger.error("Error while retrieving SSH Job Submission...", e);
+	            throw new AppCatalogException(e);
+	        }
+		 
+	}
+
+    
 
     @Override
     public void addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException {
@@ -518,7 +536,42 @@ public class ComputeResourceImpl implements ComputeResource {
         }
     }
 
-    @Override
+    //    @Override
+	//    public List<GridFTPDataMovement> getGridFTPDataMovementList(Map<String, String> filters) throws AppCatalogException {
+	//        try {
+	//            GridftpDataMovementResource resource = new GridftpDataMovementResource();
+	//            for (String fieldName : filters.keySet() ){
+	//                if (fieldName.equals(AbstractResource.GridFTPDataMovementConstants.SECURITY_PROTOCOL)){
+	//                    List<Resource> resources = resource.get(AbstractResource.GridFTPDataMovementConstants.SECURITY_PROTOCOL, filters.get(fieldName));
+	//                    if (resources != null && !resources.isEmpty()){
+	//                        return AppCatalogThriftConversion.getGridFTPDataMovementList(resources);
+	//                    }
+	//                }else {
+	//                    logger.error("Unsupported field name for GridFTP Data movement.", new IllegalArgumentException());
+	//                    throw new IllegalArgumentException("Unsupported field name for GridFTP Data movement.");
+	//                }
+	//            }
+	//        }catch (Exception e){
+	//            logger.error("Error while retrieving GridFTP Data movement list...", e);
+	//            throw new AppCatalogException(e);
+	//        }
+	//        return null;
+	//    }
+	
+	    @Override
+		public UnicoreJobSubmission getUNICOREJobSubmission(String submissionId)
+				throws AppCatalogException {
+	    	try {
+	            UnicoreJobSubmissionResource resource = new UnicoreJobSubmissionResource();
+	            resource = (UnicoreJobSubmissionResource)resource.get(submissionId);
+	            return AppCatalogThriftConversion.getUnicoreJobSubmissionDescription(resource);
+	        }catch (Exception e){
+	            logger.error("Error while retrieving UNICORE Job Submission model instance...", e);
+	            throw new AppCatalogException(e);
+	        }
+		}
+
+	@Override
     public CloudJobSubmission getCloudJobSubmission(String submissionId) throws AppCatalogException {
         try {
             CloudSubmissionResource resource = new CloudSubmissionResource();
@@ -719,4 +772,5 @@ public class ComputeResourceImpl implements ComputeResource {
 		localDataMovementResource = (LocalDataMovementResource) localDataMovementResource.get(datamovementId);
 		return AppCatalogThriftConversion.getLocalDataMovement(localDataMovementResource);
 	}
+
 }

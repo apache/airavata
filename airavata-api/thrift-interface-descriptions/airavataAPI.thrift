@@ -966,6 +966,32 @@ service Airavata {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
 
+  /**
+   * Add a UNICORE Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   *
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   *
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   *
+   * @param unicoreJobSubmission
+   *   The UnicoreJobSubmission object to be added to the resource.
+   *
+   * @return status
+   *   Returns a success/failure of the deletion.
+   *
+  */
+  bool addUNICOREJobSubmissionDetails(1: required string computeResourceId,
+            2: required i32 priorityOrder,
+            3: required computeResourceModel.UnicoreJobSubmission unicoreJobSubmission)
+  	throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+
+
  /**
    * Add a Cloud Job Submission details to a compute resource
    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.

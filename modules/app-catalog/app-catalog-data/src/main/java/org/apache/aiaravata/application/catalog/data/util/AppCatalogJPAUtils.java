@@ -116,6 +116,14 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a GSISSH Submission", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSH Submission.");
                 }
+            case UNICORE_JOB_SUBMISSION:
+                if (o instanceof UnicoreJobSubmission){
+                    return createUnicoreJobSubmission((UnicoreJobSubmission) o);
+                }else {
+                    logger.error("Object should be a GSISSH Submission", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GSISSH Submission.");
+                }
+
             case GSISSH_EXPORT:
                 if (o instanceof GSISSHExport){
                     return createGSISSHExport((GSISSHExport) o);
@@ -496,7 +504,17 @@ public class AppCatalogJPAUtils {
         }
         return submissionResource;
     }
-
+    
+    
+    private static Resource createUnicoreJobSubmission(UnicoreJobSubmission o) {
+        UnicoreJobSubmissionResource submissionResource = new UnicoreJobSubmissionResource();
+        if (o != null) {
+            submissionResource.setjobSubmissionInterfaceId(o.getSubmissionID());
+            submissionResource.setUnicoreEndpointUrl(o.getUnicoreEndpointUrl());
+        }
+        return submissionResource;
+    }
+    
     private static Resource createGSISSHExport(GSISSHExport o){
         GSISSHExportResource resource = new GSISSHExportResource();
         if (o != null) {
