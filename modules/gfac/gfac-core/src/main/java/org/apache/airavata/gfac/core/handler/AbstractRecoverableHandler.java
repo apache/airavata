@@ -81,7 +81,8 @@ public abstract class AbstractRecoverableHandler implements GFacRecoverableHandl
     protected void fireTaskOutputChangeEvent(JobExecutionContext jobExecutionContext, List<DataObjectType> outputArray) {
         TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                jobExecutionContext.getExperimentID());
+                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getGatewayID());
         publisher.publish(new TaskOutputChangeEvent(outputArray, taskIdentity));
     }
 }

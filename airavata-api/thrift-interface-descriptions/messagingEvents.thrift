@@ -43,11 +43,13 @@ enum MessageType {
 struct ExperimentStatusChangeEvent {
     1: required experimentModel.ExperimentState state;
     2: required string experimentId;
+    3: required string gatewayId;
 }
 
 struct WorkflowIdentifier {
     1: required string workflowNodeId;
     2: required string experimentId;
+    3: required string gatewayId;
 }
 
 struct WorkflowNodeStatusChangeEvent {
@@ -59,6 +61,7 @@ struct TaskIdentifier {
     1: required string taskId;
     2: required string workflowNodeId;
     3: required string experimentId;
+    4: required string gatewayId;
 }
 
 struct TaskStatusChangeEvent {
@@ -81,6 +84,7 @@ struct JobIdentifier {
     2: required string taskId;
     3: required string workflowNodeId;
     4: required string experimentId;
+    5: required string gatewayId;
 }
 
 //struct JobMonitor {

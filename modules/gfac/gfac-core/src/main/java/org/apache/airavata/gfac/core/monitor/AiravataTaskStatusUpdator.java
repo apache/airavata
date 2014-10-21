@@ -59,7 +59,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
             TaskStatusChangeEvent event = new TaskStatusChangeEvent(taskStatus.getState(), taskStatus.getTaskIdentity());
             monitorPublisher.publish(event);
             String messageId = AiravataUtils.getId("TASK");
-            MessageContext msgCntxt = new MessageContext(event, MessageType.TASK, messageId);
+            MessageContext msgCntxt = new MessageContext(event, MessageType.TASK, messageId, taskStatus.getTaskIdentity().getGatewayId());
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             if ( ServerSettings.isRabbitMqPublishEnabled()){
                 publisher.publish(msgCntxt);
@@ -101,11 +101,12 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
 			logger.debug("Publishing task status for "+jobStatus.getJobIdentity().getTaskId()+":"+state.toString());
             TaskIdentifier taskIdentity = new TaskIdentifier(jobStatus.getJobIdentity().getTaskId(),
                                                          jobStatus.getJobIdentity().getWorkflowNodeId(),
-                                                         jobStatus.getJobIdentity().getExperimentId());
+                                                         jobStatus.getJobIdentity().getExperimentId(),
+                                                         jobStatus.getJobIdentity().getGatewayId());
             TaskStatusChangeEvent event = new TaskStatusChangeEvent(state, taskIdentity);
             monitorPublisher.publish(event);
             String messageId = AiravataUtils.getId("TASK");
-            MessageContext msgCntxt = new MessageContext(event, MessageType.TASK, messageId);
+            MessageContext msgCntxt = new MessageContext(event, MessageType.TASK, messageId,jobStatus.getJobIdentity().getGatewayId());
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             if ( ServerSettings.isRabbitMqPublishEnabled()){
                 publisher.publish(msgCntxt);

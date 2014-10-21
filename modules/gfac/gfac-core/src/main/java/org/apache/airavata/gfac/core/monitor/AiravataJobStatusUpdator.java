@@ -27,7 +27,6 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
@@ -73,7 +72,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
                 JobStatusChangeEvent event = new JobStatusChangeEvent(jobStatus.getState(), jobStatus.getJobIdentity());
                 monitorPublisher.publish(event);
                 String messageId = AiravataUtils.getId("JOB");
-                MessageContext msgCntxt = new MessageContext(event, MessageType.JOB, messageId);
+                MessageContext msgCntxt = new MessageContext(event, MessageType.JOB, messageId, jobStatus.getJobIdentity().getGatewayId());
                 msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                 if ( ServerSettings.isRabbitMqPublishEnabled()){
                     publisher.publish(msgCntxt);

@@ -48,6 +48,7 @@ class ExperimentStatusChangeEvent {
 
   public $state = null;
   public $experimentId = null;
+  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -60,6 +61,10 @@ class ExperimentStatusChangeEvent {
           'var' => 'experimentId',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -68,6 +73,9 @@ class ExperimentStatusChangeEvent {
       }
       if (isset($vals['experimentId'])) {
         $this->experimentId = $vals['experimentId'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -105,6 +113,13 @@ class ExperimentStatusChangeEvent {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -128,6 +143,11 @@ class ExperimentStatusChangeEvent {
       $xfer += $output->writeString($this->experimentId);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
     $xfer += $output->writeFieldStop();
     $xfer += $output->writeStructEnd();
     return $xfer;
@@ -140,6 +160,7 @@ class WorkflowIdentifier {
 
   public $workflowNodeId = null;
   public $experimentId = null;
+  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -152,6 +173,10 @@ class WorkflowIdentifier {
           'var' => 'experimentId',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -160,6 +185,9 @@ class WorkflowIdentifier {
       }
       if (isset($vals['experimentId'])) {
         $this->experimentId = $vals['experimentId'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -197,6 +225,13 @@ class WorkflowIdentifier {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -218,6 +253,11 @@ class WorkflowIdentifier {
     if ($this->experimentId !== null) {
       $xfer += $output->writeFieldBegin('experimentId', TType::STRING, 2);
       $xfer += $output->writeString($this->experimentId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -330,6 +370,7 @@ class TaskIdentifier {
   public $taskId = null;
   public $workflowNodeId = null;
   public $experimentId = null;
+  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -346,6 +387,10 @@ class TaskIdentifier {
           'var' => 'experimentId',
           'type' => TType::STRING,
           ),
+        4 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -357,6 +402,9 @@ class TaskIdentifier {
       }
       if (isset($vals['experimentId'])) {
         $this->experimentId = $vals['experimentId'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -401,6 +449,13 @@ class TaskIdentifier {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -427,6 +482,11 @@ class TaskIdentifier {
     if ($this->experimentId !== null) {
       $xfer += $output->writeFieldBegin('experimentId', TType::STRING, 3);
       $xfer += $output->writeString($this->experimentId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 4);
+      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -762,6 +822,7 @@ class JobIdentifier {
   public $taskId = null;
   public $workflowNodeId = null;
   public $experimentId = null;
+  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -782,6 +843,10 @@ class JobIdentifier {
           'var' => 'experimentId',
           'type' => TType::STRING,
           ),
+        5 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -796,6 +861,9 @@ class JobIdentifier {
       }
       if (isset($vals['experimentId'])) {
         $this->experimentId = $vals['experimentId'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -847,6 +915,13 @@ class JobIdentifier {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -878,6 +953,11 @@ class JobIdentifier {
     if ($this->experimentId !== null) {
       $xfer += $output->writeFieldBegin('experimentId', TType::STRING, 4);
       $xfer += $output->writeString($this->experimentId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 5);
+      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

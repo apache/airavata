@@ -177,7 +177,8 @@ public class LocalProvider extends AbstractProvider {
             JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
                     jobExecutionContext.getTaskData().getTaskID(),
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                    jobExecutionContext.getExperimentID());
+                    jobExecutionContext.getExperimentID(),
+                    jobExecutionContext.getGatewayID());
             this.getMonitorPublisher().publish(new JobStatusChangeEvent(JobState.COMPLETE, jobIdentity));
         } catch (IOException io) {
             throw new GFacProviderException(io.getMessage(), io);
@@ -234,7 +235,8 @@ public class LocalProvider extends AbstractProvider {
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
             TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                    jobExecutionContext.getExperimentID());
+                    jobExecutionContext.getExperimentID(),
+                    jobExecutionContext.getGatewayID());
             getMonitorPublisher().publish(new TaskOutputChangeEvent(outputArray, taskIdentity));
         } catch (XmlException e) {
             throw new GFacProviderException("Cannot read output:" + e.getMessage(), e);

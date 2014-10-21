@@ -149,6 +149,7 @@ public class RabbitMQConsumer implements Consumer {
                     try {
                         ThriftUtils.createThriftFromBytes(body, message);
                         TBase event = null;
+                        String gatewayId = null;
                         if (message.getMessageType().equals(MessageType.EXPERIMENT)) {
                             ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), experimentStatusChangeEvent);
@@ -156,6 +157,7 @@ public class RabbitMQConsumer implements Consumer {
                                     + "' and with message type '" + message.getMessageType() + "'  with status " +
                                     experimentStatusChangeEvent.getState());
                             event = experimentStatusChangeEvent;
+                            gatewayId = experimentStatusChangeEvent.getGatewayId();
                         } else if (message.getMessageType().equals(MessageType.WORKFLOWNODE)) {
                             WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), wfnStatusChangeEvent);
@@ -163,6 +165,7 @@ public class RabbitMQConsumer implements Consumer {
                                     + "' and with message type '" + message.getMessageType() + "'  with status " +
                                     wfnStatusChangeEvent.getState());
                             event = wfnStatusChangeEvent;
+                            gatewayId = wfnStatusChangeEvent.getWorkflowNodeIdentity().getGatewayId();
                         } else if (message.getMessageType().equals(MessageType.TASK)) {
                             TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), taskStatusChangeEvent);
@@ -170,6 +173,7 @@ public class RabbitMQConsumer implements Consumer {
                                     + "' and with message type '" + message.getMessageType() + "'  with status " +
                                     taskStatusChangeEvent.getState());
                             event = taskStatusChangeEvent;
+                            gatewayId = taskStatusChangeEvent.getTaskIdentity().getGatewayId();
                         } else if (message.getMessageType().equals(MessageType.JOB)) {
                             JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), jobStatusChangeEvent);
@@ -177,9 +181,9 @@ public class RabbitMQConsumer implements Consumer {
                                     + "' and with message type '" + message.getMessageType() + "'  with status " +
                                     jobStatusChangeEvent.getState());
                             event = jobStatusChangeEvent;
+                            gatewayId = jobStatusChangeEvent.getJobIdentity().getGatewayId();
                         }
-
-                        MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId());
+                        MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId);
                         messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
                         handler.onMessage(messageContext);
                     } catch (TException e) {

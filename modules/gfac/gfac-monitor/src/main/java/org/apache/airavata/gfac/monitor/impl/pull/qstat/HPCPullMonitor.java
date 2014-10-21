@@ -232,7 +232,11 @@ public class HPCPullMonitor extends PullMonitor {
                         }
                         jobStatus = new JobStatusChangeRequestEvent();
                         iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()+","+iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
-                        JobIdentifier jobIdentity = new JobIdentifier(iMonitorID.getJobID(), iMonitorID.getTaskID(), iMonitorID.getWorkflowNodeID(), iMonitorID.getExperimentID());
+                        JobIdentifier jobIdentity = new JobIdentifier(iMonitorID.getJobID(),
+                                                                      iMonitorID.getTaskID(),
+                                                                      iMonitorID.getWorkflowNodeID(),
+                                                                      iMonitorID.getExperimentID(),
+                                                                      iMonitorID.getJobExecutionContext().getGatewayID());
                         jobStatus.setJobIdentity(jobIdentity);
                         jobStatus.setState(iMonitorID.getStatus());
                         // we have this JobStatus class to handle amqp monitoring
@@ -321,12 +325,13 @@ public class HPCPullMonitor extends PullMonitor {
             if (e.getMessage().contains("Unknown Job Id Error")) {
                 // in this case job is finished or may be the given job ID is wrong
                 jobStatus.setState(JobState.UNKNOWN);
-                JobIdentifier jobIdentifier = new JobIdentifier("UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN");
+                JobIdentifier jobIdentifier = new JobIdentifier("UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN");
                 if (currentMonitorID != null){
                     jobIdentifier.setExperimentId(currentMonitorID.getExperimentID());
                     jobIdentifier.setTaskId(currentMonitorID.getTaskID());
                     jobIdentifier.setWorkflowNodeId(currentMonitorID.getWorkflowNodeID());
                     jobIdentifier.setJobId(currentMonitorID.getJobID());
+                    jobIdentifier.setGatewayId(currentMonitorID.getJobExecutionContext().getGatewayID());
                 }
                 jobStatus.setJobIdentity(jobIdentifier);
                 publisher.publish(jobStatus);
