@@ -620,7 +620,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                         JobIdentifier jobIdentifier = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
                                                                         jobExecutionContext.getTaskData().getTaskID(),
                                                                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                                                        jobExecutionContext.getExperimentID());
+                                                                        jobExecutionContext.getExperimentID(),
+                                                                        jobExecutionContext.getGatewayID());
                         changeRequestEvent.setJobIdentity(jobIdentifier);
                         monitorPublisher.publish(changeRequestEvent);
                     } catch (NullPointerException e1) {
@@ -631,7 +632,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                         monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED,
                                                                                   new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                                                                                                      jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                                                                                     jobExecutionContext.getExperimentID())));
+                                                                                                     jobExecutionContext.getExperimentID(),
+                                                                                                     jobExecutionContext.getGatewayID())));
 
                     }
                     jobExecutionContext.setProperty(ERROR_SENT, "true");
@@ -707,7 +709,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                 JobIdentifier jobIdentity = new JobIdentifier(
                         jobExecutionContext.getJobDetails().getJobID(), jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                        jobExecutionContext.getExperimentID());
+                        jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getGatewayID());
 				monitorPublisher.publish(new JobStatusChangeEvent(JobState.FAILED, jobIdentity));
 			} catch (NullPointerException e1) {
 				log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, "
@@ -717,7 +720,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 				// Updating the task status if there's any task associated
                 TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                        jobExecutionContext.getExperimentID());
+                        jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getGatewayID());
 				monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
 
 			}
@@ -778,7 +782,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 				// ));
                 JobIdentifier jobIdentity = new JobIdentifier(
                         jobExecutionContext.getJobDetails().getJobID(),jobExecutionContext.getTaskData().getTaskID(),jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                        jobExecutionContext.getExperimentID());
+                        jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getGatewayID());
 				monitorPublisher.publish(new JobStatusChangeEvent(JobState.FAILED, jobIdentity));
 			} catch (NullPointerException e1) {
 				log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, "
@@ -787,7 +792,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 				// Updating the task status if there's any task associated
                 TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                        jobExecutionContext.getExperimentID());
+                        jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getGatewayID());
                 monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
 
 			}
@@ -1009,7 +1015,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                 } catch (Exception e) {
                     TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                             jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                            jobExecutionContext.getExperimentID());
+                            jobExecutionContext.getExperimentID(),
+                            jobExecutionContext.getGatewayID());
                     monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentity));
                     throw new GFacException(e);
                 }
@@ -1028,7 +1035,8 @@ public class BetterGfacImpl implements GFac,Watcher {
         // Updating the task status if there's any task associated
         TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                jobExecutionContext.getExperimentID());
+                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getGatewayID());
         monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.COMPLETED, taskIdentity));
         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.COMPLETED));
     }
@@ -1157,7 +1165,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 
         TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                jobExecutionContext.getExperimentID());
+                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getGatewayID());
         monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.COMPLETED, taskIdentity));
         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.COMPLETED));
     }

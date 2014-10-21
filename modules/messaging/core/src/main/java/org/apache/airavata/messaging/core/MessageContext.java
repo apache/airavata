@@ -30,13 +30,15 @@ public class MessageContext {
     private final TBase event;
     private final MessageType type;
     private final String messageId;
+    private final String gatewayId;
     private Timestamp updatedTime;
 
 
-    public MessageContext(TBase message, MessageType type, String messageId) {
+    public MessageContext(TBase message, MessageType type, String messageId, String gatewayId) {
         this.event = message;
         this.type = type;
         this.messageId = messageId;
+        this.gatewayId = gatewayId;
     }
 
     public TBase getEvent() {
@@ -57,5 +59,9 @@ public class MessageContext {
 
     public void setUpdatedTime(Timestamp updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
     }
 }
