@@ -272,6 +272,7 @@
 				<include>org.apache.zookeeper:zookeeper</include>
 
 				<!-- UNICORE Dependencies Start -->
+				<include>eu.unicore:unicore-client-wrapper</include>
 				<include>org.apache.xmlbeans:xmlbeans-xpath</include>
 				<include>net.sf.saxon:saxon</include>
 				<include>net.sf.saxon:saxon-dom</include>
