@@ -56,12 +56,24 @@ import org.apache.airavata.gfac.core.provider.GFacRecoverableProvider;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+
 import org.apache.airavata.messaging.core.Publisher;
+
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+
 import org.apache.airavata.model.appcatalog.computeresource.*;
+
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -69,6 +81,19 @@ import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.schemas.gfac.*;
 import org.apache.airavata.schemas.gfac.DataType;
+
+import org.apache.airavata.schemas.gfac.GsisshHostType;
+import org.apache.airavata.schemas.gfac.HostDescriptionType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.InputParameterType;
+import org.apache.airavata.schemas.gfac.JobTypeType;
+import org.apache.airavata.schemas.gfac.OutputParameterType;
+import org.apache.airavata.schemas.gfac.ParameterType;
+import org.apache.airavata.schemas.gfac.ProjectAccountType;
+import org.apache.airavata.schemas.gfac.QueueType;
+import org.apache.airavata.schemas.gfac.SSHHostType;
+import org.apache.airavata.schemas.gfac.ServiceDescriptionType;
+import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -207,7 +232,13 @@ public class BetterGfacImpl implements GFac,Watcher {
         daemonHandlers = new ArrayList<ThreadedHandler>();
         startDaemonHandlers();
     }
+    
+    public BetterGfacImpl(Registry registry) {
+    	this();
+    	this.registry = registry;
+    }
 
+    
     /**
      * This is the job launching method outsiders of GFac can use, this will invoke the GFac handler chain and providers
      * And update the registry occordingly, so the users can query the database to retrieve status and output from Registry
@@ -237,7 +268,7 @@ public class BetterGfacImpl implements GFac,Watcher {
          * 1. Get the Task from the task ID and construct the Job object and save it in to registry
          * 2. Add properties of description documents to jobExecutionContext which will be used inside the providers.
          */
-
+        
         //Fetch the Task details for the requested experimentID from the registry. Extract required pointers from the Task object.
         TaskDetails taskData = (TaskDetails) registry.get(RegistryModelType.TASK_DETAIL, taskID);
 
@@ -371,6 +402,12 @@ public class BetterGfacImpl implements GFac,Watcher {
                             break;
                     }
                     break;
+                case UNICORE:
+                	UnicoreJobSubmission ucrSubmission = appCatalog.getComputeResource().getUNICOREJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                	String unicoreEndpoint = ucrSubmission.getUnicoreEndPointURL();
+                	legacyHostDescription = new HostDescription(UnicoreHostType.type);
+                	((UnicoreHostType) legacyHostDescription.getType()).setUnicoreBESEndPointArray(new String[]{unicoreEndpoint});
+                	break;
                 default:
                     break;
             }
@@ -387,7 +424,9 @@ public class BetterGfacImpl implements GFac,Watcher {
 
         /////////////////////---------------- APPLICATION DESCRIPTOR ---------------------/////////////////////////
         //Fetch deployment information and fill-in legacy doc
-        if ((legacyHostDescType instanceof GsisshHostType) || (legacyHostDescType instanceof SSHHostType)) {
+        if ((legacyHostDescType instanceof GsisshHostType) 
+        		|| (legacyHostDescType instanceof SSHHostType) 
+        		|| (legacyHostDescType instanceof UnicoreHostType)) {
             legacyAppDescription = new ApplicationDescription(HpcApplicationDeploymentType.type);
             HpcApplicationDeploymentType legacyHPCAppDescType = (HpcApplicationDeploymentType) legacyAppDescription.getType();
             switch (applicationDeployment.getParallelism()) {
@@ -581,7 +620,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                         JobIdentifier jobIdentifier = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
                                                                         jobExecutionContext.getTaskData().getTaskID(),
                                                                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                                                        jobExecutionContext.getExperimentID());
+                                                                        jobExecutionContext.getExperimentID(),
+                                                                        jobExecutionContext.getGatewayID());
                         changeRequestEvent.setJobIdentity(jobIdentifier);
                         monitorPublisher.publish(changeRequestEvent);
                     } catch (NullPointerException e1) {
@@ -592,7 +632,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                         monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED,
                                                                                   new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                                                                                                      jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                                                                                     jobExecutionContext.getExperimentID())));
+                                                                                                     jobExecutionContext.getExperimentID(),
+                                                                                                     jobExecutionContext.getGatewayID())));
 
                     }
                     jobExecutionContext.setProperty(ERROR_SENT, "true");
@@ -668,7 +709,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                 JobIdentifier jobIdentity = new JobIdentifier(
                         jobExecutionContext.getJobDetails().getJobID(), jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                        jobExecutionContext.getExperimentID());
+                        jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getGatewayID());
 				monitorPublisher.publish(new JobStatusChangeEvent(JobState.FAILED, jobIdentity));
 			} catch (NullPointerException e1) {
 				log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, "
@@ -678,7 +720,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 				// Updating the task status if there's any task associated
                 TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                        jobExecutionContext.getExperimentID());
+                        jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getGatewayID());
 				monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
 
 			}
@@ -739,7 +782,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 				// ));
                 JobIdentifier jobIdentity = new JobIdentifier(
                         jobExecutionContext.getJobDetails().getJobID(),jobExecutionContext.getTaskData().getTaskID(),jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                        jobExecutionContext.getExperimentID());
+                        jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getGatewayID());
 				monitorPublisher.publish(new JobStatusChangeEvent(JobState.FAILED, jobIdentity));
 			} catch (NullPointerException e1) {
 				log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, "
@@ -748,7 +792,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 				// Updating the task status if there's any task associated
                 TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                         jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                        jobExecutionContext.getExperimentID());
+                        jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getGatewayID());
                 monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
 
 			}
@@ -970,7 +1015,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                 } catch (Exception e) {
                     TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                             jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                            jobExecutionContext.getExperimentID());
+                            jobExecutionContext.getExperimentID(),
+                            jobExecutionContext.getGatewayID());
                     monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentity));
                     throw new GFacException(e);
                 }
@@ -989,7 +1035,8 @@ public class BetterGfacImpl implements GFac,Watcher {
         // Updating the task status if there's any task associated
         TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                jobExecutionContext.getExperimentID());
+                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getGatewayID());
         monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.COMPLETED, taskIdentity));
         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.COMPLETED));
     }
@@ -1118,7 +1165,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 
         TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                jobExecutionContext.getExperimentID());
+                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getGatewayID());
         monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.COMPLETED, taskIdentity));
         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.COMPLETED));
     }

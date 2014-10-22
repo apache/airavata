@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.Map;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
 import org.apache.airavata.gfac.bes.utils.ActivityInfo;

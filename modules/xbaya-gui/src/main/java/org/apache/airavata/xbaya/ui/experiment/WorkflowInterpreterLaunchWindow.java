@@ -83,15 +83,7 @@ public class WorkflowInterpreterLaunchWindow {
 
     private GridPanel parameterPanel;
 
-//    private XBayaTextField topicTextField;
-
     private List<XBayaTextField> parameterTextFields = new ArrayList<XBayaTextField>();
-
-//    private XBayaTextField workflowInterpreterTextField;
-
-//    private XBayaTextField RegistryTextField;
-
-//    private XBayaTextField gfacTextField;
 
 	private XBayaTextField instanceNameTextField;
 
@@ -99,7 +91,6 @@ public class WorkflowInterpreterLaunchWindow {
 
     private JComboBox host;
     private HashMap<String, String> hostNames;
-    //    protected final static XmlInfosetBuilder builder = XmlConstants.BUILDER;
 
     /**
      * Constructs a WorkflowInterpreterLaunchWindow.
@@ -110,9 +101,7 @@ public class WorkflowInterpreterLaunchWindow {
     public WorkflowInterpreterLaunchWindow(XBayaEngine engine) throws AiravataClientConnectException {
         this.engine = engine;
         airavataClient = AiravataClientFactory.createAiravataClient("127.0.0.1", 8930);
-//        if (XBayaUtil.acquireJCRRegistry(engine)) {
             initGUI();
-//        }
     }
 
     /**
@@ -120,12 +109,6 @@ public class WorkflowInterpreterLaunchWindow {
      */
     public void show() {
         this.workflow = this.engine.getGUI().getWorkflow();
-
-//        MonitorConfiguration notifConfig = this.engine.getMonitor().getConfiguration();
-//        if (notifConfig.getBrokerURL() == null) {
-//            this.engine.getGUI().getErrorWindow().error(ErrorMessages.BROKER_URL_NOT_SET_ERROR);
-//            return;
-//        }
 
         // Create input fields
         Collection<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
@@ -199,25 +182,6 @@ public class WorkflowInterpreterLaunchWindow {
         this.parameterPanel.add(hostLabel);
         this.parameterPanel.add(host);
         this.parameterPanel.layout(inputNodes.size(), 3, GridPanel.WEIGHT_NONE, 2);
-//        this.instanceNameTextField.setText(workflow.getName()+"_"+Calendar.getInstance().getTime().toString());
-//        this.topicTextField.setText(UUID.randomUUID().toString());
-
-//        XBayaConfiguration config = this.engine.getConfiguration();
-//        this.gfacTextField.setText(config.getGFacURL().toString());
-//        URI workflowInterpreterURL = config.getWorkflowInterpreterURL();
-//        if (null != workflowInterpreterURL) {
-//            this.workflowInterpreterTextField.setText(workflowInterpreterURL.toString());
-//        } else {
-//            this.workflowInterpreterTextField.setText(XBayaConstants.DEFAULT_WORKFLOW_INTERPRETER_URL);
-//        }
-
-//        AiravataAPI airavataAPI = config.getAiravataAPI();
-//        if (null != airavataAPI) {
-//            this.RegistryTextField.setText(config.getRegistryURL());
-//        } else {
-//            this.RegistryTextField.setText(XBayaConstants.REGISTRY_URL.toASCIIString());
-//        }
-
         this.dialog.show();
     }
 
@@ -236,29 +200,10 @@ public class WorkflowInterpreterLaunchWindow {
 
         this.instanceNameTextField = new XBayaTextField();
         XBayaLabel instanceNameLabel = new XBayaLabel("Experiment name", this.instanceNameTextField);
-        
-//        this.topicTextField = new XBayaTextField();
-//        XBayaLabel topicLabel = new XBayaLabel("Notification topic", this.topicTextField);
-//        this.workflowInterpreterTextField = new XBayaTextField();
-//        XBayaLabel workflowInterpreterLabel = new XBayaLabel("Workflow Interpreter URL",
-//                this.workflowInterpreterTextField);
-//        this.RegistryTextField = new XBayaTextField();
-//        XBayaLabel RegistryLabel = new XBayaLabel("Registry URL", this.RegistryTextField);
-//        this.gfacTextField = new XBayaTextField();
-//        XBayaLabel gfacLabel = new XBayaLabel("GFac URL", this.gfacTextField);
 
         GridPanel infoPanel = new GridPanel();
         infoPanel.add(instanceNameLabel);
         infoPanel.add(this.instanceNameTextField);
-//        infoPanel.add(topicLabel);
-//        infoPanel.add(this.topicTextField);
-//        infoPanel.add(workflowInterpreterLabel);
-//        infoPanel.add(this.workflowInterpreterTextField);
-//        infoPanel.add(gfacLabel);
-//        infoPanel.add(this.gfacTextField);
-//        infoPanel.add(RegistryLabel);
-//        infoPanel.add(this.RegistryTextField);
-
         infoPanel.layout(1, 2, GridPanel.WEIGHT_NONE, 1);
 
         GridPanel mainPanel = new GridPanel();
@@ -306,17 +251,17 @@ public class WorkflowInterpreterLaunchWindow {
     }
 
     private void execute() throws AiravataClientConnectException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-    	
+
     	if (!(engine.getGUI().setupThriftClientData(ThriftServiceType.API_SERVICE) && engine.getGUI().setupThriftClientData(ThriftServiceType.WORKFLOW_SERVICE))){
     		hide();
     		return;
     	}
-    	
+
     	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
 		Client airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
-    	
+
 		org.apache.airavata.api.workflow.Workflow.Client workflowClient = XBayaUtil.getWorkflowClient(engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE));
-		
+
 		Workflow workflowClone = workflow.clone();
 		workflowClone.setName(workflowClone.getName()+UUID.randomUUID().toString());
 		org.apache.airavata.model.Workflow w = new org.apache.airavata.model.Workflow();
@@ -345,8 +290,6 @@ public class WorkflowInterpreterLaunchWindow {
         project.setOwner(thriftClientData.getUsername());
         project.setProjectID(airavataClient.createProject(project));
         final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
-//        builder.newFragment("inputs");
-//        new ODEClient();
         final Experiment experiment = new Experiment();
         experiment.setApplicationId(w.getTemplateId());
         experiment.setName(instanceName);
@@ -405,70 +348,6 @@ public class WorkflowInterpreterLaunchWindow {
             logger.error("Error while subscribing with experiment Id : " + experiment.getExperimentID(), e);
         }
         airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
-
-//        final String workflowInterpreterUrl = this.workflowInterpreterTextField.getText();
-//        if (null != workflowInterpreterUrl && !"".equals(workflowInterpreterUrl)) {
-//            try {
-//                this.engine.getConfiguration().setWorkflowInterpreterURL(new URI(workflowInterpreterUrl));
-//            } catch (URISyntaxException e) {
-//                this.engine.getGUI().getErrorWindow().error(e);
-//            }
-//        }
-
-//        final String gFacUrl = this.gfacTextField.getText();
-//        if (null != gFacUrl && !"".equals(gFacUrl)) {
-//            try {
-//                this.engine.getConfiguration().setGFacURL(new URI(gFacUrl));
-//            } catch (URISyntaxException e) {
-//                this.engine.getGUI().getErrorWindow().error(e);
-//            }
-//        }
-//        this.engine.getConfiguration().setTopic(topic);
-
-        new Thread() {
-            @Override
-            public void run() {
-//            	WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(experiment, null, new WorkflowInterpreterConfiguration(workflow),getOrchestratorClient());
-//                try {
-//        			workflowInterpreter.scheduleDynamically();
-//        		} catch (WorkflowException e) {
-//        			e.printStackTrace();
-//        		} catch (RegistryException e) {
-//        			// TODO Auto-generated catch block
-//        			e.printStackTrace();
-//        		}
-//                try {
-//                    List<WorkflowInput> workflowInputs=new ArrayList<WorkflowInput>();
-//                    for (int i = 0; i < inputNodes.size(); i++) {
-//                    	InputNode inputNode = inputNodes.get(i);
-//                    	workflowInputs.add(new WorkflowInput(inputNode.getID(), inputNode.getDefaultValue().toString()));
-//                    }
-//                    AiravataAPI api = engine.getConfiguration().getAiravataAPI();
-//                    
-//                    ExperimentAdvanceOptions options = api.getExecutionManager().createExperimentAdvanceOptions(instanceNameFinal, api.getCurrentUser(), null);
-//                    if (AmazonCredential.getInstance().getAwsAccessKeyId() != null) {
-//                        options.getCustomSecuritySettings().getAmazonWSSettings().setAccessKeyId(AmazonCredential.getInstance().getAwsAccessKeyId());
-//                        options.getCustomSecuritySettings().getAmazonWSSettings().setSecretAccessKey(AmazonCredential.getInstance().getAwsSecretAccessKey());
-//                    }
-//
-//                    //TODO get the token id from UI
-//                    // For the moment hard code it
-//                    // TODO Build UI to get the token id
-//                    //options.getCustomSecuritySettings().getCredentialStoreSecuritySettings().setTokenId("1234");
-//
-//
-//                    String experimentId = api.getExecutionManager().runExperiment(api.getWorkflowManager().getWorkflowAsString(workflow), workflowInputs,options);
-//                    try {
-//                        WorkflowInterpreterLaunchWindow.this.engine.getMonitor().getConfiguration().setTopic(experimentId);
-//                        WorkflowInterpreterLaunchWindow.this.engine.getMonitor().start();
-//                    } catch (MonitorException e1) {
-//                        WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e1);
-//                    }
-//                } catch (Exception e) {
-//                    WorkflowInterpreterLaunchWindow.this.engine.getGUI().getErrorWindow().error(e);
-//                }
-            }
-        }.start();
 
         hide();
     }

@@ -25,11 +25,16 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.model.messaging.event.TaskIdentifier;
+import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public abstract class AbstractRecoverableHandler implements GFacRecoverableHandler {
     private static final Logger logger = LoggerFactory.getLogger(AppDescriptorCheckHandler.class);
@@ -71,5 +76,13 @@ public abstract class AbstractRecoverableHandler implements GFacRecoverableHandl
 
     public void setRegistry(Registry registry) {
         this.registry = registry;
+    }
+
+    protected void fireTaskOutputChangeEvent(JobExecutionContext jobExecutionContext, List<DataObjectType> outputArray) {
+        TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
+                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getGatewayID());
+        publisher.publish(new TaskOutputChangeEvent(outputArray, taskIdentity));
     }
 }

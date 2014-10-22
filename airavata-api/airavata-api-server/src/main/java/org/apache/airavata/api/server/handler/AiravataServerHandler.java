@@ -1941,7 +1941,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw exception;
         }
     }
-
+    
     /**
      * Add a Cloud Job Submission details to a compute resource
      * App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
@@ -1969,7 +1969,27 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    /**
+    @Override
+	public boolean addUNICOREJobSubmissionDetails(String computeResourceId,
+			int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+	        appCatalog = AppCatalogFactory.getAppCatalog();
+	        ComputeResource computeResource = appCatalog.getComputeResource();
+	        addJobSubmissionInterface(computeResource, computeResourceId,
+	        		computeResource.addUNICOREJobSubmission(unicoreJobSubmission), JobSubmissionProtocol.UNICORE, priorityOrder);
+	        return true;
+	    } catch (AppCatalogException e) {
+	        logger.error("Error while adding job submission interface to resource compute resource...", e);
+	        AiravataSystemException exception = new AiravataSystemException();
+	        exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+	        exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+	        throw exception;
+	    }
+	}
+
+	/**
      * Update the given SSH Job Submission details
      *
      * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be updated.

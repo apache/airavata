@@ -71,6 +71,13 @@ public interface ComputeResource {
      */
     String addGlobusJobSubmission (GlobusJobSubmission globusJobSubmission) throws AppCatalogException;
 
+    /**
+     * This method will add a UNICOREJobSubmission to the database
+     * @param unicoreJobSubmission 
+     * @return uniquely generated submission id
+     */
+    String addUNICOREJobSubmission (UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException;
+
 
     String addLocalDataMovement (LOCALDataMovement localDataMovement) throws AppCatalogException;
 
@@ -144,7 +151,15 @@ public interface ComputeResource {
      * @return GSISSHSubmission object
      */
     SSHJobSubmission getSSHJobSubmission (String submissionId) throws AppCatalogException;
+    
+    /**
+     * This method will retrieve UnicoreJobSubmission object
+     * @param submissionId unique submission id
+     * @return UnicoreSubmission object
+     */
+    UnicoreJobSubmission getUNICOREJobSubmission (String submissionId) throws AppCatalogException;
 
+    
 
     /**
      * This method will retrieve GSISSHJobSubmission object

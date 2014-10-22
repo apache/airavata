@@ -30,6 +30,7 @@
         <class>org.apache.aiaravata.application.catalog.data.model.GSISSHExport</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GSISSHPreJobCommand</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GSISSHPostJobCommand</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.UnicoreJobSubmission</class>
         <class>org.apache.aiaravata.application.catalog.data.model.HostAlias</class>
         <class>org.apache.aiaravata.application.catalog.data.model.HostIPAddress</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ScpDataMovement</class>
