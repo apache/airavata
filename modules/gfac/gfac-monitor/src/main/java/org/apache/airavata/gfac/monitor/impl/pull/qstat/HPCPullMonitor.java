@@ -232,21 +232,6 @@ public class HPCPullMonitor extends PullMonitor {
                         }
                         jobStatus = new JobStatusChangeRequestEvent();
                         iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()+","+iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
-                        JobIdentifier jobIdentity = new JobIdentifier(iMonitorID.getJobID(),
-                                                                      iMonitorID.getTaskID(),
-                                                                      iMonitorID.getWorkflowNodeID(),
-                                                                      iMonitorID.getExperimentID(),
-                                                                      iMonitorID.getJobExecutionContext().getGatewayID());
-                        jobStatus.setJobIdentity(jobIdentity);
-                        jobStatus.setState(iMonitorID.getStatus());
-                        // we have this JobStatus class to handle amqp monitoring
-
-                        publisher.publish(jobStatus);
-                        logger.debugId(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
-                                        "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
-                                jobStatus.getJobIdentity().getTaskId());
-                        // if the job is completed we do not have to put the job to the queue again
-                        iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
 
                         if (iMonitorID.getFailedCount() > FAILED_COUNT) {
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
@@ -263,20 +248,36 @@ public class HPCPullMonitor extends PullMonitor {
                                     CommonUtils.removeMonitorFromQueue(queue, iMonitorID);
                                 }
                             }
-                                if (stdOut !=null && stdOut.size() > 0 && !stdOut.get(0).isEmpty()) { // have to be careful with this
-                                    completedJobs.put(iMonitorID.getJobName(), iMonitorID);
-                                    logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, removed job {} from " +
-                                                    "monitor queue. Experiment {} , task {}", iMonitorID.getFailedCount(),
-                                            iMonitorID.getExperimentID(), iMonitorID.getTaskID());
-                                } else {
-                                    iMonitorID.setFailedCount(0);
-                                }
+                            if (stdOut != null && stdOut.size() > 0 && !stdOut.get(0).isEmpty()) { // have to be careful with this
+                                iMonitorID.setStatus(JobState.COMPLETE);
+                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
+                                logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, removed job {} from " +
+                                                "monitor queue. Experiment {} , task {}", iMonitorID.getFailedCount(),
+                                        iMonitorID.getExperimentID(), iMonitorID.getTaskID());
                             } else {
+                                iMonitorID.setFailedCount(0);
+                            }
+                        } else {
                             // Evey
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             // if the job is complete we remove it from the Map, if any of these maps
                             // get empty this userMonitorData will get delete from the queue
                         }
+                        JobIdentifier jobIdentity = new JobIdentifier(iMonitorID.getJobID(),
+                                iMonitorID.getTaskID(),
+                                iMonitorID.getWorkflowNodeID(),
+                                iMonitorID.getExperimentID(),
+                                iMonitorID.getJobExecutionContext().getGatewayID());
+                        jobStatus.setJobIdentity(jobIdentity);
+                        jobStatus.setState(iMonitorID.getStatus());
+                        // we have this JobStatus class to handle amqp monitoring
+
+                        publisher.publish(jobStatus);
+                        logger.debugId(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
+                                        "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
+                                jobStatus.getJobIdentity().getTaskId());
+                        // if the job is completed we do not have to put the job to the queue again
+                        iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                     }
                 } else {
                     logger.debug("Qstat Monitor doesn't handle non-gsissh hosts , host {}", iHostMonitorData.getHost()
