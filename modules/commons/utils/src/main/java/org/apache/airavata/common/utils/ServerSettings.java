@@ -147,7 +147,6 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(ACTIVITY_LISTENERS).split(",");
     }
 
-
     public static String getActivityPublisher() throws ApplicationSettingsException{
         return getSetting(ACTIVITY_PUBLISHER);
     }

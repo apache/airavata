@@ -20,10 +20,18 @@
 */
 package org.apache.airavata.gfac.core.utils;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.logger.AiravataLogger;
+import org.apache.airavata.common.logger.AiravataLoggerFactory;
+import org.apache.airavata.common.utils.ServerSettings;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class GFacThreadPoolExecutor {
+    private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GFacThreadPoolExecutor.class);
+    public static final String GFAC_THREAD_POOL_SIZE = "gfac.thread.pool.size";
+
     private static ExecutorService cachedThreadPool;
 
     public static ExecutorService getCachedThreadPool() {
@@ -35,7 +43,11 @@ public class GFacThreadPoolExecutor {
 
     public static ExecutorService getFixedThreadPool() {
         if(cachedThreadPool==null){
-            cachedThreadPool = Executors.newFixedThreadPool(500);
+            try {
+                cachedThreadPool = Executors.newFixedThreadPool(Integer.parseInt(ServerSettings.getSetting(GFAC_THREAD_POOL_SIZE)));
+            } catch (ApplicationSettingsException e) {
+                logger.error("Error reading " + GFAC_THREAD_POOL_SIZE+ " property");
+            }
         }
         return cachedThreadPool;
     }
