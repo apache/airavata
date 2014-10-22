@@ -1,17 +1,20 @@
 package org.apache.airavata.gfac.bes.handlers;
 
-import java.util.Map;
 import java.util.Properties;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
+import org.apache.airavata.gfac.bes.security.X509SecurityContext;
 import org.apache.airavata.gfac.bes.utils.BESConstants;
 import org.apache.airavata.gfac.bes.utils.DataTransferrer;
+import org.apache.airavata.gfac.bes.utils.SecurityUtils;
 import org.apache.airavata.gfac.bes.utils.StorageCreator;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.schemas.gfac.JobDirectoryModeDocument.JobDirectoryMode;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.slf4j.Logger;
@@ -23,8 +26,6 @@ import eu.unicore.util.httpclient.DefaultClientConfiguration;
 
 public abstract class AbstractSMSHandler implements BESConstants, GFacHandler{
     
-	// TODO: later use AbstractHandler, which cannot be used due to error in RegistryFactory
-	
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
 	
     protected DefaultClientConfiguration secProperties;
@@ -44,7 +45,7 @@ public abstract class AbstractSMSHandler implements BESConstants, GFacHandler{
 			throws GFacHandlerException {
 		
 		// if not SMS then not to pass further
-		if(!isSMSEnabled(jobExecutionContext)) return;
+//		if(!isSMSEnabled(jobExecutionContext)) return;
 		
 		initSecurityProperties(jobExecutionContext);
 		
@@ -86,8 +87,24 @@ public abstract class AbstractSMSHandler implements BESConstants, GFacHandler{
             return;
         }
         UNICORESecurityContext unicoreContext;
+        try {
+	        if (jobExecutionContext.getSecurityContext(X509SecurityContext.X509_SECURITY_CONTEXT) == null ) {
+				SecurityUtils.addSecurityContext(jobExecutionContext);
+				log.info("Successfully added the UNICORE Security Context");
+	        }
+	    }catch (Exception e) {
+        	log.error(e.getMessage());
+            try {
+				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            } catch (GFacException e1) {
+				 log.error(e1.getLocalizedMessage());
+            }  
+            throw new GFacHandlerException("Error while creating UNICORESecurityContext", e, e.getLocalizedMessage());
+        }
+        	
 		try {
-			unicoreContext = (UNICORESecurityContext) jobExecutionContext.getSecurityContext(UNICORESecurityContext.UNICORE_SECURITY_CONTEXT);
+			unicoreContext = (UNICORESecurityContext) jobExecutionContext.getSecurityContext(X509SecurityContext.X509_SECURITY_CONTEXT);
+			log.info("Successfully retrieved the UNICORE Security Context");
 		} catch (GFacException e) {
 			throw new GFacHandlerException(e);
 		}

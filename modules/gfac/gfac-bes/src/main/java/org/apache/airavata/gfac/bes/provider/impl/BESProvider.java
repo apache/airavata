@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
+import org.apache.airavata.gfac.bes.security.X509SecurityContext;
 import org.apache.airavata.gfac.bes.utils.ActivityInfo;
 import org.apache.airavata.gfac.bes.utils.BESConstants;
 import org.apache.airavata.gfac.bes.utils.DataServiceInfo;
@@ -78,7 +79,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider, BESCo
         	return;
         }
             
-        UNICORESecurityContext unicoreContext = (UNICORESecurityContext) jobExecutionContext.getSecurityContext(UNICORESecurityContext.UNICORE_SECURITY_CONTEXT);
+        UNICORESecurityContext unicoreContext = (UNICORESecurityContext) jobExecutionContext.getSecurityContext(X509SecurityContext.X509_SECURITY_CONTEXT);
         if(log.isDebugEnabled()) {
         	log.debug("Generating default configuration.");
         }

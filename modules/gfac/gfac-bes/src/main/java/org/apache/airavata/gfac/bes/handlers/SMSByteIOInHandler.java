@@ -16,12 +16,12 @@ public class SMSByteIOInHandler extends AbstractSMSHandler implements GFacHandle
 	@Override
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException	{
 		super.invoke(jobExecutionContext);
-    try{    
-        	if(jobExecutionContext.getInMessageContext().getParameters().size() < 1) return;
+		if(jobExecutionContext.getInMessageContext().getParameters().size() < 1) return;
+		try{    
         	dataTransferrer.uploadLocalFiles();
-	} catch (GFacProviderException e) {
-		throw new GFacHandlerException("Cannot upload local data",e);
-	}
+		} catch (GFacProviderException e) {
+			throw new GFacHandlerException("Cannot upload local data",e);
+		}
 
  	}
 	
