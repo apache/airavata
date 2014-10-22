@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 
   private static final org.apache.thrift.protocol.TField WORKFLOW_NODE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowNodeId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -63,11 +64,13 @@ import org.slf4j.LoggerFactory;
 
   private String workflowNodeId; // required
   private String experimentId; // required
+  private String gatewayId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     WORKFLOW_NODE_ID((short)1, "workflowNodeId"),
-    EXPERIMENT_ID((short)2, "experimentId");
+    EXPERIMENT_ID((short)2, "experimentId"),
+    GATEWAY_ID((short)3, "gatewayId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -86,6 +89,8 @@ import org.slf4j.LoggerFactory;
           return WORKFLOW_NODE_ID;
         case 2: // EXPERIMENT_ID
           return EXPERIMENT_ID;
+        case 3: // GATEWAY_ID
+          return GATEWAY_ID;
         default:
           return null;
       }
@@ -133,6 +138,8 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("experimentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(WorkflowIdentifier.class, metaDataMap);
   }
@@ -142,11 +149,13 @@ import org.slf4j.LoggerFactory;
 
   public WorkflowIdentifier(
     String workflowNodeId,
-    String experimentId)
+    String experimentId,
+    String gatewayId)
   {
     this();
     this.workflowNodeId = workflowNodeId;
     this.experimentId = experimentId;
+    this.gatewayId = gatewayId;
   }
 
   /**
@@ -159,6 +168,9 @@ import org.slf4j.LoggerFactory;
     if (other.isSetExperimentId()) {
       this.experimentId = other.experimentId;
     }
+    if (other.isSetGatewayId()) {
+      this.gatewayId = other.gatewayId;
+    }
   }
 
   public WorkflowIdentifier deepCopy() {
@@ -169,6 +181,7 @@ import org.slf4j.LoggerFactory;
   public void clear() {
     this.workflowNodeId = null;
     this.experimentId = null;
+    this.gatewayId = null;
   }
 
   public String getWorkflowNodeId() {
@@ -217,6 +230,29 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getGatewayId() {
+    return this.gatewayId;
+  }
+
+  public void setGatewayId(String gatewayId) {
+    this.gatewayId = gatewayId;
+  }
+
+  public void unsetGatewayId() {
+    this.gatewayId = null;
+  }
+
+  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayId() {
+    return this.gatewayId != null;
+  }
+
+  public void setGatewayIdIsSet(boolean value) {
+    if (!value) {
+      this.gatewayId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case WORKFLOW_NODE_ID:
@@ -235,6 +271,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case GATEWAY_ID:
+      if (value == null) {
+        unsetGatewayId();
+      } else {
+        setGatewayId((String)value);
+      }
+      break;
+
     }
   }
 
@@ -245,6 +289,9 @@ import org.slf4j.LoggerFactory;
 
     case EXPERIMENT_ID:
       return getExperimentId();
+
+    case GATEWAY_ID:
+      return getGatewayId();
 
     }
     throw new IllegalStateException();
@@ -261,6 +308,8 @@ import org.slf4j.LoggerFactory;
       return isSetWorkflowNodeId();
     case EXPERIMENT_ID:
       return isSetExperimentId();
+    case GATEWAY_ID:
+      return isSetGatewayId();
     }
     throw new IllegalStateException();
   }
@@ -293,6 +342,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_experimentId && that_present_experimentId))
         return false;
       if (!this.experimentId.equals(that.experimentId))
+        return false;
+    }
+
+    boolean this_present_gatewayId = true && this.isSetGatewayId();
+    boolean that_present_gatewayId = true && that.isSetGatewayId();
+    if (this_present_gatewayId || that_present_gatewayId) {
+      if (!(this_present_gatewayId && that_present_gatewayId))
+        return false;
+      if (!this.gatewayId.equals(that.gatewayId))
         return false;
     }
 
@@ -332,6 +390,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGatewayId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -367,6 +435,14 @@ import org.slf4j.LoggerFactory;
       sb.append(this.experimentId);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("gatewayId:");
+    if (this.gatewayId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.gatewayId);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -379,6 +455,10 @@ import org.slf4j.LoggerFactory;
 
     if (!isSetExperimentId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentId' is unset! Struct:" + toString());
+    }
+
+    if (!isSetGatewayId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -434,6 +514,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 3: // GATEWAY_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.gatewayId = iprot.readString();
+              struct.setGatewayIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -457,6 +545,11 @@ import org.slf4j.LoggerFactory;
         oprot.writeString(struct.experimentId);
         oprot.writeFieldEnd();
       }
+      if (struct.gatewayId != null) {
+        oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+        oprot.writeString(struct.gatewayId);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -476,6 +569,7 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.workflowNodeId);
       oprot.writeString(struct.experimentId);
+      oprot.writeString(struct.gatewayId);
     }
 
     @Override
@@ -485,6 +579,8 @@ import org.slf4j.LoggerFactory;
       struct.setWorkflowNodeIdIsSet(true);
       struct.experimentId = iprot.readString();
       struct.setExperimentIdIsSet(true);
+      struct.gatewayId = iprot.readString();
+      struct.setGatewayIdIsSet(true);
     }
   }
 

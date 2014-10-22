@@ -61,16 +61,17 @@ extern const std::map<int, const char*> _MessageType_VALUES_TO_NAMES;
 class ExperimentStatusChangeEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "19B5240589E680301A7E32DF3971EFBE";
-  static const uint8_t binary_fingerprint[16]; // = {0x19,0xB5,0x24,0x05,0x89,0xE6,0x80,0x30,0x1A,0x7E,0x32,0xDF,0x39,0x71,0xEF,0xBE};
+  static const char* ascii_fingerprint; // = "38C252E94E93B69D04EB3A6EE2F9EDFB";
+  static const uint8_t binary_fingerprint[16]; // = {0x38,0xC2,0x52,0xE9,0x4E,0x93,0xB6,0x9D,0x04,0xEB,0x3A,0x6E,0xE2,0xF9,0xED,0xFB};
 
-  ExperimentStatusChangeEvent() : state(( ::apache::airavata::model::workspace::experiment::ExperimentState::type)0), experimentId() {
+  ExperimentStatusChangeEvent() : state(( ::apache::airavata::model::workspace::experiment::ExperimentState::type)0), experimentId(), gatewayId() {
   }
 
   virtual ~ExperimentStatusChangeEvent() throw() {}
 
    ::apache::airavata::model::workspace::experiment::ExperimentState::type state;
   std::string experimentId;
+  std::string gatewayId;
 
   void __set_state(const  ::apache::airavata::model::workspace::experiment::ExperimentState::type val) {
     state = val;
@@ -80,11 +81,17 @@ class ExperimentStatusChangeEvent {
     experimentId = val;
   }
 
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
   bool operator == (const ExperimentStatusChangeEvent & rhs) const
   {
     if (!(state == rhs.state))
       return false;
     if (!(experimentId == rhs.experimentId))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
@@ -105,16 +112,17 @@ void swap(ExperimentStatusChangeEvent &a, ExperimentStatusChangeEvent &b);
 class WorkflowIdentifier {
  public:
 
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
+  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
 
-  WorkflowIdentifier() : workflowNodeId(), experimentId() {
+  WorkflowIdentifier() : workflowNodeId(), experimentId(), gatewayId() {
   }
 
   virtual ~WorkflowIdentifier() throw() {}
 
   std::string workflowNodeId;
   std::string experimentId;
+  std::string gatewayId;
 
   void __set_workflowNodeId(const std::string& val) {
     workflowNodeId = val;
@@ -124,11 +132,17 @@ class WorkflowIdentifier {
     experimentId = val;
   }
 
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
   bool operator == (const WorkflowIdentifier & rhs) const
   {
     if (!(workflowNodeId == rhs.workflowNodeId))
       return false;
     if (!(experimentId == rhs.experimentId))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
@@ -149,8 +163,8 @@ void swap(WorkflowIdentifier &a, WorkflowIdentifier &b);
 class WorkflowNodeStatusChangeEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "E9096211D03C8F19468314A49FB23CF0";
-  static const uint8_t binary_fingerprint[16]; // = {0xE9,0x09,0x62,0x11,0xD0,0x3C,0x8F,0x19,0x46,0x83,0x14,0xA4,0x9F,0xB2,0x3C,0xF0};
+  static const char* ascii_fingerprint; // = "9686679C94D43D75F2B35A0BED2E4003";
+  static const uint8_t binary_fingerprint[16]; // = {0x96,0x86,0x67,0x9C,0x94,0xD4,0x3D,0x75,0xF2,0xB3,0x5A,0x0B,0xED,0x2E,0x40,0x03};
 
   WorkflowNodeStatusChangeEvent() : state(( ::apache::airavata::model::workspace::experiment::WorkflowNodeState::type)0) {
   }
@@ -193,10 +207,10 @@ void swap(WorkflowNodeStatusChangeEvent &a, WorkflowNodeStatusChangeEvent &b);
 class TaskIdentifier {
  public:
 
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
+  static const char* ascii_fingerprint; // = "C93D890311F28844166CF6E571EB3AC2";
+  static const uint8_t binary_fingerprint[16]; // = {0xC9,0x3D,0x89,0x03,0x11,0xF2,0x88,0x44,0x16,0x6C,0xF6,0xE5,0x71,0xEB,0x3A,0xC2};
 
-  TaskIdentifier() : taskId(), workflowNodeId(), experimentId() {
+  TaskIdentifier() : taskId(), workflowNodeId(), experimentId(), gatewayId() {
   }
 
   virtual ~TaskIdentifier() throw() {}
@@ -204,6 +218,7 @@ class TaskIdentifier {
   std::string taskId;
   std::string workflowNodeId;
   std::string experimentId;
+  std::string gatewayId;
 
   void __set_taskId(const std::string& val) {
     taskId = val;
@@ -217,6 +232,10 @@ class TaskIdentifier {
     experimentId = val;
   }
 
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
   bool operator == (const TaskIdentifier & rhs) const
   {
     if (!(taskId == rhs.taskId))
@@ -224,6 +243,8 @@ class TaskIdentifier {
     if (!(workflowNodeId == rhs.workflowNodeId))
       return false;
     if (!(experimentId == rhs.experimentId))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
@@ -244,8 +265,8 @@ void swap(TaskIdentifier &a, TaskIdentifier &b);
 class TaskStatusChangeEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "9686679C94D43D75F2B35A0BED2E4003";
-  static const uint8_t binary_fingerprint[16]; // = {0x96,0x86,0x67,0x9C,0x94,0xD4,0x3D,0x75,0xF2,0xB3,0x5A,0x0B,0xED,0x2E,0x40,0x03};
+  static const char* ascii_fingerprint; // = "8D18A3CD1822DBC67D7BD8CB98E7B4F1";
+  static const uint8_t binary_fingerprint[16]; // = {0x8D,0x18,0xA3,0xCD,0x18,0x22,0xDB,0xC6,0x7D,0x7B,0xD8,0xCB,0x98,0xE7,0xB4,0xF1};
 
   TaskStatusChangeEvent() : state(( ::apache::airavata::model::workspace::experiment::TaskState::type)0) {
   }
@@ -288,8 +309,8 @@ void swap(TaskStatusChangeEvent &a, TaskStatusChangeEvent &b);
 class TaskStatusChangeRequestEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "9686679C94D43D75F2B35A0BED2E4003";
-  static const uint8_t binary_fingerprint[16]; // = {0x96,0x86,0x67,0x9C,0x94,0xD4,0x3D,0x75,0xF2,0xB3,0x5A,0x0B,0xED,0x2E,0x40,0x03};
+  static const char* ascii_fingerprint; // = "8D18A3CD1822DBC67D7BD8CB98E7B4F1";
+  static const uint8_t binary_fingerprint[16]; // = {0x8D,0x18,0xA3,0xCD,0x18,0x22,0xDB,0xC6,0x7D,0x7B,0xD8,0xCB,0x98,0xE7,0xB4,0xF1};
 
   TaskStatusChangeRequestEvent() : state(( ::apache::airavata::model::workspace::experiment::TaskState::type)0) {
   }
@@ -332,8 +353,8 @@ void swap(TaskStatusChangeRequestEvent &a, TaskStatusChangeRequestEvent &b);
 class TaskOutputChangeEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "6488123A3A8B4CF758D069C9B693C7EB";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x88,0x12,0x3A,0x3A,0x8B,0x4C,0xF7,0x58,0xD0,0x69,0xC9,0xB6,0x93,0xC7,0xEB};
+  static const char* ascii_fingerprint; // = "A7F4390C8E4A64CE48431C1FB6A45F50";
+  static const uint8_t binary_fingerprint[16]; // = {0xA7,0xF4,0x39,0x0C,0x8E,0x4A,0x64,0xCE,0x48,0x43,0x1C,0x1F,0xB6,0xA4,0x5F,0x50};
 
   TaskOutputChangeEvent() {
   }
@@ -376,10 +397,10 @@ void swap(TaskOutputChangeEvent &a, TaskOutputChangeEvent &b);
 class JobIdentifier {
  public:
 
-  static const char* ascii_fingerprint; // = "C93D890311F28844166CF6E571EB3AC2";
-  static const uint8_t binary_fingerprint[16]; // = {0xC9,0x3D,0x89,0x03,0x11,0xF2,0x88,0x44,0x16,0x6C,0xF6,0xE5,0x71,0xEB,0x3A,0xC2};
+  static const char* ascii_fingerprint; // = "BFF0E21728CB005F9AA5774A41542B8D";
+  static const uint8_t binary_fingerprint[16]; // = {0xBF,0xF0,0xE2,0x17,0x28,0xCB,0x00,0x5F,0x9A,0xA5,0x77,0x4A,0x41,0x54,0x2B,0x8D};
 
-  JobIdentifier() : jobId(), taskId(), workflowNodeId(), experimentId() {
+  JobIdentifier() : jobId(), taskId(), workflowNodeId(), experimentId(), gatewayId() {
   }
 
   virtual ~JobIdentifier() throw() {}
@@ -388,6 +409,7 @@ class JobIdentifier {
   std::string taskId;
   std::string workflowNodeId;
   std::string experimentId;
+  std::string gatewayId;
 
   void __set_jobId(const std::string& val) {
     jobId = val;
@@ -405,6 +427,10 @@ class JobIdentifier {
     experimentId = val;
   }
 
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
   bool operator == (const JobIdentifier & rhs) const
   {
     if (!(jobId == rhs.jobId))
@@ -414,6 +440,8 @@ class JobIdentifier {
     if (!(workflowNodeId == rhs.workflowNodeId))
       return false;
     if (!(experimentId == rhs.experimentId))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
@@ -434,8 +462,8 @@ void swap(JobIdentifier &a, JobIdentifier &b);
 class JobStatusChangeEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "8D18A3CD1822DBC67D7BD8CB98E7B4F1";
-  static const uint8_t binary_fingerprint[16]; // = {0x8D,0x18,0xA3,0xCD,0x18,0x22,0xDB,0xC6,0x7D,0x7B,0xD8,0xCB,0x98,0xE7,0xB4,0xF1};
+  static const char* ascii_fingerprint; // = "062775D589B60D1687103FD465B0F5E8";
+  static const uint8_t binary_fingerprint[16]; // = {0x06,0x27,0x75,0xD5,0x89,0xB6,0x0D,0x16,0x87,0x10,0x3F,0xD4,0x65,0xB0,0xF5,0xE8};
 
   JobStatusChangeEvent() : state(( ::apache::airavata::model::workspace::experiment::JobState::type)0) {
   }
@@ -478,8 +506,8 @@ void swap(JobStatusChangeEvent &a, JobStatusChangeEvent &b);
 class JobStatusChangeRequestEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "8D18A3CD1822DBC67D7BD8CB98E7B4F1";
-  static const uint8_t binary_fingerprint[16]; // = {0x8D,0x18,0xA3,0xCD,0x18,0x22,0xDB,0xC6,0x7D,0x7B,0xD8,0xCB,0x98,0xE7,0xB4,0xF1};
+  static const char* ascii_fingerprint; // = "062775D589B60D1687103FD465B0F5E8";
+  static const uint8_t binary_fingerprint[16]; // = {0x06,0x27,0x75,0xD5,0x89,0xB6,0x0D,0x16,0x87,0x10,0x3F,0xD4,0x65,0xB0,0xF5,0xE8};
 
   JobStatusChangeRequestEvent() : state(( ::apache::airavata::model::workspace::experiment::JobState::type)0) {
   }

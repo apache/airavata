@@ -31,6 +31,7 @@ public abstract class AbstractResource implements Resource {
     public static final String GSISSH_PREJOBCOMMAND = "GSISSHPreJobCommand";
     public static final String GSISSH_POSTJOBCOMMAND = "GSISSHPostJobCommand";
     public static final String GLOBUS_SUBMISSION = "GlobusJobSubmission";
+    public static final String UNICORE_JOB_SUBMISSION = "UnicoreJobSubmission";
     public static final String GLOBUS_GK_ENDPOINT = "GlobusGKEndpoint";
     public static final String SSH_SUBMISSION = "SSHSubmission";
 	public static final String SCP_DATA_MOVEMENT = "ScpDataMovement";
@@ -118,6 +119,14 @@ public abstract class AbstractResource implements Resource {
         public static final String GLOBUS_GATEKEEPER_EP = "globusEP";
     }
 
+    // Unicore Post Job Command Table
+    public final class UnicoreJobSubmissionConstants {
+        public static final String SUBMISSION_ID = "submissionID";
+        public static final String SECURITY_PROTOCAL = "securityProtocol";
+        public static final String UNICORE_ENDPOINT_URL = "unicoreEndpointUrl";
+    }
+
+    
     public final class GlobusEPConstants{
         public static final String SUBMISSION_ID = "submissionID";
         public static final String ENDPOINT = "endpoint";

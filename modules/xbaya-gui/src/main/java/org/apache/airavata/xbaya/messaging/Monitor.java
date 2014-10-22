@@ -107,7 +107,6 @@ public class Monitor extends EventProducer {
             logger.error(msg, e);
             throw new MonitorException(msg, e);
         }
-        setMonitoring(true);
         // Enable/disable some menu items and show the monitor panel.
         sendSafeEvent(new Event(Event.Type.MONITOR_STARTED));
         getEventDataRepository().triggerListenerForPostMonitorStart();
@@ -220,11 +219,13 @@ public class Monitor extends EventProducer {
      */
     public void subscribe(String experimentID) throws MonitorException {
         try {
+            setMonitoring(true);
             String id = messageClient.listen(new NotificationMessageHandler(experimentID));
             expIdToSubscribers.put(experimentID, id);
         } catch (AiravataException e) {
             String msg = "Failed to listen to experiment: " + experimentID;
             logger.error(msg);
+            setMonitoring(false);
             throw new MonitorException(msg, e);
         }
     }
@@ -239,7 +240,7 @@ public class Monitor extends EventProducer {
         String id = expIdToSubscribers.remove(experimentId);
         if (id != null) {
             try {
-                messageClient.stopListen(experimentId);
+                messageClient.stopListen(id);
             } catch (AiravataException e) {
                 logger.warn("Failed to find the subscriber for experiment id: " + id, e);
             }

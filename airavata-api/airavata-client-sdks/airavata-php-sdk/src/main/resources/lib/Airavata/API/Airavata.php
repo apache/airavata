@@ -71,6 +71,7 @@ interface AiravataIf {
   public function addLocalSubmissionDetails($computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\LOCALSubmission $localSubmission);
   public function updateLocalSubmissionDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\LOCALSubmission $localSubmission);
   public function addSSHJobSubmissionDetails($computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission $sshJobSubmission);
+  public function addUNICOREJobSubmissionDetails($computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\UnicoreJobSubmission $unicoreJobSubmission);
   public function addCloudJobSubmissionDetails($computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\CloudJobSubmission $cloudSubmission);
   public function updateSSHJobSubmissionDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission $sshJobSubmission);
   public function updateCloudJobSubmissionDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\CloudJobSubmission $sshJobSubmission);
@@ -3374,6 +3375,68 @@ class AiravataClient implements \Airavata\API\AiravataIf {
       throw $result->ase;
     }
     throw new \Exception("addSSHJobSubmissionDetails failed: unknown result");
+  }
+
+  public function addUNICOREJobSubmissionDetails($computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\UnicoreJobSubmission $unicoreJobSubmission)
+  {
+    $this->send_addUNICOREJobSubmissionDetails($computeResourceId, $priorityOrder, $unicoreJobSubmission);
+    return $this->recv_addUNICOREJobSubmissionDetails();
+  }
+
+  public function send_addUNICOREJobSubmissionDetails($computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\UnicoreJobSubmission $unicoreJobSubmission)
+  {
+    $args = new \Airavata\API\Airavata_addUNICOREJobSubmissionDetails_args();
+    $args->computeResourceId = $computeResourceId;
+    $args->priorityOrder = $priorityOrder;
+    $args->unicoreJobSubmission = $unicoreJobSubmission;
+    $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
+    if ($bin_accel)
+    {
+      thrift_protocol_write_binary($this->output_, 'addUNICOREJobSubmissionDetails', TMessageType::CALL, $args, $this->seqid_, $this->output_->isStrictWrite());
+    }
+    else
+    {
+      $this->output_->writeMessageBegin('addUNICOREJobSubmissionDetails', TMessageType::CALL, $this->seqid_);
+      $args->write($this->output_);
+      $this->output_->writeMessageEnd();
+      $this->output_->getTransport()->flush();
+    }
+  }
+
+  public function recv_addUNICOREJobSubmissionDetails()
+  {
+    $bin_accel = ($this->input_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_read_binary');
+    if ($bin_accel) $result = thrift_protocol_read_binary($this->input_, '\Airavata\API\Airavata_addUNICOREJobSubmissionDetails_result', $this->input_->isStrictRead());
+    else
+    {
+      $rseqid = 0;
+      $fname = null;
+      $mtype = 0;
+
+      $this->input_->readMessageBegin($fname, $mtype, $rseqid);
+      if ($mtype == TMessageType::EXCEPTION) {
+        $x = new TApplicationException();
+        $x->read($this->input_);
+        $this->input_->readMessageEnd();
+        throw $x;
+      }
+      $result = new \Airavata\API\Airavata_addUNICOREJobSubmissionDetails_result();
+      $result->read($this->input_);
+      $this->input_->readMessageEnd();
+    }
+    if ($result->success !== null) {
+      return $result->success;
+    }
+    if ($result->ire !== null) {
+      throw $result->ire;
+    }
+    if ($result->ace !== null) {
+      throw $result->ace;
+    }
+    if ($result->ase !== null) {
+      throw $result->ase;
+    }
+    throw new \Exception("addUNICOREJobSubmissionDetails failed: unknown result");
   }
 
   public function addCloudJobSubmissionDetails($computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\CloudJobSubmission $cloudSubmission)
@@ -17333,6 +17396,261 @@ class Airavata_addSSHJobSubmissionDetails_result {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_addSSHJobSubmissionDetails_result');
+    if ($this->success !== null) {
+      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
+      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ire !== null) {
+      $xfer += $output->writeFieldBegin('ire', TType::STRUCT, 1);
+      $xfer += $this->ire->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ace !== null) {
+      $xfer += $output->writeFieldBegin('ace', TType::STRUCT, 2);
+      $xfer += $this->ace->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ase !== null) {
+      $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
+      $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_addUNICOREJobSubmissionDetails_args {
+  static $_TSPEC;
+
+  public $computeResourceId = null;
+  public $priorityOrder = null;
+  public $unicoreJobSubmission = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'priorityOrder',
+          'type' => TType::I32,
+          ),
+        3 => array(
+          'var' => 'unicoreJobSubmission',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\AppCatalog\ComputeResource\UnicoreJobSubmission',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
+      if (isset($vals['priorityOrder'])) {
+        $this->priorityOrder = $vals['priorityOrder'];
+      }
+      if (isset($vals['unicoreJobSubmission'])) {
+        $this->unicoreJobSubmission = $vals['unicoreJobSubmission'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_addUNICOREJobSubmissionDetails_args';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->priorityOrder);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->unicoreJobSubmission = new \Airavata\Model\AppCatalog\ComputeResource\UnicoreJobSubmission();
+            $xfer += $this->unicoreJobSubmission->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_addUNICOREJobSubmissionDetails_args');
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->priorityOrder !== null) {
+      $xfer += $output->writeFieldBegin('priorityOrder', TType::I32, 2);
+      $xfer += $output->writeI32($this->priorityOrder);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->unicoreJobSubmission !== null) {
+      if (!is_object($this->unicoreJobSubmission)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('unicoreJobSubmission', TType::STRUCT, 3);
+      $xfer += $this->unicoreJobSubmission->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class Airavata_addUNICOREJobSubmissionDetails_result {
+  static $_TSPEC;
+
+  public $success = null;
+  public $ire = null;
+  public $ace = null;
+  public $ase = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        0 => array(
+          'var' => 'success',
+          'type' => TType::BOOL,
+          ),
+        1 => array(
+          'var' => 'ire',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\InvalidRequestException',
+          ),
+        2 => array(
+          'var' => 'ace',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataClientException',
+          ),
+        3 => array(
+          'var' => 'ase',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AiravataSystemException',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['success'])) {
+        $this->success = $vals['success'];
+      }
+      if (isset($vals['ire'])) {
+        $this->ire = $vals['ire'];
+      }
+      if (isset($vals['ace'])) {
+        $this->ace = $vals['ace'];
+      }
+      if (isset($vals['ase'])) {
+        $this->ase = $vals['ase'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'Airavata_addUNICOREJobSubmissionDetails_result';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 0:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->success);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->ire = new \Airavata\API\Error\InvalidRequestException();
+            $xfer += $this->ire->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->ace = new \Airavata\API\Error\AiravataClientException();
+            $xfer += $this->ace->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRUCT) {
+            $this->ase = new \Airavata\API\Error\AiravataSystemException();
+            $xfer += $this->ase->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('Airavata_addUNICOREJobSubmissionDetails_result');
     if ($this->success !== null) {
       $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
       $xfer += $output->writeBool($this->success);

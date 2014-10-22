@@ -203,7 +203,10 @@ public class AMQPMonitor extends PushMonitor {
         }
         next.setStatus(monitorID.getStatus());
         JobIdentifier jobIdentity = new JobIdentifier(next.getJobID(),
-                                                                            next.getTaskID(), next.getWorkflowNodeID(), next.getExperimentID());
+                                                     next.getTaskID(),
+                                                     next.getWorkflowNodeID(),
+                                                     next.getExperimentID(),
+                                                     next.getJobExecutionContext().getGatewayID());
         publisher.publish(new JobStatusChangeEvent(next.getStatus(),jobIdentity));
         return true;
     }

@@ -35,7 +35,8 @@ public class GfacExperimentStateChangeRequest {
         setIdentity(new JobIdentifier(monitorID.getJobID(),
                 monitorID.getTaskID(),
                 monitorID.getWorkflowNodeID(),
-                monitorID.getExperimentID()));
+                monitorID.getExperimentID(),
+                monitorID.getJobExecutionContext().getGatewayID()));
         setMonitorID(monitorID);
         this.state = state;
     }

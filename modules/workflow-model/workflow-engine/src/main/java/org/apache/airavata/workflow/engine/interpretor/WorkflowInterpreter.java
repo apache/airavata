@@ -44,7 +44,9 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
@@ -148,6 +150,16 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	private Experiment experiment;
 	private Registry registry;
 
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    private String gatewayId;
+
 	private OrchestratorService.Client orchestratorClient;
 	
 	private Map<String, Node> awaitingTasks;
@@ -171,6 +183,14 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		this.interactor = new SSWorkflowInterpreterInteractorImpl();
 		this.orchestratorClient = orchestratorClient;
         this.publisher = publisher;
+        // if gateway id is not set, we will get it from airavata server properties
+        if (gatewayId == null){
+            try {
+                gatewayId = ServerSettings.getDefaultUserGateway();
+            } catch (ApplicationSettingsException e) {
+                log.error("error while reading airavata-server properties..", e);
+            }
+        }
 		//TODO set act of provenance
 		nodeInstanceList=new HashMap<Node, WorkflowNodeDetails>();
         setWorkflowInterpreterConfigurationThreadLocal(config);
@@ -387,8 +407,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		} finally{
         	cleanup();
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
-            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED, experiment.getExperimentID());
-            MessageContext msgCtx = new MessageContext(event, MessageType.EXPERIMENT, AiravataUtils.getId("EXPERIMENT"));
+            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED, experiment.getExperimentID(), gatewayId);
+            MessageContext msgCtx = new MessageContext(event, MessageType.EXPERIMENT, AiravataUtils.getId("EXPERIMENT"), gatewayId);
             msgCtx.setUpdatedTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
             publisher.publish(msgCtx);
         }
@@ -398,7 +418,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
             throws AiravataException {
         if (publisher != null) {
             MessageContext msgCtx = new MessageContext(new WorkflowNodeStatusChangeEvent(state, new WorkflowIdentifier(nodeId,
-                    expId)), MessageType.WORKFLOWNODE, AiravataUtils.getId("NODE"));
+                    expId, gatewayId)), MessageType.WORKFLOWNODE, AiravataUtils.getId("NODE"), gatewayId);
             msgCtx.setUpdatedTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
             publisher.publish(msgCtx);
         } else {

@@ -53,14 +53,17 @@ public class RegisterSampleApplications {
     private final static Logger logger = LoggerFactory.getLogger(RegisterSampleApplications.class);
 //    private static final String DEFAULT_GATEWAY = "default";
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
-    private Airavata.Client airavataClient;
+    private static Airavata.Client airavataClient;
 
     //Host Id's
     private static String localhostId = "";
     private static String stampedeResourceId = "stampede.tacc.xsede.org_92ac5ed6-35a5-4910-82ef-48f128f9245a";
     private static String trestlesResourceId = "trestles.sdsc.xsede.org_db29986e-5a27-4949-ae7f-04a6012d0d35";
     private static String bigredResourceId = "bigred2.uits.iu.edu_3eae6e9d-a1a7-44ec-ac85-3796ef726ef1";
-
+    private static String fsdResourceId;
+ // unicore service endpoint url
+    private static final String unicoreEndPointURL = "https://fsd-cloud15.zam.kfa-juelich.de:7000/INTEROP1/services/BESFactory?res=default_bes_factory";
+    
     //Appplication Names
     private static final String echoName = "Echo";
     private static final String amberName = "Amber";
@@ -71,6 +74,7 @@ public class RegisterSampleApplications {
     private static final String nwChemName = "NWChem";
     private static final String trinityName = "Trinity";
     private static final String wrfName = "WRF";
+    private static final String phastaName = "PHASTA";
 
     //Appplication Descriptions
     private static final String echoDescription = "A Simple Echo Application";
@@ -82,6 +86,7 @@ public class RegisterSampleApplications {
     private static final String nwChemDescription = "Ab initio computational chemistry software package";
     private static final String trinityDescription = "de novo reconstruction of transcriptomes from RNA-seq data";
     private static final String wrfDescription = "Weather Research and Forecasting";
+    private static final String phastaDescription = "Computational fluid dynamics solver";
 
     //App Module Id's
     private static String echoModuleId;
@@ -93,6 +98,7 @@ public class RegisterSampleApplications {
     private static String nwChemModuleId = "NWChem_edbc318d-4c41-46a7-b216-32bad71eabdd";
     private static String trinityModuleId = "Trinity_8af45ca0-b628-4614-9087-c7b73f5f2fb6";
     private static String wrfModuleId;
+    private static String phastaModuleId;
 
     //App Interface Id's
     private static String echoInterfaceId = "";
@@ -105,6 +111,7 @@ public class RegisterSampleApplications {
     private static String nwChemInterfaceId = "";
     private static String trinityInterfaceId = "";
     private static String wrfInterfaceId;
+    private static String phastaInterfaceId;
 
     public RegisterSampleApplications(Airavata.Client airavataClient) {
            this.airavataClient = airavataClient;
@@ -180,13 +187,45 @@ public class RegisterSampleApplications {
             bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
                     ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
             System.out.println("BigredII Resource Id is " + bigredResourceId);
+            
+            fsdResourceId = registerUnicoreEndpoint("fsd-cloud15.zam.kfa-juelich.de", "interop host", JobSubmissionProtocol.UNICORE, SecurityProtocol.GSI);
+            System.out.println("FSd Resource Id: "+fsdResourceId);
+            
 
         } catch (TException e) {
             e.printStackTrace();
         }
 
     }
-
+    
+    public static String registerUnicoreEndpoint(String hostName, String hostDesc, JobSubmissionProtocol protocol, SecurityProtocol securityProtocol) throws TException {
+		
+		ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils
+				.createComputeResourceDescription(hostName, hostDesc, null, null);
+		
+		fsdResourceId = airavataClient.registerComputeResource(computeResourceDescription);
+		
+		if (fsdResourceId.isEmpty())
+			throw new AiravataClientException();
+		
+		System.out.println("FSD Compute ResourceID: "+fsdResourceId);
+		
+		JobSubmissionInterface jobSubmission = RegisterSampleApplicationsUtils.createJobSubmissionInterface(fsdResourceId, protocol, 2);
+		UnicoreJobSubmission ucrJobSubmission = new UnicoreJobSubmission();
+		ucrJobSubmission.setSecurityProtocol(securityProtocol);
+		ucrJobSubmission.setUnicoreEndPointURL(unicoreEndPointURL);
+		jobSubmission.setJobSubmissionProtocol(JobSubmissionProtocol.UNICORE);
+		
+		airavataClient.addUNICOREJobSubmissionDetails(fsdResourceId, 0, ucrJobSubmission);
+		
+		return jobSubmission.getJobSubmissionInterfaceId();
+	}
+    
+    public void registerfsd(){
+    	System.out.println("\n #### Registering XSEDE Computational Resources #### \n");
+    	
+    }
+    
     public void registerAppModules() {
         try {
             System.out.println("\n #### Registering Application Modules #### \n");
@@ -245,6 +284,12 @@ public class RegisterSampleApplications {
                             wrfName, "3.5.1", wrfDescription));
             System.out.println("WRF Module Id " + wrfModuleId);
 
+            //Register PHASTA
+            phastaModuleId = airavataClient.registerApplicationModule(
+                    RegisterSampleApplicationsUtils.createApplicationModule(
+                            phastaName, "1.0", phastaDescription));
+            System.out.println("phasta Module Id " + phastaModuleId);
+
         } catch (TException e) {
             e.printStackTrace();
         }
@@ -264,6 +309,11 @@ public class RegisterSampleApplications {
 
         //Registering BigRed II Apps
         registerBigRedApps();
+        
+        //Registering FSD Apps
+        registerFSDApps();
+
+        
     }
 
     public void registerAppInterfaces() {
@@ -782,6 +832,44 @@ public class RegisterSampleApplications {
         }
     }
 
+    public void registerPhastaInterface() {
+        try {
+            System.out.println("#### Registering PHASTA Interface #### \n");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(phastaModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Parasolid_Geometric_Model", null,
+                    DataType.URI, null, false, "Parasolid geometric model - geom.xmt_txt", null);
+
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Problem_Definition", null,
+                    DataType.URI, null, false, "problem definition - geom.smd", null);
+
+            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Mesh_Description_File", null,
+                    DataType.URI, null, false, "Mesh Description - geom.sms", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+            applicationInputs.add(input2);
+            applicationInputs.add(input3);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("PHASTA_Execution_Log",null,DataType.URI);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("PHASTA_Output_tar",null,DataType.URI);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+            applicationOutputs.add(output2);
+
+            amberInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(phastaName, phastaDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("phasta Application Interface Id " + phastaInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void registerLocalApps (){
         try {
             System.out.println("#### Registering Application Deployments on Localhost #### \n");
@@ -939,7 +1027,24 @@ public class RegisterSampleApplications {
             e.printStackTrace();
         }
     }
+    
+    public void registerFSDApps() {
+        try {
+            System.out.println("#### Registering Application Deployments on FSD #### \n");
 
+            //Register Echo
+            String echoAppDeployId = airavataClient.registerApplicationDeployment(
+                    RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, fsdResourceId,
+                            "/bin/date", ApplicationParallelismType.SERIAL, echoDescription));
+            System.out.println("Echo on FSD deployment Id " + echoAppDeployId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    
+    
     public String registerComputeHost(String hostName, String hostDesc,
                                              ResourceJobManagerType resourceJobManagerType,
                                              String monitoringEndPoint, String jobMangerBinPath,
@@ -978,7 +1083,11 @@ public class RegisterSampleApplications {
 
         return computeResourceId;
     }
-
+    
+    
+    
+    
+    
     public void registerGatewayResourceProfile() {
 
         try {
@@ -996,13 +1105,17 @@ public class RegisterSampleApplications {
             ComputeResourcePreference bigRedResourcePreferences = RegisterSampleApplicationsUtils.
                     createComputeResourcePreference(bigredResourceId, "TG-STA110014S", false, null, null, null,
                             "/N/dc2/scratch/cgateway/gta-work-dirs");
-
+            
+            ComputeResourcePreference fsdResourcePreferences = RegisterSampleApplicationsUtils.
+                    createComputeResourcePreference(fsdResourceId, null, false, null, null, null,null);
+            
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
             gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
             gatewayResourceProfile.setGatewayName(DEFAULT_GATEWAY);
             gatewayResourceProfile.addToComputeResourcePreferences(stampedeResourcePreferences);
             gatewayResourceProfile.addToComputeResourcePreferences(trestlesResourcePreferences);
             gatewayResourceProfile.addToComputeResourcePreferences(bigRedResourcePreferences);
+            gatewayResourceProfile.addToComputeResourcePreferences(fsdResourcePreferences);
 
             String gatewayProfile = airavataClient.registerGatewayResourceProfile(gatewayResourceProfile);
             System.out.println("Gateway Profile is registered with Id " + gatewayProfile);
