@@ -73,9 +73,7 @@ public class DataTransferrer {
 					try {
 						String uriWithoutProtocol = uri.substring(
 								uri.lastIndexOf("://") + 1, uri.length());
-						FileUploader fileUploader = new FileUploader(
-								uriWithoutProtocol, "input/" + fileName,
-								Mode.overwrite);
+						FileUploader fileUploader = new FileUploader(uriWithoutProtocol, "input/" + fileName, Mode.overwrite);
 						fileUploader.perform(storageClient);
 					} catch (FileNotFoundException e3) {
 						throw new GFacProviderException(

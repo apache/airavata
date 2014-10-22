@@ -27,13 +27,15 @@ package org.apache.airavata.gfac;
  * Time: 4:33 PM
  */
 
+import java.io.Serializable;
+
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.SecurityContext;
 
 /**
  * Abstract implementation of the security context.
  */
-public abstract class AbstractSecurityContext implements SecurityContext {
+public abstract class AbstractSecurityContext implements SecurityContext, Serializable {
 
     private CredentialReader credentialReader;
     private RequestData requestData;
