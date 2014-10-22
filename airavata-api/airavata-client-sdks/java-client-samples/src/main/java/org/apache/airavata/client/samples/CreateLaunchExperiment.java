@@ -53,7 +53,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_438a0de6-544b-4df2-8586-38a4c191b9c9";
+    private static String echoAppId = "Echo_afb090d6-392f-493f-80a6-929bc848ad5d";
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
@@ -70,8 +70,8 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-                registerApplications(); // run this only the first time
-//                createAndLaunchExp();
+//                registerApplications(); // run this only the first time
+                createAndLaunchExp();
     }
     
     private static String fsdResourceId;
