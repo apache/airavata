@@ -32,23 +32,23 @@ public class GFacThreadPoolExecutor {
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GFacThreadPoolExecutor.class);
     public static final String GFAC_THREAD_POOL_SIZE = "gfac.thread.pool.size";
 
-    private static ExecutorService cachedThreadPool;
+    private static ExecutorService threadPool;
 
-    public static ExecutorService getCachedThreadPool() {
-        if(cachedThreadPool==null){
-            cachedThreadPool = Executors.newCachedThreadPool();
+    public static ExecutorService getThreadPool() {
+        if(threadPool ==null){
+            threadPool = Executors.newCachedThreadPool();
         }
-        return cachedThreadPool;
+        return threadPool;
     }
 
     public static ExecutorService getFixedThreadPool() {
-        if(cachedThreadPool==null){
+        if(threadPool ==null){
             try {
-                cachedThreadPool = Executors.newFixedThreadPool(Integer.parseInt(ServerSettings.getSetting(GFAC_THREAD_POOL_SIZE)));
+                threadPool = Executors.newFixedThreadPool(Integer.parseInt(ServerSettings.getSetting(GFAC_THREAD_POOL_SIZE)));
             } catch (ApplicationSettingsException e) {
                 logger.error("Error reading " + GFAC_THREAD_POOL_SIZE+ " property");
             }
         }
-        return cachedThreadPool;
+        return threadPool;
     }
 }
