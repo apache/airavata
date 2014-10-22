@@ -1161,11 +1161,11 @@ public class AiravataServerHandler implements Airavata.Iface {
 							}
 	                    }
 	                };
-			} else {
+                thread.start();
+            } else {
                 logger.errorId(airavataExperimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", airavataExperimentId);
                 throw new InvalidRequestException("Experiment '" + expID + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
             }
-            thread.start();
         }
     }
 
