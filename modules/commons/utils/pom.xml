@@ -48,12 +48,18 @@
             <groupId>org.ogce</groupId>
             <artifactId>xsul</artifactId>
             <version>${xsul.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.bouncycastle</groupId>
+            		<artifactId>bcprov-jdk16</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.ogce</groupId>
             <artifactId>xsul5</artifactId>
             <version>${xsul5.version}</version>
-        </dependency>
+        </dependency> 
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-kernel</artifactId>

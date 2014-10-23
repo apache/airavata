@@ -89,26 +89,6 @@
 
 		<!-- gsi-ssh api dependencies -->
 		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>gsissh</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-data-models</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>0.1.50</version>
-		</dependency>
-		<dependency>
-			<groupId>org.ogce</groupId>
-			<artifactId>bcgss</artifactId>
-			<version>146</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>
 			<artifactId>xmlbeans</artifactId>
 			<version>${xmlbeans.version}</version>

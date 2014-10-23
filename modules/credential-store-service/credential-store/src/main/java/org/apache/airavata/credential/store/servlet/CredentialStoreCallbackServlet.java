@@ -147,8 +147,8 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         info("Token id presented " + portalTokenId);
 
         info("2.a. Getting token and verifier.");
-        String token = request.getParameter(TOKEN_KEY);
-        String verifier = request.getParameter(VERIFIER_KEY);
+        String token = request.getParameter(CONST(ClientEnvironment.TOKEN));
+        String verifier = request.getParameter(CONST(ClientEnvironment.VERIFIER));
         if (token == null || verifier == null) {
             warn("2.a. The token is " + (token == null ? "null" : token) + " and the verifier is "
                     + (verifier == null ? "null" : verifier));

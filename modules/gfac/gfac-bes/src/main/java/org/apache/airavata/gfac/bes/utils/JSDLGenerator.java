@@ -64,8 +64,7 @@ public class JSDLGenerator implements BESConstants {
 		return jobDefDoc;
 	}
 
-	public synchronized static JobDefinitionDocument buildJSDLInstance(
-			JobExecutionContext context, String smsUrl) throws Exception {
+	public synchronized static JobDefinitionDocument buildJSDLInstance(JobExecutionContext context, String smsUrl) throws Exception {
 
 		JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory
 				.newInstance();
@@ -82,8 +81,7 @@ public class JSDLGenerator implements BESConstants {
 
 		ApplicationProcessor.generateJobSpecificAppElements(value, context);
 
-		UASDataStagingProcessor.generateDataStagingElements(value, context,
-				smsUrl);
+		UASDataStagingProcessor.generateDataStagingElements(value, context, smsUrl);
 
 		return jobDefDoc;
 	}

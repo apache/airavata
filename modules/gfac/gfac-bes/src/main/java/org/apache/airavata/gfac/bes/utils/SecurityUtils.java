@@ -24,8 +24,6 @@ import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
 import org.apache.airavata.gfac.bes.security.X509SecurityContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.gsi.ssh.api.ServerInfo;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -45,7 +43,7 @@ public class SecurityUtils {
 	private final static Logger logger = LoggerFactory.getLogger(SecurityUtils.class);
 	
 	
-	public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
+	public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException {
 		
 		 HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
 	        if (! (registeredHost.getType() instanceof UnicoreHostType)) {
@@ -54,7 +52,12 @@ public class SecurityUtils {
 	        else
 	        {	
 	        	String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // set by the framework
-	            RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway()); // coming from top tier
+	            RequestData requestData;
+				try {
+					requestData = new RequestData(ServerSettings.getDefaultUserGateway());
+				} catch (ApplicationSettingsException e1) {
+					throw new GFacException(e1);
+				} // coming from top tier
 	            requestData.setTokenId(credentialStoreToken);
 	            
 	            CredentialReader credentialReader = null;

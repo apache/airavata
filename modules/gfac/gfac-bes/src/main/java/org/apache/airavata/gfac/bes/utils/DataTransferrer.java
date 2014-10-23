@@ -71,9 +71,8 @@ public class DataTransferrer {
 				String fileName = new File(uri).getName();
 				if (uri.startsWith("file")) {
 					try {
-						String uriWithoutProtocol = uri.substring(
-								uri.lastIndexOf("://") + 1, uri.length());
-						FileUploader fileUploader = new FileUploader(uriWithoutProtocol, "input/" + fileName, Mode.overwrite);
+						String uriWithoutProtocol = uri.substring(uri.lastIndexOf("://") + 1, uri.length());
+						FileUploader fileUploader = new FileUploader(uriWithoutProtocol,"input/" + fileName,Mode.overwrite);
 						fileUploader.perform(storageClient);
 					} catch (FileNotFoundException e3) {
 						throw new GFacProviderException(
@@ -90,7 +89,7 @@ public class DataTransferrer {
 	}
 	
 	/**
-	 * This method will download all the remote files specified according to the output 
+	 * This method will download all the remote files specified in the output 
 	 * context of a job.  
 	 * */
 	public void downloadRemoteFiles() throws GFacProviderException {
@@ -112,24 +111,20 @@ public class DataTransferrer {
 			ActualParameter outParam = (ActualParameter) outputParams
 					.get(paramKey);
 
-			// if single urls then convert each url into jsdl source
-			// elements,
-			// that are formed by concat of gridftpurl+inputdir+filename
-
 			String paramDataType = outParam.getType().getType().toString();
 
 			if ("String".equals(paramDataType)) {
 				String stringPrm = ((StringParameterType) outParam
 						.getType()).getValue();
 				String localFileName = null;
-				//TODO: why analysis.tar? it wont scale to gateways..
+				//TODO: why analysis.tar? it wont scale to other gateways..
 				if(stringPrm == null || stringPrm.isEmpty()){
 					localFileName = "analysis-results.tar";
 				}else{
 					localFileName = stringPrm.substring(stringPrm.lastIndexOf("/")+1);
 				}
 				String outputLocation = downloadLocation+File.separator+localFileName;
-				FileDownloader fileDownloader = new FileDownloader("output/"+stringPrm,outputLocation, Mode.overwrite);
+				FileDownloader fileDownloader = new FileDownloader(stringPrm,outputLocation, Mode.overwrite);
 				try {
 					fileDownloader.perform(storageClient);
 					 ((StringParameterType) outParam.getType()).setValue(outputLocation);
@@ -145,7 +140,7 @@ public class DataTransferrer {
 				for (String v : valueArray) {
 					String localFileName = v.substring(v.lastIndexOf("/")+1);;
 					String outputLocation = downloadLocation+File.separator+localFileName;
-					FileDownloader fileDownloader = new FileDownloader("output/"+v,outputLocation, Mode.overwrite);
+					FileDownloader fileDownloader = new FileDownloader(v,outputLocation, Mode.overwrite);
 					try {
 						fileDownloader.perform(storageClient);
 						 ((StringParameterType) outParam.getType()).setValue(outputLocation);
@@ -195,7 +190,7 @@ public class DataTransferrer {
 		ApplicationDeploymentDescriptionType appDesc = application.getType();
 	
 		String stdoutLocation = downloadLocation+File.separator+stdoutFileName;
-		FileDownloader f1 = new FileDownloader("output/"+stdoutFileName,stdoutLocation, Mode.overwrite);
+		FileDownloader f1 = new FileDownloader(stdoutFileName,stdoutLocation, Mode.overwrite);
 		try {
 			f1.perform(storageClient);
 			String stdoutput = readFile(stdoutLocation);
@@ -204,7 +199,7 @@ public class DataTransferrer {
 			throw new GFacProviderException(e.getLocalizedMessage(),e);
 		}
 		String stderrLocation = downloadLocation+File.separator+stderrFileName;
-		FileDownloader f2 = new FileDownloader("output/"+stderrFileName,stderrLocation, Mode.overwrite);
+		FileDownloader f2 = new FileDownloader(stderrFileName,stderrLocation, Mode.overwrite);
 		try {
 			f2.perform(storageClient);
 			String stderror = readFile(stderrLocation);
@@ -226,6 +221,10 @@ public class DataTransferrer {
 		log.info("finish read file:" + localFile);
 
 		return buff.toString();
+	}
+	
+	public void setStorageClient(StorageClient sc){
+		storageClient = sc;
 	}
 	
 	private String getDownloadLocation() {

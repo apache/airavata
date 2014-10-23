@@ -104,7 +104,7 @@
             <artifactId>commons-codec</artifactId>
             <version>1.6</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>edu.uiuc.ncsa.myproxy</groupId>
             <artifactId>oa4mp-client-oauth1</artifactId>
             <version>${oa4mp.version}</version>
@@ -118,7 +118,7 @@
                     <artifactId>postgresql</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
