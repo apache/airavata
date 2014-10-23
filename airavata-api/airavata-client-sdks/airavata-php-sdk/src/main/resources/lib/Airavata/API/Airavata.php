@@ -16808,7 +16808,7 @@ class Airavata_addLocalSubmissionDetails_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::BOOL,
+          'type' => TType::STRING,
           ),
         1 => array(
           'var' => 'ire',
@@ -16863,8 +16863,8 @@ class Airavata_addLocalSubmissionDetails_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->success);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -16907,8 +16907,8 @@ class Airavata_addLocalSubmissionDetails_result {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_addLocalSubmissionDetails_result');
     if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
-      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {
@@ -17298,7 +17298,7 @@ class Airavata_addSSHJobSubmissionDetails_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::BOOL,
+          'type' => TType::STRING,
           ),
         1 => array(
           'var' => 'ire',
@@ -17353,8 +17353,8 @@ class Airavata_addSSHJobSubmissionDetails_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->success);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -17397,8 +17397,8 @@ class Airavata_addSSHJobSubmissionDetails_result {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_addSSHJobSubmissionDetails_result');
     if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
-      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {
@@ -17553,7 +17553,7 @@ class Airavata_addUNICOREJobSubmissionDetails_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::BOOL,
+          'type' => TType::STRING,
           ),
         1 => array(
           'var' => 'ire',
@@ -17608,8 +17608,8 @@ class Airavata_addUNICOREJobSubmissionDetails_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->success);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -17652,8 +17652,8 @@ class Airavata_addUNICOREJobSubmissionDetails_result {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_addUNICOREJobSubmissionDetails_result');
     if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
-      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {
@@ -17808,7 +17808,7 @@ class Airavata_addCloudJobSubmissionDetails_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::BOOL,
+          'type' => TType::STRING,
           ),
         1 => array(
           'var' => 'ire',
@@ -17863,8 +17863,8 @@ class Airavata_addCloudJobSubmissionDetails_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->success);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -17907,8 +17907,8 @@ class Airavata_addCloudJobSubmissionDetails_result {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_addCloudJobSubmissionDetails_result');
     if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
-      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {
@@ -18533,7 +18533,7 @@ class Airavata_addLocalDataMovementDetails_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::BOOL,
+          'type' => TType::STRING,
           ),
         1 => array(
           'var' => 'ire',
@@ -18588,8 +18588,8 @@ class Airavata_addLocalDataMovementDetails_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->success);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -18632,8 +18632,8 @@ class Airavata_addLocalDataMovementDetails_result {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_addLocalDataMovementDetails_result');
     if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
-      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {
@@ -19023,7 +19023,7 @@ class Airavata_addSCPDataMovementDetails_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::BOOL,
+          'type' => TType::STRING,
           ),
         1 => array(
           'var' => 'ire',
@@ -19078,8 +19078,8 @@ class Airavata_addSCPDataMovementDetails_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->success);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -19122,8 +19122,8 @@ class Airavata_addSCPDataMovementDetails_result {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_addSCPDataMovementDetails_result');
     if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
-      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {
@@ -19513,7 +19513,7 @@ class Airavata_addGridFTPDataMovementDetails_result {
       self::$_TSPEC = array(
         0 => array(
           'var' => 'success',
-          'type' => TType::BOOL,
+          'type' => TType::STRING,
           ),
         1 => array(
           'var' => 'ire',
@@ -19568,8 +19568,8 @@ class Airavata_addGridFTPDataMovementDetails_result {
       switch ($fid)
       {
         case 0:
-          if ($ftype == TType::BOOL) {
-            $xfer += $input->readBool($this->success);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->success);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -19612,8 +19612,8 @@ class Airavata_addGridFTPDataMovementDetails_result {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_addGridFTPDataMovementDetails_result');
     if ($this->success !== null) {
-      $xfer += $output->writeFieldBegin('success', TType::BOOL, 0);
-      $xfer += $output->writeBool($this->success);
+      $xfer += $output->writeFieldBegin('success', TType::STRING, 0);
+      $xfer += $output->writeString($this->success);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->ire !== null) {

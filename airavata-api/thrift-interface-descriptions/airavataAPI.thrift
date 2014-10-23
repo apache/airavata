@@ -912,10 +912,10 @@ service Airavata {
    *   The LOCALSubmission object to be added to the resource.
    *
    * @return status
-   *   Returns a success/failure of the deletion.
+   *   Returns the unique job submission id.
    *
   */
-  bool addLocalSubmissionDetails(1: required string computeResourceId,
+  string addLocalSubmissionDetails(1: required string computeResourceId,
             2: required i32 priorityOrder,
             3: required computeResourceModel.LOCALSubmission localSubmission)
 
@@ -956,10 +956,10 @@ service Airavata {
    *   The SSHJobSubmission object to be added to the resource.
    *
    * @return status
-   *   Returns a success/failure of the deletion.
+   *   Returns the unique job submission id.
    *
   */
-  bool addSSHJobSubmissionDetails(1: required string computeResourceId,
+  string addSSHJobSubmissionDetails(1: required string computeResourceId,
             2: required i32 priorityOrder,
             3: required computeResourceModel.SSHJobSubmission sshJobSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
@@ -980,10 +980,10 @@ service Airavata {
    *   The UnicoreJobSubmission object to be added to the resource.
    *
    * @return status
-   *   Returns a success/failure of the deletion.
+   *  Returns the unique job submission id.
    *
   */
-  bool addUNICOREJobSubmissionDetails(1: required string computeResourceId,
+  string addUNICOREJobSubmissionDetails(1: required string computeResourceId,
             2: required i32 priorityOrder,
             3: required computeResourceModel.UnicoreJobSubmission unicoreJobSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
@@ -1006,9 +1006,9 @@ service Airavata {
    *   The SSHJobSubmission object to be added to the resource.
    *
    * @return status
-   *   Returns a success/failure of the deletion.
+   *   Returns the unique job submission id.
 **/
- bool addCloudJobSubmissionDetails(1: required string computeResourceId,
+ string addCloudJobSubmissionDetails(1: required string computeResourceId,
             2: required i32 priorityOrder,
             3: required computeResourceModel.CloudJobSubmission cloudSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
@@ -1066,10 +1066,10 @@ service Airavata {
    *   The LOCALDataMovement object to be added to the resource.
    *
    * @return status
-   *   Returns a success/failure of the addition.
+   *   Returns the unique job submission id.
    *
   */
-  bool addLocalDataMovementDetails(1: required string computeResourceId,
+  string addLocalDataMovementDetails(1: required string computeResourceId,
             2: required i32 priorityOrder,
             3: required computeResourceModel.LOCALDataMovement localDataMovement)
   	throws (1: airavataErrors.InvalidRequestException ire,
@@ -1109,10 +1109,10 @@ service Airavata {
    *   The SCPDataMovement object to be added to the resource.
    *
    * @return status
-   *   Returns a success/failure of the deletion.
+   *   Returns the unique job submission id.
    *
   */
-  bool addSCPDataMovementDetails(1: required string computeResourceId,
+  string addSCPDataMovementDetails(1: required string computeResourceId,
             2: required i32 priorityOrder,
             3: required computeResourceModel.SCPDataMovement scpDataMovement)
   	throws (1: airavataErrors.InvalidRequestException ire,
@@ -1153,10 +1153,10 @@ service Airavata {
    *   The GridFTPDataMovement object to be added to the resource.
    *
    * @return status
-   *   Returns a success/failure of the deletion.
+   *   Returns the unique job submission id.
    *
   */
-  bool addGridFTPDataMovementDetails(1: required string computeResourceId,
+  string addGridFTPDataMovementDetails(1: required string computeResourceId,
             2: required i32 priorityOrder,
             3: required computeResourceModel.GridFTPDataMovement gridFTPDataMovement)
   	throws (1: airavataErrors.InvalidRequestException ire,

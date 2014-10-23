@@ -12605,8 +12605,8 @@ uint32_t Airavata_addLocalSubmissionDetails_result::read(::apache::thrift::proto
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -12655,8 +12655,8 @@ uint32_t Airavata_addLocalSubmissionDetails_result::write(::apache::thrift::prot
   xfer += oprot->writeStructBegin("Airavata_addLocalSubmissionDetails_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
-    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
     xfer += oprot->writeFieldEnd();
   } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -12697,8 +12697,8 @@ uint32_t Airavata_addLocalSubmissionDetails_presult::read(::apache::thrift::prot
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -13112,8 +13112,8 @@ uint32_t Airavata_addSSHJobSubmissionDetails_result::read(::apache::thrift::prot
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -13162,8 +13162,8 @@ uint32_t Airavata_addSSHJobSubmissionDetails_result::write(::apache::thrift::pro
   xfer += oprot->writeStructBegin("Airavata_addSSHJobSubmissionDetails_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
-    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
     xfer += oprot->writeFieldEnd();
   } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -13204,8 +13204,8 @@ uint32_t Airavata_addSSHJobSubmissionDetails_presult::read(::apache::thrift::pro
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -13375,8 +13375,8 @@ uint32_t Airavata_addUNICOREJobSubmissionDetails_result::read(::apache::thrift::
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -13425,8 +13425,8 @@ uint32_t Airavata_addUNICOREJobSubmissionDetails_result::write(::apache::thrift:
   xfer += oprot->writeStructBegin("Airavata_addUNICOREJobSubmissionDetails_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
-    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
     xfer += oprot->writeFieldEnd();
   } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -13467,8 +13467,8 @@ uint32_t Airavata_addUNICOREJobSubmissionDetails_presult::read(::apache::thrift:
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -13638,8 +13638,8 @@ uint32_t Airavata_addCloudJobSubmissionDetails_result::read(::apache::thrift::pr
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -13688,8 +13688,8 @@ uint32_t Airavata_addCloudJobSubmissionDetails_result::write(::apache::thrift::p
   xfer += oprot->writeStructBegin("Airavata_addCloudJobSubmissionDetails_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
-    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
     xfer += oprot->writeFieldEnd();
   } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -13730,8 +13730,8 @@ uint32_t Airavata_addCloudJobSubmissionDetails_presult::read(::apache::thrift::p
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -14389,8 +14389,8 @@ uint32_t Airavata_addLocalDataMovementDetails_result::read(::apache::thrift::pro
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -14439,8 +14439,8 @@ uint32_t Airavata_addLocalDataMovementDetails_result::write(::apache::thrift::pr
   xfer += oprot->writeStructBegin("Airavata_addLocalDataMovementDetails_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
-    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
     xfer += oprot->writeFieldEnd();
   } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -14481,8 +14481,8 @@ uint32_t Airavata_addLocalDataMovementDetails_presult::read(::apache::thrift::pr
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -14896,8 +14896,8 @@ uint32_t Airavata_addSCPDataMovementDetails_result::read(::apache::thrift::proto
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -14946,8 +14946,8 @@ uint32_t Airavata_addSCPDataMovementDetails_result::write(::apache::thrift::prot
   xfer += oprot->writeStructBegin("Airavata_addSCPDataMovementDetails_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
-    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
     xfer += oprot->writeFieldEnd();
   } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -14988,8 +14988,8 @@ uint32_t Airavata_addSCPDataMovementDetails_presult::read(::apache::thrift::prot
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -15403,8 +15403,8 @@ uint32_t Airavata_addGridFTPDataMovementDetails_result::read(::apache::thrift::p
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool(this->success);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -15453,8 +15453,8 @@ uint32_t Airavata_addGridFTPDataMovementDetails_result::write(::apache::thrift::
   xfer += oprot->writeStructBegin("Airavata_addGridFTPDataMovementDetails_result");
 
   if (this->__isset.success) {
-    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
-    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
     xfer += oprot->writeFieldEnd();
   } else if (this->__isset.ire) {
     xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
@@ -15495,8 +15495,8 @@ uint32_t Airavata_addGridFTPDataMovementDetails_presult::read(::apache::thrift::
     switch (fid)
     {
       case 0:
-        if (ftype == ::apache::thrift::protocol::T_BOOL) {
-          xfer += iprot->readBool((*(this->success)));
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
           this->__isset.success = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -22854,10 +22854,10 @@ bool AiravataClient::recv_deleteComputeResource()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteComputeResource failed: unknown result");
 }
 
-bool AiravataClient::addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission)
+void AiravataClient::addLocalSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission)
 {
   send_addLocalSubmissionDetails(computeResourceId, priorityOrder, localSubmission);
-  return recv_addLocalSubmissionDetails();
+  recv_addLocalSubmissionDetails(_return);
 }
 
 void AiravataClient::send_addLocalSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission)
@@ -22876,7 +22876,7 @@ void AiravataClient::send_addLocalSubmissionDetails(const std::string& computeRe
   oprot_->getTransport()->flush();
 }
 
-bool AiravataClient::recv_addLocalSubmissionDetails()
+void AiravataClient::recv_addLocalSubmissionDetails(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -22901,7 +22901,6 @@ bool AiravataClient::recv_addLocalSubmissionDetails()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  bool _return;
   Airavata_addLocalSubmissionDetails_presult result;
   result.success = &_return;
   result.read(iprot_);
@@ -22909,7 +22908,8 @@ bool AiravataClient::recv_addLocalSubmissionDetails()
   iprot_->getTransport()->readEnd();
 
   if (result.__isset.success) {
-    return _return;
+    // _return pointer has now been filled
+    return;
   }
   if (result.__isset.ire) {
     throw result.ire;
@@ -22991,10 +22991,10 @@ bool AiravataClient::recv_updateLocalSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateLocalSubmissionDetails failed: unknown result");
 }
 
-bool AiravataClient::addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission)
+void AiravataClient::addSSHJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission)
 {
   send_addSSHJobSubmissionDetails(computeResourceId, priorityOrder, sshJobSubmission);
-  return recv_addSSHJobSubmissionDetails();
+  recv_addSSHJobSubmissionDetails(_return);
 }
 
 void AiravataClient::send_addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission)
@@ -23013,7 +23013,7 @@ void AiravataClient::send_addSSHJobSubmissionDetails(const std::string& computeR
   oprot_->getTransport()->flush();
 }
 
-bool AiravataClient::recv_addSSHJobSubmissionDetails()
+void AiravataClient::recv_addSSHJobSubmissionDetails(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -23038,7 +23038,6 @@ bool AiravataClient::recv_addSSHJobSubmissionDetails()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  bool _return;
   Airavata_addSSHJobSubmissionDetails_presult result;
   result.success = &_return;
   result.read(iprot_);
@@ -23046,7 +23045,8 @@ bool AiravataClient::recv_addSSHJobSubmissionDetails()
   iprot_->getTransport()->readEnd();
 
   if (result.__isset.success) {
-    return _return;
+    // _return pointer has now been filled
+    return;
   }
   if (result.__isset.ire) {
     throw result.ire;
@@ -23060,10 +23060,10 @@ bool AiravataClient::recv_addSSHJobSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addSSHJobSubmissionDetails failed: unknown result");
 }
 
-bool AiravataClient::addUNICOREJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission)
+void AiravataClient::addUNICOREJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission)
 {
   send_addUNICOREJobSubmissionDetails(computeResourceId, priorityOrder, unicoreJobSubmission);
-  return recv_addUNICOREJobSubmissionDetails();
+  recv_addUNICOREJobSubmissionDetails(_return);
 }
 
 void AiravataClient::send_addUNICOREJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission)
@@ -23082,7 +23082,7 @@ void AiravataClient::send_addUNICOREJobSubmissionDetails(const std::string& comp
   oprot_->getTransport()->flush();
 }
 
-bool AiravataClient::recv_addUNICOREJobSubmissionDetails()
+void AiravataClient::recv_addUNICOREJobSubmissionDetails(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -23107,7 +23107,6 @@ bool AiravataClient::recv_addUNICOREJobSubmissionDetails()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  bool _return;
   Airavata_addUNICOREJobSubmissionDetails_presult result;
   result.success = &_return;
   result.read(iprot_);
@@ -23115,7 +23114,8 @@ bool AiravataClient::recv_addUNICOREJobSubmissionDetails()
   iprot_->getTransport()->readEnd();
 
   if (result.__isset.success) {
-    return _return;
+    // _return pointer has now been filled
+    return;
   }
   if (result.__isset.ire) {
     throw result.ire;
@@ -23129,10 +23129,10 @@ bool AiravataClient::recv_addUNICOREJobSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addUNICOREJobSubmissionDetails failed: unknown result");
 }
 
-bool AiravataClient::addCloudJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission)
+void AiravataClient::addCloudJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission)
 {
   send_addCloudJobSubmissionDetails(computeResourceId, priorityOrder, cloudSubmission);
-  return recv_addCloudJobSubmissionDetails();
+  recv_addCloudJobSubmissionDetails(_return);
 }
 
 void AiravataClient::send_addCloudJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission)
@@ -23151,7 +23151,7 @@ void AiravataClient::send_addCloudJobSubmissionDetails(const std::string& comput
   oprot_->getTransport()->flush();
 }
 
-bool AiravataClient::recv_addCloudJobSubmissionDetails()
+void AiravataClient::recv_addCloudJobSubmissionDetails(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -23176,7 +23176,6 @@ bool AiravataClient::recv_addCloudJobSubmissionDetails()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  bool _return;
   Airavata_addCloudJobSubmissionDetails_presult result;
   result.success = &_return;
   result.read(iprot_);
@@ -23184,7 +23183,8 @@ bool AiravataClient::recv_addCloudJobSubmissionDetails()
   iprot_->getTransport()->readEnd();
 
   if (result.__isset.success) {
-    return _return;
+    // _return pointer has now been filled
+    return;
   }
   if (result.__isset.ire) {
     throw result.ire;
@@ -23334,10 +23334,10 @@ bool AiravataClient::recv_updateCloudJobSubmissionDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateCloudJobSubmissionDetails failed: unknown result");
 }
 
-bool AiravataClient::addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
+void AiravataClient::addLocalDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
 {
   send_addLocalDataMovementDetails(computeResourceId, priorityOrder, localDataMovement);
-  return recv_addLocalDataMovementDetails();
+  recv_addLocalDataMovementDetails(_return);
 }
 
 void AiravataClient::send_addLocalDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
@@ -23356,7 +23356,7 @@ void AiravataClient::send_addLocalDataMovementDetails(const std::string& compute
   oprot_->getTransport()->flush();
 }
 
-bool AiravataClient::recv_addLocalDataMovementDetails()
+void AiravataClient::recv_addLocalDataMovementDetails(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -23381,7 +23381,6 @@ bool AiravataClient::recv_addLocalDataMovementDetails()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  bool _return;
   Airavata_addLocalDataMovementDetails_presult result;
   result.success = &_return;
   result.read(iprot_);
@@ -23389,7 +23388,8 @@ bool AiravataClient::recv_addLocalDataMovementDetails()
   iprot_->getTransport()->readEnd();
 
   if (result.__isset.success) {
-    return _return;
+    // _return pointer has now been filled
+    return;
   }
   if (result.__isset.ire) {
     throw result.ire;
@@ -23471,10 +23471,10 @@ bool AiravataClient::recv_updateLocalDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateLocalDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
+void AiravataClient::addSCPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
 {
   send_addSCPDataMovementDetails(computeResourceId, priorityOrder, scpDataMovement);
-  return recv_addSCPDataMovementDetails();
+  recv_addSCPDataMovementDetails(_return);
 }
 
 void AiravataClient::send_addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
@@ -23493,7 +23493,7 @@ void AiravataClient::send_addSCPDataMovementDetails(const std::string& computeRe
   oprot_->getTransport()->flush();
 }
 
-bool AiravataClient::recv_addSCPDataMovementDetails()
+void AiravataClient::recv_addSCPDataMovementDetails(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -23518,7 +23518,6 @@ bool AiravataClient::recv_addSCPDataMovementDetails()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  bool _return;
   Airavata_addSCPDataMovementDetails_presult result;
   result.success = &_return;
   result.read(iprot_);
@@ -23526,7 +23525,8 @@ bool AiravataClient::recv_addSCPDataMovementDetails()
   iprot_->getTransport()->readEnd();
 
   if (result.__isset.success) {
-    return _return;
+    // _return pointer has now been filled
+    return;
   }
   if (result.__isset.ire) {
     throw result.ire;
@@ -23608,10 +23608,10 @@ bool AiravataClient::recv_updateSCPDataMovementDetails()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateSCPDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::addGridFTPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
 {
   send_addGridFTPDataMovementDetails(computeResourceId, priorityOrder, gridFTPDataMovement);
-  return recv_addGridFTPDataMovementDetails();
+  recv_addGridFTPDataMovementDetails(_return);
 }
 
 void AiravataClient::send_addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
@@ -23630,7 +23630,7 @@ void AiravataClient::send_addGridFTPDataMovementDetails(const std::string& compu
   oprot_->getTransport()->flush();
 }
 
-bool AiravataClient::recv_addGridFTPDataMovementDetails()
+void AiravataClient::recv_addGridFTPDataMovementDetails(std::string& _return)
 {
 
   int32_t rseqid = 0;
@@ -23655,7 +23655,6 @@ bool AiravataClient::recv_addGridFTPDataMovementDetails()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  bool _return;
   Airavata_addGridFTPDataMovementDetails_presult result;
   result.success = &_return;
   result.read(iprot_);
@@ -23663,7 +23662,8 @@ bool AiravataClient::recv_addGridFTPDataMovementDetails()
   iprot_->getTransport()->readEnd();
 
   if (result.__isset.success) {
-    return _return;
+    // _return pointer has now been filled
+    return;
   }
   if (result.__isset.ire) {
     throw result.ire;
@@ -28035,7 +28035,7 @@ void AiravataProcessor::process_addLocalSubmissionDetails(int32_t seqid, ::apach
 
   Airavata_addLocalSubmissionDetails_result result;
   try {
-    result.success = iface_->addLocalSubmissionDetails(args.computeResourceId, args.priorityOrder, args.localSubmission);
+    iface_->addLocalSubmissionDetails(result.success, args.computeResourceId, args.priorityOrder, args.localSubmission);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -28161,7 +28161,7 @@ void AiravataProcessor::process_addSSHJobSubmissionDetails(int32_t seqid, ::apac
 
   Airavata_addSSHJobSubmissionDetails_result result;
   try {
-    result.success = iface_->addSSHJobSubmissionDetails(args.computeResourceId, args.priorityOrder, args.sshJobSubmission);
+    iface_->addSSHJobSubmissionDetails(result.success, args.computeResourceId, args.priorityOrder, args.sshJobSubmission);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -28224,7 +28224,7 @@ void AiravataProcessor::process_addUNICOREJobSubmissionDetails(int32_t seqid, ::
 
   Airavata_addUNICOREJobSubmissionDetails_result result;
   try {
-    result.success = iface_->addUNICOREJobSubmissionDetails(args.computeResourceId, args.priorityOrder, args.unicoreJobSubmission);
+    iface_->addUNICOREJobSubmissionDetails(result.success, args.computeResourceId, args.priorityOrder, args.unicoreJobSubmission);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -28287,7 +28287,7 @@ void AiravataProcessor::process_addCloudJobSubmissionDetails(int32_t seqid, ::ap
 
   Airavata_addCloudJobSubmissionDetails_result result;
   try {
-    result.success = iface_->addCloudJobSubmissionDetails(args.computeResourceId, args.priorityOrder, args.cloudSubmission);
+    iface_->addCloudJobSubmissionDetails(result.success, args.computeResourceId, args.priorityOrder, args.cloudSubmission);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -28476,7 +28476,7 @@ void AiravataProcessor::process_addLocalDataMovementDetails(int32_t seqid, ::apa
 
   Airavata_addLocalDataMovementDetails_result result;
   try {
-    result.success = iface_->addLocalDataMovementDetails(args.computeResourceId, args.priorityOrder, args.localDataMovement);
+    iface_->addLocalDataMovementDetails(result.success, args.computeResourceId, args.priorityOrder, args.localDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -28602,7 +28602,7 @@ void AiravataProcessor::process_addSCPDataMovementDetails(int32_t seqid, ::apach
 
   Airavata_addSCPDataMovementDetails_result result;
   try {
-    result.success = iface_->addSCPDataMovementDetails(args.computeResourceId, args.priorityOrder, args.scpDataMovement);
+    iface_->addSCPDataMovementDetails(result.success, args.computeResourceId, args.priorityOrder, args.scpDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -28728,7 +28728,7 @@ void AiravataProcessor::process_addGridFTPDataMovementDetails(int32_t seqid, ::a
 
   Airavata_addGridFTPDataMovementDetails_result result;
   try {
-    result.success = iface_->addGridFTPDataMovementDetails(args.computeResourceId, args.priorityOrder, args.gridFTPDataMovement);
+    iface_->addGridFTPDataMovementDetails(result.success, args.computeResourceId, args.priorityOrder, args.gridFTPDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;

@@ -60,7 +60,7 @@ public interface ComputeResource {
      * This will add a SSHJobSubmission protocol to the database
      * @param computeResourceId compute resource id
      */
-    void addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException;
+    String addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException;
 
     String addLocalJobSubmission (LOCALSubmission localSubmission) throws AppCatalogException;
 
@@ -92,7 +92,7 @@ public interface ComputeResource {
      * This will add a SCPDataMovement protocol to the database
      * @param computeResourceId compute resource id
      */
-    void addDataMovementProtocol (String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException;
+    String addDataMovementProtocol (String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException;
 
     /**
      * This method will add a GridFTP Data movement to the database

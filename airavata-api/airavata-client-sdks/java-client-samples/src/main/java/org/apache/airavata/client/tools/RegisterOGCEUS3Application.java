@@ -261,18 +261,12 @@ public class RegisterOGCEUS3Application {
 		sshJobSubmission.setResourceJobManager(resourceJobManager);
 		sshJobSubmission.setSecurityProtocol(securityProtocol);
 		sshJobSubmission.setSshPort(portNumber);
-		boolean sshAddStatus = airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
-
-		if (!sshAddStatus)
-			throw new AiravataClientException();
+		airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
 
 		SCPDataMovement scpDataMovement = new SCPDataMovement();
 		scpDataMovement.setSecurityProtocol(securityProtocol);
 		scpDataMovement.setSshPort(portNumber);
-		boolean scpAddStatus = airavataClient.addSCPDataMovementDetails(computeResourceId, 1, scpDataMovement);
-
-		if (!scpAddStatus)
-			throw new AiravataClientException();
+		airavataClient.addSCPDataMovementDetails(computeResourceId, 1, scpDataMovement);
 
 		return computeResourceId;
 	}
@@ -294,19 +288,13 @@ public class RegisterOGCEUS3Application {
 		sshJobSubmission.setResourceJobManager(resourceJobManager);
 		sshJobSubmission.setSecurityProtocol(securityProtocol);
 		sshJobSubmission.setSshPort(portNumber);
-		boolean sshAddStatus = airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
+		airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
 		ComputeResourceDescription computeResourceDescription = airavataClient.getComputeResource(computeResourceId);
 		computeResourceDescription.getJobSubmissionInterfacesIterator();
-		if (!sshAddStatus)
-			throw new AiravataClientException();
-
 		SCPDataMovement scpDataMovement = new SCPDataMovement();
 		scpDataMovement.setSecurityProtocol(securityProtocol);
 		scpDataMovement.setSshPort(portNumber);
-		boolean scpAddStatus = airavataClient.addSCPDataMovementDetails(computeResourceId, 1, scpDataMovement);
-
-		if (!scpAddStatus)
-			throw new AiravataClientException();
+		airavataClient.addSCPDataMovementDetails(computeResourceId, 1, scpDataMovement);
 
 		return computeResourceId;
 	}
