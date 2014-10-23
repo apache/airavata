@@ -159,8 +159,7 @@ public class RegisterSampleApplications {
                     createResourceJobManager(ResourceJobManagerType.FORK, null, null, null);
             LOCALSubmission submission = new LOCALSubmission();
             submission.setResourceJobManager(resourceJobManager);
-            boolean localSubmission = airavataClient.addLocalSubmissionDetails(localhostId, 1, submission);
-            if (!localSubmission) throw new AiravataClientException();
+            airavataClient.addLocalSubmissionDetails(localhostId, 1, submission);
             System.out.println("LocalHost Resource Id is " + localhostId);
 
         } catch (TException e) {
@@ -1070,16 +1069,12 @@ public class RegisterSampleApplications {
         sshJobSubmission.setResourceJobManager(resourceJobManager);
         sshJobSubmission.setSecurityProtocol(securityProtocol);
         sshJobSubmission.setSshPort(portNumber);
-        boolean sshAddStatus = airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
-
-        if (!sshAddStatus) throw new AiravataClientException();
+        airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
 
         SCPDataMovement scpDataMovement = new SCPDataMovement();
         scpDataMovement.setSecurityProtocol(securityProtocol);
         scpDataMovement.setSshPort(portNumber);
-        boolean scpAddStatus = airavataClient.addSCPDataMovementDetails(computeResourceId, 1, scpDataMovement);
-
-        if (!scpAddStatus) throw new AiravataClientException();
+        airavataClient.addSCPDataMovementDetails(computeResourceId, 1, scpDataMovement);
 
         return computeResourceId;
     }

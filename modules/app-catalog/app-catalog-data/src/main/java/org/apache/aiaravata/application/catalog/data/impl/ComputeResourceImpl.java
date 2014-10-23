@@ -216,7 +216,7 @@ public class ComputeResourceImpl implements ComputeResource {
     
 
     @Override
-    public void addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException {
+    public String addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException {
         try {
         	JobSubmissionInterfaceResource jsi = AppCatalogThriftConversion.getJobSubmissionInterface(jobSubmissionInterface);
         	jsi.setComputeResourceId(computeResourceId);
@@ -224,6 +224,7 @@ public class ComputeResourceImpl implements ComputeResource {
         	computeResourceResource=(ComputeResourceResource)computeResourceResource.get(computeResourceId);
         	jsi.setComputeHostResource(computeResourceResource);
             jsi.save();
+            return jsi.getJobSubmissionInterfaceId();
         }catch (Exception e){
             logger.error("Error while saving "+jobSubmissionInterface.getJobSubmissionProtocol().toString()+" Job Submission Protocol...", e);
             throw new AppCatalogException(e);
@@ -340,7 +341,7 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public void addDataMovementProtocol(String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException {
+    public String addDataMovementProtocol(String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException {
         try {
         	DataMovementInterfaceResource dmi = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
         	dmi.setComputeResourceId(computeResourceId);
@@ -348,6 +349,7 @@ public class ComputeResourceImpl implements ComputeResource {
         	computeResourceResource=(ComputeResourceResource)computeResourceResource.get(computeResourceId);
         	dmi.setComputeHostResource(computeResourceResource);
         	dmi.save();
+            return dmi.getDataMovementInterfaceId();
         }catch (Exception e){
             logger.error("Error while saving "+dataMovementInterface.getDataMovementProtocol().toString()+" data movement Protocol...", e);
             throw new AppCatalogException(e);

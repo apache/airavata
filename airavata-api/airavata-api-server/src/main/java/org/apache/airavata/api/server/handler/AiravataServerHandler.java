@@ -1896,13 +1896,12 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean addLocalSubmissionDetails(String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String addLocalSubmissionDetails(String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            addJobSubmissionInterface(computeResource, computeResourceId,
+            return addJobSubmissionInterface(computeResource, computeResourceId,
             		computeResource.addLocalJobSubmission(localSubmission), JobSubmissionProtocol.LOCAL, priorityOrder);
-            return true;
         } catch (AppCatalogException e) {
             logger.errorId(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1936,7 +1935,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    private void addJobSubmissionInterface(ComputeResource computeResource,
+    private String addJobSubmissionInterface(ComputeResource computeResource,
 			String computeResourceId, String jobSubmissionInterfaceId,
 			JobSubmissionProtocol protocolType, int priorityOrder)
 			throws AppCatalogException {
@@ -1944,7 +1943,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 		jobSubmissionInterface.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
 		jobSubmissionInterface.setPriorityOrder(priorityOrder);
 		jobSubmissionInterface.setJobSubmissionProtocol(protocolType);
-		computeResource.addJobSubmissionProtocol(computeResourceId,jobSubmissionInterface);
+		return computeResource.addJobSubmissionProtocol(computeResourceId,jobSubmissionInterface);
 	}
 
     /**
@@ -1958,13 +1957,12 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean addSSHJobSubmissionDetails(String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String addSSHJobSubmissionDetails(String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            addJobSubmissionInterface(computeResource, computeResourceId,
+            return addJobSubmissionInterface(computeResource, computeResourceId,
             		computeResource.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH, priorityOrder);
-            return true;
         } catch (AppCatalogException e) {
             logger.errorId(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1985,13 +1983,12 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder, CloudJobSubmission cloudJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder, CloudJobSubmission cloudJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            addJobSubmissionInterface(computeResource, computeResourceId,
+            return addJobSubmissionInterface(computeResource, computeResourceId,
                     computeResource.addCloudJobSubmission(cloudJobSubmission), JobSubmissionProtocol.CLOUD, priorityOrder);
-            return true;
         } catch (AppCatalogException e) {
             logger.errorId(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2002,16 +1999,15 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-	public boolean addUNICOREJobSubmissionDetails(String computeResourceId,
+	public String addUNICOREJobSubmissionDetails(String computeResourceId,
 			int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
 		try {
 	        appCatalog = AppCatalogFactory.getAppCatalog();
 	        ComputeResource computeResource = appCatalog.getComputeResource();
-	        addJobSubmissionInterface(computeResource, computeResourceId,
+	        return addJobSubmissionInterface(computeResource, computeResourceId,
 	        		computeResource.addUNICOREJobSubmission(unicoreJobSubmission), JobSubmissionProtocol.UNICORE, priorityOrder);
-	        return true;
 	    } catch (AppCatalogException e) {
 	        logger.error("Error while adding job submission interface to resource compute resource...", e);
 	        AiravataSystemException exception = new AiravataSystemException();
@@ -2079,13 +2075,12 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean addLocalDataMovementDetails(String computeResourceId, int priorityOrder, LOCALDataMovement localDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String addLocalDataMovementDetails(String computeResourceId, int priorityOrder, LOCALDataMovement localDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, computeResourceId,
             		computeResource.addLocalDataMovement(localDataMovement), DataMovementProtocol.LOCAL, priorityOrder);
-            return true;
         } catch (AppCatalogException e) {
             logger.errorId(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2119,7 +2114,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    private void addDataMovementInterface(ComputeResource computeResource,
+    private String addDataMovementInterface(ComputeResource computeResource,
 			String computeResourceId, String dataMovementInterfaceId,
 			DataMovementProtocol protocolType, int priorityOrder)
 			throws AppCatalogException {
@@ -2127,7 +2122,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 		dataMovementInterface.setDataMovementInterfaceId(dataMovementInterfaceId);
 		dataMovementInterface.setPriorityOrder(priorityOrder);
 		dataMovementInterface.setDataMovementProtocol(protocolType);
-		computeResource.addDataMovementProtocol(computeResourceId,dataMovementInterface);
+		return computeResource.addDataMovementProtocol(computeResourceId,dataMovementInterface);
 	}
 
     /**
@@ -2141,13 +2136,12 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean addSCPDataMovementDetails(String computeResourceId, int priorityOrder, SCPDataMovement scpDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String addSCPDataMovementDetails(String computeResourceId, int priorityOrder, SCPDataMovement scpDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, computeResourceId,
             		computeResource.addScpDataMovement(scpDataMovement), DataMovementProtocol.SCP, priorityOrder);
-            return true;
         } catch (AppCatalogException e) {
             logger.errorId(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -2193,13 +2187,12 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean addGridFTPDataMovementDetails(String computeResourceId, int priorityOrder, GridFTPDataMovement gridFTPDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String addGridFTPDataMovementDetails(String computeResourceId, int priorityOrder, GridFTPDataMovement gridFTPDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
-            addDataMovementInterface(computeResource, computeResourceId,
+            return addDataMovementInterface(computeResource, computeResourceId,
             		computeResource.addGridFTPDataMovement(gridFTPDataMovement), DataMovementProtocol.GridFTP, priorityOrder);
-            return true;
         } catch (AppCatalogException e) {
             logger.errorId(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
