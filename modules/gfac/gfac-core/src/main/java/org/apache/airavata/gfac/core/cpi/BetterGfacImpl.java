@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
@@ -59,6 +60,7 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 
 import org.apache.airavata.messaging.core.Publisher;
 
+import org.apache.airavata.messaging.core.PublisherFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
@@ -157,11 +159,9 @@ public class BetterGfacImpl implements GFac,Watcher {
     public static void startStatusUpdators(Registry registry, ZooKeeper zk, MonitorPublisher publisher) {
         try {
             String[] listenerClassList = ServerSettings.getActivityListeners();
-            String activityPublisher = ServerSettings.getActivityPublisher();
             Publisher rabbitMQPublisher = null;
             if (ServerSettings.isRabbitMqPublishEnabled()){
-                Class<? extends Publisher> aPublisher = Class.forName(activityPublisher).asSubclass(Publisher.class);
-                rabbitMQPublisher = aPublisher.newInstance();
+                rabbitMQPublisher = PublisherFactory.createPublisher();
             }
             for (String listenerClass : listenerClassList) {
                 Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
@@ -178,6 +178,8 @@ public class BetterGfacImpl implements GFac,Watcher {
         } catch (IllegalAccessException e) {
             log.error("Error loading the listener classes configured in airavata-server.properties", e);
         } catch (ApplicationSettingsException e) {
+            log.error("Error loading the listener classes configured in airavata-server.properties", e);
+        } catch (AiravataException e) {
             log.error("Error loading the listener classes configured in airavata-server.properties", e);
         }
     }

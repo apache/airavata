@@ -28,10 +28,15 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConver
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
 import org.apache.airavata.api.server.util.DataModelUtils;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.PublisherFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -41,6 +46,8 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.*;
+import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -64,13 +71,18 @@ public class AiravataServerHandler implements Airavata.Iface {
     private static final AiravataLogger logger = AiravataLoggerFactory.getLogger(AiravataServerHandler.class);
     private Registry registry;
     private AppCatalog appCatalog;
+    private Publisher publisher;
 
     public AiravataServerHandler() {
-//        try {
-//            storeServerConfig();
-//        } catch (ApplicationSettingsException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            if (ServerSettings.isRabbitMqPublishEnabled()) {
+                publisher = PublisherFactory.createPublisher();
+            }
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error occured while reading airavata-server properties..", e);
+        } catch (AiravataException e) {
+            logger.error("Error occured while reading airavata-server properties..", e);
+        }
     }
 
 //    private void storeServerConfig() throws ApplicationSettingsException {
@@ -670,6 +682,16 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             String experimentId = (String)registry.add(ParentDataType.EXPERIMENT, experiment);
+            if (ServerSettings.isRabbitMqPublishEnabled()){
+                String gatewayId = ServerSettings.getDefaultUserGateway();
+                ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.CREATED,
+                        experimentId,
+                        gatewayId);
+                String messageId = AiravataUtils.getId("EXPERIMENT");
+                MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT,messageId,gatewayId);
+                messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                publisher.publish(messageContext);
+            }
             logger.infoId(experimentId, "Created new experiment with experiment name {}", experiment.getName());
             return experimentId;
         } catch (Exception e) {
@@ -1198,6 +1220,16 @@ public class AiravataServerHandler implements Airavata.Iface {
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
                     experiment.setExperimentStatus(status);
                     registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
+                    if (ServerSettings.isRabbitMqPublishEnabled()){
+                        String gatewayId = ServerSettings.getDefaultUserGateway();
+                        ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED,
+                                experimentId,
+                                gatewayId);
+                        String messageId = AiravataUtils.getId("EXPERIMENT");
+                        MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT,messageId,gatewayId);
+                        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                        publisher.publish(messageContext);
+                    }
                     registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskID());
                     //launching the experiment
                     orchestratorClient.launchTask(taskData.getTaskID(), airavataCredStoreToken);
