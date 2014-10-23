@@ -24,8 +24,13 @@ package org.apache.airavata.messaging.core;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.impl.RabbitMQConsumer;
+import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.Message;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.thrift.TBase;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +44,7 @@ public class TestClient {
     public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
     public static final String RABBITMQ_EXCHANGE_NAME = "rabbitmq.exchange.name";
     private final static Logger logger = LoggerFactory.getLogger(TestClient.class);
-    private final static String experimentId = "echoExperiment_febc8b78-a66a-4c05-9b1f-1a6ebb0089d8";
+    private final static String experimentId = "*";
 
     public static void main(String[] args) {
         try {
@@ -60,9 +65,18 @@ public class TestClient {
 
                 @Override
                 public void onMessage(MessageContext message) {
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getType());
-                    System.out.println("message received: " + message);
+                    if (message.getType().equals(MessageType.EXPERIMENT)){
+                        try {
+                            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
+                            TBase messageEvent = message.getEvent();
+                            byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                            ThriftUtils.createThriftFromBytes(bytes, event);
+                            System.out.println(" Message Received with message id '" + message.getMessageId()
+                                    + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString());
+                        } catch (TException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
             });
         } catch (ApplicationSettingsException e) {

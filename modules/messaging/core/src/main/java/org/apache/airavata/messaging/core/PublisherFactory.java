@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class PublisherFactory {
     private static Logger log = LoggerFactory.getLogger(PublisherFactory.class);
 
-    public Publisher createPublisher() throws AiravataException {
+    public static Publisher createPublisher() throws AiravataException {
         String activityPublisher = ServerSettings.getActivityPublisher();
 
         if (activityPublisher == null) {
