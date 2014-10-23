@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.graph.impl.PortImpl;
 import org.xmlpull.infoset.XmlElement;
 
@@ -45,6 +46,10 @@ public abstract class DataPort extends PortImpl {
      */
     public DataPort(XmlElement portElement) {
         super(portElement);
+    }
+
+    public DataPort(JsonObject portObject) {
+        super(portObject);
     }
 
     /**

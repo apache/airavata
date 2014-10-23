@@ -36,11 +36,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.xmlpull.infoset.XmlNamespace;
 
 import xsul.dsig.apache.axis.uti.XMLUtils;
@@ -103,7 +109,50 @@ public class WSComponentApplication {
 		}
 
 	}
-	public org.xmlpull.infoset.XmlElement toXml(){
+
+    public static WSComponentApplication parse(JsonObject applicationObject) {
+        WSComponentApplication wsComponentApplication = new WSComponentApplication();
+        wsComponentApplication.description = applicationObject.getAsJsonPrimitive("description").getAsString();
+        wsComponentApplication.name = applicationObject.getAsJsonPrimitive("name").getAsString();
+        wsComponentApplication.applicationId = applicationObject.getAsJsonPrimitive("application").getAsString();
+
+        if (applicationObject.get("Input") != null) {
+            JsonArray inputArray = applicationObject.getAsJsonArray("Input");
+            WSComponentApplicationParameter inputParameter;
+            JsonObject inputObject;
+            for (JsonElement jsonElement : inputArray) {
+                if (jsonElement instanceof JsonObject) {
+                    inputObject = (JsonObject) jsonElement;
+                    inputParameter = new WSComponentApplicationParameter();
+                    inputParameter.setDefaultValue(inputObject.getAsJsonPrimitive("text").getAsString());
+                    inputParameter.setDescription(inputObject.getAsJsonPrimitive("description").getAsString());
+                    inputParameter.setName(inputObject.getAsJsonPrimitive("name").getAsString());
+                    // do we need to set type ?
+                    wsComponentApplication.addInputParameter(inputParameter);
+                }
+            }
+        }
+
+        if (applicationObject.get("Output") != null) {
+            JsonArray outputArray = applicationObject.getAsJsonArray("Output");
+            WSComponentApplicationParameter outputParameter;
+            JsonObject outputObject;
+            for (JsonElement jsonElement : outputArray) {
+                if (jsonElement instanceof JsonObject) {
+                    outputObject = (JsonObject) jsonElement;
+                    outputParameter = new WSComponentApplicationParameter();
+                    outputParameter.setDescription(outputObject.getAsJsonPrimitive("description").getAsString());
+                    outputParameter.setName(outputObject.getAsJsonPrimitive("name").getAsString());
+                    // do we need to set type ?
+                    wsComponentApplication.addOutputParameter(outputParameter);
+                }
+            }
+        }
+
+        return wsComponentApplication;
+    }
+
+    public org.xmlpull.infoset.XmlElement toXml(){
 		      try {
 				JAXBContext context = JAXBContext.newInstance(WSComponentApplication.class);
 				  Marshaller marshaller = context.createMarshaller();
@@ -118,8 +167,37 @@ public class WSComponentApplication {
 				return null;
 			}
 	}
-	
-	public WSComponentApplication(ApplicationInterfaceDescription application) {
+
+    public JsonObject toJSON() {
+        JsonObject componentObject = new JsonObject();
+        componentObject.addProperty("description", this.description);
+        componentObject.addProperty("name", this.name);
+        componentObject.addProperty("application", this.applicationId);
+        JsonArray inputArray = new JsonArray();
+        JsonObject inputObject;
+        for (WSComponentApplicationParameter inputParameter : this.inputParameters) {
+            inputObject = new JsonObject();
+            inputObject.addProperty("description", inputParameter.getDescription());
+            inputObject.addProperty("name", inputParameter.getName());
+            inputObject.addProperty("text", inputParameter.getDefaultValue());
+            inputArray.add(inputObject);
+        }
+        componentObject.add("Input", inputArray);
+
+        JsonArray outputArray = new JsonArray();
+        JsonObject outputObject;
+        for (WSComponentApplicationParameter outputParameter : this.outputParameters) {
+            outputObject = new JsonObject();
+            outputObject.addProperty("description", outputParameter.getDescription());
+            outputObject.addProperty("name", outputParameter.getName());
+            outputArray.add(outputObject);
+        }
+        componentObject.add("Output", outputArray);
+
+        return componentObject;
+    }
+
+    public WSComponentApplication(ApplicationInterfaceDescription application) {
 		setApplicationId(application.getApplicationInterfaceId());
 		setName(application.getApplicationName());
 		setDescription(application.getApplicationDesription());

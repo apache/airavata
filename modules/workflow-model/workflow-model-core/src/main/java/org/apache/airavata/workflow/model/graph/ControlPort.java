@@ -21,6 +21,7 @@
 
 package org.apache.airavata.workflow.model.graph;
 
+import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.graph.impl.PortImpl;
 import org.xmlpull.infoset.XmlElement;
 
@@ -45,6 +46,9 @@ public class ControlPort extends PortImpl {
         super(portElement);
     }
 
+    public ControlPort(JsonObject portObject) {
+        super(portObject);
+    }
     /**
      * @see org.apache.airavata.workflow.model.graph.impl.PortImpl#toXML()
      */
@@ -55,7 +59,11 @@ public class ControlPort extends PortImpl {
         return portElement;
     }
 
-    /**
+    protected JsonObject toJSON() {
+        JsonObject portObject = super.toJSON();
+        portObject.addProperty(GraphSchema.PORT_TYPE_ATTRIBUTE, GraphSchema.PORT_TYPE_CONTROL);
+        return portObject;
+    }    /**
      * Set if this port condition is met, flow will execute throw this port
      * 
      * @param condition
