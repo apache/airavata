@@ -255,8 +255,8 @@
 				<include>net.schmizz:sshj</include>
 				<include>j2ssh:j2ssh-core</include>
 				<include>j2ssh:j2ssh-common</include>
-				<include>org.apache.httpcomponents:httpcore:jar:4.1</include>
-				<include>org.apache.httpcomponents:httpclient:jar:4.1</include>
+				<include>org.apache.httpcomponents:httpcore:jar:4.2.4</include>
+				<include>org.apache.httpcomponents:httpclient:jar:4.2.4</include>
 				<include>de.odysseus.staxon:staxon:jar:1.2</include>
 				<include>de.odysseus.staxon:staxon-jackson:jar:1.2</include>
 				<include>org.ebaysf.web:cors-filter:jar:1.0.0</include>
@@ -274,9 +274,6 @@
 				<!-- UNICORE Dependencies Start -->
 				<include>eu.unicore:unicore-client-wrapper</include>
 				<include>org.apache.xmlbeans:xmlbeans-xpath</include>
-				<include>net.sf.saxon:saxon</include>
-				<include>net.sf.saxon:saxon-dom</include>
-				<include>net.sf.saxon:saxon-xpath</include>
 				<include>log4j:apache-log4j-extras</include>
 				<include>eu.eu-emi.security:canl</include>
 				<include>org.bouncycastle:bcpkix-jdk15on</include>
@@ -301,7 +298,23 @@
 				<include>org.apache.cxf:cxf-rt-ws-policy</include>
 				<include>org.apache.cxf:cxf-rt-transports-http</include>
 				<include>org.apache.cxf:cxf-rt-features-clustering</include>
-				<!-- UNICORE Dependencies End -->
+				<include>org.apache.neethi:neethi</include>
+				<include>org.apache.cxf:cxf-rt-frontend-jaxws</include>
+				<include>xml-resolver:xml-resolver</include>
+				<include>org.eclipse.jetty:jetty-servlet</include>
+				<include>org.eclipse.jetty:jetty-security</include>
+				<include>org.eclipse.jetty:jetty-server</include>
+				<include>org.eclipse.jetty.orbit:javax.servlet</include>
+				<include>org.eclipse.jetty:jetty-servlets</include>
+				<include>org.eclipse.jetty:jetty-continuation</include>
+				<include>org.eclipse.jetty:jetty-client</include>
+				<include>org.eclipse.jetty:jetty-http</include>
+				<include>org.eclipse.jetty:jetty-io</include>
+				<include>org.eclipse.jetty:jetty-util</include>
+				<include>wsdl4j:wsdl4j</include>
+				<include>org.apache.santuario:xmlsec</include>
+				<include>commons-httpclient:commons-httpclient</include>
+				<include>commons-codec:commons-codec</include>
 			</includes>
 		</dependencySet>
 

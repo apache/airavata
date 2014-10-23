@@ -53,7 +53,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_afb090d6-392f-493f-80a6-929bc848ad5d";
+    private static String echoAppId = "Echo_6281480a-9887-4a0f-8311-59bbaf738e54";
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
@@ -78,11 +78,12 @@ public class CreateLaunchExperiment {
     
     
     
-    public static void createAndLaunchExp() {
+    public static void createAndLaunchExp() throws TException {
+    	final String expId = createEchoExperimentForFSD(airavataClient);
     	try {
         for (int i = 0; i < 2; i++) {
 //    final String expId = createExperimentForSSHHost(airavata);
-            final String expId = createEchoExperimentForFSD(airavataClient);
+//            final String expId = createEchoExperimentForFSD(airavataClient);
 //    final String expId = createEchoExperimentForStampede(airavataClient);
 //    final String expId = createExperimentEchoForLocalHost(airavataClient);
 //    final String expId = createExperimentWRFTrestles(airavataClient);

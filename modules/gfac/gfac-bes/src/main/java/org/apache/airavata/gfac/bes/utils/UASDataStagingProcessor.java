@@ -51,7 +51,7 @@ public class UASDataStagingProcessor {
 		MessageContext outMessage = new MessageContext();
 		ActualParameter a1 = new ActualParameter();
 		a1.getType().changeType(StringParameterType.type);
-		((StringParameterType)a1.getType()).setValue("output/analysis-results.tar");
+		((StringParameterType)a1.getType()).setValue("analysis-results.tar");
 		outMessage.addParameter("o1", a1);
 		context.setOutMessageContext(outMessage);
 		
@@ -142,10 +142,6 @@ public class UASDataStagingProcessor {
 			ActualParameter outParam = (ActualParameter) outputParams
 					.get(paramKey);
 
-			// if single urls then convert each url into jsdl source
-			// elements,
-			// that are formed by concat of gridftpurl+inputdir+filename
-
 			String paramDataType = outParam.getType().getType().toString();
 
 			if ("URI".equals(paramDataType)) {
@@ -153,8 +149,6 @@ public class UASDataStagingProcessor {
 						.getValue();
 				createOutURIElement(value, uriPrm);
 			}
-
-			// string params are converted into the job arguments
 
 			else if (("URIArray").equals(paramDataType)) {
 				String[] uriArray = ((URIArrayType) outParam.getType())
@@ -164,6 +158,9 @@ public class UASDataStagingProcessor {
 					createOutURIElement(value, u);
 				}
 
+			}
+			else if ("String".equals(paramDataType) || "StringArray".equals(paramDataType)) {
+				return value;
 			}
 			else if ("String".equals(paramDataType)) {
 				String stringPrm = ((StringParameterType) outParam

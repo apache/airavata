@@ -28,13 +28,14 @@ import com.amazonaws.services.ec2.model.DeleteKeyPairRequest;
 import com.amazonaws.services.ec2.model.DescribeKeyPairsRequest;
 import com.amazonaws.services.ec2.model.ImportKeyPairRequest;
 import com.sshtools.j2ssh.util.Base64;
-import org.bouncycastle.openssl.PEMWriter;
 
 import java.io.*;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+
+import org.bouncycastle.openssl.PEMWriter;
 
 /*This class holds the utility methods used for the EC2Provider*/
 public class EC2ProviderUtil {

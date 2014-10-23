@@ -57,6 +57,12 @@
             <groupId>org.ogce</groupId>
             <artifactId>xsul</artifactId>
             <version>${xsul.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<groupId>org.bouncycastle</groupId>
+            		<artifactId>bcprov-jdk16</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
