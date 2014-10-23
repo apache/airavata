@@ -127,7 +127,7 @@ public class WSComponentApplication {
                     inputParameter.setDefaultValue(inputObject.getAsJsonPrimitive("text").getAsString());
                     inputParameter.setDescription(inputObject.getAsJsonPrimitive("description").getAsString());
                     inputParameter.setName(inputObject.getAsJsonPrimitive("name").getAsString());
-                    // do we need to set type ?
+                    inputParameter.setType(QName.valueOf(inputObject.getAsJsonPrimitive("dataType").getAsString()));
                     wsComponentApplication.addInputParameter(inputParameter);
                 }
             }
@@ -143,7 +143,7 @@ public class WSComponentApplication {
                     outputParameter = new WSComponentApplicationParameter();
                     outputParameter.setDescription(outputObject.getAsJsonPrimitive("description").getAsString());
                     outputParameter.setName(outputObject.getAsJsonPrimitive("name").getAsString());
-                    // do we need to set type ?
+                    outputParameter.setType(QName.valueOf(outputObject.getAsJsonPrimitive("dataType").getAsString()));
                     wsComponentApplication.addOutputParameter(outputParameter);
                 }
             }
@@ -180,6 +180,7 @@ public class WSComponentApplication {
             inputObject.addProperty("description", inputParameter.getDescription());
             inputObject.addProperty("name", inputParameter.getName());
             inputObject.addProperty("text", inputParameter.getDefaultValue());
+            inputObject.addProperty("dataType",  inputParameter.getType().toString());
             inputArray.add(inputObject);
         }
         componentObject.add("Input", inputArray);
@@ -190,6 +191,7 @@ public class WSComponentApplication {
             outputObject = new JsonObject();
             outputObject.addProperty("description", outputParameter.getDescription());
             outputObject.addProperty("name", outputParameter.getName());
+            outputObject.addProperty("dataType" , outputParameter.getType().toString());
             outputArray.add(outputObject);
         }
         componentObject.add("Output", outputArray);
