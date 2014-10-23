@@ -222,9 +222,10 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                     	 outputList = cluster.listDirectory(app.getOutputDataDirectory());
                         if (outputList.size() == 1 && outputList.get(0).isEmpty()) {
                             Thread.sleep(10000);
-                            continue;
                         } else if (outputList.size() > 0) {
                             break;
+                        }else{
+                            Thread.sleep(10000);
                         }
                         retry--;
                         if(retry==0){
