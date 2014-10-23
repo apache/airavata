@@ -21,6 +21,7 @@
 
 package org.apache.airavata.workflow.model.graph;
 
+import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.graph.impl.EdgeImpl;
 import org.xmlpull.infoset.XmlElement;
 
@@ -43,6 +44,9 @@ public class DataEdge extends EdgeImpl {
         super(edgeElement);
     }
 
+    public DataEdge(JsonObject edgeObject) {
+        super(edgeObject);
+    }
     /**
      * @see org.apache.airavata.workflow.model.graph.impl.EdgeImpl#getFromPort()
      */
@@ -67,5 +71,11 @@ public class DataEdge extends EdgeImpl {
         XmlElement edgeElement = super.toXML();
         edgeElement.setAttributeValue(GraphSchema.NS, GraphSchema.EDGE_TYPE_ATTRIBUTE, GraphSchema.EDGE_TYPE_DATA);
         return edgeElement;
+    }
+
+    protected JsonObject toJSON() {
+        JsonObject edgeObject = super.toJSON();
+        edgeObject.addProperty(GraphSchema.EDGE_TYPE_ATTRIBUTE, GraphSchema.EDGE_TYPE_DATA);
+        return edgeObject;
     }
 }

@@ -37,6 +37,9 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -49,6 +52,7 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.gpel.script.BPELScript;
 import org.apache.airavata.workflow.model.gpel.script.BPELScriptType;
+import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Node;
@@ -207,6 +211,10 @@ public class Workflow implements Cloneable {
         parse(workflowElement);
     }
 
+    public Workflow(JsonObject workflowObject) throws GraphException, ComponentException {
+        this();
+        parse(workflowObject);
+    }
 
     /**
      * This is used for ODE
@@ -285,34 +293,6 @@ public class Workflow implements Cloneable {
      */
     public void setDescription(String description) {
         this.graph.setDescription(description);
-    }
-
-    /**
-     * @return The metadata, appinfo.
-     */
-    public XmlElement getMetadata() {
-        return this.graph.getMetadata();
-    }
-
-    /**
-     * @param metadata
-     */
-    public void setMetadata(XmlElement metadata) {
-        this.graph.setMetadata(metadata);
-    }
-
-    /**
-     * @return The output metadata, appinfo.
-     */
-    public XmlElement getInputMetadata() {
-        return this.graph.getInputMetadata();
-    }
-
-    /**
-     * @return The input metadata, appinfo.
-     */
-    public XmlElement getOutputMetadata() {
-        return this.graph.getOutputMetadata();
     }
 
     /**
@@ -526,7 +506,7 @@ public class Workflow implements Cloneable {
      */
     public XmlElement toXML() {
         // This must be before graph.toXML() to set WSDL ID to each node.
-    	//FIXME 
+    	//FIXME
 //        Map<String, WsdlDefinitions> wsdls = getWSDLs();
 
         XmlElement workflowElement = XMLUtil.BUILDER.newFragment(NS_XWF, WORKFLOW_TAG);
@@ -581,6 +561,32 @@ public class Workflow implements Cloneable {
         }
 
         return workflowElement;
+    }
+
+    public JsonObject toJSON() {
+        JsonObject workflowRoot = new JsonObject();
+        JsonObject workflow = new JsonObject();
+        workflowRoot.add(WORKFLOW_TAG, workflow);
+
+        workflow.addProperty(VERSION_ATTRIBUTE, ApplicationVersion.VERSION.getVersion());
+        workflow.add(GraphSchema.GRAPH_TAG, this.graph.toJSON());
+
+        if (this.image != null) {
+            try {
+                workflow.addProperty(IMAGE_TAG, getBase64String());
+            } catch (IOException e) {
+                logger.error("Failed to attached image to workflow description", e);
+            }
+        }
+        return workflowRoot;
+    }
+
+    private String getBase64String() throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(this.image, WorkflowConstants.PNG_FORMAT_NAME, outputStream);
+        byte[] bytes = outputStream.toByteArray();
+        byte[] base64 = Base64.encodeBase64Chunked(bytes);
+        return new String(base64);
     }
 
     /**
@@ -745,6 +751,31 @@ public class Workflow implements Cloneable {
             } catch (RuntimeException e) {
                 String error = "Failed to parse the workflow WSDL.";
                 throw new GraphException(error, e);
+            }
+        }
+    }
+
+    private void parse(JsonObject workflowObject) throws GraphException, ComponentException {
+        // Graph
+        if (workflowObject.getAsJsonObject(WORKFLOW_TAG) == null) {
+            throw new GraphException("Failed to parse the json object, workflow object doesn't exist");
+        }
+        JsonObject workflowObj = workflowObject.getAsJsonObject(WORKFLOW_TAG);
+        JsonObject graphObject = workflowObj.getAsJsonObject(GraphSchema.GRAPH_TAG);
+        this.graph = WSGraphFactory.createGraph(graphObject);
+
+        bindComponents();
+
+        // Image
+        JsonPrimitive imagePrimitive = workflowObj.getAsJsonPrimitive(IMAGE_TAG);
+        if (imagePrimitive != null) {
+            String base64 = imagePrimitive.getAsString();
+            byte[] bytes = Base64.decodeBase64(base64.getBytes());
+
+            try {
+                this.image = ImageIO.read(new ByteArrayInputStream(bytes));
+            } catch (IOException e) {
+                logger.error(e.getMessage(), e);
             }
         }
     }

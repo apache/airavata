@@ -23,6 +23,7 @@ package org.apache.airavata.workflow.model.graph.system;
 
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
@@ -56,6 +57,11 @@ public class SystemDataPort extends DataPort {
      */
     public SystemDataPort(XmlElement portElement) {
         super(portElement);
+        resetType();
+    }
+
+    public SystemDataPort(JsonObject portObject) {
+        super(portObject);
         resetType();
     }
 
@@ -169,6 +175,12 @@ public class SystemDataPort extends DataPort {
                 GraphSchema.PORT_TYPE_SYSTEM_DATA);
 
         return portElement;
+    }
+
+    protected JsonObject toJSON() {
+        JsonObject portObject = super.toJSON();
+        portObject.addProperty(GraphSchema.PORT_TYPE_ATTRIBUTE, GraphSchema.PORT_TYPE_SYSTEM_DATA);
+        return portObject;
     }
 
     public int getIndex(){

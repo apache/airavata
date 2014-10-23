@@ -21,6 +21,8 @@
 
 package org.apache.airavata.workflow.model.graph.impl;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -62,6 +64,9 @@ public abstract class EdgeImpl implements Edge {
         parse(edgeXml);
     }
 
+    public EdgeImpl(JsonObject edgeObject) {
+        parse(edgeObject);
+    }
     /**
      * @see org.apache.airavata.workflow.model.graph.Edge#getFromPort()
      */
@@ -127,6 +132,10 @@ public abstract class EdgeImpl implements Edge {
         this.toPortID = toPortElement.requiredText();
     }
 
+    protected void parse(JsonObject edgeObject) {
+        this.fromPortID = edgeObject.getAsJsonPrimitive(GraphSchema.EDGE_FROM_PORT_TAG).getAsString();
+        this.toPortID = edgeObject.getAsJsonPrimitive(GraphSchema.EDGE_TO_PORT_TAG).getAsString();
+    }
     /**
      * @return the XmlElement
      */
@@ -140,6 +149,13 @@ public abstract class EdgeImpl implements Edge {
         toEle.addChild(this.toPort.getID());
 
         return edgeXml;
+    }
+
+    protected JsonObject toJSON() {
+        JsonObject edgeElement = new JsonObject();
+        edgeElement.addProperty(GraphSchema.EDGE_FROM_PORT_TAG, this.fromPort.getID());
+        edgeElement.addProperty(GraphSchema.EDGE_TO_PORT_TAG, this.toPort.getID());
+        return edgeElement;
     }
 
     /**

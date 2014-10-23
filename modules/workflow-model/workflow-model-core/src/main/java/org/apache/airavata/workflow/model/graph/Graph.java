@@ -24,6 +24,7 @@ package org.apache.airavata.workflow.model.graph;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.gson.JsonElement;
 import org.xmlpull.infoset.XmlElement;
 
 public interface Graph extends GraphPiece {
@@ -181,6 +182,9 @@ public interface Graph extends GraphPiece {
      * @return The graph XML
      */
     public XmlElement toXML();
+
+
+    public com.google.gson.JsonObject toJSON();
 
     /**
      * @param multipleSelectedNodes

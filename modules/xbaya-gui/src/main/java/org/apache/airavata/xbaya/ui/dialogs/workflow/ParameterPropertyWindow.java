@@ -79,9 +79,9 @@ public class ParameterPropertyWindow {
         this.outputNodes = GraphUtil.getOutputNodes(this.graph);
 
         this.inputPanel.setParameterNodes(this.inputNodes);
-        this.inputPanel.setMetadata(this.graph.getInputMetadata());
+//        this.inputPanel.setMetadata(this.graph.getInputMetadata());
         this.outputPanel.setParameterNodes(this.outputNodes);
-        this.outputPanel.setMetadata(this.graph.getOutputMetadata());
+//        this.outputPanel.setMetadata(this.graph.getOutputMetadata());
 
         this.dialog.show();
     }
@@ -121,8 +121,8 @@ public class ParameterPropertyWindow {
 
         // Check is done at this point.
 
-        this.graph.setInputMetadata(inputMetadata);
-        this.graph.setOutputMetadata(outputMetadata);
+//        this.graph.setInputMetadata(inputMetadata);
+//        this.graph.setOutputMetadata(outputMetadata);
 
         // Sort the nodes in the graph in the order of sorted inputs, sorted
         // outputs, and the rest.

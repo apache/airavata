@@ -26,6 +26,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentControlPort;
 import org.apache.airavata.workflow.model.component.ComponentException;
@@ -233,6 +235,10 @@ public class WSComponent extends Component {
 	public XmlElement toXML() {
 		return getApplication().toXml();
 	}
+
+    public JsonObject toJSON(){
+        return getApplication().toJSON();
+    }
 
 	public WSComponentApplication getApplication() {
 		return application;
