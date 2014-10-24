@@ -1956,6 +1956,21 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getLocalJobSubmission(jobSubmissionId);
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving local job submission interface to resource compute resource...";
+            logger.errorId(jobSubmissionId, errorMsg, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
+    }
+
     private String addJobSubmissionInterface(ComputeResource computeResource,
 			String computeResourceId, String jobSubmissionInterfaceId,
 			JobSubmissionProtocol protocolType, int priorityOrder)
@@ -1992,7 +2007,22 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw exception;
         }
     }
-    
+
+    @Override
+    public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionId);
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving SSH job submission interface to resource compute resource...";
+            logger.errorId(jobSubmissionId, errorMsg, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Add a Cloud Job Submission details to a compute resource
      * App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
@@ -2020,6 +2050,21 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
+    public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getCloudJobSubmission(jobSubmissionId);
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving Cloud job submission interface to resource compute resource...";
+            logger.errorId(jobSubmissionId, errorMsg, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
 	public String addUNICOREJobSubmissionDetails(String computeResourceId,
 			int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
 			throws InvalidRequestException, AiravataClientException,
@@ -2038,7 +2083,22 @@ public class AiravataServerHandler implements Airavata.Iface {
 	    }
 	}
 
-	/**
+    @Override
+    public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getUNICOREJobSubmission(jobSubmissionId);
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving Unicore job submission interface to resource compute resource...";
+            logger.errorId(jobSubmissionId, errorMsg, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Update the given SSH Job Submission details
      *
      * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be updated.
@@ -2135,6 +2195,21 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getLocalDataMovement(dataMovementId);
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving local data movement interface to resource compute resource...";
+            logger.errorId(dataMovementId, errorMsg, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
+    }
+
     private String addDataMovementInterface(ComputeResource computeResource,
 			String computeResourceId, String dataMovementInterfaceId,
 			DataMovementProtocol protocolType, int priorityOrder)
@@ -2197,6 +2272,21 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public SCPDataMovement getSCPDataMovement(String dataMovementId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getSCPDataMovement(dataMovementId);
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving SCP data movement interface to resource compute resource...";
+            logger.errorId(dataMovementId, errorMsg, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Add a GridFTP data moevement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -2244,6 +2334,21 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getGridFTPDataMovement(dataMovementId);
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving GridFTP data movement interface to resource compute resource...";
+            logger.errorId(dataMovementId, errorMsg, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMsg + e.getMessage());
             throw exception;
         }
     }
