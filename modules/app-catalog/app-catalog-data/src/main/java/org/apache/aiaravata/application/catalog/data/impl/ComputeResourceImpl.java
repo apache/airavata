@@ -131,7 +131,7 @@ public class ComputeResourceImpl implements ComputeResource {
 	protected void saveIpAddresses(ComputeResourceDescription description,
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
-		Set<String> ipAddresses = description.getIpAddresses();
+		List<String> ipAddresses = description.getIpAddresses();
 		if (ipAddresses != null && !ipAddresses.isEmpty()) {
 		    for (String ipAddress : ipAddresses) {
 		        HostIPAddressResource ipAddressResource = new HostIPAddressResource();
@@ -146,13 +146,13 @@ public class ComputeResourceImpl implements ComputeResource {
 	protected void saveHostAliases(ComputeResourceDescription description,
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
-		Set<String> hostAliases = description.getHostAliases();
+		List<String> hostAliases = description.getHostAliases();
 		if (hostAliases != null && !hostAliases.isEmpty()) {
 		    for (String alias : hostAliases) {
 		        HostAliasResource aliasResource = new HostAliasResource();
 		        aliasResource.setComputeHostResource(computeHostResource);
 		        aliasResource.setResourceID(computeHostResource.getResourceId());
-		        aliasResource.setAlias(alias);
+                aliasResource.setAlias(alias);
 		        aliasResource.save();
 		    }
 		}

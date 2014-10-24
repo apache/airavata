@@ -97,7 +97,7 @@ public class RegisterSampleApplicationsUtils {
     }
 
     public static ComputeResourceDescription createComputeResourceDescription(
-            String hostName, String hostDesc, Set<String> hostAliases, Set<String> ipAddresses) {
+            String hostName, String hostDesc, List<String> hostAliases, List<String> ipAddresses) {
         ComputeResourceDescription host = new ComputeResourceDescription();
         host.setHostName(hostName);
         host.setResourceDescription(hostDesc);

@@ -101,16 +101,16 @@ public class AppCatalogThriftConversion {
         return list;
     }
 
-    public static Set<String> getHostAliases (List<Resource> resources){
-        Set<String> hostAliases = new HashSet<String>();
+    public static List<String> getHostAliases (List<Resource> resources){
+        List<String> hostAliases = new ArrayList<String>();
         for (Resource alias : resources){
             hostAliases.add(((HostAliasResource)alias).getAlias());
         }
         return hostAliases;
     }
 
-    public static Set<String> getIpAddresses (List<Resource> resources){
-        Set<String> hostIpAddresses = new HashSet<String>();
+    public static List<String> getIpAddresses (List<Resource> resources){
+        List<String> hostIpAddresses = new ArrayList<String>();
         for (Resource resource : resources){
             hostIpAddresses.add(((HostIPAddressResource)resource).getIpaddress());
         }

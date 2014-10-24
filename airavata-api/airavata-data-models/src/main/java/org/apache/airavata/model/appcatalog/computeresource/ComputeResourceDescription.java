@@ -83,8 +83,8 @@ import org.slf4j.LoggerFactory;
 
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField HOST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("hostName", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField HOST_ALIASES_FIELD_DESC = new org.apache.thrift.protocol.TField("hostAliases", org.apache.thrift.protocol.TType.SET, (short)3);
-  private static final org.apache.thrift.protocol.TField IP_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("ipAddresses", org.apache.thrift.protocol.TType.SET, (short)4);
+  private static final org.apache.thrift.protocol.TField HOST_ALIASES_FIELD_DESC = new org.apache.thrift.protocol.TField("hostAliases", org.apache.thrift.protocol.TType.LIST, (short)3);
+  private static final org.apache.thrift.protocol.TField IP_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("ipAddresses", org.apache.thrift.protocol.TType.LIST, (short)4);
   private static final org.apache.thrift.protocol.TField RESOURCE_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceDescription", org.apache.thrift.protocol.TType.STRING, (short)5);
   private static final org.apache.thrift.protocol.TField BATCH_QUEUES_FIELD_DESC = new org.apache.thrift.protocol.TField("batchQueues", org.apache.thrift.protocol.TType.LIST, (short)6);
   private static final org.apache.thrift.protocol.TField FILE_SYSTEMS_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSystems", org.apache.thrift.protocol.TType.MAP, (short)7);
@@ -99,8 +99,8 @@ import org.slf4j.LoggerFactory;
 
   private String computeResourceId; // required
   private String hostName; // required
-  private Set<String> hostAliases; // optional
-  private Set<String> ipAddresses; // optional
+  private List<String> hostAliases; // optional
+  private List<String> ipAddresses; // optional
   private String resourceDescription; // optional
   private List<BatchQueue> batchQueues; // optional
   private Map<FileSystems,String> fileSystems; // optional
@@ -199,10 +199,10 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.HOST_NAME, new org.apache.thrift.meta_data.FieldMetaData("hostName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.HOST_ALIASES, new org.apache.thrift.meta_data.FieldMetaData("hostAliases", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.IP_ADDRESSES, new org.apache.thrift.meta_data.FieldMetaData("ipAddresses", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.SetMetaData(org.apache.thrift.protocol.TType.SET, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.RESOURCE_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("resourceDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -248,11 +248,11 @@ import org.slf4j.LoggerFactory;
       this.hostName = other.hostName;
     }
     if (other.isSetHostAliases()) {
-      Set<String> __this__hostAliases = new HashSet<String>(other.hostAliases);
+      List<String> __this__hostAliases = new ArrayList<String>(other.hostAliases);
       this.hostAliases = __this__hostAliases;
     }
     if (other.isSetIpAddresses()) {
-      Set<String> __this__ipAddresses = new HashSet<String>(other.ipAddresses);
+      List<String> __this__ipAddresses = new ArrayList<String>(other.ipAddresses);
       this.ipAddresses = __this__ipAddresses;
     }
     if (other.isSetResourceDescription()) {
@@ -370,16 +370,16 @@ import org.slf4j.LoggerFactory;
 
   public void addToHostAliases(String elem) {
     if (this.hostAliases == null) {
-      this.hostAliases = new HashSet<String>();
+      this.hostAliases = new ArrayList<String>();
     }
     this.hostAliases.add(elem);
   }
 
-  public Set<String> getHostAliases() {
+  public List<String> getHostAliases() {
     return this.hostAliases;
   }
 
-  public void setHostAliases(Set<String> hostAliases) {
+  public void setHostAliases(List<String> hostAliases) {
     this.hostAliases = hostAliases;
   }
 
@@ -408,16 +408,16 @@ import org.slf4j.LoggerFactory;
 
   public void addToIpAddresses(String elem) {
     if (this.ipAddresses == null) {
-      this.ipAddresses = new HashSet<String>();
+      this.ipAddresses = new ArrayList<String>();
     }
     this.ipAddresses.add(elem);
   }
 
-  public Set<String> getIpAddresses() {
+  public List<String> getIpAddresses() {
     return this.ipAddresses;
   }
 
-  public void setIpAddresses(Set<String> ipAddresses) {
+  public void setIpAddresses(List<String> ipAddresses) {
     this.ipAddresses = ipAddresses;
   }
 
@@ -629,7 +629,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetHostAliases();
       } else {
-        setHostAliases((Set<String>)value);
+        setHostAliases((List<String>)value);
       }
       break;
 
@@ -637,7 +637,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetIpAddresses();
       } else {
-        setIpAddresses((Set<String>)value);
+        setIpAddresses((List<String>)value);
       }
       break;
 
@@ -1119,17 +1119,17 @@ import org.slf4j.LoggerFactory;
             }
             break;
           case 3: // HOST_ALIASES
-            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TSet _set26 = iprot.readSetBegin();
-                struct.hostAliases = new HashSet<String>(2*_set26.size);
-                for (int _i27 = 0; _i27 < _set26.size; ++_i27)
+                org.apache.thrift.protocol.TList _list26 = iprot.readListBegin();
+                struct.hostAliases = new ArrayList<String>(_list26.size);
+                for (int _i27 = 0; _i27 < _list26.size; ++_i27)
                 {
                   String _elem28;
                   _elem28 = iprot.readString();
                   struct.hostAliases.add(_elem28);
                 }
-                iprot.readSetEnd();
+                iprot.readListEnd();
               }
               struct.setHostAliasesIsSet(true);
             } else { 
@@ -1137,17 +1137,17 @@ import org.slf4j.LoggerFactory;
             }
             break;
           case 4: // IP_ADDRESSES
-            if (schemeField.type == org.apache.thrift.protocol.TType.SET) {
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TSet _set29 = iprot.readSetBegin();
-                struct.ipAddresses = new HashSet<String>(2*_set29.size);
-                for (int _i30 = 0; _i30 < _set29.size; ++_i30)
+                org.apache.thrift.protocol.TList _list29 = iprot.readListBegin();
+                struct.ipAddresses = new ArrayList<String>(_list29.size);
+                for (int _i30 = 0; _i30 < _list29.size; ++_i30)
                 {
                   String _elem31;
                   _elem31 = iprot.readString();
                   struct.ipAddresses.add(_elem31);
                 }
-                iprot.readSetEnd();
+                iprot.readListEnd();
               }
               struct.setIpAddressesIsSet(true);
             } else { 
@@ -1266,12 +1266,12 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetHostAliases()) {
           oprot.writeFieldBegin(HOST_ALIASES_FIELD_DESC);
           {
-            oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.hostAliases.size()));
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.hostAliases.size()));
             for (String _iter45 : struct.hostAliases)
             {
               oprot.writeString(_iter45);
             }
-            oprot.writeSetEnd();
+            oprot.writeListEnd();
           }
           oprot.writeFieldEnd();
         }
@@ -1280,12 +1280,12 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetIpAddresses()) {
           oprot.writeFieldBegin(IP_ADDRESSES_FIELD_DESC);
           {
-            oprot.writeSetBegin(new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, struct.ipAddresses.size()));
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.ipAddresses.size()));
             for (String _iter46 : struct.ipAddresses)
             {
               oprot.writeString(_iter46);
             }
-            oprot.writeSetEnd();
+            oprot.writeListEnd();
           }
           oprot.writeFieldEnd();
         }
@@ -1466,9 +1466,9 @@ import org.slf4j.LoggerFactory;
       BitSet incoming = iprot.readBitSet(7);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TSet _set57 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.hostAliases = new HashSet<String>(2*_set57.size);
-          for (int _i58 = 0; _i58 < _set57.size; ++_i58)
+          org.apache.thrift.protocol.TList _list57 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.hostAliases = new ArrayList<String>(_list57.size);
+          for (int _i58 = 0; _i58 < _list57.size; ++_i58)
           {
             String _elem59;
             _elem59 = iprot.readString();
@@ -1479,9 +1479,9 @@ import org.slf4j.LoggerFactory;
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TSet _set60 = new org.apache.thrift.protocol.TSet(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.ipAddresses = new HashSet<String>(2*_set60.size);
-          for (int _i61 = 0; _i61 < _set60.size; ++_i61)
+          org.apache.thrift.protocol.TList _list60 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.ipAddresses = new ArrayList<String>(_list60.size);
+          for (int _i61 = 0; _i61 < _list60.size; ++_i61)
           {
             String _elem62;
             _elem62 = iprot.readString();

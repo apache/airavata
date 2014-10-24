@@ -37,6 +37,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -100,7 +101,7 @@ public class DocumentCreatorUtils {
 	}
 
 	public static ComputeResourceDescription createComputeResourceDescription(
-			String hostName, Set<String> hostAliases, Set<String> ipAddresses) {
+			String hostName, List<String> hostAliases, List<String> ipAddresses) {
 		ComputeResourceDescription host = new ComputeResourceDescription();
 		host.setHostName(hostName);
 		host.setIpAddresses(ipAddresses);
