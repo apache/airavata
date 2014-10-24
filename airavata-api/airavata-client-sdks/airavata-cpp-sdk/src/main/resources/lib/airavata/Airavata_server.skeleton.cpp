@@ -304,9 +304,19 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateLocalSubmissionDetails\n");
   }
 
+  void getLocalJobSubmission( ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& _return, const std::string& jobSubmissionId) {
+    // Your implementation goes here
+    printf("getLocalJobSubmission\n");
+  }
+
   void addSSHJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
     // Your implementation goes here
     printf("addSSHJobSubmissionDetails\n");
+  }
+
+  void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return, const std::string& jobSubmissionId) {
+    // Your implementation goes here
+    printf("getSSHJobSubmission\n");
   }
 
   void addUNICOREJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) {
@@ -314,9 +324,19 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addUNICOREJobSubmissionDetails\n");
   }
 
+  void getUnicoreJobSubmission( ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& _return, const std::string& jobSubmissionId) {
+    // Your implementation goes here
+    printf("getUnicoreJobSubmission\n");
+  }
+
   void addCloudJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission) {
     // Your implementation goes here
     printf("addCloudJobSubmissionDetails\n");
+  }
+
+  void getCloudJobSubmission( ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& _return, const std::string& jobSubmissionId) {
+    // Your implementation goes here
+    printf("getCloudJobSubmission\n");
   }
 
   bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
@@ -339,6 +359,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateLocalDataMovementDetails\n");
   }
 
+  void getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return, const std::string& dataMovementId) {
+    // Your implementation goes here
+    printf("getLocalDataMovement\n");
+  }
+
   void addSCPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("addSCPDataMovementDetails\n");
@@ -349,6 +374,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateSCPDataMovementDetails\n");
   }
 
+  void getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return, const std::string& dataMovementId) {
+    // Your implementation goes here
+    printf("getSCPDataMovement\n");
+  }
+
   void addGridFTPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("addGridFTPDataMovementDetails\n");
@@ -357,6 +387,11 @@ class AiravataHandler : virtual public AiravataIf {
   bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("updateGridFTPDataMovementDetails\n");
+  }
+
+  void getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return, const std::string& dataMovementId) {
+    // Your implementation goes here
+    printf("getGridFTPDataMovement\n");
   }
 
   bool changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder) {

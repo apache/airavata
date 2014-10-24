@@ -943,6 +943,19 @@ service Airavata {
             3: airavataErrors.AiravataSystemException ase)
 
   /**
+  * This method returns localJobSubmission object
+  * @param jobSubmissionInterfaceId
+  *   The identifier of the JobSubmission Interface to be retrieved.
+  *  @return LOCALSubmission instance
+  **/
+  computeResourceModel.LOCALSubmission getLocalJobSubmission(1: required string jobSubmissionId)
+            throws (1: airavataErrors.InvalidRequestException ire,
+                    2: airavataErrors.AiravataClientException ace,
+                    3: airavataErrors.AiravataSystemException ase)
+
+
+
+  /**
    * Add a SSH Job Submission details to a compute resource
    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
    *
@@ -959,12 +972,27 @@ service Airavata {
    *   Returns the unique job submission id.
    *
   */
+
+
   string addSSHJobSubmissionDetails(1: required string computeResourceId,
             2: required i32 priorityOrder,
             3: required computeResourceModel.SSHJobSubmission sshJobSubmission)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
+
+    /**
+    * This method returns SSHJobSubmission object
+    * @param jobSubmissionInterfaceId
+    *   The identifier of the JobSubmission Interface to be retrieved.
+    *  @return SSHJobSubmission instance
+    **/
+    computeResourceModel.SSHJobSubmission getSSHJobSubmission(1: required string jobSubmissionId)
+              throws (1: airavataErrors.InvalidRequestException ire,
+                      2: airavataErrors.AiravataClientException ace,
+                      3: airavataErrors.AiravataSystemException ase)
+
+
 
   /**
    * Add a UNICORE Job Submission details to a compute resource
@@ -991,6 +1019,17 @@ service Airavata {
             3: airavataErrors.AiravataSystemException ase)
 
 
+  /**
+    * This method returns UnicoreJobSubmission object
+    * @param jobSubmissionInterfaceId
+    *   The identifier of the JobSubmission Interface to be retrieved.
+    *  @return UnicoreJobSubmission instance
+  **/
+  computeResourceModel.UnicoreJobSubmission getUnicoreJobSubmission(1: required string jobSubmissionId)
+                throws (1: airavataErrors.InvalidRequestException ire,
+                        2: airavataErrors.AiravataClientException ace,
+                        3: airavataErrors.AiravataSystemException ase)
+
 
  /**
    * Add a Cloud Job Submission details to a compute resource
@@ -1014,6 +1053,18 @@ service Airavata {
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
+
+ /**
+    * This method returns cloudJobSubmission object
+    * @param jobSubmissionInterfaceI
+        *   The identifier of the JobSubmission Interface to be retrieved.
+    *  @return CloudJobSubmission instance
+ **/
+ computeResourceModel.CloudJobSubmission getCloudJobSubmission(1: required string jobSubmissionId)
+                  throws (1: airavataErrors.InvalidRequestException ire,
+                          2: airavataErrors.AiravataClientException ace,
+                          3: airavataErrors.AiravataSystemException ase)
+
   /**
    * Update the given SSH Job Submission details
    *
@@ -1096,6 +1147,18 @@ service Airavata {
             3: airavataErrors.AiravataSystemException ase)
 
   /**
+          * This method returns local datamovement object
+          * @param dataMovementId
+          *   The identifier of the datamovement Interface to be retrieved.
+          *  @return LOCALDataMovement instance
+  **/
+  computeResourceModel.LOCALDataMovement getLocalDataMovement(1: required string dataMovementId)
+                    throws (1: airavataErrors.InvalidRequestException ire,
+                            2: airavataErrors.AiravataClientException ace,
+                            3: airavataErrors.AiravataSystemException ase)
+
+
+  /**
    * Add a SCP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
@@ -1138,6 +1201,18 @@ service Airavata {
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
+
+ /**
+    * This method returns SCP datamovement object
+    * @param dataMovementId
+       *   The identifier of the datamovement Interface to be retrieved.
+       *  @return SCPDataMovement instance
+  **/
+  computeResourceModel.SCPDataMovement getSCPDataMovement(1: required string dataMovementId)
+                    throws (1: airavataErrors.InvalidRequestException ire,
+                            2: airavataErrors.AiravataClientException ace,
+                            3: airavataErrors.AiravataSystemException ase)
+
 
   /**
    * Add a GridFTP data movement details to a compute resource
@@ -1182,6 +1257,18 @@ service Airavata {
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
+
+ /**
+    * This method returns GridFTP datamovement object
+    * @param dataMovementId
+       *   The identifier of the datamovement Interface to be retrieved.
+    *  @return GridFTPDataMovement instance
+  **/
+  computeResourceModel.GridFTPDataMovement getGridFTPDataMovement(1: required string dataMovementId)
+                    throws (1: airavataErrors.InvalidRequestException ire,
+                            2: airavataErrors.AiravataClientException ace,
+                            3: airavataErrors.AiravataSystemException ase)
+
 
   /**
    * Change the priority of a given job submisison interface

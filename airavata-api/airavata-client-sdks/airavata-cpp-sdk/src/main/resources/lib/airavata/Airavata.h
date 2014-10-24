@@ -85,17 +85,24 @@ class AiravataIf {
   virtual bool deleteComputeResource(const std::string& computeResourceId) = 0;
   virtual void addLocalSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) = 0;
   virtual bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) = 0;
+  virtual void getLocalJobSubmission( ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& _return, const std::string& jobSubmissionId) = 0;
   virtual void addSSHJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) = 0;
+  virtual void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return, const std::string& jobSubmissionId) = 0;
   virtual void addUNICOREJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) = 0;
+  virtual void getUnicoreJobSubmission( ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& _return, const std::string& jobSubmissionId) = 0;
   virtual void addCloudJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission) = 0;
+  virtual void getCloudJobSubmission( ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& _return, const std::string& jobSubmissionId) = 0;
   virtual bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) = 0;
   virtual bool updateCloudJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& sshJobSubmission) = 0;
   virtual void addLocalDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) = 0;
   virtual bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) = 0;
+  virtual void getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return, const std::string& dataMovementId) = 0;
   virtual void addSCPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) = 0;
   virtual bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) = 0;
+  virtual void getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return, const std::string& dataMovementId) = 0;
   virtual void addGridFTPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) = 0;
   virtual bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) = 0;
+  virtual void getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return, const std::string& dataMovementId) = 0;
   virtual bool changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder) = 0;
   virtual bool changeDataMovementPriority(const std::string& dataMovementInterfaceId, const int32_t newPriorityOrder) = 0;
   virtual bool changeJobSubmissionPriorities(const std::map<std::string, int32_t> & jobSubmissionPriorityMap) = 0;
@@ -309,13 +316,25 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
+  void getLocalJobSubmission( ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& /* _return */, const std::string& /* jobSubmissionId */) {
+    return;
+  }
   void addSSHJobSubmissionDetails(std::string& /* _return */, const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& /* sshJobSubmission */) {
+    return;
+  }
+  void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& /* _return */, const std::string& /* jobSubmissionId */) {
     return;
   }
   void addUNICOREJobSubmissionDetails(std::string& /* _return */, const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& /* unicoreJobSubmission */) {
     return;
   }
+  void getUnicoreJobSubmission( ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& /* _return */, const std::string& /* jobSubmissionId */) {
+    return;
+  }
   void addCloudJobSubmissionDetails(std::string& /* _return */, const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& /* cloudSubmission */) {
+    return;
+  }
+  void getCloudJobSubmission( ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& /* _return */, const std::string& /* jobSubmissionId */) {
     return;
   }
   bool updateSSHJobSubmissionDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& /* sshJobSubmission */) {
@@ -333,6 +352,9 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
+  void getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& /* _return */, const std::string& /* dataMovementId */) {
+    return;
+  }
   void addSCPDataMovementDetails(std::string& /* _return */, const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& /* scpDataMovement */) {
     return;
   }
@@ -340,12 +362,18 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
+  void getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& /* _return */, const std::string& /* dataMovementId */) {
+    return;
+  }
   void addGridFTPDataMovementDetails(std::string& /* _return */, const std::string& /* computeResourceId */, const int32_t /* priorityOrder */, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& /* gridFTPDataMovement */) {
     return;
   }
   bool updateGridFTPDataMovementDetails(const std::string& /* jobSubmissionInterfaceId */, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& /* gridFTPDataMovement */) {
     bool _return = false;
     return _return;
+  }
+  void getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& /* _return */, const std::string& /* dataMovementId */) {
+    return;
   }
   bool changeJobSubmissionPriority(const std::string& /* jobSubmissionInterfaceId */, const int32_t /* newPriorityOrder */) {
     bool _return = false;
@@ -7561,6 +7589,138 @@ class Airavata_updateLocalSubmissionDetails_presult {
 };
 
 
+class Airavata_getLocalJobSubmission_args {
+ public:
+
+  Airavata_getLocalJobSubmission_args() : jobSubmissionId() {
+  }
+
+  virtual ~Airavata_getLocalJobSubmission_args() throw() {}
+
+  std::string jobSubmissionId;
+
+  void __set_jobSubmissionId(const std::string& val) {
+    jobSubmissionId = val;
+  }
+
+  bool operator == (const Airavata_getLocalJobSubmission_args & rhs) const
+  {
+    if (!(jobSubmissionId == rhs.jobSubmissionId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getLocalJobSubmission_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getLocalJobSubmission_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getLocalJobSubmission_pargs {
+ public:
+
+
+  virtual ~Airavata_getLocalJobSubmission_pargs() throw() {}
+
+  const std::string* jobSubmissionId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getLocalJobSubmission_result__isset {
+  _Airavata_getLocalJobSubmission_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getLocalJobSubmission_result__isset;
+
+class Airavata_getLocalJobSubmission_result {
+ public:
+
+  Airavata_getLocalJobSubmission_result() {
+  }
+
+  virtual ~Airavata_getLocalJobSubmission_result() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getLocalJobSubmission_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getLocalJobSubmission_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getLocalJobSubmission_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getLocalJobSubmission_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getLocalJobSubmission_presult__isset {
+  _Airavata_getLocalJobSubmission_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getLocalJobSubmission_presult__isset;
+
+class Airavata_getLocalJobSubmission_presult {
+ public:
+
+
+  virtual ~Airavata_getLocalJobSubmission_presult() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getLocalJobSubmission_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_addSSHJobSubmissionDetails_args {
  public:
 
@@ -7703,6 +7863,138 @@ class Airavata_addSSHJobSubmissionDetails_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addSSHJobSubmissionDetails_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getSSHJobSubmission_args {
+ public:
+
+  Airavata_getSSHJobSubmission_args() : jobSubmissionId() {
+  }
+
+  virtual ~Airavata_getSSHJobSubmission_args() throw() {}
+
+  std::string jobSubmissionId;
+
+  void __set_jobSubmissionId(const std::string& val) {
+    jobSubmissionId = val;
+  }
+
+  bool operator == (const Airavata_getSSHJobSubmission_args & rhs) const
+  {
+    if (!(jobSubmissionId == rhs.jobSubmissionId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getSSHJobSubmission_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getSSHJobSubmission_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getSSHJobSubmission_pargs {
+ public:
+
+
+  virtual ~Airavata_getSSHJobSubmission_pargs() throw() {}
+
+  const std::string* jobSubmissionId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getSSHJobSubmission_result__isset {
+  _Airavata_getSSHJobSubmission_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getSSHJobSubmission_result__isset;
+
+class Airavata_getSSHJobSubmission_result {
+ public:
+
+  Airavata_getSSHJobSubmission_result() {
+  }
+
+  virtual ~Airavata_getSSHJobSubmission_result() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getSSHJobSubmission_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getSSHJobSubmission_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getSSHJobSubmission_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getSSHJobSubmission_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getSSHJobSubmission_presult__isset {
+  _Airavata_getSSHJobSubmission_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getSSHJobSubmission_presult__isset;
+
+class Airavata_getSSHJobSubmission_presult {
+ public:
+
+
+  virtual ~Airavata_getSSHJobSubmission_presult() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getSSHJobSubmission_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -7857,6 +8149,138 @@ class Airavata_addUNICOREJobSubmissionDetails_presult {
 };
 
 
+class Airavata_getUnicoreJobSubmission_args {
+ public:
+
+  Airavata_getUnicoreJobSubmission_args() : jobSubmissionId() {
+  }
+
+  virtual ~Airavata_getUnicoreJobSubmission_args() throw() {}
+
+  std::string jobSubmissionId;
+
+  void __set_jobSubmissionId(const std::string& val) {
+    jobSubmissionId = val;
+  }
+
+  bool operator == (const Airavata_getUnicoreJobSubmission_args & rhs) const
+  {
+    if (!(jobSubmissionId == rhs.jobSubmissionId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getUnicoreJobSubmission_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getUnicoreJobSubmission_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getUnicoreJobSubmission_pargs {
+ public:
+
+
+  virtual ~Airavata_getUnicoreJobSubmission_pargs() throw() {}
+
+  const std::string* jobSubmissionId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getUnicoreJobSubmission_result__isset {
+  _Airavata_getUnicoreJobSubmission_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getUnicoreJobSubmission_result__isset;
+
+class Airavata_getUnicoreJobSubmission_result {
+ public:
+
+  Airavata_getUnicoreJobSubmission_result() {
+  }
+
+  virtual ~Airavata_getUnicoreJobSubmission_result() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getUnicoreJobSubmission_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getUnicoreJobSubmission_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getUnicoreJobSubmission_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getUnicoreJobSubmission_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getUnicoreJobSubmission_presult__isset {
+  _Airavata_getUnicoreJobSubmission_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getUnicoreJobSubmission_presult__isset;
+
+class Airavata_getUnicoreJobSubmission_presult {
+ public:
+
+
+  virtual ~Airavata_getUnicoreJobSubmission_presult() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getUnicoreJobSubmission_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_addCloudJobSubmissionDetails_args {
  public:
 
@@ -7999,6 +8423,138 @@ class Airavata_addCloudJobSubmissionDetails_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_addCloudJobSubmissionDetails_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getCloudJobSubmission_args {
+ public:
+
+  Airavata_getCloudJobSubmission_args() : jobSubmissionId() {
+  }
+
+  virtual ~Airavata_getCloudJobSubmission_args() throw() {}
+
+  std::string jobSubmissionId;
+
+  void __set_jobSubmissionId(const std::string& val) {
+    jobSubmissionId = val;
+  }
+
+  bool operator == (const Airavata_getCloudJobSubmission_args & rhs) const
+  {
+    if (!(jobSubmissionId == rhs.jobSubmissionId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getCloudJobSubmission_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getCloudJobSubmission_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getCloudJobSubmission_pargs {
+ public:
+
+
+  virtual ~Airavata_getCloudJobSubmission_pargs() throw() {}
+
+  const std::string* jobSubmissionId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getCloudJobSubmission_result__isset {
+  _Airavata_getCloudJobSubmission_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getCloudJobSubmission_result__isset;
+
+class Airavata_getCloudJobSubmission_result {
+ public:
+
+  Airavata_getCloudJobSubmission_result() {
+  }
+
+  virtual ~Airavata_getCloudJobSubmission_result() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getCloudJobSubmission_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getCloudJobSubmission_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getCloudJobSubmission_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getCloudJobSubmission_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getCloudJobSubmission_presult__isset {
+  _Airavata_getCloudJobSubmission_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getCloudJobSubmission_presult__isset;
+
+class Airavata_getCloudJobSubmission_presult {
+ public:
+
+
+  virtual ~Airavata_getCloudJobSubmission_presult() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getCloudJobSubmission_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -8573,6 +9129,138 @@ class Airavata_updateLocalDataMovementDetails_presult {
 };
 
 
+class Airavata_getLocalDataMovement_args {
+ public:
+
+  Airavata_getLocalDataMovement_args() : dataMovementId() {
+  }
+
+  virtual ~Airavata_getLocalDataMovement_args() throw() {}
+
+  std::string dataMovementId;
+
+  void __set_dataMovementId(const std::string& val) {
+    dataMovementId = val;
+  }
+
+  bool operator == (const Airavata_getLocalDataMovement_args & rhs) const
+  {
+    if (!(dataMovementId == rhs.dataMovementId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getLocalDataMovement_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getLocalDataMovement_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getLocalDataMovement_pargs {
+ public:
+
+
+  virtual ~Airavata_getLocalDataMovement_pargs() throw() {}
+
+  const std::string* dataMovementId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getLocalDataMovement_result__isset {
+  _Airavata_getLocalDataMovement_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getLocalDataMovement_result__isset;
+
+class Airavata_getLocalDataMovement_result {
+ public:
+
+  Airavata_getLocalDataMovement_result() {
+  }
+
+  virtual ~Airavata_getLocalDataMovement_result() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getLocalDataMovement_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getLocalDataMovement_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getLocalDataMovement_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getLocalDataMovement_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getLocalDataMovement_presult__isset {
+  _Airavata_getLocalDataMovement_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getLocalDataMovement_presult__isset;
+
+class Airavata_getLocalDataMovement_presult {
+ public:
+
+
+  virtual ~Airavata_getLocalDataMovement_presult() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getLocalDataMovement_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_addSCPDataMovementDetails_args {
  public:
 
@@ -8861,6 +9549,138 @@ class Airavata_updateSCPDataMovementDetails_presult {
 };
 
 
+class Airavata_getSCPDataMovement_args {
+ public:
+
+  Airavata_getSCPDataMovement_args() : dataMovementId() {
+  }
+
+  virtual ~Airavata_getSCPDataMovement_args() throw() {}
+
+  std::string dataMovementId;
+
+  void __set_dataMovementId(const std::string& val) {
+    dataMovementId = val;
+  }
+
+  bool operator == (const Airavata_getSCPDataMovement_args & rhs) const
+  {
+    if (!(dataMovementId == rhs.dataMovementId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getSCPDataMovement_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getSCPDataMovement_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getSCPDataMovement_pargs {
+ public:
+
+
+  virtual ~Airavata_getSCPDataMovement_pargs() throw() {}
+
+  const std::string* dataMovementId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getSCPDataMovement_result__isset {
+  _Airavata_getSCPDataMovement_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getSCPDataMovement_result__isset;
+
+class Airavata_getSCPDataMovement_result {
+ public:
+
+  Airavata_getSCPDataMovement_result() {
+  }
+
+  virtual ~Airavata_getSCPDataMovement_result() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getSCPDataMovement_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getSCPDataMovement_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getSCPDataMovement_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getSCPDataMovement_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getSCPDataMovement_presult__isset {
+  _Airavata_getSCPDataMovement_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getSCPDataMovement_presult__isset;
+
+class Airavata_getSCPDataMovement_presult {
+ public:
+
+
+  virtual ~Airavata_getSCPDataMovement_presult() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getSCPDataMovement_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_addGridFTPDataMovementDetails_args {
  public:
 
@@ -9143,6 +9963,138 @@ class Airavata_updateGridFTPDataMovementDetails_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateGridFTPDataMovementDetails_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getGridFTPDataMovement_args {
+ public:
+
+  Airavata_getGridFTPDataMovement_args() : dataMovementId() {
+  }
+
+  virtual ~Airavata_getGridFTPDataMovement_args() throw() {}
+
+  std::string dataMovementId;
+
+  void __set_dataMovementId(const std::string& val) {
+    dataMovementId = val;
+  }
+
+  bool operator == (const Airavata_getGridFTPDataMovement_args & rhs) const
+  {
+    if (!(dataMovementId == rhs.dataMovementId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGridFTPDataMovement_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGridFTPDataMovement_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getGridFTPDataMovement_pargs {
+ public:
+
+
+  virtual ~Airavata_getGridFTPDataMovement_pargs() throw() {}
+
+  const std::string* dataMovementId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGridFTPDataMovement_result__isset {
+  _Airavata_getGridFTPDataMovement_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getGridFTPDataMovement_result__isset;
+
+class Airavata_getGridFTPDataMovement_result {
+ public:
+
+  Airavata_getGridFTPDataMovement_result() {
+  }
+
+  virtual ~Airavata_getGridFTPDataMovement_result() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getGridFTPDataMovement_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getGridFTPDataMovement_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGridFTPDataMovement_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGridFTPDataMovement_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGridFTPDataMovement_presult__isset {
+  _Airavata_getGridFTPDataMovement_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getGridFTPDataMovement_presult__isset;
+
+class Airavata_getGridFTPDataMovement_presult {
+ public:
+
+
+  virtual ~Airavata_getGridFTPDataMovement_presult() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getGridFTPDataMovement_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -11379,15 +12331,27 @@ class AiravataClient : virtual public AiravataIf {
   bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission);
   void send_updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission);
   bool recv_updateLocalSubmissionDetails();
+  void getLocalJobSubmission( ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& _return, const std::string& jobSubmissionId);
+  void send_getLocalJobSubmission(const std::string& jobSubmissionId);
+  void recv_getLocalJobSubmission( ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& _return);
   void addSSHJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
   void send_addSSHJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
   void recv_addSSHJobSubmissionDetails(std::string& _return);
+  void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return, const std::string& jobSubmissionId);
+  void send_getSSHJobSubmission(const std::string& jobSubmissionId);
+  void recv_getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return);
   void addUNICOREJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission);
   void send_addUNICOREJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission);
   void recv_addUNICOREJobSubmissionDetails(std::string& _return);
+  void getUnicoreJobSubmission( ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& _return, const std::string& jobSubmissionId);
+  void send_getUnicoreJobSubmission(const std::string& jobSubmissionId);
+  void recv_getUnicoreJobSubmission( ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& _return);
   void addCloudJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission);
   void send_addCloudJobSubmissionDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission);
   void recv_addCloudJobSubmissionDetails(std::string& _return);
+  void getCloudJobSubmission( ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& _return, const std::string& jobSubmissionId);
+  void send_getCloudJobSubmission(const std::string& jobSubmissionId);
+  void recv_getCloudJobSubmission( ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& _return);
   bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
   void send_updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission);
   bool recv_updateSSHJobSubmissionDetails();
@@ -11400,18 +12364,27 @@ class AiravataClient : virtual public AiravataIf {
   bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement);
   void send_updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement);
   bool recv_updateLocalDataMovementDetails();
+  void getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return, const std::string& dataMovementId);
+  void send_getLocalDataMovement(const std::string& dataMovementId);
+  void recv_getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return);
   void addSCPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement);
   void send_addSCPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement);
   void recv_addSCPDataMovementDetails(std::string& _return);
   bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement);
   void send_updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement);
   bool recv_updateSCPDataMovementDetails();
+  void getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return, const std::string& dataMovementId);
+  void send_getSCPDataMovement(const std::string& dataMovementId);
+  void recv_getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return);
   void addGridFTPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement);
   void send_addGridFTPDataMovementDetails(const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement);
   void recv_addGridFTPDataMovementDetails(std::string& _return);
   bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement);
   void send_updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement);
   bool recv_updateGridFTPDataMovementDetails();
+  void getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return, const std::string& dataMovementId);
+  void send_getGridFTPDataMovement(const std::string& dataMovementId);
+  void recv_getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return);
   bool changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder);
   void send_changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder);
   bool recv_changeJobSubmissionPriority();
@@ -11525,17 +12498,24 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_deleteComputeResource(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addLocalSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateLocalSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getLocalJobSubmission(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addSSHJobSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getSSHJobSubmission(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addUNICOREJobSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getUnicoreJobSubmission(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addCloudJobSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getCloudJobSubmission(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateSSHJobSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateCloudJobSubmissionDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addLocalDataMovementDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateLocalDataMovementDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getLocalDataMovement(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addSCPDataMovementDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateSCPDataMovementDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getSCPDataMovement(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_addGridFTPDataMovementDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateGridFTPDataMovementDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getGridFTPDataMovement(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_changeJobSubmissionPriority(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_changeDataMovementPriority(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_changeJobSubmissionPriorities(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -11607,17 +12587,24 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["deleteComputeResource"] = &AiravataProcessor::process_deleteComputeResource;
     processMap_["addLocalSubmissionDetails"] = &AiravataProcessor::process_addLocalSubmissionDetails;
     processMap_["updateLocalSubmissionDetails"] = &AiravataProcessor::process_updateLocalSubmissionDetails;
+    processMap_["getLocalJobSubmission"] = &AiravataProcessor::process_getLocalJobSubmission;
     processMap_["addSSHJobSubmissionDetails"] = &AiravataProcessor::process_addSSHJobSubmissionDetails;
+    processMap_["getSSHJobSubmission"] = &AiravataProcessor::process_getSSHJobSubmission;
     processMap_["addUNICOREJobSubmissionDetails"] = &AiravataProcessor::process_addUNICOREJobSubmissionDetails;
+    processMap_["getUnicoreJobSubmission"] = &AiravataProcessor::process_getUnicoreJobSubmission;
     processMap_["addCloudJobSubmissionDetails"] = &AiravataProcessor::process_addCloudJobSubmissionDetails;
+    processMap_["getCloudJobSubmission"] = &AiravataProcessor::process_getCloudJobSubmission;
     processMap_["updateSSHJobSubmissionDetails"] = &AiravataProcessor::process_updateSSHJobSubmissionDetails;
     processMap_["updateCloudJobSubmissionDetails"] = &AiravataProcessor::process_updateCloudJobSubmissionDetails;
     processMap_["addLocalDataMovementDetails"] = &AiravataProcessor::process_addLocalDataMovementDetails;
     processMap_["updateLocalDataMovementDetails"] = &AiravataProcessor::process_updateLocalDataMovementDetails;
+    processMap_["getLocalDataMovement"] = &AiravataProcessor::process_getLocalDataMovement;
     processMap_["addSCPDataMovementDetails"] = &AiravataProcessor::process_addSCPDataMovementDetails;
     processMap_["updateSCPDataMovementDetails"] = &AiravataProcessor::process_updateSCPDataMovementDetails;
+    processMap_["getSCPDataMovement"] = &AiravataProcessor::process_getSCPDataMovement;
     processMap_["addGridFTPDataMovementDetails"] = &AiravataProcessor::process_addGridFTPDataMovementDetails;
     processMap_["updateGridFTPDataMovementDetails"] = &AiravataProcessor::process_updateGridFTPDataMovementDetails;
+    processMap_["getGridFTPDataMovement"] = &AiravataProcessor::process_getGridFTPDataMovement;
     processMap_["changeJobSubmissionPriority"] = &AiravataProcessor::process_changeJobSubmissionPriority;
     processMap_["changeDataMovementPriority"] = &AiravataProcessor::process_changeDataMovementPriority;
     processMap_["changeJobSubmissionPriorities"] = &AiravataProcessor::process_changeJobSubmissionPriorities;
@@ -12175,6 +13162,16 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateLocalSubmissionDetails(jobSubmissionInterfaceId, localSubmission);
   }
 
+  void getLocalJobSubmission( ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& _return, const std::string& jobSubmissionId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getLocalJobSubmission(_return, jobSubmissionId);
+    }
+    ifaces_[i]->getLocalJobSubmission(_return, jobSubmissionId);
+    return;
+  }
+
   void addSSHJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -12182,6 +13179,16 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->addSSHJobSubmissionDetails(_return, computeResourceId, priorityOrder, sshJobSubmission);
     }
     ifaces_[i]->addSSHJobSubmissionDetails(_return, computeResourceId, priorityOrder, sshJobSubmission);
+    return;
+  }
+
+  void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return, const std::string& jobSubmissionId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getSSHJobSubmission(_return, jobSubmissionId);
+    }
+    ifaces_[i]->getSSHJobSubmission(_return, jobSubmissionId);
     return;
   }
 
@@ -12195,6 +13202,16 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
+  void getUnicoreJobSubmission( ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& _return, const std::string& jobSubmissionId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getUnicoreJobSubmission(_return, jobSubmissionId);
+    }
+    ifaces_[i]->getUnicoreJobSubmission(_return, jobSubmissionId);
+    return;
+  }
+
   void addCloudJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -12202,6 +13219,16 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->addCloudJobSubmissionDetails(_return, computeResourceId, priorityOrder, cloudSubmission);
     }
     ifaces_[i]->addCloudJobSubmissionDetails(_return, computeResourceId, priorityOrder, cloudSubmission);
+    return;
+  }
+
+  void getCloudJobSubmission( ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& _return, const std::string& jobSubmissionId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getCloudJobSubmission(_return, jobSubmissionId);
+    }
+    ifaces_[i]->getCloudJobSubmission(_return, jobSubmissionId);
     return;
   }
 
@@ -12242,6 +13269,16 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateLocalDataMovementDetails(jobSubmissionInterfaceId, localDataMovement);
   }
 
+  void getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return, const std::string& dataMovementId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getLocalDataMovement(_return, dataMovementId);
+    }
+    ifaces_[i]->getLocalDataMovement(_return, dataMovementId);
+    return;
+  }
+
   void addSCPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -12261,6 +13298,16 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateSCPDataMovementDetails(jobSubmissionInterfaceId, scpDataMovement);
   }
 
+  void getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return, const std::string& dataMovementId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getSCPDataMovement(_return, dataMovementId);
+    }
+    ifaces_[i]->getSCPDataMovement(_return, dataMovementId);
+    return;
+  }
+
   void addGridFTPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     size_t sz = ifaces_.size();
     size_t i = 0;
@@ -12278,6 +13325,16 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->updateGridFTPDataMovementDetails(jobSubmissionInterfaceId, gridFTPDataMovement);
     }
     return ifaces_[i]->updateGridFTPDataMovementDetails(jobSubmissionInterfaceId, gridFTPDataMovement);
+  }
+
+  void getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return, const std::string& dataMovementId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getGridFTPDataMovement(_return, dataMovementId);
+    }
+    ifaces_[i]->getGridFTPDataMovement(_return, dataMovementId);
+    return;
   }
 
   bool changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder) {
