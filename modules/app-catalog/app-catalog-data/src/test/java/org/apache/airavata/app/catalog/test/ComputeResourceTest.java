@@ -69,11 +69,11 @@ public class ComputeResourceTest {
 
             description.setHostName("localhost");
             description.setResourceDescription("test compute resource");
-            Set<String> ipdaresses = new HashSet<String>();
+            List<String> ipdaresses = new ArrayList<String>();
             ipdaresses.add("222.33.43.444");
             ipdaresses.add("23.344.44.454");
             description.setIpAddresses(ipdaresses);
-            Set<String> aliases = new HashSet<String>();
+            List<String> aliases = new ArrayList<String>();
             aliases.add("test.alias1");
             aliases.add("test.alias2");
             description.setHostAliases(aliases);
@@ -143,6 +143,11 @@ public class ComputeResourceTest {
             ComputeResourceDescription host = null;
             if (computeResource.isComputeResourceExists(resourceId)){
                 host = computeResource.getComputeResource(resourceId);
+                List<String> hostAliases = host.getHostAliases();
+                for (String alias : hostAliases){
+                    System.out.println("%%%%%%%%%%%%%%%% alias value :  %%%%%%%%%%%%%%%%%%% : " + alias);
+                }
+
                 System.out.println("**********Resource name ************* : " +  host.getHostName());
             }
 

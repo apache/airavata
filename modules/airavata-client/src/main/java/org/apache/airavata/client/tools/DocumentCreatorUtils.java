@@ -21,6 +21,7 @@
 
 package org.apache.airavata.client.tools;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -104,7 +105,7 @@ public class DocumentCreatorUtils {
 	}
 
 	public static ComputeResourceDescription createComputeResourceDescription(
-			String hostName, Set<String> hostAliases, Set<String> ipAddresses) {
+			String hostName, List<String> hostAliases, List<String> ipAddresses) {
 		ComputeResourceDescription host = new ComputeResourceDescription();
 		host.setHostName(hostName);
 		host.setIpAddresses(ipAddresses);

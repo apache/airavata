@@ -1858,7 +1858,7 @@ class ComputeResourceDescription {
           ),
         3 => array(
           'var' => 'hostAliases',
-          'type' => TType::SET,
+          'type' => TType::LST,
           'etype' => TType::STRING,
           'elem' => array(
             'type' => TType::STRING,
@@ -1866,7 +1866,7 @@ class ComputeResourceDescription {
           ),
         4 => array(
           'var' => 'ipAddresses',
-          'type' => TType::SET,
+          'type' => TType::LST,
           'etype' => TType::STRING,
           'elem' => array(
             'type' => TType::STRING,
@@ -1982,43 +1982,35 @@ class ComputeResourceDescription {
           }
           break;
         case 3:
-          if ($ftype == TType::SET) {
+          if ($ftype == TType::LST) {
             $this->hostAliases = array();
             $_size23 = 0;
             $_etype26 = 0;
-            $xfer += $input->readSetBegin($_etype26, $_size23);
+            $xfer += $input->readListBegin($_etype26, $_size23);
             for ($_i27 = 0; $_i27 < $_size23; ++$_i27)
             {
               $elem28 = null;
               $xfer += $input->readString($elem28);
-              if (is_scalar($elem28)) {
-                $this->hostAliases[$elem28] = true;
-              } else {
-                $this->hostAliases []= $elem28;
-              }
+              $this->hostAliases []= $elem28;
             }
-            $xfer += $input->readSetEnd();
+            $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
-          if ($ftype == TType::SET) {
+          if ($ftype == TType::LST) {
             $this->ipAddresses = array();
             $_size29 = 0;
             $_etype32 = 0;
-            $xfer += $input->readSetBegin($_etype32, $_size29);
+            $xfer += $input->readListBegin($_etype32, $_size29);
             for ($_i33 = 0; $_i33 < $_size29; ++$_i33)
             {
               $elem34 = null;
               $xfer += $input->readString($elem34);
-              if (is_scalar($elem34)) {
-                $this->ipAddresses[$elem34] = true;
-              } else {
-                $this->ipAddresses []= $elem34;
-              }
+              $this->ipAddresses []= $elem34;
             }
-            $xfer += $input->readSetEnd();
+            $xfer += $input->readListEnd();
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -2131,20 +2123,16 @@ class ComputeResourceDescription {
       if (!is_array($this->hostAliases)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('hostAliases', TType::SET, 3);
+      $xfer += $output->writeFieldBegin('hostAliases', TType::LST, 3);
       {
-        $output->writeSetBegin(TType::STRING, count($this->hostAliases));
+        $output->writeListBegin(TType::STRING, count($this->hostAliases));
         {
-          foreach ($this->hostAliases as $iter60 => $iter61)
+          foreach ($this->hostAliases as $iter60)
           {
-            if (is_scalar($iter61)) {
             $xfer += $output->writeString($iter60);
-            } else {
-            $xfer += $output->writeString($iter61);
-            }
           }
         }
-        $output->writeSetEnd();
+        $output->writeListEnd();
       }
       $xfer += $output->writeFieldEnd();
     }
@@ -2152,20 +2140,16 @@ class ComputeResourceDescription {
       if (!is_array($this->ipAddresses)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('ipAddresses', TType::SET, 4);
+      $xfer += $output->writeFieldBegin('ipAddresses', TType::LST, 4);
       {
-        $output->writeSetBegin(TType::STRING, count($this->ipAddresses));
+        $output->writeListBegin(TType::STRING, count($this->ipAddresses));
         {
-          foreach ($this->ipAddresses as $iter62 => $iter63)
+          foreach ($this->ipAddresses as $iter61)
           {
-            if (is_scalar($iter63)) {
-            $xfer += $output->writeString($iter62);
-            } else {
-            $xfer += $output->writeString($iter63);
-            }
+            $xfer += $output->writeString($iter61);
           }
         }
-        $output->writeSetEnd();
+        $output->writeListEnd();
       }
       $xfer += $output->writeFieldEnd();
     }
@@ -2182,9 +2166,9 @@ class ComputeResourceDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->batchQueues));
         {
-          foreach ($this->batchQueues as $iter64)
+          foreach ($this->batchQueues as $iter62)
           {
-            $xfer += $iter64->write($output);
+            $xfer += $iter62->write($output);
           }
         }
         $output->writeListEnd();
@@ -2199,10 +2183,10 @@ class ComputeResourceDescription {
       {
         $output->writeMapBegin(TType::I32, TType::STRING, count($this->fileSystems));
         {
-          foreach ($this->fileSystems as $kiter65 => $viter66)
+          foreach ($this->fileSystems as $kiter63 => $viter64)
           {
-            $xfer += $output->writeI32($kiter65);
-            $xfer += $output->writeString($viter66);
+            $xfer += $output->writeI32($kiter63);
+            $xfer += $output->writeString($viter64);
           }
         }
         $output->writeMapEnd();
@@ -2217,9 +2201,9 @@ class ComputeResourceDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->jobSubmissionInterfaces));
         {
-          foreach ($this->jobSubmissionInterfaces as $iter67)
+          foreach ($this->jobSubmissionInterfaces as $iter65)
           {
-            $xfer += $iter67->write($output);
+            $xfer += $iter65->write($output);
           }
         }
         $output->writeListEnd();
@@ -2234,9 +2218,9 @@ class ComputeResourceDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->dataMovementInterfaces));
         {
-          foreach ($this->dataMovementInterfaces as $iter68)
+          foreach ($this->dataMovementInterfaces as $iter66)
           {
-            $xfer += $iter68->write($output);
+            $xfer += $iter66->write($output);
           }
         }
         $output->writeListEnd();

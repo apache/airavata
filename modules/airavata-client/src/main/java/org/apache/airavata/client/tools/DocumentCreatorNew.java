@@ -74,7 +74,7 @@ public class DocumentCreatorNew {
     public String createLocalHostDocs() throws AppCatalogException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         //Define compute resource host
         ComputeResourceDescription host = DocumentCreatorUtils.createComputeResourceDescription(
-                "localhost", new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})), new HashSet<String>(Arrays.asList(new String[]{"127.0.0.1"})));
+                "localhost", new ArrayList<String>(Arrays.asList(new String[]{"127.0.0.1"})), new ArrayList<String>(Arrays.asList(new String[]{"127.0.0.1"})));
 //    	host.setIsEmpty(true);
         host.setComputeResourceId(client.registerComputeResource(host));
 

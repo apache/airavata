@@ -927,8 +927,8 @@ typedef struct _ComputeResourceDescription__isset {
 class ComputeResourceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "2CAAC3134218EFF83D46106C39BECE65";
-  static const uint8_t binary_fingerprint[16]; // = {0x2C,0xAA,0xC3,0x13,0x42,0x18,0xEF,0xF8,0x3D,0x46,0x10,0x6C,0x39,0xBE,0xCE,0x65};
+  static const char* ascii_fingerprint; // = "CA924FC1A07D7956848B049D2CACF3EC";
+  static const uint8_t binary_fingerprint[16]; // = {0xCA,0x92,0x4F,0xC1,0xA0,0x7D,0x79,0x56,0x84,0x8B,0x04,0x9D,0x2C,0xAC,0xF3,0xEC};
 
   ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription() {
   }
@@ -937,8 +937,8 @@ class ComputeResourceDescription {
 
   std::string computeResourceId;
   std::string hostName;
-  std::set<std::string>  hostAliases;
-  std::set<std::string>  ipAddresses;
+  std::vector<std::string>  hostAliases;
+  std::vector<std::string>  ipAddresses;
   std::string resourceDescription;
   std::vector<BatchQueue>  batchQueues;
   std::map<FileSystems::type, std::string>  fileSystems;
@@ -955,12 +955,12 @@ class ComputeResourceDescription {
     hostName = val;
   }
 
-  void __set_hostAliases(const std::set<std::string> & val) {
+  void __set_hostAliases(const std::vector<std::string> & val) {
     hostAliases = val;
     __isset.hostAliases = true;
   }
 
-  void __set_ipAddresses(const std::set<std::string> & val) {
+  void __set_ipAddresses(const std::vector<std::string> & val) {
     ipAddresses = val;
     __isset.ipAddresses = true;
   }

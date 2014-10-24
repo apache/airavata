@@ -24,11 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
@@ -124,23 +120,25 @@ public class RegisterSampleApplications {
 
             RegisterSampleApplications registerSampleApplications = new RegisterSampleApplications(airavataClient);
 
+            registerLocalHost();
             //Register all compute hosts
-            registerSampleApplications.registerXSEDEHosts();
+//            registerSampleApplications.registerXSEDEHosts();
+
 
             //Register Gateway Resource Preferences
-            registerSampleApplications.registerGatewayResourceProfile();
+//            registerSampleApplications.registerGatewayResourceProfile();
 
             //Register all application modules
-            registerSampleApplications.registerAppModules();
+//            registerSampleApplications.registerAppModules();
 
             //Register all application deployments
-            registerSampleApplications.registerAppDeployments();
+//            registerSampleApplications.registerAppDeployments();
 
             //Register all application interfaces
-            registerSampleApplications.registerAppInterfaces();
+//            registerSampleApplications.registerAppInterfaces();
 
             //write output into propertiesFile
-            registerSampleApplications.writeIdPropertyFile();
+//            registerSampleApplications.writeIdPropertyFile();
 
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
@@ -148,12 +146,16 @@ public class RegisterSampleApplications {
         }
     }
 
-    public void registerLocalHost() {
+    public static void registerLocalHost() {
         try {
             System.out.println("\n #### Registering Localhost Computational Resource #### \n");
 
             ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils.
                     createComputeResourceDescription("localhost", "LocalHost", null, null);
+            List<String> hostAliases  = new ArrayList<String>();
+            hostAliases.add("alias1");
+            hostAliases.add("alias2");
+            computeResourceDescription.setHostAliases(hostAliases);
             localhostId = airavataClient.registerComputeResource(computeResourceDescription);
             ResourceJobManager resourceJobManager = RegisterSampleApplicationsUtils.
                     createResourceJobManager(ResourceJobManagerType.FORK, null, null, null);
