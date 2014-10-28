@@ -819,6 +819,14 @@ public class GFacUtils {
 		return stringObjectHashMap;
 	}
 
+    public static Map<String, Object> getInMessageContext(List<DataObjectType> experimentData) throws GFacException {
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (DataObjectType objectType : experimentData) {
+            map.put(objectType.getKey(), objectType);
+        }
+        return map;
+    }
+
 	public static Map<String, Object> getOutMessageContext(
 			List<DataObjectType> experimentData, Parameter[] parameters)
 			throws GFacException {
@@ -853,6 +861,14 @@ public class GFacUtils {
 		}
 		return stringObjectHashMap;
 	}
+
+    public static Map<String, Object> getOutMessageContext(List<DataObjectType> experimentData) throws GFacException {
+        Map<String, Object> map = new HashMap<String, Object>();
+        for (DataObjectType objectType : experimentData) {
+            map.put(objectType.getKey(), objectType);
+        }
+        return map;
+    }
 
 	public static GfacExperimentState getZKExperimentState(ZooKeeper zk,
 			JobExecutionContext jobExecutionContext)
