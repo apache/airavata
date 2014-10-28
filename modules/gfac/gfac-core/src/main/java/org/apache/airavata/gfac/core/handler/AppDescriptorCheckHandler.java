@@ -20,12 +20,12 @@
 */
 package org.apache.airavata.gfac.core.handler;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,47 +43,34 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
             logger.info("Error saving plugin status to ZK");
         }
         StringBuffer data = new StringBuffer();
-        ApplicationDescription app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
-        ApplicationDeploymentDescriptionType appDesc = app.getType();
+        ApplicationInterfaceDescription appInterface = jobExecutionContext.getApplicationContext().getApplicationInterfaceDescription();
+        ComputeResourcePreference computeResourcePreference = jobExecutionContext.getApplicationContext().getComputeResourcePreference();
 
-        if (appDesc.getScratchWorkingDirectory() == null) {
-            appDesc.setScratchWorkingDirectory("/tmp");
+        if (computeResourcePreference.getScratchLocation() == null) {
+            computeResourcePreference.setScratchLocation("/tmp");
         }
         /*
         * Working dir
         */
-        if (appDesc.getStaticWorkingDirectory() == null || "null".equals(appDesc.getStaticWorkingDirectory())) {
-            String tmpDir = appDesc.getScratchWorkingDirectory() + File.separator
-                    + jobExecutionContext.getExperimentID();
 
-            appDesc.setStaticWorkingDirectory(tmpDir);
-        }
-        data.append(appDesc.getScratchWorkingDirectory());
-        data.append(",").append(appDesc.getStaticWorkingDirectory());
-        //FIXME: Move this input/output to application descrpitor
+        String workingDir = computeResourcePreference.getScratchLocation() + File.separator+ jobExecutionContext.getExperimentID();
+        jobExecutionContext.setWorkingDir(workingDir);
+        data.append(computeResourcePreference.getScratchLocation());
+        data.append(",").append(jobExecutionContext.getWorkingDir());
+
         /*
         * Input and Output Directory
         */
-        if (appDesc.getInputDataDirectory() == null || "".equals(appDesc.getInputDataDirectory())) {
-            appDesc.setInputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + Constants.INPUT_DATA_DIR_VAR_NAME);
-        }
-        if (appDesc.getOutputDataDirectory() == null || "".equals(appDesc.getOutputDataDirectory())) {
-            appDesc.setOutputDataDirectory(appDesc.getStaticWorkingDirectory() + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
-        }
+        jobExecutionContext.setInputDir(workingDir + File.separator + Constants.INPUT_DATA_DIR_VAR_NAME );
+        jobExecutionContext.setOutputDir(workingDir + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
+        data.append(",").append(jobExecutionContext.getInputDir()).append(",").append(jobExecutionContext.getOutputDir());
 
-        data.append(",").append(appDesc.getInputDataDirectory()).append(",").append(appDesc.getOutputDataDirectory());
         /*
         * Stdout and Stderr for Shell
         */
-        if (appDesc.getStandardOutput() == null || "".equals(appDesc.getStandardOutput())) {
-            appDesc.setStandardOutput(appDesc.getStaticWorkingDirectory() + File.separator
-                    + appDesc.getApplicationName().getStringValue().replaceAll("\\s+","") + ".stdout");
-        }
-        if (appDesc.getStandardError() == null || "".equals(appDesc.getStandardError())) {
-            appDesc.setStandardError(appDesc.getStaticWorkingDirectory() + File.separator
-                    + appDesc.getApplicationName().getStringValue().replaceAll("\\s+","") + ".stderr");
-        }
-        data.append(",").append(appDesc.getStandardOutput()).append(",").append(appDesc.getStandardError());
+        jobExecutionContext.setStandaredOutput(workingDir + File.separator + appInterface.getApplicationName().replaceAll("\\s+", "") + ".stdout");
+        jobExecutionContext.setStandaredError(workingDir + File.separator + appInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
+        data.append(",").append(jobExecutionContext.getStandaredOutput()).append(",").append(jobExecutionContext.getStandaredError());
 
 
         logger.info("Recoverable data is saving to zk: " + data.toString());
@@ -97,17 +84,15 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
     }
 
     public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        ApplicationDescription app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
-        ApplicationDeploymentDescriptionType appDesc = app.getType();
         try {
             String s = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
             String[] split = s.split(",");                   // this is ugly code but nobody else is saving or reading this data, so this is the fastest way
-            appDesc.setScratchWorkingDirectory(split[0]);
-            appDesc.setStaticWorkingDirectory(split[1]);
-            appDesc.setInputDataDirectory(split[2]);
-            appDesc.setOutputDataDirectory(split[3]);
-            appDesc.setStandardOutput(split[4]);
-            appDesc.setStandardError(split[5]);
+            jobExecutionContext.getApplicationContext().getComputeResourcePreference().setScratchLocation(split[0]);
+            jobExecutionContext.setWorkingDir(split[1]);
+            jobExecutionContext.setInputDir(split[2]);
+            jobExecutionContext.setOutputDir(split[3]);
+            jobExecutionContext.setStandaredOutput(split[4]);
+            jobExecutionContext.setStandaredError(split[5]);
         } catch (Exception e) {
             throw new GFacHandlerException(e);
         }

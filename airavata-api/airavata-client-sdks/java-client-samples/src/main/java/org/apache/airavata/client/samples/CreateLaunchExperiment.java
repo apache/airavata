@@ -53,7 +53,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_6281480a-9887-4a0f-8311-59bbaf738e54";
+    private static String echoAppId = "Echo_b6782be4-315b-4cbd-9403-aa7ce564548a";
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
@@ -70,7 +70,7 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-                registerApplications(); // run this only the first time
+//                registerApplications(); // run this only the first time
                 createAndLaunchExp();
     }
     
@@ -79,12 +79,13 @@ public class CreateLaunchExperiment {
     
     
     public static void createAndLaunchExp() throws TException {
-    	final String expId = createEchoExperimentForFSD(airavataClient);
+//    	final String expId = createEchoExperimentForFSD(airavataClient);
     	try {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 1; i++) {
 //    final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createEchoExperimentForFSD(airavataClient);
 //    final String expId = createEchoExperimentForStampede(airavataClient);
+    final String expId = createEchoExperimentForTrestles(airavataClient);
 //    final String expId = createExperimentEchoForLocalHost(airavataClient);
 //    final String expId = createExperimentWRFTrestles(airavataClient);
 //    final String expId = createExperimentForBR2(airavataClient);
@@ -93,7 +94,7 @@ public class CreateLaunchExperiment {
 //    final String expId = createExperimentForStampedeAmber(airavataClient);
 //    final String expId = createExperimentForTrestlesAmber(airavataClient);
 
-//    System.out.println("Experiment ID : " + expId);
+    System.out.println("Experiment ID : " + expId);
 //    updateExperiment(airavata, expId);
             launchExperiment(airavataClient, expId);
         }

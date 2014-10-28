@@ -39,6 +39,7 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderConfig;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -75,7 +76,7 @@ public class Scheduler {
      * @return GFacProvider instance.
      */
     private static GFacProvider getProvider(JobExecutionContext jobExecutionContext) throws GFacException {
-        HostDescription hostDescription = jobExecutionContext.getApplicationContext().getHostDescription();
+        ComputeResourceDescription hostDescription = jobExecutionContext.getApplicationContext().getComputeResourceDescription();
         String applicationName = jobExecutionContext.getServiceName();
 
         URL resource = Scheduler.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
@@ -111,6 +112,8 @@ public class Scheduler {
             }
             // We give higher preference to applications specific provider if configured
             if (provider == null) {
+
+                jobExecutionContext.getApplicationContext().getComputeResourcePreference().getPreferredJobSubmissionProtocol()
                 String hostClass = hostDescription.getType().getClass().getName();
                 providerClassName = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                 Class<? extends GFacProvider> aClass1 = Class.forName(providerClassName).asSubclass(GFacProvider.class);
