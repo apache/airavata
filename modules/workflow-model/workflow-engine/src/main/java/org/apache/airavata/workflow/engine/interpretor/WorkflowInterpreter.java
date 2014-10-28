@@ -407,7 +407,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		} finally{
         	cleanup();
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
-            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED, experiment.getExperimentID(), gatewayId);
+            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.COMPLETED, experiment.getExperimentID(), gatewayId);
             MessageContext msgCtx = new MessageContext(event, MessageType.EXPERIMENT, AiravataUtils.getId("EXPERIMENT"), gatewayId);
             msgCtx.setUpdatedTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
             publisher.publish(msgCtx);

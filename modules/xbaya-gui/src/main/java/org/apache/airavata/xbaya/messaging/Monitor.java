@@ -207,7 +207,7 @@ public class Monitor extends EventProducer {
             for (String key : keys) {
                 eventDataMap.get(key).addEvent(eventData);
             }
-            if (eventData.getType() == MessageType.EXPERIMENT && eventData.getStatus().equals(ExperimentState.LAUNCHED.toString())) {
+            if (eventData.getType() == MessageType.EXPERIMENT && eventData.getStatus().equals(ExperimentState.COMPLETED.toString())) {
                 unsubscribe(eventData.getExperimentId());
             }
         }
