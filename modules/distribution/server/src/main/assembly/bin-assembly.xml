@@ -315,6 +315,7 @@
 				<include>org.apache.santuario:xmlsec</include>
 				<include>commons-httpclient:commons-httpclient</include>
 				<include>commons-codec:commons-codec</include>
+                <include>com.google.code.gson:gson</include>
 			</includes>
 		</dependencySet>
 

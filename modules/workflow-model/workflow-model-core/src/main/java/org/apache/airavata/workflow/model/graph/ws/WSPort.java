@@ -23,6 +23,7 @@ package org.apache.airavata.workflow.model.graph.ws;
 
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.workflow.model.component.ComponentPort;
 import org.apache.airavata.workflow.model.component.system.SystemComponentDataPort;
@@ -55,6 +56,9 @@ public class WSPort extends DataPort {
         super(portElement);
     }
 
+    public WSPort(JsonObject portObject) {
+        super(portObject);
+    }
     /**
      * Returns the typeQName.
      * 
@@ -124,5 +128,12 @@ public class WSPort extends DataPort {
         XmlElement portElement = super.toXML();
         portElement.setAttributeValue(GraphSchema.NS, GraphSchema.PORT_TYPE_ATTRIBUTE, GraphSchema.PORT_TYPE_WS_DATA);
         return portElement;
+    }
+
+    protected JsonObject toJSON() {
+        JsonObject portObject = super.toJSON();
+        portObject.addProperty(GraphSchema.PORT_TYPE_ATTRIBUTE, GraphSchema.PORT_TYPE_WS_DATA);
+        portObject.addProperty(GraphSchema.PORT_DATA_TYPE_TAG, this.getType().toString());
+        return portObject;
     }
 }

@@ -30,6 +30,10 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import org.apache.airavata.common.utils.JSONUtil;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
@@ -65,7 +69,7 @@ public class WorkflowPropertyWindow {
 
     
     /**
-     * @param engine
+     * @param
      */
     public WorkflowPropertyWindow(XBayaGUI xbayaGUI) {
         this.xbayaGUI = xbayaGUI;
@@ -98,14 +102,14 @@ public class WorkflowPropertyWindow {
             this.instanceIDField.setText(instanceID.toString());
         }
 
-        XmlElement metadata = this.workflow.getMetadata();
-        String metadataText;
-        if (metadata == null) {
-            metadataText = WSConstants.EMPTY_APPINFO;
-        } else {
-            metadataText = XMLUtil.xmlElementToString(metadata);
-        }
-        this.metadataTextArea.setText(metadataText);
+//        XmlElement metadata = this.workflow.getMetadata();
+//        String metadataText;
+//        if (metadata == null) {
+//            metadataText = WSConstants.EMPTY_APPINFO;
+//        } else {
+//            metadataText = XMLUtil.xmlElementToString(metadata);
+//        }
+//        this.metadataTextArea.setText(metadataText);
 
         this.dialog.show();
     }
@@ -134,24 +138,29 @@ public class WorkflowPropertyWindow {
         String name = this.nameTextField.getText();
         if (name != null && name.equals(StringUtil.convertToJavaIdentifier(name)) && (!isWorkflowNameAlreadyPresent(name))) {
             String description = this.descriptionTextArea.getText();
-            String metadataText = this.metadataTextArea.getText();
+//            String metadataText = this.metadataTextArea.getText();
 
-            XmlElement metadata;
-            if (metadataText.length() == 0) {
-                metadata = null;
-            } else {
-                try {
-                    metadata = XMLUtil.stringToXmlElement(metadataText);
-                } catch (RuntimeException e) {
-                    String warning = "The metadata is ill-formed.";
-                    this.xbayaGUI.getErrorWindow().error(warning, e);
-                    return;
-                }
-            }
+//            XmlElement metadata;
+//            if (metadataText.length() == 0) {
+//                metadata = null;
+//            } else {
+//                try {
+////                    metadata = XMLUtil.stringToXmlElement(metadataText);
+//                    JsonObject metadataObject = new JsonObject();
+//                    JsonObject appInfoObject = new JsonObject();
+//                    appInfoObject.add("data", JSONUtil.stringToJSONObject(metadataText));
+//
+//                    metadata = XMLUtil.stringToXmlElement(metadataText);
+//                } catch (RuntimeException e) {
+//                    String warning = "The metadata is ill-formed.";
+//                    this.xbayaGUI.getErrorWindow().error(warning, e);
+//                    return;
+//                }
+//            }
 
             GraphCanvas graphCanvas = this.xbayaGUI.getGraphCanvas();
             graphCanvas.setNameAndDescription(name, description);
-            graphCanvas.getWorkflow().setMetadata(metadata);
+//            graphCanvas.getWorkflow().setMetadata(metadata);
             hide();
         } else {
             this.nameTextField.setText(StringUtil.convertToJavaIdentifier(name));
@@ -175,8 +184,8 @@ public class WorkflowPropertyWindow {
         this.descriptionTextArea = new XBayaTextArea();
         XBayaLabel descriptionLabel = new XBayaLabel("Description", this.descriptionTextArea);
 
-        this.metadataTextArea = new XBayaTextArea();
-        XBayaLabel metadataLabel = new XBayaLabel("Metadata", this.metadataTextArea);
+//        this.metadataTextArea = new XBayaTextArea();
+//        XBayaLabel metadataLabel = new XBayaLabel("Metadata", this.metadataTextArea);
 
         GridPanel mainPanel = new GridPanel();
         mainPanel.add(nameLabel);
@@ -187,9 +196,9 @@ public class WorkflowPropertyWindow {
         mainPanel.add(this.instanceIDField);
         mainPanel.add(descriptionLabel);
         mainPanel.add(this.descriptionTextArea);
-        mainPanel.add(metadataLabel);
-        mainPanel.add(this.metadataTextArea);
-        mainPanel.layout(new double[] { 0, 0, 0, 0.5, 0.5 }, new double[] { 0, 1 });
+//        mainPanel.add(metadataLabel);
+//        mainPanel.add(this.metadataTextArea);
+        mainPanel.layout(new double[] { 0, 0, 0, 0.5}, new double[] { 0, 1 });
 
         this.okButton = new JButton("OK");
         this.okButton.addActionListener(new AbstractAction() {

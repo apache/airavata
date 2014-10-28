@@ -28,6 +28,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.ControlPort;
@@ -472,6 +476,36 @@ public abstract class GraphImpl implements Graph {
         return graphElement;
     }
 
+    @Override
+    public JsonObject toJSON() {
+        JsonObject graphObject = new JsonObject();
+
+        graphObject.addProperty(GraphSchema.XBAYA_VERSION_ATTRIBUTE, ApplicationVersion.VERSION.getVersion());
+        graphObject.addProperty(GraphSchema.GRAPH_ID_TAG, getID());
+        graphObject.addProperty(GraphSchema.GRAPH_NAME_TAG, getName());
+        graphObject.addProperty(GraphSchema.GRAPH_DESCRIPTION_TAG, getDescription());
+
+        JsonArray nodeArray = new JsonArray();
+        for (NodeImpl node : this.nodes) {
+            nodeArray.add(node.toJSON());
+        }
+        graphObject.add(GraphSchema.NODE_TAG, nodeArray);
+
+        JsonArray portArray = new JsonArray();
+        for (PortImpl port : this.ports) {
+            portArray.add(port.toJSON());
+        }
+        graphObject.add(GraphSchema.PORT_TAG, portArray);
+
+        JsonArray edgeArray = new JsonArray();
+        for (EdgeImpl edge : this.edges) {
+            edgeArray.add(edge.toJSON());
+        }
+        graphObject.add(GraphSchema.EDGE_TAG, edgeArray);
+
+        return graphObject;
+    }
+
     /**
      * @param graphElement
      */
@@ -518,6 +552,38 @@ public abstract class GraphImpl implements Graph {
             EdgeImpl edge = this.factory.createEdge(edgeElement);
             // need to call this to set this graph to the edge.
             this.addEdge(edge);
+        }
+
+        indexToPointer();
+    }
+
+    protected void parse(JsonObject graphObject) throws GraphException{
+        JsonPrimitive  jsonPrimitive = graphObject.getAsJsonPrimitive(GraphSchema.GRAPH_ID_TAG);
+        if (jsonPrimitive != null) {
+            this.id = jsonPrimitive.getAsString();
+        }
+        jsonPrimitive = graphObject.getAsJsonPrimitive(GraphSchema.GRAPH_NAME_TAG);
+        if (jsonPrimitive != null) {
+            this.name = jsonPrimitive.getAsString();
+        }
+        jsonPrimitive = graphObject.getAsJsonPrimitive(GraphSchema.GRAPH_DESCRIPTION_TAG);
+        if (jsonPrimitive != null) {
+           this.description = jsonPrimitive.getAsString();
+        }
+
+        JsonArray jArray = graphObject.getAsJsonArray(GraphSchema.NODE_TAG);
+        for (JsonElement jsonElement : jArray) {
+            addNode(this.factory.createNode((JsonObject) jsonElement));
+        }
+
+        jArray = graphObject.getAsJsonArray(GraphSchema.PORT_TAG);
+        for (JsonElement jsonElement : jArray) {
+            addPort(this.factory.createPort((JsonObject) jsonElement));
+        }
+
+        jArray = graphObject.getAsJsonArray(GraphSchema.EDGE_TAG);
+        for (JsonElement jsonElement : jArray) {
+            addEdge(this.factory.createEdge((JsonObject)jsonElement));
         }
 
         indexToPointer();

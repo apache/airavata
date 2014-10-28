@@ -23,6 +23,7 @@ package org.apache.airavata.workflow.model.graph.ws;
 
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentApplication;
@@ -51,6 +52,10 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode{
      */
     public WSNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
+    }
+
+    public WSNode(JsonObject nodeObject) throws GraphException{
+        super(nodeObject);
     }
 
     /**
@@ -135,6 +140,14 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode{
         return nodeElement;
     }
 
+    @Override
+    protected JsonObject toJSON() {
+        JsonObject nodeObject = (JsonObject) super.toJSON();
+        nodeObject.addProperty(GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_WS);
+        nodeObject.add("Application", getComponent().toJSON());
+        return nodeObject;
+    }
+
     /**
      * @see org.apache.airavata.workflow.model.graph.impl.NodeImpl#parse(org.xmlpull.infoset.XmlElement)
      */
@@ -165,6 +178,17 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode{
 //        if (operationElement != null) {
 //            this.operationName = operationElement.requiredText();
 //        }
+    }
+
+    protected void parse(JsonObject nodeObject) {
+        super.parse(nodeObject);
+        JsonObject applicationObject = nodeObject.getAsJsonObject("Application");
+        WSComponentApplication application = WSComponentApplication.parse(applicationObject);
+        try {
+            setComponent(new WSComponent(application));
+        } catch (ComponentException e) {
+            e.printStackTrace();
+        }
     }
    
 }

@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.ComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
@@ -90,6 +93,11 @@ public abstract class PortImpl implements Port {
     public PortImpl(XmlElement portElement) {
         this();
         parse(portElement);
+    }
+
+    public PortImpl(JsonObject portObject) {
+        this();
+        parse(portObject);
     }
 
 
@@ -372,6 +380,17 @@ public abstract class PortImpl implements Port {
         this.nodeID = nodeElement.requiredText();
     }
 
+    protected void parse(JsonObject portObject) {
+        this.id = portObject.getAsJsonPrimitive(GraphSchema.PORT_ID_TAG).getAsString();
+
+        JsonPrimitive jPrimitive = portObject.getAsJsonPrimitive(GraphSchema.PORT_NAME_TAG);
+        if (jPrimitive != null) {
+            this.name = jPrimitive.getAsString();
+        }
+
+        this.nodeID = portObject.getAsJsonPrimitive(GraphSchema.PORT_NODE_TAG).getAsString();
+    }
+
     /**
      * @return the XML representation of this Port
      */
@@ -389,6 +408,15 @@ public abstract class PortImpl implements Port {
 
         XmlElement nodeElement = portElement.addElement(GraphSchema.NS, GraphSchema.PORT_NODE_TAG);
         nodeElement.addChild(this.node.getID());
+
+        return portElement;
+    }
+
+    protected JsonObject toJSON(){
+        JsonObject portElement = new JsonObject();
+        portElement.addProperty(GraphSchema.PORT_ID_TAG, getID());
+        portElement.addProperty(GraphSchema.PORT_NAME_TAG, getName());
+        portElement.addProperty(GraphSchema.PORT_NODE_TAG, this.node.getID());
 
         return portElement;
     }
