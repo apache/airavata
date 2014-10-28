@@ -28,6 +28,8 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
+import com.google.gson.JsonObject;
+import org.apache.airavata.common.utils.JSONUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -106,8 +108,10 @@ public class WorkflowFiler {
                     WSGraph graph = WSGraphFactory.createGraph(file);
                     workflow = Workflow.graphToWorkflow(graph);
                 } else {
-                    XmlElement workflowElement = XMLUtil.loadXML(file);
-                    workflow = new Workflow(workflowElement);
+                    JsonObject workflowObject = JSONUtil.loadJSON(file);
+//                    XmlElement workflowElement = XMLUtil.loadXML(file);
+//                    workflow = new Workflow(workflowElement);
+                    workflow = new Workflow(workflowObject);
                 }
                 GraphCanvas newGraphCanvas = engine.getGUI().newGraphCanvas(true);
                 newGraphCanvas.setWorkflow(workflow);
@@ -148,7 +152,7 @@ public class WorkflowFiler {
         	File saveAsWorkflowFile = saveAsWorkflow(graphCanvas);
         	graphCanvas.setWorkflowFile(saveAsWorkflowFile);
         }else{
-        	saveWorkflow(graphCanvas.getWorkflow(), graphCanvas.getWorkflowFile());
+        	saveWorkflow(graphCanvas.getWorkflowWithImage(), graphCanvas.getWorkflowFile());
         }
 		if (graphCanvas.getWorkflowFile()!=null){
 			graphCanvas.workflowSaved();
@@ -173,7 +177,7 @@ public class WorkflowFiler {
             if (!path.endsWith(XBayaConstants.WORKFLOW_FILE_SUFFIX)) {
                 file = new File(path + XBayaConstants.WORKFLOW_FILE_SUFFIX);
             }
-            saveWorkflow(graphCanvas.getWorkflow(),file);
+            saveWorkflow(graphCanvas.getWorkflowWithImage(),file);
             return file;
         }
         return null;
@@ -181,8 +185,9 @@ public class WorkflowFiler {
 
 	private void saveWorkflow(Workflow workflow, File file) {
 		try {
-		    XMLUtil.saveXML(workflow.toXML(), file);
-		} catch (IOException e) {
+//		    XMLUtil.saveXML(workflow.toXML(), file);
+            JSONUtil.saveJSON(workflow.toJSON(), file);
+        } catch (IOException e) {
 		    this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
 		} catch (RuntimeException e) {
 		    this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_SAVE_ERROR, e);

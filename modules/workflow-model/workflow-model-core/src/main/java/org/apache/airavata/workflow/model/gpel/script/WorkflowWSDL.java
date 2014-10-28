@@ -298,12 +298,12 @@ public class WorkflowWSDL {
         schema.setAttributeValue(WSConstants.XMLNS, WSConstants.XSD_NS_URI);
         schema.setAttributeValue(WSConstants.ELEMENT_FORM_DEFAULT_ATTRIBUTE, WSConstants.UNQUALIFIED_VALUE);
         List<InputNode> inputNodes = GraphUtil.getInputNodes(this.graph);
-        XmlElement inputMetadata = this.graph.getInputMetadata();
-        addParameters(workflowInputMessageElelmentName, inputMetadata, inputNodes, schema);
+//        XmlElement inputMetadata = this.graph.getInputMetadata();
+//        addParameters(workflowInputMessageElelmentName, inputMetadata, inputNodes, schema);
 
-        List<OutputNode> outputNodes = GraphUtil.getOutputNodes(this.graph);
-        XmlElement outputMetadata = this.graph.getOutputMetadata();
-        addParameters(workflowOutputMessageElementName, outputMetadata, outputNodes, schema);
+//        List<OutputNode> outputNodes = GraphUtil.getOutputNodes(this.graph);
+//        XmlElement outputMetadata = this.graph.getOutputMetadata();
+//        addParameters(workflowOutputMessageElementName, outputMetadata, outputNodes, schema);
 
         return types;
     }

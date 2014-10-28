@@ -25,6 +25,9 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.system.InputComponent;
@@ -73,6 +76,10 @@ public class InputNode extends ParameterNode {
      */
     public InputNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
+    }
+
+    public InputNode(JsonObject nodeObject) throws GraphException {
+        super(nodeObject);
     }
 
     public boolean isVisibility() {
@@ -296,11 +303,32 @@ public class InputNode extends ParameterNode {
         }
     }
 
+    protected void parseConfiguration(JsonObject configObject) {
+        super.parseConfiguration(configObject);
+        JsonElement jsonElement = configObject.get(VALUE_TAG_NAME);
+        if (jsonElement != null) {
+            this.defaultValue = jsonElement.getAsString();
+        }
+
+        jsonElement = configObject.get(VISIBILITY_TAG_NAME);
+        if (jsonElement != null) {
+            this.visibility = jsonElement.getAsBoolean();
+        } else {
+            this.visibility = true;
+        }
+    }
     @Override
     public XmlElement toXML() {
         XmlElement nodeElement = super.toXML();
         nodeElement.setAttributeValue(GraphSchema.NS, GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_INPUT);
         return nodeElement;
+    }
+
+    @Override
+    protected JsonObject toJSON() {
+        JsonObject nodeObject = super.toJSON();
+        nodeObject.addProperty(GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_INPUT);
+        return nodeObject;
     }
 
     @Override
@@ -316,6 +344,16 @@ public class InputNode extends ParameterNode {
         return configElement;
     }
 
+    @Override
+    protected JsonObject addConfigurationElement(JsonObject nodeObject) {
+        JsonObject configObject= super.addConfigurationElement(nodeObject);
+        if (this.defaultValue != null) {
+            configObject.addProperty(VALUE_TAG_NAME, this.defaultValue.toString());
+
+        }
+        configObject.addProperty(VISIBILITY_TAG_NAME, this.visibility);
+        return configObject;
+    }
     /**
      * @param toWSPort
      */

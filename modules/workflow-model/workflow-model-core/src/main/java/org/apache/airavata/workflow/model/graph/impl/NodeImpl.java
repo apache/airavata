@@ -27,6 +27,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
@@ -132,6 +137,11 @@ public abstract class NodeImpl implements Node {
     public NodeImpl(XmlElement nodeElement) throws GraphException {
         this();
         parse(nodeElement);
+    }
+
+    public NodeImpl(JsonObject nodeObject) throws GraphException{
+        this();
+        parse(nodeObject);
     }
 
     /**
@@ -505,6 +515,56 @@ public abstract class NodeImpl implements Node {
         }
     }
 
+    protected void parse(JsonObject nodeObject) {
+        this.id = nodeObject.getAsJsonPrimitive(GraphSchema.NODE_ID_TAG).getAsString();
+        this.name = nodeObject.getAsJsonPrimitive(GraphSchema.NODE_NAME_TAG).getAsString();
+
+        JsonArray jArray;
+        if (nodeObject.get(GraphSchema.NODE_INPUT_PORT_TAG) != null) {
+            jArray  = nodeObject.getAsJsonArray(GraphSchema.NODE_INPUT_PORT_TAG);
+            for (JsonElement jsonElement : jArray) {
+                this.inputPortIDs.add(jsonElement.getAsString());
+            }
+
+        }
+
+        if (nodeObject.get(GraphSchema.NODE_OUTPUT_PORT_TAG) != null) {
+            jArray = nodeObject.getAsJsonArray(GraphSchema.NODE_OUTPUT_PORT_TAG);
+            for (JsonElement jsonElement : jArray) {
+                this.outputPortIDs.add(jsonElement.getAsString());
+            }
+
+        }
+
+        JsonElement jElement = nodeObject.get(GraphSchema.NODE_CONTROL_IN_PORT_TAG);
+        if (jElement != null) {
+           this.controlInPortID = jElement.getAsString();
+        }
+
+        if (nodeObject.get(GraphSchema.NODE_CONTROL_OUT_PORT_TAG) != null) {
+            jArray = nodeObject.getAsJsonArray(GraphSchema.NODE_CONTROL_OUT_PORT_TAG);
+            for (JsonElement jsonElement : jArray) {
+                this.controlOutPortIDs.add(jsonElement.getAsString());
+            }
+        }
+
+        jElement = nodeObject.get(GraphSchema.NODE_EPR_PORT_TAG);
+        if (jElement != null) {
+            this.eprPortID = jElement.getAsString();
+        }
+
+        this.position.x = nodeObject.get(GraphSchema.NODE_X_LOCATION_TAG).getAsInt();
+        this.position.y = nodeObject.get(GraphSchema.NODE_Y_LOCATION_TAG).getAsInt();
+
+        // Parse config element not sure why we used it.
+        // Parse component element.
+        JsonObject configObject = nodeObject.getAsJsonObject(GraphSchema.NODE_CONFIG_TAG);
+        if (configObject != null) {
+            parseConfiguration(configObject);
+        }
+
+    }
+
     /**
      * @param componentElement
      * @throws GraphException
@@ -520,6 +580,10 @@ public abstract class NodeImpl implements Node {
     protected void parseConfiguration(XmlElement configElement) {
         logger.debug("Entering:" + configElement);
         // Do nothing by default.
+    }
+
+    protected void parseConfiguration(JsonObject configObject) {
+        logger.debug("Entering:" + new Gson().toJson(configObject));
     }
 
     /**
@@ -581,7 +645,46 @@ public abstract class NodeImpl implements Node {
         return nodeElement;
     }
 
+    protected JsonObject toJSON() {
+        JsonObject nodeObject = new JsonObject();
+        nodeObject.addProperty(GraphSchema.NODE_ID_TAG, getID());
+        nodeObject.addProperty(GraphSchema.NODE_NAME_TAG, getName());
 
+        if (this.inputPorts.size() > 0) {
+            JsonArray inputPortsArray = new JsonArray();
+            for (PortImpl inputPort : this.inputPorts) {
+                inputPortsArray.add(new JsonPrimitive(inputPort.getID()));
+            }
+            nodeObject.add(GraphSchema.NODE_INPUT_PORT_TAG, inputPortsArray);
+        }
+
+        if (this.outputPorts.size() > 0) {
+            JsonArray outputPortsArray = new JsonArray();
+            for (PortImpl outputPort : this.outputPorts) {
+                outputPortsArray.add(new JsonPrimitive(outputPort.getID()));
+            }
+            nodeObject.add(GraphSchema.NODE_OUTPUT_PORT_TAG, outputPortsArray);
+        }
+
+        if (this.controlInPort != null) {
+            nodeObject.addProperty(GraphSchema.NODE_CONTROL_IN_PORT_TAG, this.controlInPort.getID());
+        }
+
+        if (this.controlOutPorts.size() > 0) {
+            JsonArray controlOutPortArray = new JsonArray();
+            for (PortImpl controlOutPort : this.controlOutPorts) {
+                controlOutPortArray.add(new JsonPrimitive(controlOutPort.getID()));
+            }
+            nodeObject.add(GraphSchema.NODE_CONTROL_OUT_PORT_TAG, controlOutPortArray);
+        }
+
+        nodeObject.addProperty(GraphSchema.NODE_X_LOCATION_TAG, Integer.toString(this.position.x));
+        nodeObject.addProperty(GraphSchema.NODE_Y_LOCATION_TAG, Integer.toString(this.position.y));
+
+        addConfigurationElement(nodeObject);
+
+        return nodeObject;
+    }
 
     /**
      * Adds a configuration element to a specified node element.
@@ -596,7 +699,10 @@ public abstract class NodeImpl implements Node {
         return null;
     }
 
-    /**
+    protected JsonObject addConfigurationElement(JsonObject nodeObject) {
+        // Do nothing by default.
+        return null;
+    }    /**
      * Called when an Edge was added. It doesn't do anything by default.
      * 
      * @param edge

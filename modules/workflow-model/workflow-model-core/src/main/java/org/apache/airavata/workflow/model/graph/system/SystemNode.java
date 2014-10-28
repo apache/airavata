@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataEdge;
 import org.apache.airavata.workflow.model.graph.DataPort;
@@ -57,6 +58,10 @@ public abstract class SystemNode extends NodeImpl {
      */
     public SystemNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
+    }
+
+    public SystemNode(JsonObject nodeObject) throws GraphException {
+        super(nodeObject);
     }
 
     /**

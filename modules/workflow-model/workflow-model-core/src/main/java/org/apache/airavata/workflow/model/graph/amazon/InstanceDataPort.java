@@ -23,6 +23,7 @@ package org.apache.airavata.workflow.model.graph.amazon;
 
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -72,6 +73,12 @@ public class InstanceDataPort extends DataPort {
         XmlElement portElement = super.toXML();
         portElement.setAttributeValue(GraphSchema.NS, GraphSchema.PORT_TYPE_ATTRIBUTE, GraphSchema.PORT_TYPE_INSTANCE);
         return portElement;
+    }
+
+    protected JsonObject toJSON() {
+        JsonObject portObject = super.toJSON();
+        portObject.addProperty(GraphSchema.PORT_TYPE_ATTRIBUTE, GraphSchema.PORT_TYPE_INSTANCE);
+        return portObject;
     }
 
     /**

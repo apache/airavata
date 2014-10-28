@@ -21,6 +21,8 @@
 
 package org.apache.airavata.workflow.model.graph;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.graph.impl.EdgeImpl;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.impl.PortImpl;
@@ -37,6 +39,8 @@ public interface GraphFactory {
      */
     public NodeImpl createNode(XmlElement nodeElement) throws GraphException;
 
+    public NodeImpl createNode(JsonObject nodeObject) throws GraphException;
+
     /**
      * Creates a Port.
      * 
@@ -45,6 +49,7 @@ public interface GraphFactory {
      */
     public PortImpl createPort(XmlElement portElement);
 
+    public PortImpl createPort(JsonObject portObject);
     /**
      * Creates a Edge.
      * 
@@ -61,5 +66,7 @@ public interface GraphFactory {
      * @return the edge created
      */
     public EdgeImpl createEdge(XmlElement edgeXml);
+
+    public EdgeImpl createEdge(JsonObject edgeObject);
 
 }
