@@ -66,6 +66,13 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     private String credentialStoreToken;
 
+    private String workingDir;
+
+    private String inputDir;
+    private String outputDir;
+    private String standaredOutput;
+    private String standaredError;
+
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
     // Keep track of the current path of the message. Before hitting provider its in-path.
@@ -316,5 +323,45 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public void setCredentialStoreToken(String credentialStoreToken) {
         this.credentialStoreToken = credentialStoreToken;
+    }
+
+    public String getWorkingDir() {
+        return workingDir;
+    }
+
+    public void setWorkingDir(String workingDir) {
+        this.workingDir = workingDir;
+    }
+
+    public String getInputDir() {
+        return inputDir;
+    }
+
+    public void setInputDir(String inputDir) {
+        this.inputDir = inputDir;
+    }
+
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    public void setOutputDir(String outputDir) {
+        this.outputDir = outputDir;
+    }
+
+    public String getStandaredOutput() {
+        return standaredOutput;
+    }
+
+    public void setStandaredOutput(String standaredOutput) {
+        this.standaredOutput = standaredOutput;
+    }
+
+    public String getStandaredError() {
+        return standaredError;
+    }
+
+    public void setStandaredError(String standaredError) {
+        this.standaredError = standaredError;
     }
 }
