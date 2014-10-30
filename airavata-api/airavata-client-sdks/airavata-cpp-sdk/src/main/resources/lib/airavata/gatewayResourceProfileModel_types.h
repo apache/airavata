@@ -30,6 +30,7 @@
 #include <thrift/transport/TTransport.h>
 
 #include <thrift/cxxfunctional.h>
+#include "computeResourceModel_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace gatewayprofile {
@@ -46,18 +47,18 @@ typedef struct _ComputeResourcePreference__isset {
 class ComputeResourcePreference {
  public:
 
-  static const char* ascii_fingerprint; // = "9C98338B7E052CD4DEECB22F243D6DAE";
-  static const uint8_t binary_fingerprint[16]; // = {0x9C,0x98,0x33,0x8B,0x7E,0x05,0x2C,0xD4,0xDE,0xEC,0xB2,0x2F,0x24,0x3D,0x6D,0xAE};
+  static const char* ascii_fingerprint; // = "365108C84A2E160D53CD17C2A7F06F5C";
+  static const uint8_t binary_fingerprint[16]; // = {0x36,0x51,0x08,0xC8,0x4A,0x2E,0x16,0x0D,0x53,0xCD,0x17,0xC2,0xA7,0xF0,0x6F,0x5C};
 
-  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), preferredJobSubmissionProtocol(), preferredDataMovementProtocol(), preferredBatchQueue(), scratchLocation(), allocationProjectNumber() {
+  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber() {
   }
 
   virtual ~ComputeResourcePreference() throw() {}
 
   std::string computeResourceId;
   bool overridebyAiravata;
-  std::string preferredJobSubmissionProtocol;
-  std::string preferredDataMovementProtocol;
+   ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type preferredJobSubmissionProtocol;
+   ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type preferredDataMovementProtocol;
   std::string preferredBatchQueue;
   std::string scratchLocation;
   std::string allocationProjectNumber;
@@ -72,12 +73,12 @@ class ComputeResourcePreference {
     overridebyAiravata = val;
   }
 
-  void __set_preferredJobSubmissionProtocol(const std::string& val) {
+  void __set_preferredJobSubmissionProtocol(const  ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type val) {
     preferredJobSubmissionProtocol = val;
     __isset.preferredJobSubmissionProtocol = true;
   }
 
-  void __set_preferredDataMovementProtocol(const std::string& val) {
+  void __set_preferredDataMovementProtocol(const  ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type val) {
     preferredDataMovementProtocol = val;
     __isset.preferredDataMovementProtocol = true;
   }
@@ -147,8 +148,8 @@ typedef struct _GatewayResourceProfile__isset {
 class GatewayResourceProfile {
  public:
 
-  static const char* ascii_fingerprint; // = "D6477904C48AAB4DC8F09369D670B400";
-  static const uint8_t binary_fingerprint[16]; // = {0xD6,0x47,0x79,0x04,0xC4,0x8A,0xAB,0x4D,0xC8,0xF0,0x93,0x69,0xD6,0x70,0xB4,0x00};
+  static const char* ascii_fingerprint; // = "42DA2625493A482A59D0742432A025BD";
+  static const uint8_t binary_fingerprint[16]; // = {0x42,0xDA,0x26,0x25,0x49,0x3A,0x48,0x2A,0x59,0xD0,0x74,0x24,0x32,0xA0,0x25,0xBD};
 
   GatewayResourceProfile() : gatewayID("DO_NOT_SET_AT_CLIENTS"), gatewayName(), gatewayDescription() {
   }
