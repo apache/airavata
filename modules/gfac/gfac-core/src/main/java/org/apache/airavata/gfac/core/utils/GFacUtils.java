@@ -20,6 +20,9 @@
  */
 package org.apache.airavata.gfac.core.utils;
 
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.DBUtil;
@@ -36,6 +39,8 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
@@ -1235,5 +1240,38 @@ public class GFacUtils {
 			return null;	
 		}
 	}
+
+    public static LOCALSubmission getLocalJobSubmission (String submissionId) throws AppCatalogException{
+        try {
+            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getLocalJobSubmission(submissionId);
+        }catch (Exception e){
+            String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
+            log.error(errorMsg, e);
+            throw new AppCatalogException(errorMsg, e);
+        }
+    }
+
+    public static UnicoreJobSubmission getUnicoreJobSubmission (String submissionId) throws AppCatalogException{
+        try {
+            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getUNICOREJobSubmission(submissionId);
+        }catch (Exception e){
+            String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
+            log.error(errorMsg, e);
+            throw new AppCatalogException(errorMsg, e);
+        }
+    }
+
+    public static UnicoreJobSubmission getJobSubmission (String submissionId) throws AppCatalogException{
+        try {
+            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getUNICOREJobSubmission(submissionId);
+        }catch (Exception e){
+            String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
+            log.error(errorMsg, e);
+            throw new AppCatalogException(errorMsg, e);
+        }
+    }
 
 }
