@@ -33,6 +33,9 @@ import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.notification.GFacNotifier;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -67,16 +70,42 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     private ZooKeeper zk;
 
     private String credentialStoreToken;
-
+    /**
+     * User defined working directory.
+     */
     private String workingDir;
-
+    /**
+     * Input data directory
+     */
     private String inputDir;
+    /**
+     * Output data directory
+     */
     private String outputDir;
-    private String standaredOutput;
-    private String standaredError;
-    private String prefferedJobSubmissionProtocal;
-    private String prefferedDataMovementProtocal;
-
+    /**
+     * standard output file path
+     */
+    private String standardOutput;
+    /**
+     * standard error file path
+     */
+    private String standardError;
+    /**
+     * User preferred job submission protocol.
+     */
+    private JobSubmissionProtocol preferredJobSubmissionProtocol;
+    /**
+     * User preferred data movement protocol.
+     */
+    private DataMovementProtocol preferredDataMovementProtocol;
+    /**
+     * List of job submission protocols sorted by priority order.
+      */
+    private List<JobSubmissionInterface> hostPrioritizedJobSubmissionInterfaces;
+    /**
+     * use preferred job submission protocol.
+     */
+    private JobSubmissionInterface preferredJobSubmissionInterface;
 
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -354,35 +383,51 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         this.outputDir = outputDir;
     }
 
-    public String getStandaredOutput() {
-        return standaredOutput;
+    public String getStandardOutput() {
+        return standardOutput;
     }
 
-    public void setStandaredOutput(String standaredOutput) {
-        this.standaredOutput = standaredOutput;
+    public void setStandardOutput(String standardOutput) {
+        this.standardOutput = standardOutput;
     }
 
-    public String getStandaredError() {
-        return standaredError;
+    public String getStandardError() {
+        return standardError;
     }
 
-    public void setStandaredError(String standaredError) {
-        this.standaredError = standaredError;
+    public void setStandardError(String standardError) {
+        this.standardError = standardError;
     }
 
-    public String getPrefferedJobSubmissionProtocal() {
-        return prefferedJobSubmissionProtocal;
+    public JobSubmissionProtocol getPreferredJobSubmissionProtocol() {
+        return preferredJobSubmissionProtocol;
     }
 
-    public void setPrefferedJobSubmissionProtocal(String prefferedJobSubmissionProtocal) {
-        this.prefferedJobSubmissionProtocal = prefferedJobSubmissionProtocal;
+    public void setPreferredJobSubmissionProtocol(JobSubmissionProtocol preferredJobSubmissionProtocol) {
+        this.preferredJobSubmissionProtocol = preferredJobSubmissionProtocol;
     }
 
-    public String getPrefferedDataMovementProtocal() {
-        return prefferedDataMovementProtocal;
+    public DataMovementProtocol getPreferredDataMovementProtocol() {
+        return preferredDataMovementProtocol;
     }
 
-    public void setPrefferedDataMovementProtocal(String prefferedDataMovementProtocal) {
-        this.prefferedDataMovementProtocal = prefferedDataMovementProtocal;
+    public void setPreferredDataMovementProtocol(DataMovementProtocol preferredDataMovementProtocol) {
+        this.preferredDataMovementProtocol = preferredDataMovementProtocol;
+    }
+
+    public List<JobSubmissionInterface> getHostPrioritizedJobSubmissionInterfaces() {
+        return hostPrioritizedJobSubmissionInterfaces;
+    }
+
+    public void setHostPrioritizedJobSubmissionInterfaces(List<JobSubmissionInterface> hostPrioritizedJobSubmissionInterfaces) {
+        this.hostPrioritizedJobSubmissionInterfaces = hostPrioritizedJobSubmissionInterfaces;
+    }
+
+    public JobSubmissionInterface getPreferredJobSubmissionInterface() {
+        return preferredJobSubmissionInterface;
+    }
+
+    public void setPreferredJobSubmissionInterface(JobSubmissionInterface preferredJobSubmissionInterface) {
+        this.preferredJobSubmissionInterface = preferredJobSubmissionInterface;
     }
 }

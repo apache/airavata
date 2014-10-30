@@ -53,6 +53,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -70,6 +71,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
@@ -319,31 +322,25 @@ public class BetterGfacImpl implements GFac,Watcher {
             /*
             * Stdout and Stderr for Shell
             */
-            jobExecutionContext.setStandaredOutput(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stdout");
-            jobExecutionContext.setStandaredError(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
+            jobExecutionContext.setStandardOutput(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stdout");
+            jobExecutionContext.setStandardError(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
+
+            jobExecutionContext.setPreferredJobSubmissionProtocol(gatewayResourcePreferences.getPreferredJobSubmissionProtocol());
         }
 
         List<JobSubmissionInterface> jobSubmissionInterfaces = computeResource.getJobSubmissionInterfaces();
-        String preferredJobSubmissionProtocol = gatewayResourcePreferences.getPreferredJobSubmissionProtocol();
-        String hostClass;
-        if (preferredJobSubmissionProtocol != null){
-            hostClass = preferredJobSubmissionProtocol;
-        }else {
-            if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()){
-                int lowestPriority = jobSubmissionInterfaces.get(0).getPriorityOrder();
-                String selectedHost = null;
-                for (int i = 0; i < jobSubmissionInterfaces.size() - 1; i++){
-                    if (jobSubmissionInterfaces.get(i+1).getPriorityOrder() < lowestPriority ){
-                        lowestPriority = jobSubmissionInterfaces.get(i+1).getPriorityOrder();
-                        selectedHost = jobSubmissionInterfaces.get(i+1).getJobSubmissionProtocol().toString();
-                    }
+        if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()){
+            Collections.sort(jobSubmissionInterfaces, new Comparator<JobSubmissionInterface>() {
+                @Override
+                public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
+                    return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
                 }
-                hostClass = selectedHost;
-            }else {
-                throw new GFacException("Compute resource should have atleast one job submission interface defined...");
-            }
+            });
+
+            jobExecutionContext.setHostPrioritizedJobSubmissionInterfaces(jobSubmissionInterfaces);
+        }else {
+            throw new GFacException("Compute resource should have at least one job submission interface defined...");
         }
-        jobExecutionContext.setPrefferedJobSubmissionProtocal(hostClass);
 
         return jobExecutionContext;
     }
