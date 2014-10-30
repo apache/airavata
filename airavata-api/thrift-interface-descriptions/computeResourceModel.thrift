@@ -83,6 +83,21 @@ enum JobManagerCommand {
 }
 
 /**
+* Monitoring modes
+*
+* PUSH:
+* Server will push job status changes.
+*
+* PULL:
+* Need to pull and get the Job status changes.
+*
+**/
+enum MonitorMode {
+   PUSH,
+   PULL
+}
+
+/**
  * Resource Job Manager Information
  *
  * resourceJobManagerType:
@@ -104,7 +119,8 @@ struct ResourceJobManager {
     2: required ResourceJobManagerType resourceJobManagerType,
     3: optional string pushMonitoringEndpoint,
     4: optional string jobManagerBinPath,
-    5: optional map<JobManagerCommand, string> jobManagerCommands
+    5: optional map<JobManagerCommand, string> jobManagerCommands,
+    6: optional MonitorMode monitorMode
 }
 
 /**
