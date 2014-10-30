@@ -1368,6 +1368,25 @@ service Airavata {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
 
+ string registerResourceJobManager(1: required computeResourceModel.ResourceJobManager resourceJobManager)
+    throws (1: airavataErrors.InvalidRequestException ire,
+            2: airavataErrors.AiravataClientException ace,
+            3: airavataErrors.AiravataSystemException ase)
+
+ bool updateResourceJobManager(1: required string resourceJobManagerId, 2: required computeResourceModel.ResourceJobManager updatedResourceJobManager)
+     throws (1: airavataErrors.InvalidRequestException ire,
+             2: airavataErrors.AiravataClientException ace,
+             3: airavataErrors.AiravataSystemException ase)
+
+ computeResourceModel.ResourceJobManager getResourceJobManager(1: required string resourceJobManagerId)
+      throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+ bool deleteResourceJobManager(1: required string resourceJobManagerId)
+       throws (1: airavataErrors.InvalidRequestException ire,
+               2: airavataErrors.AiravataClientException ace,
+               3: airavataErrors.AiravataSystemException ase)
 /*
  * Gateway Resource Profile
  *
