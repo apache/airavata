@@ -21,29 +21,25 @@
 
 package org.apache.airavata.gfac;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderConfig;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
 
 /**
@@ -76,7 +72,6 @@ public class Scheduler {
      * @return GFacProvider instance.
      */
     private static GFacProvider getProvider(JobExecutionContext jobExecutionContext) throws GFacException {
-        ComputeResourceDescription hostDescription = jobExecutionContext.getApplicationContext().getComputeResourceDescription();
         String applicationName = jobExecutionContext.getServiceName();
 
         URL resource = Scheduler.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
@@ -113,8 +108,8 @@ public class Scheduler {
             // We give higher preference to applications specific provider if configured
             if (provider == null) {
 
-                jobExecutionContext.getApplicationContext().getComputeResourcePreference().getPreferredJobSubmissionProtocol()
-                String hostClass = hostDescription.getType().getClass().getName();
+                List<JobSubmissionInterface> jobSubmissionInterfaces = jobExecutionContext.getApplicationContext().getComputeResourceDescription().getJobSubmissionInterfaces();
+                String hostClass = jobExecutionContext.getPrefferedJobSubmissionProtocal();
                 providerClassName = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                 Class<? extends GFacProvider> aClass1 = Class.forName(providerClassName).asSubclass(GFacProvider.class);
                 provider = aClass1.newInstance();
@@ -144,9 +139,7 @@ public class Scheduler {
         return provider;
     }
     public static ExecutionMode getExecutionMode(JobExecutionContext jobExecutionContext)throws GFacException{
-       HostDescription hostDescription = jobExecutionContext.getApplicationContext().getHostDescription();
-        String applicationName = jobExecutionContext.getServiceName();
-
+        String applicationName = jobExecutionContext.getApplicationContext().getApplicationInterfaceDescription().getApplicationName();
         URL resource = Scheduler.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
@@ -169,7 +162,7 @@ public class Scheduler {
             // This should be have a single element only.
 
             if (executionMode == null || "".equals(executionMode)) {
-                String hostClass = hostDescription.getType().getClass().getName();
+                String hostClass = jobExecutionContext.getPrefferedJobSubmissionProtocal();
                 executionMode = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
             }
         } catch (XPathExpressionException e) {
