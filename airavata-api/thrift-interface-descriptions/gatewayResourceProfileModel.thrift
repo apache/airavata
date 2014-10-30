@@ -21,6 +21,7 @@
 namespace java org.apache.airavata.model.appcatalog.gatewayprofile
 namespace php Airavata.Model.AppCatalog.GatewayProfile
 namespace cpp apache.airavata.model.appcatalog.gatewayprofile
+include "computeResourceModel.thrift"
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
@@ -54,8 +55,8 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 struct ComputeResourcePreference {
     1: required string computeResourceId,
     2: required bool overridebyAiravata = 1,
-    3: optional string preferredJobSubmissionProtocol,
-    4: optional string preferredDataMovementProtocol,
+    3: optional computeResourceModel.JobSubmissionProtocol preferredJobSubmissionProtocol,
+    4: optional computeResourceModel.DataMovementProtocol preferredDataMovementProtocol,
     5: optional string preferredBatchQueue,
     6: optional string scratchLocation,
     7: optional string allocationProjectNumber
