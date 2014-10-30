@@ -59,15 +59,6 @@ struct JobManagerCommand {
 
 extern const std::map<int, const char*> _JobManagerCommand_VALUES_TO_NAMES;
 
-struct MonitorMode {
-  enum type {
-    PUSH = 0,
-    PULL = 1
-  };
-};
-
-extern const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES;
-
 struct FileSystems {
   enum type {
     HOME = 0,
@@ -104,6 +95,15 @@ struct JobSubmissionProtocol {
 
 extern const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES;
 
+struct MonitorMode {
+  enum type {
+    POLL_JOB_MANAGER = 0,
+    XSEDE_AMQP_SUBSCRIBE = 1
+  };
+};
+
+extern const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES;
+
 struct DataMovementProtocol {
   enum type {
     LOCAL = 0,
@@ -127,20 +127,19 @@ struct ProviderName {
 extern const std::map<int, const char*> _ProviderName_VALUES_TO_NAMES;
 
 typedef struct _ResourceJobManager__isset {
-  _ResourceJobManager__isset() : pushMonitoringEndpoint(false), jobManagerBinPath(false), jobManagerCommands(false), monitorMode(false) {}
+  _ResourceJobManager__isset() : pushMonitoringEndpoint(false), jobManagerBinPath(false), jobManagerCommands(false) {}
   bool pushMonitoringEndpoint;
   bool jobManagerBinPath;
   bool jobManagerCommands;
-  bool monitorMode;
 } _ResourceJobManager__isset;
 
 class ResourceJobManager {
  public:
 
-  static const char* ascii_fingerprint; // = "83F3E1FB1C076C79A1E733A1E531B938";
-  static const uint8_t binary_fingerprint[16]; // = {0x83,0xF3,0xE1,0xFB,0x1C,0x07,0x6C,0x79,0xA1,0xE7,0x33,0xA1,0xE5,0x31,0xB9,0x38};
+  static const char* ascii_fingerprint; // = "F61CAF80247D0E44C8D52504F3A43BED";
+  static const uint8_t binary_fingerprint[16]; // = {0xF6,0x1C,0xAF,0x80,0x24,0x7D,0x0E,0x44,0xC8,0xD5,0x25,0x04,0xF3,0xA4,0x3B,0xED};
 
-  ResourceJobManager() : resourceJobManagerId("DO_NOT_SET_AT_CLIENTS"), resourceJobManagerType((ResourceJobManagerType::type)0), pushMonitoringEndpoint(), jobManagerBinPath(), monitorMode((MonitorMode::type)0) {
+  ResourceJobManager() : resourceJobManagerId("DO_NOT_SET_AT_CLIENTS"), resourceJobManagerType((ResourceJobManagerType::type)0), pushMonitoringEndpoint(), jobManagerBinPath() {
   }
 
   virtual ~ResourceJobManager() throw() {}
@@ -150,7 +149,6 @@ class ResourceJobManager {
   std::string pushMonitoringEndpoint;
   std::string jobManagerBinPath;
   std::map<JobManagerCommand::type, std::string>  jobManagerCommands;
-  MonitorMode::type monitorMode;
 
   _ResourceJobManager__isset __isset;
 
@@ -177,11 +175,6 @@ class ResourceJobManager {
     __isset.jobManagerCommands = true;
   }
 
-  void __set_monitorMode(const MonitorMode::type val) {
-    monitorMode = val;
-    __isset.monitorMode = true;
-  }
-
   bool operator == (const ResourceJobManager & rhs) const
   {
     if (!(resourceJobManagerId == rhs.resourceJobManagerId))
@@ -199,10 +192,6 @@ class ResourceJobManager {
     if (__isset.jobManagerCommands != rhs.__isset.jobManagerCommands)
       return false;
     else if (__isset.jobManagerCommands && !(jobManagerCommands == rhs.jobManagerCommands))
-      return false;
-    if (__isset.monitorMode != rhs.__isset.monitorMode)
-      return false;
-    else if (__isset.monitorMode && !(monitorMode == rhs.monitorMode))
       return false;
     return true;
   }
@@ -493,8 +482,8 @@ void swap(UnicoreDataMovement &a, UnicoreDataMovement &b);
 class LOCALSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "D51508D1A661370F4785A01334DB8637";
-  static const uint8_t binary_fingerprint[16]; // = {0xD5,0x15,0x08,0xD1,0xA6,0x61,0x37,0x0F,0x47,0x85,0xA0,0x13,0x34,0xDB,0x86,0x37};
+  static const char* ascii_fingerprint; // = "A5A35C842CBE1CA9D6A13C5974C6FB8F";
+  static const uint8_t binary_fingerprint[16]; // = {0xA5,0xA3,0x5C,0x84,0x2C,0xBE,0x1C,0xA9,0xD6,0xA1,0x3C,0x59,0x74,0xC6,0xFB,0x8F};
 
   LOCALSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS") {
   }
@@ -571,18 +560,19 @@ class LOCALDataMovement {
 void swap(LOCALDataMovement &a, LOCALDataMovement &b);
 
 typedef struct _SSHJobSubmission__isset {
-  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true) {}
+  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitorMode(false) {}
   bool alternativeSSHHostName;
   bool sshPort;
+  bool monitorMode;
 } _SSHJobSubmission__isset;
 
 class SSHJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "BCAF073DD81C8F6A9ED716A45569D2B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xBC,0xAF,0x07,0x3D,0xD8,0x1C,0x8F,0x6A,0x9E,0xD7,0x16,0xA4,0x55,0x69,0xD2,0xB3};
+  static const char* ascii_fingerprint; // = "A62183DAA7AFF027173705420A9D99D0";
+  static const uint8_t binary_fingerprint[16]; // = {0xA6,0x21,0x83,0xDA,0xA7,0xAF,0xF0,0x27,0x17,0x37,0x05,0x42,0x0A,0x9D,0x99,0xD0};
 
-  SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSSHHostName(), sshPort(22) {
+  SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSSHHostName(), sshPort(22), monitorMode((MonitorMode::type)0) {
   }
 
   virtual ~SSHJobSubmission() throw() {}
@@ -592,6 +582,7 @@ class SSHJobSubmission {
   ResourceJobManager resourceJobManager;
   std::string alternativeSSHHostName;
   int32_t sshPort;
+  MonitorMode::type monitorMode;
 
   _SSHJobSubmission__isset __isset;
 
@@ -617,6 +608,11 @@ class SSHJobSubmission {
     __isset.sshPort = true;
   }
 
+  void __set_monitorMode(const MonitorMode::type val) {
+    monitorMode = val;
+    __isset.monitorMode = true;
+  }
+
   bool operator == (const SSHJobSubmission & rhs) const
   {
     if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
@@ -632,6 +628,10 @@ class SSHJobSubmission {
     if (__isset.sshPort != rhs.__isset.sshPort)
       return false;
     else if (__isset.sshPort && !(sshPort == rhs.sshPort))
+      return false;
+    if (__isset.monitorMode != rhs.__isset.monitorMode)
+      return false;
+    else if (__isset.monitorMode && !(monitorMode == rhs.monitorMode))
       return false;
     return true;
   }
