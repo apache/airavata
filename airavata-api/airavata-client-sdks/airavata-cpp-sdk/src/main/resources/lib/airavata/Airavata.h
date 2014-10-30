@@ -109,6 +109,10 @@ class AiravataIf {
   virtual bool changeDataMovementPriorities(const std::map<std::string, int32_t> & dataMovementPriorityMap) = 0;
   virtual bool deleteJobSubmissionInterface(const std::string& jobSubmissionInterfaceId) = 0;
   virtual bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId) = 0;
+  virtual void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) = 0;
+  virtual bool updateResourceJobManager(const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager) = 0;
+  virtual void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const std::string& resourceJobManagerId) = 0;
+  virtual bool deleteResourceJobManager(const std::string& resourceJobManagerId) = 0;
   virtual void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) = 0;
   virtual void getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return, const std::string& gatewayID) = 0;
   virtual bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) = 0;
@@ -396,6 +400,20 @@ class AiravataNull : virtual public AiravataIf {
     return _return;
   }
   bool deleteDataMovementInterface(const std::string& /* dataMovementInterfaceId */) {
+    bool _return = false;
+    return _return;
+  }
+  void registerResourceJobManager(std::string& /* _return */, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& /* resourceJobManager */) {
+    return;
+  }
+  bool updateResourceJobManager(const std::string& /* resourceJobManagerId */, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& /* updatedResourceJobManager */) {
+    bool _return = false;
+    return _return;
+  }
+  void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& /* _return */, const std::string& /* resourceJobManagerId */) {
+    return;
+  }
+  bool deleteResourceJobManager(const std::string& /* resourceJobManagerId */) {
     bool _return = false;
     return _return;
   }
@@ -10909,6 +10927,542 @@ class Airavata_deleteDataMovementInterface_presult {
 };
 
 
+class Airavata_registerResourceJobManager_args {
+ public:
+
+  Airavata_registerResourceJobManager_args() {
+  }
+
+  virtual ~Airavata_registerResourceJobManager_args() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager resourceJobManager;
+
+  void __set_resourceJobManager(const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& val) {
+    resourceJobManager = val;
+  }
+
+  bool operator == (const Airavata_registerResourceJobManager_args & rhs) const
+  {
+    if (!(resourceJobManager == rhs.resourceJobManager))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerResourceJobManager_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerResourceJobManager_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_registerResourceJobManager_pargs {
+ public:
+
+
+  virtual ~Airavata_registerResourceJobManager_pargs() throw() {}
+
+  const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager* resourceJobManager;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerResourceJobManager_result__isset {
+  _Airavata_registerResourceJobManager_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_registerResourceJobManager_result__isset;
+
+class Airavata_registerResourceJobManager_result {
+ public:
+
+  Airavata_registerResourceJobManager_result() : success() {
+  }
+
+  virtual ~Airavata_registerResourceJobManager_result() throw() {}
+
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerResourceJobManager_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_registerResourceJobManager_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerResourceJobManager_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerResourceJobManager_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerResourceJobManager_presult__isset {
+  _Airavata_registerResourceJobManager_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_registerResourceJobManager_presult__isset;
+
+class Airavata_registerResourceJobManager_presult {
+ public:
+
+
+  virtual ~Airavata_registerResourceJobManager_presult() throw() {}
+
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerResourceJobManager_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_updateResourceJobManager_args {
+ public:
+
+  Airavata_updateResourceJobManager_args() : resourceJobManagerId() {
+  }
+
+  virtual ~Airavata_updateResourceJobManager_args() throw() {}
+
+  std::string resourceJobManagerId;
+   ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager updatedResourceJobManager;
+
+  void __set_resourceJobManagerId(const std::string& val) {
+    resourceJobManagerId = val;
+  }
+
+  void __set_updatedResourceJobManager(const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& val) {
+    updatedResourceJobManager = val;
+  }
+
+  bool operator == (const Airavata_updateResourceJobManager_args & rhs) const
+  {
+    if (!(resourceJobManagerId == rhs.resourceJobManagerId))
+      return false;
+    if (!(updatedResourceJobManager == rhs.updatedResourceJobManager))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateResourceJobManager_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateResourceJobManager_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_updateResourceJobManager_pargs {
+ public:
+
+
+  virtual ~Airavata_updateResourceJobManager_pargs() throw() {}
+
+  const std::string* resourceJobManagerId;
+  const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager* updatedResourceJobManager;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateResourceJobManager_result__isset {
+  _Airavata_updateResourceJobManager_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateResourceJobManager_result__isset;
+
+class Airavata_updateResourceJobManager_result {
+ public:
+
+  Airavata_updateResourceJobManager_result() : success(0) {
+  }
+
+  virtual ~Airavata_updateResourceJobManager_result() throw() {}
+
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateResourceJobManager_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_updateResourceJobManager_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateResourceJobManager_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateResourceJobManager_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateResourceJobManager_presult__isset {
+  _Airavata_updateResourceJobManager_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateResourceJobManager_presult__isset;
+
+class Airavata_updateResourceJobManager_presult {
+ public:
+
+
+  virtual ~Airavata_updateResourceJobManager_presult() throw() {}
+
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateResourceJobManager_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getResourceJobManager_args {
+ public:
+
+  Airavata_getResourceJobManager_args() : resourceJobManagerId() {
+  }
+
+  virtual ~Airavata_getResourceJobManager_args() throw() {}
+
+  std::string resourceJobManagerId;
+
+  void __set_resourceJobManagerId(const std::string& val) {
+    resourceJobManagerId = val;
+  }
+
+  bool operator == (const Airavata_getResourceJobManager_args & rhs) const
+  {
+    if (!(resourceJobManagerId == rhs.resourceJobManagerId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getResourceJobManager_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getResourceJobManager_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getResourceJobManager_pargs {
+ public:
+
+
+  virtual ~Airavata_getResourceJobManager_pargs() throw() {}
+
+  const std::string* resourceJobManagerId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getResourceJobManager_result__isset {
+  _Airavata_getResourceJobManager_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getResourceJobManager_result__isset;
+
+class Airavata_getResourceJobManager_result {
+ public:
+
+  Airavata_getResourceJobManager_result() {
+  }
+
+  virtual ~Airavata_getResourceJobManager_result() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getResourceJobManager_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getResourceJobManager_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getResourceJobManager_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getResourceJobManager_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getResourceJobManager_presult__isset {
+  _Airavata_getResourceJobManager_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getResourceJobManager_presult__isset;
+
+class Airavata_getResourceJobManager_presult {
+ public:
+
+
+  virtual ~Airavata_getResourceJobManager_presult() throw() {}
+
+   ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getResourceJobManager_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_deleteResourceJobManager_args {
+ public:
+
+  Airavata_deleteResourceJobManager_args() : resourceJobManagerId() {
+  }
+
+  virtual ~Airavata_deleteResourceJobManager_args() throw() {}
+
+  std::string resourceJobManagerId;
+
+  void __set_resourceJobManagerId(const std::string& val) {
+    resourceJobManagerId = val;
+  }
+
+  bool operator == (const Airavata_deleteResourceJobManager_args & rhs) const
+  {
+    if (!(resourceJobManagerId == rhs.resourceJobManagerId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteResourceJobManager_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteResourceJobManager_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_deleteResourceJobManager_pargs {
+ public:
+
+
+  virtual ~Airavata_deleteResourceJobManager_pargs() throw() {}
+
+  const std::string* resourceJobManagerId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteResourceJobManager_result__isset {
+  _Airavata_deleteResourceJobManager_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteResourceJobManager_result__isset;
+
+class Airavata_deleteResourceJobManager_result {
+ public:
+
+  Airavata_deleteResourceJobManager_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteResourceJobManager_result() throw() {}
+
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteResourceJobManager_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_deleteResourceJobManager_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteResourceJobManager_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteResourceJobManager_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteResourceJobManager_presult__isset {
+  _Airavata_deleteResourceJobManager_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteResourceJobManager_presult__isset;
+
+class Airavata_deleteResourceJobManager_presult {
+ public:
+
+
+  virtual ~Airavata_deleteResourceJobManager_presult() throw() {}
+
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteResourceJobManager_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_registerGatewayResourceProfile_args {
  public:
 
@@ -12403,6 +12957,18 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId);
   void send_deleteDataMovementInterface(const std::string& dataMovementInterfaceId);
   bool recv_deleteDataMovementInterface();
+  void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
+  void send_registerResourceJobManager(const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager);
+  void recv_registerResourceJobManager(std::string& _return);
+  bool updateResourceJobManager(const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager);
+  void send_updateResourceJobManager(const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager);
+  bool recv_updateResourceJobManager();
+  void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const std::string& resourceJobManagerId);
+  void send_getResourceJobManager(const std::string& resourceJobManagerId);
+  void recv_getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return);
+  bool deleteResourceJobManager(const std::string& resourceJobManagerId);
+  void send_deleteResourceJobManager(const std::string& resourceJobManagerId);
+  bool recv_deleteResourceJobManager();
   void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile);
   void send_registerGatewayResourceProfile(const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile);
   void recv_registerGatewayResourceProfile(std::string& _return);
@@ -12522,6 +13088,10 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_changeDataMovementPriorities(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteJobSubmissionInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteDataMovementInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_registerResourceJobManager(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateResourceJobManager(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getResourceJobManager(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteResourceJobManager(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerGatewayResourceProfile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getGatewayResourceProfile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateGatewayResourceProfile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -12611,6 +13181,10 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["changeDataMovementPriorities"] = &AiravataProcessor::process_changeDataMovementPriorities;
     processMap_["deleteJobSubmissionInterface"] = &AiravataProcessor::process_deleteJobSubmissionInterface;
     processMap_["deleteDataMovementInterface"] = &AiravataProcessor::process_deleteDataMovementInterface;
+    processMap_["registerResourceJobManager"] = &AiravataProcessor::process_registerResourceJobManager;
+    processMap_["updateResourceJobManager"] = &AiravataProcessor::process_updateResourceJobManager;
+    processMap_["getResourceJobManager"] = &AiravataProcessor::process_getResourceJobManager;
+    processMap_["deleteResourceJobManager"] = &AiravataProcessor::process_deleteResourceJobManager;
     processMap_["registerGatewayResourceProfile"] = &AiravataProcessor::process_registerGatewayResourceProfile;
     processMap_["getGatewayResourceProfile"] = &AiravataProcessor::process_getGatewayResourceProfile;
     processMap_["updateGatewayResourceProfile"] = &AiravataProcessor::process_updateGatewayResourceProfile;
@@ -13389,6 +13963,44 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->deleteDataMovementInterface(dataMovementInterfaceId);
     }
     return ifaces_[i]->deleteDataMovementInterface(dataMovementInterfaceId);
+  }
+
+  void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->registerResourceJobManager(_return, resourceJobManager);
+    }
+    ifaces_[i]->registerResourceJobManager(_return, resourceJobManager);
+    return;
+  }
+
+  bool updateResourceJobManager(const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
+    }
+    return ifaces_[i]->updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
+  }
+
+  void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const std::string& resourceJobManagerId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getResourceJobManager(_return, resourceJobManagerId);
+    }
+    ifaces_[i]->getResourceJobManager(_return, resourceJobManagerId);
+    return;
+  }
+
+  bool deleteResourceJobManager(const std::string& resourceJobManagerId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteResourceJobManager(resourceJobManagerId);
+    }
+    return ifaces_[i]->deleteResourceJobManager(resourceJobManagerId);
   }
 
   void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {

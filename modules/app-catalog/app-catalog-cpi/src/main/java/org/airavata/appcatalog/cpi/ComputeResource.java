@@ -55,6 +55,12 @@ public interface ComputeResource {
 
 
     String addResourceJobManager(ResourceJobManager resourceJobManager) throws AppCatalogException;
+
+    void updateResourceJobManager (String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws AppCatalogException;
+
+    ResourceJobManager getResourceJobManager (String resourceJobManagerId) throws AppCatalogException;
+
+    void deleteResourceJobManager (String resourceJobManagerId) throws AppCatalogException;
     
     /**
      * This will add a SSHJobSubmission protocol to the database
@@ -77,6 +83,7 @@ public interface ComputeResource {
      * @return uniquely generated submission id
      */
     String addUNICOREJobSubmission (UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException;
+
 
 
     String addLocalDataMovement (LOCALDataMovement localDataMovement) throws AppCatalogException;

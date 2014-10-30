@@ -738,7 +738,56 @@ public class ComputeResourceImpl implements ComputeResource {
 		return resource.getResourceJobManagerId();
 	}
 
-	@Override
+    @Override
+    public void updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws AppCatalogException {
+        try {
+            ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(updatedResourceJobManager);
+            resource.setResourceJobManagerId(resourceJobManagerId);
+            resource.save();
+            Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
+            if (jobManagerCommands!=null) {
+                for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
+                    JobManagerCommandResource r = new JobManagerCommandResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.JobManagerCommandConstants.RESOURCE_JOB_MANAGER_ID, resourceJobManagerId);
+                    ids.put(AbstractResource.JobManagerCommandConstants.COMMAND_TYPE, commandType.toString());
+                    JobManagerCommandResource existingCommand = (JobManagerCommandResource)r.get(ids);
+                    existingCommand.setCommandType(commandType.toString());
+                    existingCommand.setCommand(jobManagerCommands.get(commandType));
+                    existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
+                    existingCommand.save();
+                }
+            }
+        }catch (Exception e){
+            logger.error("Error while updating resource job manager..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
+        try {
+            ResourceJobManagerResource resource = new ResourceJobManagerResource();
+            ResourceJobManagerResource jobManagerResource = (ResourceJobManagerResource)resource.get(resourceJobManagerId);
+            return AppCatalogThriftConversion.getResourceJobManager(jobManagerResource);
+        }catch (Exception e){
+            logger.error("Error while retrieving resource job manager..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public void deleteResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
+        try {
+            ResourceJobManagerResource resource = new ResourceJobManagerResource();
+            resource.remove(resourceJobManagerId);
+        }catch (Exception e){
+            logger.error("Error while deleting resource job manager..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
 	public String addLocalJobSubmission(LOCALSubmission localSubmission)
 			throws AppCatalogException {
 		localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));

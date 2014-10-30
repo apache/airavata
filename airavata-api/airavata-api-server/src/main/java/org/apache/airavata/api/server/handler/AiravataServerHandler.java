@@ -2447,6 +2447,64 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public String registerResourceJobManager(ResourceJobManager resourceJobManager) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().addResourceJobManager(resourceJobManager);
+        } catch (AppCatalogException e) {
+            logger.errorId(resourceJobManager.getResourceJobManagerId(), "Error while adding resource job manager...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding resource job manager. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getComputeResource().updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.errorId(resourceJobManagerId, "Error while updating resource job manager...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating resource job manager. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getResourceJobManager(resourceJobManagerId);
+        } catch (AppCatalogException e) {
+            logger.errorId(resourceJobManagerId, "Error while retrieving resource job manager...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving resource job manager. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean deleteResourceJobManager(String resourceJobManagerId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getComputeResource().deleteResourceJobManager(resourceJobManagerId);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.errorId(resourceJobManagerId, "Error while deleting resource job manager...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting resource job manager. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Register a Gateway Resource Profile.
      *
