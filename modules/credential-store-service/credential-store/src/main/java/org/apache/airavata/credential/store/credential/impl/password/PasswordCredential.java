@@ -22,13 +22,14 @@
 package org.apache.airavata.credential.store.credential.impl.password;
 
 import org.apache.airavata.credential.store.credential.Credential;
+import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 
 import java.util.Date;
 
 /**
  * User name password credentials.
  */
-public class PasswordCredential extends Credential {
+public class PasswordCredential extends SSHCredential {
 
     private String userName;
     private String password;

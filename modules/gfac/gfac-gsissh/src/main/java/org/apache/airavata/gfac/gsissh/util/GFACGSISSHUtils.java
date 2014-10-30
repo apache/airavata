@@ -163,7 +163,7 @@ public class GFACGSISSHUtils {
             } catch (Exception e) {
                 throw new GFacException("An error occurred while creating GSI security context", e);
             }
-            jobExecutionContext.addSecurityContext(Constants.GSI_SECURITY_CONTEXT, context);
+            jobExecutionContext.addSecurityContext(Constants.GSI_SECURITY_CONTEXT+"-"+registeredHost.getType().getHostAddress(), context);
         }
     }
 
