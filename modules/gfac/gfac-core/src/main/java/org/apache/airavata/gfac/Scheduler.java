@@ -109,7 +109,7 @@ public class Scheduler {
             if (provider == null) {
 
                 List<JobSubmissionInterface> jobSubmissionInterfaces = jobExecutionContext.getApplicationContext().getComputeResourceDescription().getJobSubmissionInterfaces();
-                String hostClass = jobExecutionContext.getPrefferedJobSubmissionProtocal();
+                String hostClass = jobExecutionContext.getPreferredJobSubmissionProtocol().toString();
                 providerClassName = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                 Class<? extends GFacProvider> aClass1 = Class.forName(providerClassName).asSubclass(GFacProvider.class);
                 provider = aClass1.newInstance();
@@ -162,7 +162,7 @@ public class Scheduler {
             // This should be have a single element only.
 
             if (executionMode == null || "".equals(executionMode)) {
-                String hostClass = jobExecutionContext.getPrefferedJobSubmissionProtocal();
+                String hostClass = jobExecutionContext.getPreferredJobSubmissionProtocol().toString();
                 executionMode = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
             }
         } catch (XPathExpressionException e) {

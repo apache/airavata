@@ -53,7 +53,7 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
         /*
         * Stdout and Stderr for Shell
         */
-        data.append(",").append(jobExecutionContext.getStandaredOutput()).append(",").append(jobExecutionContext.getStandaredError());
+        data.append(",").append(jobExecutionContext.getStandardOutput()).append(",").append(jobExecutionContext.getStandardError());
 
 
         logger.info("Recoverable data is saving to zk: " + data.toString());
@@ -74,8 +74,8 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
             jobExecutionContext.setWorkingDir(split[1]);
             jobExecutionContext.setInputDir(split[2]);
             jobExecutionContext.setOutputDir(split[3]);
-            jobExecutionContext.setStandaredOutput(split[4]);
-            jobExecutionContext.setStandaredError(split[5]);
+            jobExecutionContext.setStandardOutput(split[4]);
+            jobExecutionContext.setStandardError(split[5]);
         } catch (Exception e) {
             throw new GFacHandlerException(e);
         }
