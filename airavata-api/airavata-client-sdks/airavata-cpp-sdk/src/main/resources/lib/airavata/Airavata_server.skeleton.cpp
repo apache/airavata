@@ -424,6 +424,26 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteDataMovementInterface\n");
   }
 
+  void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) {
+    // Your implementation goes here
+    printf("registerResourceJobManager\n");
+  }
+
+  bool updateResourceJobManager(const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager) {
+    // Your implementation goes here
+    printf("updateResourceJobManager\n");
+  }
+
+  void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const std::string& resourceJobManagerId) {
+    // Your implementation goes here
+    printf("getResourceJobManager\n");
+  }
+
+  bool deleteResourceJobManager(const std::string& resourceJobManagerId) {
+    // Your implementation goes here
+    printf("deleteResourceJobManager\n");
+  }
+
   void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
     // Your implementation goes here
     printf("registerGatewayResourceProfile\n");
