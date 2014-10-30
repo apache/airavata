@@ -49,15 +49,6 @@ final class JobManagerCommand {
   );
 }
 
-final class MonitorMode {
-  const PUSH = 0;
-  const PULL = 1;
-  static public $__names = array(
-    0 => 'PUSH',
-    1 => 'PULL',
-  );
-}
-
 final class FileSystems {
   const HOME = 0;
   const WORK = 1;
@@ -103,6 +94,15 @@ final class JobSubmissionProtocol {
   );
 }
 
+final class MonitorMode {
+  const POLL_JOB_MANAGER = 0;
+  const XSEDE_AMQP_SUBSCRIBE = 1;
+  static public $__names = array(
+    0 => 'POLL_JOB_MANAGER',
+    1 => 'XSEDE_AMQP_SUBSCRIBE',
+  );
+}
+
 final class DataMovementProtocol {
   const LOCAL = 0;
   const SCP = 1;
@@ -137,7 +137,6 @@ class ResourceJobManager {
   public $pushMonitoringEndpoint = null;
   public $jobManagerBinPath = null;
   public $jobManagerCommands = null;
-  public $monitorMode = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -170,10 +169,6 @@ class ResourceJobManager {
             'type' => TType::STRING,
             ),
           ),
-        6 => array(
-          'var' => 'monitorMode',
-          'type' => TType::I32,
-          ),
         );
     }
     if (is_array($vals)) {
@@ -191,9 +186,6 @@ class ResourceJobManager {
       }
       if (isset($vals['jobManagerCommands'])) {
         $this->jobManagerCommands = $vals['jobManagerCommands'];
-      }
-      if (isset($vals['monitorMode'])) {
-        $this->monitorMode = $vals['monitorMode'];
       }
     }
   }
@@ -265,13 +257,6 @@ class ResourceJobManager {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->monitorMode);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -321,11 +306,6 @@ class ResourceJobManager {
         }
         $output->writeMapEnd();
       }
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->monitorMode !== null) {
-      $xfer += $output->writeFieldBegin('monitorMode', TType::I32, 6);
-      $xfer += $output->writeI32($this->monitorMode);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -1066,6 +1046,7 @@ class SSHJobSubmission {
   public $resourceJobManager = null;
   public $alternativeSSHHostName = null;
   public $sshPort = 22;
+  public $monitorMode = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1091,6 +1072,10 @@ class SSHJobSubmission {
           'var' => 'sshPort',
           'type' => TType::I32,
           ),
+        6 => array(
+          'var' => 'monitorMode',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1108,6 +1093,9 @@ class SSHJobSubmission {
       }
       if (isset($vals['sshPort'])) {
         $this->sshPort = $vals['sshPort'];
+      }
+      if (isset($vals['monitorMode'])) {
+        $this->monitorMode = $vals['monitorMode'];
       }
     }
   }
@@ -1167,6 +1155,13 @@ class SSHJobSubmission {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 6:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->monitorMode);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1206,6 +1201,11 @@ class SSHJobSubmission {
     if ($this->sshPort !== null) {
       $xfer += $output->writeFieldBegin('sshPort', TType::I32, 5);
       $xfer += $output->writeI32($this->sshPort);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->monitorMode !== null) {
+      $xfer += $output->writeFieldBegin('monitorMode', TType::I32, 6);
+      $xfer += $output->writeI32($this->monitorMode);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

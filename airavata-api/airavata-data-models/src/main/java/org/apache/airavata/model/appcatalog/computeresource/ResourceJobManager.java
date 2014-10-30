@@ -74,7 +74,6 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField PUSH_MONITORING_ENDPOINT_FIELD_DESC = new org.apache.thrift.protocol.TField("pushMonitoringEndpoint", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField JOB_MANAGER_BIN_PATH_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerBinPath", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField JOB_MANAGER_COMMANDS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobManagerCommands", org.apache.thrift.protocol.TType.MAP, (short)5);
-  private static final org.apache.thrift.protocol.TField MONITOR_MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("monitorMode", org.apache.thrift.protocol.TType.I32, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -87,7 +86,6 @@ import org.slf4j.LoggerFactory;
   private String pushMonitoringEndpoint; // optional
   private String jobManagerBinPath; // optional
   private Map<JobManagerCommand,String> jobManagerCommands; // optional
-  private MonitorMode monitorMode; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -99,12 +97,7 @@ import org.slf4j.LoggerFactory;
     RESOURCE_JOB_MANAGER_TYPE((short)2, "resourceJobManagerType"),
     PUSH_MONITORING_ENDPOINT((short)3, "pushMonitoringEndpoint"),
     JOB_MANAGER_BIN_PATH((short)4, "jobManagerBinPath"),
-    JOB_MANAGER_COMMANDS((short)5, "jobManagerCommands"),
-    /**
-     * 
-     * @see MonitorMode
-     */
-    MONITOR_MODE((short)6, "monitorMode");
+    JOB_MANAGER_COMMANDS((short)5, "jobManagerCommands");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -129,8 +122,6 @@ import org.slf4j.LoggerFactory;
           return JOB_MANAGER_BIN_PATH;
         case 5: // JOB_MANAGER_COMMANDS
           return JOB_MANAGER_COMMANDS;
-        case 6: // MONITOR_MODE
-          return MONITOR_MODE;
         default:
           return null;
       }
@@ -171,7 +162,7 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.PUSH_MONITORING_ENDPOINT,_Fields.JOB_MANAGER_BIN_PATH,_Fields.JOB_MANAGER_COMMANDS,_Fields.MONITOR_MODE};
+  private _Fields optionals[] = {_Fields.PUSH_MONITORING_ENDPOINT,_Fields.JOB_MANAGER_BIN_PATH,_Fields.JOB_MANAGER_COMMANDS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -187,8 +178,6 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.MapMetaData(org.apache.thrift.protocol.TType.MAP, 
             new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, JobManagerCommand.class), 
             new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
-    tmpMap.put(_Fields.MONITOR_MODE, new org.apache.thrift.meta_data.FieldMetaData("monitorMode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, MonitorMode.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ResourceJobManager.class, metaDataMap);
   }
@@ -238,9 +227,6 @@ import org.slf4j.LoggerFactory;
       }
       this.jobManagerCommands = __this__jobManagerCommands;
     }
-    if (other.isSetMonitorMode()) {
-      this.monitorMode = other.monitorMode;
-    }
   }
 
   public ResourceJobManager deepCopy() {
@@ -255,7 +241,6 @@ import org.slf4j.LoggerFactory;
     this.pushMonitoringEndpoint = null;
     this.jobManagerBinPath = null;
     this.jobManagerCommands = null;
-    this.monitorMode = null;
   }
 
   public String getResourceJobManagerId() {
@@ -392,37 +377,6 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  /**
-   * 
-   * @see MonitorMode
-   */
-  public MonitorMode getMonitorMode() {
-    return this.monitorMode;
-  }
-
-  /**
-   * 
-   * @see MonitorMode
-   */
-  public void setMonitorMode(MonitorMode monitorMode) {
-    this.monitorMode = monitorMode;
-  }
-
-  public void unsetMonitorMode() {
-    this.monitorMode = null;
-  }
-
-  /** Returns true if field monitorMode is set (has been assigned a value) and false otherwise */
-  public boolean isSetMonitorMode() {
-    return this.monitorMode != null;
-  }
-
-  public void setMonitorModeIsSet(boolean value) {
-    if (!value) {
-      this.monitorMode = null;
-    }
-  }
-
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case RESOURCE_JOB_MANAGER_ID:
@@ -465,14 +419,6 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case MONITOR_MODE:
-      if (value == null) {
-        unsetMonitorMode();
-      } else {
-        setMonitorMode((MonitorMode)value);
-      }
-      break;
-
     }
   }
 
@@ -492,9 +438,6 @@ import org.slf4j.LoggerFactory;
 
     case JOB_MANAGER_COMMANDS:
       return getJobManagerCommands();
-
-    case MONITOR_MODE:
-      return getMonitorMode();
 
     }
     throw new IllegalStateException();
@@ -517,8 +460,6 @@ import org.slf4j.LoggerFactory;
       return isSetJobManagerBinPath();
     case JOB_MANAGER_COMMANDS:
       return isSetJobManagerCommands();
-    case MONITOR_MODE:
-      return isSetMonitorMode();
     }
     throw new IllegalStateException();
   }
@@ -578,15 +519,6 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_jobManagerCommands && that_present_jobManagerCommands))
         return false;
       if (!this.jobManagerCommands.equals(that.jobManagerCommands))
-        return false;
-    }
-
-    boolean this_present_monitorMode = true && this.isSetMonitorMode();
-    boolean that_present_monitorMode = true && that.isSetMonitorMode();
-    if (this_present_monitorMode || that_present_monitorMode) {
-      if (!(this_present_monitorMode && that_present_monitorMode))
-        return false;
-      if (!this.monitorMode.equals(that.monitorMode))
         return false;
     }
 
@@ -656,16 +588,6 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetMonitorMode()).compareTo(other.isSetMonitorMode());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetMonitorMode()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.monitorMode, other.monitorMode);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     return 0;
   }
 
@@ -728,16 +650,6 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.jobManagerCommands);
-      }
-      first = false;
-    }
-    if (isSetMonitorMode()) {
-      if (!first) sb.append(", ");
-      sb.append("monitorMode:");
-      if (this.monitorMode == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.monitorMode);
       }
       first = false;
     }
@@ -844,14 +756,6 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // MONITOR_MODE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.monitorMode = MonitorMode.findByValue(iprot.readI32());
-              struct.setMonitorModeIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -904,13 +808,6 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.monitorMode != null) {
-        if (struct.isSetMonitorMode()) {
-          oprot.writeFieldBegin(MONITOR_MODE_FIELD_DESC);
-          oprot.writeI32(struct.monitorMode.getValue());
-          oprot.writeFieldEnd();
-        }
-      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -940,10 +837,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetJobManagerCommands()) {
         optionals.set(2);
       }
-      if (struct.isSetMonitorMode()) {
-        optionals.set(3);
-      }
-      oprot.writeBitSet(optionals, 4);
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetPushMonitoringEndpoint()) {
         oprot.writeString(struct.pushMonitoringEndpoint);
       }
@@ -960,9 +854,6 @@ import org.slf4j.LoggerFactory;
           }
         }
       }
-      if (struct.isSetMonitorMode()) {
-        oprot.writeI32(struct.monitorMode.getValue());
-      }
     }
 
     @Override
@@ -972,7 +863,7 @@ import org.slf4j.LoggerFactory;
       struct.setResourceJobManagerIdIsSet(true);
       struct.resourceJobManagerType = ResourceJobManagerType.findByValue(iprot.readI32());
       struct.setResourceJobManagerTypeIsSet(true);
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.pushMonitoringEndpoint = iprot.readString();
         struct.setPushMonitoringEndpointIsSet(true);
@@ -995,10 +886,6 @@ import org.slf4j.LoggerFactory;
           }
         }
         struct.setJobManagerCommandsIsSet(true);
-      }
-      if (incoming.get(3)) {
-        struct.monitorMode = MonitorMode.findByValue(iprot.readI32());
-        struct.setMonitorModeIsSet(true);
       }
     }
   }
