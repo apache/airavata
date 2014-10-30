@@ -52,6 +52,7 @@ import org.apache.airavata.messaging.core.PublisherFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -298,6 +299,52 @@ public class BetterGfacImpl implements GFac,Watcher {
         jobExecutionContext.setGfac(this);
         jobExecutionContext.setZk(zk);
         jobExecutionContext.setCredentialStoreToken(AiravataZKUtils.getExpTokenId(zk, experimentID, taskID));
+        if (gatewayResourcePreferences != null ) {
+            if (gatewayResourcePreferences.getScratchLocation() == null) {
+                gatewayResourcePreferences.setScratchLocation("/tmp");
+            }
+
+            /**
+             * Working dir
+             */
+            String workingDir = gatewayResourcePreferences.getScratchLocation() + File.separator + jobExecutionContext.getExperimentID();
+            jobExecutionContext.setWorkingDir(workingDir);
+
+            /*
+            * Input and Output Directory
+            */
+            jobExecutionContext.setInputDir(workingDir + File.separator + Constants.INPUT_DATA_DIR_VAR_NAME);
+            jobExecutionContext.setOutputDir(workingDir + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
+
+            /*
+            * Stdout and Stderr for Shell
+            */
+            jobExecutionContext.setStandaredOutput(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stdout");
+            jobExecutionContext.setStandaredError(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
+        }
+
+        List<JobSubmissionInterface> jobSubmissionInterfaces = computeResource.getJobSubmissionInterfaces();
+        String preferredJobSubmissionProtocol = gatewayResourcePreferences.getPreferredJobSubmissionProtocol();
+        String hostClass;
+        if (preferredJobSubmissionProtocol != null){
+            hostClass = preferredJobSubmissionProtocol;
+        }else {
+            if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()){
+                int lowestPriority = jobSubmissionInterfaces.get(0).getPriorityOrder();
+                String selectedHost = null;
+                for (int i = 0; i < jobSubmissionInterfaces.size() - 1; i++){
+                    if (jobSubmissionInterfaces.get(i+1).getPriorityOrder() < lowestPriority ){
+                        lowestPriority = jobSubmissionInterfaces.get(i+1).getPriorityOrder();
+                        selectedHost = jobSubmissionInterfaces.get(i+1).getJobSubmissionProtocol().toString();
+                    }
+                }
+                hostClass = selectedHost;
+            }else {
+                throw new GFacException("Compute resource should have atleast one job submission interface defined...");
+            }
+        }
+        jobExecutionContext.setPrefferedJobSubmissionProtocal(hostClass);
+
         return jobExecutionContext;
     }
 
