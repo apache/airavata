@@ -31,17 +31,17 @@ import org.apache.thrift.TEnum;
 /**
  * Monitoring modes
  * 
- * PUSH:
- * Server will push job status changes.
+ * POLL_JOB_MANAGER:
+ * GFac need to pull job status changes.
  * 
- * PULL:
- * Need to pull and get the Job status changes.
+ * XSEDE_AMQP_SUBSCRIBE:
+ * Server will publish job status changes to amqp servert.
  * 
  * 
  */
 @SuppressWarnings("all") public enum MonitorMode implements org.apache.thrift.TEnum {
-  PUSH(0),
-  PULL(1);
+  POLL_JOB_MANAGER(0),
+  XSEDE_AMQP_SUBSCRIBE(1);
 
   private final int value;
 
@@ -63,9 +63,9 @@ import org.apache.thrift.TEnum;
   public static MonitorMode findByValue(int value) { 
     switch (value) {
       case 0:
-        return PUSH;
+        return POLL_JOB_MANAGER;
       case 1:
-        return PULL;
+        return XSEDE_AMQP_SUBSCRIBE;
       default:
         return null;
     }
