@@ -15435,7 +15435,7 @@ uint32_t Airavata_updateLocalDataMovementDetails_args::read(::apache::thrift::pr
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_jobSubmissionInterfaceId = false;
+  bool isset_dataMovementInterfaceId = false;
   bool isset_localDataMovement = false;
 
   while (true)
@@ -15448,8 +15448,8 @@ uint32_t Airavata_updateLocalDataMovementDetails_args::read(::apache::thrift::pr
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->jobSubmissionInterfaceId);
-          isset_jobSubmissionInterfaceId = true;
+          xfer += iprot->readString(this->dataMovementInterfaceId);
+          isset_dataMovementInterfaceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -15471,7 +15471,7 @@ uint32_t Airavata_updateLocalDataMovementDetails_args::read(::apache::thrift::pr
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_jobSubmissionInterfaceId)
+  if (!isset_dataMovementInterfaceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_localDataMovement)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -15482,8 +15482,8 @@ uint32_t Airavata_updateLocalDataMovementDetails_args::write(::apache::thrift::p
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_updateLocalDataMovementDetails_args");
 
-  xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->jobSubmissionInterfaceId);
+  xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->dataMovementInterfaceId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("localDataMovement", ::apache::thrift::protocol::T_STRUCT, 2);
@@ -15499,8 +15499,8 @@ uint32_t Airavata_updateLocalDataMovementDetails_pargs::write(::apache::thrift::
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_updateLocalDataMovementDetails_pargs");
 
-  xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->jobSubmissionInterfaceId)));
+  xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->dataMovementInterfaceId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("localDataMovement", ::apache::thrift::protocol::T_STRUCT, 2);
@@ -16167,7 +16167,7 @@ uint32_t Airavata_updateSCPDataMovementDetails_args::read(::apache::thrift::prot
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_jobSubmissionInterfaceId = false;
+  bool isset_dataMovementInterfaceId = false;
   bool isset_scpDataMovement = false;
 
   while (true)
@@ -16180,8 +16180,8 @@ uint32_t Airavata_updateSCPDataMovementDetails_args::read(::apache::thrift::prot
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->jobSubmissionInterfaceId);
-          isset_jobSubmissionInterfaceId = true;
+          xfer += iprot->readString(this->dataMovementInterfaceId);
+          isset_dataMovementInterfaceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -16203,7 +16203,7 @@ uint32_t Airavata_updateSCPDataMovementDetails_args::read(::apache::thrift::prot
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_jobSubmissionInterfaceId)
+  if (!isset_dataMovementInterfaceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_scpDataMovement)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -16214,8 +16214,8 @@ uint32_t Airavata_updateSCPDataMovementDetails_args::write(::apache::thrift::pro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_updateSCPDataMovementDetails_args");
 
-  xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->jobSubmissionInterfaceId);
+  xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->dataMovementInterfaceId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("scpDataMovement", ::apache::thrift::protocol::T_STRUCT, 2);
@@ -16231,8 +16231,8 @@ uint32_t Airavata_updateSCPDataMovementDetails_pargs::write(::apache::thrift::pr
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_updateSCPDataMovementDetails_pargs");
 
-  xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->jobSubmissionInterfaceId)));
+  xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->dataMovementInterfaceId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("scpDataMovement", ::apache::thrift::protocol::T_STRUCT, 2);
@@ -16899,7 +16899,7 @@ uint32_t Airavata_updateGridFTPDataMovementDetails_args::read(::apache::thrift::
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_jobSubmissionInterfaceId = false;
+  bool isset_dataMovementInterfaceId = false;
   bool isset_gridFTPDataMovement = false;
 
   while (true)
@@ -16912,8 +16912,8 @@ uint32_t Airavata_updateGridFTPDataMovementDetails_args::read(::apache::thrift::
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->jobSubmissionInterfaceId);
-          isset_jobSubmissionInterfaceId = true;
+          xfer += iprot->readString(this->dataMovementInterfaceId);
+          isset_dataMovementInterfaceId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -16935,7 +16935,7 @@ uint32_t Airavata_updateGridFTPDataMovementDetails_args::read(::apache::thrift::
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_jobSubmissionInterfaceId)
+  if (!isset_dataMovementInterfaceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_gridFTPDataMovement)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -16946,8 +16946,8 @@ uint32_t Airavata_updateGridFTPDataMovementDetails_args::write(::apache::thrift:
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_updateGridFTPDataMovementDetails_args");
 
-  xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->jobSubmissionInterfaceId);
+  xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->dataMovementInterfaceId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("gridFTPDataMovement", ::apache::thrift::protocol::T_STRUCT, 2);
@@ -16963,8 +16963,8 @@ uint32_t Airavata_updateGridFTPDataMovementDetails_pargs::write(::apache::thrift
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_updateGridFTPDataMovementDetails_pargs");
 
-  xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString((*(this->jobSubmissionInterfaceId)));
+  xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->dataMovementInterfaceId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("gridFTPDataMovement", ::apache::thrift::protocol::T_STRUCT, 2);
@@ -18372,6 +18372,7 @@ uint32_t Airavata_deleteJobSubmissionInterface_args::read(::apache::thrift::prot
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_computeResourceId = false;
   bool isset_jobSubmissionInterfaceId = false;
 
   while (true)
@@ -18383,6 +18384,14 @@ uint32_t Airavata_deleteJobSubmissionInterface_args::read(::apache::thrift::prot
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->computeResourceId);
+          isset_computeResourceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->jobSubmissionInterfaceId);
           isset_jobSubmissionInterfaceId = true;
@@ -18399,6 +18408,8 @@ uint32_t Airavata_deleteJobSubmissionInterface_args::read(::apache::thrift::prot
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_computeResourceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_jobSubmissionInterfaceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -18408,7 +18419,11 @@ uint32_t Airavata_deleteJobSubmissionInterface_args::write(::apache::thrift::pro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_deleteJobSubmissionInterface_args");
 
-  xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->computeResourceId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->jobSubmissionInterfaceId);
   xfer += oprot->writeFieldEnd();
 
@@ -18421,7 +18436,11 @@ uint32_t Airavata_deleteJobSubmissionInterface_pargs::write(::apache::thrift::pr
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_deleteJobSubmissionInterface_pargs");
 
-  xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->computeResourceId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("jobSubmissionInterfaceId", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->jobSubmissionInterfaceId)));
   xfer += oprot->writeFieldEnd();
 
@@ -18597,6 +18616,7 @@ uint32_t Airavata_deleteDataMovementInterface_args::read(::apache::thrift::proto
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_computeResourceId = false;
   bool isset_dataMovementInterfaceId = false;
 
   while (true)
@@ -18608,6 +18628,14 @@ uint32_t Airavata_deleteDataMovementInterface_args::read(::apache::thrift::proto
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->computeResourceId);
+          isset_computeResourceId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->dataMovementInterfaceId);
           isset_dataMovementInterfaceId = true;
@@ -18624,6 +18652,8 @@ uint32_t Airavata_deleteDataMovementInterface_args::read(::apache::thrift::proto
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_computeResourceId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_dataMovementInterfaceId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -18633,7 +18663,11 @@ uint32_t Airavata_deleteDataMovementInterface_args::write(::apache::thrift::prot
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_deleteDataMovementInterface_args");
 
-  xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->computeResourceId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->dataMovementInterfaceId);
   xfer += oprot->writeFieldEnd();
 
@@ -18646,7 +18680,11 @@ uint32_t Airavata_deleteDataMovementInterface_pargs::write(::apache::thrift::pro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_deleteDataMovementInterface_pargs");
 
-  xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("computeResourceId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->computeResourceId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("dataMovementInterfaceId", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->dataMovementInterfaceId)));
   xfer += oprot->writeFieldEnd();
 
@@ -26165,19 +26203,19 @@ void AiravataClient::recv_addLocalDataMovementDetails(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addLocalDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
+bool AiravataClient::updateLocalDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
 {
-  send_updateLocalDataMovementDetails(jobSubmissionInterfaceId, localDataMovement);
+  send_updateLocalDataMovementDetails(dataMovementInterfaceId, localDataMovement);
   return recv_updateLocalDataMovementDetails();
 }
 
-void AiravataClient::send_updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
+void AiravataClient::send_updateLocalDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateLocalDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_updateLocalDataMovementDetails_pargs args;
-  args.jobSubmissionInterfaceId = &jobSubmissionInterfaceId;
+  args.dataMovementInterfaceId = &dataMovementInterfaceId;
   args.localDataMovement = &localDataMovement;
   args.write(oprot_);
 
@@ -26369,19 +26407,19 @@ void AiravataClient::recv_addSCPDataMovementDetails(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addSCPDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
+bool AiravataClient::updateSCPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
 {
-  send_updateSCPDataMovementDetails(jobSubmissionInterfaceId, scpDataMovement);
+  send_updateSCPDataMovementDetails(dataMovementInterfaceId, scpDataMovement);
   return recv_updateSCPDataMovementDetails();
 }
 
-void AiravataClient::send_updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
+void AiravataClient::send_updateSCPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateSCPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_updateSCPDataMovementDetails_pargs args;
-  args.jobSubmissionInterfaceId = &jobSubmissionInterfaceId;
+  args.dataMovementInterfaceId = &dataMovementInterfaceId;
   args.scpDataMovement = &scpDataMovement;
   args.write(oprot_);
 
@@ -26573,19 +26611,19 @@ void AiravataClient::recv_addGridFTPDataMovementDetails(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addGridFTPDataMovementDetails failed: unknown result");
 }
 
-bool AiravataClient::updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
+bool AiravataClient::updateGridFTPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
 {
-  send_updateGridFTPDataMovementDetails(jobSubmissionInterfaceId, gridFTPDataMovement);
+  send_updateGridFTPDataMovementDetails(dataMovementInterfaceId, gridFTPDataMovement);
   return recv_updateGridFTPDataMovementDetails();
 }
 
-void AiravataClient::send_updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
+void AiravataClient::send_updateGridFTPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("updateGridFTPDataMovementDetails", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_updateGridFTPDataMovementDetails_pargs args;
-  args.jobSubmissionInterfaceId = &jobSubmissionInterfaceId;
+  args.dataMovementInterfaceId = &dataMovementInterfaceId;
   args.gridFTPDataMovement = &gridFTPDataMovement;
   args.write(oprot_);
 
@@ -26978,18 +27016,19 @@ bool AiravataClient::recv_changeDataMovementPriorities()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "changeDataMovementPriorities failed: unknown result");
 }
 
-bool AiravataClient::deleteJobSubmissionInterface(const std::string& jobSubmissionInterfaceId)
+bool AiravataClient::deleteJobSubmissionInterface(const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId)
 {
-  send_deleteJobSubmissionInterface(jobSubmissionInterfaceId);
+  send_deleteJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
   return recv_deleteJobSubmissionInterface();
 }
 
-void AiravataClient::send_deleteJobSubmissionInterface(const std::string& jobSubmissionInterfaceId)
+void AiravataClient::send_deleteJobSubmissionInterface(const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("deleteJobSubmissionInterface", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_deleteJobSubmissionInterface_pargs args;
+  args.computeResourceId = &computeResourceId;
   args.jobSubmissionInterfaceId = &jobSubmissionInterfaceId;
   args.write(oprot_);
 
@@ -27045,18 +27084,19 @@ bool AiravataClient::recv_deleteJobSubmissionInterface()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteJobSubmissionInterface failed: unknown result");
 }
 
-bool AiravataClient::deleteDataMovementInterface(const std::string& dataMovementInterfaceId)
+bool AiravataClient::deleteDataMovementInterface(const std::string& computeResourceId, const std::string& dataMovementInterfaceId)
 {
-  send_deleteDataMovementInterface(dataMovementInterfaceId);
+  send_deleteDataMovementInterface(computeResourceId, dataMovementInterfaceId);
   return recv_deleteDataMovementInterface();
 }
 
-void AiravataClient::send_deleteDataMovementInterface(const std::string& dataMovementInterfaceId)
+void AiravataClient::send_deleteDataMovementInterface(const std::string& computeResourceId, const std::string& dataMovementInterfaceId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("deleteDataMovementInterface", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_deleteDataMovementInterface_pargs args;
+  args.computeResourceId = &computeResourceId;
   args.dataMovementInterfaceId = &dataMovementInterfaceId;
   args.write(oprot_);
 
@@ -32023,7 +32063,7 @@ void AiravataProcessor::process_updateLocalDataMovementDetails(int32_t seqid, ::
 
   Airavata_updateLocalDataMovementDetails_result result;
   try {
-    result.success = iface_->updateLocalDataMovementDetails(args.jobSubmissionInterfaceId, args.localDataMovement);
+    result.success = iface_->updateLocalDataMovementDetails(args.dataMovementInterfaceId, args.localDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -32212,7 +32252,7 @@ void AiravataProcessor::process_updateSCPDataMovementDetails(int32_t seqid, ::ap
 
   Airavata_updateSCPDataMovementDetails_result result;
   try {
-    result.success = iface_->updateSCPDataMovementDetails(args.jobSubmissionInterfaceId, args.scpDataMovement);
+    result.success = iface_->updateSCPDataMovementDetails(args.dataMovementInterfaceId, args.scpDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -32401,7 +32441,7 @@ void AiravataProcessor::process_updateGridFTPDataMovementDetails(int32_t seqid, 
 
   Airavata_updateGridFTPDataMovementDetails_result result;
   try {
-    result.success = iface_->updateGridFTPDataMovementDetails(args.jobSubmissionInterfaceId, args.gridFTPDataMovement);
+    result.success = iface_->updateGridFTPDataMovementDetails(args.dataMovementInterfaceId, args.gridFTPDataMovement);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -32779,7 +32819,7 @@ void AiravataProcessor::process_deleteJobSubmissionInterface(int32_t seqid, ::ap
 
   Airavata_deleteJobSubmissionInterface_result result;
   try {
-    result.success = iface_->deleteJobSubmissionInterface(args.jobSubmissionInterfaceId);
+    result.success = iface_->deleteJobSubmissionInterface(args.computeResourceId, args.jobSubmissionInterfaceId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -32842,7 +32882,7 @@ void AiravataProcessor::process_deleteDataMovementInterface(int32_t seqid, ::apa
 
   Airavata_deleteDataMovementInterface_result result;
   try {
-    result.success = iface_->deleteDataMovementInterface(args.dataMovementInterfaceId);
+    result.success = iface_->deleteDataMovementInterface(args.computeResourceId, args.dataMovementInterfaceId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;

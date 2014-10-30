@@ -32,6 +32,7 @@ include "computeResourceModel.thrift"
 include "applicationDeploymentModel.thrift"
 include "applicationInterfaceModel.thrift"
 include "gatewayResourceProfileModel.thrift"
+include "workflowDataModel.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -1130,8 +1131,8 @@ service Airavata {
   /**
    * Update the given Local data movement details
    *
-   * @param jobSubmissionInterfaceId
-   *   The identifier of the JobSubmission Interface to be updated.
+   * @param dataMovementInterfaceId
+   *   The identifier of the data movement Interface to be updated.
    *
    * @param localDataMovement
    *   The LOCALDataMovement object to be updated.
@@ -1140,7 +1141,7 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
-  bool updateLocalDataMovementDetails(1: required string jobSubmissionInterfaceId,
+  bool updateLocalDataMovementDetails(1: required string dataMovementInterfaceId,
             2: required computeResourceModel.LOCALDataMovement localDataMovement)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
@@ -1186,8 +1187,8 @@ service Airavata {
    * Update the given scp data movement details
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
-   * @param jobSubmissionInterfaceId
-   *   The identifier of the JobSubmission Interface to be updated.
+   * @param dataMovementInterfaceId
+   *   The identifier of the data movement Interface to be updated.
    *
    * @param scpDataMovement
    *   The SCPDataMovement object to be updated.
@@ -1196,7 +1197,7 @@ service Airavata {
    *   Returns a success/failure of the update.
    *
   */
-  bool updateSCPDataMovementDetails(1: required string jobSubmissionInterfaceId,
+  bool updateSCPDataMovementDetails(1: required string dataMovementInterfaceId,
             2: required computeResourceModel.SCPDataMovement scpDataMovement)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
@@ -1242,8 +1243,8 @@ service Airavata {
    * Update the given GridFTP data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
    *
-   * @param jobSubmissionInterfaceId
-   *   The identifier of the JobSubmission Interface to be updated.
+   * @param dataMovementInterfaceId
+   *   The identifier of the data movement Interface to be updated.
    *
    * @param gridFTPDataMovement
    *   The GridFTPDataMovement object to be updated.
@@ -1252,7 +1253,7 @@ service Airavata {
    *   Returns a success/failure of the updation.
    *
   */
-  bool updateGridFTPDataMovementDetails(1: required string jobSubmissionInterfaceId,
+  bool updateGridFTPDataMovementDetails(1: required string dataMovementInterfaceId,
             2: required computeResourceModel.GridFTPDataMovement gridFTPDataMovement)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
@@ -1348,7 +1349,7 @@ service Airavata {
    *   Returns a success/failure of the deletion.
    *
   */
-  bool deleteJobSubmissionInterface(1: required string jobSubmissionInterfaceId)
+  bool deleteJobSubmissionInterface(1: required string computeResourceId, 2: required string jobSubmissionInterfaceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
@@ -1363,7 +1364,7 @@ service Airavata {
    *   Returns a success/failure of the deletion.
    *
   */
-  bool deleteDataMovementInterface(1: required string dataMovementInterfaceId)
+  bool deleteDataMovementInterface(1: required string computeResourceId, 2: required string dataMovementInterfaceId)
   	throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
@@ -1561,5 +1562,43 @@ service Airavata {
             3: airavataErrors.AiravataSystemException ase)
 
  //End of API
+ }
+ // Workflow API
+ service Workflow {
+
+  list<string> getAllWorkflows()
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+  
+  workflowDataModel.Workflow getWorkflow (1: required string workflowTemplateId)
+      throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+  void deleteWorkflow (1: required string workflowTemplateId)
+      throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+  string registerWorkflow(1: required workflowDataModel.Workflow workflow)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  void updateWorkflow (1: required string workflowTemplateId, 2: required workflowDataModel.Workflow workflow)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  string getWorkflowTemplateId (1: required string workflowName)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
+  bool isWorkflowExistWithName(1: required string workflowName)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
  }
 

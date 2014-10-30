@@ -66,7 +66,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	                state = ExperimentState.CANCELED; updateExperimentStatus = true;
 	                break;
 	            case COMPLETED:
-	                state = ExperimentState.EXECUTING; updateExperimentStatus = false;
+	                state = ExperimentState.EXECUTING; updateExperimentStatus = true;
 	                break;
 	            case INVOKED:
 	                state = ExperimentState.LAUNCHED; updateExperimentStatus = false;

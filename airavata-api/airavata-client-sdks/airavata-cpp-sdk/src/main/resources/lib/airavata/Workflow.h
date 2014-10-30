@@ -25,9 +25,9 @@
 #define Workflow_H
 
 #include <thrift/TDispatchProcessor.h>
-#include "workflowAPI_types.h"
+#include "airavataAPI_types.h"
 
-namespace airavata { namespace api { namespace workflow {
+namespace apache { namespace airavata { namespace api {
 
 class WorkflowIf {
  public:
