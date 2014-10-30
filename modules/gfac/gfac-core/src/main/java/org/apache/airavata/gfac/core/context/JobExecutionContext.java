@@ -52,12 +52,14 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     private GFacNotifier notifier;
 
+    //FIXME : not needed for gfac
     private Experiment experiment;
 
     private TaskDetails taskData;
 
     private JobDetails jobDetails;
 
+    // FIXME : not needed for gfac
     private WorkflowNodeDetails workflowNodeDetails;
 
     private GFac gfac;
@@ -72,6 +74,9 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     private String outputDir;
     private String standaredOutput;
     private String standaredError;
+    private String prefferedJobSubmissionProtocal;
+    private String prefferedDataMovementProtocal;
+
 
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -363,5 +368,21 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public void setStandaredError(String standaredError) {
         this.standaredError = standaredError;
+    }
+
+    public String getPrefferedJobSubmissionProtocal() {
+        return prefferedJobSubmissionProtocal;
+    }
+
+    public void setPrefferedJobSubmissionProtocal(String prefferedJobSubmissionProtocal) {
+        this.prefferedJobSubmissionProtocal = prefferedJobSubmissionProtocal;
+    }
+
+    public String getPrefferedDataMovementProtocal() {
+        return prefferedDataMovementProtocal;
+    }
+
+    public void setPrefferedDataMovementProtocal(String prefferedDataMovementProtocal) {
+        this.prefferedDataMovementProtocal = prefferedDataMovementProtocal;
     }
 }
