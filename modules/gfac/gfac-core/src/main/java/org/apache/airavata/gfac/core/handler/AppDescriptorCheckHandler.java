@@ -20,16 +20,13 @@
 */
 package org.apache.airavata.gfac.core.handler;
 
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.Properties;
 
 public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
@@ -43,33 +40,19 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
             logger.info("Error saving plugin status to ZK");
         }
         StringBuffer data = new StringBuffer();
-        ApplicationInterfaceDescription appInterface = jobExecutionContext.getApplicationContext().getApplicationInterfaceDescription();
         ComputeResourcePreference computeResourcePreference = jobExecutionContext.getApplicationContext().getComputeResourcePreference();
 
-        if (computeResourcePreference.getScratchLocation() == null) {
-            computeResourcePreference.setScratchLocation("/tmp");
-        }
-        /*
-        * Working dir
-        */
-
-        String workingDir = computeResourcePreference.getScratchLocation() + File.separator+ jobExecutionContext.getExperimentID();
-        jobExecutionContext.setWorkingDir(workingDir);
         data.append(computeResourcePreference.getScratchLocation());
         data.append(",").append(jobExecutionContext.getWorkingDir());
 
         /*
         * Input and Output Directory
         */
-        jobExecutionContext.setInputDir(workingDir + File.separator + Constants.INPUT_DATA_DIR_VAR_NAME );
-        jobExecutionContext.setOutputDir(workingDir + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
         data.append(",").append(jobExecutionContext.getInputDir()).append(",").append(jobExecutionContext.getOutputDir());
 
         /*
         * Stdout and Stderr for Shell
         */
-        jobExecutionContext.setStandaredOutput(workingDir + File.separator + appInterface.getApplicationName().replaceAll("\\s+", "") + ".stdout");
-        jobExecutionContext.setStandaredError(workingDir + File.separator + appInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
         data.append(",").append(jobExecutionContext.getStandaredOutput()).append(",").append(jobExecutionContext.getStandaredError());
 
 
