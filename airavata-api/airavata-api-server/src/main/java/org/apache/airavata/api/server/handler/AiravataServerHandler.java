@@ -2411,10 +2411,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteJobSubmissionInterface(String jobSubmissionInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
-            appCatalog.getComputeResource().removeJobSubmissionInterface(jobSubmissionInterfaceId);
+            appCatalog.getComputeResource().removeJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
             return true;
         } catch (AppCatalogException e) {
             logger.errorId(jobSubmissionInterfaceId, "Error while deleting job submission interface...", e);
@@ -2433,10 +2433,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteDataMovementInterface(String dataMovementInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public boolean deleteDataMovementInterface(String computeResourceId, String dataMovementInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
-            appCatalog.getComputeResource().removeDataMovementInterface(dataMovementInterfaceId);
+            appCatalog.getComputeResource().removeDataMovementInterface(computeResourceId, dataMovementInterfaceId);
             return true;
         } catch (AppCatalogException e) {
             logger.errorId(dataMovementInterfaceId, "Error while deleting data movement interface...", e);

@@ -38,6 +38,7 @@
 #include "applicationDeploymentModel_types.h"
 #include "applicationInterfaceModel_types.h"
 #include "gatewayResourceProfileModel_types.h"
+#include "workflowDataModel_types.h"
 
 
 namespace apache { namespace airavata { namespace api {

@@ -152,7 +152,7 @@ rm -rf ${JAVA_GEN_DIR}
 #   The airavataAPI.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate java thrift classes on AiravataAPI
 
-thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/workflowAPI.thrift || fail unable to generate java thrift classes on WorkflowAPI
+#thrift ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/workflowAPI.thrift || fail unable to generate java thrift classes on WorkflowAPI
 
 # For the generated java classes add the ASF V2 License header
 add_license_header $JAVA_GEN_DIR
@@ -175,7 +175,7 @@ rm -rf ${CPP_GEN_DIR}
 #   The airavataAPI.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen cpp ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate C++ thrift classes
 
-thrift ${THRIFT_ARGS} --gen cpp ${THRIFT_IDL_DIR}/workflowAPI.thrift || fail unable to generate C++ thrift classes for WorkflowAPI
+#thrift ${THRIFT_ARGS} --gen cpp ${THRIFT_IDL_DIR}/workflowAPI.thrift || fail unable to generate C++ thrift classes for WorkflowAPI
 # For the generated CPP classes add the ASF V2 License header
 add_license_header $CPP_GEN_DIR
 
@@ -197,7 +197,7 @@ rm -rf ${PHP_GEN_DIR}
 #   The airavataAPI.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen php:autoload ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate PHP thrift classes
 
-thrift ${THRIFT_ARGS} --gen php:autoload ${THRIFT_IDL_DIR}/workflowAPI.thrift || fail unable to generate PHP thrift classes for WorkflowAPI
+#thrift ${THRIFT_ARGS} --gen php:autoload ${THRIFT_IDL_DIR}/workflowAPI.thrift || fail unable to generate PHP thrift classes for WorkflowAPI
 # For the generated java classes add the ASF V2 License header
 ## TODO Write PHP license parser
 

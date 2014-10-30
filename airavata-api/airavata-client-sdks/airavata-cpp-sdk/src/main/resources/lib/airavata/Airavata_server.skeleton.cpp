@@ -354,7 +354,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addLocalDataMovementDetails\n");
   }
 
-  bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
+  bool updateLocalDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
     // Your implementation goes here
     printf("updateLocalDataMovementDetails\n");
   }
@@ -369,7 +369,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addSCPDataMovementDetails\n");
   }
 
-  bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
+  bool updateSCPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("updateSCPDataMovementDetails\n");
   }
@@ -384,7 +384,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addGridFTPDataMovementDetails\n");
   }
 
-  bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
+  bool updateGridFTPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("updateGridFTPDataMovementDetails\n");
   }
@@ -414,12 +414,12 @@ class AiravataHandler : virtual public AiravataIf {
     printf("changeDataMovementPriorities\n");
   }
 
-  bool deleteJobSubmissionInterface(const std::string& jobSubmissionInterfaceId) {
+  bool deleteJobSubmissionInterface(const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId) {
     // Your implementation goes here
     printf("deleteJobSubmissionInterface\n");
   }
 
-  bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId) {
+  bool deleteDataMovementInterface(const std::string& computeResourceId, const std::string& dataMovementInterfaceId) {
     // Your implementation goes here
     printf("deleteDataMovementInterface\n");
   }

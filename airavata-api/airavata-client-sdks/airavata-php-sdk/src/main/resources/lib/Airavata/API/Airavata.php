@@ -80,20 +80,20 @@ interface AiravataIf {
   public function updateSSHJobSubmissionDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\SSHJobSubmission $sshJobSubmission);
   public function updateCloudJobSubmissionDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\CloudJobSubmission $sshJobSubmission);
   public function addLocalDataMovementDetails($computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement);
-  public function updateLocalDataMovementDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement);
+  public function updateLocalDataMovementDetails($dataMovementInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement);
   public function getLocalDataMovement($dataMovementId);
   public function addSCPDataMovementDetails($computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement);
-  public function updateSCPDataMovementDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement);
+  public function updateSCPDataMovementDetails($dataMovementInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement);
   public function getSCPDataMovement($dataMovementId);
   public function addGridFTPDataMovementDetails($computeResourceId, $priorityOrder, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement);
-  public function updateGridFTPDataMovementDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement);
+  public function updateGridFTPDataMovementDetails($dataMovementInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement);
   public function getGridFTPDataMovement($dataMovementId);
   public function changeJobSubmissionPriority($jobSubmissionInterfaceId, $newPriorityOrder);
   public function changeDataMovementPriority($dataMovementInterfaceId, $newPriorityOrder);
   public function changeJobSubmissionPriorities($jobSubmissionPriorityMap);
   public function changeDataMovementPriorities($dataMovementPriorityMap);
-  public function deleteJobSubmissionInterface($jobSubmissionInterfaceId);
-  public function deleteDataMovementInterface($dataMovementInterfaceId);
+  public function deleteJobSubmissionInterface($computeResourceId, $jobSubmissionInterfaceId);
+  public function deleteDataMovementInterface($computeResourceId, $dataMovementInterfaceId);
   public function registerResourceJobManager(\Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager $resourceJobManager);
   public function updateResourceJobManager($resourceJobManagerId, \Airavata\Model\AppCatalog\ComputeResource\ResourceJobManager $updatedResourceJobManager);
   public function getResourceJobManager($resourceJobManagerId);
@@ -3936,16 +3936,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("addLocalDataMovementDetails failed: unknown result");
   }
 
-  public function updateLocalDataMovementDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement)
+  public function updateLocalDataMovementDetails($dataMovementInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement)
   {
-    $this->send_updateLocalDataMovementDetails($jobSubmissionInterfaceId, $localDataMovement);
+    $this->send_updateLocalDataMovementDetails($dataMovementInterfaceId, $localDataMovement);
     return $this->recv_updateLocalDataMovementDetails();
   }
 
-  public function send_updateLocalDataMovementDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement)
+  public function send_updateLocalDataMovementDetails($dataMovementInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\LOCALDataMovement $localDataMovement)
   {
     $args = new \Airavata\API\Airavata_updateLocalDataMovementDetails_args();
-    $args->jobSubmissionInterfaceId = $jobSubmissionInterfaceId;
+    $args->dataMovementInterfaceId = $dataMovementInterfaceId;
     $args->localDataMovement = $localDataMovement;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -4119,16 +4119,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("addSCPDataMovementDetails failed: unknown result");
   }
 
-  public function updateSCPDataMovementDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement)
+  public function updateSCPDataMovementDetails($dataMovementInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement)
   {
-    $this->send_updateSCPDataMovementDetails($jobSubmissionInterfaceId, $scpDataMovement);
+    $this->send_updateSCPDataMovementDetails($dataMovementInterfaceId, $scpDataMovement);
     return $this->recv_updateSCPDataMovementDetails();
   }
 
-  public function send_updateSCPDataMovementDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement)
+  public function send_updateSCPDataMovementDetails($dataMovementInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\SCPDataMovement $scpDataMovement)
   {
     $args = new \Airavata\API\Airavata_updateSCPDataMovementDetails_args();
-    $args->jobSubmissionInterfaceId = $jobSubmissionInterfaceId;
+    $args->dataMovementInterfaceId = $dataMovementInterfaceId;
     $args->scpDataMovement = $scpDataMovement;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -4302,16 +4302,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("addGridFTPDataMovementDetails failed: unknown result");
   }
 
-  public function updateGridFTPDataMovementDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement)
+  public function updateGridFTPDataMovementDetails($dataMovementInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement)
   {
-    $this->send_updateGridFTPDataMovementDetails($jobSubmissionInterfaceId, $gridFTPDataMovement);
+    $this->send_updateGridFTPDataMovementDetails($dataMovementInterfaceId, $gridFTPDataMovement);
     return $this->recv_updateGridFTPDataMovementDetails();
   }
 
-  public function send_updateGridFTPDataMovementDetails($jobSubmissionInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement)
+  public function send_updateGridFTPDataMovementDetails($dataMovementInterfaceId, \Airavata\Model\AppCatalog\ComputeResource\GridFTPDataMovement $gridFTPDataMovement)
   {
     $args = new \Airavata\API\Airavata_updateGridFTPDataMovementDetails_args();
-    $args->jobSubmissionInterfaceId = $jobSubmissionInterfaceId;
+    $args->dataMovementInterfaceId = $dataMovementInterfaceId;
     $args->gridFTPDataMovement = $gridFTPDataMovement;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -4665,15 +4665,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("changeDataMovementPriorities failed: unknown result");
   }
 
-  public function deleteJobSubmissionInterface($jobSubmissionInterfaceId)
+  public function deleteJobSubmissionInterface($computeResourceId, $jobSubmissionInterfaceId)
   {
-    $this->send_deleteJobSubmissionInterface($jobSubmissionInterfaceId);
+    $this->send_deleteJobSubmissionInterface($computeResourceId, $jobSubmissionInterfaceId);
     return $this->recv_deleteJobSubmissionInterface();
   }
 
-  public function send_deleteJobSubmissionInterface($jobSubmissionInterfaceId)
+  public function send_deleteJobSubmissionInterface($computeResourceId, $jobSubmissionInterfaceId)
   {
     $args = new \Airavata\API\Airavata_deleteJobSubmissionInterface_args();
+    $args->computeResourceId = $computeResourceId;
     $args->jobSubmissionInterfaceId = $jobSubmissionInterfaceId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -4725,15 +4726,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("deleteJobSubmissionInterface failed: unknown result");
   }
 
-  public function deleteDataMovementInterface($dataMovementInterfaceId)
+  public function deleteDataMovementInterface($computeResourceId, $dataMovementInterfaceId)
   {
-    $this->send_deleteDataMovementInterface($dataMovementInterfaceId);
+    $this->send_deleteDataMovementInterface($computeResourceId, $dataMovementInterfaceId);
     return $this->recv_deleteDataMovementInterface();
   }
 
-  public function send_deleteDataMovementInterface($dataMovementInterfaceId)
+  public function send_deleteDataMovementInterface($computeResourceId, $dataMovementInterfaceId)
   {
     $args = new \Airavata\API\Airavata_deleteDataMovementInterface_args();
+    $args->computeResourceId = $computeResourceId;
     $args->dataMovementInterfaceId = $dataMovementInterfaceId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -20193,14 +20195,14 @@ class Airavata_addLocalDataMovementDetails_result {
 class Airavata_updateLocalDataMovementDetails_args {
   static $_TSPEC;
 
-  public $jobSubmissionInterfaceId = null;
+  public $dataMovementInterfaceId = null;
   public $localDataMovement = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'jobSubmissionInterfaceId',
+          'var' => 'dataMovementInterfaceId',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -20211,8 +20213,8 @@ class Airavata_updateLocalDataMovementDetails_args {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['jobSubmissionInterfaceId'])) {
-        $this->jobSubmissionInterfaceId = $vals['jobSubmissionInterfaceId'];
+      if (isset($vals['dataMovementInterfaceId'])) {
+        $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
       }
       if (isset($vals['localDataMovement'])) {
         $this->localDataMovement = $vals['localDataMovement'];
@@ -20241,7 +20243,7 @@ class Airavata_updateLocalDataMovementDetails_args {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->jobSubmissionInterfaceId);
+            $xfer += $input->readString($this->dataMovementInterfaceId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -20267,9 +20269,9 @@ class Airavata_updateLocalDataMovementDetails_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_updateLocalDataMovementDetails_args');
-    if ($this->jobSubmissionInterfaceId !== null) {
-      $xfer += $output->writeFieldBegin('jobSubmissionInterfaceId', TType::STRING, 1);
-      $xfer += $output->writeString($this->jobSubmissionInterfaceId);
+    if ($this->dataMovementInterfaceId !== null) {
+      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->dataMovementInterfaceId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->localDataMovement !== null) {
@@ -20898,14 +20900,14 @@ class Airavata_addSCPDataMovementDetails_result {
 class Airavata_updateSCPDataMovementDetails_args {
   static $_TSPEC;
 
-  public $jobSubmissionInterfaceId = null;
+  public $dataMovementInterfaceId = null;
   public $scpDataMovement = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'jobSubmissionInterfaceId',
+          'var' => 'dataMovementInterfaceId',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -20916,8 +20918,8 @@ class Airavata_updateSCPDataMovementDetails_args {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['jobSubmissionInterfaceId'])) {
-        $this->jobSubmissionInterfaceId = $vals['jobSubmissionInterfaceId'];
+      if (isset($vals['dataMovementInterfaceId'])) {
+        $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
       }
       if (isset($vals['scpDataMovement'])) {
         $this->scpDataMovement = $vals['scpDataMovement'];
@@ -20946,7 +20948,7 @@ class Airavata_updateSCPDataMovementDetails_args {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->jobSubmissionInterfaceId);
+            $xfer += $input->readString($this->dataMovementInterfaceId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -20972,9 +20974,9 @@ class Airavata_updateSCPDataMovementDetails_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_updateSCPDataMovementDetails_args');
-    if ($this->jobSubmissionInterfaceId !== null) {
-      $xfer += $output->writeFieldBegin('jobSubmissionInterfaceId', TType::STRING, 1);
-      $xfer += $output->writeString($this->jobSubmissionInterfaceId);
+    if ($this->dataMovementInterfaceId !== null) {
+      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->dataMovementInterfaceId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->scpDataMovement !== null) {
@@ -21603,14 +21605,14 @@ class Airavata_addGridFTPDataMovementDetails_result {
 class Airavata_updateGridFTPDataMovementDetails_args {
   static $_TSPEC;
 
-  public $jobSubmissionInterfaceId = null;
+  public $dataMovementInterfaceId = null;
   public $gridFTPDataMovement = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'jobSubmissionInterfaceId',
+          'var' => 'dataMovementInterfaceId',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -21621,8 +21623,8 @@ class Airavata_updateGridFTPDataMovementDetails_args {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['jobSubmissionInterfaceId'])) {
-        $this->jobSubmissionInterfaceId = $vals['jobSubmissionInterfaceId'];
+      if (isset($vals['dataMovementInterfaceId'])) {
+        $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
       }
       if (isset($vals['gridFTPDataMovement'])) {
         $this->gridFTPDataMovement = $vals['gridFTPDataMovement'];
@@ -21651,7 +21653,7 @@ class Airavata_updateGridFTPDataMovementDetails_args {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->jobSubmissionInterfaceId);
+            $xfer += $input->readString($this->dataMovementInterfaceId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -21677,9 +21679,9 @@ class Airavata_updateGridFTPDataMovementDetails_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_updateGridFTPDataMovementDetails_args');
-    if ($this->jobSubmissionInterfaceId !== null) {
-      $xfer += $output->writeFieldBegin('jobSubmissionInterfaceId', TType::STRING, 1);
-      $xfer += $output->writeString($this->jobSubmissionInterfaceId);
+    if ($this->dataMovementInterfaceId !== null) {
+      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->dataMovementInterfaceId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->gridFTPDataMovement !== null) {
@@ -23001,18 +23003,26 @@ class Airavata_changeDataMovementPriorities_result {
 class Airavata_deleteJobSubmissionInterface_args {
   static $_TSPEC;
 
+  public $computeResourceId = null;
   public $jobSubmissionInterfaceId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
           'var' => 'jobSubmissionInterfaceId',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
       if (isset($vals['jobSubmissionInterfaceId'])) {
         $this->jobSubmissionInterfaceId = $vals['jobSubmissionInterfaceId'];
       }
@@ -23040,6 +23050,13 @@ class Airavata_deleteJobSubmissionInterface_args {
       {
         case 1:
           if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->jobSubmissionInterfaceId);
           } else {
             $xfer += $input->skip($ftype);
@@ -23058,8 +23075,13 @@ class Airavata_deleteJobSubmissionInterface_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_deleteJobSubmissionInterface_args');
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->jobSubmissionInterfaceId !== null) {
-      $xfer += $output->writeFieldBegin('jobSubmissionInterfaceId', TType::STRING, 1);
+      $xfer += $output->writeFieldBegin('jobSubmissionInterfaceId', TType::STRING, 2);
       $xfer += $output->writeString($this->jobSubmissionInterfaceId);
       $xfer += $output->writeFieldEnd();
     }
@@ -23211,18 +23233,26 @@ class Airavata_deleteJobSubmissionInterface_result {
 class Airavata_deleteDataMovementInterface_args {
   static $_TSPEC;
 
+  public $computeResourceId = null;
   public $dataMovementInterfaceId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
+          'var' => 'computeResourceId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
           'var' => 'dataMovementInterfaceId',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['computeResourceId'])) {
+        $this->computeResourceId = $vals['computeResourceId'];
+      }
       if (isset($vals['dataMovementInterfaceId'])) {
         $this->dataMovementInterfaceId = $vals['dataMovementInterfaceId'];
       }
@@ -23250,6 +23280,13 @@ class Airavata_deleteDataMovementInterface_args {
       {
         case 1:
           if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->computeResourceId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->dataMovementInterfaceId);
           } else {
             $xfer += $input->skip($ftype);
@@ -23268,8 +23305,13 @@ class Airavata_deleteDataMovementInterface_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_deleteDataMovementInterface_args');
+    if ($this->computeResourceId !== null) {
+      $xfer += $output->writeFieldBegin('computeResourceId', TType::STRING, 1);
+      $xfer += $output->writeString($this->computeResourceId);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->dataMovementInterfaceId !== null) {
-      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 1);
+      $xfer += $output->writeFieldBegin('dataMovementInterfaceId', TType::STRING, 2);
       $xfer += $output->writeString($this->dataMovementInterfaceId);
       $xfer += $output->writeFieldEnd();
     }

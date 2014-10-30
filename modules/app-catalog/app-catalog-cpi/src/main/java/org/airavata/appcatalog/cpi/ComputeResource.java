@@ -226,14 +226,14 @@ public interface ComputeResource {
      * @param jobSubmissionInterfaceId unique job submission interface id
      * @throws AppCatalogException
      */
-    void removeJobSubmissionInterface(String jobSubmissionInterfaceId) throws AppCatalogException;
+    void removeJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId) throws AppCatalogException;
 
     /**
      * This method will remove data movement interface
      * @param dataMovementInterfaceId unique data movement id
      * @throws AppCatalogException
      */
-    void removeDataMovementInterface(String dataMovementInterfaceId)  throws AppCatalogException;
+    void removeDataMovementInterface(String computeResourceId, String dataMovementInterfaceId)  throws AppCatalogException;
 
 
 

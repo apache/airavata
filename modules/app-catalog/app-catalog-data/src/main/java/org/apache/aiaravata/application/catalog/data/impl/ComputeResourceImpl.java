@@ -698,10 +698,13 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public void removeJobSubmissionInterface(String jobSubmissionInterfaceId) throws AppCatalogException {
+    public void removeJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId) throws AppCatalogException {
         try {
             JobSubmissionInterfaceResource resource = new JobSubmissionInterfaceResource();
-            resource.remove(jobSubmissionInterfaceId);
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AbstractResource.JobSubmissionInterfaceConstants.COMPUTE_RESOURCE_ID, computeResourceId);
+            ids.put(AbstractResource.JobSubmissionInterfaceConstants.JOB_SUBMISSION_INTERFACE_ID, jobSubmissionInterfaceId);
+            resource.remove(ids);
         }catch (Exception e){
             logger.error("Error while removing job submission interface..", e);
             throw new AppCatalogException(e);
@@ -709,10 +712,13 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public void removeDataMovementInterface(String dataMovementInterfaceId) throws AppCatalogException {
+    public void removeDataMovementInterface(String computeResourceId, String dataMovementInterfaceId) throws AppCatalogException {
         try {
             DataMovementInterfaceResource resource = new DataMovementInterfaceResource();
-            resource.remove(dataMovementInterfaceId);
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AbstractResource.DataMovementInterfaceConstants.COMPUTE_RESOURCE_ID, computeResourceId);
+            ids.put(AbstractResource.DataMovementInterfaceConstants.DATA_MOVEMENT_INTERFACE_ID, dataMovementInterfaceId);
+            resource.remove(ids);
         }catch (Exception e){
             logger.error("Error while removing data movement interface..", e);
             throw new AppCatalogException(e);
