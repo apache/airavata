@@ -32,6 +32,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.ssh.context.SSHAuthWrapper;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
@@ -48,6 +49,8 @@ import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthentica
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.schemas.gfac.*;
 import org.slf4j.Logger;
@@ -292,6 +295,37 @@ public class GFACSSHUtils {
 
         }
         return jobDescriptor;
+    }
+
+    /**
+     * This method can be used to set the Security Context if its not set and later use it in other places
+     * @param jobExecutionContext
+     * @param authenticationInfo
+     * @param userName
+     * @param hostName
+     * @param port
+     * @return
+     * @throws GFacException
+     */
+    public static String prepareSecurityContext(JobExecutionContext jobExecutionContext, AuthenticationInfo authenticationInfo
+            , String userName, String hostName, int port) throws GFacException {
+        ServerInfo serverInfo = new ServerInfo(userName, hostName);
+        String key = userName+hostName+port;
+        SSHAuthWrapper sshAuthWrapper = new SSHAuthWrapper(serverInfo, authenticationInfo, key);
+        if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT+key) == null) {
+            try {
+                GFACSSHUtils.addSecurityContext(jobExecutionContext, sshAuthWrapper);
+            } catch (ApplicationSettingsException e) {
+                logger.error(e.getMessage());
+                try {
+                    GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                } catch (GFacException e1) {
+                    logger.error(e1.getLocalizedMessage());
+                }
+                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+            }
+        }
+        return key;
     }
 
 }
