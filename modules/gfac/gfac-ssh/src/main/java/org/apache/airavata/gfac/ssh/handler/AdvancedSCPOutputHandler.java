@@ -73,6 +73,8 @@ import java.util.Set;
 public class AdvancedSCPOutputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(AdvancedSCPOutputHandler.class);
 
+    public static final int DEFAULT_SSH_PORT = 22;
+
     private String password = null;
 
     private String publicKeyPath;
@@ -86,8 +88,6 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
     private String hostName;
 
     private String outputPath;
-
-    public static final String ADVANCED_SSH_AUTH = "advanced.ssh.auth";
 
 
     public void initProperties(Properties properties) throws GFacHandlerException {
@@ -111,12 +111,12 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     this.passPhrase);
         }
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        String key = this.userName + this.hostName;
-        jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,new SSHAuthWrapper(serverInfo,authenticationInfo,key));
+        String key = this.userName + this.hostName + DEFAULT_SSH_PORT;
+        SSHAuthWrapper sshAuthWrapper = new SSHAuthWrapper(serverInfo, authenticationInfo, key);
         try {
-            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
+            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT+key) == null) {
                 try {
-                    GFACSSHUtils.addSecurityContext(jobExecutionContext);
+                    GFACSSHUtils.addSecurityContext(jobExecutionContext,sshAuthWrapper);
                 } catch (ApplicationSettingsException e) {
                     log.error(e.getMessage());
                     try {

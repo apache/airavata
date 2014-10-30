@@ -72,6 +72,7 @@ import java.util.*;
 public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
     private static final Logger log = LoggerFactory.getLogger(AdvancedSCPInputHandler.class);
     public static final String ADVANCED_SSH_AUTH = "advanced.ssh.auth";
+    public static final int DEFAULT_SSH_PORT = 22;
 
     private String password = null;
 
@@ -131,11 +132,11 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
                         this.passPhrase);
             }
             ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-            String key = this.userName + this.hostName;
-            jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,new SSHAuthWrapper(serverInfo,authenticationInfo,key));
-            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
+            String key = this.userName + this.hostName + DEFAULT_SSH_PORT;
+            SSHAuthWrapper sshAuthWrapper = new SSHAuthWrapper(serverInfo, authenticationInfo, key);
+            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT+key) == null) {
                 try {
-                    GFACSSHUtils.addSecurityContext(jobExecutionContext);
+                    GFACSSHUtils.addSecurityContext(jobExecutionContext,sshAuthWrapper);
                 } catch (ApplicationSettingsException e) {
                     log.error(e.getMessage());
                     try {
