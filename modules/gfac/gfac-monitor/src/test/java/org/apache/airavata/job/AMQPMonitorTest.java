@@ -20,15 +20,11 @@
 */
 package org.apache.airavata.job;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.utils.MonitorPublisher;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.impl.push.amqp.AMQPMonitor;
 import org.apache.airavata.gsi.ssh.api.Cluster;
@@ -38,14 +34,29 @@ import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class AMQPMonitorTest {
 
@@ -54,12 +65,13 @@ public class AMQPMonitorTest {
     private String certificateLocation;
     private String pbsFilePath;
     private String workingDirectory;
-    private HostDescription hostDescription;
     private MonitorPublisher monitorPublisher;
     private BlockingQueue<MonitorID> finishQueue;
     private BlockingQueue<MonitorID> pushQueue;
     private Thread pushThread;
     private String proxyFilePath;
+    private ComputeResourceDescription computeResourceDescription;
+
     @Before
     public void setUp() throws Exception {
         System.setProperty("myproxy.username", "ogce");
@@ -98,14 +110,26 @@ public class AMQPMonitorTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        computeResourceDescription = new ComputeResourceDescription("TestComputerResoruceId", "TestHostName");
+        computeResourceDescription.setHostName("stampede-host");
+        computeResourceDescription.addToIpAddresses("login1.stampede.tacc.utexas.edu");
+        ResourceJobManager resourceJobManager = new ResourceJobManager("1234", ResourceJobManagerType.SLURM);
+        Map<JobManagerCommand, String> commandMap = new HashMap<JobManagerCommand, String>();
+        commandMap.put(JobManagerCommand.SUBMISSION, "test");
+        resourceJobManager.setJobManagerCommands(commandMap);
+        resourceJobManager.setJobManagerBinPath("/usr/bin/");
+        resourceJobManager.setPushMonitoringEndpoint("push"); // TODO - add monitor mode
+        SSHJobSubmission sshJobSubmission = new SSHJobSubmission("TestSSHJobSubmissionInterfaceId", SecurityProtocol.GSI,
+                resourceJobManager);
 
-        hostDescription = new HostDescription(GsisshHostType.type);
-        hostDescription.getType().setHostAddress("login1.stampede.tacc.utexas.edu");
-        hostDescription.getType().setHostName("stampede-host");
-        ((GsisshHostType) hostDescription.getType()).setJobManager("slurm");
-        ((GsisshHostType) hostDescription.getType()).setInstalledPath("/usr/bin/");
-        ((GsisshHostType) hostDescription.getType()).setPort(2222);
-        ((GsisshHostType) hostDescription.getType()).setMonitorMode("push");
+        AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+        String jobSubmissionID = appCatalog.getComputeResource().addSSHJobSubmission(sshJobSubmission);
+
+        JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface(jobSubmissionID, JobSubmissionProtocol.SSH, 1);
+
+        computeResourceDescription.addToJobSubmissionInterfaces(jobSubmissionInterface);
+        computeResourceDescription.addToDataMovementInterfaces(new DataMovementInterface("4532", DataMovementProtocol.SCP, 1));
+
     }
 
     @Test
@@ -151,7 +175,7 @@ public class AMQPMonitorTest {
         String jobID = pbsCluster.submitBatchJob(jobDescriptor);
         System.out.println(jobID);
         try {
-            pushQueue.add(new MonitorID(hostDescription, jobID,null,null,null, "ogce", jobName));
+            pushQueue.add(new MonitorID(computeResourceDescription, jobID,null,null,null, "ogce", jobName));
         } catch (Exception e) {
             e.printStackTrace();
         }

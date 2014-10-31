@@ -20,6 +20,9 @@
 */
 package org.apache.airavata.gfac.gsissh.provider.impl;
 
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacException;
@@ -36,11 +39,16 @@ import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
+//import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.zookeeper.KeeperException;
@@ -48,6 +56,7 @@ import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.management.monitor.Monitor;
 import java.util.List;
 import java.util.Map;
 
@@ -76,14 +85,18 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         log.info("Invoking GSISSH Provider Invoke ...");
         StringBuffer data = new StringBuffer();
         jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
-        HostDescriptionType host = jobExecutionContext.getApplicationContext().
-                getHostDescription().getType();
-        HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().
-                getApplicationDeploymentDescription().getType();
+        ComputeResourceDescription computeResourceDescription = jobExecutionContext.getApplicationContext()
+                .getComputeResourceDescription();
+        ApplicationDeploymentDescription appDeployDesc = jobExecutionContext.getApplicationContext()
+                .getApplicationDeploymentDescription();
         JobDetails jobDetails = new JobDetails();
         Cluster cluster = null;
-        
+
         try {
+            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(
+                    jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId());
+
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
                 cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
             }
@@ -93,7 +106,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
                 log.info("Successfully retrieved the Security Context");
             }
             // This installed path is a mandetory field, because this could change based on the computing resource
-            JobDescriptor jobDescriptor = GFACGSISSHUtils.createJobDescriptor(jobExecutionContext, app, cluster);
+            JobDescriptor jobDescriptor = GFACGSISSHUtils.createJobDescriptor(jobExecutionContext, cluster);
             jobDetails.setJobName(jobDescriptor.getJobName());
 
             log.info(jobDescriptor.toXML());
@@ -113,10 +126,10 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
 
             // Now job has submitted to the resource, its up to the Provider to parse the information to daemon handler
             // to perform monitoring, daemon handlers can be accessed from anywhere
-            delegateToMonitorHandlers(jobExecutionContext, (GsisshHostType) host, jobDetails.getJobID());
+            delegateToMonitorHandlers(jobExecutionContext, sshJobSubmission , jobDetails.getJobID());
             // we know this host is type GsiSSHHostType
         } catch (Exception e) {
-		    String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+		    String error = "Error submitting the job to host " + computeResourceDescription.getHostName() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
@@ -130,18 +143,18 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
           
     }
 
-    public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext, GsisshHostType host, String jobID) throws GFacHandlerException {
+    public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext, SSHJobSubmission sshJobSubmission, String jobID) throws GFacHandlerException {
         List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         if (daemonHandlers == null) {
             daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         }
         ThreadedHandler pullMonitorHandler = null;
         ThreadedHandler pushMonitorHandler = null;
-        String monitorMode = host.getMonitorMode();
+        MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
         for (ThreadedHandler threadedHandler : daemonHandlers) {
             if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
                 pullMonitorHandler = threadedHandler;
-                if ("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PULL.equals(monitorMode)) {
+                if (monitorMode == null || monitorMode == MonitorMode.POLL_JOB_MANAGER) {
                     log.info("Job is launched successfully now parsing it to monitoring in pull mode, JobID Returned:  " + jobID);
                     pullMonitorHandler.invoke(jobExecutionContext);
                 } else {
@@ -150,7 +163,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
                 }
             } else if ("org.apache.airavata.gfac.monitor.handlers.GridPushMonitorHandler".equals(threadedHandler.getClass().getName())) {
                 pushMonitorHandler = threadedHandler;
-                if ("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PUSH.equals(monitorMode)) {
+                if (monitorMode == null || monitorMode == MonitorMode.XSEDE_AMQP_SUBSCRIBE) {
                     log.info("Job is launched successfully now parsing it to monitoring in push mode, JobID Returned:  " + jobID);
                     pushMonitorHandler.invoke(jobExecutionContext);
                 } else {
@@ -166,18 +179,18 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         }
     }
 
-    public void removeFromMonitorHandlers(JobExecutionContext jobExecutionContext, GsisshHostType host, String jobID) throws GFacHandlerException {
+    public void removeFromMonitorHandlers(JobExecutionContext jobExecutionContext, SSHJobSubmission sshJobSubmission, String jobID) throws GFacHandlerException {
         List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         if (daemonHandlers == null) {
             daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         }
         ThreadedHandler pullMonitorHandler = null;
         ThreadedHandler pushMonitorHandler = null;
-        String monitorMode = host.getMonitorMode();
+        MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
         for (ThreadedHandler threadedHandler : daemonHandlers) {
             if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
                 pullMonitorHandler = threadedHandler;
-                if ("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PULL.equals(monitorMode)) {
+                if (monitorMode == null || monitorMode == MonitorMode.POLL_JOB_MANAGER) {
                     jobExecutionContext.setProperty("cancel","true");
                     pullMonitorHandler.invoke(jobExecutionContext);
                 } else {
@@ -186,7 +199,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
                 }
             } else if ("org.apache.airavata.gfac.monitor.handlers.GridPushMonitorHandler".equals(threadedHandler.getClass().getName())) {
                 pushMonitorHandler = threadedHandler;
-                if ("".equals(monitorMode) || monitorMode == null || org.apache.airavata.common.utils.Constants.PUSH.equals(monitorMode)) {
+                if ( monitorMode == null || monitorMode == MonitorMode.XSEDE_AMQP_SUBSCRIBE) {
                     pushMonitorHandler.invoke(jobExecutionContext);
                 } else {
                     log.error("Currently we only support Pull and Push monitoring and monitorMode should be PUSH" +
@@ -208,8 +221,6 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
     public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
         log.info("canceling the job status in GSISSHProvider!!!!!");
-        HostDescriptionType host = jobExecutionContext.getApplicationContext().
-                getHostDescription().getType();
         JobDetails jobDetails = jobExecutionContext.getJobDetails();
         try {
             Cluster cluster = null;
@@ -236,14 +247,14 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
             // we know this host is type GsiSSHHostType
         } catch (SSHApiException e) {
-            String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+            String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
             GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
         } catch (Exception e) {
-            String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+            String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
@@ -255,8 +266,8 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
     public void recover(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
         // have to implement the logic to recover a gfac failure
         log.info("Invoking Recovering for the Experiment: " + jobExecutionContext.getExperimentID());
-        HostDescriptionType host = jobExecutionContext.getApplicationContext().
-                getHostDescription().getType();
+        ComputeResourceDescription computeResourceDescription = jobExecutionContext.getApplicationContext()
+                .getComputeResourceDescription();
         String jobId = "";
         String jobDesc = "";
         try {
@@ -306,8 +317,11 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
                     throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
                 }
             }
-            delegateToMonitorHandlers(jobExecutionContext, (GsisshHostType) host, jobId);
-        } catch (GFacHandlerException e) {
+            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(
+                    jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId());
+            delegateToMonitorHandlers(jobExecutionContext, sshJobSubmission, jobId);
+        } catch (Exception e) {
             throw new GFacProviderException("Error delegating already ran job to Monitoring", e);
         }
     }
