@@ -271,9 +271,14 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getJobDescription() {
-    return this.jobDescription;
-  }
+    /**
+     * this method is deprecated after we introduce new thirft model with appcatalog
+     * @return
+     */
+    @Deprecated
+    public String getJobDescription() {
+        return this.jobDescription;
+    }
 
   public void setJobDescription(String jobDescription) {
     this.jobDescription = jobDescription;

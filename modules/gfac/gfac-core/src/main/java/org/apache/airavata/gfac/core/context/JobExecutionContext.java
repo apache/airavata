@@ -33,6 +33,7 @@ import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.notification.GFacNotifier;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -100,12 +101,20 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     private DataMovementProtocol preferredDataMovementProtocol;
     /**
      * List of job submission protocols sorted by priority order.
-      */
+     */
     private List<JobSubmissionInterface> hostPrioritizedJobSubmissionInterfaces;
     /**
      * use preferred job submission protocol.
      */
     private JobSubmissionInterface preferredJobSubmissionInterface;
+    /**
+     * List of job submission protocols sorted by priority order.
+     */
+    private List<DataMovementInterface> hostPrioritizedDataMovementInterfaces;
+    /**
+     * use preferred job submission protocol.
+     */
+    private DataMovementInterface preferredDataMovementInterface;
 
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -433,5 +442,21 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public String getHostName() {
         return applicationContext.getComputeResourceDescription().getHostName();
+    }
+
+    public List<DataMovementInterface> getHostPrioritizedDataMovementInterfaces() {
+        return hostPrioritizedDataMovementInterfaces;
+    }
+
+    public void setHostPrioritizedDataMovementInterfaces(List<DataMovementInterface> hostPrioritizedDataMovementInterfaces) {
+        this.hostPrioritizedDataMovementInterfaces = hostPrioritizedDataMovementInterfaces;
+    }
+
+    public DataMovementInterface getPreferredDataMovementInterface() {
+        return preferredDataMovementInterface;
+    }
+
+    public void setPreferredDataMovementInterface(DataMovementInterface preferredDataMovementInterface) {
+        this.preferredDataMovementInterface = preferredDataMovementInterface;
     }
 }

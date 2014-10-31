@@ -27,6 +27,7 @@ import java.util.*;
 import net.schmizz.sshj.connection.ConnectionException;
 import net.schmizz.sshj.transport.TransportException;
 
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -46,6 +47,10 @@ import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -67,36 +72,6 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
         int oldIndex = 0;
         List<String> oldFiles = new ArrayList<String>();
         StringBuffer data = new StringBuffer("|");
-        if (jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof GsisshHostType) { // this is because we don't have the right jobexecution context
-            // so attempting to get it from the registry
-            if (Constants.PUSH.equals(((GsisshHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getMonitorMode())) {
-                log.warn("During the out handler chain jobExecution context came null, so trying to handler");
-                ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
-                TaskDetails taskData = null;
-                try {
-                    taskData = (TaskDetails) jobExecutionContext.getRegistry().get(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
-                } catch (RegistryException e) {
-                    log.error("Error retrieving job details from Registry");
-                    throw new GFacHandlerException("Error retrieving job details from Registry", e);
-                }
-                JobDetails jobDetails = taskData.getJobDetailsList().get(0);
-                String jobDescription = jobDetails.getJobDescription();
-                if (jobDescription != null) {
-                    JobDescriptor jobDescriptor = null;
-                    try {
-                        jobDescriptor = JobDescriptor.fromXML(jobDescription);
-                    } catch (XmlException e1) {
-                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                    applicationDeploymentDescription.getType().setScratchWorkingDirectory(
-                            jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getWorkingDirectory());
-                    applicationDeploymentDescription.getType().setInputDataDirectory(jobDescriptor.getInputDirectory());
-                    applicationDeploymentDescription.getType().setOutputDataDirectory(jobDescriptor.getOutputDirectory());
-                    applicationDeploymentDescription.getType().setStandardError(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardErrorFile());
-                    applicationDeploymentDescription.getType().setStandardOutput(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardOutFile());
-                }
-            }
-        }
         try {
             if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
 
@@ -114,8 +89,6 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
         DataTransferDetails detail = new DataTransferDetails();
         TransferStatus status = new TransferStatus();
 
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
-                .getApplicationDeploymentDescription().getType();
         Cluster cluster = null;
         
         try {
@@ -174,7 +147,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 localStdOutFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stdout");
                 while(stdOutStr.isEmpty()){
                 try {
-                	cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
+                	cluster.scpFrom(jobExecutionContext.getStandardOutput(), localStdOutFile.getAbsolutePath());
                 	stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
 				} catch (Exception e) {
 					log.error(e.getLocalizedMessage());
@@ -192,7 +165,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 data.append(oldFiles.get(index++)).append(",");
             } else {
                 localStdErrFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stderr");
-                cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
+                cluster.scpFrom(jobExecutionContext.getStandardError(), localStdErrFile.getAbsolutePath());
                 StringBuffer temp = new StringBuffer(data.append(localStdErrFile.getAbsolutePath()).append(",").toString());
                 GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
             }
@@ -219,7 +192,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                     List<String> outputList = null;
                     int retry=3;
                     while(retry>0){
-                    	 outputList = cluster.listDirectory(app.getOutputDataDirectory());
+                    	 outputList = cluster.listDirectory(jobExecutionContext.getOutputDir());
                         if (outputList.size() == 1 && outputList.get(0).isEmpty()) {
                             Thread.sleep(10000);
                         } else if (outputList.size() > 0) {
@@ -229,7 +202,6 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                         }
                         retry--;
                         if(retry==0){
-//                            log.info("Ohhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shitttttttOhhhhhhh shittttttt");
                         }
                     	 Thread.sleep(10000);
                     }
@@ -269,7 +241,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                             outputFile = oldFiles.get(index);
                             data.append(oldFiles.get(index++)).append(",");
                         } else {
-                            cluster.scpFrom(app.getOutputDataDirectory() + File.separator + valueList, outputDataDir);
+                            cluster.scpFrom(jobExecutionContext.getOutputDir() + File.separator + valueList, outputDataDir);
                             outputFile = outputDataDir + File.separator + valueList;
                             jobExecutionContext.addOutputFile(outputFile);
                             StringBuffer temp = new StringBuffer(data.append(outputFile).append(",").toString());
@@ -296,9 +268,10 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 );
                 }
             }
-            app.setStandardError(localStdErrFile.getAbsolutePath());
-            app.setStandardOutput(localStdOutFile.getAbsolutePath());
-            app.setOutputDataDirectory(outputDataDir);
+            // Why we set following?
+//            app.setStandardError(localStdErrFile.getAbsolutePath());
+//            app.setStandardOutput(localStdOutFile.getAbsolutePath());
+//            app.setOutputDataDirectory(outputDataDir);
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription(outputDataDir);
