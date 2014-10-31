@@ -38,6 +38,7 @@ import org.apache.airavata.gfac.core.provider.utils.ProviderUtils;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.ec2.util.AmazonEC2Util;
 import org.apache.airavata.gfac.ec2.util.EC2ProviderUtil;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.Ec2ApplicationDeploymentType;
@@ -90,7 +91,7 @@ public class EC2Provider extends AbstractProvider {
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException{
         if (jobExecutionContext != null) {
-    		jobId="EC2_"+jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress()+"_"+Calendar.getInstance().getTimeInMillis();
+    		jobId="EC2_"+jobExecutionContext.getHostName()+"_"+Calendar.getInstance().getTimeInMillis();
             if (jobExecutionContext.getSecurityContext(AmazonSecurityContext.AMAZON_SECURITY_CONTEXT)
                     instanceof AmazonSecurityContext) {
                 this.amazonSecurityContext = (AmazonSecurityContext) jobExecutionContext.
@@ -156,10 +157,9 @@ public class EC2Provider extends AbstractProvider {
         try
         {
             String outParamName;
-            OutputParameterType[] outputParametersArray = jobExecutionContext.getApplicationContext().
-                    getServiceDescription().getType().getOutputParametersArray();
-            if(outputParametersArray != null) {
-                outParamName = outputParametersArray[0].getParameterName();
+            List<OutputDataObjectType> outputs = jobExecutionContext.getApplicationContext().getApplicationInterfaceDescription().getApplicationOutputs();
+            if(outputs != null && !outputs.isEmpty()) {
+                outParamName = outputs.get(0).getName();
             } else {
                 throw new GFacProviderException("Output parameter name is not set. Therefore, not being able " +
                         "to filter the job result from standard out ");
@@ -217,11 +217,10 @@ public class EC2Provider extends AbstractProvider {
             executionResult = executionResult.replace("\r","").replace("\n","");
             log.info("Result of the job : " + executionResult);
 
-            for(OutputParameterType outparamType : outputParametersArray){
+            for(OutputDataObjectType outparamType : outputs){
                 /* Assuming that there is just a single result. If you want to add more results, update the necessary
                    logic below */
-                String paramName = outparamType.getParameterName();
-                ActualParameter outParam = new ActualParameter();
+                String paramName = outparamType.getName();
                 outParam.getType().changeType(StringParameterType.type);
                 ((StringParameterType) outParam.getType()).setValue(executionResult);
                 jobExecutionContext.getOutMessageContext().addParameter(paramName, outParam);
