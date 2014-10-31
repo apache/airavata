@@ -2,6 +2,7 @@ package org.apache.airavata.gfac.bes.handlers;
 
 import java.util.Properties;
 
+import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
 import org.apache.airavata.gfac.bes.security.X509SecurityContext;
@@ -13,6 +14,7 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.schemas.gfac.JobDirectoryModeDocument.JobDirectoryMode;
@@ -43,42 +45,42 @@ public abstract class AbstractSMSHandler implements BESConstants, GFacHandler{
 	@Override
 	public void invoke(JobExecutionContext jobExecutionContext)
 			throws GFacHandlerException {
-		
-		// if not SMS then not to pass further
-//		if(!isSMSEnabled(jobExecutionContext)) return;
-		
-		initSecurityProperties(jobExecutionContext);
-		
-
-		
-		UnicoreHostType host = (UnicoreHostType) jobExecutionContext.getApplicationContext().getHostDescription()
-                .getType();
-        String factoryUrl = host.getUnicoreBESEndPointArray()[0];
-        
-        storageClient = null;
-        
-        if(!isSMSInstanceExisting(jobExecutionContext)) {
-            EndpointReferenceType eprt = EndpointReferenceType.Factory.newInstance();
-            eprt.addNewAddress().setStringValue(factoryUrl);
-            StorageCreator storageCreator = new StorageCreator(secProperties, factoryUrl, 5, null);
-            try {
-                storageClient = storageCreator.createStorage();
-            } catch (Exception e2) {
-                log.error("Cannot create storage..");
-                throw new GFacHandlerException("Cannot create storage..", e2);
+		try {
+            initSecurityProperties(jobExecutionContext);
+            JobSubmissionInterface preferredJobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
+            JobSubmissionProtocol protocol = preferredJobSubmissionInterface.getJobSubmissionProtocol();
+            String interfaceId = preferredJobSubmissionInterface.getJobSubmissionInterfaceId();
+            String factoryUrl = null;
+            if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
+                    UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(interfaceId);
+                    factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
             }
-            jobExecutionContext.setProperty(PROP_SMS_EPR, storageClient.getEPR());
+            storageClient = null;
+
+            if (!isSMSInstanceExisting(jobExecutionContext)) {
+                EndpointReferenceType eprt = EndpointReferenceType.Factory.newInstance();
+                eprt.addNewAddress().setStringValue(factoryUrl);
+                StorageCreator storageCreator = new StorageCreator(secProperties, factoryUrl, 5, null);
+                try {
+                    storageClient = storageCreator.createStorage();
+                } catch (Exception e2) {
+                    log.error("Cannot create storage..");
+                    throw new GFacHandlerException("Cannot create storage..", e2);
+                }
+                jobExecutionContext.setProperty(PROP_SMS_EPR, storageClient.getEPR());
+            } else {
+                EndpointReferenceType eprt = (EndpointReferenceType) jobExecutionContext.getProperty(PROP_SMS_EPR);
+                try {
+                    storageClient = new StorageClient(eprt, secProperties);
+                } catch (Exception e) {
+                    throw new GFacHandlerException("Cannot create storage..", e);
+                }
+            }
+            dataTransferrer = new DataTransferrer(jobExecutionContext, storageClient);
+        } catch (AppCatalogException e) {
+            throw new GFacHandlerException("Error occurred while retrieving unicore job submission interface..", e);
         }
-        else {
-        	EndpointReferenceType eprt = (EndpointReferenceType)jobExecutionContext.getProperty(PROP_SMS_EPR);
-        		try {
-					storageClient = new StorageClient(eprt, secProperties);
-				} catch (Exception e) {
-					throw new GFacHandlerException("Cannot create storage..", e);
-				}
-        }
-        dataTransferrer = new DataTransferrer(jobExecutionContext, storageClient);
-	}
+    }
 	
 	protected void initSecurityProperties(JobExecutionContext jobExecutionContext) throws GFacHandlerException{
 		log.debug("Initializing SMSInHandler security properties ..");
@@ -136,9 +138,9 @@ public abstract class AbstractSMSHandler implements BESConstants, GFacHandler{
 	 * of the job execution context.
 	 * */
 	protected boolean isSMSEnabled(JobExecutionContext jobExecutionContext){
-		if(((UnicoreHostType)jobExecutionContext.getApplicationContext().getHostDescription().getType()).getJobDirectoryMode() == JobDirectoryMode.SMS_BYTE_IO) {
-			return true;
-		}
+//		if(((UnicoreHostType)jobExecutionContext.getApplicationContext().getHostDescription().getType()).getJobDirectoryMode() == JobDirectoryMode.SMS_BYTE_IO) {
+//			return true;
+//		}
 		return false;
 	}
 	

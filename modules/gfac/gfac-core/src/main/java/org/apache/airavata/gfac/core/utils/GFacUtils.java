@@ -39,7 +39,9 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
+import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.model.workspace.experiment.DataType;
@@ -1258,21 +1260,34 @@ public class GFacUtils {
             AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
             return appCatalog.getComputeResource().getUNICOREJobSubmission(submissionId);
         }catch (Exception e){
-            String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
+            String errorMsg = "Error while retrieving UNICORE job submission with submission id : " + submissionId;
             log.error(errorMsg, e);
             throw new AppCatalogException(errorMsg, e);
         }
     }
 
-    public static UnicoreJobSubmission getJobSubmission (String submissionId) throws AppCatalogException{
+    public static GlobusJobSubmission getGlobusJobSubmission (String submissionId) throws AppCatalogException{
+        return null;
+//        try {
+//            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+//            return appCatalog.getComputeResource().getGlobus(submissionId);
+//        }catch (Exception e){
+//            String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
+//            log.error(errorMsg, e);
+//            throw new AppCatalogException(errorMsg, e);
+//        }
+    }
+
+    public static SSHJobSubmission getSSHJobSubmission (String submissionId) throws AppCatalogException{
         try {
             AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
-            return appCatalog.getComputeResource().getUNICOREJobSubmission(submissionId);
+            return appCatalog.getComputeResource().getSSHJobSubmission(submissionId);
         }catch (Exception e){
-            String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
+            String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
             log.error(errorMsg, e);
             throw new AppCatalogException(errorMsg, e);
         }
     }
+
 
 }
