@@ -52,8 +52,9 @@ import org.apache.airavata.messaging.core.PublisherFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -74,6 +75,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -303,6 +305,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         jobExecutionContext.setZk(zk);
         jobExecutionContext.setCredentialStoreToken(AiravataZKUtils.getExpTokenId(zk, experimentID, taskID));
 
+        // handle job submission protocol
         List<JobSubmissionInterface> jobSubmissionInterfaces = computeResource.getJobSubmissionInterfaces();
         if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()){
             Collections.sort(jobSubmissionInterfaces, new Comparator<JobSubmissionInterface>() {
@@ -316,36 +319,92 @@ public class BetterGfacImpl implements GFac,Watcher {
         }else {
             throw new GFacException("Compute resource should have at least one job submission interface defined...");
         }
+        // handle data movement protocol
+        List<DataMovementInterface> dataMovementInterfaces = computeResource.getDataMovementInterfaces();
+        if (dataMovementInterfaces != null && !dataMovementInterfaces.isEmpty()) {
+            Collections.sort(dataMovementInterfaces, new Comparator<DataMovementInterface>() {
+                @Override
+                public int compare(DataMovementInterface dataMovementInterface, DataMovementInterface dataMovementInterface2) {
+                    return dataMovementInterface.getPriorityOrder() - dataMovementInterface2.getPriorityOrder();
+                }
+            });
+            jobExecutionContext.setHostPrioritizedDataMovementInterfaces(dataMovementInterfaces);
+        }
+
+        // set compute resource configuration as default preferred values, after that replace those with gateway user preferences.
+        populateDefaultComputeResourceConfiguration(jobExecutionContext, applicationInterface, computeResource);
+        // if gateway resource preference is set
         if (gatewayResourcePreferences != null ) {
             if (gatewayResourcePreferences.getScratchLocation() == null) {
                 gatewayResourcePreferences.setScratchLocation("/tmp");
             }
-
-            /**
-             * Working dir
-             */
-            String workingDir = gatewayResourcePreferences.getScratchLocation() + File.separator + jobExecutionContext.getExperimentID();
-            jobExecutionContext.setWorkingDir(workingDir);
-
-            /*
-            * Input and Output Directory
-            */
-            jobExecutionContext.setInputDir(workingDir + File.separator + Constants.INPUT_DATA_DIR_VAR_NAME);
-            jobExecutionContext.setOutputDir(workingDir + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
-
-            /*
-            * Stdout and Stderr for Shell
-            */
-            jobExecutionContext.setStandardOutput(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stdout");
-            jobExecutionContext.setStandardError(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
+            setUpWorkingLocation(jobExecutionContext, applicationInterface, gatewayResourcePreferences.getScratchLocation());
 
             jobExecutionContext.setPreferredJobSubmissionProtocol(gatewayResourcePreferences.getPreferredJobSubmissionProtocol());
             if (gatewayResourcePreferences.getPreferredJobSubmissionProtocol() == null) {
                 jobExecutionContext.setPreferredJobSubmissionInterface(jobExecutionContext.getHostPrioritizedJobSubmissionInterfaces().get(0));
                 jobExecutionContext.setPreferredJobSubmissionProtocol(jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionProtocol());
+            } else {
+                for (JobSubmissionInterface jobSubmissionInterface : jobSubmissionInterfaces) {
+                    if (gatewayResourcePreferences.getPreferredJobSubmissionProtocol() == jobSubmissionInterface.getJobSubmissionProtocol()) {
+                        jobExecutionContext.setPreferredJobSubmissionInterface(jobSubmissionInterface);
+                        break;
+                    }
+                }
+            }
+
+            // set gatewayUserPreferred data movement protocol and interface
+            jobExecutionContext.setPreferredDataMovementProtocol(gatewayResourcePreferences.getPreferredDataMovementProtocol());
+            if (gatewayResourcePreferences.getPreferredJobSubmissionProtocol() == null) {
+                jobExecutionContext.setPreferredDataMovementInterface(jobExecutionContext.getHostPrioritizedDataMovementInterfaces().get(0));
+                jobExecutionContext.setPreferredDataMovementProtocol(jobExecutionContext.getPreferredDataMovementInterface().getDataMovementProtocol());
+            } else {
+                for (DataMovementInterface dataMovementInterface : dataMovementInterfaces) {
+                    if (gatewayResourcePreferences.getPreferredDataMovementProtocol() == dataMovementInterface.getDataMovementProtocol()) {
+                        jobExecutionContext.setPreferredDataMovementInterface(dataMovementInterface);
+                        break;
+                    }
+                }
             }
         }
         return jobExecutionContext;
+    }
+
+    private void setUpWorkingLocation(JobExecutionContext jobExecutionContext, ApplicationInterfaceDescription applicationInterface, String scratchLocation) {
+
+        /**
+         * Working dir
+         */
+        String workingDir = scratchLocation + File.separator + jobExecutionContext.getExperimentID();
+        jobExecutionContext.setWorkingDir(workingDir);
+
+            /*
+            * Input and Output Directory
+            */
+        jobExecutionContext.setInputDir(workingDir + File.separator + Constants.INPUT_DATA_DIR_VAR_NAME);
+        jobExecutionContext.setOutputDir(workingDir + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
+
+            /*
+            * Stdout and Stderr for Shell
+            */
+        jobExecutionContext.setStandardOutput(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stdout");
+        jobExecutionContext.setStandardError(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
+    }
+
+    private void populateDefaultComputeResourceConfiguration(JobExecutionContext jobExecutionContext, ApplicationInterfaceDescription applicationInterface, ComputeResourceDescription computeResource) {
+        Map<FileSystems, String> fileSystems = computeResource.getFileSystems();
+        String scratchLocation = fileSystems.get(FileSystems.SCRATCH);
+        if (scratchLocation != null) {
+            setUpWorkingLocation(jobExecutionContext, applicationInterface, scratchLocation);
+        }
+
+        jobExecutionContext.setPreferredJobSubmissionInterface(jobExecutionContext.getHostPrioritizedJobSubmissionInterfaces().get(0));
+        jobExecutionContext.setPreferredJobSubmissionProtocol(jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionProtocol());
+
+        if (jobExecutionContext.getHostPrioritizedDataMovementInterfaces() != null) {
+            jobExecutionContext.setPreferredDataMovementInterface(jobExecutionContext.getHostPrioritizedDataMovementInterfaces().get(0));
+            jobExecutionContext.setPreferredDataMovementProtocol(jobExecutionContext.getPreferredDataMovementInterface().getDataMovementProtocol());
+        }
     }
 
     private boolean submitJob(JobExecutionContext jobExecutionContext) throws GFacException {
