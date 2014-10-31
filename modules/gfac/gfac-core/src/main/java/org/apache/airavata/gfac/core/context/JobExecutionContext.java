@@ -430,4 +430,8 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     public void setPreferredJobSubmissionInterface(JobSubmissionInterface preferredJobSubmissionInterface) {
         this.preferredJobSubmissionInterface = preferredJobSubmissionInterface;
     }
+
+    public String getHostName() {
+        return applicationContext.getComputeResourceDescription().getHostName();
+    }
 }

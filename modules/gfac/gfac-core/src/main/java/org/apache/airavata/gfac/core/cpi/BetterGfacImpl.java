@@ -302,6 +302,20 @@ public class BetterGfacImpl implements GFac,Watcher {
         jobExecutionContext.setGfac(this);
         jobExecutionContext.setZk(zk);
         jobExecutionContext.setCredentialStoreToken(AiravataZKUtils.getExpTokenId(zk, experimentID, taskID));
+
+        List<JobSubmissionInterface> jobSubmissionInterfaces = computeResource.getJobSubmissionInterfaces();
+        if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()){
+            Collections.sort(jobSubmissionInterfaces, new Comparator<JobSubmissionInterface>() {
+                @Override
+                public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
+                    return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
+                }
+            });
+
+            jobExecutionContext.setHostPrioritizedJobSubmissionInterfaces(jobSubmissionInterfaces);
+        }else {
+            throw new GFacException("Compute resource should have at least one job submission interface defined...");
+        }
         if (gatewayResourcePreferences != null ) {
             if (gatewayResourcePreferences.getScratchLocation() == null) {
                 gatewayResourcePreferences.setScratchLocation("/tmp");
@@ -326,22 +340,11 @@ public class BetterGfacImpl implements GFac,Watcher {
             jobExecutionContext.setStandardError(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
 
             jobExecutionContext.setPreferredJobSubmissionProtocol(gatewayResourcePreferences.getPreferredJobSubmissionProtocol());
+            if (gatewayResourcePreferences.getPreferredJobSubmissionProtocol() == null) {
+                jobExecutionContext.setPreferredJobSubmissionInterface(jobExecutionContext.getHostPrioritizedJobSubmissionInterfaces().get(0));
+                jobExecutionContext.setPreferredJobSubmissionProtocol(jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionProtocol());
+            }
         }
-
-        List<JobSubmissionInterface> jobSubmissionInterfaces = computeResource.getJobSubmissionInterfaces();
-        if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()){
-            Collections.sort(jobSubmissionInterfaces, new Comparator<JobSubmissionInterface>() {
-                @Override
-                public int compare(JobSubmissionInterface jobSubmissionInterface, JobSubmissionInterface jobSubmissionInterface2) {
-                    return jobSubmissionInterface.getPriorityOrder() - jobSubmissionInterface2.getPriorityOrder();
-                }
-            });
-
-            jobExecutionContext.setHostPrioritizedJobSubmissionInterfaces(jobSubmissionInterfaces);
-        }else {
-            throw new GFacException("Compute resource should have at least one job submission interface defined...");
-        }
-
         return jobExecutionContext;
     }
 
