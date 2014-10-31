@@ -66,8 +66,8 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
                     resource.setGatewayId(profileResource.getGatewayID());
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
-                    resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol());
-                    resource.setPreferedDMProtocol(preference.getPreferredDataMovementProtocol());
+                    resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());
+                    resource.setPreferedDMProtocol(preference.getPreferredDataMovementProtocol().toString());
                     resource.setBatchQueue(preference.getPreferredBatchQueue());
                     resource.setProjectNumber(preference.getAllocationProjectNumber());
                     resource.setScratchLocation(preference.getScratchLocation());
@@ -100,8 +100,8 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
                     resource.setGatewayId(gatewayId);
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
-                    resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol());
-                    resource.setPreferedDMProtocol(preference.getPreferredDataMovementProtocol());
+                    resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());
+                    resource.setPreferedDMProtocol(preference.getPreferredDataMovementProtocol().toString());
                     resource.setBatchQueue(preference.getPreferredBatchQueue());
                     resource.setProjectNumber(preference.getAllocationProjectNumber());
                     resource.setScratchLocation(preference.getScratchLocation());

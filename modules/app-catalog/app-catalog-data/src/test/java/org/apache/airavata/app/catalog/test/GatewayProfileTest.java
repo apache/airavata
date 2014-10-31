@@ -84,8 +84,8 @@ public class GatewayProfileTest {
         ComputeResourcePreference preference1 = new ComputeResourcePreference();
         preference1.setComputeResourceId(hostId1);
         preference1.setOverridebyAiravata(true);
-        preference1.setPreferredJobSubmissionProtocol(JobSubmissionProtocol.SSH.toString());
-        preference1.setPreferredDataMovementProtocol(DataMovementProtocol.SCP.toString());
+        preference1.setPreferredJobSubmissionProtocol(JobSubmissionProtocol.SSH);
+                preference1.setPreferredDataMovementProtocol(DataMovementProtocol.SCP);
         preference1.setPreferredBatchQueue("queue1");
         preference1.setScratchLocation("/tmp");
         preference1.setAllocationProjectNumber("project1");
@@ -93,8 +93,8 @@ public class GatewayProfileTest {
         ComputeResourcePreference preference2 = new ComputeResourcePreference();
         preference2.setComputeResourceId(hostId2);
         preference2.setOverridebyAiravata(true);
-        preference2.setPreferredJobSubmissionProtocol(JobSubmissionProtocol.LOCAL.toString());
-        preference2.setPreferredDataMovementProtocol(DataMovementProtocol.GridFTP.toString());
+        preference2.setPreferredJobSubmissionProtocol(JobSubmissionProtocol.LOCAL);
+        preference2.setPreferredDataMovementProtocol(DataMovementProtocol.GridFTP);
         preference2.setPreferredBatchQueue("queue2");
         preference2.setScratchLocation("/tmp");
         preference2.setAllocationProjectNumber("project2");

@@ -20,21 +20,19 @@
 */
 package org.apache.airavata.gfac.gsissh.util;
 
-import java.sql.SQLException;
-import java.util.*;
-
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
-import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
+import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
@@ -47,22 +45,26 @@ import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.FileArrayType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
-import org.apache.openjpa.lib.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.Max;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 
 public class GFACGSISSHUtils {
@@ -74,32 +76,35 @@ public class GFACGSISSHUtils {
     public static int maxClusterCount = 5;
     public static Map<String, List<Cluster>> clusters = new HashMap<String, List<Cluster>>();
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
-        HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
-        if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
-                || registeredHost.getType() instanceof SSHHostType) {
-            logger.error("This is a wrong method to invoke to non ssh host types,please check your gfac-config.xml");
-        } else if (registeredHost.getType() instanceof GsisshHostType) {
-            String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
-            RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
-            requestData.setTokenId(credentialStoreToken);
-            PBSCluster pbsCluster = null;
-            GSISecurityContext context = null;
-            try {
+        JobSubmissionInterface jobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
+        JobSubmissionProtocol jobProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
+        try {
+            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+            if (jobProtocol == JobSubmissionProtocol.GLOBUS || jobProtocol == JobSubmissionProtocol.UNICORE
+                    || jobProtocol == JobSubmissionProtocol.CLOUD || jobProtocol == JobSubmissionProtocol.LOCAL) {
+                logger.error("This is a wrong method to invoke to non ssh host types,please check your gfac-config.xml");
+            } else if (jobProtocol == JobSubmissionProtocol.SSH && sshJobSubmission.getSecurityProtocol() == SecurityProtocol.GSI) {
+                String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
+                RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
+                requestData.setTokenId(credentialStoreToken);
+                PBSCluster pbsCluster = null;
+                GSISecurityContext context = null;
+
                 TokenizedMyProxyAuthInfo tokenizedMyProxyAuthInfo = new TokenizedMyProxyAuthInfo(requestData);
                 CredentialReader credentialReader = GFacUtils.getCredentialReader();
-                if(credentialReader != null){
-                	CertificateCredential credential = null;
-					try {
-						credential = (CertificateCredential)credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
-			      		requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
-					} catch (Exception e) {
-						logger.error(e.getLocalizedMessage());
-					}
+                if (credentialReader != null) {
+                    CertificateCredential credential = null;
+                    try {
+                        credential = (CertificateCredential) credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
+                        requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
+                    } catch (Exception e) {
+                        logger.error(e.getLocalizedMessage());
+                    }
                 }
 
-                GsisshHostType gsisshHostType = (GsisshHostType) registeredHost.getType();
-                String key = requestData.getMyProxyUserName() + registeredHost.getType().getHostAddress() +
-                        gsisshHostType.getPort();
+                String key = requestData.getMyProxyUserName() + jobExecutionContext.getHostName()+
+                        sshJobSubmission.getSshPort();
                 boolean recreate = false;
                 synchronized (clusters) {
                     if (clusters.containsKey(key) && clusters.get(key).size() < maxClusterCount) {
@@ -112,7 +117,7 @@ public class GFACGSISSHUtils {
                             clusters.get(key).remove(i);
                             recreate = true;
                         }
-                        if(!recreate) {
+                        if (!recreate) {
                             try {
                                 pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
                             } catch (Exception e) {
@@ -129,13 +134,12 @@ public class GFACGSISSHUtils {
                     }
 
                     if (recreate) {
-                        ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress(),
-                                gsisshHostType.getPort());
+                        ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), jobExecutionContext.getHostName(),
+                                sshJobSubmission.getSshPort());
 
                         JobManagerConfiguration jConfig = null;
-                        String installedParentPath = ((HpcApplicationDeploymentType)
-                                jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
-                        String jobManager = ((GsisshHostType) registeredHost.getType()).getJobManager();
+                        String installedParentPath = sshJobSubmission.getResourceJobManager().getJobManagerBinPath();
+                        String jobManager = sshJobSubmission.getResourceJobManager().getResourceJobManagerType().toString();
                         if (jobManager == null) {
                             logger.error("No Job Manager is configured, so we are picking pbs as the default job manager");
                             jConfig = CommonUtils.getPBSJobManager(installedParentPath);
@@ -160,28 +164,30 @@ public class GFACGSISSHUtils {
                         clusters.put(key, pbsClusters);
                     }
                 }
-            } catch (Exception e) {
-                throw new GFacException("An error occurred while creating GSI security context", e);
+
+                jobExecutionContext.addSecurityContext(Constants.GSI_SECURITY_CONTEXT, context);
             }
-            jobExecutionContext.addSecurityContext(Constants.GSI_SECURITY_CONTEXT, context);
+        } catch (Exception e) {
+            throw new GFacException("An error occurred while creating GSI security context", e);
         }
     }
 
-    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext,
-                                                    ApplicationDeploymentDescriptionType app, Cluster cluster) {
+    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
+        ApplicationContext applicationContext = jobExecutionContext.getApplicationContext();
+        ApplicationDeploymentDescription app = applicationContext.getApplicationDeploymentDescription();
         // this is common for any application descriptor
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
         jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
-        jobDescriptor.setInputDirectory(app.getInputDataDirectory());
-        jobDescriptor.setOutputDirectory(app.getOutputDataDirectory());
-        jobDescriptor.setExecutablePath(app.getExecutableLocation());
-        jobDescriptor.setStandardOutFile(app.getStandardOutput());
-        jobDescriptor.setStandardErrorFile(app.getStandardError());
+        jobDescriptor.setInputDirectory(jobExecutionContext.getInputDir());
+        jobDescriptor.setOutputDirectory(jobExecutionContext.getOutputDir());
+        jobDescriptor.setExecutablePath(app.getExecutablePath());
+        jobDescriptor.setStandardOutFile(jobExecutionContext.getStandardOutput());
+        jobDescriptor.setStandardErrorFile(jobExecutionContext.getStandardError());
         Random random = new Random();
         int i = random.nextInt(Integer.MAX_VALUE); // We always set the job name
         jobDescriptor.setJobName("A" + String.valueOf(i+99999999));
-        jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
+        jobDescriptor.setWorkingDirectory(jobExecutionContext.getWorkingDir());
 
         List<String> inputValues = new ArrayList<String>();
         MessageContext input = jobExecutionContext.getInMessageContext();
