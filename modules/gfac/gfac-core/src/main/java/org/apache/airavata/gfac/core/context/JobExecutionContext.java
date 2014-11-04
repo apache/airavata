@@ -139,7 +139,7 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     // a scientific application(or algorithm) as a service. Service name is there to identify to
     // which service description we should refer during the execution of the current job represented
     // by this context instance.
-    private String serviceName;
+    private String applicationName;
 
     private String experimentID;
 
@@ -166,10 +166,10 @@ public class JobExecutionContext extends AbstractContext implements Serializable
      */
     private Map<String, SecurityContext> securityContext = new HashMap<String, SecurityContext>();
 
-    public JobExecutionContext(GFacConfiguration gFacConfiguration,String serviceName){
+    public JobExecutionContext(GFacConfiguration gFacConfiguration,String applicationName){
         this.gfacConfiguration = gFacConfiguration;
         notifier = new GFacNotifier();
-        setServiceName(serviceName);
+        setApplicationName(applicationName);
         outputFileList = new ArrayList<String>();
     }
 
@@ -238,12 +238,12 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         this.outHandlers = outHandlers;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public String getApplicationName() {
+        return applicationName;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
 
     public GFacNotifier getNotifier() {
@@ -274,15 +274,6 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         this.inPath = false;
     }
 
-//    public ContextHeaderDocument.ContextHeader getContextHeader() {
-//        return contextHeader;
-//    }
-//
-//    public void setContextHeader(ContextHeaderDocument.ContextHeader contextHeader) {
-//        this.contextHeader = contextHeader;
-//    }
-
-	
 	public SecurityContext getSecurityContext(String name) throws GFacException{
 		SecurityContext secContext = securityContext.get(name+"-"+this.getApplicationContext().getHostDescription().getType().getHostAddress());
 		return secContext;
@@ -458,5 +449,13 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public void setPreferredDataMovementInterface(DataMovementInterface preferredDataMovementInterface) {
         this.preferredDataMovementInterface = preferredDataMovementInterface;
+    }
+
+    public String getExecutablePath() {
+        if (applicationContext == null || applicationContext.getApplicationDeploymentDescription() == null) {
+            return null;
+        } else {
+            return applicationContext.getApplicationDeploymentDescription().getExecutablePath();
+        }
     }
 }

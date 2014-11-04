@@ -133,7 +133,7 @@ public class GridFTPOutputHandler extends AbstractHandler {
                     }
 
                     String timeStampedServiceName = GFacUtils.createUniqueNameWithDate(jobExecutionContext
-                            .getServiceName());
+                            .getApplicationName());
                     File localStdOutFile = File.createTempFile(timeStampedServiceName, "stdout");
                     localStdErrFile = File.createTempFile(timeStampedServiceName, "stderr");
 

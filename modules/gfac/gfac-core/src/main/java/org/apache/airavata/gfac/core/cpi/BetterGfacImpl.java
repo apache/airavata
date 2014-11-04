@@ -269,7 +269,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         GFacConfiguration gFacConfiguration = GFacConfiguration.create(new File(resource.getPath()), configurationProperties);
 
         // start constructing jobexecutioncontext
-        jobExecutionContext = new JobExecutionContext(gFacConfiguration, applicationInterfaceId);
+        jobExecutionContext = new JobExecutionContext(gFacConfiguration, applicationInterface.getApplicationName());
 
         // setting experiment/task/workflownode related information
         Experiment experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentID);
@@ -281,6 +281,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 
 
         List<JobDetails> jobDetailsList = taskData.getJobDetailsList();
+        //FIXME: Following for loop only set last jobDetails element to the jobExecutionContext
         for(JobDetails jDetails:jobDetailsList){
             jobExecutionContext.setJobDetails(jDetails);
         }

@@ -60,9 +60,9 @@ public class Scheduler {
         jobExecutionContext.setProvider(getProvider(jobExecutionContext));
         // TODO: Selecting the provider based on application description.
         jobExecutionContext.getGFacConfiguration().setInHandlers(jobExecutionContext.getProvider().getClass().getName(),
-                jobExecutionContext.getServiceName());
+                jobExecutionContext.getApplicationName());
         jobExecutionContext.getGFacConfiguration().setOutHandlers(jobExecutionContext.getProvider().getClass().getName(),
-        		 jobExecutionContext.getServiceName());
+        		 jobExecutionContext.getApplicationName());
         jobExecutionContext.getGFacConfiguration().setExecutionMode(getExecutionMode(jobExecutionContext));
     }
 
@@ -72,7 +72,7 @@ public class Scheduler {
      * @return GFacProvider instance.
      */
     private static GFacProvider getProvider(JobExecutionContext jobExecutionContext) throws GFacException {
-        String applicationName = jobExecutionContext.getServiceName();
+        String applicationName = jobExecutionContext.getApplicationName();
 
         URL resource = Scheduler.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();

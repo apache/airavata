@@ -114,6 +114,22 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     .getApplicationDeploymentDescription().getType();
             String standardError = app.getStandardError();
             String standardOutput = app.getStandardOutput();
+            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
+                try {
+                    GFACSSHUtils.addSecurityContext(jobExecutionContext);
+                } catch (ApplicationSettingsException e) {
+                    log.error(e.getMessage());
+                    try {
+         				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+         			} catch (GFacException e1) {
+         				 log.error(e1.getLocalizedMessage());
+         			}
+                    throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+                }
+            }
+            pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+            String standardError = jobExecutionContext.getStandardError();
+            String standardOutput = jobExecutionContext.getStandardOutput();
             super.invoke(jobExecutionContext);
             // Server info
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir() != null){
