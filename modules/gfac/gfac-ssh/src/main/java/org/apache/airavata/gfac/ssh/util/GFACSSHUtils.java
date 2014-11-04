@@ -20,11 +20,13 @@
 */
 package org.apache.airavata.gfac.ssh.util;
 
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.gfac.Constants;
@@ -32,28 +34,36 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.ssh.context.SSHAuthWrapper;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.security.TokenizedSSHAuthInfo;
 import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
-import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
-import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.schemas.gfac.*;
+import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
+import org.apache.airavata.schemas.gfac.FileArrayType;
+import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
+import org.apache.airavata.schemas.gfac.StringArrayType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 public class GFACSSHUtils {
     private final static Logger logger = LoggerFactory.getLogger(GFACSSHUtils.class);
@@ -66,109 +76,113 @@ public class GFACSSHUtils {
 
 
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
-        HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
-        if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType) {
+        JobSubmissionProtocol preferredJobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
+        JobSubmissionInterface preferredJobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
+        if (preferredJobSubmissionProtocol == JobSubmissionProtocol.GLOBUS || preferredJobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
             logger.error("This is a wrong method to invoke to non ssh host types,please check your gfac-config.xml");
-        } else if (registeredHost.getType() instanceof SSHHostType
-                || registeredHost.getType() instanceof GsisshHostType) {
-            SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
-            String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
-            RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
-            requestData.setTokenId(credentialStoreToken);
-
-            ServerInfo serverInfo = new ServerInfo(null, registeredHost.getType().getHostAddress());
-            SSHAuthWrapper sshAuth = (SSHAuthWrapper) jobExecutionContext.getProperty(ADVANCED_SSH_AUTH);
-
-            Cluster pbsCluster = null;
+        } else if ( preferredJobSubmissionProtocol == JobSubmissionProtocol.SSH  ) {
             try {
-                TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
-                String installedParentPath = ((HpcApplicationDeploymentType)
-                        jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
-                if (installedParentPath == null) {
-                    installedParentPath = "/";
-                }
+                AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+                SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (sshJobSubmission.getSecurityProtocol() == SecurityProtocol.GSI) {
+                    SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
+                    String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
+                    RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
+                    requestData.setTokenId(credentialStoreToken);
 
-                SSHCredential credentials = tokenizedSSHAuthInfo.getCredentials();// this is just a call to get and set credentials in to this object,data will be used
-                serverInfo.setUserName(credentials.getPortalUserName());
-                jobExecutionContext.getExperiment().setUserName(credentials.getPortalUserName());
-                // inside the pbsCluser object
+                    ServerInfo serverInfo = new ServerInfo(null, jobExecutionContext.getHostName());
+                    SSHAuthWrapper sshAuth = (SSHAuthWrapper) jobExecutionContext.getProperty(ADVANCED_SSH_AUTH);
 
-                String key = credentials.getPortalUserName() + registeredHost.getType().getHostAddress() +
-                        serverInfo.getPort();
-                if(sshAuth!=null){
-                    key=sshAuth.getKey();
-                }
-                boolean recreate = false;
-                synchronized (clusters) {
-                    if (clusters.containsKey(key) && clusters.get(key).size() < maxClusterCount) {
-                        recreate = true;
-                    } else if (clusters.containsKey(key)) {
-                        int i = new Random().nextInt(Integer.MAX_VALUE) % maxClusterCount;
-                        if (clusters.get(key).get(i).getSession().isConnected()) {
-                            pbsCluster = clusters.get(key).get(i);
-                        } else {
-                            clusters.get(key).remove(i);
-                            recreate = true;
+                    Cluster pbsCluster = null;
+                    try {
+                        TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
+                        String installedParentPath = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getExecutablePath();
+                        if (installedParentPath == null) {
+                            installedParentPath = "/";
                         }
-                        if (!recreate) {
-                            try {
-                                pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
-                            } catch (Exception e) {
-                                clusters.get(key).remove(i);
-                                logger.info("Connection found the connection map is expired, so we create from the scratch");
-                                maxClusterCount++;
-                                recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+
+                        SSHCredential credentials = tokenizedSSHAuthInfo.getCredentials();// this is just a call to get and set credentials in to this object,data will be used
+                        serverInfo.setUserName(credentials.getPortalUserName());
+                        jobExecutionContext.getExperiment().setUserName(credentials.getPortalUserName());
+                        // inside the pbsCluser object
+
+                        String key = credentials.getPortalUserName() + jobExecutionContext.getHostName() + serverInfo.getPort();
+                        if(sshAuth!=null){
+                            key=sshAuth.getKey();
+                        }
+                        boolean recreate = false;
+                        synchronized (clusters) {
+                            if (clusters.containsKey(key) && clusters.get(key).size() < maxClusterCount) {
+                                recreate = true;
+                            } else if (clusters.containsKey(key)) {
+                                int i = new Random().nextInt(Integer.MAX_VALUE) % maxClusterCount;
+                                if (clusters.get(key).get(i).getSession().isConnected()) {
+                                    pbsCluster = clusters.get(key).get(i);
+                                } else {
+                                    clusters.get(key).remove(i);
+                                    recreate = true;
+                                }
+                                if (!recreate) {
+                                    try {
+                                        pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+                                    } catch (Exception e) {
+                                        clusters.get(key).remove(i);
+                                        logger.info("Connection found the connection map is expired, so we create from the scratch");
+                                        maxClusterCount++;
+                                        recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+                                    }
+                                }
+                                logger.info("Re-using the same connection used with the connection string:" + key);
+                            } else {
+                                recreate = true;
+                            }
+                            if (recreate) {
+                                if (sshAuth != null) {
+                                    pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),
+                                            CommonUtils.getPBSJobManager(installedParentPath));
+                                    jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,null); // some other provider might fail
+                                    key = sshAuth.getKey();
+                                } else {
+                                    pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
+                                            CommonUtils.getPBSJobManager(installedParentPath));
+                                }
+                                List<Cluster> pbsClusters = null;
+                                if (!(clusters.containsKey(key))) {
+                                    pbsClusters = new ArrayList<Cluster>();
+                                } else {
+                                    pbsClusters = clusters.get(key);
+                                }
+                                pbsClusters.add(pbsCluster);
+                                clusters.put(key, pbsClusters);
                             }
                         }
-                        logger.info("Re-using the same connection used with the connection string:" + key);
-                    } else {
-                        recreate = true;
+                    } catch (Exception e) {
+                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
-                    if (recreate) {
-                        if (sshAuth != null) {
-                            pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),
-                                    CommonUtils.getPBSJobManager(installedParentPath));
-                            jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,null); // some other provider might fail
-                            key = sshAuth.getKey();
-                        } else {
-                            pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
-                                    CommonUtils.getPBSJobManager(installedParentPath));
-                        }
-                        List<Cluster> pbsClusters = null;
-                        if (!(clusters.containsKey(key))) {
-                            pbsClusters = new ArrayList<Cluster>();
-                        } else {
-                            pbsClusters = clusters.get(key);
-                        }
-                        pbsClusters.add(pbsCluster);
-                        clusters.put(key, pbsClusters);
-                    }
+                    sshSecurityContext.setPbsCluster(pbsCluster);
+                    jobExecutionContext.addSecurityContext(Constants.SSH_SECURITY_CONTEXT, sshSecurityContext);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (AppCatalogException e) {
+                throw new GFacException("Error while getting SSH Submission object from app catalog", e);
             }
-            sshSecurityContext.setPbsCluster(pbsCluster);
-            jobExecutionContext.addSecurityContext(Constants.SSH_SECURITY_CONTEXT, sshSecurityContext);
         }
     }
 
-    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext,
-                                                    ApplicationDeploymentDescriptionType app, Cluster cluster) {
+    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
         // this is common for any application descriptor
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
         jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
-        jobDescriptor.setInputDirectory(app.getInputDataDirectory());
-        jobDescriptor.setOutputDirectory(app.getOutputDataDirectory());
-        jobDescriptor.setExecutablePath(app.getExecutableLocation());
-        jobDescriptor.setStandardOutFile(app.getStandardOutput());
-        jobDescriptor.setStandardErrorFile(app.getStandardError());
+        jobDescriptor.setInputDirectory(jobExecutionContext.getInputDir());
+        jobDescriptor.setOutputDirectory(jobExecutionContext.getOutputDir());
+        jobDescriptor.setExecutablePath(jobExecutionContext.getApplicationContext()
+                .getApplicationDeploymentDescription().getExecutablePath());
+        jobDescriptor.setStandardOutFile(jobExecutionContext.getStandardOutput());
+        jobDescriptor.setStandardErrorFile(jobExecutionContext.getStandardError());
         Random random = new Random();
         int i = random.nextInt(Integer.MAX_VALUE);
         jobDescriptor.setJobName(String.valueOf(i + 99999999));
-        jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
-
-
+        jobDescriptor.setWorkingDirectory(jobExecutionContext.getWorkingDir());
         List<String> inputValues = new ArrayList<String>();
         MessageContext input = jobExecutionContext.getInMessageContext();
         Map<String, Object> inputs = input.getParameters();
@@ -194,51 +208,6 @@ public class GFACSSHUtils {
         }
         jobDescriptor.setInputValues(inputValues);
 
-        // this part will fill out the hpcApplicationDescriptor
-        if (app instanceof HpcApplicationDeploymentType) {
-            HpcApplicationDeploymentType applicationDeploymentType
-                    = (HpcApplicationDeploymentType) app;
-            jobDescriptor.setUserName(((GSISSHAbstractCluster) cluster).getServerInfo().getUserName());
-            jobDescriptor.setShellName("/bin/bash");
-            jobDescriptor.setAllEnvExport(true);
-            jobDescriptor.setMailOptions("n");
-            jobDescriptor.setNodes(applicationDeploymentType.getNodeCount());
-            jobDescriptor.setProcessesPerNode(applicationDeploymentType.getProcessorsPerNode());
-            jobDescriptor.setMaxWallTime(String.valueOf(applicationDeploymentType.getMaxWallTime()));
-            jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
-            jobDescriptor.setCPUCount(applicationDeploymentType.getCpuCount());
-            if (applicationDeploymentType.getProjectAccount() != null) {
-                if (applicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null) {
-                    jobDescriptor.setAcountString(applicationDeploymentType.getProjectAccount().getProjectAccountNumber());
-                }
-            }
-            if (applicationDeploymentType.getQueue() != null) {
-                if (applicationDeploymentType.getQueue().getQueueName() != null) {
-                    jobDescriptor.setQueueName(applicationDeploymentType.getQueue().getQueueName());
-                }
-            }
-            jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
-            TaskDetails taskData = jobExecutionContext.getTaskData();
-            if (taskData != null && taskData.isSetTaskScheduling()) {
-                ComputationalResourceScheduling computionnalResource = taskData.getTaskScheduling();
-                if (computionnalResource.getNodeCount() > 0) {
-                    jobDescriptor.setNodes(computionnalResource.getNodeCount());
-                }
-                if (computionnalResource.getComputationalProjectAccount() != null) {
-                    jobDescriptor.setAcountString(computionnalResource.getComputationalProjectAccount());
-                }
-                if (computionnalResource.getQueueName() != null) {
-                    jobDescriptor.setQueueName(computionnalResource.getQueueName());
-                }
-                if (computionnalResource.getTotalCPUCount() > 0) {
-                    jobDescriptor.setProcessesPerNode(computionnalResource.getTotalCPUCount());
-                }
-                if (computionnalResource.getWallTimeLimit() > 0) {
-                    jobDescriptor.setMaxWallTime(String.valueOf(computionnalResource.getWallTimeLimit()));
-                }
-            }
-
-        }
         return jobDescriptor;
     }
 

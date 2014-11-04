@@ -128,10 +128,8 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                 }
             }
             pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
-            ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
-                    .getApplicationDeploymentDescription().getType();
-            String standardError = app.getStandardError();
-            String standardOutput = app.getStandardOutput();
+            String standardError = jobExecutionContext.getStandardError();
+            String standardOutput = jobExecutionContext.getStandardOutput();
             super.invoke(jobExecutionContext);
             // Server info
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir() != null){

@@ -73,11 +73,10 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
         } else {
             log.info("Successfully retrieved the Security Context");
         }
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
-            String workingDirectory = app.getScratchWorkingDirectory();
+            String workingDirectory = jobExecutionContext.getWorkingDir();
             cluster.makeDirectory(workingDirectory);
-            cluster.makeDirectory(app.getInputDataDirectory());
-            cluster.makeDirectory(app.getOutputDataDirectory());
+            cluster.makeDirectory(jobExecutionContext.getInputDir());
+            cluster.makeDirectory(jobExecutionContext.getOutputDir());
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();
             status.setTransferState(TransferState.DIRECTORY_SETUP);

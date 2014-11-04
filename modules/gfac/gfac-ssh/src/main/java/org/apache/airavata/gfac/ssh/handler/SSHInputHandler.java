@@ -150,11 +150,10 @@ public class SSHInputHandler extends AbstractHandler {
     }
 
     private static String stageInputFiles(Cluster cluster, JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
         int i = paramValue.lastIndexOf(File.separator);
         String substring = paramValue.substring(i + 1);
         try {
-            String targetFile = app.getInputDataDirectory() + File.separator + substring;
+            String targetFile = jobExecutionContext.getInputDir() + File.separator + substring;
             if(paramValue.startsWith("scp:")){
             	paramValue = paramValue.substring(paramValue.indexOf(":") + 1, paramValue.length());
             	cluster.scpThirdParty(paramValue, targetFile);
