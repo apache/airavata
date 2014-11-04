@@ -259,7 +259,7 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
             gssCredentials = renewCredentialsAsATrustedHost();
         } catch (Exception e) {
             log.warn("Renewing credentials as a trusted renewer failed", e);
-            gssCredentials = getProxyCredentials();
+            gssCredentials = getDefaultCredentials();
         }
 
         return gssCredentials;
