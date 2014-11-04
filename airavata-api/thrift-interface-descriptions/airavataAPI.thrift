@@ -1388,6 +1388,11 @@ service Airavata {
        throws (1: airavataErrors.InvalidRequestException ire,
                2: airavataErrors.AiravataClientException ace,
                3: airavataErrors.AiravataSystemException ase)
+
+  bool deleteBatchQueue(1: required string computeResourceId, 2: required string queueName)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
 /*
  * Gateway Resource Profile
  *

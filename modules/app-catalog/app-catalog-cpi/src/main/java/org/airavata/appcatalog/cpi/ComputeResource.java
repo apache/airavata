@@ -235,6 +235,8 @@ public interface ComputeResource {
      */
     void removeDataMovementInterface(String computeResourceId, String dataMovementInterfaceId)  throws AppCatalogException;
 
+    void removeBatchQueue(String computeResourceId, String queueName)  throws AppCatalogException;
+
 
 
     LOCALSubmission getLocalJobSubmission(String submissionId) throws AppCatalogException;

@@ -2505,6 +2505,21 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public boolean deleteBatchQueue(String computeResourceId, String queueName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            appCatalog.getComputeResource().removeBatchQueue(computeResourceId, queueName);
+            return true;
+        } catch (AppCatalogException e) {
+            logger.errorId(computeResourceId, "Error while deleting batch queue...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting batch queue. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Register a Gateway Resource Profile.
      *
