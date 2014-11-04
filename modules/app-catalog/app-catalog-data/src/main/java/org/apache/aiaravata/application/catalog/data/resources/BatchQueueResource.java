@@ -53,20 +53,12 @@ public class BatchQueueResource extends AbstractResource {
 	
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
-		HashMap<String, String> ids;
-		if (identifier instanceof Map) {
-			ids = (HashMap<String, String>) identifier;
-		} else {
-			logger.error("Identifier should be a map with the field name and it's value");
-			throw new AppCatalogException("Identifier should be a map with the field name and it's value");
-		}
 		EntityManager em = null;
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
 			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(BATCH_QUEUE);
-			generator.setParameter(BatchQueueConstants.COMPUTE_RESOURCE_ID, ids.get(BatchQueueConstants.COMPUTE_RESOURCE_ID));
-			generator.setParameter(BatchQueueConstants.QUEUE_NAME, ids.get(BatchQueueConstants.QUEUE_NAME));
+			generator.setParameter(BatchQueueConstants.COMPUTE_RESOURCE_ID, identifier);
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
