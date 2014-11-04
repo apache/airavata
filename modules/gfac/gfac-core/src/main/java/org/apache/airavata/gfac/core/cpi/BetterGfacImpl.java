@@ -372,6 +372,10 @@ public class BetterGfacImpl implements GFac,Watcher {
     }
 
     private void setUpWorkingLocation(JobExecutionContext jobExecutionContext, ApplicationInterfaceDescription applicationInterface, String scratchLocation) {
+        /**
+         * Scratch location
+         */
+        jobExecutionContext.setScratchLocation(scratchLocation);
 
         /**
          * Working dir

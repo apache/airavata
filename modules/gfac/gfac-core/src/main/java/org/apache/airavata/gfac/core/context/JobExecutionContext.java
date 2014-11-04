@@ -72,6 +72,10 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     private String credentialStoreToken;
     /**
+     * User defined scratch/temp directory
+     */
+    private String scratchLocation;
+    /**
      * User defined working directory.
      */
     private String workingDir;
@@ -357,6 +361,14 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public void setCredentialStoreToken(String credentialStoreToken) {
         this.credentialStoreToken = credentialStoreToken;
+    }
+
+    public String getScratchLocation() {
+        return scratchLocation;
+    }
+
+    public void setScratchLocation(String scratchLocation) {
+        this.scratchLocation = scratchLocation;
     }
 
     public String getWorkingDir() {
