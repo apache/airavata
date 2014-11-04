@@ -194,6 +194,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateApplicationModule\n");
   }
 
+  void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) {
+    // Your implementation goes here
+    printf("getAllModules\n");
+  }
+
   bool deleteApplicationModule(const std::string& appModuleId) {
     // Your implementation goes here
     printf("deleteApplicationModule\n");
@@ -492,6 +497,41 @@ class AiravataHandler : virtual public AiravataIf {
   bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("deleteGatewayComputeResourcePreference\n");
+  }
+
+  void getAllWorkflows(std::vector<std::string> & _return) {
+    // Your implementation goes here
+    printf("getAllWorkflows\n");
+  }
+
+  void getWorkflow( ::Workflow& _return, const std::string& workflowTemplateId) {
+    // Your implementation goes here
+    printf("getWorkflow\n");
+  }
+
+  void deleteWorkflow(const std::string& workflowTemplateId) {
+    // Your implementation goes here
+    printf("deleteWorkflow\n");
+  }
+
+  void registerWorkflow(std::string& _return, const  ::Workflow& workflow) {
+    // Your implementation goes here
+    printf("registerWorkflow\n");
+  }
+
+  void updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow) {
+    // Your implementation goes here
+    printf("updateWorkflow\n");
+  }
+
+  void getWorkflowTemplateId(std::string& _return, const std::string& workflowName) {
+    // Your implementation goes here
+    printf("getWorkflowTemplateId\n");
+  }
+
+  bool isWorkflowExistWithName(const std::string& workflowName) {
+    // Your implementation goes here
+    printf("isWorkflowExistWithName\n");
   }
 
 };

@@ -38,6 +38,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
+import org.apache.airavata.model.Workflow;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
@@ -1450,6 +1451,11 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public List<ApplicationModule> getAllModules() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
     /**
      * Delete a Application Module.
      *
@@ -2779,6 +2785,41 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Error while updating gateway compute resource preference. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    @Override
+    public List<String> getAllWorkflows() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    @Override
+    public Workflow getWorkflow(String workflowTemplateId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    @Override
+    public void deleteWorkflow(String workflowTemplateId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+
+    }
+
+    @Override
+    public String registerWorkflow(Workflow workflow) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    @Override
+    public void updateWorkflow(String workflowTemplateId, Workflow workflow) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+
+    }
+
+    @Override
+    public String getWorkflowTemplateId(String workflowName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
+    @Override
+    public boolean isWorkflowExistWithName(String workflowName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return false;
     }
 
 }

@@ -63,6 +63,7 @@ class AiravataIf {
   virtual void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
   virtual void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId) = 0;
   virtual bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
+  virtual void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) = 0;
   virtual bool deleteApplicationModule(const std::string& appModuleId) = 0;
   virtual void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) = 0;
   virtual void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId) = 0;
@@ -123,6 +124,13 @@ class AiravataIf {
   virtual void getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return, const std::string& gatewayID) = 0;
   virtual bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) = 0;
   virtual bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId) = 0;
+  virtual void getAllWorkflows(std::vector<std::string> & _return) = 0;
+  virtual void getWorkflow( ::Workflow& _return, const std::string& workflowTemplateId) = 0;
+  virtual void deleteWorkflow(const std::string& workflowTemplateId) = 0;
+  virtual void registerWorkflow(std::string& _return, const  ::Workflow& workflow) = 0;
+  virtual void updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow) = 0;
+  virtual void getWorkflowTemplateId(std::string& _return, const std::string& workflowName) = 0;
+  virtual bool isWorkflowExistWithName(const std::string& workflowName) = 0;
 };
 
 class AiravataIfFactory {
@@ -246,6 +254,9 @@ class AiravataNull : virtual public AiravataIf {
   bool updateApplicationModule(const std::string& /* appModuleId */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& /* applicationModule */) {
     bool _return = false;
     return _return;
+  }
+  void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & /* _return */) {
+    return;
   }
   bool deleteApplicationModule(const std::string& /* appModuleId */) {
     bool _return = false;
@@ -451,6 +462,28 @@ class AiravataNull : virtual public AiravataIf {
     return _return;
   }
   bool deleteGatewayComputeResourcePreference(const std::string& /* gatewayID */, const std::string& /* computeResourceId */) {
+    bool _return = false;
+    return _return;
+  }
+  void getAllWorkflows(std::vector<std::string> & /* _return */) {
+    return;
+  }
+  void getWorkflow( ::Workflow& /* _return */, const std::string& /* workflowTemplateId */) {
+    return;
+  }
+  void deleteWorkflow(const std::string& /* workflowTemplateId */) {
+    return;
+  }
+  void registerWorkflow(std::string& /* _return */, const  ::Workflow& /* workflow */) {
+    return;
+  }
+  void updateWorkflow(const std::string& /* workflowTemplateId */, const  ::Workflow& /* workflow */) {
+    return;
+  }
+  void getWorkflowTemplateId(std::string& /* _return */, const std::string& /* workflowName */) {
+    return;
+  }
+  bool isWorkflowExistWithName(const std::string& /* workflowName */) {
     bool _return = false;
     return _return;
   }
@@ -4678,6 +4711,130 @@ class Airavata_updateApplicationModule_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_updateApplicationModule_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getAllModules_args {
+ public:
+
+  Airavata_getAllModules_args() {
+  }
+
+  virtual ~Airavata_getAllModules_args() throw() {}
+
+
+  bool operator == (const Airavata_getAllModules_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const Airavata_getAllModules_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllModules_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllModules_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllModules_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllModules_result__isset {
+  _Airavata_getAllModules_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllModules_result__isset;
+
+class Airavata_getAllModules_result {
+ public:
+
+  Airavata_getAllModules_result() {
+  }
+
+  virtual ~Airavata_getAllModules_result() throw() {}
+
+  std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllModules_result__isset __isset;
+
+  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getAllModules_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllModules_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllModules_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllModules_presult__isset {
+  _Airavata_getAllModules_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllModules_presult__isset;
+
+class Airavata_getAllModules_presult {
+ public:
+
+
+  virtual ~Airavata_getAllModules_presult() throw() {}
+
+  std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllModules_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -12867,6 +13024,910 @@ class Airavata_deleteGatewayComputeResourcePreference_presult {
 
 };
 
+
+class Airavata_getAllWorkflows_args {
+ public:
+
+  Airavata_getAllWorkflows_args() {
+  }
+
+  virtual ~Airavata_getAllWorkflows_args() throw() {}
+
+
+  bool operator == (const Airavata_getAllWorkflows_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const Airavata_getAllWorkflows_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllWorkflows_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllWorkflows_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllWorkflows_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllWorkflows_result__isset {
+  _Airavata_getAllWorkflows_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllWorkflows_result__isset;
+
+class Airavata_getAllWorkflows_result {
+ public:
+
+  Airavata_getAllWorkflows_result() {
+  }
+
+  virtual ~Airavata_getAllWorkflows_result() throw() {}
+
+  std::vector<std::string>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllWorkflows_result__isset __isset;
+
+  void __set_success(const std::vector<std::string> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getAllWorkflows_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllWorkflows_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllWorkflows_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllWorkflows_presult__isset {
+  _Airavata_getAllWorkflows_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllWorkflows_presult__isset;
+
+class Airavata_getAllWorkflows_presult {
+ public:
+
+
+  virtual ~Airavata_getAllWorkflows_presult() throw() {}
+
+  std::vector<std::string> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllWorkflows_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getWorkflow_args {
+ public:
+
+  Airavata_getWorkflow_args() : workflowTemplateId() {
+  }
+
+  virtual ~Airavata_getWorkflow_args() throw() {}
+
+  std::string workflowTemplateId;
+
+  void __set_workflowTemplateId(const std::string& val) {
+    workflowTemplateId = val;
+  }
+
+  bool operator == (const Airavata_getWorkflow_args & rhs) const
+  {
+    if (!(workflowTemplateId == rhs.workflowTemplateId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getWorkflow_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getWorkflow_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getWorkflow_pargs {
+ public:
+
+
+  virtual ~Airavata_getWorkflow_pargs() throw() {}
+
+  const std::string* workflowTemplateId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getWorkflow_result__isset {
+  _Airavata_getWorkflow_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getWorkflow_result__isset;
+
+class Airavata_getWorkflow_result {
+ public:
+
+  Airavata_getWorkflow_result() {
+  }
+
+  virtual ~Airavata_getWorkflow_result() throw() {}
+
+   ::Workflow success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getWorkflow_result__isset __isset;
+
+  void __set_success(const  ::Workflow& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getWorkflow_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getWorkflow_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getWorkflow_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getWorkflow_presult__isset {
+  _Airavata_getWorkflow_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getWorkflow_presult__isset;
+
+class Airavata_getWorkflow_presult {
+ public:
+
+
+  virtual ~Airavata_getWorkflow_presult() throw() {}
+
+   ::Workflow* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getWorkflow_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_deleteWorkflow_args {
+ public:
+
+  Airavata_deleteWorkflow_args() : workflowTemplateId() {
+  }
+
+  virtual ~Airavata_deleteWorkflow_args() throw() {}
+
+  std::string workflowTemplateId;
+
+  void __set_workflowTemplateId(const std::string& val) {
+    workflowTemplateId = val;
+  }
+
+  bool operator == (const Airavata_deleteWorkflow_args & rhs) const
+  {
+    if (!(workflowTemplateId == rhs.workflowTemplateId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteWorkflow_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteWorkflow_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_deleteWorkflow_pargs {
+ public:
+
+
+  virtual ~Airavata_deleteWorkflow_pargs() throw() {}
+
+  const std::string* workflowTemplateId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteWorkflow_result__isset {
+  _Airavata_deleteWorkflow_result__isset() : ire(false), ace(false), ase(false) {}
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteWorkflow_result__isset;
+
+class Airavata_deleteWorkflow_result {
+ public:
+
+  Airavata_deleteWorkflow_result() {
+  }
+
+  virtual ~Airavata_deleteWorkflow_result() throw() {}
+
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteWorkflow_result__isset __isset;
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_deleteWorkflow_result & rhs) const
+  {
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteWorkflow_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteWorkflow_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteWorkflow_presult__isset {
+  _Airavata_deleteWorkflow_presult__isset() : ire(false), ace(false), ase(false) {}
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteWorkflow_presult__isset;
+
+class Airavata_deleteWorkflow_presult {
+ public:
+
+
+  virtual ~Airavata_deleteWorkflow_presult() throw() {}
+
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteWorkflow_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_registerWorkflow_args {
+ public:
+
+  Airavata_registerWorkflow_args() {
+  }
+
+  virtual ~Airavata_registerWorkflow_args() throw() {}
+
+   ::Workflow workflow;
+
+  void __set_workflow(const  ::Workflow& val) {
+    workflow = val;
+  }
+
+  bool operator == (const Airavata_registerWorkflow_args & rhs) const
+  {
+    if (!(workflow == rhs.workflow))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerWorkflow_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerWorkflow_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_registerWorkflow_pargs {
+ public:
+
+
+  virtual ~Airavata_registerWorkflow_pargs() throw() {}
+
+  const  ::Workflow* workflow;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerWorkflow_result__isset {
+  _Airavata_registerWorkflow_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_registerWorkflow_result__isset;
+
+class Airavata_registerWorkflow_result {
+ public:
+
+  Airavata_registerWorkflow_result() : success() {
+  }
+
+  virtual ~Airavata_registerWorkflow_result() throw() {}
+
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerWorkflow_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_registerWorkflow_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_registerWorkflow_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_registerWorkflow_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_registerWorkflow_presult__isset {
+  _Airavata_registerWorkflow_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_registerWorkflow_presult__isset;
+
+class Airavata_registerWorkflow_presult {
+ public:
+
+
+  virtual ~Airavata_registerWorkflow_presult() throw() {}
+
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_registerWorkflow_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_updateWorkflow_args {
+ public:
+
+  Airavata_updateWorkflow_args() : workflowTemplateId() {
+  }
+
+  virtual ~Airavata_updateWorkflow_args() throw() {}
+
+  std::string workflowTemplateId;
+   ::Workflow workflow;
+
+  void __set_workflowTemplateId(const std::string& val) {
+    workflowTemplateId = val;
+  }
+
+  void __set_workflow(const  ::Workflow& val) {
+    workflow = val;
+  }
+
+  bool operator == (const Airavata_updateWorkflow_args & rhs) const
+  {
+    if (!(workflowTemplateId == rhs.workflowTemplateId))
+      return false;
+    if (!(workflow == rhs.workflow))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateWorkflow_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateWorkflow_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_updateWorkflow_pargs {
+ public:
+
+
+  virtual ~Airavata_updateWorkflow_pargs() throw() {}
+
+  const std::string* workflowTemplateId;
+  const  ::Workflow* workflow;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateWorkflow_result__isset {
+  _Airavata_updateWorkflow_result__isset() : ire(false), ace(false), ase(false) {}
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateWorkflow_result__isset;
+
+class Airavata_updateWorkflow_result {
+ public:
+
+  Airavata_updateWorkflow_result() {
+  }
+
+  virtual ~Airavata_updateWorkflow_result() throw() {}
+
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateWorkflow_result__isset __isset;
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_updateWorkflow_result & rhs) const
+  {
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateWorkflow_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateWorkflow_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateWorkflow_presult__isset {
+  _Airavata_updateWorkflow_presult__isset() : ire(false), ace(false), ase(false) {}
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateWorkflow_presult__isset;
+
+class Airavata_updateWorkflow_presult {
+ public:
+
+
+  virtual ~Airavata_updateWorkflow_presult() throw() {}
+
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateWorkflow_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getWorkflowTemplateId_args {
+ public:
+
+  Airavata_getWorkflowTemplateId_args() : workflowName() {
+  }
+
+  virtual ~Airavata_getWorkflowTemplateId_args() throw() {}
+
+  std::string workflowName;
+
+  void __set_workflowName(const std::string& val) {
+    workflowName = val;
+  }
+
+  bool operator == (const Airavata_getWorkflowTemplateId_args & rhs) const
+  {
+    if (!(workflowName == rhs.workflowName))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getWorkflowTemplateId_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getWorkflowTemplateId_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getWorkflowTemplateId_pargs {
+ public:
+
+
+  virtual ~Airavata_getWorkflowTemplateId_pargs() throw() {}
+
+  const std::string* workflowName;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getWorkflowTemplateId_result__isset {
+  _Airavata_getWorkflowTemplateId_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getWorkflowTemplateId_result__isset;
+
+class Airavata_getWorkflowTemplateId_result {
+ public:
+
+  Airavata_getWorkflowTemplateId_result() : success() {
+  }
+
+  virtual ~Airavata_getWorkflowTemplateId_result() throw() {}
+
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getWorkflowTemplateId_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getWorkflowTemplateId_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getWorkflowTemplateId_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getWorkflowTemplateId_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getWorkflowTemplateId_presult__isset {
+  _Airavata_getWorkflowTemplateId_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getWorkflowTemplateId_presult__isset;
+
+class Airavata_getWorkflowTemplateId_presult {
+ public:
+
+
+  virtual ~Airavata_getWorkflowTemplateId_presult() throw() {}
+
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getWorkflowTemplateId_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_isWorkflowExistWithName_args {
+ public:
+
+  Airavata_isWorkflowExistWithName_args() : workflowName() {
+  }
+
+  virtual ~Airavata_isWorkflowExistWithName_args() throw() {}
+
+  std::string workflowName;
+
+  void __set_workflowName(const std::string& val) {
+    workflowName = val;
+  }
+
+  bool operator == (const Airavata_isWorkflowExistWithName_args & rhs) const
+  {
+    if (!(workflowName == rhs.workflowName))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_isWorkflowExistWithName_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_isWorkflowExistWithName_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_isWorkflowExistWithName_pargs {
+ public:
+
+
+  virtual ~Airavata_isWorkflowExistWithName_pargs() throw() {}
+
+  const std::string* workflowName;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_isWorkflowExistWithName_result__isset {
+  _Airavata_isWorkflowExistWithName_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_isWorkflowExistWithName_result__isset;
+
+class Airavata_isWorkflowExistWithName_result {
+ public:
+
+  Airavata_isWorkflowExistWithName_result() : success(0) {
+  }
+
+  virtual ~Airavata_isWorkflowExistWithName_result() throw() {}
+
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_isWorkflowExistWithName_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_isWorkflowExistWithName_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_isWorkflowExistWithName_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_isWorkflowExistWithName_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_isWorkflowExistWithName_presult__isset {
+  _Airavata_isWorkflowExistWithName_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_isWorkflowExistWithName_presult__isset;
+
+class Airavata_isWorkflowExistWithName_presult {
+ public:
+
+
+  virtual ~Airavata_isWorkflowExistWithName_presult() throw() {}
+
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_isWorkflowExistWithName_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
 class AiravataClient : virtual public AiravataIf {
  public:
   AiravataClient(boost::shared_ptr< ::apache::thrift::protocol::TProtocol> prot) :
@@ -12980,6 +14041,9 @@ class AiravataClient : virtual public AiravataIf {
   bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   void send_updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   bool recv_updateApplicationModule();
+  void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return);
+  void send_getAllModules();
+  void recv_getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return);
   bool deleteApplicationModule(const std::string& appModuleId);
   void send_deleteApplicationModule(const std::string& appModuleId);
   bool recv_deleteApplicationModule();
@@ -13160,6 +14224,27 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId);
   void send_deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId);
   bool recv_deleteGatewayComputeResourcePreference();
+  void getAllWorkflows(std::vector<std::string> & _return);
+  void send_getAllWorkflows();
+  void recv_getAllWorkflows(std::vector<std::string> & _return);
+  void getWorkflow( ::Workflow& _return, const std::string& workflowTemplateId);
+  void send_getWorkflow(const std::string& workflowTemplateId);
+  void recv_getWorkflow( ::Workflow& _return);
+  void deleteWorkflow(const std::string& workflowTemplateId);
+  void send_deleteWorkflow(const std::string& workflowTemplateId);
+  void recv_deleteWorkflow();
+  void registerWorkflow(std::string& _return, const  ::Workflow& workflow);
+  void send_registerWorkflow(const  ::Workflow& workflow);
+  void recv_registerWorkflow(std::string& _return);
+  void updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow);
+  void send_updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow);
+  void recv_updateWorkflow();
+  void getWorkflowTemplateId(std::string& _return, const std::string& workflowName);
+  void send_getWorkflowTemplateId(const std::string& workflowName);
+  void recv_getWorkflowTemplateId(std::string& _return);
+  bool isWorkflowExistWithName(const std::string& workflowName);
+  void send_isWorkflowExistWithName(const std::string& workflowName);
+  bool recv_isWorkflowExistWithName();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -13206,6 +14291,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_registerApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllModules(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerApplicationDeployment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationDeployment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -13266,6 +14352,13 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getAllGatewayComputeResourcePreferences(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateGatewayComputeResourcePreference(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteGatewayComputeResourcePreference(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllWorkflows(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getWorkflow(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteWorkflow(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_registerWorkflow(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateWorkflow(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getWorkflowTemplateId(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_isWorkflowExistWithName(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
@@ -13300,6 +14393,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["registerApplicationModule"] = &AiravataProcessor::process_registerApplicationModule;
     processMap_["getApplicationModule"] = &AiravataProcessor::process_getApplicationModule;
     processMap_["updateApplicationModule"] = &AiravataProcessor::process_updateApplicationModule;
+    processMap_["getAllModules"] = &AiravataProcessor::process_getAllModules;
     processMap_["deleteApplicationModule"] = &AiravataProcessor::process_deleteApplicationModule;
     processMap_["registerApplicationDeployment"] = &AiravataProcessor::process_registerApplicationDeployment;
     processMap_["getApplicationDeployment"] = &AiravataProcessor::process_getApplicationDeployment;
@@ -13360,6 +14454,13 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getAllGatewayComputeResourcePreferences"] = &AiravataProcessor::process_getAllGatewayComputeResourcePreferences;
     processMap_["updateGatewayComputeResourcePreference"] = &AiravataProcessor::process_updateGatewayComputeResourcePreference;
     processMap_["deleteGatewayComputeResourcePreference"] = &AiravataProcessor::process_deleteGatewayComputeResourcePreference;
+    processMap_["getAllWorkflows"] = &AiravataProcessor::process_getAllWorkflows;
+    processMap_["getWorkflow"] = &AiravataProcessor::process_getWorkflow;
+    processMap_["deleteWorkflow"] = &AiravataProcessor::process_deleteWorkflow;
+    processMap_["registerWorkflow"] = &AiravataProcessor::process_registerWorkflow;
+    processMap_["updateWorkflow"] = &AiravataProcessor::process_updateWorkflow;
+    processMap_["getWorkflowTemplateId"] = &AiravataProcessor::process_getWorkflowTemplateId;
+    processMap_["isWorkflowExistWithName"] = &AiravataProcessor::process_isWorkflowExistWithName;
   }
 
   virtual ~AiravataProcessor() {}
@@ -13688,6 +14789,16 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->updateApplicationModule(appModuleId, applicationModule);
     }
     return ifaces_[i]->updateApplicationModule(appModuleId, applicationModule);
+  }
+
+  void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllModules(_return);
+    }
+    ifaces_[i]->getAllModules(_return);
+    return;
   }
 
   bool deleteApplicationModule(const std::string& appModuleId) {
@@ -14261,6 +15372,73 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
     }
     return ifaces_[i]->deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
+  }
+
+  void getAllWorkflows(std::vector<std::string> & _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllWorkflows(_return);
+    }
+    ifaces_[i]->getAllWorkflows(_return);
+    return;
+  }
+
+  void getWorkflow( ::Workflow& _return, const std::string& workflowTemplateId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getWorkflow(_return, workflowTemplateId);
+    }
+    ifaces_[i]->getWorkflow(_return, workflowTemplateId);
+    return;
+  }
+
+  void deleteWorkflow(const std::string& workflowTemplateId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteWorkflow(workflowTemplateId);
+    }
+    ifaces_[i]->deleteWorkflow(workflowTemplateId);
+  }
+
+  void registerWorkflow(std::string& _return, const  ::Workflow& workflow) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->registerWorkflow(_return, workflow);
+    }
+    ifaces_[i]->registerWorkflow(_return, workflow);
+    return;
+  }
+
+  void updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateWorkflow(workflowTemplateId, workflow);
+    }
+    ifaces_[i]->updateWorkflow(workflowTemplateId, workflow);
+  }
+
+  void getWorkflowTemplateId(std::string& _return, const std::string& workflowName) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getWorkflowTemplateId(_return, workflowName);
+    }
+    ifaces_[i]->getWorkflowTemplateId(_return, workflowName);
+    return;
+  }
+
+  bool isWorkflowExistWithName(const std::string& workflowName) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->isWorkflowExistWithName(workflowName);
+    }
+    return ifaces_[i]->isWorkflowExistWithName(workflowName);
   }
 
 };
