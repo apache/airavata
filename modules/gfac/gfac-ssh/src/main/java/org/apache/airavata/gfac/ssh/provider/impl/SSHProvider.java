@@ -51,6 +51,8 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
+import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
@@ -86,16 +88,16 @@ public class SSHProvider extends AbstractProvider {
         }
         taskID = jobExecutionContext.getTaskData().getTaskID();
 
-        if (!((SSHHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getHpcResource()) {
-            jobID = "SSH_" + jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress() + "_" + Calendar.getInstance().getTimeInMillis();
+        JobSubmissionProtocol preferredJobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
+        if (preferredJobSubmissionProtocol == JobSubmissionProtocol.SSH) {
+            jobID = "SSH_" + jobExecutionContext.getHostName() + "_" + Calendar.getInstance().getTimeInMillis();
             cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
 
-            ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
-            String remoteFile = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
+            String remoteFile = jobExecutionContext.getWorkingDir() + File.separatorChar + Constants.EXECUTABLE_NAME;
             details.setJobID(taskID);
             details.setJobDescription(remoteFile);
             jobExecutionContext.setJobDetails(details);
-            JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, app, null);
+            JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, null);
             details.setJobDescription(jobDescriptor.toXML());
 
             GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SETUP);
@@ -114,16 +116,15 @@ public class SSHProvider extends AbstractProvider {
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         if (!hpcType) {
-            ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
             try {
                 /*
                  * Execute
                  */
-                String execuable = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
-                details.setJobDescription(execuable);
+                String executable = jobExecutionContext.getWorkingDir() + File.separatorChar + Constants.EXECUTABLE_NAME;
+                details.setJobDescription(executable);
 
 //                GFacUtils.updateJobStatus(details, JobState.SUBMITTED);
-                RawCommandInfo rawCommandInfo = new RawCommandInfo("/bin/chmod 755 " + execuable + "; " + execuable);
+                RawCommandInfo rawCommandInfo = new RawCommandInfo("/bin/chmod 755 " + executable + "; " + executable);
 
                 StandardOutReader jobIDReaderCommandOutput = new StandardOutReader();
 
@@ -139,10 +140,6 @@ public class SSHProvider extends AbstractProvider {
         } else {
             try {
                 jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
-                HostDescriptionType host = jobExecutionContext.getApplicationContext().
-                        getHostDescription().getType();
-                HpcApplicationDeploymentType app = (HpcApplicationDeploymentType) jobExecutionContext.getApplicationContext().
-                        getApplicationDeploymentDescription().getType();
                 JobDetails jobDetails = new JobDetails();
                 try {
                     Cluster cluster = null;
@@ -155,7 +152,7 @@ public class SSHProvider extends AbstractProvider {
                         log.info("Successfully retrieved the Security Context");
                     }
                     // This installed path is a mandetory field, because this could change based on the computing resource
-                    JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, app, cluster);
+                    JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, cluster);
                     jobDetails.setJobName(jobDescriptor.getJobName());
                     log.info(jobDescriptor.toXML());
 
@@ -172,14 +169,14 @@ public class SSHProvider extends AbstractProvider {
                     }
                     delegateToMonitorHandlers(jobExecutionContext);
                 } catch (SSHApiException e) {
-                    String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+                    String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                     log.error(error);
                     jobDetails.setJobID("none");
                     GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
                     GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
                 } catch (Exception e) {
-                    String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+                    String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                     log.error(error);
                     jobDetails.setJobID("none");
                     GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
@@ -199,8 +196,6 @@ public class SSHProvider extends AbstractProvider {
 
     public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         JobDetails jobDetails = jobExecutionContext.getJobDetails();
-        HostDescriptionType host = jobExecutionContext.getApplicationContext().
-                getHostDescription().getType();
         StringBuffer data = new StringBuffer();
         if (!hpcType) {
             throw new NotImplementedException();
@@ -225,14 +220,14 @@ public class SSHProvider extends AbstractProvider {
                 }
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
             } catch (SSHApiException e) {
-                String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+                String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                 log.error(error);
                 jobDetails.setJobID("none");
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
                 GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 throw new GFacProviderException(error, e);
             } catch (Exception e) {
-                String error = "Error submitting the job to host " + host.getHostAddress() + " message: " + e.getMessage();
+                String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                 log.error(error);
                 jobDetails.setJobID("none");
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
@@ -279,40 +274,28 @@ public class SSHProvider extends AbstractProvider {
         }
     }
     private File createShellScript(JobExecutionContext context) throws IOException {
-        ApplicationDeploymentDescriptionType app = context.getApplicationContext()
-                .getApplicationDeploymentDescription().getType();
-        String uniqueDir = app.getApplicationName().getStringValue() + System.currentTimeMillis()
+        String uniqueDir = jobExecutionContext.getApplicationName() + System.currentTimeMillis()
                 + new Random().nextLong();
 
         File shellScript = File.createTempFile(uniqueDir, "sh");
         OutputStream out = new FileOutputStream(shellScript);
 
         out.write("#!/bin/bash\n".getBytes());
-        out.write(("cd " + app.getStaticWorkingDirectory() + "\n").getBytes());
-        out.write(("export " + Constants.INPUT_DATA_DIR_VAR_NAME + "=" + app.getInputDataDirectory() + "\n").getBytes());
-        out.write(("export " + Constants.OUTPUT_DATA_DIR_VAR_NAME + "=" + app.getOutputDataDirectory() + "\n")
+        out.write(("cd " + jobExecutionContext.getWorkingDir() + "\n").getBytes());
+        out.write(("export " + Constants.INPUT_DATA_DIR_VAR_NAME + "=" + jobExecutionContext.getInputDir() + "\n").getBytes());
+        out.write(("export " + Constants.OUTPUT_DATA_DIR_VAR_NAME + "=" + jobExecutionContext.getOutputDir() + "\n")
                 .getBytes());
         // get the env of the host and the application
-        NameValuePairType[] env = app.getApplicationEnvironmentArray();
-
-        Map<String, String> nv = new HashMap<String, String>();
-        if (env != null) {
-            for (int i = 0; i < env.length; i++) {
-                String key = env[i].getName();
-                String value = env[i].getValue();
-                nv.put(key, value);
-            }
-        }
-        for (Entry<String, String> entry : nv.entrySet()) {
-            log.debug("Env[" + entry.getKey() + "] = " + entry.getValue());
-            out.write(("export " + entry.getKey() + "=" + entry.getValue() + "\n").getBytes());
-
+        List<SetEnvPaths> envPathList = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getSetEnvironment();
+        for (SetEnvPaths setEnvPaths : envPathList) {
+            log.debug("Env[" + setEnvPaths.getName() + "] = " + setEnvPaths.getValue());
+            out.write(("export " + setEnvPaths.getName() + "=" + setEnvPaths.getValue() + "\n").getBytes());
         }
 
         // prepare the command
         final String SPACE = " ";
         StringBuffer cmd = new StringBuffer();
-        cmd.append(app.getExecutableLocation());
+        cmd.append(jobExecutionContext.getExecutablePath());
         cmd.append(SPACE);
 
         MessageContext input = context.getInMessageContext();
@@ -338,11 +321,11 @@ public class SSHProvider extends AbstractProvider {
         cmd.append(SPACE);
         cmd.append("1>");
         cmd.append(SPACE);
-        cmd.append(app.getStandardOutput());
+        cmd.append(jobExecutionContext.getStandardOutput());
         cmd.append(SPACE);
         cmd.append("2>");
         cmd.append(SPACE);
-        cmd.append(app.getStandardError());
+        cmd.append(jobExecutionContext.getStandardError());
 
         String cmdStr = cmd.toString();
         log.info("Command = " + cmdStr);
