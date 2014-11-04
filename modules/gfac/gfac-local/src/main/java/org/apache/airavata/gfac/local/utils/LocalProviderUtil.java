@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.local.utils;
 
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,14 +40,12 @@ public class LocalProviderUtil {
     }
 
     public void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.
-                getApplicationContext().getApplicationDeploymentDescription().getType();
-        log.info("working diectroy = " + app.getStaticWorkingDirectory());
-        log.info("temp directory = " + app.getScratchWorkingDirectory());
-        makeFileSystemDir(app.getStaticWorkingDirectory());
-        makeFileSystemDir(app.getScratchWorkingDirectory());
-        makeFileSystemDir(app.getInputDataDirectory());
-        makeFileSystemDir(app.getOutputDataDirectory());
+        log.info("working diectroy = " + jobExecutionContext.getWorkingDir());
+        log.info("temp directory = " + jobExecutionContext.getScratchLocation());
+        makeFileSystemDir(jobExecutionContext.getWorkingDir());
+        makeFileSystemDir(jobExecutionContext.getScratchLocation());
+        makeFileSystemDir(jobExecutionContext.getInputDir());
+        makeFileSystemDir(jobExecutionContext.getOutputDir());
     }
 
 }
