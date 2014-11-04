@@ -1453,7 +1453,16 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     public List<ApplicationModule> getAllModules() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationInterface().getAllApplicationModules();
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving all application modules...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving all application modules. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
