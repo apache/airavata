@@ -118,6 +118,8 @@ public class ComputeResourceImpl implements ComputeResource {
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<BatchQueue> batchQueueList = description.getBatchQueues();
+        BatchQueueResource resource = new BatchQueueResource();
+        resource.remove(description.getComputeResourceId());
 		if (batchQueueList != null && !batchQueueList.isEmpty()) {
 		    for (BatchQueue batchQueue : batchQueueList) {
 		    	BatchQueueResource bq = AppCatalogThriftConversion.getBatchQueue(batchQueue);
@@ -132,6 +134,8 @@ public class ComputeResourceImpl implements ComputeResource {
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<String> ipAddresses = description.getIpAddresses();
+        HostIPAddressResource resource = new HostIPAddressResource();
+        resource.remove(description.getComputeResourceId());
 		if (ipAddresses != null && !ipAddresses.isEmpty()) {
 		    for (String ipAddress : ipAddresses) {
 		        HostIPAddressResource ipAddressResource = new HostIPAddressResource();
@@ -147,6 +151,9 @@ public class ComputeResourceImpl implements ComputeResource {
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<String> hostAliases = description.getHostAliases();
+        // delete previous host aliases
+        HostAliasResource resource = new HostAliasResource();
+        resource.remove(description.getComputeResourceId());
 		if (hostAliases != null && !hostAliases.isEmpty()) {
 		    for (String alias : hostAliases) {
 		        HostAliasResource aliasResource = new HostAliasResource();
@@ -732,7 +739,7 @@ public class ComputeResourceImpl implements ComputeResource {
 		ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(resourceJobManager);
 		resource.save();
 		Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-		if (jobManagerCommands!=null) {
+		if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
 			for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
 				JobManagerCommandResource r = new JobManagerCommandResource();
 				r.setCommandType(commandType.toString());
@@ -751,7 +758,7 @@ public class ComputeResourceImpl implements ComputeResource {
             resource.setResourceJobManagerId(resourceJobManagerId);
             resource.save();
             Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
-            if (jobManagerCommands!=null) {
+            if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
                 for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
                     JobManagerCommandResource r = new JobManagerCommandResource();
                     Map<String, String> ids = new HashMap<String, String>();

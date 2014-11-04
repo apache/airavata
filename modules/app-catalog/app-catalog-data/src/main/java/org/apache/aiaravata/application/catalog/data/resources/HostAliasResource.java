@@ -43,21 +43,13 @@ public class HostAliasResource extends AbstractResource {
     private ComputeResourceResource computeHostResource;
 
     public void remove(Object identifier) throws AppCatalogException {
-        HashMap<String, String> ids;
-        if (identifier instanceof Map){
-            ids = (HashMap)identifier;
-        }else {
-            logger.error("Identifier should be a map with the field name and it's value");
-            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
-        }
-
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(HOST_ALIAS);
-            generator.setParameter(HostAliasConstants.RESOURCE_ID, ids.get(HostAliasConstants.RESOURCE_ID));
-            generator.setParameter(HostAliasConstants.ALIAS, ids.get(HostAliasConstants.ALIAS));
+            generator.setParameter(HostAliasConstants.RESOURCE_ID, (String)identifier);
+//            generator.setParameter(HostAliasConstants.ALIAS, ids.get(HostAliasConstants.ALIAS));
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
