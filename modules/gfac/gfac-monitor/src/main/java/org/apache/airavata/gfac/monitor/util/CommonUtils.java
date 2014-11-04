@@ -34,6 +34,7 @@ import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -79,11 +80,11 @@ public class CommonUtils {
         }
     }
     public static String getChannelID(MonitorID monitorID) {
-        return monitorID.getUserName() + "-" + monitorID.getHost().getType().getHostName();
+        return monitorID.getUserName() + "-" + monitorID.getComputeResourceDescription().getHostName();
     }
 
     public static String getRoutingKey(MonitorID monitorID) {
-        return "*." + monitorID.getUserName() + "." + monitorID.getHost().getType().getHostAddress();
+        return "*." + monitorID.getUserName() + "." + monitorID.getComputeResourceDescription().getIpAddresses().get(0);
     }
 
     public static String getChannelID(String userName,String hostAddress) {
@@ -94,7 +95,7 @@ public class CommonUtils {
         return "*." + userName + "." + hostAddress;
     }
 
-    public static void addMonitortoQueue(BlockingQueue<UserMonitorData> queue, MonitorID monitorID) throws AiravataMonitorException {
+    public static void addMonitortoQueue(BlockingQueue<UserMonitorData> queue, MonitorID monitorID, JobExecutionContext jobExecutionContext) throws AiravataMonitorException {
         synchronized (queue) {
             Iterator<UserMonitorData> iterator = queue.iterator();
             while (iterator.hasNext()) {
@@ -103,7 +104,7 @@ public class CommonUtils {
                     // then this is the right place to update
                     List<HostMonitorData> monitorIDs = next.getHostMonitorData();
                     for (HostMonitorData host : monitorIDs) {
-                        if (host.getHost().toXML().equals(monitorID.getHost().toXML())) {
+                        if (isEqual(host.getComputeResourceDescription(), monitorID.getComputeResourceDescription())) {
                             // ok we found right place to add this monitorID
                             host.addMonitorIDForHost(monitorID);
                             logger.debugId(monitorID.getJobID(), "Added new job to the monitoring queue, experiment {}," +
@@ -113,7 +114,7 @@ public class CommonUtils {
                     }
                     // there is a userMonitor object for this user name but no Hosts for this host
                     // so we have to create new Hosts
-                    HostMonitorData hostMonitorData = new HostMonitorData(monitorID.getHost());
+                    HostMonitorData hostMonitorData = new HostMonitorData(jobExecutionContext);
                     hostMonitorData.addMonitorIDForHost(monitorID);
                     next.addHostMonitorData(hostMonitorData);
                     logger.debugId(monitorID.getJobID(), "Added new job to the monitoring queue, experiment {}," +
@@ -121,7 +122,7 @@ public class CommonUtils {
                     return;
                 }
             }
-            HostMonitorData hostMonitorData = new HostMonitorData(monitorID.getHost());
+            HostMonitorData hostMonitorData = new HostMonitorData(jobExecutionContext);
             hostMonitorData.addMonitorIDForHost(monitorID);
 
             UserMonitorData userMonitorData = new UserMonitorData(monitorID.getUserName());
@@ -135,11 +136,18 @@ public class CommonUtils {
             }
         }
     }
+
+    private static boolean isEqual(ComputeResourceDescription comRes_1, ComputeResourceDescription comRes_2) {
+        return comRes_1.getComputeResourceId().equals(comRes_2.getComputeResourceId()) &&
+                comRes_1.getHostName().equals(comRes_2.getHostName());
+    }
+
     public static boolean isTheLastJobInQueue(BlockingQueue<MonitorID> queue,MonitorID monitorID){
         Iterator<MonitorID> iterator = queue.iterator();
         while(iterator.hasNext()){
             MonitorID next = iterator.next();
-            if(monitorID.getUserName().equals(next.getUserName()) && CommonUtils.isEqual(monitorID.getHost(), next.getHost())){
+            if (monitorID.getUserName().equals(next.getUserName()) &&
+                    CommonUtils.isEqual(monitorID.getComputeResourceDescription(), next.getComputeResourceDescription())) {
                 return false;
             }
         }
@@ -162,7 +170,7 @@ public class CommonUtils {
                     Iterator<HostMonitorData> iterator1 = hostMonitorData.iterator();
                     while (iterator1.hasNext()) {
                         HostMonitorData iHostMonitorID = iterator1.next();
-                        if (iHostMonitorID.getHost().toXML().equals(monitorID.getHost().toXML())) {
+                        if (isEqual(iHostMonitorID.getComputeResourceDescription(), monitorID.getComputeResourceDescription())) {
                             Iterator<MonitorID> iterator2 = iHostMonitorID.getMonitorIDs().iterator();
                             while (iterator2.hasNext()) {
                                 MonitorID iMonitorID = iterator2.next();
@@ -172,11 +180,10 @@ public class CommonUtils {
                                     // could be different, thats why we check the jobID
                                     iterator2.remove();
                                     logger.infoId(monitorID.getJobID(), "Removed the jobId: {} JobName: {} from monitoring last " +
-                                            "status:{}", monitorID.getJobID(),monitorID.getJobName(), monitorID.getStatus().toString());
+                                            "status:{}", monitorID.getJobID(), monitorID.getJobName(), monitorID.getStatus().toString());
                                     if (iHostMonitorID.getMonitorIDs().size() == 0) {
                                         iterator1.remove();
-                                        logger.debug("Removed host {} from monitoring queue", iHostMonitorID.getHost()
-                                                .getType().getHostAddress());
+                                        logger.debug("Removed host {} from monitoring queue", iHostMonitorID.getComputeResourceDescription().getHostName());
                                         if (hostMonitorData.size() == 0) {
                                             // no useful data so we have to remove the element from the queue
                                             queue.remove(next);
@@ -330,7 +337,7 @@ public class CommonUtils {
      */
     public static String getJobCountUpdatePath(MonitorID monitorID){
         return new StringBuilder("/").append(Constants.STAT).append("/").append(monitorID.getUserName())
-                .append("/").append(monitorID.getHost().getType().getHostAddress()).append("/").append(Constants.JOB).toString();
+                .append("/").append(monitorID.getComputeResourceDescription().getHostName()).append("/").append(Constants.JOB).toString();
     }
 
     /**
