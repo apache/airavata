@@ -193,7 +193,33 @@ public class AppModuleResource extends AbstractResource {
 
     @Override
     public List<Resource> getAll() throws AppCatalogException {
-        return null;
+        List<Resource> appModuleResources = new ArrayList<Resource>();
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_MODULE);
+            Query q = generator.selectQuery(em);
+            List<?> results = q.getResultList();
+            for (Object result : results) {
+                ApplicationModule module = (ApplicationModule) result;
+                AppModuleResource appModuleResource = (AppModuleResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APPLICATION_MODULE, module);
+                appModuleResources.add(appModuleResource);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return appModuleResources;
     }
 
     @Override
