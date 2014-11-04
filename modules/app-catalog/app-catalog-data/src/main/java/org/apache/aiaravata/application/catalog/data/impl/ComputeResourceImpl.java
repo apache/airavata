@@ -776,7 +776,12 @@ public class ComputeResourceImpl implements ComputeResource {
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AbstractResource.JobManagerCommandConstants.RESOURCE_JOB_MANAGER_ID, resourceJobManagerId);
                     ids.put(AbstractResource.JobManagerCommandConstants.COMMAND_TYPE, commandType.toString());
-                    JobManagerCommandResource existingCommand = (JobManagerCommandResource)r.get(ids);
+                    JobManagerCommandResource existingCommand;
+                    if (r.isExists(ids)){
+                        existingCommand = (JobManagerCommandResource)r.get(ids);
+                    }else {
+                        existingCommand = new JobManagerCommandResource();
+                    }
                     existingCommand.setCommandType(commandType.toString());
                     existingCommand.setCommand(jobManagerCommands.get(commandType));
                     existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
