@@ -181,7 +181,7 @@ public class GFACGSISSHUtils {
         jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
         jobDescriptor.setInputDirectory(jobExecutionContext.getInputDir());
         jobDescriptor.setOutputDirectory(jobExecutionContext.getOutputDir());
-        jobDescriptor.setExecutablePath(app.getExecutablePath());
+        jobDescriptor.setExecutablePath(jobExecutionContext.getExecutablePath());
         jobDescriptor.setStandardOutFile(jobExecutionContext.getStandardOutput());
         jobDescriptor.setStandardErrorFile(jobExecutionContext.getStandardError());
         Random random = new Random();
@@ -214,51 +214,6 @@ public class GFACGSISSHUtils {
         }
         jobDescriptor.setInputValues(inputValues);
 
-        // this part will fill out the hpcApplicationDescriptor
-        if (app instanceof HpcApplicationDeploymentType) {
-            HpcApplicationDeploymentType applicationDeploymentType
-                    = (HpcApplicationDeploymentType) app;
-            jobDescriptor.setUserName(((GSISSHAbstractCluster)cluster).getServerInfo().getUserName());
-            jobDescriptor.setShellName("/bin/bash");
-            jobDescriptor.setAllEnvExport(true);
-            jobDescriptor.setMailOptions("n");
-            jobDescriptor.setNodes(applicationDeploymentType.getNodeCount());
-            jobDescriptor.setProcessesPerNode(applicationDeploymentType.getProcessorsPerNode());
-            jobDescriptor.setMaxWallTime(String.valueOf(applicationDeploymentType.getMaxWallTime()));
-            jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
-            jobDescriptor.setCPUCount(applicationDeploymentType.getCpuCount());
-            if (applicationDeploymentType.getProjectAccount() != null) {
-                if (applicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null) {
-                    jobDescriptor.setAcountString(applicationDeploymentType.getProjectAccount().getProjectAccountNumber());
-                }
-            }
-            if (applicationDeploymentType.getQueue() != null) {
-                if (applicationDeploymentType.getQueue().getQueueName() != null) {
-                    jobDescriptor.setQueueName(applicationDeploymentType.getQueue().getQueueName());
-                }
-            }
-            jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
-            TaskDetails taskData = jobExecutionContext.getTaskData();
-            if (taskData != null && taskData.isSetTaskScheduling()) {
-                ComputationalResourceScheduling computionnalResource = taskData.getTaskScheduling();
-                if (computionnalResource.getNodeCount() > 0) {
-                    jobDescriptor.setNodes(computionnalResource.getNodeCount());
-                }
-                if (computionnalResource.getComputationalProjectAccount() != null) {
-                    jobDescriptor.setAcountString(computionnalResource.getComputationalProjectAccount());
-                }
-                if (computionnalResource.getQueueName() != null) {
-                    jobDescriptor.setQueueName(computionnalResource.getQueueName());
-                }
-                if (computionnalResource.getTotalCPUCount() > 0) {
-                    jobDescriptor.setProcessesPerNode(computionnalResource.getTotalCPUCount());
-                }
-                if (computionnalResource.getWallTimeLimit() > 0) {
-                    jobDescriptor.setMaxWallTime(String.valueOf(computionnalResource.getWallTimeLimit()));
-                }
-            }
-
-        }
         return jobDescriptor;
     }
 }
