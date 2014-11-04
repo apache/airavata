@@ -113,6 +113,7 @@ class AiravataIf {
   virtual bool updateResourceJobManager(const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager) = 0;
   virtual void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const std::string& resourceJobManagerId) = 0;
   virtual bool deleteResourceJobManager(const std::string& resourceJobManagerId) = 0;
+  virtual bool deleteBatchQueue(const std::string& computeResourceId, const std::string& queueName) = 0;
   virtual void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) = 0;
   virtual void getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return, const std::string& gatewayID) = 0;
   virtual bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) = 0;
@@ -414,6 +415,10 @@ class AiravataNull : virtual public AiravataIf {
     return;
   }
   bool deleteResourceJobManager(const std::string& /* resourceJobManagerId */) {
+    bool _return = false;
+    return _return;
+  }
+  bool deleteBatchQueue(const std::string& /* computeResourceId */, const std::string& /* queueName */) {
     bool _return = false;
     return _return;
   }
@@ -11479,6 +11484,146 @@ class Airavata_deleteResourceJobManager_presult {
 };
 
 
+class Airavata_deleteBatchQueue_args {
+ public:
+
+  Airavata_deleteBatchQueue_args() : computeResourceId(), queueName() {
+  }
+
+  virtual ~Airavata_deleteBatchQueue_args() throw() {}
+
+  std::string computeResourceId;
+  std::string queueName;
+
+  void __set_computeResourceId(const std::string& val) {
+    computeResourceId = val;
+  }
+
+  void __set_queueName(const std::string& val) {
+    queueName = val;
+  }
+
+  bool operator == (const Airavata_deleteBatchQueue_args & rhs) const
+  {
+    if (!(computeResourceId == rhs.computeResourceId))
+      return false;
+    if (!(queueName == rhs.queueName))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteBatchQueue_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteBatchQueue_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_deleteBatchQueue_pargs {
+ public:
+
+
+  virtual ~Airavata_deleteBatchQueue_pargs() throw() {}
+
+  const std::string* computeResourceId;
+  const std::string* queueName;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteBatchQueue_result__isset {
+  _Airavata_deleteBatchQueue_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteBatchQueue_result__isset;
+
+class Airavata_deleteBatchQueue_result {
+ public:
+
+  Airavata_deleteBatchQueue_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteBatchQueue_result() throw() {}
+
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteBatchQueue_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_deleteBatchQueue_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteBatchQueue_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteBatchQueue_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteBatchQueue_presult__isset {
+  _Airavata_deleteBatchQueue_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteBatchQueue_presult__isset;
+
+class Airavata_deleteBatchQueue_presult {
+ public:
+
+
+  virtual ~Airavata_deleteBatchQueue_presult() throw() {}
+
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteBatchQueue_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
 class Airavata_registerGatewayResourceProfile_args {
  public:
 
@@ -12985,6 +13130,9 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteResourceJobManager(const std::string& resourceJobManagerId);
   void send_deleteResourceJobManager(const std::string& resourceJobManagerId);
   bool recv_deleteResourceJobManager();
+  bool deleteBatchQueue(const std::string& computeResourceId, const std::string& queueName);
+  void send_deleteBatchQueue(const std::string& computeResourceId, const std::string& queueName);
+  bool recv_deleteBatchQueue();
   void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile);
   void send_registerGatewayResourceProfile(const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile);
   void recv_registerGatewayResourceProfile(std::string& _return);
@@ -13108,6 +13256,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_updateResourceJobManager(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getResourceJobManager(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteResourceJobManager(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteBatchQueue(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerGatewayResourceProfile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getGatewayResourceProfile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateGatewayResourceProfile(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -13201,6 +13350,7 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["updateResourceJobManager"] = &AiravataProcessor::process_updateResourceJobManager;
     processMap_["getResourceJobManager"] = &AiravataProcessor::process_getResourceJobManager;
     processMap_["deleteResourceJobManager"] = &AiravataProcessor::process_deleteResourceJobManager;
+    processMap_["deleteBatchQueue"] = &AiravataProcessor::process_deleteBatchQueue;
     processMap_["registerGatewayResourceProfile"] = &AiravataProcessor::process_registerGatewayResourceProfile;
     processMap_["getGatewayResourceProfile"] = &AiravataProcessor::process_getGatewayResourceProfile;
     processMap_["updateGatewayResourceProfile"] = &AiravataProcessor::process_updateGatewayResourceProfile;
@@ -14017,6 +14167,15 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->deleteResourceJobManager(resourceJobManagerId);
     }
     return ifaces_[i]->deleteResourceJobManager(resourceJobManagerId);
+  }
+
+  bool deleteBatchQueue(const std::string& computeResourceId, const std::string& queueName) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteBatchQueue(computeResourceId, queueName);
+    }
+    return ifaces_[i]->deleteBatchQueue(computeResourceId, queueName);
   }
 
   void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {

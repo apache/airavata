@@ -444,6 +444,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteResourceJobManager\n");
   }
 
+  bool deleteBatchQueue(const std::string& computeResourceId, const std::string& queueName) {
+    // Your implementation goes here
+    printf("deleteBatchQueue\n");
+  }
+
   void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
     // Your implementation goes here
     printf("registerGatewayResourceProfile\n");

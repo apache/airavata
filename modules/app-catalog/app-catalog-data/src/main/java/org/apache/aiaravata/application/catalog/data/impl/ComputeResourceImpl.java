@@ -118,8 +118,6 @@ public class ComputeResourceImpl implements ComputeResource {
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<BatchQueue> batchQueueList = description.getBatchQueues();
-        BatchQueueResource resource = new BatchQueueResource();
-        resource.remove(description.getComputeResourceId());
 		if (batchQueueList != null && !batchQueueList.isEmpty()) {
 		    for (BatchQueue batchQueue : batchQueueList) {
 		    	BatchQueueResource bq = AppCatalogThriftConversion.getBatchQueue(batchQueue);
@@ -728,6 +726,20 @@ public class ComputeResourceImpl implements ComputeResource {
             resource.remove(ids);
         }catch (Exception e){
             logger.error("Error while removing data movement interface..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public void removeBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
+        try {
+            BatchQueueResource resource = new BatchQueueResource();
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AbstractResource.BatchQueueConstants.COMPUTE_RESOURCE_ID, computeResourceId);
+            ids.put(AbstractResource.BatchQueueConstants.QUEUE_NAME, queueName);
+            resource.remove(ids);
+        }catch (Exception e){
+            logger.error("Error while removing batch queue..", e);
             throw new AppCatalogException(e);
         }
     }
