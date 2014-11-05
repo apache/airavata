@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.GFacException;
@@ -39,6 +40,10 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.ec2.util.AmazonEC2Util;
 import org.apache.airavata.gfac.ec2.util.EC2ProviderUtil;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.ProviderName;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.Ec2ApplicationDeploymentType;
@@ -221,9 +226,8 @@ public class EC2Provider extends AbstractProvider {
                 /* Assuming that there is just a single result. If you want to add more results, update the necessary
                    logic below */
                 String paramName = outparamType.getName();
-                outParam.getType().changeType(StringParameterType.type);
-                ((StringParameterType) outParam.getType()).setValue(executionResult);
-                jobExecutionContext.getOutMessageContext().addParameter(paramName, outParam);
+                String value = outparamType.getValue();
+                jobExecutionContext.getOutMessageContext().addParameter(paramName, value);
             }
             GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.COMPLETE);
         } catch (InvalidSshKeyException e) {
@@ -252,26 +256,28 @@ public class EC2Provider extends AbstractProvider {
      * @throws GFacProviderException GFacProviderException
      */
     private String createShellCmd(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        String command = "";
-        ApplicationDescription appDesc = jobExecutionContext.getApplicationContext().
-                getApplicationDeploymentDescription();
+        try {
+            String command = "";
+            JobSubmissionInterface submissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
+            CloudJobSubmission cloudJobSubmission = GFacUtils.getCloudJobSubmission(submissionInterface.getJobSubmissionInterfaceId());
+            String executablePath = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getExecutablePath();
+            if (cloudJobSubmission.getProviderName().equals(ProviderName.EC2)) {
+                if (cloudJobSubmission.getExecutableType() != null) {
+                    command = cloudJobSubmission.getExecutableType() + " " + executablePath;
+                } else {
+                    command = "sh" + " " + executablePath;
+                }
+                command = setCmdParams(jobExecutionContext, command);
 
-        if(appDesc.getType() instanceof Ec2ApplicationDeploymentType) {
-            Ec2ApplicationDeploymentType type = (Ec2ApplicationDeploymentType) appDesc.getType();
-            if(type.getExecutable() != null) {
-                command = type.getExecutableType() + " " + type.getExecutable();
             } else {
-                command = "sh" + " " + type.getExecutable();
+                command = "sh" + " " + executablePath;
+                command = setCmdParams(jobExecutionContext, command);
             }
-            command = setCmdParams(jobExecutionContext, command);
-
-        } else {
-            ApplicationDeploymentDescriptionType type = appDesc.getType();
-            command = "sh" + " " + type.getExecutableLocation();
-            command = setCmdParams(jobExecutionContext, command);
+            return command + '\n';
+        } catch (AppCatalogException e) {
+            log.error("Error while retrieving cloud job submission", e);
+            throw new GFacProviderException("Error while retrieving cloud job submission", e);
         }
-
-        return command + '\n';
     }
 
     private String setCmdParams(JobExecutionContext jobExecutionContext, String command) throws GFacProviderException {
