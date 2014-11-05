@@ -110,10 +110,6 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     this.passPhrase);
         }
         try {
-            ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
-                    .getApplicationDeploymentDescription().getType();
-            String standardError = app.getStandardError();
-            String standardOutput = app.getStandardOutput();
             if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
                 try {
                     GFACSSHUtils.addSecurityContext(jobExecutionContext);
