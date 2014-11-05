@@ -1,0 +1,230 @@
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor 
+	license agreements. See the NOTICE file distributed with this work for additional 
+	information regarding copyright ownership. The ASF licenses this file to 
+	you under the Apache License, Version 2.0 (theÏ "License"); you may not use 
+	this file except in compliance with the License. You may obtain a copy of 
+	the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required 
+	by applicable law or agreed to in writing, software distributed under the 
+	License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS 
+	OF ANY ~ KIND, either express or implied. See the License for the specific 
+	language governing permissions and limitations under the License. -->
+
+<!DOCTYPE assembly [
+        <!ELEMENT assembly (id|includeBaseDirectory|baseDirectory|formats|fileSets|dependencySets)*>
+        <!ELEMENT id (#PCDATA)>
+        <!ELEMENT includeBaseDirectory (#PCDATA)>
+        <!ELEMENT baseDirectory (#PCDATA)>
+        <!ELEMENT formats (format)*>
+        <!ELEMENT format (#PCDATA)>
+        <!ELEMENT fileSets (fileSet)*>
+        <!ELEMENT fileSet (directory|outputDirectory|includes)*>
+        <!ELEMENT directory (#PCDATA)>
+        <!ELEMENT outputDirectory (#PCDATA)>
+        <!ELEMENT includes (include)*>
+        <!ELEMENT include (#PCDATA)>
+        <!ELEMENT dependencySets (dependencySet)*>
+        <!ELEMENT dependencySet (outputDirectory|includes)*>
+        ]>
+<assembly>
+	<id>bin</id>
+	<includeBaseDirectory>true</includeBaseDirectory>
+	<baseDirectory>${archieve.name}-${version}</baseDirectory>
+	<formats>
+		<format>tar.gz</format>
+		<format>zip</format>
+	</formats>
+
+	<fileSets>
+
+		<!-- ********************** copy release notes files ********************** -->
+		<fileSet>
+			<directory>../../../</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>RELEASE_NOTES</include>
+			</includes>
+		</fileSet>
+		<!-- ********************** copy licenses, readme etc. ********************** -->
+		<fileSet>
+			<directory>src/main/resources/</directory>
+			<outputDirectory>.</outputDirectory>
+			<includes>
+				<include>LICENSE</include>
+				<include>NOTICE</include>
+				<include>README</include>
+				<include>INSTALL</include>
+			</includes>
+		</fileSet>
+
+		<!-- ********************** copy database scripts ********************** -->
+		<fileSet>
+			<directory>../../ws-messenger/messagebroker/src/main/resources/database_scripts
+			</directory>
+			<outputDirectory>bin/database_scripts
+			</outputDirectory>
+			<includes>
+				<include>*sql*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../../ws-messenger/messagebox/src/main/resources/database_scripts
+			</directory>
+			<outputDirectory>bin/database_scripts
+			</outputDirectory>
+			<includes>
+				<include>*sql*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../../registry/airavata-jpa-registry/src/main/resources
+			</directory>
+			<outputDirectory>bin/database_scripts
+			</outputDirectory>
+			<includes>
+				<include>*sql*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>../../app-catalog/app-catalog-data/src/main/resources
+			</directory>
+			<outputDirectory>bin/database_scripts
+			</outputDirectory>
+			<includes>
+				<include>*sql*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>src/main/resources/bin</directory>
+			<outputDirectory>bin</outputDirectory>
+			<fileMode>777</fileMode>
+			<includes>
+				<include>*.sh</include>
+				<include>*.bat</include>
+				<include>logo.txt</include>
+				<include>startNetworkServer</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.build.directory}/conf</directory>
+			<outputDirectory>bin</outputDirectory>
+			<includes>
+				<include>airavata-server.properties</include>
+				<include>zoo.cfg</include>
+				<include>registry.properties</include>
+				<include>log4j.properties</include>
+				<include>host.xml</include>
+				<include>persistence.xml</include>
+				<include>provenance.sql</include>
+				<include>gfac-config.xml</include>
+				<include>PBSTemplate.xslt</include>
+				<include>SLURMTemplate.xslt</include>
+				<include>SGETemplate.xslt</include>
+				<include>gsissh.properties</include>
+			</includes>
+		</fileSet>
+
+		<!-- ********************** Copy Axis2 startup scripts to stand alone server 
+			********************** -->
+		<fileSet>
+			<directory>src/main/resources/axis2-standalone-bin</directory>
+			<outputDirectory>bin</outputDirectory>
+			<fileMode>777</fileMode>
+			<includes>
+				<include>*.sh</include>
+				<include>*.bat</include>
+			</includes>
+		</fileSet>
+
+		<fileSet>
+			<directory>src/main/resources/conf</directory>
+			<outputDirectory>bin</outputDirectory>
+			<includes>
+				<include>**/*</include>
+			</includes>
+		</fileSet>
+
+		<!-- ********************** Copy samples ********************** -->
+		<fileSet>
+			<directory>${project.build.directory}/samples/applications
+			</directory>
+			<outputDirectory>samples</outputDirectory>
+			<includes>
+				<include>*.sh</include>
+				<include>*.bat</include>
+			</includes>
+		</fileSet>
+
+	</fileSets>
+
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
+			</outputFileNameMapping>
+			<includes>
+				<include>org.apache.derby:derby:jar</include>
+				<include>org.apache.derby:derbytools:jar</include>
+				<include>org.apache.derby:derbynet:jar</include>
+				<include>org.apache.derby:derbyclient:jar</include>
+			</includes>
+		</dependencySet>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+			<includes>
+				<include>org.slf4j:slf4j-api:jar</include>
+				<include>org.slf4j:slf4j-jcl:jar</include>
+				<include>org.slf4j:slf4j-log4j12:jar</include>
+				<include>log4j:log4j:jar</include>
+				<include>javax.jcr:jcr:jar</include>
+				<include>commons-collections:commons-collections</include>
+				<include>commons-configuration:commons-configuration</include>
+				<include>commons-lang:commons-lang</include>
+				<include>commons-io:commons-io</include>
+			    <include>org.apache.xmlbeans:xmlbeans</include>
+				<include>org.apache.airavata:airavata-standalone-server:jar
+				</include>
+				<include>org.apache.airavata:airavata-common-utils:jar</include>
+				<include>org.apache.airavata:airavata-orchestrator-service:jar
+				</include>
+				<include>org.apache.airavata:airavata-orchestrator-core:jar
+				</include>
+				<include>org.apache.airavata:airavata-gfac-schema-utils:jar
+				</include>
+				<include>org.apache.airavata:airavata-workflow-execution-context:jar
+				</include>
+				<include>org.apache.airavata:airavata-registry-cpi:jar</include>
+				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
+				<include>org.apache.airavata:app-catalog-cpi:jar</include>
+				<include>org.apache.airavata:app-catalog-data:jar</include>
+				<include>org.apache.airavata:airavata-data-models:jar</include>
+				<include>org.apache.airavata:airavata-credential-store:jar</include>
+				<include>org.apache.airavata:airavata-gfac-core:jar</include>
+				<include>org.apache.airavata:airavata-gfac-stubs:jar</include>
+				<include>org.apache.airavata:airavata-message-monitor:jar</include>
+				<include>org.apache.airavata:airavata-workflow-model-core:jar
+				</include>
+				<include>org.apache.airavata:airavata-messenger-commons:jar
+				</include>
+				<include>org.apache.airavata:airavata-messenger-client:jar</include>
+				<include>org.apache.airavata:airavata-workflow-engine:jar</include>
+				<include>org.apache.airavata:airavata-messaging-core:jar</include>
+				<include>org.apache.airavata:airavata-model-utils:jar</include>
+				<include>org.apache.airavata:airavata-api-stubs:jar</include>
+				<include>org.apache.openjpa:openjpa-all:jar</include>
+				<include>org.bouncycastle:bcprov-jdk15on</include>
+				<include>javax.servlet:javax.servlet-api</include>
+				<include>xerces:xercesImpl:jar:2.9.1</include>
+				<include>com.ibm.icu:icu4j</include>
+				<include>com.google.guava:guava</include>
+				<include>org.apache.xmlbeans:xmlbeans</include>
+				<include>org.apache.thrift:libthrift:jar:0.9.1</include>
+				<include>commons-cli:commons-cli</include>
+				<include>commons-codec:commons-codec</include>
+				<include>com.rabbitmq:amqp-client</include>
+				<include>org.apache.zookeeper:zookeeper</include>
+			</includes>
+		</dependencySet>
+
+	</dependencySets>
+
+</assembly>

@@ -26,30 +26,44 @@ import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.PublisherFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.LaunchValidationException;
+import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
+import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.orchestrator.util.OrchestratorRecoveryHandler;
+import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
+import org.apache.airavata.workflow.engine.WorkflowEngine;
+import org.apache.airavata.workflow.engine.WorkflowEngineException;
+import org.apache.airavata.workflow.engine.WorkflowEngineFactory;
+import org.apache.airavata.orchestrator.util.DataModelUtils;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -73,6 +87,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 
 	private String airavataUserName;
 	private String gatewayName;
+	private Publisher publisher;
 
 	/**
 	 * Query orchestrator server to fetch the CPI version
@@ -85,6 +100,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	public OrchestratorServerHandler() {
 		// registering with zk
 		try {
+			if (ServerSettings.isRabbitMqPublishEnabled()) {
+	                publisher = PublisherFactory.createPublisher();
+	        }
 			String zkhostPort = AiravataZKUtils.getZKhostPort();
 			String airavataServerHostPort = ServerSettings
 					.getSetting(Constants.ORCHESTRATOR_SERVER_HOST)
@@ -118,6 +136,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 				e.printStackTrace();
 			}
 		} catch (ApplicationSettingsException e) {
+			e.printStackTrace();
+		}catch (AiravataException e) {
 			e.printStackTrace();
 		}
 		// orchestrator init
@@ -160,7 +180,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	 * 
 	 * @param experimentId
 	 */
-	public boolean launchExperiment(String experimentId) throws TException {
+	public boolean launchExperiment(String experimentId, String token) throws TException {
         Experiment experiment = null; // this will inside the bottom catch statement
         try {
             experiment = (Experiment) registry.get(
@@ -169,59 +189,26 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                 log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
             }
-            List<String> ids = registry.getIds(
-					RegistryModelType.WORKFLOW_NODE_DETAIL,
-					WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
-            for (String workflowNodeId : ids) {
-                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
-						.get(RegistryModelType.WORKFLOW_NODE_DETAIL,
-								workflowNodeId);
-                List<Object> taskDetailList = registry.get(
-						RegistryModelType.TASK_DETAIL,
-						TaskDetailConstants.NODE_ID, workflowNodeId);
-                for (Object o : taskDetailList) {
-                    TaskDetails taskID = (TaskDetails) o;
-                    // iterate through all the generated tasks and performs the
-                    // job submisssion+monitoring
-					ExperimentStatus status = new ExperimentStatus();
-					status.setExperimentState(ExperimentState.LAUNCHED);
-					status.setTimeOfStateChange(Calendar.getInstance()
-							.getTimeInMillis());
-					experiment.setExperimentStatus(status);
-					registry.update(RegistryModelType.EXPERIMENT, experiment,
-							experimentId);
-					// launching the experiment
-					orchestrator.launchExperiment(experiment,
-							workflowNodeDetail, taskID,null);
-				}
-			}
-
-		} catch (Exception e) {
-			// Here we really do not have to do much because only potential
-			// failure can happen
-			// is in gfac, if there are errors in gfac, it will handle the
-			// experiment/task/job statuses
-			// We might get failures in registry access before submitting the
-			// jobs to gfac, in that case we
-			// leave the status of these as created.
-			ExperimentStatus status = new ExperimentStatus();
-			status.setExperimentState(ExperimentState.FAILED);
-			status.setTimeOfStateChange(Calendar.getInstance()
-					.getTimeInMillis());
-			experiment.setExperimentStatus(status);
-			try {
-				registry.update(RegistryModelType.EXPERIMENT, experiment,
-						experimentId);
-            } catch (RegistryException e1) {
-                log.errorId(experimentId, "Couldn't update the status {} of the experiment {}.",
-                        ExperimentState.FAILED.toString(), experimentId);
-				throw new TException(e);
-			}
-            log.errorId(experimentId, "Error while launching experiment {}.", experimentId);
-            throw new TException(e);
-		}
-        log.infoId(experimentId, "Successfully launched experiment {}.", experimentId);
-		return true;
+            ExecutionType executionType = DataModelUtils.getExecutionType(experiment);
+            synchronized (this) {
+      		if (executionType==ExecutionType.SINGLE_APP) {
+                  //its an single application execution experiment
+                  log.debugId(experimentId, "Launching single application experiment {}.", experimentId);
+                  OrchestratorServerThreadPoolExecutor.getFixedThreadPool().execute(new SingleAppExperimentRunner(experimentId, token));
+            } 
+      		else if (executionType == ExecutionType.WORKFLOW){
+  					//its a workflow execution experiment
+                  log.debugId(experimentId, "Launching workflow experiment {}.", experimentId);
+  				  launchWorkflowExperiment(experimentId, token);
+  	          } else {
+                  log.errorId(experimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", experimentId);
+                  throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
+              }
+          }
+         }catch(Exception e){
+             throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
+         }
+        return true;
 	}
 
 	/**
@@ -634,4 +621,89 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
         }
         return true;
     }
+    private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
+    	try {
+			WorkflowEngine workflowEngine = WorkflowEngineFactory.getWorkflowEngine();
+			workflowEngine.launchExperiment(experimentId, airavataCredStoreToken);
+		} catch (WorkflowEngineException e) {
+            log.errorId(experimentId, "Error while launching experiment.", e);
+        }
+    }
+
+
+    private class SingleAppExperimentRunner implements Runnable {
+
+        String experimentId;
+        String airavataCredStoreToken;
+        public SingleAppExperimentRunner(String experimentId,String airavataCredStoreToken){
+            this.experimentId = experimentId;
+            this.airavataCredStoreToken = airavataCredStoreToken;
+        }
+        @Override
+        public void run() {
+            try {
+                launchSingleAppExperiment();
+            } catch (TException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private boolean launchSingleAppExperiment() throws TException {
+            Experiment experiment = null;
+            try {
+                List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL, WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
+                for (String workflowNodeId : ids) {
+//                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
+                    List<Object> taskDetailList = registry.get(RegistryModelType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
+                    for (Object o : taskDetailList) {
+                        TaskDetails taskData = (TaskDetails) o;
+                        //iterate through all the generated tasks and performs the job submisssion+monitoring
+                        experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentId);
+                        if (experiment == null) {
+                            log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}", experimentId);
+                            return false;
+                        }
+                        ExperimentStatus status = new ExperimentStatus();
+                        status.setExperimentState(ExperimentState.LAUNCHED);
+                        status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+                        experiment.setExperimentStatus(status);
+                        registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
+                        if (ServerSettings.isRabbitMqPublishEnabled()) {
+                            String gatewayId = ServerSettings.getDefaultUserGateway();
+                            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED,
+                                    experimentId,
+                                    gatewayId);
+                            String messageId = AiravataUtils.getId("EXPERIMENT");
+                            MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
+                            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                            publisher.publish(messageContext);
+                        }
+                        registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskID());
+                        //launching the experiment
+                        launchTask(taskData.getTaskID(), airavataCredStoreToken);
+                    }
+                }
+
+            } catch (Exception e) {
+                // Here we really do not have to do much because only potential failure can happen
+                // is in gfac, if there are errors in gfac, it will handle the experiment/task/job statuses
+                // We might get failures in registry access before submitting the jobs to gfac, in that case we
+                // leave the status of these as created.
+                ExperimentStatus status = new ExperimentStatus();
+                status.setExperimentState(ExperimentState.FAILED);
+                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+                experiment.setExperimentStatus(status);
+                try {
+                    registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
+                } catch (RegistryException e1) {
+                    log.errorId(experimentId, "Error while updating experiment status to " + status.toString(), e);
+                    throw new TException(e);
+                }
+                log.errorId(experimentId, "Error while updating task status, hence updated experiment status to " + status.toString(), e);
+                throw new TException(e);
+            }
+            return true;
+        }
+    }
+
 }

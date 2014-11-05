@@ -21,16 +21,7 @@
 package org.apache.airavata.orchestrator.core;
 
 
-import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
 //import org.apache.airavata.client.tools.DocumentCreatorNew;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.orchestrator.core.util.Initialize;
-import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
-import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 
 public class BaseOrchestratorTest {
 

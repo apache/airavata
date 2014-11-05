@@ -20,10 +20,9 @@
 */
 package org.apache.airavata.orchestrator.core.job;
 
-import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.client.GFACInstance;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
 
 /**
  * This is the submitter interface, orchestrator can

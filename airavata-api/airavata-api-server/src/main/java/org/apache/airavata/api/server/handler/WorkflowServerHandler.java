@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.WorkflowCatalog;
-import org.apache.airavata.api.workflow.Workflow.Iface;
+import org.apache.airavata.api.Workflow.Iface;
 import org.apache.airavata.model.Workflow;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataErrorType;

@@ -22,7 +22,8 @@
 package org.apache.airavata.api.client;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.workflow.Workflow;
+
+import org.apache.airavata.api.Workflow;
 //import org.apache.airavata.api.appcatalog.ApplicationCatalogAPI;
 import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -60,7 +61,7 @@ public class AiravataClientFactory {
             throw new AiravataClientConnectException("Unable to connect to the server at "+serverHost+":"+serverPort);
         }
     }
-    
+//    
     /*
     public static <T extends org.apache.thrift.TServiceClient> T createApplicationCatalogClient(String serverHost, int serverPort, Class<T> type) throws Exception{
         try {
