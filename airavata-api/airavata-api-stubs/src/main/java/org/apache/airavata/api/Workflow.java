@@ -2063,13 +2063,13 @@ import org.slf4j.LoggerFactory;
             case 0: // SUCCESS
               if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
                 {
-                  org.apache.thrift.protocol.TList _list204 = iprot.readListBegin();
-                  struct.success = new ArrayList<String>(_list204.size);
-                  for (int _i205 = 0; _i205 < _list204.size; ++_i205)
+                  org.apache.thrift.protocol.TList _list212 = iprot.readListBegin();
+                  struct.success = new ArrayList<String>(_list212.size);
+                  for (int _i213 = 0; _i213 < _list212.size; ++_i213)
                   {
-                    String _elem206;
-                    _elem206 = iprot.readString();
-                    struct.success.add(_elem206);
+                    String _elem214;
+                    _elem214 = iprot.readString();
+                    struct.success.add(_elem214);
                   }
                   iprot.readListEnd();
                 }
@@ -2124,9 +2124,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.success.size()));
-            for (String _iter207 : struct.success)
+            for (String _iter215 : struct.success)
             {
-              oprot.writeString(_iter207);
+              oprot.writeString(_iter215);
             }
             oprot.writeListEnd();
           }
@@ -2181,9 +2181,9 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           {
             oprot.writeI32(struct.success.size());
-            for (String _iter208 : struct.success)
+            for (String _iter216 : struct.success)
             {
-              oprot.writeString(_iter208);
+              oprot.writeString(_iter216);
             }
           }
         }
@@ -2204,13 +2204,13 @@ import org.slf4j.LoggerFactory;
         BitSet incoming = iprot.readBitSet(4);
         if (incoming.get(0)) {
           {
-            org.apache.thrift.protocol.TList _list209 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-            struct.success = new ArrayList<String>(_list209.size);
-            for (int _i210 = 0; _i210 < _list209.size; ++_i210)
+            org.apache.thrift.protocol.TList _list217 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+            struct.success = new ArrayList<String>(_list217.size);
+            for (int _i218 = 0; _i218 < _list217.size; ++_i218)
             {
-              String _elem211;
-              _elem211 = iprot.readString();
-              struct.success.add(_elem211);
+              String _elem219;
+              _elem219 = iprot.readString();
+              struct.success.add(_elem219);
             }
           }
           struct.setSuccessIsSet(true);

@@ -132,6 +132,8 @@ public class ComputeResourceImpl implements ComputeResource {
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<String> ipAddresses = description.getIpAddresses();
+        HostIPAddressResource resource = new HostIPAddressResource();
+        resource.remove(description.getComputeResourceId());
 		if (ipAddresses != null && !ipAddresses.isEmpty()) {
 		    for (String ipAddress : ipAddresses) {
 		        HostIPAddressResource ipAddressResource = new HostIPAddressResource();
@@ -147,6 +149,9 @@ public class ComputeResourceImpl implements ComputeResource {
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<String> hostAliases = description.getHostAliases();
+        // delete previous host aliases
+        HostAliasResource resource = new HostAliasResource();
+        resource.remove(description.getComputeResourceId());
 		if (hostAliases != null && !hostAliases.isEmpty()) {
 		    for (String alias : hostAliases) {
 		        HostAliasResource aliasResource = new HostAliasResource();
@@ -726,13 +731,27 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
+    public void removeBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
+        try {
+            BatchQueueResource resource = new BatchQueueResource();
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AbstractResource.BatchQueueConstants.COMPUTE_RESOURCE_ID, computeResourceId);
+            ids.put(AbstractResource.BatchQueueConstants.QUEUE_NAME, queueName);
+            resource.remove(ids);
+        }catch (Exception e){
+            logger.error("Error while removing batch queue..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
 	public String addResourceJobManager(ResourceJobManager resourceJobManager)
 			throws AppCatalogException {
 		resourceJobManager.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
 		ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(resourceJobManager);
 		resource.save();
 		Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-		if (jobManagerCommands!=null) {
+		if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
 			for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
 				JobManagerCommandResource r = new JobManagerCommandResource();
 				r.setCommandType(commandType.toString());
@@ -751,13 +770,18 @@ public class ComputeResourceImpl implements ComputeResource {
             resource.setResourceJobManagerId(resourceJobManagerId);
             resource.save();
             Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
-            if (jobManagerCommands!=null) {
+            if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
                 for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
                     JobManagerCommandResource r = new JobManagerCommandResource();
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AbstractResource.JobManagerCommandConstants.RESOURCE_JOB_MANAGER_ID, resourceJobManagerId);
                     ids.put(AbstractResource.JobManagerCommandConstants.COMMAND_TYPE, commandType.toString());
-                    JobManagerCommandResource existingCommand = (JobManagerCommandResource)r.get(ids);
+                    JobManagerCommandResource existingCommand;
+                    if (r.isExists(ids)){
+                        existingCommand = (JobManagerCommandResource)r.get(ids);
+                    }else {
+                        existingCommand = new JobManagerCommandResource();
+                    }
                     existingCommand.setCommandType(commandType.toString());
                     existingCommand.setCommand(jobManagerCommands.get(commandType));
                     existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());

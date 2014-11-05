@@ -573,6 +573,12 @@ service Airavata {
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
 
+
+  list<applicationDeploymentModel.ApplicationModule> getAllModules ()
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
+
   /**
    * Delete a Application Module.
    *
@@ -1388,6 +1394,11 @@ service Airavata {
        throws (1: airavataErrors.InvalidRequestException ire,
                2: airavataErrors.AiravataClientException ace,
                3: airavataErrors.AiravataSystemException ase)
+
+  bool deleteBatchQueue(1: required string computeResourceId, 2: required string queueName)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
 /*
  * Gateway Resource Profile
  *
@@ -1561,44 +1572,41 @@ service Airavata {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
 
- //End of API
- }
- // Workflow API
- service Workflow {
-
   list<string> getAllWorkflows()
+          throws (1: airavataErrors.InvalidRequestException ire,
+                  2: airavataErrors.AiravataClientException ace,
+                  3: airavataErrors.AiravataSystemException ase)
+
+  workflowDataModel.Workflow getWorkflow (1: required string workflowTemplateId)
         throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
-  
-  workflowDataModel.Workflow getWorkflow (1: required string workflowTemplateId)
-      throws (1: airavataErrors.InvalidRequestException ire,
-              2: airavataErrors.AiravataClientException ace,
-              3: airavataErrors.AiravataSystemException ase)
 
   void deleteWorkflow (1: required string workflowTemplateId)
-      throws (1: airavataErrors.InvalidRequestException ire,
-              2: airavataErrors.AiravataClientException ace,
-              3: airavataErrors.AiravataSystemException ase)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
 
   string registerWorkflow(1: required workflowDataModel.Workflow workflow)
-        throws (1: airavataErrors.InvalidRequestException ire,
-                2: airavataErrors.AiravataClientException ace,
-                3: airavataErrors.AiravataSystemException ase)
+          throws (1: airavataErrors.InvalidRequestException ire,
+                  2: airavataErrors.AiravataClientException ace,
+                  3: airavataErrors.AiravataSystemException ase)
 
   void updateWorkflow (1: required string workflowTemplateId, 2: required workflowDataModel.Workflow workflow)
-        throws (1: airavataErrors.InvalidRequestException ire,
-                2: airavataErrors.AiravataClientException ace,
-                3: airavataErrors.AiravataSystemException ase)
+          throws (1: airavataErrors.InvalidRequestException ire,
+                  2: airavataErrors.AiravataClientException ace,
+                  3: airavataErrors.AiravataSystemException ase)
 
   string getWorkflowTemplateId (1: required string workflowName)
-        throws (1: airavataErrors.InvalidRequestException ire,
-                2: airavataErrors.AiravataClientException ace,
-                3: airavataErrors.AiravataSystemException ase)
+          throws (1: airavataErrors.InvalidRequestException ire,
+                  2: airavataErrors.AiravataClientException ace,
+                  3: airavataErrors.AiravataSystemException ase)
 
   bool isWorkflowExistWithName(1: required string workflowName)
-        throws (1: airavataErrors.InvalidRequestException ire,
-                2: airavataErrors.AiravataClientException ace,
-                3: airavataErrors.AiravataSystemException ase)
+          throws (1: airavataErrors.InvalidRequestException ire,
+                  2: airavataErrors.AiravataClientException ace,
+                  3: airavataErrors.AiravataSystemException ase)
+
+ //End of API
  }
 
