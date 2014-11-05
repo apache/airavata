@@ -41,15 +41,16 @@ public class RegisterSampleApplicationsUtils {
     public static ComputeResourcePreference
         createComputeResourcePreference(String computeResourceId, String allocationProjectNumber,
                                         boolean overridebyAiravata, String preferredBatchQueue,
-                                        String preferredJobSubmissionProtocol,String preferredDataMovementProtocol,
+                                        JobSubmissionProtocol preferredJobSubmissionProtocol,
+                                        DataMovementProtocol preferredDataMovementProtocol,
                                         String scratchLocation) {
         ComputeResourcePreference computeResourcePreference = new ComputeResourcePreference();
         computeResourcePreference.setComputeResourceId(computeResourceId);
         computeResourcePreference.setOverridebyAiravata(overridebyAiravata);
         computeResourcePreference.setAllocationProjectNumber(allocationProjectNumber);
         computeResourcePreference.setPreferredBatchQueue(preferredBatchQueue);
-        computeResourcePreference.setPreferredDataMovementProtocol(DataMovementProtocol.valueOf(preferredDataMovementProtocol));
-        computeResourcePreference.setPreferredJobSubmissionProtocol(JobSubmissionProtocol.valueOf(preferredJobSubmissionProtocol));
+        computeResourcePreference.setPreferredDataMovementProtocol(preferredDataMovementProtocol);
+        computeResourcePreference.setPreferredJobSubmissionProtocol(preferredJobSubmissionProtocol);
         computeResourcePreference.setScratchLocation(scratchLocation);
         return computeResourcePreference;
     }
