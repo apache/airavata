@@ -39,10 +39,7 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
-import org.apache.airavata.model.appcatalog.computeresource.GlobusJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
@@ -1288,5 +1285,15 @@ public class GFacUtils {
         }
     }
 
+    public static CloudJobSubmission getCloudJobSubmission (String submissionId) throws AppCatalogException{
+        try {
+            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getCloudJobSubmission(submissionId);
+        }catch (Exception e){
+            String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
+            log.error(errorMsg, e);
+            throw new AppCatalogException(errorMsg, e);
+        }
+    }
 
 }
