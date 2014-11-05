@@ -52,8 +52,8 @@ public class DocumentCreatorUtils {
 		computeResourcePreference.setOverridebyAiravata(overridebyAiravata);
 		computeResourcePreference.setAllocationProjectNumber(allocationProjectNumber);
 		computeResourcePreference.setPreferredBatchQueue(preferredBatchQueue);
-		computeResourcePreference.setPreferredDataMovementProtocol(preferredDataMovementProtocol);
-		computeResourcePreference.setPreferredJobSubmissionProtocol(preferredJobSubmissionProtocol);
+		computeResourcePreference.setPreferredDataMovementProtocol(DataMovementProtocol.valueOf(preferredDataMovementProtocol));
+		computeResourcePreference.setPreferredJobSubmissionProtocol(JobSubmissionProtocol.valueOf(preferredJobSubmissionProtocol));
 		computeResourcePreference.setScratchLocation(scratchLocation);
 		return computeResourcePreference;
 	}
