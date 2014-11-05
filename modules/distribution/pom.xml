@@ -30,7 +30,10 @@
             <modules>
                 <module>server</module>
                 <module>client</module>
-		<module>release</module>
+                <module>api-server</module>
+                <module>orchestrator-server</module>
+                <module>gfac-server</module>
+            	<module>release</module>
             </modules>
         </profile>
     </profiles>

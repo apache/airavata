@@ -23,9 +23,8 @@ package org.apache.airavata.orchestrator.core.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.gfac.client.GFACInstance;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
-import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
-import org.apache.airavata.orchestrator.cpi.Orchestrator;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.zookeeper.ZooKeeper;
 

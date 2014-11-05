@@ -84,7 +84,7 @@ public class OrchestratorRecoveryHandler implements Watcher {
                 if(GFacUtils.isCancelled(expId.split("\\+")[0], expId.split("\\+")[1], zk)) {// during relaunching we check the operation and then launch
                     serverHandler.terminateExperiment(expId.split("\\+")[0]);
                 }else {
-                    serverHandler.launchExperiment(expId.split("\\+")[0]);
+                    serverHandler.launchExperiment(expId.split("\\+")[0], null);
                 }
                 // we do not move the old experiment in to new gfac node, gfac will do it
             } catch (Exception e) {       // we attempt all the experiments

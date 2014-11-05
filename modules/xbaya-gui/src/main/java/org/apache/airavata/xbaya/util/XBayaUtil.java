@@ -31,8 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.api.Workflow.Client;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.api.workflow.Workflow.Client;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
