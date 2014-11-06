@@ -24,6 +24,9 @@ package org.apache.airavata.persistance.registry.jpa.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ActionableGroup;
 import org.apache.airavata.model.workspace.experiment.AdvancedInputDataHandling;
@@ -31,9 +34,7 @@ import org.apache.airavata.model.workspace.experiment.AdvancedOutputDataHandling
 import org.apache.airavata.model.workspace.experiment.ApplicationStatus;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
-import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.ErrorDetails;
 import org.apache.airavata.model.workspace.experiment.ExecutionUnit;
@@ -178,62 +179,35 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static DataObjectType getInputOutput(Object object){
+    public static InputDataObjectType getInput(Object object){
         if (object != null){
-            DataObjectType dataObjectType = new DataObjectType();
+            InputDataObjectType dataObjectType = new InputDataObjectType();
             if (object instanceof  ExperimentInputResource){
                 ExperimentInputResource expInput = (ExperimentInputResource) object;
-                dataObjectType.setKey(expInput.getExperimentKey());
+                dataObjectType.setName(expInput.getExperimentKey());
                 dataObjectType.setValue(expInput.getValue());
                 if (expInput.getInputType() != null){
                     dataObjectType.setType(DataType.valueOf(expInput.getInputType()));
                 }
                 dataObjectType.setMetaData(expInput.getMetadata());
                 return dataObjectType;
-            }else if (object instanceof ExperimentOutputResource){
-                ExperimentOutputResource expOutput = (ExperimentOutputResource)object;
-                dataObjectType.setKey(expOutput.getExperimentKey());
-                dataObjectType.setValue(expOutput.getValue());
-                if (expOutput.getOutputType() != null){
-                    dataObjectType.setType(DataType.valueOf(expOutput.getOutputType()));
-                }
-                dataObjectType.setMetaData(expOutput.getMetadata());
-                return dataObjectType;
             }else if (object instanceof NodeInputResource){
                 NodeInputResource nodeInputResource = (NodeInputResource)object;
-                dataObjectType.setKey(nodeInputResource.getInputKey());
+                dataObjectType.setName(nodeInputResource.getInputKey());
                 dataObjectType.setValue(nodeInputResource.getValue());
                 if (nodeInputResource.getInputType() != null){
                     dataObjectType.setType(DataType.valueOf(nodeInputResource.getInputType()));
                 }
                 dataObjectType.setMetaData(nodeInputResource.getMetadata());
                 return dataObjectType;
-            }else if (object instanceof NodeOutputResource){
-                NodeOutputResource nodeOutputResource = (NodeOutputResource)object;
-                dataObjectType.setKey(nodeOutputResource.getOutputKey());
-                dataObjectType.setValue(nodeOutputResource.getValue());
-                if (nodeOutputResource.getOutputType() != null){
-                    dataObjectType.setType(DataType.valueOf(nodeOutputResource.getOutputType()));
-                }
-                dataObjectType.setMetaData(nodeOutputResource.getMetadata());
-                return dataObjectType;
             }else if (object instanceof ApplicationInputResource){
                 ApplicationInputResource inputResource = (ApplicationInputResource)object;
-                dataObjectType.setKey(inputResource.getInputKey());
+                dataObjectType.setName(inputResource.getInputKey());
                 dataObjectType.setValue(inputResource.getValue());
                 if (inputResource.getInputType() != null){
                     dataObjectType.setType(DataType.valueOf(inputResource.getInputType()));
                 }
                 dataObjectType.setMetaData(inputResource.getMetadata());
-                return dataObjectType;
-            }else if (object instanceof ApplicationOutputResource){
-                ApplicationOutputResource outputResource = (ApplicationOutputResource)object;
-                dataObjectType.setKey(outputResource.getOutputKey());
-                dataObjectType.setValue(outputResource.getValue());
-                if (outputResource.getOutputType() != null){
-                    dataObjectType.setType(DataType.valueOf(outputResource.getOutputType()));
-                }
-                dataObjectType.setMetaData(outputResource.getMetadata());
                 return dataObjectType;
             }else {
                 return null;
@@ -242,66 +216,103 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<DataObjectType> getExpInputs (List<ExperimentInputResource> exInputList){
-        List<DataObjectType> expInputs = new ArrayList<DataObjectType>();
+    public static OutputDataObjectType getOutput(Object object){
+        if (object != null){
+            OutputDataObjectType dataObjectType = new OutputDataObjectType();
+            if (object instanceof ExperimentOutputResource){
+                ExperimentOutputResource expOutput = (ExperimentOutputResource)object;
+                dataObjectType.setName(expOutput.getExperimentKey());
+                dataObjectType.setValue(expOutput.getValue());
+                if (expOutput.getOutputType() != null){
+                    dataObjectType.setType(DataType.valueOf(expOutput.getOutputType()));
+                }
+//                dataObjectType.setMetaData(expOutput.getMetadata());
+                return dataObjectType;
+            }else if (object instanceof NodeOutputResource){
+                NodeOutputResource nodeOutputResource = (NodeOutputResource)object;
+                dataObjectType.setName(nodeOutputResource.getOutputKey());
+                dataObjectType.setValue(nodeOutputResource.getValue());
+                if (nodeOutputResource.getOutputType() != null){
+                    dataObjectType.setType(DataType.valueOf(nodeOutputResource.getOutputType()));
+                }
+//                dataObjectType.setMetaData(nodeOutputResource.getMetadata());
+                return dataObjectType;
+            }else if (object instanceof ApplicationOutputResource){
+                ApplicationOutputResource outputResource = (ApplicationOutputResource)object;
+                dataObjectType.setName(outputResource.getOutputKey());
+                dataObjectType.setValue(outputResource.getValue());
+                if (outputResource.getOutputType() != null){
+                    dataObjectType.setType(DataType.valueOf(outputResource.getOutputType()));
+                }
+//                dataObjectType.setMetaData(outputResource.getMetadata());
+                return dataObjectType;
+            }else {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    public static List<InputDataObjectType> getExpInputs (List<ExperimentInputResource> exInputList){
+        List<InputDataObjectType> expInputs = new ArrayList<InputDataObjectType>();
         if (exInputList != null && !exInputList.isEmpty()){
             for (ExperimentInputResource inputResource : exInputList){
-                DataObjectType exInput = getInputOutput(inputResource);
+                InputDataObjectType exInput = getInput(inputResource);
                 expInputs.add(exInput);
             }
         }
         return expInputs;
     }
 
-    public static List<DataObjectType> getExpOutputs (List<ExperimentOutputResource> experimentOutputResourceList){
-        List<DataObjectType> exOutputs = new ArrayList<DataObjectType>();
+    public static List<OutputDataObjectType> getExpOutputs (List<ExperimentOutputResource> experimentOutputResourceList){
+        List<OutputDataObjectType> exOutputs = new ArrayList<OutputDataObjectType>();
         if (experimentOutputResourceList != null && !experimentOutputResourceList.isEmpty()){
             for (ExperimentOutputResource outputResource : experimentOutputResourceList){
-                DataObjectType output = getInputOutput(outputResource);
+                OutputDataObjectType output = getOutput(outputResource);
                 exOutputs.add(output);
             }
         }
         return exOutputs;
     }
 
-    public static List<DataObjectType> getNodeInputs (List<NodeInputResource> nodeInputResources){
-        List<DataObjectType> nodeInputs = new ArrayList<DataObjectType>();
+    public static List<InputDataObjectType> getNodeInputs (List<NodeInputResource> nodeInputResources){
+        List<InputDataObjectType> nodeInputs = new ArrayList<InputDataObjectType>();
         if (nodeInputResources != null && !nodeInputResources.isEmpty()){
             for (NodeInputResource inputResource : nodeInputResources){
-                DataObjectType nodeInput = getInputOutput(inputResource);
+                InputDataObjectType nodeInput = getInput(inputResource);
                 nodeInputs.add(nodeInput);
             }
         }
         return nodeInputs;
     }
 
-    public static List<DataObjectType> getNodeOutputs (List<NodeOutputResource> nodeOutputResourceList){
-        List<DataObjectType> nodeOutputs = new ArrayList<DataObjectType>();
+    public static List<OutputDataObjectType> getNodeOutputs (List<NodeOutputResource> nodeOutputResourceList){
+        List<OutputDataObjectType> nodeOutputs = new ArrayList<OutputDataObjectType>();
         if (nodeOutputResourceList != null && !nodeOutputResourceList.isEmpty()){
             for (NodeOutputResource outputResource : nodeOutputResourceList){
-                DataObjectType output = getInputOutput(outputResource);
+                OutputDataObjectType output = getOutput(outputResource);
                 nodeOutputs.add(output);
             }
         }
         return nodeOutputs;
     }
 
-    public static List<DataObjectType> getApplicationInputs (List<ApplicationInputResource> applicationInputResources){
-        List<DataObjectType> appInputs = new ArrayList<DataObjectType>();
+    public static List<InputDataObjectType> getApplicationInputs (List<ApplicationInputResource> applicationInputResources){
+        List<InputDataObjectType> appInputs = new ArrayList<InputDataObjectType>();
         if (applicationInputResources != null && !applicationInputResources.isEmpty()){
             for (ApplicationInputResource inputResource : applicationInputResources){
-                DataObjectType appInput = getInputOutput(inputResource);
+                InputDataObjectType appInput = getInput(inputResource);
                 appInputs.add(appInput);
             }
         }
         return appInputs;
     }
 
-    public static List<DataObjectType> getApplicationOutputs (List<ApplicationOutputResource> outputResources){
-        List<DataObjectType> appOutputs = new ArrayList<DataObjectType>();
+    public static List<OutputDataObjectType> getApplicationOutputs (List<ApplicationOutputResource> outputResources){
+        List<OutputDataObjectType> appOutputs = new ArrayList<OutputDataObjectType>();
         if (outputResources != null && !outputResources.isEmpty()){
             for (ApplicationOutputResource outputResource : outputResources){
-                DataObjectType output = getInputOutput(outputResource);
+                OutputDataObjectType output = getOutput(outputResource);
                 appOutputs.add(output);
             }
         }
