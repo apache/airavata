@@ -22,7 +22,7 @@
         </InHandlers>
         <OutHandlers></OutHandlers>
     </GlobalHandlers>
-    <Provider class="org.apache.airavata.gfac.local.provider.impl.LocalProvider" host="org.apache.airavata.schemas.gfac.impl.HostDescriptionTypeImpl">
+    <Provider class="org.apache.airavata.gfac.local.provider.impl.LocalProvider" submission="LOCAL">
         <InHandlers>
             <Handler class="org.apache.airavata.gfac.local.handler.LocalDirectorySetupHandler"/>
         </InHandlers>
@@ -65,7 +65,7 @@
         </OutHandlers>
     </Application>
 
-     <Provider class="org.apache.airavata.gfac.ssh.provider.impl.SSHProvider" host="org.apache.airavata.schemas.gfac.impl.SSHHostTypeImpl" executionMode="async">
+     <Provider class="org.apache.airavata.gfac.ssh.provider.impl.SSHProvider" submission="SSH" executionMode="async">
          <InHandlers>
             <Handler class="org.apache.airavata.gfac.ssh.handler.SSHDirectorySetupHandler"/>
             <Handler class="org.apache.airavata.gfac.ssh.handler.SSHInputHandler"/>
@@ -74,7 +74,7 @@
             <Handler class="org.apache.airavata.gfac.ssh.handler.SSHOutputHandler"/>
         </OutHandlers>
     </Provider>
-    <Provider class="org.apache.airavata.gfac.gsissh.provider.impl.GSISSHProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl" executionMode="async">
+    <Provider class="org.apache.airavata.gfac.gsissh.provider.impl.GSISSHProvider" submission="SSH" security="GSI" executionMode="async">
              <InHandlers>
                 <Handler class="org.apache.airavata.gfac.gsissh.handler.GSISSHDirectorySetupHandler"/>
                  <!--Handler class="org.apache.airavata.gfac.ssh.handler.AdvancedSCPInputHandler">
