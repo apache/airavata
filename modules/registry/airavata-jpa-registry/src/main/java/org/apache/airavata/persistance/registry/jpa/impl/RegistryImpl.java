@@ -23,6 +23,7 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
@@ -130,7 +131,7 @@ public class RegistryImpl implements Registry {
                 case EXPERIMENT_CONFIGURATION_DATA:
                     return experimentRegistry.addUserConfigData((UserConfigurationData) newObjectToAdd, (String) dependentIdentifier);
                 case EXPERIMENT_OUTPUT:
-                    return experimentRegistry.addExpOutputs((List<DataObjectType>) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addExpOutputs((List<OutputDataObjectType>) newObjectToAdd, (String) dependentIdentifier);
                 case EXPERIMENT_STATUS:
                     return experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
                 case WORKFLOW_NODE_DETAIL:
@@ -138,11 +139,11 @@ public class RegistryImpl implements Registry {
                 case WORKFLOW_NODE_STATUS:
                     return experimentRegistry.addWorkflowNodeStatus((WorkflowNodeStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 case NODE_OUTPUT:
-                    return experimentRegistry.addNodeOutputs((List<DataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+                    return experimentRegistry.addNodeOutputs((List<OutputDataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 case TASK_DETAIL:
                     return experimentRegistry.addTaskDetails((TaskDetails) newObjectToAdd, (String) dependentIdentifier);
                 case APPLICATION_OUTPUT:
-                    return experimentRegistry.addApplicationOutputs((List<DataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+                    return experimentRegistry.addApplicationOutputs((List<OutputDataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 case TASK_STATUS:
                     return experimentRegistry.addTaskStatus((TaskStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 case JOB_DETAIL:
@@ -201,7 +202,7 @@ public class RegistryImpl implements Registry {
                     experimentRegistry.updateUserConfigData((UserConfigurationData) newObjectToUpdate, (String) identifier);
                     break;
                 case EXPERIMENT_OUTPUT:
-                    experimentRegistry.updateExpOutputs((List<DataObjectType>) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateExpOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
                     break;
                 case EXPERIMENT_STATUS:
                     experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
@@ -213,13 +214,13 @@ public class RegistryImpl implements Registry {
                     experimentRegistry.updateWorkflowNodeStatus((WorkflowNodeStatus) newObjectToUpdate, (String) identifier);
                     break;
                 case NODE_OUTPUT:
-                    experimentRegistry.updateNodeOutputs((List<DataObjectType>) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateNodeOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
                     break;
                 case TASK_DETAIL:
                     experimentRegistry.updateTaskDetails((TaskDetails) newObjectToUpdate, (String) identifier);
                     break;
                 case APPLICATION_OUTPUT:
-                    experimentRegistry.updateAppOutputs((List<DataObjectType>) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateAppOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
                     break;
                 case TASK_STATUS:
                     experimentRegistry.updateTaskStatus((TaskStatus) newObjectToUpdate, (String) identifier);
