@@ -25,10 +25,11 @@ package org.apache.airavata.model.util;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.AdvancedInputDataHandling;
 import org.apache.airavata.model.workspace.experiment.AdvancedOutputDataHandling;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.QualityOfServiceParams;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -52,7 +53,7 @@ public class ExperimentModelUtil {
                                                     String experimentName,
                                                     String expDescription,
                                                     String applicationId,
-                                                    List<DataObjectType> experimentInputList) {
+                                                    List<InputDataObjectType> experimentInputList) {
         Experiment experiment = new Experiment();
         experiment.setProjectID(projectID);
         experiment.setUserName(userName);
@@ -124,12 +125,12 @@ public class ExperimentModelUtil {
         taskDetails.setCreationTime(experiment.getCreationTime());
         taskDetails.setApplicationId(experiment.getApplicationId());
         taskDetails.setApplicationVersion(experiment.getApplicationVersion());
-        List<DataObjectType> experimentInputs = experiment.getExperimentInputs();
+        List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
         if (experimentInputs != null){
             taskDetails.setApplicationInputs(experimentInputs);
         }
 
-        List<DataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+        List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
         if (experimentOutputs != null){
             taskDetails.setApplicationOutputs(experimentOutputs);
         }
@@ -158,12 +159,12 @@ public class ExperimentModelUtil {
 //        String[] split = ;
         taskDetails.setApplicationId(nodeDetails.getExecutionUnitData());
 //        taskDetails.setApplicationVersion(split[1]);
-        List<DataObjectType> experimentInputs = nodeDetails.getNodeInputs();
+        List<InputDataObjectType> experimentInputs = nodeDetails.getNodeInputs();
         if (experimentInputs != null){
             taskDetails.setApplicationInputs(experimentInputs);
         }
 
-        List<DataObjectType> experimentOutputs = nodeDetails.getNodeOutputs();
+        List<OutputDataObjectType> experimentOutputs = nodeDetails.getNodeOutputs();
         if (experimentOutputs != null){
             taskDetails.setApplicationOutputs(experimentOutputs);
         }
@@ -186,7 +187,7 @@ public class ExperimentModelUtil {
         return taskDetails;
     }
     public static WorkflowNodeDetails createWorkflowNode (String nodeName,
-                                                          List<DataObjectType> nodeInputs){
+                                                          List<InputDataObjectType> nodeInputs){
         WorkflowNodeDetails wfnod = new WorkflowNodeDetails();
         wfnod.setNodeName(nodeName);
         wfnod.setNodeInputs(nodeInputs);

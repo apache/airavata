@@ -24,6 +24,8 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
@@ -81,7 +83,7 @@ public class ExperimentRegistry {
             experimentResource.setWorkflowTemplateVersion(experiment.getWorkflowTemplateVersion());
             experimentResource.setWorkflowExecutionId(experiment.getWorkflowExecutionInstanceId());
             experimentResource.save();
-            List<DataObjectType> experimentInputs = experiment.getExperimentInputs();
+            List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
             if (experimentInputs != null) {
                 addExpInputs(experimentInputs, experimentResource);
             }
@@ -91,9 +93,9 @@ public class ExperimentRegistry {
                 addUserConfigData(userConfigurationData, experimentID);
             }
 
-            List<DataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+            List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
             if (experimentOutputs != null && !experimentOutputs.isEmpty()){
-                for (DataObjectType output : experimentOutputs){
+                for (OutputDataObjectType output : experimentOutputs){
                     output.setValue("");
                 }
                 addExpOutputs(experimentOutputs, experimentID);
@@ -260,12 +262,12 @@ public class ExperimentRegistry {
 
     }
 
-    public void addExpInputs(List<DataObjectType> exInputs, ExperimentResource experimentResource) throws RegistryException {
+    public void addExpInputs(List<InputDataObjectType> exInputs, ExperimentResource experimentResource) throws RegistryException {
         try {
-            for (DataObjectType input : exInputs) {
+            for (InputDataObjectType input : exInputs) {
                 ExperimentInputResource resource = (ExperimentInputResource) experimentResource.create(ResourceType.EXPERIMENT_INPUT);
                 resource.setExperimentResource(experimentResource);
-                resource.setExperimentKey(input.getKey());
+                resource.setExperimentKey(input.getName());
                 resource.setValue(input.getValue());
                 if (input.getType() != null){
                     resource.setInputType(input.getType().toString());
@@ -279,12 +281,12 @@ public class ExperimentRegistry {
         }
     }
 
-    public void updateExpInputs(List<DataObjectType> exInputs, ExperimentResource experimentResource) throws RegistryException {
+    public void updateExpInputs(List<InputDataObjectType> exInputs, ExperimentResource experimentResource) throws RegistryException {
         try {
             List<ExperimentInputResource> experimentInputs = experimentResource.getExperimentInputs();
-            for (DataObjectType input : exInputs) {
+            for (InputDataObjectType input : exInputs) {
                 for (ExperimentInputResource exinput : experimentInputs) {
-                    if (exinput.getExperimentKey().equals(input.getKey())) {
+                    if (exinput.getExperimentKey().equals(input.getName())) {
                         exinput.setValue(input.getValue());
                         if (input.getType() != null){
                             exinput.setInputType(input.getType().toString());
@@ -301,18 +303,18 @@ public class ExperimentRegistry {
 
     }
 
-    public String addExpOutputs(List<DataObjectType> exOutput, String expId) throws RegistryException {
+    public String addExpOutputs(List<OutputDataObjectType> exOutput, String expId) throws RegistryException {
         try {
             ExperimentResource experiment = gatewayResource.getExperiment(expId);
-            for (DataObjectType output : exOutput) {
+            for (OutputDataObjectType output : exOutput) {
                 ExperimentOutputResource resource = (ExperimentOutputResource) experiment.create(ResourceType.EXPERIMENT_OUTPUT);
                 resource.setExperimentResource(experiment);
-                resource.setExperimentKey(output.getKey());
+                resource.setExperimentKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null){
                     resource.setOutputType(output.getType().toString());
                 }
-                resource.setMetadata(output.getMetaData());
+//                resource.setMetadata(output.get());
                 resource.save();
             }
         } catch (Exception e) {
@@ -322,20 +324,20 @@ public class ExperimentRegistry {
         return expId;
     }
 
-    public void updateExpOutputs(List<DataObjectType> exOutput, String expId) throws RegistryException {
+    public void updateExpOutputs(List<OutputDataObjectType> exOutput, String expId) throws RegistryException {
         try {
             ExperimentResource experiment = gatewayResource.getExperiment(expId);
             List<ExperimentOutputResource> existingExpOutputs = experiment.getExperimentOutputs();
-            for (DataObjectType output : exOutput) {
+            for (OutputDataObjectType output : exOutput) {
                 for (ExperimentOutputResource resource : existingExpOutputs) {
-                    if (resource.getExperimentKey().equals(output.getKey())) {
+                    if (resource.getExperimentKey().equals(output.getName())) {
                         resource.setExperimentResource(experiment);
-                        resource.setExperimentKey(output.getKey());
+                        resource.setExperimentKey(output.getName());
                         resource.setValue(output.getValue());
                         if (output.getType() != null){
                             resource.setOutputType(output.getType().toString());
                         }
-                        resource.setMetadata(output.getMetaData());
+//                        resource.setMetadata(output.getMetaData());
                         resource.save();
                     }
                 }
@@ -346,19 +348,19 @@ public class ExperimentRegistry {
         }
     }
 
-    public String addNodeOutputs(List<DataObjectType> wfOutputs, CompositeIdentifier ids) throws RegistryException {
+    public String addNodeOutputs(List<OutputDataObjectType> wfOutputs, CompositeIdentifier ids) throws RegistryException {
         try {
             ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getSecondLevelIdentifier());
-            for (DataObjectType output : wfOutputs) {
+            for (OutputDataObjectType output : wfOutputs) {
                 NodeOutputResource resource = (NodeOutputResource) workflowNode.create(ResourceType.NODE_OUTPUT);
                 resource.setNodeDetailResource(workflowNode);
-                resource.setOutputKey(output.getKey());
+                resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null){
                     resource.setOutputType(output.getType().toString());
                 }
-                resource.setMetadata(output.getMetaData());
+//                resource.setMetadata(output.getMetaData());
                 resource.save();
             }
         } catch (Exception e) {
@@ -368,20 +370,20 @@ public class ExperimentRegistry {
         return (String) ids.getSecondLevelIdentifier();
     }
 
-    public void updateNodeOutputs(List<DataObjectType> wfOutputs, String nodeId) throws RegistryException {
+    public void updateNodeOutputs(List<OutputDataObjectType> wfOutputs, String nodeId) throws RegistryException {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
             List<NodeOutputResource> nodeOutputs = workflowNode.getNodeOutputs();
-            for (DataObjectType output : wfOutputs) {
+            for (OutputDataObjectType output : wfOutputs) {
                 for (NodeOutputResource resource : nodeOutputs) {
                     resource.setNodeDetailResource(workflowNode);
-                    resource.setOutputKey(output.getKey());
+                    resource.setOutputKey(output.getName());
                     resource.setValue(output.getValue());
                     if (output.getType() != null){
                         resource.setOutputType(output.getType().toString());
                     }
-                    resource.setMetadata(output.getMetaData());
+//                    resource.setMetadata(output.getMetaData());
                     resource.save();
                 }
             }
@@ -391,20 +393,20 @@ public class ExperimentRegistry {
         }
     }
 
-    public String addApplicationOutputs(List<DataObjectType> appOutputs, CompositeIdentifier ids) throws RegistryException {
+    public String addApplicationOutputs(List<OutputDataObjectType> appOutputs, CompositeIdentifier ids) throws RegistryException {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getTopLevelIdentifier());
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getSecondLevelIdentifier());
-            for (DataObjectType output : appOutputs) {
+            for (OutputDataObjectType output : appOutputs) {
                 ApplicationOutputResource resource = (ApplicationOutputResource) taskDetail.create(ResourceType.APPLICATION_OUTPUT);
                 resource.setTaskDetailResource(taskDetail);
-                resource.setOutputKey(output.getKey());
+                resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null){
                     resource.setOutputType(output.getType().toString());
                 }
-                resource.setMetadata(output.getMetaData());
+//                resource.setMetadata(output.getMetaData());
                 resource.save();
             }
         } catch (Exception e) {
@@ -704,11 +706,11 @@ public class ExperimentRegistry {
             resource.setNodeInstanceId(getNodeInstanceID(nodeDetails.getNodeName()));
             resource.save();
             String nodeId = resource.getNodeInstanceId();
-            List<DataObjectType> nodeInputs = nodeDetails.getNodeInputs();
+            List<InputDataObjectType> nodeInputs = nodeDetails.getNodeInputs();
             if (nodeInputs != null) {
                 addWorkflowInputs(nodeDetails.getNodeInputs(), resource);
             }
-            List<DataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
+            List<OutputDataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
             if (nodeOutputs != null && !nodeOutputs.isEmpty()){
                 CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
                 addNodeOutputs(nodeOutputs, ids);
@@ -761,11 +763,11 @@ public class ExperimentRegistry {
             workflowNode.setNodeInstanceId(nodeId);
             workflowNode.save();
             String expID = workflowNode.getExperimentResource().getExpID();
-            List<DataObjectType> nodeInputs = nodeDetails.getNodeInputs();
+            List<InputDataObjectType> nodeInputs = nodeDetails.getNodeInputs();
             if (nodeInputs != null) {
                 updateWorkflowInputs(nodeDetails.getNodeInputs(), workflowNode);
             }
-            List<DataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
+            List<OutputDataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
             if (nodeOutputs != null && !nodeOutputs.isEmpty()){
                 updateNodeOutputs(nodeOutputs, nodeId);
             }
@@ -802,12 +804,12 @@ public class ExperimentRegistry {
     }
 
 
-    public void addWorkflowInputs(List<DataObjectType> wfInputs, WorkflowNodeDetailResource nodeDetailResource) throws RegistryException {
+    public void addWorkflowInputs(List<InputDataObjectType> wfInputs, WorkflowNodeDetailResource nodeDetailResource) throws RegistryException {
         try {
-            for (DataObjectType input : wfInputs) {
+            for (InputDataObjectType input : wfInputs) {
                 NodeInputResource resource = (NodeInputResource) nodeDetailResource.create(ResourceType.NODE_INPUT);
                 resource.setNodeDetailResource(nodeDetailResource);
-                resource.setInputKey(input.getKey());
+                resource.setInputKey(input.getName());
                 resource.setValue(input.getValue());
                 if (input.getType() != null){
                     resource.setInputType(input.getType().toString());
@@ -822,13 +824,13 @@ public class ExperimentRegistry {
 
     }
 
-    public void updateWorkflowInputs(List<DataObjectType> wfInputs, WorkflowNodeDetailResource nodeDetailResource) throws RegistryException {
+    public void updateWorkflowInputs(List<InputDataObjectType> wfInputs, WorkflowNodeDetailResource nodeDetailResource) throws RegistryException {
         try {
             List<NodeInputResource> nodeInputs = nodeDetailResource.getNodeInputs();
-            for (DataObjectType input : wfInputs) {
+            for (InputDataObjectType input : wfInputs) {
                 for (NodeInputResource resource : nodeInputs) {
                     resource.setNodeDetailResource(nodeDetailResource);
-                    resource.setInputKey(input.getKey());
+                    resource.setInputKey(input.getName());
                     resource.setValue(input.getValue());
                     if (input.getType() != null){
                         resource.setInputType(input.getType().toString());
@@ -855,11 +857,11 @@ public class ExperimentRegistry {
             taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
             taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));
             taskDetail.save();
-            List<DataObjectType> applicationInputs = taskDetails.getApplicationInputs();
+            List<InputDataObjectType> applicationInputs = taskDetails.getApplicationInputs();
             if (applicationInputs != null) {
                 addAppInputs(applicationInputs, taskDetail);
             }
-            List<DataObjectType> applicationOutput = taskDetails.getApplicationOutputs();
+            List<OutputDataObjectType> applicationOutput = taskDetails.getApplicationOutputs();
             if (applicationOutput != null) {
                 addAppOutputs(applicationOutput, taskDetail);
             }
@@ -931,7 +933,7 @@ public class ExperimentRegistry {
             taskDetail.setApplicationDeploymentId(taskDetails.getApplicationDeploymentId());
 
             taskDetail.save();
-            List<DataObjectType> applicationInputs = taskDetails.getApplicationInputs();
+            List<InputDataObjectType> applicationInputs = taskDetails.getApplicationInputs();
             if (applicationInputs != null) {
                 updateAppInputs(applicationInputs, taskDetail);
             }
@@ -980,12 +982,12 @@ public class ExperimentRegistry {
         }
     }
 
-    public void addAppInputs(List<DataObjectType> appInputs, TaskDetailResource taskDetailResource) throws RegistryException {
+    public void addAppInputs(List<InputDataObjectType> appInputs, TaskDetailResource taskDetailResource) throws RegistryException {
         try {
-            for (DataObjectType input : appInputs) {
+            for (InputDataObjectType input : appInputs) {
                 ApplicationInputResource resource = (ApplicationInputResource) taskDetailResource.create(ResourceType.APPLICATION_INPUT);
                 resource.setTaskDetailResource(taskDetailResource);
-                resource.setInputKey(input.getKey());
+                resource.setInputKey(input.getName());
                 resource.setValue(input.getValue());
                 if (input.getType() != null){
                     resource.setInputType(input.getType().toString());
@@ -1000,17 +1002,17 @@ public class ExperimentRegistry {
 
     }
 
-    public void addAppOutputs(List<DataObjectType> appOytputs, TaskDetailResource taskDetailResource) throws RegistryException {
+    public void addAppOutputs(List<OutputDataObjectType> appOytputs, TaskDetailResource taskDetailResource) throws RegistryException {
         try {
-            for (DataObjectType output : appOytputs) {
+            for (OutputDataObjectType output : appOytputs) {
                 ApplicationOutputResource resource = (ApplicationOutputResource) taskDetailResource.create(ResourceType.APPLICATION_OUTPUT);
                 resource.setTaskDetailResource(taskDetailResource);
-                resource.setOutputKey(output.getKey());
+                resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null){
                     resource.setOutputType(output.getType().toString());
                 }
-                resource.setMetadata(output.getMetaData());
+//                resource.setMetadata(output.getMetaData());
                 resource.save();
             }
         } catch (Exception e) {
@@ -1020,21 +1022,21 @@ public class ExperimentRegistry {
 
     }
 
-    public void updateAppOutputs(List<DataObjectType> appOutputs, String taskId) throws RegistryException {
+    public void updateAppOutputs(List<OutputDataObjectType> appOutputs, String taskId) throws RegistryException {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             List<ApplicationOutputResource> outputs = taskDetail.getApplicationOutputs();
-            for (DataObjectType output : appOutputs) {
+            for (OutputDataObjectType output : appOutputs) {
                 for (ApplicationOutputResource resource : outputs) {
                     resource.setTaskDetailResource(taskDetail);
-                    resource.setOutputKey(output.getKey());
+                    resource.setOutputKey(output.getName());
                     resource.setValue(output.getValue());
                     if (output.getType() != null){
                         resource.setOutputType(output.getType().toString());
                     }
-                    resource.setMetadata(output.getMetaData());
+//                    resource.setMetadata(output.getMetaData());
                     resource.save();
                 }
             }
@@ -1044,13 +1046,13 @@ public class ExperimentRegistry {
         }
     }
 
-    public void updateAppInputs(List<DataObjectType> appInputs, TaskDetailResource taskDetailResource) throws RegistryException {
+    public void updateAppInputs(List<InputDataObjectType> appInputs, TaskDetailResource taskDetailResource) throws RegistryException {
         try {
             List<ApplicationInputResource> inputs = taskDetailResource.getApplicationInputs();
-            for (DataObjectType input : appInputs) {
+            for (InputDataObjectType input : appInputs) {
                 for (ApplicationInputResource resource : inputs) {
                     resource.setTaskDetailResource(taskDetailResource);
-                    resource.setInputKey(input.getKey());
+                    resource.setInputKey(input.getName());
                     resource.setValue(input.getValue());
                     if (input.getType() != null){
                         resource.setInputType(input.getType().toString());
@@ -1517,7 +1519,7 @@ public class ExperimentRegistry {
             existingExperiment.setWorkflowTemplateVersion(experiment.getWorkflowTemplateVersion());
             existingExperiment.setWorkflowExecutionId(experiment.getWorkflowExecutionInstanceId());
             existingExperiment.save();
-            List<DataObjectType> experimentInputs = experiment.getExperimentInputs();
+            List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
             if (experimentInputs != null && !experimentInputs.isEmpty()){
                 updateExpInputs(experimentInputs, existingExperiment);
             }
@@ -1527,7 +1529,7 @@ public class ExperimentRegistry {
                 updateUserConfigData(userConfigurationData, expId);
             }
 
-            List<DataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+            List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
             if (experimentOutputs != null && !experimentOutputs.isEmpty()){
                 updateExpOutputs(experimentOutputs, expId);
             }
@@ -1946,7 +1948,7 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public List<DataObjectType> getExperimentOutputs(String expId) throws RegistryException {
+    public List<OutputDataObjectType> getExperimentOutputs(String expId) throws RegistryException {
         try {
             ExperimentResource resource = gatewayResource.getExperiment(expId);
             List<ExperimentOutputResource> experimentOutputs = resource.getExperimentOutputs();
@@ -2095,7 +2097,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public List<DataObjectType> getNodeOutputs(String nodeId) throws RegistryException {
+    public List<OutputDataObjectType> getNodeOutputs(String nodeId) throws RegistryException {
         try {
             ExperimentResource resource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = resource.getWorkflowNode(nodeId);
@@ -2128,7 +2130,7 @@ public class ExperimentRegistry {
         }
     }
     
-    public List<DataObjectType> getApplicationOutputs(String taskId) throws RegistryException {
+    public List<OutputDataObjectType> getApplicationOutputs(String taskId) throws RegistryException {
         try {
             ExperimentResource resource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) resource.create(ResourceType.WORKFLOW_NODE_DETAIL);
