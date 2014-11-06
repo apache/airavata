@@ -397,7 +397,7 @@ service Airavata {
               3: airavataErrors.AiravataClientException ace,
               4: airavataErrors.AiravataSystemException ase)
 
-  list<experimentModel.DataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
+  list<applicationInterfaceModel.OutputDataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
       throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.ExperimentNotFoundException enf,
               3: airavataErrors.AiravataClientException ace,

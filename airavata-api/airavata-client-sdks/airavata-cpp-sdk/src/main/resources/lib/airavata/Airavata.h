@@ -54,7 +54,7 @@ class AiravataIf {
   virtual bool validateExperiment(const std::string& airavataExperimentId) = 0;
   virtual void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) = 0;
   virtual void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId) = 0;
-  virtual void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId) = 0;
+  virtual void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId) = 0;
@@ -227,7 +227,7 @@ class AiravataNull : virtual public AiravataIf {
   void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & /* _return */, const std::string& /* airavataExperimentId */) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & /* _return */, const std::string& /* airavataExperimentId */) {
@@ -3511,7 +3511,7 @@ class Airavata_getExperimentOutputs_result {
 
   virtual ~Airavata_getExperimentOutputs_result() throw() {}
 
-  std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType>  success;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -3519,7 +3519,7 @@ class Airavata_getExperimentOutputs_result {
 
   _Airavata_getExperimentOutputs_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val) {
     success = val;
   }
 
@@ -3579,7 +3579,7 @@ class Airavata_getExperimentOutputs_presult {
 
   virtual ~Airavata_getExperimentOutputs_presult() throw() {}
 
-  std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> * success;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -14014,9 +14014,9 @@ class AiravataClient : virtual public AiravataIf {
   void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId);
   void send_getExperimentStatus(const std::string& airavataExperimentId);
   void recv_getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return);
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId);
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId);
   void send_getExperimentOutputs(const std::string& airavataExperimentId);
-  void recv_getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return);
+  void recv_getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return);
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId);
   void send_getJobStatuses(const std::string& airavataExperimentId);
   void recv_getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return);
@@ -14703,7 +14703,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {

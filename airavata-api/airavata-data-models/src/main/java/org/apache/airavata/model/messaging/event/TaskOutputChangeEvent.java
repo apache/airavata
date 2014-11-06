@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new TaskOutputChangeEventTupleSchemeFactory());
   }
 
-  private List<org.apache.airavata.model.workspace.experiment.DataObjectType> output; // required
+  private List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> output; // required
   private TaskIdentifier taskIdentity; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -131,7 +131,7 @@ import org.slf4j.LoggerFactory;
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.OUTPUT, new org.apache.thrift.meta_data.FieldMetaData("output", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.workspace.experiment.DataObjectType.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType.class))));
     tmpMap.put(_Fields.TASK_IDENTITY, new org.apache.thrift.meta_data.FieldMetaData("taskIdentity", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, TaskIdentifier.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -142,7 +142,7 @@ import org.slf4j.LoggerFactory;
   }
 
   public TaskOutputChangeEvent(
-    List<org.apache.airavata.model.workspace.experiment.DataObjectType> output,
+    List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> output,
     TaskIdentifier taskIdentity)
   {
     this();
@@ -155,9 +155,9 @@ import org.slf4j.LoggerFactory;
    */
   public TaskOutputChangeEvent(TaskOutputChangeEvent other) {
     if (other.isSetOutput()) {
-      List<org.apache.airavata.model.workspace.experiment.DataObjectType> __this__output = new ArrayList<org.apache.airavata.model.workspace.experiment.DataObjectType>(other.output.size());
-      for (org.apache.airavata.model.workspace.experiment.DataObjectType other_element : other.output) {
-        __this__output.add(new org.apache.airavata.model.workspace.experiment.DataObjectType(other_element));
+      List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> __this__output = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(other.output.size());
+      for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType other_element : other.output) {
+        __this__output.add(new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType(other_element));
       }
       this.output = __this__output;
     }
@@ -180,22 +180,22 @@ import org.slf4j.LoggerFactory;
     return (this.output == null) ? 0 : this.output.size();
   }
 
-  public java.util.Iterator<org.apache.airavata.model.workspace.experiment.DataObjectType> getOutputIterator() {
+  public java.util.Iterator<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getOutputIterator() {
     return (this.output == null) ? null : this.output.iterator();
   }
 
-  public void addToOutput(org.apache.airavata.model.workspace.experiment.DataObjectType elem) {
+  public void addToOutput(org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType elem) {
     if (this.output == null) {
-      this.output = new ArrayList<org.apache.airavata.model.workspace.experiment.DataObjectType>();
+      this.output = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>();
     }
     this.output.add(elem);
   }
 
-  public List<org.apache.airavata.model.workspace.experiment.DataObjectType> getOutput() {
+  public List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getOutput() {
     return this.output;
   }
 
-  public void setOutput(List<org.apache.airavata.model.workspace.experiment.DataObjectType> output) {
+  public void setOutput(List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> output) {
     this.output = output;
   }
 
@@ -243,7 +243,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetOutput();
       } else {
-        setOutput((List<org.apache.airavata.model.workspace.experiment.DataObjectType>)value);
+        setOutput((List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>)value);
       }
       break;
 
@@ -445,11 +445,11 @@ import org.slf4j.LoggerFactory;
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
-                struct.output = new ArrayList<org.apache.airavata.model.workspace.experiment.DataObjectType>(_list0.size);
+                struct.output = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list0.size);
                 for (int _i1 = 0; _i1 < _list0.size; ++_i1)
                 {
-                  org.apache.airavata.model.workspace.experiment.DataObjectType _elem2;
-                  _elem2 = new org.apache.airavata.model.workspace.experiment.DataObjectType();
+                  org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem2;
+                  _elem2 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
                   _elem2.read(iprot);
                   struct.output.add(_elem2);
                 }
@@ -486,7 +486,7 @@ import org.slf4j.LoggerFactory;
         oprot.writeFieldBegin(OUTPUT_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.output.size()));
-          for (org.apache.airavata.model.workspace.experiment.DataObjectType _iter3 : struct.output)
+          for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter3 : struct.output)
           {
             _iter3.write(oprot);
           }
@@ -518,7 +518,7 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol oprot = (TTupleProtocol) prot;
       {
         oprot.writeI32(struct.output.size());
-        for (org.apache.airavata.model.workspace.experiment.DataObjectType _iter4 : struct.output)
+        for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter4 : struct.output)
         {
           _iter4.write(oprot);
         }
@@ -531,11 +531,11 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       {
         org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-        struct.output = new ArrayList<org.apache.airavata.model.workspace.experiment.DataObjectType>(_list5.size);
+        struct.output = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list5.size);
         for (int _i6 = 0; _i6 < _list5.size; ++_i6)
         {
-          org.apache.airavata.model.workspace.experiment.DataObjectType _elem7;
-          _elem7 = new org.apache.airavata.model.workspace.experiment.DataObjectType();
+          org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem7;
+          _elem7 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
           _elem7.read(iprot);
           struct.output.add(_elem7);
         }

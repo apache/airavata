@@ -31,6 +31,7 @@
 
 #include <thrift/cxxfunctional.h>
 #include "experimentModel_types.h"
+#include "applicationInterfaceModel_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace messaging { namespace event {
@@ -353,18 +354,18 @@ void swap(TaskStatusChangeRequestEvent &a, TaskStatusChangeRequestEvent &b);
 class TaskOutputChangeEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "A7F4390C8E4A64CE48431C1FB6A45F50";
-  static const uint8_t binary_fingerprint[16]; // = {0xA7,0xF4,0x39,0x0C,0x8E,0x4A,0x64,0xCE,0x48,0x43,0x1C,0x1F,0xB6,0xA4,0x5F,0x50};
+  static const char* ascii_fingerprint; // = "850570A8E8883AE24DE92AFC9AA86C7E";
+  static const uint8_t binary_fingerprint[16]; // = {0x85,0x05,0x70,0xA8,0xE8,0x88,0x3A,0xE2,0x4D,0xE9,0x2A,0xFC,0x9A,0xA8,0x6C,0x7E};
 
   TaskOutputChangeEvent() {
   }
 
   virtual ~TaskOutputChangeEvent() throw() {}
 
-  std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType>  output;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  output;
   TaskIdentifier taskIdentity;
 
-  void __set_output(const std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & val) {
+  void __set_output(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val) {
     output = val;
   }
 
