@@ -20,68 +20,64 @@
 */
 package org.apache.airavata.gfac.core.utils;
 
+import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
-import org.apache.airavata.gfac.core.handler.GFacHandlerException;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.DataType;
-import org.apache.airavata.schemas.gfac.StdErrParameterType;
-import org.apache.airavata.schemas.gfac.StdOutParameterType;
-
 public class OutputUtils {
     private static String regexPattern = "\\s*=\\s*(.*)\\r?\\n";
 
-	public static void fillOutputFromStdout(Map<String, Object> output, String stdout, String stderr, List<DataObjectType> outputArray) throws Exception {
+	public static void fillOutputFromStdout(Map<String, Object> output, String stdout, String stderr, List<OutputDataObjectType> outputArray) throws Exception {
 
 		if (stdout == null || stdout.equals("")) {
 			throw new GFacHandlerException("Standard output is empty.");
 		}
 
 		Set<String> keys = output.keySet();
+        OutputDataObjectType actual = null;
+        OutputDataObjectType resultOutput = null;
 		for (String paramName : keys) {
-			ActualParameter actual = (ActualParameter) output.get(paramName);
+			actual = (OutputDataObjectType) output.get(paramName);
 			// if parameter value is not already set, we let it go
 
 			if (actual == null) {
 				continue;
 			}
-			if ("StdOut".equals(actual.getType().getType().toString())) {
-		        ((StdOutParameterType) actual.getType()).setValue(stdout);
-		        DataObjectType out = new DataObjectType();
-				out.setKey(paramName);
-				out.setType(DataType.STDOUT);
-				out.setValue(stdout);
-				outputArray.add(out);
-			} else if ("StdErr".equals(actual.getType().getType().toString())) {
-				((StdErrParameterType) actual.getType()).setValue(stderr);
-		        DataObjectType out = new DataObjectType();
-				out.setKey(paramName);
-				out.setType(DataType.STDERR);
-				out.setValue(stderr);
-				outputArray.add(out);
-			}
+            resultOutput = new OutputDataObjectType();
+            if (DataType.STDOUT == actual.getType()) {
+                actual.setValue(stdout);
+                resultOutput.setName(paramName);
+                resultOutput.setType(DataType.STDOUT);
+                resultOutput.setValue(stdout);
+                outputArray.add(resultOutput);
+			} else if (DataType.STDERR == actual.getType()) {
+                actual.setValue(stderr);
+                resultOutput.setName(paramName);
+                resultOutput.setType(DataType.STDERR);
+                resultOutput.setValue(stderr);
+                outputArray.add(resultOutput);
+            }
 //			else if ("URI".equals(actual.getType().getType().toString())) {
 //				continue;
 //			} 
-			else {
-				String parseStdout = parseStdout(stdout, paramName);
-				if (parseStdout != null) {
-					DataObjectType out = new DataObjectType();
-					out.setKey(paramName);
-					out.setType(DataType.STRING);
-					out.setValue(parseStdout);
-					outputArray.add(out);
-					MappingFactory.fromString(actual, parseStdout);
-	          }
-			}
-		}
+            else {
+                String parseStdout = parseStdout(stdout, paramName);
+                if (parseStdout != null) {
+                    actual.setValue(parseStdout);
+                    resultOutput.setName(paramName);
+                    resultOutput.setType(DataType.STRING);
+                    resultOutput.setValue(parseStdout);
+                    outputArray.add(resultOutput);
+                }
+            }
+        }
 	}
 
     private static String parseStdout(String stdout, String outParam) throws Exception {

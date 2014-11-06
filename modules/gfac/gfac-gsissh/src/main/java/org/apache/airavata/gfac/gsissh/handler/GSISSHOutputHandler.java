@@ -20,23 +20,10 @@
 */
 package org.apache.airavata.gfac.gsissh.handler;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-import net.schmizz.sshj.connection.ConnectionException;
-import net.schmizz.sshj.transport.TransportException;
-
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
+//import org.apache.airavata.commons.gfac.type.ActualParameter;
+//import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
-import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
@@ -45,23 +32,25 @@ import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
-import org.apache.airavata.model.messaging.event.TaskIdentifier;
-import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.RegistryModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class GSISSHOutputHandler extends AbstractRecoverableHandler {
     private static final Logger log = LoggerFactory.getLogger(GSISSHOutputHandler.class);
@@ -182,12 +171,12 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
             //todo this is a mess we have to fix this
-            List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
+            List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             Set<String> keys = output.keySet();
             for (String paramName : keys) {
-                ActualParameter actualParameter = (ActualParameter) output.get(paramName);
-                if ("URI".equals(actualParameter.getType().getType().toString())) {
+                OutputDataObjectType outputDataObjectType = (OutputDataObjectType) output.get(paramName);
+                if (DataType.URI == outputDataObjectType.getType()) {
 
                     List<String> outputList = null;
                     int retry=3;
@@ -210,9 +199,9 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                         Set<String> strings = output.keySet();
                         outputArray.clear();
                         for (String key : strings) {
-                            ActualParameter actualParameter1 = (ActualParameter) output.get(key);
-                            if ("URI".equals(actualParameter1.getType().getType().toString())) {
-                                String downloadFile = MappingFactory.toString(actualParameter1);
+                            OutputDataObjectType outputDataObjectType1 = (OutputDataObjectType) output.get(key);
+                            if (DataType.URI == outputDataObjectType1.getType()) {
+                                String downloadFile = outputDataObjectType1.getValue();
                                 String localFile;
                                 if (index < oldIndex) {
                                     localFile = oldFiles.get(index);
@@ -225,10 +214,10 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                                     GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                                 }
                                 jobExecutionContext.addOutputFile(localFile);
-                                MappingFactory.fromString(actualParameter1, localFile);
-                                DataObjectType dataObjectType = new DataObjectType();
+                                outputDataObjectType1.setValue(localFile);
+                                OutputDataObjectType dataObjectType = new OutputDataObjectType();
                                 dataObjectType.setValue(localFile);
-                                dataObjectType.setKey(key);
+                                dataObjectType.setName(key);
                                 dataObjectType.setType(DataType.URI);
                                 outputArray.add(dataObjectType);
                             }
@@ -248,10 +237,10 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                             GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                         }
                         jobExecutionContext.addOutputFile(outputFile);
-                        MappingFactory.fromString(actualParameter, outputFile);
-                        DataObjectType dataObjectType = new DataObjectType();
+                        outputDataObjectType.setValue(outputFile);
+                        OutputDataObjectType dataObjectType  = new OutputDataObjectType();
                         dataObjectType.setValue(valueList);
-                        dataObjectType.setKey(paramName);
+                        dataObjectType.setName(paramName);
                         dataObjectType.setType(DataType.URI);
                         outputArray.add(dataObjectType);
                     }

@@ -25,6 +25,9 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.tools.RegisterSampleApplications;
 import org.apache.airavata.client.tools.RegisterSampleApplicationsUtils;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -152,16 +155,16 @@ public class CreateLaunchExperiment {
     
     public static String createEchoExperimentForTrestles(Airavata.Client client) throws TException {
         try {
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("Input_to_Echo");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Input_to_Echo");
             input.setType(DataType.STRING);
             input.setValue("Echoed_Output=Hello World");
             exInputs.add(input);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("echo_output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("echo_output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
@@ -204,16 +207,16 @@ public class CreateLaunchExperiment {
     
     public static String createEchoExperimentForFSD(Airavata.Client client) throws TException {
         try {
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("Input_to_Echo");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Input_to_Echo");
             input.setType(DataType.STRING);
             input.setValue("Echoed_Output=Hello World");
             exInputs.add(input);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("echo_output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("echo_output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
@@ -261,19 +264,19 @@ public class CreateLaunchExperiment {
     
     public static String createExperimentWRFStampede(Airavata.Client client) throws TException {
         try {
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("Config_Namelist_File");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Config_Namelist_File");
             input.setType(DataType.URI);
             input.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/namelist.input");
 
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("WRF_Initial_Conditions");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("WRF_Initial_Conditions");
             input1.setType(DataType.URI);
             input1.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfinput_d01");
 
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("WRF_Boundary_File");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("WRF_Boundary_File");
             input2.setType(DataType.URI);
             input2.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfbdy_d01");
 
@@ -282,14 +285,14 @@ public class CreateLaunchExperiment {
             exInputs.add(input2);
 
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("WRF_Output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("WRF_Output");
             output.setType(DataType.URI);
             output.setValue("");
 
-            DataObjectType output1 = new DataObjectType();
-            output1.setKey("WRF_Execution_Log");
+            OutputDataObjectType output1 = new OutputDataObjectType();
+            output1.setName("WRF_Execution_Log");
             output1.setType(DataType.URI);
             output1.setValue("");
 
@@ -335,19 +338,19 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentWRFTrestles(Airavata.Client client) throws TException {
         try {
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("WRF_Namelist");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("WRF_Namelist");
             input.setType(DataType.URI);
             input.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/namelist.input");
 
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("WRF_Input_File");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("WRF_Input_File");
             input1.setType(DataType.URI);
             input1.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/wrfinput_d01");
 
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("WRF_Boundary_File");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("WRF_Boundary_File");
             input2.setType(DataType.URI);
             input2.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/wrfbdy_d01");
 
@@ -356,14 +359,14 @@ public class CreateLaunchExperiment {
             exInputs.add(input2);
 
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("WRF_Output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("WRF_Output");
             output.setType(DataType.URI);
             output.setValue("");
 
-            DataObjectType output1 = new DataObjectType();
-            output1.setKey("WRF_Execution_Log");
+            OutputDataObjectType output1 = new OutputDataObjectType();
+            output1.setName("WRF_Execution_Log");
             output1.setType(DataType.URI);
             output1.setValue("");
 
@@ -431,16 +434,16 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentEchoForLocalHost(Airavata.Client client) throws TException {
         try {
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("Input_to_Echo");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Input_to_Echo");
             input.setType(DataType.STRING);
             input.setValue("Echoed_Output=Hello World");
             exInputs.add(input);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("Echoed_Output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("Echoed_Output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
@@ -485,16 +488,16 @@ public class CreateLaunchExperiment {
 
 //    public static String createExperimentForSSHHost(Airavata.Client client) throws TException {
 //        try {
-//            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-//            DataObjectType input = new DataObjectType();
-//            input.setKey("echo_input");
+//            List<OutputDataObjectType> exInputs = new ArrayList<OutputDataObjectType>();
+//            OutputDataObjectType input = new OutputDataObjectType();
+//            input.setName("echo_input");
 //            input.setType(DataType.STRING);
 //            input.setValue("echo_output=Hello World");
 //            exInputs.add(input);
 //
-//            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-//            DataObjectType output = new DataObjectType();
-//            output.setKey("echo_output");
+//            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+//            OutputDataObjectType output = new OutputDataObjectType();
+//            output.setName("echo_output");
 //            output.setType(DataType.STRING);
 //            output.setValue("");
 //            exOut.add(output);
@@ -531,16 +534,16 @@ public class CreateLaunchExperiment {
 
     public static String createEchoExperimentForStampede(Airavata.Client client) throws TException {
         try {
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("Input_to_Echo");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Input_to_Echo");
             input.setType(DataType.STRING);
             input.setValue("Echoed_Output=Hello World");
             exInputs.add(input);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("Echoed_Output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("Echoed_Output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
@@ -585,16 +588,16 @@ public class CreateLaunchExperiment {
 
 //    public static String createEchoExperimentForLonestar(Airavata.Client client) throws TException {
 //        try {
-//            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-//            DataObjectType input = new DataObjectType();
-//            input.setKey("echo_input");
+//            List<OutputDataObjectType> exInputs = new ArrayList<OutputDataObjectType>();
+//            OutputDataObjectType input = new OutputDataObjectType();
+//            input.setName("echo_input");
 //            input.setType(DataType.STRING);
 //            input.setValue("echo_output=Hello World");
 //            exInputs.add(input);
 //
-//            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-//            DataObjectType output = new DataObjectType();
-//            output.setKey("echo_output");
+//            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+//            OutputDataObjectType output = new OutputDataObjectType();
+//            output.setName("echo_output");
 //            output.setType(DataType.STRING);
 //            output.setValue("");
 //            exOut.add(output);
@@ -655,16 +658,16 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForBR2(Airavata.Client client) throws TException {
         try {
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("Input_to_Echo");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Input_to_Echo");
             input.setType(DataType.STRING);
             input.setValue("Echoed_Output=Hello World");
             exInputs.add(input);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("Echoed_Output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("Echoed_Output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
@@ -709,44 +712,44 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForBR2Amber(Airavata.Client client) throws TException {
         try {
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("Heat_Restart_File");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Heat_Restart_File");
             input.setType(DataType.URI);
             input.setValue("/Users/lahirugunathilake/Downloads/02_Heat.rst");
             exInputs.add(input);
 
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("Production_Control_File");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("Production_Control_File");
             input1.setType(DataType.URI);
             input1.setValue("/Users/lahirugunathilake/Downloads/03_Prod.in");
             exInputs.add(input1);
 
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("Parameter_Topology_File");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("Parameter_Topology_File");
             input2.setType(DataType.URI);
             input2.setValue("/Users/lahirugunathilake/Downloads/prmtop");
             exInputs.add(input2);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("AMBER_Execution_Summary");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("AMBER_Execution_Summary");
             output.setType(DataType.URI);
             output.setValue("");
             exOut.add(output);
 
-            DataObjectType output1 = new DataObjectType();
-            output1.setKey("AMBER_Execution_log");
+            OutputDataObjectType output1 = new OutputDataObjectType();
+            output1.setName("AMBER_Execution_log");
             output1.setType(DataType.URI);
             output1.setValue("");
             exOut.add(output1);
-            DataObjectType output2 = new DataObjectType();
-            output2.setKey("AMBER_Trajectory_file");
+            OutputDataObjectType output2 = new OutputDataObjectType();
+            output2.setName("AMBER_Trajectory_file");
             output2.setType(DataType.URI);
             output2.setValue("");
             exOut.add(output2);
-            DataObjectType output3 = new DataObjectType();
-            output3.setKey("AMBER_Restart_file");
+            OutputDataObjectType output3 = new OutputDataObjectType();
+            output3.setName("AMBER_Restart_file");
             output3.setType(DataType.URI);
             output3.setValue("");
             exOut.add(output3);
@@ -792,44 +795,44 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForStampedeAmber(Airavata.Client client) throws TException {
         try {
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("Heat_Restart_File");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Heat_Restart_File");
             input.setType(DataType.URI);
             input.setValue("/Users/lahirugunathilake/Downloads/02_Heat.rst");
             exInputs.add(input);
 
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("Production_Control_File");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("Production_Control_File");
             input1.setType(DataType.URI);
             input1.setValue("/Users/lahirugunathilake/Downloads/03_Prod.in");
             exInputs.add(input1);
 
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("Parameter_Topology_File");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("Parameter_Topology_File");
             input2.setType(DataType.URI);
             input2.setValue("/Users/lahirugunathilake/Downloads/prmtop");
             exInputs.add(input2);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("AMBER_Execution_Summary");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("AMBER_Execution_Summary");
             output.setType(DataType.URI);
             output.setValue("");
             exOut.add(output);
 
-            DataObjectType output1 = new DataObjectType();
-            output1.setKey("AMBER_Execution_Summary");
+            OutputDataObjectType output1 = new OutputDataObjectType();
+            output1.setName("AMBER_Execution_Summary");
             output1.setType(DataType.URI);
             output1.setValue("");
             exOut.add(output1);
-            DataObjectType output2 = new DataObjectType();
-            output2.setKey("AMBER_Trajectory_file");
+            OutputDataObjectType output2 = new OutputDataObjectType();
+            output2.setName("AMBER_Trajectory_file");
             output2.setType(DataType.URI);
             output2.setValue("");
             exOut.add(output2);
-            DataObjectType output3 = new DataObjectType();
-            output3.setKey("AMBER_Restart_file");
+            OutputDataObjectType output3 = new OutputDataObjectType();
+            output3.setName("AMBER_Restart_file");
             output3.setType(DataType.URI);
             output3.setValue("");
             exOut.add(output3);
@@ -874,44 +877,44 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForTrestlesAmber(Airavata.Client client) throws TException {
         try {
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("Heat_Restart_File");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Heat_Restart_File");
             input.setType(DataType.URI);
             input.setValue("/Users/lahirugunathilake/Downloads/02_Heat.rst");
             exInputs.add(input);
 
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("Production_Control_File");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("Production_Control_File");
             input1.setType(DataType.URI);
             input1.setValue("/Users/lahirugunathilake/Downloads/03_Prod.in");
             exInputs.add(input1);
 
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("Production_Control_File");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("Production_Control_File");
             input2.setType(DataType.URI);
             input2.setValue("/Users/lahirugunathilake/Downloads/prmtop");
             exInputs.add(input2);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("AMBER_Execution_Summary");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("AMBER_Execution_Summary");
             output.setType(DataType.URI);
             output.setValue("");
             exOut.add(output);
 
-            DataObjectType output1 = new DataObjectType();
-            output1.setKey("AMBER_Execution_log");
+            OutputDataObjectType output1 = new OutputDataObjectType();
+            output1.setName("AMBER_Execution_log");
             output1.setType(DataType.URI);
             output1.setValue("");
             exOut.add(output1);
-            DataObjectType output2 = new DataObjectType();
-            output2.setKey("AMBER_Trajectory_file");
+            OutputDataObjectType output2 = new OutputDataObjectType();
+            output2.setName("AMBER_Trajectory_file");
             output2.setType(DataType.URI);
             output2.setValue("");
             exOut.add(output2);
-            DataObjectType output3 = new DataObjectType();
-            output3.setKey("AMBER_Restart_file");
+            OutputDataObjectType output3 = new OutputDataObjectType();
+            output3.setName("AMBER_Restart_file");
             output3.setType(DataType.URI);
             output3.setValue("");
             exOut.add(output3);

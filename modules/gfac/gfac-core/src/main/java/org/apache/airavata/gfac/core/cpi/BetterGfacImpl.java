@@ -51,6 +51,8 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
 import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
@@ -295,11 +297,11 @@ public class BetterGfacImpl implements GFac,Watcher {
         applicationContext.setComputeResourcePreference(gatewayResourcePreferences);
         jobExecutionContext.setApplicationContext(applicationContext);
 
-        List<DataObjectType> experimentInputs = taskData.getApplicationInputs();
-        jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInMessageContext(experimentInputs)));
+        List<InputDataObjectType> experimentInputs = taskData.getApplicationInputs();
+        jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInputParamMap(experimentInputs)));
 
-        List<DataObjectType> outputData = taskData.getApplicationOutputs();
-        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOutMessageContext(outputData)));
+        List<OutputDataObjectType> outputData = taskData.getApplicationOutputs();
+        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOuputParamMap(outputData)));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setGfac(this);

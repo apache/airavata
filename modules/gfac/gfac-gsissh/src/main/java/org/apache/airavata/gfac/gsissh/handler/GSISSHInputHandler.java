@@ -30,10 +30,10 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
-import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TransferState;
 import org.apache.airavata.model.workspace.experiment.TransferStatus;
@@ -113,8 +113,8 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {
-                DataObjectType inputParamType = (DataObjectType) input.getParameters().get(paramName);
-                String paramValue = inputParamType.getKey();
+                InputDataObjectType inputParamType = (InputDataObjectType) input.getParameters().get(paramName);
+                String paramValue = inputParamType.getName();
                 //TODO: Review this with type
                 if (inputParamType.getType() == DataType.URI) {
                     if (index < oldIndex) {

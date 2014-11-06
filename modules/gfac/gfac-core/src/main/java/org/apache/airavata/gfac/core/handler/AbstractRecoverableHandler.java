@@ -25,9 +25,9 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -78,7 +78,7 @@ public abstract class AbstractRecoverableHandler implements GFacRecoverableHandl
         this.registry = registry;
     }
 
-    protected void fireTaskOutputChangeEvent(JobExecutionContext jobExecutionContext, List<DataObjectType> outputArray) {
+    protected void fireTaskOutputChangeEvent(JobExecutionContext jobExecutionContext, List<OutputDataObjectType> outputArray) {
         TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                 jobExecutionContext.getExperimentID(),

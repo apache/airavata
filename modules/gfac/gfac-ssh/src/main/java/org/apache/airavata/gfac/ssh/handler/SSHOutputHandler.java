@@ -20,20 +20,6 @@
 */
 package org.apache.airavata.gfac.ssh.handler;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-import net.schmizz.sshj.connection.ConnectionException;
-import net.schmizz.sshj.transport.TransportException;
-
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -44,20 +30,24 @@ import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.RegistryModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class SSHOutputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(SSHOutputHandler.class);
@@ -141,12 +131,12 @@ public class SSHOutputHandler extends AbstractHandler {
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
 
-            List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
+            List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             Set<String> keys = output.keySet();
             for (String paramName : keys) {
-                ActualParameter actualParameter = (ActualParameter) output.get(paramName);
-                if ("URI".equals(actualParameter.getType().getType().toString())) {
+                OutputDataObjectType actualParameter = (OutputDataObjectType) output.get(paramName);
+                if (DataType.URI == actualParameter.getType()) {
                     List<String> outputList = null;
                     int retry = 3;
                     while (retry > 0) {
@@ -163,17 +153,17 @@ public class SSHOutputHandler extends AbstractHandler {
                         Set<String> strings = output.keySet();
                         outputArray.clear();
                         for (String key : strings) {
-                            ActualParameter actualParameter1 = (ActualParameter) output.get(key);
-                            if ("URI".equals(actualParameter1.getType().getType().toString())) {
-                                String downloadFile = MappingFactory.toString(actualParameter1);
+                            OutputDataObjectType actualParameter1 = (OutputDataObjectType) output.get(key);
+                            if (DataType.URI == actualParameter1.getType()) {
+                                String downloadFile = actualParameter1.getValue();
                                 cluster.scpFrom(downloadFile, outputDataDir);
                                 String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar) + 1, downloadFile.length());
                                 String localFile = outputDataDir + File.separator + fileName;
                                 jobExecutionContext.addOutputFile(localFile);
-                                MappingFactory.fromString(actualParameter1, localFile);
-                                DataObjectType dataObjectType = new DataObjectType();
+                                actualParameter1.setValue(localFile);
+                                OutputDataObjectType dataObjectType = new OutputDataObjectType();
                                 dataObjectType.setValue(localFile);
-                                dataObjectType.setKey(key);
+                                dataObjectType.setName(key);
                                 dataObjectType.setType(DataType.URI);
                                 outputArray.add(dataObjectType);
                             }
@@ -185,10 +175,10 @@ public class SSHOutputHandler extends AbstractHandler {
                         cluster.scpFrom(jobExecutionContext.getOutputDir() + File.separator + valueList, outputDataDir);
                         String outputPath = outputDataDir + File.separator + valueList;
                         jobExecutionContext.addOutputFile(outputPath);
-                        MappingFactory.fromString(actualParameter, outputPath);
-                        DataObjectType dataObjectType = new DataObjectType();
+                        actualParameter.setValue(outputPath);
+                        OutputDataObjectType dataObjectType = new OutputDataObjectType();
                         dataObjectType.setValue(outputPath);
-                        dataObjectType.setKey(paramName);
+                        dataObjectType.setName(paramName);
                         dataObjectType.setType(DataType.URI);
                         outputArray.add(dataObjectType);
                     }
