@@ -21,9 +21,6 @@
 package org.apache.airavata.gfac.gsissh.handler;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
@@ -34,13 +31,13 @@ import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TransferState;
 import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,48 +113,49 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {
-                ActualParameter actualParameter = (ActualParameter) input.getParameters().get(paramName);
-                String paramValue = MappingFactory.toString(actualParameter);
+                DataObjectType inputParamType = (DataObjectType) input.getParameters().get(paramName);
+                String paramValue = inputParamType.getKey();
                 //TODO: Review this with type
-                if ("URI".equals(actualParameter.getType().getType().toString())) {
+                if (inputParamType.getType() == DataType.URI) {
                     if (index < oldIndex) {
                         log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+                        inputParamType.setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
                     } else {
                         String stageInputFile = stageInputFiles(cluster, jobExecutionContext, paramValue);
-                        ((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
+                        inputParamType.setValue(stageInputFile);
                         StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
                         status.setTransferState(TransferState.UPLOAD);
                         detail.setTransferStatus(status);
                         detail.setTransferDescription("Input Data Staged: " + stageInputFile);
                         registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                
+
                         GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                     }
-                } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-                    List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
-                    List<String> newFiles = new ArrayList<String>();
-                    for (String paramValueEach : split) {
-                        if (index < oldIndex) {
-                            log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                            newFiles.add(oldFiles.get(index));
-                            data.append(oldFiles.get(index++)).append(",");
-                        } else {
-                            String stageInputFiles = stageInputFiles(cluster, jobExecutionContext, paramValueEach);
-                            status.setTransferState(TransferState.UPLOAD);
-                            detail.setTransferStatus(status);
-                            detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
-                            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                            StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
-                            GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
-                            newFiles.add(stageInputFiles);
-                        }
-
-                    }
-                    ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
-                }
-                inputNew.getParameters().put(paramName, actualParameter);
+                } // FIXME: what is the thrift model DataType equivalent for URIArray type?
+//                else if ("URIArray".equals(inputParamType.getType().getType().toString())) {
+//                    List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
+//                    List<String> newFiles = new ArrayList<String>();
+//                    for (String paramValueEach : split) {
+//                        if (index < oldIndex) {
+//                            log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
+//                            newFiles.add(oldFiles.get(index));
+//                            data.append(oldFiles.get(index++)).append(",");
+//                        } else {
+//                            String stageInputFiles = stageInputFiles(cluster, jobExecutionContext, paramValueEach);
+//                            status.setTransferState(TransferState.UPLOAD);
+//                            detail.setTransferStatus(status);
+//                            detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
+//                            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+//                            StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
+//                            GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+//                            newFiles.add(stageInputFiles);
+//                        }
+//
+//                    }
+//                    ((URIArrayType) inputParamType.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
+//                }
+                inputNew.getParameters().put(paramName, inputParamType);
             }
         } catch (Exception e) {
 			log.error(e.getMessage());
