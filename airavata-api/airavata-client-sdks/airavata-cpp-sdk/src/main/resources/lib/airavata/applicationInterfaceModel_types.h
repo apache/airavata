@@ -39,7 +39,9 @@ struct DataType {
     STRING = 0,
     INTEGER = 1,
     FLOAT = 2,
-    URI = 3
+    URI = 3,
+    STDOUT = 4,
+    STDERR = 5
   };
 };
 
