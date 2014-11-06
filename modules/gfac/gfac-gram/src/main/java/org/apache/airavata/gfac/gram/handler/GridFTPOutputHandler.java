@@ -47,6 +47,7 @@ import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.gram.security.GSISecurityContext;
 import org.apache.airavata.gfac.gram.external.GridFtp;
 import org.apache.airavata.gfac.gram.util.GramProviderUtils;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
@@ -157,7 +158,7 @@ public class GridFTPOutputHandler extends AbstractHandler {
                         log.error("Cannot download stdout/err files. One reason could be the job is not successfully finished:  "+e.getMessage());
                     }
 
-                    List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
+                    List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
                     Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
                     Set<String> keys = output.keySet();
                     for (String paramName : keys) {

@@ -39,18 +39,16 @@ import org.apache.airavata.gfac.local.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.local.utils.InputUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.RegistryModelType;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -219,7 +217,7 @@ public class LocalProvider extends AbstractProvider {
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         try {
-        	List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
+        	List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
             String stdOutStr = GFacUtils.readFileToString(jobExecutionContext.getStandardOutput());
             String stdErrStr = GFacUtils.readFileToString(jobExecutionContext.getStandardError());
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
