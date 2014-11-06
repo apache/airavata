@@ -32,8 +32,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 
+import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.api.client.AiravataClientFactory;
-
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.model.error.AiravataClientException;
@@ -91,7 +91,7 @@ public class RegistryWorkflowPublisherWindow {
         try {
         	if (engine.getGUI().setupThriftClientData(ThriftServiceType.WORKFLOW_SERVICE)){
         		ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE);
-				org.apache.airavata.api.Workflow.Client client = AiravataClientFactory.createWorkflowClient(thriftClientData.getServerAddress(), thriftClientData.getServerPort());
+				Client client = AiravataClientFactory.createAiravataClient(thriftClientData.getServerAddress(), thriftClientData.getServerPort());
     			if (client.isWorkflowExistWithName(workflowTemplateName)){
     				int result = JOptionPane.showConfirmDialog(this.dialog.getDialog(), "A workflow with the name "+workflowTemplateName+" already exists. Do you want to update it?", "Register Workflow", JOptionPane.YES_NO_CANCEL_OPTION);
     				if (result==JOptionPane.NO_OPTION){

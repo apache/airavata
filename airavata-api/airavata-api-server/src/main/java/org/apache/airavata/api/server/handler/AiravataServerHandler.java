@@ -62,6 +62,7 @@ import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
+import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.airavata.workflow.engine.WorkflowEngine;
 import org.apache.airavata.workflow.engine.WorkflowEngineException;
 import org.apache.airavata.workflow.engine.WorkflowEngineFactory;
@@ -74,6 +75,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private Registry registry;
     private AppCatalog appCatalog;
     private Publisher publisher;
+	private WorkflowCatalog workflowCatalog;
 
     public AiravataServerHandler() {
         try {
@@ -2602,38 +2604,118 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<String> getAllWorkflows() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
-    }
+	public List<String> getAllWorkflows() throws InvalidRequestException,
+			AiravataClientException, AiravataSystemException, TException {
+		try {
+			return getWorkflowCatalog().getAllWorkflows();
+		} catch (AppCatalogException e) {
+			String msg = "Error in retrieving all workflow template Ids.";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    @Override
-    public Workflow getWorkflow(String workflowTemplateId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
-    }
+	@Override
+	public Workflow getWorkflow(String workflowTemplateId)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			return getWorkflowCatalog().getWorkflow(workflowTemplateId);
+		} catch (AppCatalogException e) {
+			String msg = "Error in retrieving the workflow "+workflowTemplateId+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    @Override
-    public void deleteWorkflow(String workflowTemplateId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+	@Override
+	public void deleteWorkflow(String workflowTemplateId)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			getWorkflowCatalog().deleteWorkflow(workflowTemplateId);
+		} catch (AppCatalogException e) {
+			String msg = "Error in deleting the workflow "+workflowTemplateId+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    }
+	@Override
+	public String registerWorkflow(Workflow workflow)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			return getWorkflowCatalog().registerWorkflow(workflow);
+		} catch (AppCatalogException e) {
+			String msg = "Error in registering the workflow "+workflow.getName()+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    @Override
-    public String registerWorkflow(Workflow workflow) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
-    }
+	@Override
+	public void updateWorkflow(String workflowTemplateId, Workflow workflow)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			getWorkflowCatalog().updateWorkflow(workflowTemplateId, workflow);
+		} catch (AppCatalogException e) {
+			String msg = "Error in updating the workflow "+workflow.getName()+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    @Override
-    public void updateWorkflow(String workflowTemplateId, Workflow workflow) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+	@Override
+	public String getWorkflowTemplateId(String workflowName)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			return getWorkflowCatalog().getWorkflowTemplateId(workflowName);
+		} catch (AppCatalogException e) {
+			String msg = "Error in retrieving the workflow template id for "+workflowName+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    }
+	@Override
+	public boolean isWorkflowExistWithName(String workflowName)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			return getWorkflowCatalog().isWorkflowExistWithName(workflowName);
+		} catch (AppCatalogException e) {
+			String msg = "Error in veriying the workflow for workflow name "+workflowName+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    @Override
-    public String getWorkflowTemplateId(String workflowName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
-    }
-
-    @Override
-    public boolean isWorkflowExistWithName(String workflowName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
-    }
+	private WorkflowCatalog getWorkflowCatalog() {
+		if (workflowCatalog == null) {
+			try {
+				workflowCatalog = WorkflowCatalogFactory.getWorkflowCatalog();
+			} catch (Exception e) {
+				logger.error("Unable to create Workflow Catalog", e);
+			}
+		}
+		return workflowCatalog;
+	}
 
 }

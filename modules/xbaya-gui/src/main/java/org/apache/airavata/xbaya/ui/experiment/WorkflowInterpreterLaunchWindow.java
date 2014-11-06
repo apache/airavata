@@ -260,7 +260,7 @@ public class WorkflowInterpreterLaunchWindow {
     	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
 		Client airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
 
-		org.apache.airavata.api.Workflow.Client workflowClient = XBayaUtil.getWorkflowClient(engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE));
+		Client workflowClient = XBayaUtil.getAiravataClient(engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE));
 
 		Workflow workflowClone = workflow.clone();
 		workflowClone.setName(workflowClone.getName()+UUID.randomUUID().toString());

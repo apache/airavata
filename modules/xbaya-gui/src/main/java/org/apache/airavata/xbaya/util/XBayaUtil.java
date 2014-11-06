@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.Workflow.Client;
+import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.model.error.AiravataClientConnectException;
@@ -252,7 +252,7 @@ public class XBayaUtil {
 	}
 	
 	public static Client getWorkflowClient(ThriftClientData data) throws AiravataClientConnectException{
-		return AiravataClientFactory.createWorkflowClient(data.getServerAddress(),data.getServerPort());
+		return AiravataClientFactory.createAiravataClient(data.getServerAddress(),data.getServerPort());
 	}
 	
 
