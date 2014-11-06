@@ -249,9 +249,6 @@ public class HPCPullMonitor extends PullMonitor {
                         iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()+","+iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
                         iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                         sendNotification(iMonitorID);
-                        logger.debugId(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
-                                        "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
-                                jobStatus.getJobIdentity().getTaskId());
                         // if the job is completed we do not have to put the job to the queue again
                         iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                     }
@@ -359,6 +356,9 @@ public class HPCPullMonitor extends PullMonitor {
         jobStatus.setJobIdentity(jobIdentity);
         jobStatus.setState(iMonitorID.getStatus());
         // we have this JobStatus class to handle amqp monitoring
+        logger.debugId(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
+                "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
+        jobStatus.getJobIdentity().getTaskId());
 
         publisher.publish(jobStatus);
     }
