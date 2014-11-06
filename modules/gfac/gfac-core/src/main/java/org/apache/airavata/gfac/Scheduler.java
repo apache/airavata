@@ -21,15 +21,24 @@
 
 package org.apache.airavata.gfac;
 
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderConfig;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -109,15 +118,44 @@ public class Scheduler {
             if (provider == null) {
 
                 List<JobSubmissionInterface> jobSubmissionInterfaces = jobExecutionContext.getApplicationContext().getComputeResourceDescription().getJobSubmissionInterfaces();
-                String hostClass = jobExecutionContext.getPreferredJobSubmissionProtocol().toString();
-                providerClassName = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
-                Class<? extends GFacProvider> aClass1 = Class.forName(providerClassName).asSubclass(GFacProvider.class);
-                provider = aClass1.newInstance();
-                //loading the provider properties
-                aClass = GFacConfiguration.getProviderConfig(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_HANDLERS_START +
-                        providerClassName + "']", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
-                if(!aClass.isEmpty()){
-                    provider.initProperties(aClass.get(0).getProperties());
+                JobSubmissionProtocol jobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
+                SSHJobSubmission sshJobSubmission;
+                LOCALSubmission localSubmission;
+                String securityProtocol = null;
+                try {
+                    AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+                    if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
+                        sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(
+                                jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId());
+                        if (sshJobSubmission != null) {
+                            securityProtocol  = sshJobSubmission.getSecurityProtocol().toString();
+                        }
+                    }else if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL) {
+                        localSubmission = appCatalog.getComputeResource().getLocalJobSubmission(jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId());
+                    }
+                    List<Element> elements = GFacUtils.getElementList(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_SUBMISSION + jobSubmissionProtocol + "']");
+                    for (Element element : elements) {
+                        String security = element.getAttribute(Constants.GFAC_CONFIG_SECURITY_ATTRIBUTE);
+                        if (securityProtocol == null && security == null) {
+                            providerClassName = element.getAttribute(Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+                        }else if (securityProtocol.equals(security)) {
+                            providerClassName = element.getAttribute(Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+                        }
+                    }
+                    if (providerClassName == null) {
+                        throw new GFacException("Couldn't find provider class");
+                    }
+
+                    Class<? extends GFacProvider> aClass1 = Class.forName(providerClassName).asSubclass(GFacProvider.class);
+                    provider = aClass1.newInstance();
+                    //loading the provider properties
+                    aClass = GFacConfiguration.getProviderConfig(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_HANDLERS_START +
+                            providerClassName + "']", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
+                    if (!aClass.isEmpty()) {
+                        provider.initProperties(aClass.get(0).getProperties());
+                    }
+                } catch (AppCatalogException e) {
+                    throw new GFacException("Couldn't retrieve job submission protocol from app catalog ");
                 }
             }
         } catch (XPathExpressionException e) {

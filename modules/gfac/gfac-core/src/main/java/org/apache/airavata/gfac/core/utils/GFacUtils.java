@@ -52,7 +52,16 @@ import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
@@ -150,6 +159,21 @@ public class GFacUtils {
 		date = date.replaceAll(":", "_");
 		return name + "_" + date;
 	}
+
+    public static List<Element> getElementList(Document doc, String expression) throws XPathExpressionException {
+        XPathFactory xPathFactory = XPathFactory.newInstance();
+        XPath xPath = xPathFactory.newXPath();
+        XPathExpression expr = xPath.compile(expression);
+        NodeList nodeList = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+        List<Element> elementList = new ArrayList<Element>();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node item = nodeList.item(i);
+            if (item instanceof Element) {
+                elementList.add((Element) item);
+            }
+        }
+        return elementList;
+    }
 
 	public static String createGsiftpURIAsString(String host, String localPath)
 			throws URISyntaxException {

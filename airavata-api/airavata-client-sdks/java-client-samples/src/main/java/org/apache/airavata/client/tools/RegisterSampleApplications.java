@@ -1092,12 +1092,12 @@ public class RegisterSampleApplications {
 
 
             ComputeResourcePreference stampedeResourcePreferences = RegisterSampleApplicationsUtils.
-                    createComputeResourcePreference(stampedeResourceId, "TG-STA110014S", false, null, null, null,
-                            "/scratch/01437/ogce/gta-work-dirs");
+                    createComputeResourcePreference(stampedeResourceId, "TG-STA110014S", false, null,
+                            JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01437/ogce/gta-work-dirs");
 
             ComputeResourcePreference trestlesResourcePreferences = RegisterSampleApplicationsUtils.
-                    createComputeResourcePreference(trestlesResourceId, "sds128", false, null, null, null,
-                            "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs");
+                    createComputeResourcePreference(trestlesResourceId, "sds128", false, null, JobSubmissionProtocol.SSH,
+                            DataMovementProtocol.SCP, "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs");
 
             ComputeResourcePreference bigRedResourcePreferences = RegisterSampleApplicationsUtils.
                     createComputeResourcePreference(bigredResourceId, "TG-STA110014S", false, null, null, null,

@@ -34,10 +34,13 @@ public class Constants {
 
 	public static final String XPATH_EXPR_PROVIDER_HANDLERS_START = "/GFac/Provider[@class='";
     public static final String XPATH_EXPR_PROVIDER_ON_HOST = "/GFac/Provider[@host='";
+    public static final String XPATH_EXPR_PROVIDER_ON_SUBMISSION = "/GFac/Provider[@submission='";
 	public static final String XPATH_EXPR_PROVIDER_INFLOW_HANDLERS_END = "']/InHandlers/Handler";
 	public static final String XPATH_EXPR_PROVIDER_OUTFLOW_HANDLERS_END = "']/OutHandlers/Handler";
 
 	public static final String GFAC_CONFIG_CLASS_ATTRIBUTE = "class";
+	public static final String GFAC_CONFIG_SECURITY_ATTRIBUTE = "security";
+	public static final String GFAC_CONFIG_SUBMISSION_ATTRIBUTE = "submission";
     public static final String GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE = "executionMode";
 	public static final String GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE = "class";
 	public static final String NEWLINE = System.getProperty("line.separator");
