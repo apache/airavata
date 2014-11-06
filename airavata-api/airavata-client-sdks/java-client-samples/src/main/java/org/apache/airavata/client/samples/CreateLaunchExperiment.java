@@ -53,7 +53,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_b6782be4-315b-4cbd-9403-aa7ce564548a";
+    private static String echoAppId = "Echo_37c26231-8784-4a40-b184-ae00f6330113";
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 

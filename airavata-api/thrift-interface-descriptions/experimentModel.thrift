@@ -19,6 +19,7 @@
  */
 
 include "computeResourceModel.thrift"
+include "applicationInterfaceModel.thrift"
 
 namespace java org.apache.airavata.model.workspace.experiment
 namespace php Airavata.Model.Workspace.Experiment
@@ -183,25 +184,6 @@ enum CorrectiveAction {
     CANNOT_BE_DETERMINED
 }
 
-enum DataType{
-	STRING,
-	INTEGER,
-	URI,
-	STDOUT,
-	STDERR
-}
-
-/**
-* A structure  hold experiment input output
-*
-*/
-struct DataObjectType {
-    1: required string key,
-    2: optional string value,
-    3: optional DataType type,
-    4: optional string metaData
-}
-
 /**
  * A structure holding the Computational Resource Scheduling.
  *
@@ -307,8 +289,8 @@ struct TaskDetails {
     3: optional string applicationId,
     4: optional string applicationVersion,
     5: optional string applicationDeploymentId,
-    6: optional list<DataObjectType> applicationInputs,
-    7: optional list<DataObjectType> applicationOutputs,
+    6: optional list<applicationInterfaceModel.InputDataObjectType> applicationInputs,
+    7: optional list<applicationInterfaceModel.OutputDataObjectType> applicationOutputs,
     8: optional ComputationalResourceScheduling taskScheduling,
     9: optional AdvancedInputDataHandling advancedInputDataHandling,
     10: optional AdvancedOutputDataHandling advancedOutputDataHandling,
@@ -336,8 +318,8 @@ struct WorkflowNodeDetails {
     3: required string nodeName = SINGLE_APP_NODE_NAME,
     4: required ExecutionUnit executionUnit = ExecutionUnit.APPLICATION,
     5: optional string executionUnitData,
-    6: optional list<DataObjectType> nodeInputs,
-    7: optional list<DataObjectType> nodeOutputs,
+    6: optional list<applicationInterfaceModel.InputDataObjectType> nodeInputs,
+    7: optional list<applicationInterfaceModel.OutputDataObjectType> nodeOutputs,
     8: optional WorkflowNodeStatus workflowNodeStatus,
     9: optional list<TaskDetails> taskDetailsList,
     10: optional list<ErrorDetails> errors
@@ -390,8 +372,8 @@ struct Experiment {
     10: optional string workflowTemplateVersion,
     11: optional UserConfigurationData userConfigurationData,
     12: optional string workflowExecutionInstanceId,
-    13: optional list<DataObjectType> experimentInputs,
-    14: optional list<DataObjectType> experimentOutputs,
+    13: optional list<applicationInterfaceModel.InputDataObjectType> experimentInputs,
+    14: optional list<applicationInterfaceModel.OutputDataObjectType> experimentOutputs,
     15: optional ExperimentStatus experimentStatus,
     16: optional list<WorkflowNodeStatus> stateChangeList,
     17: optional list<WorkflowNodeDetails> workflowNodeDetailsList,

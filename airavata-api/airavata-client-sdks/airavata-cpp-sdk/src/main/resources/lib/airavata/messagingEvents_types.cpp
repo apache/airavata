@@ -607,8 +607,8 @@ void swap(TaskStatusChangeRequestEvent &a, TaskStatusChangeRequestEvent &b) {
   swap(a.taskIdentity, b.taskIdentity);
 }
 
-const char* TaskOutputChangeEvent::ascii_fingerprint = "A7F4390C8E4A64CE48431C1FB6A45F50";
-const uint8_t TaskOutputChangeEvent::binary_fingerprint[16] = {0xA7,0xF4,0x39,0x0C,0x8E,0x4A,0x64,0xCE,0x48,0x43,0x1C,0x1F,0xB6,0xA4,0x5F,0x50};
+const char* TaskOutputChangeEvent::ascii_fingerprint = "850570A8E8883AE24DE92AFC9AA86C7E";
+const uint8_t TaskOutputChangeEvent::binary_fingerprint[16] = {0x85,0x05,0x70,0xA8,0xE8,0x88,0x3A,0xE2,0x4D,0xE9,0x2A,0xFC,0x9A,0xA8,0x6C,0x7E};
 
 uint32_t TaskOutputChangeEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -683,7 +683,7 @@ uint32_t TaskOutputChangeEvent::write(::apache::thrift::protocol::TProtocol* opr
   xfer += oprot->writeFieldBegin("output", ::apache::thrift::protocol::T_LIST, 1);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->output.size()));
-    std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> ::const_iterator _iter9;
+    std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter9;
     for (_iter9 = this->output.begin(); _iter9 != this->output.end(); ++_iter9)
     {
       xfer += (*_iter9).write(oprot);
