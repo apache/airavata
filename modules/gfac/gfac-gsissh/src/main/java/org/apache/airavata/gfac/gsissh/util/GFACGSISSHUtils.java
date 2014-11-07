@@ -45,6 +45,7 @@ import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
@@ -185,23 +186,8 @@ public class GFACGSISSHUtils {
         Map<String, Object> inputs = input.getParameters();
         Set<String> keys = inputs.keySet();
         for (String paramName : keys) {
-            ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
-            if ("URIArray".equals(actualParameter.getType().getType().toString()) || "StringArray".equals(actualParameter.getType().getType().toString())
-                    || "FileArray".equals(actualParameter.getType().getType().toString())) {
-                String[] values = null;
-                if (actualParameter.getType() instanceof URIArrayType) {
-                    values = ((URIArrayType) actualParameter.getType()).getValueArray();
-                } else if (actualParameter.getType() instanceof StringArrayType) {
-                    values = ((StringArrayType) actualParameter.getType()).getValueArray();
-                } else if (actualParameter.getType() instanceof FileArrayType) {
-                    values = ((FileArrayType) actualParameter.getType()).getValueArray();
-                }
-                String value = StringUtil.createDelimiteredString(values, " ");
-                inputValues.add(value);
-            } else {
-                String paramValue = MappingFactory.toString(actualParameter);
-                inputValues.add(paramValue);
-            }
+            InputDataObjectType inputDataObjectType = (InputDataObjectType) inputs.get(paramName);
+            inputValues.add(inputDataObjectType.getValue());
         }
         jobDescriptor.setInputValues(inputValues);
 
