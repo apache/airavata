@@ -77,8 +77,8 @@ public class WorkflowImportWindow {
      */
     public WorkflowImportWindow(XBayaEngine engine) throws Exception {
         this.engine = engine;
-        if (engine.getGUI().setupThriftClientData(ThriftServiceType.WORKFLOW_SERVICE)) {
-        	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE);
+        if (engine.getGUI().setupThriftClientData(ThriftServiceType.API_SERVICE)) {
+        	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
         	setClient(AiravataClientFactory.createAiravataClient(thriftClientData.getServerAddress(), thriftClientData.getServerPort()));
             initGUI();
         } else {

@@ -89,8 +89,7 @@ public class RegistryWorkflowPublisherWindow {
         workflow.setName(name);
         String workflowTemplateName = workflow.getName();
         try {
-        	if (engine.getGUI().setupThriftClientData(ThriftServiceType.WORKFLOW_SERVICE)){
-        		ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE);
+        		ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
 				Client client = AiravataClientFactory.createAiravataClient(thriftClientData.getServerAddress(), thriftClientData.getServerPort());
     			if (client.isWorkflowExistWithName(workflowTemplateName)){
     				int result = JOptionPane.showConfirmDialog(this.dialog.getDialog(), "A workflow with the name "+workflowTemplateName+" already exists. Do you want to update it?", "Register Workflow", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -99,7 +98,6 @@ public class RegistryWorkflowPublisherWindow {
     				} else if (result==JOptionPane.CANCEL_OPTION){
     					hide();
     				}
-    			}
     			String workflowAsString = XMLUtil.xmlElementToString(engine.getGUI().getGraphCanvas().getWorkflow().toXML());
     			org.apache.airavata.model.Workflow workflowData = new org.apache.airavata.model.Workflow();
     			workflowData.setName(workflowTemplateName);
