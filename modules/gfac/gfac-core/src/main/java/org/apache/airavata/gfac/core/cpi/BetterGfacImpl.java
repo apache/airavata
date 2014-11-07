@@ -297,10 +297,10 @@ public class BetterGfacImpl implements GFac,Watcher {
         applicationContext.setComputeResourcePreference(gatewayResourcePreferences);
         jobExecutionContext.setApplicationContext(applicationContext);
 
-        List<InputDataObjectType> experimentInputs = taskData.getApplicationInputs();
+        List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
         jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInputParamMap(experimentInputs)));
 
-        List<OutputDataObjectType> outputData = taskData.getApplicationOutputs();
+        List<OutputDataObjectType> outputData = experiment.getExperimentOutputs();
         jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOuputParamMap(outputData)));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);

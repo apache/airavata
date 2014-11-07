@@ -164,7 +164,7 @@ public class CreateLaunchExperiment {
 
             List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
             OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("echo_output");
+            output.setName("Echoed_Output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
@@ -216,7 +216,7 @@ public class CreateLaunchExperiment {
 
             List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
             OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("echo_output");
+            output.setName("Echoed_Output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
@@ -492,12 +492,12 @@ public class CreateLaunchExperiment {
 //            OutputDataObjectType input = new OutputDataObjectType();
 //            input.setName("echo_input");
 //            input.setType(DataType.STRING);
-//            input.setValue("echo_output=Hello World");
+//            input.setValue("Echoed_Output=Hello World");
 //            exInputs.add(input);
 //
 //            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
 //            OutputDataObjectType output = new OutputDataObjectType();
-//            output.setName("echo_output");
+//            output.setName("Echoed_Output");
 //            output.setType(DataType.STRING);
 //            output.setValue("");
 //            exOut.add(output);
@@ -592,12 +592,12 @@ public class CreateLaunchExperiment {
 //            OutputDataObjectType input = new OutputDataObjectType();
 //            input.setName("echo_input");
 //            input.setType(DataType.STRING);
-//            input.setValue("echo_output=Hello World");
+//            input.setValue("Echoed_Output=Hello World");
 //            exInputs.add(input);
 //
 //            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
 //            OutputDataObjectType output = new OutputDataObjectType();
-//            output.setName("echo_output");
+//            output.setName("Echoed_Output");
 //            output.setType(DataType.STRING);
 //            output.setValue("");
 //            exOut.add(output);
