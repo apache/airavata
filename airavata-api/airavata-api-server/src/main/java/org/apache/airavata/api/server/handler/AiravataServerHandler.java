@@ -62,6 +62,7 @@ import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
+import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.airavata.workflow.engine.WorkflowEngine;
 import org.apache.airavata.workflow.engine.WorkflowEngineException;
 import org.apache.airavata.workflow.engine.WorkflowEngineFactory;
@@ -74,6 +75,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     private Registry registry;
     private AppCatalog appCatalog;
     private Publisher publisher;
+	private WorkflowCatalog workflowCatalog;
 
     public AiravataServerHandler() {
         try {
@@ -86,88 +88,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             logger.error("Error occured while reading airavata-server properties..", e);
         }
     }
-
-//    private void storeServerConfig() throws ApplicationSettingsException {
-//        String zkhostPort = AiravataZKUtils.getZKhostPort();
-//        String airavataServerHostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_HOST)
-//                            + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_PORT);
-//
-//        try {
-//            zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
-//            String apiServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_API_SERVER_NODE,"/airavata-server");
-//            String OrchServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE,"/orchestrator-server");
-//            String gfacServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_SERVER_NODE,"/gfac-server");
-//            String gfacExperiments = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE,"/gfac-experiments");
-//
-//            synchronized (mutex) {
-//                mutex.wait();  // waiting for the syncConnected event
-//            }
-//            Stat zkStat = zk.exists(apiServer, false);
-//            if (zkStat == null) {
-//                zk.create(apiServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-//                        CreateMode.PERSISTENT);
-//            }
-//            String instantNode = apiServer + File.separator + String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-//            zkStat = zk.exists(instantNode, false);
-//            if (zkStat == null) {
-//                zk.create(instantNode,
-//                        airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-//                        CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
-//                logger.info("Successfully created airavata-server node");
-//            }
-//
-//            zkStat = zk.exists(OrchServer, false);
-//            if (zkStat == null) {
-//                zk.create(OrchServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-//                        CreateMode.PERSISTENT);
-//                logger.info("Successfully created orchestrator-server node");
-//            }
-//            zkStat = zk.exists(gfacServer, false);
-//            if (zkStat == null) {
-//                zk.create(gfacServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-//                        CreateMode.PERSISTENT);
-//                logger.info("Successfully created gfac-server node");
-//            }
-//            zkStat = zk.exists(gfacServer, false);
-//            if (zkStat == null) {
-//                zk.create(gfacExperiments, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-//                        CreateMode.PERSISTENT);
-//                logger.info("Successfully created gfac-server node");
-//            }
-//            logger.info("Finished starting ZK: " + zk);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        } catch (KeeperException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//    synchronized public void process(WatchedEvent watchedEvent) {
-//        synchronized (mutex) {
-//            Event.KeeperState state = watchedEvent.getState();
-//            logger.info(state.name());
-//            if (state == Event.KeeperState.SyncConnected) {
-//                mutex.notify();
-//            } else if(state == Event.KeeperState.Expired ||
-//                    state == Event.KeeperState.Disconnected){
-//                try {
-//                    mutex = -1;
-//                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
-//                    synchronized (mutex) {
-//                        mutex.wait();  // waiting for the syncConnected event
-//                    }
-//                    storeServerConfig();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } catch (ApplicationSettingsException e) {
-//                    e.printStackTrace();
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
 
     /**
      * Query Airavata to fetch the API version
@@ -1155,138 +1075,25 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Error while retrieving projects. More info : " + e1.getMessage());
             throw exception;
         }
-
-        final String expID = airavataExperimentId;
-        final String token = airavataCredStoreToken;
-        synchronized (this) {
-    		Experiment experiment = getExperiment(expID);
-			ExecutionType executionType = DataModelUtils.getExecutionType(experiment);
-			Thread thread = null;
-			if (executionType==ExecutionType.SINGLE_APP) {
-                //its an single application execution experiment
-                logger.debugId(airavataExperimentId, "Launching single application experiment {}.", airavataExperimentId);
-                final OrchestratorService.Client orchestratorClient = getOrchestratorClient();
-                if (orchestratorClient.validateExperiment(expID)) {
-                   AiravataServerThreadPoolExecutor.getFixedThreadPool().execute(new SingleAppExperimentRunner(expID, token, orchestratorClient));
-                } else {
-                    logger.errorId(airavataExperimentId, "Experiment validation failed. Please check the configurations.");
-                    throw new InvalidRequestException("Experiment Validation Failed, please check the configuration");
-                }
-
-            } else if (executionType == ExecutionType.WORKFLOW){
-					//its a workflow execution experiment
-                logger.debugId(airavataExperimentId, "Launching workflow experiment {}.", airavataExperimentId);
-					thread = new Thread() {
-	                    public void run() {
-	                        try {
-                        		launchWorkflowExperiment(expID, token);
-	                        } catch (TException e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-							}
-	                    }
-	                };
-                thread.start();
-            } else {
-                logger.errorId(airavataExperimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", airavataExperimentId);
-                throw new InvalidRequestException("Experiment '" + expID + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
-            }
+    	Experiment experiment = getExperiment(airavataExperimentId);
+    	OrchestratorService.Client orchestratorClient = getOrchestratorClient();
+    	if (orchestratorClient.validateExperiment(airavataExperimentId)) {
+    		orchestratorClient.launchExperiment(airavataExperimentId, airavataCredStoreToken);
+    	}else {
+            logger.errorId(airavataExperimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", airavataExperimentId);
+            throw new InvalidRequestException("Experiment '" + airavataExperimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
         }
     }
 
-    private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
-    	try {
-			WorkflowEngine workflowEngine = WorkflowEngineFactory.getWorkflowEngine();
-			workflowEngine.launchExperiment(experimentId, airavataCredStoreToken);
-		} catch (WorkflowEngineException e) {
-            logger.errorId(experimentId, "Error while launching experiment.", e);
-        }
-    }
-
-    private class SingleAppExperimentRunner implements Runnable {
-
-        String experimentId;
-        String airavataCredStoreToken;
-        Client client;
-        public SingleAppExperimentRunner(String experimentId,String airavataCredStoreToken,Client client){
-            this.experimentId = experimentId;
-            this.airavataCredStoreToken = airavataCredStoreToken;
-            this.client = client;
-        }
-        @Override
-        public void run() {
-            try {
-                launchSingleAppExperiment();
-            } catch (TException e) {
-                e.printStackTrace();
-            }
-        }
-
-        private boolean launchSingleAppExperiment() throws TException {
-            Experiment experiment = null;
-            try {
-                List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL, WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
-                for (String workflowNodeId : ids) {
-//                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
-                    List<Object> taskDetailList = registry.get(RegistryModelType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
-                    for (Object o : taskDetailList) {
-                        TaskDetails taskData = (TaskDetails) o;
-                        //iterate through all the generated tasks and performs the job submisssion+monitoring
-                        experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentId);
-                        if (experiment == null) {
-                            logger.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}", experimentId);
-                            return false;
-                        }
-                        ExperimentStatus status = new ExperimentStatus();
-                        status.setExperimentState(ExperimentState.LAUNCHED);
-                        status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                        experiment.setExperimentStatus(status);
-                        registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
-                        if (ServerSettings.isRabbitMqPublishEnabled()) {
-                            String gatewayId = ServerSettings.getDefaultUserGateway();
-                            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED,
-                                    experimentId,
-                                    gatewayId);
-                            String messageId = AiravataUtils.getId("EXPERIMENT");
-                            MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
-                            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                            publisher.publish(messageContext);
-                        }
-                        registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskID());
-                        //launching the experiment
-                        client.launchTask(taskData.getTaskID(), airavataCredStoreToken);
-                    }
-                }
-
-            } catch (Exception e) {
-                // Here we really do not have to do much because only potential failure can happen
-                // is in gfac, if there are errors in gfac, it will handle the experiment/task/job statuses
-                // We might get failures in registry access before submitting the jobs to gfac, in that case we
-                // leave the status of these as created.
-                ExperimentStatus status = new ExperimentStatus();
-                status.setExperimentState(ExperimentState.FAILED);
-                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                experiment.setExperimentStatus(status);
-                try {
-                    registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
-                } catch (RegistryException e1) {
-                    logger.errorId(experimentId, "Error while updating experiment status to " + status.toString(), e);
-                    throw new TException(e);
-                }
-                logger.errorId(experimentId, "Error while updating task status, hence updated experiment status to " + status.toString(), e);
-                throw new TException(e);
-            } finally {
-                client.getOutputProtocol().getTransport().close();
-                client.getInputProtocol().getTransport().close();
-
-            }
-            return true;
-        }
-    }
-    
-	private OrchestratorService.Client getOrchestratorClient() {
+       
+    private OrchestratorService.Client getOrchestratorClient() throws TException{
 		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
         final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
-        return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+        try {
+			return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+		} catch (AiravataClientConnectException e) {
+			throw new TException(e);
+		}
 	}
 
     /**
@@ -2797,38 +2604,118 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<String> getAllWorkflows() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
-    }
+	public List<String> getAllWorkflows() throws InvalidRequestException,
+			AiravataClientException, AiravataSystemException, TException {
+		try {
+			return getWorkflowCatalog().getAllWorkflows();
+		} catch (AppCatalogException e) {
+			String msg = "Error in retrieving all workflow template Ids.";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    @Override
-    public Workflow getWorkflow(String workflowTemplateId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
-    }
+	@Override
+	public Workflow getWorkflow(String workflowTemplateId)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			return getWorkflowCatalog().getWorkflow(workflowTemplateId);
+		} catch (AppCatalogException e) {
+			String msg = "Error in retrieving the workflow "+workflowTemplateId+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    @Override
-    public void deleteWorkflow(String workflowTemplateId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+	@Override
+	public void deleteWorkflow(String workflowTemplateId)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			getWorkflowCatalog().deleteWorkflow(workflowTemplateId);
+		} catch (AppCatalogException e) {
+			String msg = "Error in deleting the workflow "+workflowTemplateId+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    }
+	@Override
+	public String registerWorkflow(Workflow workflow)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			return getWorkflowCatalog().registerWorkflow(workflow);
+		} catch (AppCatalogException e) {
+			String msg = "Error in registering the workflow "+workflow.getName()+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    @Override
-    public String registerWorkflow(Workflow workflow) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
-    }
+	@Override
+	public void updateWorkflow(String workflowTemplateId, Workflow workflow)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			getWorkflowCatalog().updateWorkflow(workflowTemplateId, workflow);
+		} catch (AppCatalogException e) {
+			String msg = "Error in updating the workflow "+workflow.getName()+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    @Override
-    public void updateWorkflow(String workflowTemplateId, Workflow workflow) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+	@Override
+	public String getWorkflowTemplateId(String workflowName)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			return getWorkflowCatalog().getWorkflowTemplateId(workflowName);
+		} catch (AppCatalogException e) {
+			String msg = "Error in retrieving the workflow template id for "+workflowName+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    }
+	@Override
+	public boolean isWorkflowExistWithName(String workflowName)
+			throws InvalidRequestException, AiravataClientException,
+			AiravataSystemException, TException {
+		try {
+			return getWorkflowCatalog().isWorkflowExistWithName(workflowName);
+		} catch (AppCatalogException e) {
+			String msg = "Error in veriying the workflow for workflow name "+workflowName+".";
+			logger.error(msg, e);
+			AiravataSystemException exception = new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(msg+" More info : " + e.getMessage());
+            throw exception;
+		}
+	}
 
-    @Override
-    public String getWorkflowTemplateId(String workflowName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
-    }
-
-    @Override
-    public boolean isWorkflowExistWithName(String workflowName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return false;
-    }
+	private WorkflowCatalog getWorkflowCatalog() {
+		if (workflowCatalog == null) {
+			try {
+				workflowCatalog = WorkflowCatalogFactory.getWorkflowCatalog();
+			} catch (Exception e) {
+				logger.error("Unable to create Workflow Catalog", e);
+			}
+		}
+		return workflowCatalog;
+	}
 
 }

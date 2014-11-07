@@ -202,8 +202,8 @@ public class RegistryWindow {
     	case API_SERVICE:
     		AiravataClientFactory.createAiravataClient(getServerName(), Integer.parseInt(getServerPort())); break;
     	case WORKFLOW_SERVICE:
-    		AiravataClientFactory.createWorkflowClient(getServerName(), Integer.parseInt(getServerPort())); break;
-    	}
+    		AiravataClientFactory.createAiravataClient(getServerName(), Integer.parseInt(getServerPort())); break;
+        }
         
     }
 

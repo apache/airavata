@@ -60,13 +60,19 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
     public void setupExperimentStatus(WorkflowNodeStatusChangeEvent nodeStatus) throws Exception{
 		try {
 			boolean updateExperimentStatus=true;
+			ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
+			
 	        ExperimentState state = ExperimentState.UNKNOWN;
 	        switch (nodeStatus.getState()) {
 	            case CANCELED:
 	                state = ExperimentState.CANCELED; updateExperimentStatus = true;
 	                break;
 	            case COMPLETED:
+	            	if(executionType.equals(ExecutionType.SINGLE_APP)){
+	            		state = ExperimentState.COMPLETED; updateExperimentStatus = true;
+	            	}else{
 	                state = ExperimentState.EXECUTING; updateExperimentStatus = true;
+	                }
 	                break;
 	            case INVOKED:
 	                state = ExperimentState.LAUNCHED; updateExperimentStatus = false;
@@ -84,7 +90,6 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	                return;
 	        }
 	        if (!updateExperimentStatus){
-				ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
 				updateExperimentStatus=(executionType==ExecutionType.SINGLE_APP);
 	        }
 			updateExperimentStatus(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), state);

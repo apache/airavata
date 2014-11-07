@@ -260,7 +260,7 @@ public class WorkflowInterpreterLaunchWindow {
     	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
 		Client airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
 
-		org.apache.airavata.api.workflow.Workflow.Client workflowClient = XBayaUtil.getWorkflowClient(engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE));
+		Client workflowClient = XBayaUtil.getAiravataClient(engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE));
 
 		Workflow workflowClone = workflow.clone();
 		workflowClone.setName(workflowClone.getName()+UUID.randomUUID().toString());
@@ -355,6 +355,11 @@ public class WorkflowInterpreterLaunchWindow {
 	private OrchestratorService.Client getOrchestratorClient() {
 		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
         final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
-        return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+        try {
+			return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+		} catch (AiravataClientConnectException e) {
+			e.printStackTrace();
+		}
+        return null;
 	}
 }

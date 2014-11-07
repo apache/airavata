@@ -22,8 +22,7 @@
 package org.apache.airavata.api.client;
 
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.workflow.Workflow;
-//import org.apache.airavata.api.appcatalog.ApplicationCatalogAPI;
+
 import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -48,31 +47,4 @@ public class AiravataClientFactory {
             throw new AiravataClientConnectException("Unable to connect to the server at "+serverHost+":"+serverPort);
         }
     }
-    
-    public static Workflow.Client createWorkflowClient(String serverHost, int serverPort) throws AiravataClientConnectException{
-        try {
-            TTransport transport = new TSocket(serverHost, serverPort);
-            transport.open();
-            TProtocol protocol = new TBinaryProtocol(transport);
-//            TMultiplexedProtocol mp = new TMultiplexedProtocol(protocol, "AppCatalog");
-            return new Workflow.Client(protocol);
-        } catch (TTransportException e) {
-            throw new AiravataClientConnectException("Unable to connect to the server at "+serverHost+":"+serverPort);
-        }
-    }
-    
-    /*
-    public static <T extends org.apache.thrift.TServiceClient> T createApplicationCatalogClient(String serverHost, int serverPort, Class<T> type) throws Exception{
-        try {
-            TTransport transport = new TSocket(serverHost, serverPort);
-            transport.open();
-            TProtocol protocol = new TBinaryProtocol(transport);
-            TMultiplexedProtocol mp = new TMultiplexedProtocol(protocol, "AppCatalog");
-            return  type.getConstructor(TProtocol.class).newInstance(mp);
-        } catch (TTransportException e) {
-            throw new AiravataClientConnectException("Unable to connect to the server at "+serverHost+":"+serverPort);
-        } catch (Exception e) {
-			throw new Exception("Invalid Airavata API Service "+type.getClass().getCanonicalName());
-		}
-    }*/
 }
