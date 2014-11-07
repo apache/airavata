@@ -67,11 +67,12 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
         Cluster cluster = null;
         
         try {
-        	if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
-                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
-            } else {
-                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
+            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
+                GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
+
+            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
             if (cluster == null) {
                 throw new GFacException("Security context is not set properly");
             } else {
@@ -93,7 +94,7 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                     log.error("Previously stored data " + pluginData +" is wrong so we continue the operations");
                 }
             }
-            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
+            if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 try {
                     GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
                 } catch (ApplicationSettingsException e) {
