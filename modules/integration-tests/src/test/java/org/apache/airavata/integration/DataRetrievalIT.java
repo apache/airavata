@@ -25,6 +25,9 @@ import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.integration.tools.DocumentCreatorNew;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
@@ -176,16 +179,16 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 	public String runExperiment(String user, String project) throws ApplicationSettingsException, AiravataClientConnectException,
 			InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException, ExperimentNotFoundException {
-		List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-		DataObjectType input = new DataObjectType();
-		input.setKey("echo_input");
+		List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+        InputDataObjectType input = new InputDataObjectType();
+        input.setName("echo_input");
 		input.setType(DataType.STRING);
 		input.setValue("echo_output=Hello World");
 		exInputs.add(input);
 
-		List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-		DataObjectType output = new DataObjectType();
-		output.setKey("echo_output");
+		List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+        OutputDataObjectType output = new OutputDataObjectType();
+		output.setName("echo_output");
 		output.setType(DataType.STRING);
 		output.setValue("");
 		exOut.add(output);
