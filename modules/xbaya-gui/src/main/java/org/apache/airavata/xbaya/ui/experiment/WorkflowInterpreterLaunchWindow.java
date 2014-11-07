@@ -252,11 +252,7 @@ public class WorkflowInterpreterLaunchWindow {
 
     private void execute() throws AiravataClientConnectException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
 
-    	if (engine.getGUI().setupThriftClientData(ThriftServiceType.API_SERVICE)){
-    		hide();
-    		return;
-    	}
-
+    	
     	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
 		Client airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
 
