@@ -27,6 +27,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HostMonitorData {
@@ -41,7 +42,14 @@ public class HostMonitorData {
         this.computeResourceDescription = jobExecutionContext.getApplicationContext().getComputeResourceDescription();
         this.jobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
         this.dataMovementProtocol = jobExecutionContext.getPreferredDataMovementProtocol();
+        this.monitorIDs = new ArrayList<MonitorID>();
+    }
 
+    public HostMonitorData(JobExecutionContext jobExecutionContext, List<MonitorID> monitorIDs) {
+        this.computeResourceDescription = jobExecutionContext.getApplicationContext().getComputeResourceDescription();
+        this.jobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
+        this.dataMovementProtocol = jobExecutionContext.getPreferredDataMovementProtocol();
+        this.monitorIDs = monitorIDs;
     }
 
     public ComputeResourceDescription getComputeResourceDescription() {
