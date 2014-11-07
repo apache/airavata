@@ -41,6 +41,7 @@
                 <!--<module>gfac-bes</module>-->
                 <module>gfac-monitor</module>
                 <module>airavata-gfac-service</module>
+                <module>airavata-gfac-stubs</module>
             </modules>
         </profile>
     </profiles>
