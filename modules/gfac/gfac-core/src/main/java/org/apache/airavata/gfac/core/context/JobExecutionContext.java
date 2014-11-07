@@ -234,7 +234,7 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
 	
 	public SecurityContext getSecurityContext(String name) throws GFacException{
-		SecurityContext secContext = securityContext.get(name+"-"+this.getApplicationContext().getHostDescription().getType().getHostAddress());
+		SecurityContext secContext = securityContext.get(name);
 		return secContext;
 	}
 

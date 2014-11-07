@@ -156,12 +156,14 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
                 if ("URI".equals(actualParameter.getType().getType().toString())) {
                     try {
                         URL file = new URL(paramValue);
+                        String key = file.getUserInfo() + file.getHost() + DEFAULT_SSH_PORT;
                         GFACSSHUtils.prepareSecurityContext(jobExecutionContext, authenticationInfo, file.getUserInfo(), file.getHost(), DEFAULT_SSH_PORT);
-                        pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+                        pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT+key)).getPbsCluster();
                         paramValue = file.getPath();
                     } catch (MalformedURLException e) {
+                        String key = this.userName + this.hostName + DEFAULT_SSH_PORT;
                         GFACSSHUtils.prepareSecurityContext(jobExecutionContext, authenticationInfo, this.userName, this.hostName, DEFAULT_SSH_PORT);
-                        pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+                        pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT+key)).getPbsCluster();
                         log.error(e.getLocalizedMessage(), e);
                     }
 
