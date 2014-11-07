@@ -62,21 +62,14 @@ public class HPCMonitorID extends MonitorID {
         this.authenticationInfo = authenticationInfo;
         if (this.authenticationInfo != null) {
             try {
-                SecurityContext securityContext = jobExecutionContext.getSecurityContext(Constants.GSI_SECURITY_CONTEXT);
+                String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+                SecurityContext securityContext = jobExecutionContext.getSecurityContext(hostAddress);
                 ServerInfo serverInfo = null;
                 if (securityContext != null) {
                     serverInfo = (((GSISecurityContext) securityContext).getPbsCluster()).getServerInfo();
                 }
-                if(serverInfo == null) {
-                    securityContext = jobExecutionContext.getSecurityContext(Constants.SSH_SECURITY_CONTEXT);
-                    if(securityContext !=null){
-                        serverInfo = (((SSHSecurityContext) securityContext).getPbsCluster()).getServerInfo();
-                    }
-                }
-                if(serverInfo!=null) {
-                    if (serverInfo.getUserName() != null) {
-                        setUserName(serverInfo.getUserName());
-                    }
+                if (serverInfo.getUserName() != null) {
+                    setUserName(serverInfo.getUserName());
                 }
             } catch (GFacException e) {
                 e.printStackTrace();

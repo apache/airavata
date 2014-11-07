@@ -46,7 +46,8 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         try {
-            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
+            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
             }
         } catch (Exception e) {
@@ -67,7 +68,8 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
 	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
 		Cluster cluster = null;
 		try{
-        cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
         if (cluster == null) {
             throw new GFacHandlerException("Security context is not set properly");
         } else {

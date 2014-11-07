@@ -74,6 +74,4 @@ public class Constants {
     public static final String NAME = "name";
     public static final String VALUE = "value";
 
-    public static final String SSH_SECURITY_CONTEXT = "ssh";
-    public static final String GSI_SECURITY_CONTEXT = "gsi";
 }
