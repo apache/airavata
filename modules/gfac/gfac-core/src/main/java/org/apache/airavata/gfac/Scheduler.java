@@ -182,6 +182,7 @@ public class Scheduler {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
         Document handlerDoc = null;
+        String jobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol().toString();
         try {
             docBuilder = docBuilderFactory.newDocumentBuilder();
             handlerDoc = docBuilder.parse(new File(resource.getPath()));
@@ -203,6 +204,14 @@ public class Scheduler {
                 String hostClass = jobExecutionContext.getPreferredJobSubmissionProtocol().toString();
                 executionMode = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
             }
+
+            if (executionMode == null || "".equals(executionMode)) {
+                List<Element> elements = GFacUtils.getElementList(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_SUBMISSION + jobSubmissionProtocol + "']");
+                for (Element element : elements) {
+                    executionMode = element.getAttribute(Constants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
+                }
+            }
+
         } catch (XPathExpressionException e) {
             log.error("Error evaluating XPath expression");  //To change body of catch statement use File | Settings | File Templates.
             throw new GFacException("Error evaluating XPath expression", e);
