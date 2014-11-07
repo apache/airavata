@@ -183,7 +183,7 @@ public class BigRed2TestWithSSHAuth {
 
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, serv.getType().getName());
         // Adding security context
-        jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, getSecurityContext(app));
+        jobExecutionContext.addSecurityContext(host.getType().getHostAddress(), getSecurityContext(app));
         ApplicationContext applicationContext = new ApplicationContext();
         jobExecutionContext.setApplicationContext(applicationContext);
         applicationContext.setServiceDescription(serv);

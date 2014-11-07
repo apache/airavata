@@ -142,7 +142,7 @@ public class GFACSSHUtils {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
             sshSecurityContext.setPbsCluster(pbsCluster);
-            jobExecutionContext.addSecurityContext(Constants.SSH_SECURITY_CONTEXT+"-"+registeredHost.getType().getHostAddress(), sshSecurityContext);
+            jobExecutionContext.addSecurityContext(registeredHost.getType().getHostAddress(), sshSecurityContext);
         }
     }
 
@@ -201,7 +201,7 @@ public class GFACSSHUtils {
                     }
                 }
                 sshSecurityContext.setPbsCluster(pbsCluster);
-                jobExecutionContext.addSecurityContext(Constants.SSH_SECURITY_CONTEXT+key, sshSecurityContext);
+                jobExecutionContext.addSecurityContext(key, sshSecurityContext);
             } catch (Exception e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
@@ -312,7 +312,7 @@ public class GFACSSHUtils {
         ServerInfo serverInfo = new ServerInfo(userName, hostName);
         String key = userName+hostName+port;
         SSHAuthWrapper sshAuthWrapper = new SSHAuthWrapper(serverInfo, authenticationInfo, key);
-        if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT+key) == null) {
+        if (jobExecutionContext.getSecurityContext(key) == null) {
             try {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext, sshAuthWrapper);
             } catch (ApplicationSettingsException e) {

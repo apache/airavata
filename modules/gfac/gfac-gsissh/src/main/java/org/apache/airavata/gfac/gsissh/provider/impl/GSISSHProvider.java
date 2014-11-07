@@ -61,7 +61,8 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         super.initialize(jobExecutionContext);
         try {
-            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
+            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
         } catch (ApplicationSettingsException e) {
@@ -84,8 +85,8 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         Cluster cluster = null;
         
         try {
-            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
-                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
+            if (jobExecutionContext.getSecurityContext(host.getHostAddress()) != null) {
+                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(host.getHostAddress())).getPbsCluster();
             }
             if (cluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
@@ -213,10 +214,10 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         JobDetails jobDetails = jobExecutionContext.getJobDetails();
         try {
             Cluster cluster = null;
-            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
+            if (jobExecutionContext.getSecurityContext(host.getHostAddress()) == null) {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
-            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
+            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(host.getHostAddress())).getPbsCluster();
             if (cluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
             } else {
@@ -298,7 +299,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             jobDetails.setJobDescription(jobDesc);
             jobDetails.setJobID(jobId);
             jobExecutionContext.setJobDetails(jobDetails);
-            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
+            if (jobExecutionContext.getSecurityContext(host.getHostAddress()) == null) {
                 try {
                     GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
                 } catch (ApplicationSettingsException e) {
