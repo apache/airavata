@@ -89,10 +89,9 @@ public class SSHOutputHandler extends AbstractHandler {
                 }
             }
         }
-
+        String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
         try {
-            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
-
+            if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
             }
         } catch (Exception e) {
@@ -113,7 +112,7 @@ public class SSHOutputHandler extends AbstractHandler {
                 .getApplicationDeploymentDescription().getType();
         Cluster cluster = null;
         try {
-             cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+             cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
             if (cluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
             } else {

@@ -76,7 +76,8 @@ public class SSHProvider extends AbstractProvider {
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         super.initialize(jobExecutionContext);
-        if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
+        String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+        if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
             try {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
             } catch (ApplicationSettingsException e) {
@@ -88,7 +89,7 @@ public class SSHProvider extends AbstractProvider {
 
         if (!((SSHHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getHpcResource()) {
             jobID = "SSH_" + jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress() + "_" + Calendar.getInstance().getTimeInMillis();
-            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
 
             ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
             String remoteFile = app.getStaticWorkingDirectory() + File.separatorChar + Constants.EXECUTABLE_NAME;
@@ -146,9 +147,10 @@ public class SSHProvider extends AbstractProvider {
                 JobDetails jobDetails = new JobDetails();
                 try {
                     Cluster cluster = null;
-                    if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) != null) {
-                        cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+                    if (jobExecutionContext.getSecurityContext(host.getHostAddress()) == null) {
+                        GFACSSHUtils.addSecurityContext(jobExecutionContext);
                     }
+                    cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(host.getHostAddress())).getPbsCluster();
                     if (cluster == null) {
                         throw new GFacProviderException("Security context is not set properly");
                     } else {
@@ -205,7 +207,7 @@ public class SSHProvider extends AbstractProvider {
         if (!hpcType) {
             throw new NotImplementedException();
         } else {
-            Cluster cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
+            Cluster cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(host.getHostAddress())).getPbsCluster();
             if (cluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
             } else {
