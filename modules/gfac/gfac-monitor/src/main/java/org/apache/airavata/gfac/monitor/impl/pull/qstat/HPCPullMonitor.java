@@ -186,7 +186,7 @@ public class HPCPullMonitor extends PullMonitor {
                             String cancelMId = iterator1.next();
                             if (cancelMId.equals(iMonitorID.getExperimentID() + "+" + iMonitorID.getTaskID())) {
                                 iMonitorID.setStatus(JobState.CANCELED);
-                                iterator1.remove();
+                                CommonUtils.removeMonitorFromQueue(take,iMonitorID);
                                 logger.debugId(cancelMId, "Found a match in cancel monitor queue, hence moved to the " +
                                                 "completed job queue, experiment {}, task {} , job {}",
                                         iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobID());
@@ -211,7 +211,7 @@ public class HPCPullMonitor extends PullMonitor {
                                 if (completeId.equals(iMonitorID.getUserName() + "," + iMonitorID.getJobName())) {
                                     logger.info("This job is finished because push notification came with <username,jobName> " + completeId);
                                     iMonitorID.setStatus(JobState.COMPLETE);
-                                    iterator.remove();//we have to make this empty everytime we iterate, otherwise this list will accumulate and will lead to a memory leak
+                                    CommonUtils.removeMonitorFromQueue(take,iMonitorID);//we have to make this empty everytime we iterate, otherwise this list will accumulate and will lead to a memory leak
                                     logger.debugId(completeId, "Push notification updated job {} status to {}. " +
                                                     "experiment {} , task {}.", iMonitorID.getJobID(), JobState.COMPLETE.toString(),
                                             iMonitorID.getExperimentID(), iMonitorID.getTaskID());
@@ -241,7 +241,7 @@ public class HPCPullMonitor extends PullMonitor {
                         }else if(JobState.COMPLETE.equals(iMonitorID.getStatus())){
                             logger.debugId(iMonitorID.getJobID(), "Moved job {} to completed jobs map, experiment {}, " +
                                     "task {}", iMonitorID.getJobID(), iMonitorID.getExperimentID(), iMonitorID.getTaskID());
-                            iterator.remove();
+                            CommonUtils.removeMonitorFromQueue(take,iMonitorID);
                             logger.info("PULL Notification is complete: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
                                     iMonitorID.getExperimentID(),iMonitorID.getTaskID(),iMonitorID.getJobName());
                             GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
@@ -278,7 +278,7 @@ public class HPCPullMonitor extends PullMonitor {
                                 logger.info("Listing directory came as complete: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
                                         iMonitorID.getExperimentID(),iMonitorID.getTaskID(),iMonitorID.getJobName());
                                 sendNotification(iMonitorID);
-                                iterator.remove();
+                                CommonUtils.removeMonitorFromQueue(take,iMonitorID);
                                 GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
                             } else {
                                 iMonitorID.setFailedCount(0);
@@ -299,7 +299,12 @@ public class HPCPullMonitor extends PullMonitor {
             }
             // We have finished all the HostMonitorData object in userMonitorData, now we need to put it back
             // now the userMonitorData goes back to the tail of the queue
-            queue.put(take);
+            // during individual monitorID removal we remove the HostMonitorData object if it become empty
+            // so if all the jobs are finished for all the hostMOnitorId objects in userMonitorData object
+            // we should remove it from the queue so here we do not put it back.
+            if(take.getHostMonitorData().size()!=0) {
+                queue.put(take);
+            }
         } catch (InterruptedException e) {
             if (!this.queue.contains(take)) {
                 try {
