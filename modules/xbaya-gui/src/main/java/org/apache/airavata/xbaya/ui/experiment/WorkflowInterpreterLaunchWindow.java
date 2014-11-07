@@ -252,7 +252,7 @@ public class WorkflowInterpreterLaunchWindow {
 
     private void execute() throws AiravataClientConnectException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
 
-    	if (!(engine.getGUI().setupThriftClientData(ThriftServiceType.API_SERVICE) && engine.getGUI().setupThriftClientData(ThriftServiceType.WORKFLOW_SERVICE))){
+    	if (engine.getGUI().setupThriftClientData(ThriftServiceType.API_SERVICE)){
     		hide();
     		return;
     	}
@@ -260,14 +260,13 @@ public class WorkflowInterpreterLaunchWindow {
     	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
 		Client airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
 
-		Client workflowClient = XBayaUtil.getAiravataClient(engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE));
-
+		
 		Workflow workflowClone = workflow.clone();
 		workflowClone.setName(workflowClone.getName()+UUID.randomUUID().toString());
 		org.apache.airavata.model.Workflow w = new org.apache.airavata.model.Workflow();
 		w.setName(workflowClone.getName());
 		w.setGraph(XMLUtil.xmlElementToString(workflowClone.toXML()));
-		w.setTemplateId(workflowClient.registerWorkflow(w));
+		w.setTemplateId(airavataClient.registerWorkflow(w));
         String instanceName = this.instanceNameTextField.getText();
         if (instanceName.trim().equals("")){
         	JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
