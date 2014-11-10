@@ -218,7 +218,7 @@ public class HPCPullMonitor extends PullMonitor {
                                     logger.info("AMQP message recieved: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
                                             iMonitorID.getExperimentID(),iMonitorID.getTaskID(),iMonitorID.getJobName());
 
-                                    monitorIDListIterator.remove();
+                                    iterator.remove();
                                     sendNotification(iMonitorID);
                                     GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
                                     break;
