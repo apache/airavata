@@ -176,11 +176,8 @@ public class CommonUtils {
                                     // could be different, thats why we check the jobID
                                     iterator2.remove();
                                     logger.infoId(monitorID.getJobID(), "Removed the jobId: {} JobName: {} from monitoring last " +
-                                            "status:{}", monitorID.getJobID(), monitorID.getJobName(), monitorID.getStatus().toString());
-                                    if (iHostMonitorID.getMonitorIDs().size() == 0) {
-                                        iterator1.remove();
-                                        logger.debug("Removed host {} from monitoring queue", iHostMonitorID.getComputeResourceDescription().getHostName());
-                                    }
+                                            "status:{}", monitorID.getJobID(),monitorID.getJobName(), monitorID.getStatus().toString());
+
                                     return;
                                 }
                             }

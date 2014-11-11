@@ -17,13 +17,13 @@
         <!ELEMENT formats (format)*>
         <!ELEMENT format (#PCDATA)>
         <!ELEMENT fileSets (fileSet)*>
-        <!ELEMENT fileSet (directory|outputDirectory|includes)*>
+        <!ELEMENT fileSet (directory|outputDirectory|fileMode|includes)*>
         <!ELEMENT directory (#PCDATA)>
         <!ELEMENT outputDirectory (#PCDATA)>
         <!ELEMENT includes (include)*>
         <!ELEMENT include (#PCDATA)>
         <!ELEMENT dependencySets (dependencySet)*>
-        <!ELEMENT dependencySet (outputDirectory|includes)*>
+        <!ELEMENT dependencySet (outputDirectory|outputFileNameMapping|includes)*>
         ]>
 <assembly>
 	<id>bin</id>
@@ -159,8 +159,7 @@
 	<dependencySets>
 		<dependencySet>
 			<outputDirectory>lib</outputDirectory>
-			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}
-			</outputFileNameMapping>
+			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
 			<includes>
 				<include>org.apache.derby:derby:jar</include>
 				<include>org.apache.derby:derbytools:jar</include>
@@ -283,16 +282,17 @@
 				<include>pl.edu.icm.saml:samly2</include>
 				<include>org.apache.ws.security:wss4j</include>
 				<include>org.json:json</include>
-				<include>org.apache.cxf:cxf-rt-databinding-xmlbeans</include>
-				<include>org.apache.cxf:cxf-api</include>
+				<!-- CXF deps start -->
 				<include>org.codehaus.woodstox:woodstox-core-asl</include>
 				<include>org.codehaus.woodstox:stax2-api</include>
+				<include>org.apache.cxf:cxf-rt-databinding-xmlbeans</include>
+				<include>org.apache.cxf:cxf-api</include>
 				<include>org.apache.ws.xmlschema:xmlschema-core</include>
+				<include>org.apache.cxf:cxf-api</include>
+				<include>org.apache.cxf:cxf-rt-databinding-xmlbeans</include>
 				<include>org.apache.cxf:cxf-rt-core</include>
-				<include>com.sun.xml.bind:jaxb-impl</include>
 				<include>org.apache.cxf:cxf-rt-frontend-jaxws</include>
-				<include>xml-resolver:xml-resolver</include>
-				<include>asm:asm</include>
+				<include>org.apache.cxf:cxf-rt-frontend-simple</include>
 				<include>org.apache.cxf:cxf-rt-bindings-soap</include>
 				<include>org.apache.cxf:cxf-rt-databinding-jaxb</include>
 				<include>org.apache.cxf:cxf-rt-bindings-xml</include>
@@ -301,8 +301,13 @@
 				<include>org.apache.cxf:cxf-rt-ws-policy</include>
 				<include>org.apache.cxf:cxf-rt-transports-http</include>
 				<include>org.apache.cxf:cxf-rt-features-clustering</include>
-				<include>org.apache.neethi:neethi</include>
 				<include>org.apache.cxf:cxf-rt-frontend-jaxws</include>
+				<include>org.apache.cxf:cxf-bundle</include>
+				<!-- // CXF deps end -->
+				<include>com.sun.xml.bind:jaxb-impl</include>
+				<include>org.apache.neethi:neethi:3.0.2</include>
+				<include>xml-resolver:xml-resolver</include>
+				<include>asm:asm</include>
 				<include>xml-resolver:xml-resolver</include>
 				<include>org.eclipse.jetty:jetty-servlet</include>
 				<include>org.eclipse.jetty:jetty-security</include>

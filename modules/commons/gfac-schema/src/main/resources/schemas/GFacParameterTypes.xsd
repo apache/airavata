@@ -63,7 +63,7 @@
 				<sequence>
 					<element name="value" nillable="true" type="xsd:string" />
 				</sequence>
-				<attribute name="type" fixed="StdErr" />
+				<attribute name="type" fixed="StdErr" /> 
 			</extension>
 		</complexContent>
 	</complexType>

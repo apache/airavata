@@ -95,9 +95,10 @@ public class ExperimentRegistry {
 
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
             if (experimentOutputs != null && !experimentOutputs.isEmpty()){
-                for (OutputDataObjectType output : experimentOutputs){
-                    output.setValue("");
-                }
+            	//TODO: short change.
+//                for (DataObjectType output : experimentOutputs){
+//                    output.setValue("");
+//                }
                 addExpOutputs(experimentOutputs, experimentID);
             }
 
