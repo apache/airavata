@@ -170,11 +170,7 @@ public class CommonUtils {
                                     iterator2.remove();
                                     logger.infoId(monitorID.getJobID(), "Removed the jobId: {} JobName: {} from monitoring last " +
                                             "status:{}", monitorID.getJobID(),monitorID.getJobName(), monitorID.getStatus().toString());
-                                    if (iHostMonitorID.getMonitorIDs().size() == 0) {
-                                        iterator1.remove();
-                                        logger.debug("Removed host {} from monitoring queue", iHostMonitorID.getHost()
-                                                .getType().getHostAddress());
-                                    }
+
                                     return;
                                 }
                             }
