@@ -670,8 +670,12 @@ public class AppCatalogThriftConversion {
         ComputeResourcePreference preference = new ComputeResourcePreference();
         preference.setComputeResourceId(resource.getResourceId());
         preference.setOverridebyAiravata(resource.getOverrideByAiravata());
-        preference.setPreferredJobSubmissionProtocol(JobSubmissionProtocol.valueOf(resource.getPreferredJobProtocol()));
-        preference.setPreferredDataMovementProtocol(DataMovementProtocol.valueOf(resource.getPreferedDMProtocol()));
+        if (resource.getPreferredJobProtocol() != null){
+            preference.setPreferredJobSubmissionProtocol(JobSubmissionProtocol.valueOf(resource.getPreferredJobProtocol()));
+        }
+        if (resource.getPreferedDMProtocol() != null){
+            preference.setPreferredDataMovementProtocol(DataMovementProtocol.valueOf(resource.getPreferedDMProtocol()));
+        }
         preference.setPreferredBatchQueue(resource.getBatchQueue());
         preference.setScratchLocation(resource.getScratchLocation());
         preference.setAllocationProjectNumber(resource.getProjectNumber());
