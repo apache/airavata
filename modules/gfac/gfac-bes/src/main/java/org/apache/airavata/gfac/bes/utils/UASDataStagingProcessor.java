@@ -22,6 +22,8 @@
 package org.apache.airavata.gfac.bes.utils;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -48,17 +50,19 @@ public class UASDataStagingProcessor {
 		if (context.getInMessageContext().getParameters().size() > 0) {
 			buildDataStagingFromInputContext(context, value, smsUrl, appDepType);
 		}
-		MessageContext outMessage = new MessageContext();
-		ActualParameter a1 = new ActualParameter();
-		a1.getType().changeType(StringParameterType.type);
-		((StringParameterType)a1.getType()).setValue("analysis-results.tar");
-		outMessage.addParameter("o1", a1);
-		context.setOutMessageContext(outMessage);
+//		MessageContext outMessage = new MessageContext();
+//		ActualParameter a1 = new ActualParameter();
+//		a1.getType().changeType(StringParameterType.type);
+//		((StringParameterType)a1.getType()).setValue("analysis-results.tar");
+//		outMessage.addParameter("o1", a1);
+//		context.setOutMessageContext(outMessage);
 		
+		// now download for string typed outputs are to be done 
 		if (context.getOutMessageContext().getParameters().size() > 0) {
 			buildFromOutputContext(context, value, smsUrl, appDepType);
 		}
-		createStdOutURIs(value, appDepType, smsUrl, isUnicoreEndpoint(context));
+		//TODO need a review for us3 gateway..
+//		createStdOutURIs(value, appDepType, smsUrl, isUnicoreEndpoint(context));
 	}
 	
 	private static void createInURISMSElement(JobDefinitionType value,
@@ -85,7 +89,16 @@ public class UASDataStagingProcessor {
 			HpcApplicationDeploymentType appDepType, String smsUrl,
 			boolean isUnicore) throws Exception {
 
+		// no need to use smsUrl for output location, because output location is activity's working directory 
 		
+		if(isUnicore) {
+			String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
+			String scriptExitCode = smsUrl+"#/output/"+scriptExitCodeFName;
+			JSDLUtils.addDataStagingTargetElement(value, null,
+					scriptExitCodeFName, null);
+		}
+		
+		if(!isUnicore) {
 		String stdout = ApplicationProcessor.getApplicationStdOut(value, appDepType);
 		
 		String stderr = ApplicationProcessor.getApplicationStdErr(value, appDepType);
@@ -93,20 +106,16 @@ public class UASDataStagingProcessor {
 		String stdoutFileName = (stdout == null || stdout.equals("")) ? "stdout"
 				: stdout;
 		String stdoutURI = smsUrl+"#/output/"+stdoutFileName;
+		
 		JSDLUtils.addDataStagingTargetElement(value, null, stdoutFileName,
-				stdoutURI);
+				null);
 
 		String stderrFileName = (stdout == null || stderr.equals("")) ? "stderr"
 				: stderr;
 		String stderrURI = smsUrl+"#/output/"+stderrFileName;
-		JSDLUtils.addDataStagingTargetElement(value, null, stderrFileName,
-				stderrURI);
 		
-		if(isUnicore) {
-			String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
-			String scriptExitCode = smsUrl+"#/output/"+scriptExitCodeFName;
-			JSDLUtils.addDataStagingTargetElement(value, null,
-					scriptExitCodeFName, scriptExitCode.toString());
+		JSDLUtils.addDataStagingTargetElement(value, null, stderrFileName,
+				null);
 		}
 
 	}
@@ -119,7 +128,7 @@ public class UASDataStagingProcessor {
 		
 		String finalSMSPath = smsUrl + "#/output/"+prmValue;
 		
-		JSDLUtils.addDataStagingTargetElement(value, null, prmValue,	finalSMSPath);
+		JSDLUtils.addDataStagingTargetElement(value, null, prmValue, null);
 	}
 
 	
@@ -159,22 +168,19 @@ public class UASDataStagingProcessor {
 				}
 
 			}
-			else if ("String".equals(paramDataType) || "StringArray".equals(paramDataType)) {
-				return value;
-			}
-			else if ("String".equals(paramDataType)) {
-				String stringPrm = ((StringParameterType) outParam
-						.getType()).getValue();
-				createOutStringElements(value, appDepType, smsUrl, stringPrm);
-			}
-
-			else if ("StringArray".equals(paramDataType)) {
-				String[] valueArray = ((StringArrayType) outParam.getType())
-						.getValueArray();
-				for (String v : valueArray) {
-					createOutStringElements(value, appDepType, smsUrl, v);
-				}
-			}
+//			else if ("String".equals(paramDataType)) {
+//				String stringPrm = ((StringParameterType) outParam
+//						.getType()).getValue();
+//				createOutStringElements(value, appDepType, smsUrl, stringPrm);
+//			}
+//
+//			else if ("StringArray".equals(paramDataType)) {
+//				String[] valueArray = ((StringArrayType) outParam.getType())
+//						.getValueArray();
+//				for (String v : valueArray) {
+//					createOutStringElements(value, appDepType, smsUrl, v);
+//				}
+//			}
 		}
 		
 		return value;
@@ -212,7 +218,6 @@ public class UASDataStagingProcessor {
 				ApplicationProcessor.addApplicationArgument(value, appDepType, stringPrm);
 			}
 		}
-		
 	}
 	
 	public static boolean isUnicoreEndpoint(JobExecutionContext context) {

@@ -187,17 +187,17 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 						.toString();
 			}
 			log.info("JobID: " + jobId);
-			jobDetails.setJobID(activityEpr.toString());
-			jobDetails.setJobDescription(activityEpr.toString());
+			jobDetails.setJobID(jobId);
+			jobDetails.setJobDescription(jobId);
 
 			jobExecutionContext.setJobDetails(jobDetails);
 			try {
 			log.info(formatStatusMessage(activityEpr.getAddress()
 					.getStringValue(), factory.getActivityStatus(activityEpr)
 					.toString()));
-
+			
 			jobExecutionContext.getNotifier().publish(new UnicoreJobIDEvent(jobId));
-			GFacUtils.saveJobStatus(jobExecutionContext, details,JobState.SUBMITTED);
+//			GFacUtils.saveJobStatus(jobExecutionContext, details,JobState.SUBMITTED);
 
 			factory.getActivityStatus(activityEpr);
 			log.info(formatStatusMessage(activityEpr.getAddress()
@@ -215,8 +215,8 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 					JobState applicationJobStatus = getApplicationJobStatus(activityStatus);
 					String jobStatusMessage = "Status of job " + jobId + "is "
 							+ applicationJobStatus;
-					GFacUtils.updateJobStatus(jobExecutionContext, jobDetails,
-							applicationJobStatus);
+					//TODO: properly use GFacUtils..
+//					GFacUtils.updateJobStatus(jobExecutionContext, jobDetails,	applicationJobStatus);
 
 					jobExecutionContext.getNotifier().publish(
 							new StatusChangeEvent(jobStatusMessage));
@@ -272,8 +272,8 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 						+ applicationJobStatus;
 				jobExecutionContext.getNotifier().publish(
 						new StatusChangeEvent(jobStatusMessage));
-				GFacUtils.updateJobStatus(jobExecutionContext, jobDetails,
-						applicationJobStatus);
+				//TODO: properly use GFacUtils..
+//				GFacUtils.updateJobStatus(jobExecutionContext, jobDetails, applicationJobStatus);
 				throw new GFacProviderException(
 						jobExecutionContext.getExperimentID() + "Job Canceled");
 			}
