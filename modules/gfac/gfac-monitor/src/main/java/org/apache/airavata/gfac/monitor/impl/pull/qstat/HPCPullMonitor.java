@@ -250,8 +250,7 @@ public class HPCPullMonitor extends PullMonitor {
                         MonitorID iMonitorID = iterator.next();
                         if (iMonitorID.getFailedCount() > FAILED_COUNT) {
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
-                            String outputDir = iMonitorID.getJobExecutionContext().getApplicationContext()
-                                    .getApplicationDeploymentDescription().getType().getOutputDataDirectory();
+                            String outputDir = iMonitorID.getJobExecutionContext().getOutputDir();
                             List<String> stdOut = null;
                             try {
                                 stdOut = connection.getCluster().listDirectory(outputDir); // check the outputs directory
@@ -299,8 +298,7 @@ public class HPCPullMonitor extends PullMonitor {
                 HostMonitorData iHostMonitorID = iterator1.next();
                 if (iHostMonitorID.getMonitorIDs().size() == 0) {
                     iterator1.remove();
-                    logger.debug("Removed host {} from monitoring queue", iHostMonitorID.getHost()
-                            .getType().getHostAddress());
+                    logger.debug("Removed host {} from monitoring queue", iHostMonitorID.getComputeResourceDescription().getHostName());
                 }
             }
             if(take.getHostMonitorData().size()!=0) {
