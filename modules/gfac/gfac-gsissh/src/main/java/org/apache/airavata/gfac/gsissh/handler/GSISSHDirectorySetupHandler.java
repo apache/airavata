@@ -47,7 +47,7 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         try {
-            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            String hostAddress = jobExecutionContext.getHostName();
             if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
@@ -67,7 +67,7 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
 	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         Cluster cluster = null;
         try {
-            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            String hostAddress = jobExecutionContext.getHostName();
             cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
             if (cluster == null) {
                 try {
@@ -79,12 +79,11 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
             } else {
                 log.info("Successfully retrieved the Security Context");
             }
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 
-            String workingDirectory = app.getScratchWorkingDirectory();
+            String workingDirectory = jobExecutionContext.getWorkingDir();
             cluster.makeDirectory(workingDirectory);
-            cluster.makeDirectory(app.getInputDataDirectory());
-            cluster.makeDirectory(app.getOutputDataDirectory());
+            cluster.makeDirectory(jobExecutionContext.getInputDir());
+            cluster.makeDirectory(jobExecutionContext.getOutputDir());
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();
             status.setTransferState(TransferState.DIRECTORY_SETUP);

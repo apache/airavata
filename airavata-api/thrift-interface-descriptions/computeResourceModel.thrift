@@ -82,6 +82,7 @@ enum JobManagerCommand {
     SHOW_START
 }
 
+
 /**
  * Resource Job Manager Information
  *
@@ -187,6 +188,21 @@ enum JobSubmissionProtocol {
     GLOBUS,
     UNICORE,
     CLOUD
+}
+
+/**
+* Monitoring modes
+*
+* POLL_JOB_MANAGER:
+* GFac need to pull job status changes.
+*
+* XSEDE_AMQP_SUBSCRIBE:
+* Server will publish job status changes to amqp servert.
+*
+**/
+enum MonitorMode {
+   POLL_JOB_MANAGER,
+   XSEDE_AMQP_SUBSCRIBE
 }
 
 /**
@@ -297,7 +313,8 @@ struct SSHJobSubmission {
     2: required SecurityProtocol securityProtocol,
     3: required ResourceJobManager resourceJobManager,
     4: optional string alternativeSSHHostName,
-    5: optional i32 sshPort = 22
+    5: optional i32 sshPort = 22,
+    6: optional MonitorMode monitorMode
 }
 
 struct GlobusJobSubmission {

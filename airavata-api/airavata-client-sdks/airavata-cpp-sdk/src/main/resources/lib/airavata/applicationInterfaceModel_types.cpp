@@ -31,15 +31,19 @@ int _kDataTypeValues[] = {
   DataType::STRING,
   DataType::INTEGER,
   DataType::FLOAT,
-  DataType::URI
+  DataType::URI,
+  DataType::STDOUT,
+  DataType::STDERR
 };
 const char* _kDataTypeNames[] = {
   "STRING",
   "INTEGER",
   "FLOAT",
-  "URI"
+  "URI",
+  "STDOUT",
+  "STDERR"
 };
-const std::map<int, const char*> _DataType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kDataTypeValues, _kDataTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _DataType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kDataTypeValues, _kDataTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 const char* InputDataObjectType::ascii_fingerprint = "24F962C1CE4BE9FBD0F5D5EE9D1D5C00";
 const uint8_t InputDataObjectType::binary_fingerprint[16] = {0x24,0xF9,0x62,0xC1,0xCE,0x4B,0xE9,0xFB,0xD0,0xF5,0xD5,0xEE,0x9D,0x1D,0x5C,0x00};

@@ -20,12 +20,9 @@
 */
 package org.apache.airavata.gfac.local.handler;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.HostDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,18 +34,14 @@ public class LocalDirectorySetupHandler implements GFacHandler {
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         log.info("Invoking LocalDirectorySetupHandler ...");
-        HostDescriptionType type = jobExecutionContext.getApplicationContext().getHostDescription().getType();
-        ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
-        ApplicationDeploymentDescriptionType app = applicationDeploymentDescription.getType();
-        log.debug("working directory = " + app.getStaticWorkingDirectory());
-        log.debug("temp directory = " + app.getScratchWorkingDirectory());
+        log.debug("working directory = " + jobExecutionContext.getWorkingDir());
+        log.debug("temp directory = " + jobExecutionContext.getWorkingDir());
 
-        makeFileSystemDir(app.getStaticWorkingDirectory(),jobExecutionContext);
-        makeFileSystemDir(app.getScratchWorkingDirectory(),jobExecutionContext);
-        makeFileSystemDir(app.getInputDataDirectory(),jobExecutionContext);
-        makeFileSystemDir(app.getOutputDataDirectory(),jobExecutionContext);
+        makeFileSystemDir(jobExecutionContext.getWorkingDir());
+        makeFileSystemDir(jobExecutionContext.getInputDir());
+        makeFileSystemDir(jobExecutionContext.getOutputDir());
     }
-    private void makeFileSystemDir(String dir, JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+    private void makeFileSystemDir(String dir) throws GFacHandlerException {
            File f = new File(dir);
            if (f.isDirectory() && f.exists()) {
                return;

@@ -21,6 +21,9 @@ package org.apache.airavata.client.samples;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
@@ -140,16 +143,16 @@ public class CreateLaunchExperimentUS3 {
 
     public static String createExperimentForTrestles(Airavata.Client client) throws TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("echo_input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("echo_input");
             input.setType(DataType.STRING);
             input.setValue("echo_output=Hello World");
             exInputs.add(input);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("echo_output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("echo_output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
@@ -186,17 +189,17 @@ public class CreateLaunchExperimentUS3 {
     
     public static String createUS3ExperimentForTrestles (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("input");
             input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("walltime");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("walltime");
             input1.setType(DataType.STRING);
             input1.setValue("-walltime=60");
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("mgroupcount");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("mgroupcount");
             input2.setType(DataType.STRING);
             input2.setValue("-mgroupcount=1");
             
@@ -204,17 +207,17 @@ public class CreateLaunchExperimentUS3 {
             exInputs.add(input1);
             exInputs.add(input2);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("output");
             output.setType(DataType.URI);
             output.setValue("");
-//            DataObjectType output1 = new DataObjectType();
-//            output1.setKey("stdout");
+//            OutputDataObjectType output1 = new OutputDataObjectType();
+//            output1.setName("stdout");
 //            output1.setType(DataType.STDOUT);
 //            output1.setValue("");
-//            DataObjectType output2 = new DataObjectType();
-//            output2.setKey("stderr");
+//            OutputDataObjectType output2 = new OutputDataObjectType();
+//            output2.setName("stderr");
 //            output2.setType(DataType.STDERR);
 //            output2.setValue("");
             exOut.add(output);
@@ -257,17 +260,17 @@ public class CreateLaunchExperimentUS3 {
     }
     public static String createUS3ExperimentForStampede (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("input");
             input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("walltime");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("walltime");
             input1.setType(DataType.STRING);
             input1.setValue("-walltime=60");
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("mgroupcount");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("mgroupcount");
             input2.setType(DataType.STRING);
             input2.setValue("-mgroupcount=1");
             
@@ -276,17 +279,17 @@ public class CreateLaunchExperimentUS3 {
             exInputs.add(input2);
 
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("output");
             output.setType(DataType.URI);
             output.setValue("");
-//            DataObjectType output1 = new DataObjectType();
-//            output1.setKey("stdout");
+//            OutputDataObjectType output1 = new OutputDataObjectType();
+//            output1.setName("stdout");
 //            output1.setType(DataType.STDOUT);
 //            output1.setValue("");
-//            DataObjectType output2 = new DataObjectType();
-//            output2.setKey("stderr");
+//            OutputDataObjectType output2 = new OutputDataObjectType();
+//            output2.setName("stderr");
 //            output2.setType(DataType.STDERR);
 //            output2.setValue("");
             exOut.add(output);
@@ -330,17 +333,17 @@ public class CreateLaunchExperimentUS3 {
     }
     public static String createUS3ExperimentForLonestar (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("input");
             input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("walltime");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("walltime");
             input1.setType(DataType.STRING);
             input1.setValue("-walltime=60");
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("mgroupcount");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("mgroupcount");
             input2.setType(DataType.STRING);
             input2.setValue("-mgroupcount=1");
             
@@ -348,17 +351,17 @@ public class CreateLaunchExperimentUS3 {
             exInputs.add(input1);
             exInputs.add(input2);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("output");
             output.setType(DataType.URI);
             output.setValue("");
-//            DataObjectType output1 = new DataObjectType();
-//            output1.setKey("stdout");
+//            OutputDataObjectType output1 = new OutputDataObjectType();
+//            output1.setName("stdout");
 //            output1.setType(DataType.STDOUT);
 //            output1.setValue("");
-//            DataObjectType output2 = new DataObjectType();
-//            output2.setKey("stderr");
+//            OutputDataObjectType output2 = new OutputDataObjectType();
+//            output2.setName("stderr");
 //            output2.setType(DataType.STDERR);
 //            output2.setValue("");
             exOut.add(output);
@@ -402,17 +405,17 @@ public class CreateLaunchExperimentUS3 {
     }
     public static String createUS3ExperimentForAlamo (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("input");
             input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("walltime");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("walltime");
             input1.setType(DataType.STRING);
             input1.setValue("-walltime=60");
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("mgroupcount");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("mgroupcount");
             input2.setType(DataType.STRING);
             input2.setValue("-mgroupcount=1");
             
@@ -421,17 +424,17 @@ public class CreateLaunchExperimentUS3 {
             exInputs.add(input2);
 
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("output");
             output.setType(DataType.URI);
             output.setValue("");
-//            DataObjectType output1 = new DataObjectType();
-//            output1.setKey("stdout");
+//            OutputDataObjectType output1 = new OutputDataObjectType();
+//            output1.setName("stdout");
 //            output1.setType(DataType.STDOUT);
 //            output1.setValue("");
-//            DataObjectType output2 = new DataObjectType();
-//            output2.setKey("stderr");
+//            OutputDataObjectType output2 = new OutputDataObjectType();
+//            output2.setName("stderr");
 //            output2.setType(DataType.STDERR);
 //            output2.setValue("");
             exOut.add(output);
@@ -475,16 +478,16 @@ public class CreateLaunchExperimentUS3 {
     }
     public static String createExperimentForStampede(Airavata.Client client) throws TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("echo_input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("echo_input");
             input.setType(DataType.STRING);
             input.setValue("echo_output=Hello World");
             exInputs.add(input);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("echo_output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("echo_output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);

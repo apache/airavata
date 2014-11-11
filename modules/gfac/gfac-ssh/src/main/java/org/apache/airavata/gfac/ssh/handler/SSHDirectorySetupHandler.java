@@ -46,7 +46,7 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         try {
-            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            String hostAddress = jobExecutionContext.getHostName();
             if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
             }
@@ -68,18 +68,17 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
 	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
 		Cluster cluster = null;
 		try{
-            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            String hostAddress = jobExecutionContext.getHostName();
             cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
         if (cluster == null) {
             throw new GFacHandlerException("Security context is not set properly");
         } else {
             log.info("Successfully retrieved the Security Context");
         }
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
-            String workingDirectory = app.getScratchWorkingDirectory();
+            String workingDirectory = jobExecutionContext.getWorkingDir();
             cluster.makeDirectory(workingDirectory);
-            cluster.makeDirectory(app.getInputDataDirectory());
-            cluster.makeDirectory(app.getOutputDataDirectory());
+            cluster.makeDirectory(jobExecutionContext.getInputDir());
+            cluster.makeDirectory(jobExecutionContext.getOutputDir());
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();
             status.setTransferState(TransferState.DIRECTORY_SETUP);

@@ -5621,7 +5621,7 @@ uint32_t Airavata_getExperimentOutputs_result::write(::apache::thrift::protocol:
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> ::const_iterator _iter116;
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter116;
       for (_iter116 = this->success.begin(); _iter116 != this->success.end(); ++_iter116)
       {
         xfer += (*_iter116).write(oprot);
@@ -25467,7 +25467,7 @@ void AiravataClient::recv_getExperimentStatus( ::apache::airavata::model::worksp
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getExperimentStatus failed: unknown result");
 }
 
-void AiravataClient::getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId)
+void AiravataClient::getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId)
 {
   send_getExperimentOutputs(airavataExperimentId);
   recv_getExperimentOutputs(_return);
@@ -25487,7 +25487,7 @@ void AiravataClient::send_getExperimentOutputs(const std::string& airavataExperi
   oprot_->getTransport()->flush();
 }
 
-void AiravataClient::recv_getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return)
+void AiravataClient::recv_getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return)
 {
 
   int32_t rseqid = 0;

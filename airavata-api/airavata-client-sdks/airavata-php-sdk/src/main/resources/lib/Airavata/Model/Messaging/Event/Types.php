@@ -705,7 +705,7 @@ class TaskOutputChangeEvent {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\Workspace\Experiment\DataObjectType',
+            'class' => '\Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType',
             ),
           ),
         2 => array(
@@ -753,7 +753,7 @@ class TaskOutputChangeEvent {
             for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
             {
               $elem5 = null;
-              $elem5 = new \Airavata\Model\Workspace\Experiment\DataObjectType();
+              $elem5 = new \Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType();
               $xfer += $elem5->read($input);
               $this->output []= $elem5;
             }

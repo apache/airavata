@@ -149,7 +149,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getExperimentStatus\n");
   }
 
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getExperimentOutputs\n");
   }

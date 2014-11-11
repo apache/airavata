@@ -78,8 +78,8 @@ import org.slf4j.LoggerFactory;
   private String nodeName; // required
   private ExecutionUnit executionUnit; // required
   private String executionUnitData; // optional
-  private List<DataObjectType> nodeInputs; // optional
-  private List<DataObjectType> nodeOutputs; // optional
+  private List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> nodeInputs; // optional
+  private List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> nodeOutputs; // optional
   private WorkflowNodeStatus workflowNodeStatus; // optional
   private List<TaskDetails> taskDetailsList; // optional
   private List<ErrorDetails> errors; // optional
@@ -192,10 +192,10 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.NODE_INPUTS, new org.apache.thrift.meta_data.FieldMetaData("nodeInputs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DataObjectType.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType.class))));
     tmpMap.put(_Fields.NODE_OUTPUTS, new org.apache.thrift.meta_data.FieldMetaData("nodeOutputs", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DataObjectType.class))));
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType.class))));
     tmpMap.put(_Fields.WORKFLOW_NODE_STATUS, new org.apache.thrift.meta_data.FieldMetaData("workflowNodeStatus", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, WorkflowNodeStatus.class)));
     tmpMap.put(_Fields.TASK_DETAILS_LIST, new org.apache.thrift.meta_data.FieldMetaData("taskDetailsList", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -247,16 +247,16 @@ import org.slf4j.LoggerFactory;
       this.executionUnitData = other.executionUnitData;
     }
     if (other.isSetNodeInputs()) {
-      List<DataObjectType> __this__nodeInputs = new ArrayList<DataObjectType>(other.nodeInputs.size());
-      for (DataObjectType other_element : other.nodeInputs) {
-        __this__nodeInputs.add(new DataObjectType(other_element));
+      List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> __this__nodeInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(other.nodeInputs.size());
+      for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType other_element : other.nodeInputs) {
+        __this__nodeInputs.add(new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType(other_element));
       }
       this.nodeInputs = __this__nodeInputs;
     }
     if (other.isSetNodeOutputs()) {
-      List<DataObjectType> __this__nodeOutputs = new ArrayList<DataObjectType>(other.nodeOutputs.size());
-      for (DataObjectType other_element : other.nodeOutputs) {
-        __this__nodeOutputs.add(new DataObjectType(other_element));
+      List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> __this__nodeOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(other.nodeOutputs.size());
+      for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType other_element : other.nodeOutputs) {
+        __this__nodeOutputs.add(new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType(other_element));
       }
       this.nodeOutputs = __this__nodeOutputs;
     }
@@ -427,22 +427,22 @@ import org.slf4j.LoggerFactory;
     return (this.nodeInputs == null) ? 0 : this.nodeInputs.size();
   }
 
-  public java.util.Iterator<DataObjectType> getNodeInputsIterator() {
+  public java.util.Iterator<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> getNodeInputsIterator() {
     return (this.nodeInputs == null) ? null : this.nodeInputs.iterator();
   }
 
-  public void addToNodeInputs(DataObjectType elem) {
+  public void addToNodeInputs(org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType elem) {
     if (this.nodeInputs == null) {
-      this.nodeInputs = new ArrayList<DataObjectType>();
+      this.nodeInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>();
     }
     this.nodeInputs.add(elem);
   }
 
-  public List<DataObjectType> getNodeInputs() {
+  public List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> getNodeInputs() {
     return this.nodeInputs;
   }
 
-  public void setNodeInputs(List<DataObjectType> nodeInputs) {
+  public void setNodeInputs(List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> nodeInputs) {
     this.nodeInputs = nodeInputs;
   }
 
@@ -465,22 +465,22 @@ import org.slf4j.LoggerFactory;
     return (this.nodeOutputs == null) ? 0 : this.nodeOutputs.size();
   }
 
-  public java.util.Iterator<DataObjectType> getNodeOutputsIterator() {
+  public java.util.Iterator<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getNodeOutputsIterator() {
     return (this.nodeOutputs == null) ? null : this.nodeOutputs.iterator();
   }
 
-  public void addToNodeOutputs(DataObjectType elem) {
+  public void addToNodeOutputs(org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType elem) {
     if (this.nodeOutputs == null) {
-      this.nodeOutputs = new ArrayList<DataObjectType>();
+      this.nodeOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>();
     }
     this.nodeOutputs.add(elem);
   }
 
-  public List<DataObjectType> getNodeOutputs() {
+  public List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> getNodeOutputs() {
     return this.nodeOutputs;
   }
 
-  public void setNodeOutputs(List<DataObjectType> nodeOutputs) {
+  public void setNodeOutputs(List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType> nodeOutputs) {
     this.nodeOutputs = nodeOutputs;
   }
 
@@ -644,7 +644,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetNodeInputs();
       } else {
-        setNodeInputs((List<DataObjectType>)value);
+        setNodeInputs((List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>)value);
       }
       break;
 
@@ -652,7 +652,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetNodeOutputs();
       } else {
-        setNodeOutputs((List<DataObjectType>)value);
+        setNodeOutputs((List<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>)value);
       }
       break;
 
@@ -1182,11 +1182,11 @@ import org.slf4j.LoggerFactory;
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list56 = iprot.readListBegin();
-                struct.nodeInputs = new ArrayList<DataObjectType>(_list56.size);
+                struct.nodeInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list56.size);
                 for (int _i57 = 0; _i57 < _list56.size; ++_i57)
                 {
-                  DataObjectType _elem58;
-                  _elem58 = new DataObjectType();
+                  org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem58;
+                  _elem58 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
                   _elem58.read(iprot);
                   struct.nodeInputs.add(_elem58);
                 }
@@ -1201,11 +1201,11 @@ import org.slf4j.LoggerFactory;
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list59 = iprot.readListBegin();
-                struct.nodeOutputs = new ArrayList<DataObjectType>(_list59.size);
+                struct.nodeOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list59.size);
                 for (int _i60 = 0; _i60 < _list59.size; ++_i60)
                 {
-                  DataObjectType _elem61;
-                  _elem61 = new DataObjectType();
+                  org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem61;
+                  _elem61 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
                   _elem61.read(iprot);
                   struct.nodeOutputs.add(_elem61);
                 }
@@ -1308,7 +1308,7 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(NODE_INPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.nodeInputs.size()));
-            for (DataObjectType _iter68 : struct.nodeInputs)
+            for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter68 : struct.nodeInputs)
             {
               _iter68.write(oprot);
             }
@@ -1322,7 +1322,7 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(NODE_OUTPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.nodeOutputs.size()));
-            for (DataObjectType _iter69 : struct.nodeOutputs)
+            for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter69 : struct.nodeOutputs)
             {
               _iter69.write(oprot);
             }
@@ -1418,7 +1418,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetNodeInputs()) {
         {
           oprot.writeI32(struct.nodeInputs.size());
-          for (DataObjectType _iter72 : struct.nodeInputs)
+          for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter72 : struct.nodeInputs)
           {
             _iter72.write(oprot);
           }
@@ -1427,7 +1427,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetNodeOutputs()) {
         {
           oprot.writeI32(struct.nodeOutputs.size());
-          for (DataObjectType _iter73 : struct.nodeOutputs)
+          for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter73 : struct.nodeOutputs)
           {
             _iter73.write(oprot);
           }
@@ -1477,11 +1477,11 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(2)) {
         {
           org.apache.thrift.protocol.TList _list76 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.nodeInputs = new ArrayList<DataObjectType>(_list76.size);
+          struct.nodeInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list76.size);
           for (int _i77 = 0; _i77 < _list76.size; ++_i77)
           {
-            DataObjectType _elem78;
-            _elem78 = new DataObjectType();
+            org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem78;
+            _elem78 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
             _elem78.read(iprot);
             struct.nodeInputs.add(_elem78);
           }
@@ -1491,11 +1491,11 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(3)) {
         {
           org.apache.thrift.protocol.TList _list79 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.nodeOutputs = new ArrayList<DataObjectType>(_list79.size);
+          struct.nodeOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list79.size);
           for (int _i80 = 0; _i80 < _list79.size; ++_i80)
           {
-            DataObjectType _elem81;
-            _elem81 = new DataObjectType();
+            org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem81;
+            _elem81 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
             _elem81.read(iprot);
             struct.nodeOutputs.add(_elem81);
           }

@@ -50,12 +50,12 @@ public class ResourceConnection {
         MonitorID monitorID = hostMonitorData.getMonitorIDs().get(0);
         try {
             GSISecurityContext securityContext = (GSISecurityContext)
-                    monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress());
+                    monitorID.getJobExecutionContext().getSecurityContext(monitorID.getComputeResourceDescription().getHostName());
             if(securityContext != null) {
                 cluster = (PBSCluster) securityContext.getPbsCluster();
             }else {
                 SSHSecurityContext sshSecurityContext = (SSHSecurityContext)
-                        monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress());
+                        monitorID.getJobExecutionContext().getSecurityContext(monitorID.getComputeResourceDescription().getHostName());
                 cluster = (PBSCluster)sshSecurityContext.getPbsCluster();
             }
 
@@ -71,7 +71,7 @@ public class ResourceConnection {
         MonitorID monitorID = hostMonitorData.getMonitorIDs().get(0);
         try {
             GSISecurityContext securityContext = (GSISecurityContext)
-                    monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress());
+                    monitorID.getJobExecutionContext().getSecurityContext(monitorID.getComputeResourceDescription().getHostName());
             cluster = (PBSCluster) securityContext.getPbsCluster();
 
             // we just use cluster configuration from the incoming request and construct a new cluster because for monitoring

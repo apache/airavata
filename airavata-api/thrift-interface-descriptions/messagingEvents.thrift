@@ -19,6 +19,7 @@
  */
 
 include "experimentModel.thrift"
+include "applicationInterfaceModel.thrift"
 
 namespace java org.apache.airavata.model.messaging.event
 namespace php Airavata.Model.Messaging.Event
@@ -75,7 +76,7 @@ struct TaskStatusChangeRequestEvent {
 }
 
 struct TaskOutputChangeEvent {
-    1: required list<experimentModel.DataObjectType> output;
+    1: required list<applicationInterfaceModel.OutputDataObjectType> output;
     2: required TaskIdentifier taskIdentity;
 }
 

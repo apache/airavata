@@ -21,28 +21,7 @@
 
 package org.apache.airavata.workflow.engine.interpretor;
 
-import java.net.URL;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
-import org.apache.airavata.api.Airavata;
+import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
@@ -52,6 +31,8 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
@@ -59,7 +40,6 @@ import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.WorkflowIdentifier;
 import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.ExecutionUnit;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
@@ -125,10 +105,27 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-
 import xsul5.XmlConstants;
 
-import com.google.common.eventbus.Subscribe;
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+import java.net.URL;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class WorkflowInterpreter implements AbstractActivityListener{
     private static final Logger log = LoggerFactory.getLogger(WorkflowInterpreter.class);
@@ -238,10 +235,10 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		try {
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.RUNNING);
 			ArrayList<Node> inputNodes = this.getInputNodesDynamically();
-			List<DataObjectType> experimentInputs = experiment.getExperimentInputs();
+			List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
 			Map<String,String> inputDataStrings=new HashMap<String, String>();
-			for (DataObjectType dataObjectType : experimentInputs) {
-				inputDataStrings.put(dataObjectType.getKey(), dataObjectType.getValue());
+			for (InputDataObjectType dataObjectType : experimentInputs) {
+				inputDataStrings.put(dataObjectType.getName(), dataObjectType.getValue());
 			}
 			for (Node node : inputNodes) {
                 publishNodeStatusChange(WorkflowNodeState.EXECUTING,node.getID(),experiment.getExperimentID());
@@ -261,8 +258,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				Object portValue = ((InputNode) node).getDefaultValue();
                 //Saving workflow input Node data before running the workflow
 				WorkflowNodeDetails workflowNode = createWorkflowNodeDetails(node);
-				DataObjectType elem = new DataObjectType();
-				elem.setKey(portId);
+                InputDataObjectType elem = new InputDataObjectType();
+				elem.setName(portId);
 				elem.setValue(portValue==null?null:portValue.toString());
 				workflowNode.addToNodeInputs(elem);
 				getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNode, workflowNode.getNodeInstanceId());
@@ -508,8 +505,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
                     String portValue = ((OutputNode) node).getDescription();
 //                    this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowInstanceNodeOutput(workflowInstanceNode, portname + "=" + portValue);
 //                    this.getConfig().getConfiguration().getAiravataAPI().getProvenanceManager().setWorkflowNodeType(workflowInstanceNode, workflowNodeType);
-                    DataObjectType elem = new DataObjectType();
-                    elem.setKey(portname);
+                    OutputDataObjectType elem = new OutputDataObjectType();
+                    elem.setName(portname);
                     elem.setValue(portValue);
 					workflowNodeDetails.addToNodeOutputs(elem);
 					getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, workflowNodeDetails.getNodeInstanceId());
@@ -572,8 +569,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 					throw new WorkFlowInterpreterException("Unable to find output for the node:" + node.getID());
 				}
 				WorkflowNodeDetails workflowNodeDetails = nodeInstanceList.get(node);
-				DataObjectType elem = new DataObjectType();
-				elem.setKey(node.getName());
+                OutputDataObjectType elem = new OutputDataObjectType();
+				elem.setName(node.getName());
 				elem.setValue(val.toString());
 				workflowNodeDetails.addToNodeOutputs(elem);
 				try {
@@ -1061,8 +1058,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
                     portInputValue = outputData.get(dataPort.getEdge(0).getFromPort().getName());
                 }
 			}
-			DataObjectType elem = new DataObjectType();
-			elem.setKey(dataPort.getName());
+            InputDataObjectType elem = new InputDataObjectType();
+            elem.setName(dataPort.getName());
 			elem.setValue(portInputValue);
 			nodeDetails.addToNodeInputs(elem);
 		}
@@ -1079,8 +1076,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		Map<String, String> outputData = nodeOutputData.get(node);
 		for (DataPort dataPort : outputPorts) {
 			String portInputValue = outputData.get(dataPort.getName());
-			DataObjectType elem = new DataObjectType();
-			elem.setKey(dataPort.getName());
+            OutputDataObjectType elem = new OutputDataObjectType();
+			elem.setName(dataPort.getName());
 			elem.setValue(portInputValue);
 			nodeDetails.addToNodeOutputs(elem);
 		}
@@ -1466,13 +1463,13 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		if (isTaskAwaiting(taskId)){
         	WorkflowNodeState state=WorkflowNodeState.COMPLETED;
 			Node node = getAwaitingNodeForTask(taskId);
-    		List<DataObjectType> applicationOutputs = taskOutputEvent.getOutput();
+    		List<OutputDataObjectType> applicationOutputs = taskOutputEvent.getOutput();
 			Map<String, String> outputData = new HashMap<String, String>();
-			for (DataObjectType outputObj : applicationOutputs) {
+			for (OutputDataObjectType outputObj : applicationOutputs) {
 				List<DataPort> outputPorts = node.getOutputPorts();
 				for (DataPort dataPort : outputPorts) {
-					if (dataPort.getName().equals(outputObj.getKey())){
-						outputData.put(outputObj.getKey(), outputObj.getValue());
+					if (dataPort.getName().equals(outputObj.getName())){
+						outputData.put(outputObj.getName(), outputObj.getValue());
 					}
 				}
 			}
