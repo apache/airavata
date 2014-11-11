@@ -44,7 +44,7 @@ public class UNICORESecurityContext extends X509SecurityContext {
 		try{
 			X509Credential cred = getX509Credentials();
 			secProperties = new DefaultClientConfiguration(dcValidator, cred);
-//			setExtraSettings();
+			setExtraSettings();
 		}
 		catch (Exception e) {
 			throw new GFacException(e.getMessage(), e); 
@@ -103,8 +103,8 @@ public class UNICORESecurityContext extends X509SecurityContext {
 			p = new Properties();
 		}
 		
-		p.setProperty("http.connection.timeout", "300000");
-		p.setProperty("http.socket.timeout", "300000");
+		p.setProperty("http.connection.timeout", "5000");
+		p.setProperty("http.socket.timeout", "5000");
 		
 		secProperties.setExtraSettings(p);
 

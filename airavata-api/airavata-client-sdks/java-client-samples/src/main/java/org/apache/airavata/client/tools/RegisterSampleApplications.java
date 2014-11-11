@@ -531,12 +531,17 @@ public class RegisterSampleApplications {
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "Hello World",
                     DataType.STRING, null, false, "A test string to Echo", null);
+            
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo1", "http://shrib.com/22QmrrX4",
+                    DataType.URI, null, false, "A test uri to Echo", null);
 
+            
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
+            applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING);
+                    "22QmrrX4", DataType.STRING);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -1036,7 +1041,7 @@ public class RegisterSampleApplications {
             //Register Echo
             String echoAppDeployId = airavataClient.registerApplicationDeployment(
                     RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, fsdResourceId,
-                            "/bin/date", ApplicationParallelismType.SERIAL, echoDescription));
+                            "/bin/echo", ApplicationParallelismType.SERIAL, echoDescription));
             System.out.println("Echo on FSD deployment Id " + echoAppDeployId);
 
         } catch (TException e) {
