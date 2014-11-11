@@ -122,10 +122,12 @@ public class JSDLUtils
 		SourceTargetType target = newDS.addNewTarget();
 
 		try {
-			uri = (uri == null) ? null : URIUtils.encodeAll(uri);
+			if (uri != null) { 
+				URIUtils.encodeAll(uri);
+				target.setURI(uri);
+			}
 		} catch (URIException e) {
 		}
-		target.setURI(uri);
 		newDS.setFileName(file);
 		if (fileSystem != null && !fileSystem.equals("Work")) {  //$NON-NLS-1$
 			newDS.setFilesystemName(fileSystem);
