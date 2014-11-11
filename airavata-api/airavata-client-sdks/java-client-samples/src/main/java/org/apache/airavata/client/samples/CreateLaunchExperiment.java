@@ -58,9 +58,9 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_7b3cfedd-efe4-4a6f-8201-9ee1891d8ced";
-    private static String wrfAppId = "WRF_d41bdc86-e280-4eb6-a045-708f69a8c116";
-    private static String amberAppId = "Amber_b23ee051-90d6-4892-827e-622a2f6c95ee";
+    private static String echoAppId = "Echo_3f2bb10b-2ee4-48c0-a526-c7c3c53f0a97";
+    private static String wrfAppId = "WRF_a37fb0be-a252-4185-a31c-ff43f585f88f";
+    private static String amberAppId = "Amber_a8187edf-7be0-4dad-9c8a-d0cc9075e6a0";
 
     private static String localHost = "localhost";
     private static String trestlesHostName = "trestles.sdsc.xsede.org";
@@ -75,7 +75,7 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-//                regist?erApplications(); // run this only the first time
+//                registerApplications(); // run this only the first time
                 createAndLaunchExp();
     }
     
@@ -90,14 +90,14 @@ public class CreateLaunchExperiment {
 //    final String expId = createExperimentForSSHHost(airavata);
 //            final String expId = createEchoExperimentForFSD(airavataClient);
 //    final String expId = createEchoExperimentForStampede(airavataClient);
-    final String expId = createEchoExperimentForTrestles(airavataClient);
+//    final String expId = createEchoExperimentForTrestles(airavataClient);
 //    final String expId = createExperimentEchoForLocalHost(airavataClient);
 //    final String expId = createExperimentWRFTrestles(airavataClient);
 //    final String expId = createExperimentForBR2(airavataClient);
 //    final String expId = createExperimentForBR2Amber(airavataClient);
 //    final String expId = createExperimentWRFStampede(airavataClient);
 //    final String expId = createExperimentForStampedeAmber(airavataClient);
-//    final String expId = createExperimentForTrestlesAmber(airavataClient);
+    final String expId = createExperimentForTrestlesAmber(airavataClient);
 
     System.out.println("Experiment ID : " + expId);
 //    updateExperiment(airavata, expId);
@@ -894,19 +894,19 @@ public class CreateLaunchExperiment {
             InputDataObjectType input = new InputDataObjectType();
             input.setName("Heat_Restart_File");
             input.setType(DataType.URI);
-            input.setValue("/Users/lahirugunathilake/Downloads/02_Heat.rst");
+            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/02_Heat.rst");
             exInputs.add(input);
 
             InputDataObjectType input1 = new InputDataObjectType();
             input1.setName("Production_Control_File");
             input1.setType(DataType.URI);
-            input1.setValue("/Users/lahirugunathilake/Downloads/03_Prod.in");
+            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/03_Prod.in");
             exInputs.add(input1);
 
             InputDataObjectType input2 = new InputDataObjectType();
-            input2.setName("Production_Control_File");
+            input2.setName("Parameter_Topology_File");
             input2.setType(DataType.URI);
-            input2.setValue("/Users/lahirugunathilake/Downloads/prmtop");
+            input2.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/prmtop");
             exInputs.add(input2);
 
             List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();

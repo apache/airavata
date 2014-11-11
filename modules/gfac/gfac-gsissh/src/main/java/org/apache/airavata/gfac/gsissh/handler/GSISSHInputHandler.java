@@ -115,7 +115,7 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {
                 InputDataObjectType inputParamType = (InputDataObjectType) input.getParameters().get(paramName);
-                String paramValue = inputParamType.getName();
+                String paramValue = inputParamType.getValue();
                 //TODO: Review this with type
                 if (inputParamType.getType() == DataType.URI) {
                     if (index < oldIndex) {
