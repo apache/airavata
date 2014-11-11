@@ -41,11 +41,11 @@ class ComputeResourcePreference {
           ),
         3 => array(
           'var' => 'preferredJobSubmissionProtocol',
-          'type' => TType::STRING,
+          'type' => TType::I32,
           ),
         4 => array(
           'var' => 'preferredDataMovementProtocol',
-          'type' => TType::STRING,
+          'type' => TType::I32,
           ),
         5 => array(
           'var' => 'preferredBatchQueue',
@@ -120,15 +120,15 @@ class ComputeResourcePreference {
           }
           break;
         case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->preferredJobSubmissionProtocol);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->preferredJobSubmissionProtocol);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->preferredDataMovementProtocol);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->preferredDataMovementProtocol);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -178,13 +178,13 @@ class ComputeResourcePreference {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->preferredJobSubmissionProtocol !== null) {
-      $xfer += $output->writeFieldBegin('preferredJobSubmissionProtocol', TType::STRING, 3);
-      $xfer += $output->writeString($this->preferredJobSubmissionProtocol);
+      $xfer += $output->writeFieldBegin('preferredJobSubmissionProtocol', TType::I32, 3);
+      $xfer += $output->writeI32($this->preferredJobSubmissionProtocol);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->preferredDataMovementProtocol !== null) {
-      $xfer += $output->writeFieldBegin('preferredDataMovementProtocol', TType::STRING, 4);
-      $xfer += $output->writeString($this->preferredDataMovementProtocol);
+      $xfer += $output->writeFieldBegin('preferredDataMovementProtocol', TType::I32, 4);
+      $xfer += $output->writeI32($this->preferredDataMovementProtocol);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->preferredBatchQueue !== null) {

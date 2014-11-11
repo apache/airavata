@@ -20,21 +20,19 @@
 */
 package org.apache.airavata.gfac.gsissh.util;
 
-import java.sql.SQLException;
-import java.util.*;
-
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
-import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
+import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
@@ -47,22 +45,21 @@ import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.FileArrayType;
-import org.apache.airavata.schemas.gfac.GlobusHostType;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
-import org.apache.airavata.schemas.gfac.SSHHostType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
-import org.apache.openjpa.lib.log.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.Max;
+import java.util.*;
 
 
 public class GFACGSISSHUtils {
@@ -74,32 +71,35 @@ public class GFACGSISSHUtils {
     public static int maxClusterCount = 5;
     public static Map<String, List<Cluster>> clusters = new HashMap<String, List<Cluster>>();
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
-        HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
-        if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType
-                || registeredHost.getType() instanceof SSHHostType) {
-            logger.error("This is a wrong method to invoke to non ssh host types,please check your gfac-config.xml");
-        } else if (registeredHost.getType() instanceof GsisshHostType) {
-            String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
-            RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
-            requestData.setTokenId(credentialStoreToken);
-            PBSCluster pbsCluster = null;
-            GSISecurityContext context = null;
-            try {
+        JobSubmissionInterface jobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
+        JobSubmissionProtocol jobProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
+        try {
+            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+            if (jobProtocol == JobSubmissionProtocol.GLOBUS || jobProtocol == JobSubmissionProtocol.UNICORE
+                    || jobProtocol == JobSubmissionProtocol.CLOUD || jobProtocol == JobSubmissionProtocol.LOCAL) {
+                logger.error("This is a wrong method to invoke to non ssh host types,please check your gfac-config.xml");
+            } else if (jobProtocol == JobSubmissionProtocol.SSH && sshJobSubmission.getSecurityProtocol() == SecurityProtocol.GSI) {
+                String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
+                RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
+                requestData.setTokenId(credentialStoreToken);
+                PBSCluster pbsCluster = null;
+                GSISecurityContext context = null;
+
                 TokenizedMyProxyAuthInfo tokenizedMyProxyAuthInfo = new TokenizedMyProxyAuthInfo(requestData);
                 CredentialReader credentialReader = GFacUtils.getCredentialReader();
-                if(credentialReader != null){
-                	CertificateCredential credential = null;
-					try {
-						credential = (CertificateCredential)credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
-			      		requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
-					} catch (Exception e) {
-						logger.error(e.getLocalizedMessage());
-					}
+                if (credentialReader != null) {
+                    CertificateCredential credential = null;
+                    try {
+                        credential = (CertificateCredential) credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
+                        requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
+                    } catch (Exception e) {
+                        logger.error(e.getLocalizedMessage());
+                    }
                 }
 
-                GsisshHostType gsisshHostType = (GsisshHostType) registeredHost.getType();
-                String key = requestData.getMyProxyUserName() + registeredHost.getType().getHostAddress() +
-                        gsisshHostType.getPort();
+                String key = requestData.getMyProxyUserName() + jobExecutionContext.getHostName()+
+                        sshJobSubmission.getSshPort();
                 boolean recreate = false;
                 synchronized (clusters) {
                     if (clusters.containsKey(key) && clusters.get(key).size() < maxClusterCount) {
@@ -112,7 +112,7 @@ public class GFACGSISSHUtils {
                             clusters.get(key).remove(i);
                             recreate = true;
                         }
-                        if(!recreate) {
+                        if (!recreate) {
                             try {
                                 pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
                             } catch (Exception e) {
@@ -129,13 +129,12 @@ public class GFACGSISSHUtils {
                     }
 
                     if (recreate) {
-                        ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), registeredHost.getType().getHostAddress(),
-                                gsisshHostType.getPort());
+                        ServerInfo serverInfo = new ServerInfo(requestData.getMyProxyUserName(), jobExecutionContext.getHostName(),
+                                sshJobSubmission.getSshPort());
 
                         JobManagerConfiguration jConfig = null;
-                        String installedParentPath = ((HpcApplicationDeploymentType)
-                                jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType()).getInstalledParentPath();
-                        String jobManager = ((GsisshHostType) registeredHost.getType()).getJobManager();
+                        String installedParentPath = sshJobSubmission.getResourceJobManager().getJobManagerBinPath();
+                        String jobManager = sshJobSubmission.getResourceJobManager().getResourceJobManagerType().toString();
                         if (jobManager == null) {
                             logger.error("No Job Manager is configured, so we are picking pbs as the default job manager");
                             jConfig = CommonUtils.getPBSJobManager(installedParentPath);
@@ -160,99 +159,83 @@ public class GFACGSISSHUtils {
                         clusters.put(key, pbsClusters);
                     }
                 }
-            } catch (Exception e) {
-                throw new GFacException("An error occurred while creating GSI security context", e);
+
+                jobExecutionContext.addSecurityContext(jobExecutionContext.getHostName(), context);
             }
-            jobExecutionContext.addSecurityContext(registeredHost.getType().getHostAddress(), context);
+        } catch (Exception e) {
+            throw new GFacException("An error occurred while creating GSI security context", e);
         }
     }
 
-    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext,
-                                                    ApplicationDeploymentDescriptionType app, Cluster cluster) {
+    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
+        ApplicationContext applicationContext = jobExecutionContext.getApplicationContext();
+        ApplicationDeploymentDescription app = applicationContext.getApplicationDeploymentDescription();
+        TaskDetails taskData = jobExecutionContext.getTaskData();
         // this is common for any application descriptor
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
         jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
-        jobDescriptor.setInputDirectory(app.getInputDataDirectory());
-        jobDescriptor.setOutputDirectory(app.getOutputDataDirectory());
-        jobDescriptor.setExecutablePath(app.getExecutableLocation());
-        jobDescriptor.setStandardOutFile(app.getStandardOutput());
-        jobDescriptor.setStandardErrorFile(app.getStandardError());
+        jobDescriptor.setInputDirectory(jobExecutionContext.getInputDir());
+        jobDescriptor.setOutputDirectory(jobExecutionContext.getOutputDir());
+        jobDescriptor.setExecutablePath(jobExecutionContext.getExecutablePath());
+        jobDescriptor.setStandardOutFile(jobExecutionContext.getStandardOutput());
+        jobDescriptor.setStandardErrorFile(jobExecutionContext.getStandardError());
         Random random = new Random();
         int i = random.nextInt(Integer.MAX_VALUE); // We always set the job name
         jobDescriptor.setJobName("A" + String.valueOf(i+99999999));
-        jobDescriptor.setWorkingDirectory(app.getStaticWorkingDirectory());
+        jobDescriptor.setWorkingDirectory(jobExecutionContext.getWorkingDir());
 
         List<String> inputValues = new ArrayList<String>();
         MessageContext input = jobExecutionContext.getInMessageContext();
         Map<String, Object> inputs = input.getParameters();
         Set<String> keys = inputs.keySet();
         for (String paramName : keys) {
-            ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
-            if ("URIArray".equals(actualParameter.getType().getType().toString()) || "StringArray".equals(actualParameter.getType().getType().toString())
-                    || "FileArray".equals(actualParameter.getType().getType().toString())) {
-                String[] values = null;
-                if (actualParameter.getType() instanceof URIArrayType) {
-                    values = ((URIArrayType) actualParameter.getType()).getValueArray();
-                } else if (actualParameter.getType() instanceof StringArrayType) {
-                    values = ((StringArrayType) actualParameter.getType()).getValueArray();
-                } else if (actualParameter.getType() instanceof FileArrayType) {
-                    values = ((FileArrayType) actualParameter.getType()).getValueArray();
-                }
-                String value = StringUtil.createDelimiteredString(values, " ");
-                inputValues.add(value);
-            } else {
-                String paramValue = MappingFactory.toString(actualParameter);
-                inputValues.add(paramValue);
-            }
+            InputDataObjectType inputDataObjectType = (InputDataObjectType) inputs.get(paramName);
+            inputValues.add(inputDataObjectType.getValue());
         }
         jobDescriptor.setInputValues(inputValues);
 
-        // this part will fill out the hpcApplicationDescriptor
-        if (app instanceof HpcApplicationDeploymentType) {
-            HpcApplicationDeploymentType applicationDeploymentType
-                    = (HpcApplicationDeploymentType) app;
-            jobDescriptor.setUserName(((GSISSHAbstractCluster)cluster).getServerInfo().getUserName());
-            jobDescriptor.setShellName("/bin/bash");
-            jobDescriptor.setAllEnvExport(true);
-            jobDescriptor.setMailOptions("n");
-            jobDescriptor.setNodes(applicationDeploymentType.getNodeCount());
-            jobDescriptor.setProcessesPerNode(applicationDeploymentType.getProcessorsPerNode());
-            jobDescriptor.setMaxWallTime(String.valueOf(applicationDeploymentType.getMaxWallTime()));
-            jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
-            jobDescriptor.setCPUCount(applicationDeploymentType.getCpuCount());
-            if (applicationDeploymentType.getProjectAccount() != null) {
-                if (applicationDeploymentType.getProjectAccount().getProjectAccountNumber() != null) {
-                    jobDescriptor.setAcountString(applicationDeploymentType.getProjectAccount().getProjectAccountNumber());
-                }
+        jobDescriptor.setUserName(((GSISSHAbstractCluster) cluster).getServerInfo().getUserName());
+        jobDescriptor.setShellName("/bin/bash");
+        jobDescriptor.setAllEnvExport(true);
+        jobDescriptor.setMailOptions("n");
+        jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
+
+        ComputationalResourceScheduling taskScheduling = taskData.getTaskScheduling();
+        if (taskScheduling != null) {
+            int totalNodeCount = taskScheduling.getNodeCount();
+            int totalCPUCount = taskScheduling.getTotalCPUCount();
+
+//        jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
+            if (taskScheduling.getComputationalProjectAccount() != null) {
+                jobDescriptor.setAcountString(taskScheduling.getComputationalProjectAccount());
             }
-            if (applicationDeploymentType.getQueue() != null) {
-                if (applicationDeploymentType.getQueue().getQueueName() != null) {
-                    jobDescriptor.setQueueName(applicationDeploymentType.getQueue().getQueueName());
-                }
-            }
-            jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
-            TaskDetails taskData = jobExecutionContext.getTaskData();
-            if (taskData != null && taskData.isSetTaskScheduling()) {
-                ComputationalResourceScheduling computionnalResource = taskData.getTaskScheduling();
-                if (computionnalResource.getNodeCount() > 0) {
-                    jobDescriptor.setNodes(computionnalResource.getNodeCount());
-                }
-                if (computionnalResource.getComputationalProjectAccount() != null) {
-                    jobDescriptor.setAcountString(computionnalResource.getComputationalProjectAccount());
-                }
-                if (computionnalResource.getQueueName() != null) {
-                    jobDescriptor.setQueueName(computionnalResource.getQueueName());
-                }
-                if (computionnalResource.getTotalCPUCount() > 0) {
-                    jobDescriptor.setProcessesPerNode(computionnalResource.getTotalCPUCount());
-                }
-                if (computionnalResource.getWallTimeLimit() > 0) {
-                    jobDescriptor.setMaxWallTime(String.valueOf(computionnalResource.getWallTimeLimit()));
-                }
+            if (taskScheduling.getQueueName() != null) {
+                jobDescriptor.setQueueName(taskScheduling.getQueueName());
             }
 
+            if (totalNodeCount > 0) {
+                jobDescriptor.setNodes(totalNodeCount);
+            }
+            if (taskScheduling.getComputationalProjectAccount() != null) {
+                jobDescriptor.setAcountString(taskScheduling.getComputationalProjectAccount());
+            }
+            if (taskScheduling.getQueueName() != null) {
+                jobDescriptor.setQueueName(taskScheduling.getQueueName());
+            }
+            if (totalCPUCount > 0) {
+                int ppn = totalCPUCount / totalNodeCount;
+                jobDescriptor.setProcessesPerNode(ppn);
+                jobDescriptor.setCPUCount(totalCPUCount);
+            }
+            if (taskScheduling.getWallTimeLimit() > 0) {
+                jobDescriptor.setMaxWallTime(String.valueOf(taskScheduling.getWallTimeLimit()));
+            }
+        } else {
+            logger.error("Task scheduling cannot be null at this point..");
         }
+
+
         return jobDescriptor;
     }
 }

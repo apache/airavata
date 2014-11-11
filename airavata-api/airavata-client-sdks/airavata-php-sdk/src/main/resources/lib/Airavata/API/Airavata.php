@@ -11357,7 +11357,7 @@ class Airavata_getExperimentOutputs_result {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\Workspace\Experiment\DataObjectType',
+            'class' => '\Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType',
             ),
           ),
         1 => array(
@@ -11429,7 +11429,7 @@ class Airavata_getExperimentOutputs_result {
             for ($_i74 = 0; $_i74 < $_size70; ++$_i74)
             {
               $elem75 = null;
-              $elem75 = new \Airavata\Model\Workspace\Experiment\DataObjectType();
+              $elem75 = new \Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType();
               $xfer += $elem75->read($input);
               $this->success []= $elem75;
             }

@@ -33,6 +33,10 @@ import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.notification.GFacNotifier;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -52,12 +56,14 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     private GFacNotifier notifier;
 
+    //FIXME : not needed for gfac
     private Experiment experiment;
 
     private TaskDetails taskData;
 
     private JobDetails jobDetails;
 
+    // FIXME : not needed for gfac
     private WorkflowNodeDetails workflowNodeDetails;
 
     private GFac gfac;
@@ -65,6 +71,54 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     private ZooKeeper zk;
 
     private String credentialStoreToken;
+    /**
+     * User defined scratch/temp directory
+     */
+    private String scratchLocation;
+    /**
+     * User defined working directory.
+     */
+    private String workingDir;
+    /**
+     * Input data directory
+     */
+    private String inputDir;
+    /**
+     * Output data directory
+     */
+    private String outputDir;
+    /**
+     * standard output file path
+     */
+    private String standardOutput;
+    /**
+     * standard error file path
+     */
+    private String standardError;
+    /**
+     * User preferred job submission protocol.
+     */
+    private JobSubmissionProtocol preferredJobSubmissionProtocol;
+    /**
+     * User preferred data movement protocol.
+     */
+    private DataMovementProtocol preferredDataMovementProtocol;
+    /**
+     * List of job submission protocols sorted by priority order.
+     */
+    private List<JobSubmissionInterface> hostPrioritizedJobSubmissionInterfaces;
+    /**
+     * use preferred job submission protocol.
+     */
+    private JobSubmissionInterface preferredJobSubmissionInterface;
+    /**
+     * List of job submission protocols sorted by priority order.
+     */
+    private List<DataMovementInterface> hostPrioritizedDataMovementInterfaces;
+    /**
+     * use preferred job submission protocol.
+     */
+    private DataMovementInterface preferredDataMovementInterface;
 
 //    private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -89,7 +143,7 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     // a scientific application(or algorithm) as a service. Service name is there to identify to
     // which service description we should refer during the execution of the current job represented
     // by this context instance.
-    private String serviceName;
+    private String applicationName;
 
     private String experimentID;
 
@@ -116,10 +170,10 @@ public class JobExecutionContext extends AbstractContext implements Serializable
      */
     private Map<String, SecurityContext> securityContext = new HashMap<String, SecurityContext>();
 
-    public JobExecutionContext(GFacConfiguration gFacConfiguration,String serviceName){
+    public JobExecutionContext(GFacConfiguration gFacConfiguration,String applicationName){
         this.gfacConfiguration = gFacConfiguration;
         notifier = new GFacNotifier();
-        setServiceName(serviceName);
+        setApplicationName(applicationName);
         outputFileList = new ArrayList<String>();
     }
 
@@ -188,12 +242,12 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         this.outHandlers = outHandlers;
     }
 
-    public String getServiceName() {
-        return serviceName;
+    public String getApplicationName() {
+        return applicationName;
     }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
     }
 
     public GFacNotifier getNotifier() {
@@ -224,15 +278,6 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         this.inPath = false;
     }
 
-//    public ContextHeaderDocument.ContextHeader getContextHeader() {
-//        return contextHeader;
-//    }
-//
-//    public void setContextHeader(ContextHeaderDocument.ContextHeader contextHeader) {
-//        this.contextHeader = contextHeader;
-//    }
-
-	
 	public SecurityContext getSecurityContext(String name) throws GFacException{
 		SecurityContext secContext = securityContext.get(name);
 		return secContext;
@@ -316,5 +361,113 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public void setCredentialStoreToken(String credentialStoreToken) {
         this.credentialStoreToken = credentialStoreToken;
+    }
+
+    public String getScratchLocation() {
+        return scratchLocation;
+    }
+
+    public void setScratchLocation(String scratchLocation) {
+        this.scratchLocation = scratchLocation;
+    }
+
+    public String getWorkingDir() {
+        return workingDir;
+    }
+
+    public void setWorkingDir(String workingDir) {
+        this.workingDir = workingDir;
+    }
+
+    public String getInputDir() {
+        return inputDir;
+    }
+
+    public void setInputDir(String inputDir) {
+        this.inputDir = inputDir;
+    }
+
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    public void setOutputDir(String outputDir) {
+        this.outputDir = outputDir;
+    }
+
+    public String getStandardOutput() {
+        return standardOutput;
+    }
+
+    public void setStandardOutput(String standardOutput) {
+        this.standardOutput = standardOutput;
+    }
+
+    public String getStandardError() {
+        return standardError;
+    }
+
+    public void setStandardError(String standardError) {
+        this.standardError = standardError;
+    }
+
+    public JobSubmissionProtocol getPreferredJobSubmissionProtocol() {
+        return preferredJobSubmissionProtocol;
+    }
+
+    public void setPreferredJobSubmissionProtocol(JobSubmissionProtocol preferredJobSubmissionProtocol) {
+        this.preferredJobSubmissionProtocol = preferredJobSubmissionProtocol;
+    }
+
+    public DataMovementProtocol getPreferredDataMovementProtocol() {
+        return preferredDataMovementProtocol;
+    }
+
+    public void setPreferredDataMovementProtocol(DataMovementProtocol preferredDataMovementProtocol) {
+        this.preferredDataMovementProtocol = preferredDataMovementProtocol;
+    }
+
+    public List<JobSubmissionInterface> getHostPrioritizedJobSubmissionInterfaces() {
+        return hostPrioritizedJobSubmissionInterfaces;
+    }
+
+    public void setHostPrioritizedJobSubmissionInterfaces(List<JobSubmissionInterface> hostPrioritizedJobSubmissionInterfaces) {
+        this.hostPrioritizedJobSubmissionInterfaces = hostPrioritizedJobSubmissionInterfaces;
+    }
+
+    public JobSubmissionInterface getPreferredJobSubmissionInterface() {
+        return preferredJobSubmissionInterface;
+    }
+
+    public void setPreferredJobSubmissionInterface(JobSubmissionInterface preferredJobSubmissionInterface) {
+        this.preferredJobSubmissionInterface = preferredJobSubmissionInterface;
+    }
+
+    public String getHostName() {
+        return applicationContext.getComputeResourceDescription().getHostName();
+    }
+
+    public List<DataMovementInterface> getHostPrioritizedDataMovementInterfaces() {
+        return hostPrioritizedDataMovementInterfaces;
+    }
+
+    public void setHostPrioritizedDataMovementInterfaces(List<DataMovementInterface> hostPrioritizedDataMovementInterfaces) {
+        this.hostPrioritizedDataMovementInterfaces = hostPrioritizedDataMovementInterfaces;
+    }
+
+    public DataMovementInterface getPreferredDataMovementInterface() {
+        return preferredDataMovementInterface;
+    }
+
+    public void setPreferredDataMovementInterface(DataMovementInterface preferredDataMovementInterface) {
+        this.preferredDataMovementInterface = preferredDataMovementInterface;
+    }
+
+    public String getExecutablePath() {
+        if (applicationContext == null || applicationContext.getApplicationDeploymentDescription() == null) {
+            return null;
+        } else {
+            return applicationContext.getApplicationDeploymentDescription().getExecutablePath();
+        }
     }
 }

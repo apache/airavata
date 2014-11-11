@@ -25,17 +25,19 @@ package org.apache.airavata.orchestrator.sample;
 //import org.apache.airavata.client.api.AiravataAPI;
 //import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 //import org.apache.airavata.client.tools.DocumentCreator;
-import java.util.ArrayList;
-import java.util.List;
 
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.thrift.TException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class OrchestratorClientSample {
 //    private static DocumentCreator documentCreator;
@@ -86,17 +88,17 @@ public class OrchestratorClientSample {
         for (int i = 0; i < NUM_CONCURRENT_REQUESTS; i++) {
             Thread thread = new Thread() {
                 public void run() {
-                    List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-                    DataObjectType input = new DataObjectType();
-                    input.setKey("echo_input");
+                    List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+                    InputDataObjectType input = new InputDataObjectType();
+                    input.setName("echo_input");
                     input.setType(DataType.STRING);
                     input.setValue("echo_output=Hello World");
                     exInputs.add(input);
 
 
-                    List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-                    DataObjectType output = new DataObjectType();
-                    output.setKey("echo_output");
+                    List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+                    OutputDataObjectType output = new OutputDataObjectType();
+                    output.setName("echo_output");
                     output.setType(DataType.STRING);
                     output.setValue("");
                     exOut.add(output);

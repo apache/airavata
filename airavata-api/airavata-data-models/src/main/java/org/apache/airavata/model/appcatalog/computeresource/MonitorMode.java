@@ -21,23 +21,31 @@
  * DO NOT EDIT UNLESS YOU ARE SURE THAT YOU KNOW WHAT YOU ARE DOING
  *  @generated
  */
-package org.apache.airavata.model.workspace.experiment;
+package org.apache.airavata.model.appcatalog.computeresource;
 
 
 import java.util.Map;
 import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
-@SuppressWarnings("all") public enum DataType implements org.apache.thrift.TEnum {
-  STRING(0),
-  INTEGER(1),
-  URI(2),
-  STDOUT(3),
-  STDERR(4);
+/**
+ * Monitoring modes
+ * 
+ * POLL_JOB_MANAGER:
+ * GFac need to pull job status changes.
+ * 
+ * XSEDE_AMQP_SUBSCRIBE:
+ * Server will publish job status changes to amqp servert.
+ * 
+ * 
+ */
+@SuppressWarnings("all") public enum MonitorMode implements org.apache.thrift.TEnum {
+  POLL_JOB_MANAGER(0),
+  XSEDE_AMQP_SUBSCRIBE(1);
 
   private final int value;
 
-  private DataType(int value) {
+  private MonitorMode(int value) {
     this.value = value;
   }
 
@@ -52,18 +60,12 @@ import org.apache.thrift.TEnum;
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static DataType findByValue(int value) { 
+  public static MonitorMode findByValue(int value) { 
     switch (value) {
       case 0:
-        return STRING;
+        return POLL_JOB_MANAGER;
       case 1:
-        return INTEGER;
-      case 2:
-        return URI;
-      case 3:
-        return STDOUT;
-      case 4:
-        return STDERR;
+        return XSEDE_AMQP_SUBSCRIBE;
       default:
         return null;
     }

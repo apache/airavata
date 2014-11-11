@@ -25,6 +25,7 @@ import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
@@ -35,15 +36,12 @@ import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.core.PullMonitor;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.gfac.monitor.impl.push.amqp.SimpleJobFinishConsumer;
-import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.airavata.schemas.gfac.SSHHostType;
-import org.apache.zookeeper.ZooKeeper;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -159,20 +157,19 @@ public class HPCPullMonitor extends PullMonitor {
             take = this.queue.take();
             List<HostMonitorData> hostMonitorData = take.getHostMonitorData();
             for (HostMonitorData iHostMonitorData : hostMonitorData) {
-                if (iHostMonitorData.getHost().getType() instanceof GsisshHostType
-                        || iHostMonitorData.getHost().getType() instanceof SSHHostType) {
-                    String hostName =  iHostMonitorData.getHost().getType().getHostAddress();
+                if (iHostMonitorData.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
+                    String hostName = iHostMonitorData.getComputeResourceDescription().getHostName();
                     ResourceConnection connection = null;
                     if (connections.containsKey(hostName)) {
-                        if(!connections.get(hostName).isConnected()){
-                            connection = new ResourceConnection(iHostMonitorData,getAuthenticationInfo());
+                        if (!connections.get(hostName).isConnected()) {
+                            connection = new ResourceConnection(iHostMonitorData, getAuthenticationInfo());
                             connections.put(hostName, connection);
-                        }else{
+                        } else {
                             logger.debug("We already have this connection so not going to create one");
                             connection = connections.get(hostName);
                         }
                     } else {
-                        connection = new ResourceConnection(iHostMonitorData,getAuthenticationInfo());
+                        connection = new ResourceConnection(iHostMonitorData, getAuthenticationInfo());
                         connections.put(hostName, connection);
                     }
 
@@ -207,7 +204,7 @@ public class HPCPullMonitor extends PullMonitor {
                             MonitorID iMonitorID = monitorIDListIterator.next();
                             String completeId = null;
                             while (iterator.hasNext()) {
-                                 completeId = iterator.next();
+                                completeId = iterator.next();
                                 if (completeId.equals(iMonitorID.getUserName() + "," + iMonitorID.getJobName())) {
                                     logger.info("This job is finished because push notification came with <username,jobName> " + completeId);
                                     iMonitorID.setStatus(JobState.COMPLETE);
@@ -257,8 +254,7 @@ public class HPCPullMonitor extends PullMonitor {
                         MonitorID iMonitorID = iterator.next();
                         if (iMonitorID.getFailedCount() > FAILED_COUNT) {
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
-                            String outputDir = iMonitorID.getJobExecutionContext().getApplicationContext()
-                                    .getApplicationDeploymentDescription().getType().getOutputDataDirectory();
+                            String outputDir = iMonitorID.getJobExecutionContext().getOutputDir();
                             List<String> stdOut = null;
                             try {
                                 stdOut = connection.getCluster().listDirectory(outputDir); // check the outputs directory
@@ -293,8 +289,8 @@ public class HPCPullMonitor extends PullMonitor {
 
 
                 } else {
-                    logger.debug("Qstat Monitor doesn't handle non-gsissh hosts , host {}", iHostMonitorData.getHost()
-                            .getType().getHostAddress());
+                    logger.debug("Qstat Monitor doesn't handle non-gsissh hosts , host {}", iHostMonitorData.
+                            getComputeResourceDescription().getHostName());
                 }
             }
             // We have finished all the HostMonitorData object in userMonitorData, now we need to put it back

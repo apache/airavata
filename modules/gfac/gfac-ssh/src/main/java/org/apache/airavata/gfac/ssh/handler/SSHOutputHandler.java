@@ -20,18 +20,6 @@
 */
 package org.apache.airavata.gfac.ssh.handler;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
-import net.schmizz.sshj.connection.ConnectionException;
-import net.schmizz.sshj.transport.TransportException;
-
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -42,54 +30,30 @@ import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TransferState;
+import org.apache.airavata.model.workspace.experiment.TransferStatus;
 import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.RegistryModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class SSHOutputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(SSHOutputHandler.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        if (jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof GsisshHostType) { // this is because we don't have the right jobexecution context
-            // so attempting to get it from the registry
-            if (Constants.PUSH.equals(((GsisshHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getMonitorMode())) { // this is because we don't have the right jobexecution context
-                // so attempting to get it from the registry
-                log.warn("During the out handler chain jobExecution context came null, so trying to handler");
-                ApplicationDescription applicationDeploymentDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
-                TaskDetails taskData = null;
-                try {
-                    taskData = (TaskDetails) registry.get(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
-                } catch (RegistryException e) {
-                    log.error("Error retrieving job details from Registry");
-                    throw new GFacHandlerException("Error retrieving job details from Registry", e);
-                }
-                JobDetails jobDetails = taskData.getJobDetailsList().get(0);
-                String jobDescription = jobDetails.getJobDescription();
-                if (jobDescription != null) {
-                    JobDescriptor jobDescriptor = null;
-                    try {
-                        jobDescriptor = JobDescriptor.fromXML(jobDescription);
-                    } catch (XmlException e1) {
-                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                    applicationDeploymentDescription.getType().setScratchWorkingDirectory(
-                            jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getWorkingDirectory());
-                    applicationDeploymentDescription.getType().setInputDataDirectory(jobDescriptor.getInputDirectory());
-                    applicationDeploymentDescription.getType().setOutputDataDirectory(jobDescriptor.getOutputDirectory());
-                    applicationDeploymentDescription.getType().setStandardError(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardErrorFile());
-                    applicationDeploymentDescription.getType().setStandardOutput(jobDescriptor.getJobDescriptorDocument().getJobDescriptor().getStandardOutFile());
-                }
-            }
-        }
-        String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+        String hostAddress = jobExecutionContext.getHostName();
         try {
             if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
@@ -97,10 +61,10 @@ public class SSHOutputHandler extends AbstractHandler {
         } catch (Exception e) {
             log.error(e.getMessage());
             try {
- 				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
- 			} catch (GFacException e1) {
- 				 log.error(e1.getLocalizedMessage());
- 			}
+                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            } catch (GFacException e1) {
+                log.error(e1.getLocalizedMessage());
+            }
             throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
         }
 
@@ -108,8 +72,6 @@ public class SSHOutputHandler extends AbstractHandler {
         DataTransferDetails detail = new DataTransferDetails();
         TransferStatus status = new TransferStatus();
 
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
-                .getApplicationDeploymentDescription().getType();
         Cluster cluster = null;
         try {
              cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
@@ -142,19 +104,19 @@ public class SSHOutputHandler extends AbstractHandler {
 //            cluster.makeDirectory(outputDataDir);
             int i = 0;
             String stdOutStr = "";
-            while(stdOutStr.isEmpty()){ 		
-            try {
-            	cluster.scpFrom(app.getStandardOutput(), localStdOutFile.getAbsolutePath());
-                stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
-			} catch (Exception e) {
-				log.error(e.getLocalizedMessage());
-				Thread.sleep(2000);
-			}
-            i++;
-            if(i == 3) break;
+            while (stdOutStr.isEmpty()) {
+                try {
+                    cluster.scpFrom(jobExecutionContext.getStandardOutput(), localStdOutFile.getAbsolutePath());
+                    stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
+                } catch (Exception e) {
+                    log.error(e.getLocalizedMessage());
+                    Thread.sleep(2000);
+                }
+                i++;
+                if (i == 3) break;
             }
             Thread.sleep(1000);
-            cluster.scpFrom(app.getStandardError(), localStdErrFile.getAbsolutePath());
+            cluster.scpFrom(jobExecutionContext.getStandardError(), localStdErrFile.getAbsolutePath());
             Thread.sleep(1000);
 
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
@@ -169,79 +131,80 @@ public class SSHOutputHandler extends AbstractHandler {
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
 
-            List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
+            List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             Set<String> keys = output.keySet();
             for (String paramName : keys) {
-                ActualParameter actualParameter = (ActualParameter) output.get(paramName);
-                if ("URI".equals(actualParameter.getType().getType().toString())) {
+                OutputDataObjectType actualParameter = (OutputDataObjectType) output.get(paramName);
+                if (DataType.URI == actualParameter.getType()) {
                     List<String> outputList = null;
-                    int retry=3;
-                    while(retry>0){
-                    	 outputList = cluster.listDirectory(app.getOutputDataDirectory());
-                    	 if(outputList.size() > 0){
-                    		 break;
-                    	 }	
-                    	 retry--;
-                    	 Thread.sleep(2000);
+                    int retry = 3;
+                    while (retry > 0) {
+                        outputList = cluster.listDirectory(jobExecutionContext.getOutputDir());
+                        if (outputList.size() > 0) {
+                            break;
+                        }
+                        retry--;
+                        Thread.sleep(2000);
                     }
-                  
+
                     if (outputList.size() == 0 || outputList.get(0).isEmpty() || outputList.size() > 0) {
-                        OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr,outputArray);
+                        OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
                         Set<String> strings = output.keySet();
                         outputArray.clear();
                         for (String key : strings) {
-                            ActualParameter actualParameter1 = (ActualParameter) output.get(key);
-                            if ("URI".equals(actualParameter1.getType().getType().toString())) {
-                              	String downloadFile = MappingFactory.toString(actualParameter1);
-                            	cluster.scpFrom(downloadFile, outputDataDir);
-                            	String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar)+1, downloadFile.length());
-                            	String localFile = outputDataDir +  File.separator +fileName;
-								jobExecutionContext.addOutputFile(localFile);
-								MappingFactory.fromString(actualParameter1, localFile);
-								DataObjectType dataObjectType = new DataObjectType();
+                            OutputDataObjectType actualParameter1 = (OutputDataObjectType) output.get(key);
+                            if (DataType.URI == actualParameter1.getType()) {
+                                String downloadFile = actualParameter1.getValue();
+                                cluster.scpFrom(downloadFile, outputDataDir);
+                                String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar) + 1, downloadFile.length());
+                                String localFile = outputDataDir + File.separator + fileName;
+                                jobExecutionContext.addOutputFile(localFile);
+                                actualParameter1.setValue(localFile);
+                                OutputDataObjectType dataObjectType = new OutputDataObjectType();
                                 dataObjectType.setValue(localFile);
-                                dataObjectType.setKey(key);
+                                dataObjectType.setName(key);
                                 dataObjectType.setType(DataType.URI);
                                 outputArray.add(dataObjectType);
                             }
                         }
-                    
+
                         break;
-                    } else if( outputList.size() == 0) {//FIXME: Ultrascan case
+                    } else if (outputList.size() == 0) {//FIXME: Ultrascan case
                         String valueList = outputList.get(0);
-                        cluster.scpFrom(app.getOutputDataDirectory() + File.separator + valueList, outputDataDir);
+                        cluster.scpFrom(jobExecutionContext.getOutputDir() + File.separator + valueList, outputDataDir);
                         String outputPath = outputDataDir + File.separator + valueList;
-						jobExecutionContext.addOutputFile(outputPath);
-						MappingFactory.fromString(actualParameter, outputPath);
-						DataObjectType dataObjectType = new DataObjectType();
+                        jobExecutionContext.addOutputFile(outputPath);
+                        actualParameter.setValue(outputPath);
+                        OutputDataObjectType dataObjectType = new OutputDataObjectType();
                         dataObjectType.setValue(outputPath);
-                        dataObjectType.setKey(paramName);
+                        dataObjectType.setName(paramName);
                         dataObjectType.setType(DataType.URI);
                         outputArray.add(dataObjectType);
                     }
                 } else {
-                    OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr,outputArray);
+                    OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
                 }
             }
             if (outputArray == null || outputArray.isEmpty()) {
-            	log.error("Empty Output returned from the Application, Double check the application and ApplicationDescriptor output Parameter Names");
-            	if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() == null){
-            		throw new GFacHandlerException(
-                        "Empty Output returned from the Application, Double check the application"
-                                + "and ApplicationDescriptor output Parameter Names");
-            	}
+                log.error("Empty Output returned from the Application, Double check the application and ApplicationDescriptor output Parameter Names");
+                if (jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() == null) {
+                    throw new GFacHandlerException(
+                            "Empty Output returned from the Application, Double check the application"
+                                    + "and ApplicationDescriptor output Parameter Names");
+                }
             }
-            app.setStandardError(localStdErrFile.getAbsolutePath());
-            app.setStandardOutput(localStdOutFile.getAbsolutePath());
-            app.setOutputDataDirectory(outputDataDir);
+            // FIXME: why we set standard error ouput and outputDirectory again ?
+//            app.setStandardError(localStdErrFile.getAbsolutePath());
+//            app.setStandardOutput(localStdOutFile.getAbsolutePath());
+//            app.setOutputDataDirectory(outputDataDir);
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription(outputDataDir);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
-            
-        }catch (Exception e) {
+
+        } catch (Exception e) {
             try {
                 status.setTransferState(TransferState.FAILED);
                 detail.setTransferStatus(status);

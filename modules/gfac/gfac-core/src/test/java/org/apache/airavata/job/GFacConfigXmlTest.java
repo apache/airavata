@@ -21,6 +21,9 @@
 package org.apache.airavata.job;
 
 import junit.framework.Assert;
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacConfiguration;
@@ -29,6 +32,7 @@ import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.schemas.gfac.GsisshHostType;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -53,12 +57,34 @@ public class GFacConfigXmlTest {
         try {
             JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(gfac.getGfacConfigFile(), null), "testService");
             ApplicationContext applicationContext = new ApplicationContext();
-            HostDescription host = new HostDescription(GsisshHostType.type);
-            host.getType().setHostAddress("trestles.sdsc.edu");
-            host.getType().setHostName("trestles");
-            ((GsisshHostType) host.getType()).setPort(22);
-            ((GsisshHostType) host.getType()).setInstalledPath("/opt/torque/bin/");
-            applicationContext.setHostDescription(host);
+            ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
+            computeResourceDescription.setHostName("trestles.sdsc.xsede.org");
+            computeResourceDescription.setResourceDescription("SDSC Trestles Cluster");
+
+            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+
+            ResourceJobManager resourceJobManager = new ResourceJobManager();
+            resourceJobManager.setResourceJobManagerType(ResourceJobManagerType.PBS);
+            resourceJobManager.setPushMonitoringEndpoint("push");
+            resourceJobManager.setJobManagerBinPath("/opt/torque/bin/");
+
+            SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
+            sshJobSubmission.setResourceJobManager(resourceJobManager);
+            sshJobSubmission.setSecurityProtocol(SecurityProtocol.GSI);
+            sshJobSubmission.setSshPort(22);
+            sshJobSubmission.setResourceJobManager(resourceJobManager);
+
+            String jobSubmissionId = appCatalog.getComputeResource().addSSHJobSubmission(sshJobSubmission);
+
+            JobSubmissionInterface submissionInterface = new JobSubmissionInterface();
+            submissionInterface.setJobSubmissionInterfaceId(jobSubmissionId);
+            submissionInterface.setJobSubmissionProtocol(JobSubmissionProtocol.SSH);
+            submissionInterface.setPriorityOrder(0);
+
+            computeResourceDescription.addToJobSubmissionInterfaces(submissionInterface);
+
+            appCatalog.getComputeResource().addComputeResource(computeResourceDescription);
+            applicationContext.setComputeResourceDescription(computeResourceDescription);
             jec.setApplicationContext(applicationContext);
             Scheduler.schedule(jec);
             Assert.assertEquals(ExecutionMode.ASYNCHRONOUS, jec.getGFacConfiguration().getExecutionMode());
@@ -73,6 +99,8 @@ public class GFacConfigXmlTest {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (GFacException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (AppCatalogException e) {
+            e.printStackTrace();
         }
     }
     @Test
@@ -82,12 +110,34 @@ public class GFacConfigXmlTest {
             try {
                 JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(gfac.getGfacConfigFile(), null), "UltraScan");
                 ApplicationContext applicationContext = new ApplicationContext();
-                HostDescription host = new HostDescription(GsisshHostType.type);
-                host.getType().setHostAddress("trestles.sdsc.edu");
-                host.getType().setHostName("trestles");
-                ((GsisshHostType) host.getType()).setPort(22);
-                ((GsisshHostType) host.getType()).setInstalledPath("/opt/torque/bin/");
-                applicationContext.setHostDescription(host);
+                ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
+                computeResourceDescription.setHostName("trestles.sdsc.xsede.org");
+                computeResourceDescription.setResourceDescription("SDSC Trestles Cluster");
+
+                AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+
+                ResourceJobManager resourceJobManager = new ResourceJobManager();
+                resourceJobManager.setResourceJobManagerType(ResourceJobManagerType.PBS);
+                resourceJobManager.setPushMonitoringEndpoint("push");
+                resourceJobManager.setJobManagerBinPath("/opt/torque/bin/");
+
+                SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
+                sshJobSubmission.setResourceJobManager(resourceJobManager);
+                sshJobSubmission.setSecurityProtocol(SecurityProtocol.GSI);
+                sshJobSubmission.setSshPort(22);
+                sshJobSubmission.setResourceJobManager(resourceJobManager);
+
+                String jobSubmissionId = appCatalog.getComputeResource().addSSHJobSubmission(sshJobSubmission);
+
+                JobSubmissionInterface submissionInterface = new JobSubmissionInterface();
+                submissionInterface.setJobSubmissionInterfaceId(jobSubmissionId);
+                submissionInterface.setJobSubmissionProtocol(JobSubmissionProtocol.SSH);
+                submissionInterface.setPriorityOrder(0);
+
+                computeResourceDescription.addToJobSubmissionInterfaces(submissionInterface);
+
+                appCatalog.getComputeResource().addComputeResource(computeResourceDescription);
+                applicationContext.setComputeResourceDescription(computeResourceDescription);
                 jec.setApplicationContext(applicationContext);
                 Scheduler.schedule(jec);
                 Assert.assertEquals(3, jec.getGFacConfiguration().getInHandlers().size());
@@ -106,8 +156,10 @@ public class GFacConfigXmlTest {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             } catch (GFacException e) {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } catch (AppCatalogException e) {
+                e.printStackTrace();
             }
-        }
+    }
 
 
 }

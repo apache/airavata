@@ -28,21 +28,18 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.gfac.ssh.context.SSHAuthWrapper;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.DataType;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,10 +107,23 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     this.passPhrase);
         }
         try {
-            ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
-                    .getApplicationDeploymentDescription().getType();
-            String standardError = app.getStandardError();
-            String standardOutput = app.getStandardOutput();
+            String hostName = jobExecutionContext.getHostName();
+            if (jobExecutionContext.getSecurityContext(hostName) == null) {
+                try {
+                    GFACSSHUtils.addSecurityContext(jobExecutionContext);
+                } catch (ApplicationSettingsException e) {
+                    log.error(e.getMessage());
+                    try {
+         				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+         			} catch (GFacException e1) {
+         				 log.error(e1.getLocalizedMessage());
+         			}
+                    throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+                }
+            }
+            pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(hostName)).getPbsCluster();
+            String standardError = jobExecutionContext.getStandardError();
+            String standardOutput = jobExecutionContext.getStandardOutput();
             super.invoke(jobExecutionContext);
             // Server info
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir() != null){
@@ -135,7 +145,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             }
             pbsCluster.scpTo(outputPath, standardError);
             pbsCluster.scpTo(outputPath, standardOutput);
-            List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
+            List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             Set<String> keys = output.keySet();
             for (String paramName : keys) {
@@ -148,9 +158,9 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                 	}
                 	pbsCluster.scpTo(outputPath, downloadFile);
                     String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar)+1, downloadFile.length());
-                    DataObjectType dataObjectType = new DataObjectType();
+                    OutputDataObjectType dataObjectType = new OutputDataObjectType();
                     dataObjectType.setValue(outputPath + File.separatorChar + fileName);
-                    dataObjectType.setKey(paramName);
+                    dataObjectType.setName(paramName);
                     dataObjectType.setType(DataType.URI);
                     outputArray.add(dataObjectType);
                 }

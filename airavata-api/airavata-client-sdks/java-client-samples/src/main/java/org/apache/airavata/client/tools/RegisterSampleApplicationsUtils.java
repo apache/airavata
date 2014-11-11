@@ -41,7 +41,8 @@ public class RegisterSampleApplicationsUtils {
     public static ComputeResourcePreference
         createComputeResourcePreference(String computeResourceId, String allocationProjectNumber,
                                         boolean overridebyAiravata, String preferredBatchQueue,
-                                        String preferredJobSubmissionProtocol,String preferredDataMovementProtocol,
+                                        JobSubmissionProtocol preferredJobSubmissionProtocol,
+                                        DataMovementProtocol preferredDataMovementProtocol,
                                         String scratchLocation) {
         ComputeResourcePreference computeResourcePreference = new ComputeResourcePreference();
         computeResourcePreference.setComputeResourceId(computeResourceId);

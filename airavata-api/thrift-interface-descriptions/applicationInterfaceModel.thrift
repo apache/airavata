@@ -38,7 +38,9 @@ enum DataType{
 	STRING,
 	INTEGER,
 	FLOAT,
-	URI
+	URI,
+	STDOUT,
+	STDERR
 }
 
 /**

@@ -81,8 +81,8 @@ import org.slf4j.LoggerFactory;
 
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField OVERRIDEBY_AIRAVATA_FIELD_DESC = new org.apache.thrift.protocol.TField("overridebyAiravata", org.apache.thrift.protocol.TType.BOOL, (short)2);
-  private static final org.apache.thrift.protocol.TField PREFERRED_JOB_SUBMISSION_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredJobSubmissionProtocol", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField PREFERRED_DATA_MOVEMENT_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredDataMovementProtocol", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField PREFERRED_JOB_SUBMISSION_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredJobSubmissionProtocol", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField PREFERRED_DATA_MOVEMENT_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredDataMovementProtocol", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField PREFERRED_BATCH_QUEUE_FIELD_DESC = new org.apache.thrift.protocol.TField("preferredBatchQueue", org.apache.thrift.protocol.TType.STRING, (short)5);
   private static final org.apache.thrift.protocol.TField SCRATCH_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("scratchLocation", org.apache.thrift.protocol.TType.STRING, (short)6);
   private static final org.apache.thrift.protocol.TField ALLOCATION_PROJECT_NUMBER_FIELD_DESC = new org.apache.thrift.protocol.TField("allocationProjectNumber", org.apache.thrift.protocol.TType.STRING, (short)7);
@@ -95,8 +95,8 @@ import org.slf4j.LoggerFactory;
 
   private String computeResourceId; // required
   private boolean overridebyAiravata; // required
-  private String preferredJobSubmissionProtocol; // optional
-  private String preferredDataMovementProtocol; // optional
+  private org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol preferredJobSubmissionProtocol; // optional
+  private org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol preferredDataMovementProtocol; // optional
   private String preferredBatchQueue; // optional
   private String scratchLocation; // optional
   private String allocationProjectNumber; // optional
@@ -105,7 +105,15 @@ import org.slf4j.LoggerFactory;
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     COMPUTE_RESOURCE_ID((short)1, "computeResourceId"),
     OVERRIDEBY_AIRAVATA((short)2, "overridebyAiravata"),
+    /**
+     * 
+     * @see org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol
+     */
     PREFERRED_JOB_SUBMISSION_PROTOCOL((short)3, "preferredJobSubmissionProtocol"),
+    /**
+     * 
+     * @see org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol
+     */
     PREFERRED_DATA_MOVEMENT_PROTOCOL((short)4, "preferredDataMovementProtocol"),
     PREFERRED_BATCH_QUEUE((short)5, "preferredBatchQueue"),
     SCRATCH_LOCATION((short)6, "scratchLocation"),
@@ -189,9 +197,9 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.OVERRIDEBY_AIRAVATA, new org.apache.thrift.meta_data.FieldMetaData("overridebyAiravata", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.PREFERRED_JOB_SUBMISSION_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("preferredJobSubmissionProtocol", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol.class)));
     tmpMap.put(_Fields.PREFERRED_DATA_MOVEMENT_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("preferredDataMovementProtocol", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol.class)));
     tmpMap.put(_Fields.PREFERRED_BATCH_QUEUE, new org.apache.thrift.meta_data.FieldMetaData("preferredBatchQueue", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SCRATCH_LOCATION, new org.apache.thrift.meta_data.FieldMetaData("scratchLocation", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -304,11 +312,19 @@ import org.slf4j.LoggerFactory;
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __OVERRIDEBYAIRAVATA_ISSET_ID, value);
   }
 
-  public String getPreferredJobSubmissionProtocol() {
+  /**
+   * 
+   * @see org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol
+   */
+  public org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol getPreferredJobSubmissionProtocol() {
     return this.preferredJobSubmissionProtocol;
   }
 
-  public void setPreferredJobSubmissionProtocol(String preferredJobSubmissionProtocol) {
+  /**
+   * 
+   * @see org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol
+   */
+  public void setPreferredJobSubmissionProtocol(org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol preferredJobSubmissionProtocol) {
     this.preferredJobSubmissionProtocol = preferredJobSubmissionProtocol;
   }
 
@@ -327,11 +343,19 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getPreferredDataMovementProtocol() {
+  /**
+   * 
+   * @see org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol
+   */
+  public org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol getPreferredDataMovementProtocol() {
     return this.preferredDataMovementProtocol;
   }
 
-  public void setPreferredDataMovementProtocol(String preferredDataMovementProtocol) {
+  /**
+   * 
+   * @see org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol
+   */
+  public void setPreferredDataMovementProtocol(org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol preferredDataMovementProtocol) {
     this.preferredDataMovementProtocol = preferredDataMovementProtocol;
   }
 
@@ -441,7 +465,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetPreferredJobSubmissionProtocol();
       } else {
-        setPreferredJobSubmissionProtocol((String)value);
+        setPreferredJobSubmissionProtocol((org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol)value);
       }
       break;
 
@@ -449,7 +473,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetPreferredDataMovementProtocol();
       } else {
-        setPreferredDataMovementProtocol((String)value);
+        setPreferredDataMovementProtocol((org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol)value);
       }
       break;
 
@@ -845,16 +869,16 @@ import org.slf4j.LoggerFactory;
             }
             break;
           case 3: // PREFERRED_JOB_SUBMISSION_PROTOCOL
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.preferredJobSubmissionProtocol = iprot.readString();
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.preferredJobSubmissionProtocol = org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol.findByValue(iprot.readI32());
               struct.setPreferredJobSubmissionProtocolIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
           case 4: // PREFERRED_DATA_MOVEMENT_PROTOCOL
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.preferredDataMovementProtocol = iprot.readString();
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.preferredDataMovementProtocol = org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol.findByValue(iprot.readI32());
               struct.setPreferredDataMovementProtocolIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -908,14 +932,14 @@ import org.slf4j.LoggerFactory;
       if (struct.preferredJobSubmissionProtocol != null) {
         if (struct.isSetPreferredJobSubmissionProtocol()) {
           oprot.writeFieldBegin(PREFERRED_JOB_SUBMISSION_PROTOCOL_FIELD_DESC);
-          oprot.writeString(struct.preferredJobSubmissionProtocol);
+          oprot.writeI32(struct.preferredJobSubmissionProtocol.getValue());
           oprot.writeFieldEnd();
         }
       }
       if (struct.preferredDataMovementProtocol != null) {
         if (struct.isSetPreferredDataMovementProtocol()) {
           oprot.writeFieldBegin(PREFERRED_DATA_MOVEMENT_PROTOCOL_FIELD_DESC);
-          oprot.writeString(struct.preferredDataMovementProtocol);
+          oprot.writeI32(struct.preferredDataMovementProtocol.getValue());
           oprot.writeFieldEnd();
         }
       }
@@ -977,10 +1001,10 @@ import org.slf4j.LoggerFactory;
       }
       oprot.writeBitSet(optionals, 5);
       if (struct.isSetPreferredJobSubmissionProtocol()) {
-        oprot.writeString(struct.preferredJobSubmissionProtocol);
+        oprot.writeI32(struct.preferredJobSubmissionProtocol.getValue());
       }
       if (struct.isSetPreferredDataMovementProtocol()) {
-        oprot.writeString(struct.preferredDataMovementProtocol);
+        oprot.writeI32(struct.preferredDataMovementProtocol.getValue());
       }
       if (struct.isSetPreferredBatchQueue()) {
         oprot.writeString(struct.preferredBatchQueue);
@@ -1002,11 +1026,11 @@ import org.slf4j.LoggerFactory;
       struct.setOverridebyAiravataIsSet(true);
       BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
-        struct.preferredJobSubmissionProtocol = iprot.readString();
+        struct.preferredJobSubmissionProtocol = org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol.findByValue(iprot.readI32());
         struct.setPreferredJobSubmissionProtocolIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.preferredDataMovementProtocol = iprot.readString();
+        struct.preferredDataMovementProtocol = org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol.findByValue(iprot.readI32());
         struct.setPreferredDataMovementProtocolIsSet(true);
       }
       if (incoming.get(2)) {

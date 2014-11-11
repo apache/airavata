@@ -31,6 +31,7 @@ import org.apache.airavata.gfac.ssh.security.TokenizedSSHAuthInfo;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +46,10 @@ public class HPCMonitorID extends MonitorID {
 
     private AuthenticationInfo authenticationInfo = null;
 
-    public HPCMonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID,
+    public HPCMonitorID(ComputeResourceDescription computeResourceDescription, String jobID, String taskID, String workflowNodeID,
                         String experimentID, String userName,String jobName) {
-        super(host, jobID, taskID, workflowNodeID, experimentID, userName,jobName);
-        setHost(host);
+        super(computeResourceDescription, jobID, taskID, workflowNodeID, experimentID, userName,jobName);
+        setComputeResourceDescription(computeResourceDescription);
         setJobStartedTime(new Timestamp((new Date()).getTime()));
         setUserName(userName);
         setJobID(jobID);
@@ -62,7 +63,7 @@ public class HPCMonitorID extends MonitorID {
         this.authenticationInfo = authenticationInfo;
         if (this.authenticationInfo != null) {
             try {
-                String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+                String hostAddress = jobExecutionContext.getHostName();
                 SecurityContext securityContext = jobExecutionContext.getSecurityContext(hostAddress);
                 ServerInfo serverInfo = null;
                 if (securityContext != null) {
@@ -77,8 +78,8 @@ public class HPCMonitorID extends MonitorID {
         }
     }
 
-    public HPCMonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID, String experimentID, String userName, AuthenticationInfo authenticationInfo) {
-        setHost(host);
+    public HPCMonitorID(ComputeResourceDescription computeResourceDescription, String jobID, String taskID, String workflowNodeID, String experimentID, String userName, AuthenticationInfo authenticationInfo) {
+        setComputeResourceDescription(computeResourceDescription);
         setJobStartedTime(new Timestamp((new Date()).getTime()));
         this.authenticationInfo = authenticationInfo;
         // if we give myproxyauthenticationInfo, so we try to use myproxy user as the user

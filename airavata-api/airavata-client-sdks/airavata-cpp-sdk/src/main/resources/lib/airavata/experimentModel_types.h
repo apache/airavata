@@ -31,6 +31,7 @@
 
 #include <thrift/cxxfunctional.h>
 #include "computeResourceModel_types.h"
+#include "applicationInterfaceModel_types.h"
 
 
 namespace apache { namespace airavata { namespace model { namespace workspace { namespace experiment {
@@ -163,18 +164,6 @@ struct CorrectiveAction {
 };
 
 extern const std::map<int, const char*> _CorrectiveAction_VALUES_TO_NAMES;
-
-struct DataType {
-  enum type {
-    STRING = 0,
-    INTEGER = 1,
-    URI = 2,
-    STDOUT = 3,
-    STDERR = 4
-  };
-};
-
-extern const std::map<int, const char*> _DataType_VALUES_TO_NAMES;
 
 struct ExecutionUnit {
   enum type {
@@ -504,81 +493,6 @@ class ApplicationStatus {
 };
 
 void swap(ApplicationStatus &a, ApplicationStatus &b);
-
-typedef struct _DataObjectType__isset {
-  _DataObjectType__isset() : value(false), type(false), metaData(false) {}
-  bool value;
-  bool type;
-  bool metaData;
-} _DataObjectType__isset;
-
-class DataObjectType {
- public:
-
-  static const char* ascii_fingerprint; // = "544FBB8031AE070AEEB7AC0E4A90E43C";
-  static const uint8_t binary_fingerprint[16]; // = {0x54,0x4F,0xBB,0x80,0x31,0xAE,0x07,0x0A,0xEE,0xB7,0xAC,0x0E,0x4A,0x90,0xE4,0x3C};
-
-  DataObjectType() : key(), value(), type((DataType::type)0), metaData() {
-  }
-
-  virtual ~DataObjectType() throw() {}
-
-  std::string key;
-  std::string value;
-  DataType::type type;
-  std::string metaData;
-
-  _DataObjectType__isset __isset;
-
-  void __set_key(const std::string& val) {
-    key = val;
-  }
-
-  void __set_value(const std::string& val) {
-    value = val;
-    __isset.value = true;
-  }
-
-  void __set_type(const DataType::type val) {
-    type = val;
-    __isset.type = true;
-  }
-
-  void __set_metaData(const std::string& val) {
-    metaData = val;
-    __isset.metaData = true;
-  }
-
-  bool operator == (const DataObjectType & rhs) const
-  {
-    if (!(key == rhs.key))
-      return false;
-    if (__isset.value != rhs.__isset.value)
-      return false;
-    else if (__isset.value && !(value == rhs.value))
-      return false;
-    if (__isset.type != rhs.__isset.type)
-      return false;
-    else if (__isset.type && !(type == rhs.type))
-      return false;
-    if (__isset.metaData != rhs.__isset.metaData)
-      return false;
-    else if (__isset.metaData && !(metaData == rhs.metaData))
-      return false;
-    return true;
-  }
-  bool operator != (const DataObjectType &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const DataObjectType & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-void swap(DataObjectType &a, DataObjectType &b);
 
 typedef struct _ComputationalResourceScheduling__isset {
   _ComputationalResourceScheduling__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), jobStartTime(false), totalPhysicalMemory(false), computationalProjectAccount(false) {}
@@ -1380,8 +1294,8 @@ typedef struct _TaskDetails__isset {
 class TaskDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "5329C387E7633AF234038F8461F51097";
-  static const uint8_t binary_fingerprint[16]; // = {0x53,0x29,0xC3,0x87,0xE7,0x63,0x3A,0xF2,0x34,0x03,0x8F,0x84,0x61,0xF5,0x10,0x97};
+  static const char* ascii_fingerprint; // = "C0E50EB91BEBDC23A45D03BFD2BD630A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0xE5,0x0E,0xB9,0x1B,0xEB,0xDC,0x23,0xA4,0x5D,0x03,0xBF,0xD2,0xBD,0x63,0x0A};
 
   TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), applicationDeploymentId() {
   }
@@ -1393,8 +1307,8 @@ class TaskDetails {
   std::string applicationId;
   std::string applicationVersion;
   std::string applicationDeploymentId;
-  std::vector<DataObjectType>  applicationInputs;
-  std::vector<DataObjectType>  applicationOutputs;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType>  applicationInputs;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  applicationOutputs;
   ComputationalResourceScheduling taskScheduling;
   AdvancedInputDataHandling advancedInputDataHandling;
   AdvancedOutputDataHandling advancedOutputDataHandling;
@@ -1429,12 +1343,12 @@ class TaskDetails {
     __isset.applicationDeploymentId = true;
   }
 
-  void __set_applicationInputs(const std::vector<DataObjectType> & val) {
+  void __set_applicationInputs(const std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & val) {
     applicationInputs = val;
     __isset.applicationInputs = true;
   }
 
-  void __set_applicationOutputs(const std::vector<DataObjectType> & val) {
+  void __set_applicationOutputs(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val) {
     applicationOutputs = val;
     __isset.applicationOutputs = true;
   }
@@ -1559,8 +1473,8 @@ typedef struct _WorkflowNodeDetails__isset {
 class WorkflowNodeDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "6ABC52FB94DCEC8D6AA3F1F3188E2691";
-  static const uint8_t binary_fingerprint[16]; // = {0x6A,0xBC,0x52,0xFB,0x94,0xDC,0xEC,0x8D,0x6A,0xA3,0xF1,0xF3,0x18,0x8E,0x26,0x91};
+  static const char* ascii_fingerprint; // = "F9600D5A8E84EAF65A64E38C18DFACAE";
+  static const uint8_t binary_fingerprint[16]; // = {0xF9,0x60,0x0D,0x5A,0x8E,0x84,0xEA,0xF6,0x5A,0x64,0xE3,0x8C,0x18,0xDF,0xAC,0xAE};
 
   WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE"), executionUnit((ExecutionUnit::type)1), executionUnitData() {
     executionUnit = (ExecutionUnit::type)1;
@@ -1574,8 +1488,8 @@ class WorkflowNodeDetails {
   std::string nodeName;
   ExecutionUnit::type executionUnit;
   std::string executionUnitData;
-  std::vector<DataObjectType>  nodeInputs;
-  std::vector<DataObjectType>  nodeOutputs;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType>  nodeInputs;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  nodeOutputs;
   WorkflowNodeStatus workflowNodeStatus;
   std::vector<TaskDetails>  taskDetailsList;
   std::vector<ErrorDetails>  errors;
@@ -1604,12 +1518,12 @@ class WorkflowNodeDetails {
     __isset.executionUnitData = true;
   }
 
-  void __set_nodeInputs(const std::vector<DataObjectType> & val) {
+  void __set_nodeInputs(const std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & val) {
     nodeInputs = val;
     __isset.nodeInputs = true;
   }
 
-  void __set_nodeOutputs(const std::vector<DataObjectType> & val) {
+  void __set_nodeOutputs(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val) {
     nodeOutputs = val;
     __isset.nodeOutputs = true;
   }
@@ -1798,8 +1712,8 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "EAE6C4E7D5F1EDAC82E4630FDDD892A9";
-  static const uint8_t binary_fingerprint[16]; // = {0xEA,0xE6,0xC4,0xE7,0xD5,0xF1,0xED,0xAC,0x82,0xE4,0x63,0x0F,0xDD,0xD8,0x92,0xA9};
+  static const char* ascii_fingerprint; // = "CDFB79AEABF988D5D38D8EEAEEBECC6F";
+  static const uint8_t binary_fingerprint[16]; // = {0xCD,0xFB,0x79,0xAE,0xAB,0xF9,0x88,0xD5,0xD3,0x8D,0x8E,0xEA,0xEE,0xBE,0xCC,0x6F};
 
   Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), workflowExecutionInstanceId() {
   }
@@ -1818,8 +1732,8 @@ class Experiment {
   std::string workflowTemplateVersion;
   UserConfigurationData userConfigurationData;
   std::string workflowExecutionInstanceId;
-  std::vector<DataObjectType>  experimentInputs;
-  std::vector<DataObjectType>  experimentOutputs;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType>  experimentInputs;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  experimentOutputs;
   ExperimentStatus experimentStatus;
   std::vector<WorkflowNodeStatus>  stateChangeList;
   std::vector<WorkflowNodeDetails>  workflowNodeDetailsList;
@@ -1883,12 +1797,12 @@ class Experiment {
     __isset.workflowExecutionInstanceId = true;
   }
 
-  void __set_experimentInputs(const std::vector<DataObjectType> & val) {
+  void __set_experimentInputs(const std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & val) {
     experimentInputs = val;
     __isset.experimentInputs = true;
   }
 
-  void __set_experimentOutputs(const std::vector<DataObjectType> & val) {
+  void __set_experimentOutputs(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val) {
     experimentOutputs = val;
     __isset.experimentOutputs = true;
   }
