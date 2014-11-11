@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 public class CreateLaunchExperiment {
 
@@ -53,7 +55,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_6281480a-9887-4a0f-8311-59bbaf738e54";
+    private static String echoAppId = "Echo_70892623-ef16-4efb-a9f0-b12a2861e27a";
     private static String wrfAppId = "WRF_5f097c9c-7066-49ec-aed7-4e39607b3adc";
     private static String amberAppId = "Amber_89906be6-5678-49a6-9d04-a0604fbdef2e";
 
@@ -179,7 +181,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
-                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        
                         return client.createExperiment(simpleExperiment);
                     }
                 }
@@ -203,18 +205,24 @@ public class CreateLaunchExperiment {
     
     public static String createEchoExperimentForFSD(Airavata.Client client) throws TException {
         try {
+        	// these are template variables and do not need to have values, as it is a data model.
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
             DataObjectType input = new DataObjectType();
             input.setKey("Input_to_Echo");
             input.setType(DataType.STRING);
             input.setValue("Echoed_Output=Hello World");
             exInputs.add(input);
+            DataObjectType i2 = new DataObjectType();
+            i2.setKey("Input_to_Echo1");
+            i2.setType(DataType.URI);
+            i2.setValue("http://shrib.com/22QmrrX4");
+            exInputs.add(i2);
 
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
-            output.setKey("echo_output");
+            output.setKey("Echoed_Output");
             output.setType(DataType.STRING);
-            output.setValue("");
+            output.setValue("22QmrrX4");
             exOut.add(output);
             
             
@@ -235,7 +243,13 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        
+                        // set output directory 
+                        AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+                        dataHandling.setOutputDataDir("/tmp/airavata/output/"+UUID.randomUUID().toString()+"/");
+                        userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        
                         return client.createExperiment(simpleExperiment);
                     }
                 }

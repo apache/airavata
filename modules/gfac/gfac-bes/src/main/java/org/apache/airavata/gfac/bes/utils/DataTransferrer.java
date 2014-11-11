@@ -26,7 +26,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.airavata.commons.gfac.type.ActualParameter;
@@ -39,6 +41,7 @@ import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
 import org.apache.airavata.schemas.gfac.StringParameterType;
+import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,7 +122,8 @@ public class DataTransferrer {
 				String localFileName = null;
 				//TODO: why analysis.tar? it wont scale to other gateways..
 				if(stringPrm == null || stringPrm.isEmpty()){
-					localFileName = "analysis-results.tar";
+					continue; 
+//					localFileName = "analysis-results.tar";
 				}else{
 					localFileName = stringPrm.substring(stringPrm.lastIndexOf("/")+1);
 				}
@@ -199,16 +203,59 @@ public class DataTransferrer {
 			throw new GFacProviderException(e.getLocalizedMessage(),e);
 		}
 		String stderrLocation = downloadLocation+File.separator+stderrFileName;
-		FileDownloader f2 = new FileDownloader(stderrFileName,stderrLocation, Mode.overwrite);
+//		FileDownloader f2 = new FileDownloader(stderrFileName,stderrLocation, Mode.overwrite);
 		try {
-			f2.perform(storageClient);
+			f1.setFrom(stderrFileName);
+			f1.setTo(stderrLocation);
+			f1.perform(storageClient);
 			String stderror = readFile(stderrLocation);
 			appDesc.setStandardError(stderror);
 		} catch (Exception e) {
 			throw new GFacProviderException(e.getLocalizedMessage(),e);
 		}
+		
+		if(UASDataStagingProcessor.isUnicoreEndpoint(jobContext)) {
+			String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
+			f1.setFrom(scriptExitCodeFName);
+			f1.setTo(downloadLocation+File.separator+scriptExitCodeFName);
+			
+		}
+	}
+	
+	public List<String> extractOutStringParams(JobExecutionContext context) {
+		
+		Map<String, Object> outputParams = context.getOutMessageContext()
+				.getParameters();
+		
+		List<String> outPrmsList = new ArrayList<String>();
+		
+		for (String paramKey : outputParams.keySet()) {
+
+			ActualParameter outParam = (ActualParameter) outputParams
+					.get(paramKey);
+
+			String paramDataType = outParam.getType().getType().toString();
+
+			if ("String".equals(paramDataType)) {
+				String strPrm = ((StringParameterType) outParam.getType())
+						.getValue();
+				outPrmsList.add(strPrm);
+			}
+
+			else if (("StringArray").equals(paramDataType)) {
+				String[] uriArray = ((URIArrayType) outParam.getType())
+						.getValueArray();
+				for (String u : uriArray) {
+					outPrmsList.add(u);					
+				}
+
+			}
+		}
+		
+		return outPrmsList;
 	}
 
+	
 	private String readFile(String localFile) throws IOException {
 		BufferedReader instream = new BufferedReader(new FileReader(localFile));
 		StringBuffer buff = new StringBuffer();
