@@ -31,7 +31,7 @@ using namespace ::apache::thrift::server;
 
 using boost::shared_ptr;
 
-using namespace  ::airavata::api::workflow;
+using namespace  ::apache::airavata::api;
 
 class WorkflowHandler : virtual public WorkflowIf {
  public:

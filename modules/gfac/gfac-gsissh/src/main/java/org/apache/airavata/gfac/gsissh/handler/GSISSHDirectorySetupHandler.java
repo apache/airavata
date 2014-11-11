@@ -47,7 +47,8 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         try {
-            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
+            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
         } catch (Exception e) {
@@ -64,19 +65,20 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
         makeDirectory(jobExecutionContext);
 	}
 	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-		 Cluster cluster = null;
-		try {
-         cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
-        if (cluster == null) {
-        	 try {
-  				GFacUtils.saveErrorDetails(jobExecutionContext, "Security context is not set properly", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-  			} catch (GFacException e1) {
-  				 log.error(e1.getLocalizedMessage());
-  			}
-            throw new GFacHandlerException("Security context is not set properly");
-        } else {
-            log.info("Successfully retrieved the Security Context");
-        }
+        Cluster cluster = null;
+        try {
+            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
+            if (cluster == null) {
+                try {
+                    GFacUtils.saveErrorDetails(jobExecutionContext, "Security context is not set properly", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                } catch (GFacException e1) {
+                    log.error(e1.getLocalizedMessage());
+                }
+                throw new GFacHandlerException("Security context is not set properly");
+            } else {
+                log.info("Successfully retrieved the Security Context");
+            }
         ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
 
             String workingDirectory = app.getScratchWorkingDirectory();

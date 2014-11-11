@@ -29,12 +29,12 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.client.GFACInstance;
+import org.apache.airavata.gfac.client.GFacClientFactory;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.core.gfac.GFACInstance;
-import org.apache.airavata.orchestrator.core.gfac.GFacClientFactory;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.KeeperException;
@@ -43,8 +43,6 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.naming.OperationNotSupportedException;
 
 /*
  * this class is responsible for submitting a job to gfac in service mode,

@@ -1092,7 +1092,8 @@ public class GFacUtils {
 		}else if(experimentEntry != null && GFacUtils.isCancelled(experimentID,taskID,zk) ){
             // this happens when a cancel request comes to a differnt gfac node, in this case we do not move gfac experiment
             // node to gfac node specific location, because original request execution will fail with errors
-            return true;
+            log.error("This experiment is already cancelled and its already executing the cancel operation so cannot submit again !");
+            return false;
         } else {
             log.error("ExperimentID: " + experimentID + " taskID: " + taskID
                     + " is already running by this Gfac instance");

@@ -24,7 +24,10 @@ package org.apache.airavata.workflow.model.graph.ws;
 import java.io.File;
 import java.io.IOException;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.IOUtil;
+import org.apache.airavata.common.utils.JSONUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.ControlEdge;
@@ -96,12 +99,14 @@ public class WSGraphFactory implements GraphFactory {
 	 */
 	public static WSGraph createGraph(String graphString) throws GraphException {
 		XmlElement graphElement;
+        JsonObject graphElementJSON;
 		try {
-			graphElement = XMLUtil.stringToXmlElement(graphString);
-		} catch (RuntimeException e) {
+//			graphElement = XMLUtil.stringToXmlElement(graphString);
+            graphElementJSON = JSONUtil.stringToJSONObject(graphString);
+        } catch (RuntimeException e) {
 			throw new GraphException(MessageConstants.XML_ERROR, e);
 		}
-		return createGraph(graphElement);
+		return createGraph(graphElementJSON);
 	}
 
 	/**
@@ -119,6 +124,12 @@ public class WSGraphFactory implements GraphFactory {
 			throw new GraphException(MessageConstants.XML_ERROR, e);
 		}
 	}
+
+    public static WSGraph createGraph(JsonObject graphObject) throws GraphException {
+        WSGraph graph = createWSGraph();
+        graph.parse(graphObject);
+        return graph;
+    }
 
 	/**
 	 * @see org.apache.airavata.workflow.model.graph.GraphFactory#createNode(org.xmlpull.infoset.XmlElement)
@@ -175,34 +186,102 @@ public class WSGraphFactory implements GraphFactory {
 		return node;
 	}
 
+    public NodeImpl createNode(JsonObject nodeObject) throws GraphException {
+
+        String type = nodeObject.getAsJsonPrimitive(GraphSchema.NODE_TYPE_ATTRIBUTE).getAsString();
+
+        NodeImpl node;
+        if (GraphSchema.NODE_TYPE_WS.equals(type)) {
+            node = new WSNode(nodeObject);
+        } else if (GraphSchema.NODE_TYPE_WORKFLOW.equals(type)) {
+            node = new WorkflowNode(nodeObject);
+        } else if (GraphSchema.NODE_TYPE_INPUT.equals(type)) {
+            node = new InputNode(nodeObject);
+        } else if (GraphSchema.NODE_TYPE_OUTPUT.equals(type)) {
+            node = new OutputNode(nodeObject);
+/*        } else if (GraphSchema.NODE_TYPE_STREAM_SOURCE.equals(type)) {
+            node = new StreamSourceNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_CONSTANT.equals(type)) {
+            node = new ConstantNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_SPLIT.equals(type)) {
+            node = new ForEachNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_MERGE.equals(type)) {
+            node = new EndForEachNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_IF.equals(type)) {
+            node = new IfNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_ENDIF.equals(type)) {
+            node = new EndifNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_DOWHILE.equals(type)) {
+            node = new DoWhileNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_ENDDOWHILE.equals(type)) {
+            node = new EndDoWhileNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_MEMO.equals(type)) {
+            node = new MemoNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_RECEIVE.equals(type)) {
+            node = new ReceiveNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_BLOCK.equals(type)) {
+            node = new BlockNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_ENDBLOCK.equals(type)) {
+            node = new EndBlockNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_INSTANCE.equals(type)) {
+            node = new InstanceNode(nodeElement);
+        } else if (GraphSchema.NODE_TYPE_TERMINATE.equals(type)) {
+            node = new TerminateInstanceNode(nodeElement);*/
+        } else {
+            // Default is WsNode for backward compatibility.
+            node = new WSNode(nodeObject);
+        }
+
+        return node;
+    }
 	/**
 	 * @see org.apache.airavata.workflow.model.graph.GraphFactory#createPort(org.xmlpull.infoset.XmlElement)
 	 */
-	public PortImpl createPort(XmlElement portElement) {
-		String type = portElement.attributeValue(GraphSchema.NS,
-				GraphSchema.PORT_TYPE_ATTRIBUTE);
-		if (type == null) {
-			// Old graphs don't have the namespace for the attribute.
-			type = portElement.attributeValue(GraphSchema.PORT_TYPE_ATTRIBUTE);
-		}
-		PortImpl port;
-		if (GraphSchema.PORT_TYPE_WS_DATA.equals(type)) {
-			port = new WSPort(portElement);
-		} else if (GraphSchema.PORT_TYPE_SYSTEM_DATA.equals(type)) {
-			port = new SystemDataPort(portElement);
-		} else if (GraphSchema.PORT_TYPE_CONTROL.equals(type)) {
-			port = new ControlPort(portElement);
-		} else if (GraphSchema.PORT_TYPE_EPR.equals(type)) {
-			port = new EPRPort(portElement);
-		} else if (GraphSchema.PORT_TYPE_INSTANCE.equals(type)) {
-			port = new InstanceDataPort(portElement);
-		} else {
-			// Default is WsPort because of backword compatibility
-			port = new WSPort(portElement);
-		}
-		return port;
-	}
+	public PortImpl createPort(JsonObject portObject) {
 
+        String type = portObject.getAsJsonPrimitive(GraphSchema.PORT_TYPE_ATTRIBUTE).getAsString();
+        PortImpl port;
+        if (GraphSchema.PORT_TYPE_WS_DATA.equals(type)) {
+            port = new WSPort(portObject);
+        } else if (GraphSchema.PORT_TYPE_SYSTEM_DATA.equals(type)) {
+            port = new SystemDataPort(portObject);
+        } else if (GraphSchema.PORT_TYPE_CONTROL.equals(type)) {
+            port = new ControlPort(portObject);
+/*        } else if (GraphSchema.PORT_TYPE_EPR.equals(type)) {
+            port = new EPRPort(portElement);
+        } else if (GraphSchema.PORT_TYPE_INSTANCE.equals(type)) {
+            port = new InstanceDataPort(portElement);*/
+        } else {
+            // Default is WsPort because of backword compatibility
+            port = new WSPort(portObject);
+        }
+        return port;
+    }
+
+    public PortImpl createPort(XmlElement portElement) {
+        String type = portElement.attributeValue(GraphSchema.NS,
+                GraphSchema.PORT_TYPE_ATTRIBUTE);
+        if (type == null) {
+            // Old graphs don't have the namespace for the attribute.
+            type = portElement.attributeValue(GraphSchema.PORT_TYPE_ATTRIBUTE);
+        }
+        PortImpl port;
+        if (GraphSchema.PORT_TYPE_WS_DATA.equals(type)) {
+            port = new WSPort(portElement);
+        } else if (GraphSchema.PORT_TYPE_SYSTEM_DATA.equals(type)) {
+            port = new SystemDataPort(portElement);
+        } else if (GraphSchema.PORT_TYPE_CONTROL.equals(type)) {
+            port = new ControlPort(portElement);
+        } else if (GraphSchema.PORT_TYPE_EPR.equals(type)) {
+            port = new EPRPort(portElement);
+        } else if (GraphSchema.PORT_TYPE_INSTANCE.equals(type)) {
+            port = new InstanceDataPort(portElement);
+        } else {
+            // Default is WsPort because of backword compatibility
+            port = new WSPort(portElement);
+        }
+        return port;
+    }
 	/**
 	 * @see org.apache.airavata.workflow.model.graph.GraphFactory#createEdge(org.apache.airavata.workflow.model.graph.Port,
 	 *      org.apache.airavata.workflow.model.graph.Port)
@@ -244,7 +323,21 @@ public class WSGraphFactory implements GraphFactory {
 		return edge;
 	}
 
-	/**
+    public EdgeImpl createEdge(JsonObject edgeObject) {
+        String type = edgeObject.getAsJsonPrimitive(GraphSchema.EDGE_TYPE_ATTRIBUTE).getAsString();
+        EdgeImpl edge;
+        if (GraphSchema.EDGE_TYPE_DATA.equals(type)) {
+            edge = new DataEdge(edgeObject);
+        } else if (GraphSchema.PORT_TYPE_CONTROL.equals(type)) {
+            edge = new ControlEdge(edgeObject);
+        } else {
+            // Default is WsPort because of backword compatibility
+            edge = new DataEdge(edgeObject);
+        }
+        return edge;
+    }
+
+    /**
 	 * @return The graph created.
 	 */
 	private static WSGraph createWSGraph() {

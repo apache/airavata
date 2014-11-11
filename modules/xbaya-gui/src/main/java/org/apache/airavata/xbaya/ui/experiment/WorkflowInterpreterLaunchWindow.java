@@ -252,22 +252,17 @@ public class WorkflowInterpreterLaunchWindow {
 
     private void execute() throws AiravataClientConnectException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
 
-    	if (!(engine.getGUI().setupThriftClientData(ThriftServiceType.API_SERVICE) && engine.getGUI().setupThriftClientData(ThriftServiceType.WORKFLOW_SERVICE))){
-    		hide();
-    		return;
-    	}
-
+    	
     	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
 		Client airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
 
-		org.apache.airavata.api.workflow.Workflow.Client workflowClient = XBayaUtil.getWorkflowClient(engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE));
-
+		
 		Workflow workflowClone = workflow.clone();
 		workflowClone.setName(workflowClone.getName()+UUID.randomUUID().toString());
 		org.apache.airavata.model.Workflow w = new org.apache.airavata.model.Workflow();
 		w.setName(workflowClone.getName());
 		w.setGraph(XMLUtil.xmlElementToString(workflowClone.toXML()));
-		w.setTemplateId(workflowClient.registerWorkflow(w));
+		w.setTemplateId(airavataClient.registerWorkflow(w));
         String instanceName = this.instanceNameTextField.getText();
         if (instanceName.trim().equals("")){
         	JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
@@ -355,6 +350,11 @@ public class WorkflowInterpreterLaunchWindow {
 	private OrchestratorService.Client getOrchestratorClient() {
 		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
         final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
-        return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+        try {
+			return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+		} catch (AiravataClientConnectException e) {
+			e.printStackTrace();
+		}
+        return null;
 	}
 }

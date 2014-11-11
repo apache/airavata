@@ -26,6 +26,8 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.graph.DataEdge;
@@ -59,6 +61,7 @@ abstract public class ParameterNode extends SystemNode {
     private String description;
 
     private XmlElement metadata;
+    private JsonObject metadataJson;
 
     /**
      * Constructs a ParameterNode.
@@ -70,6 +73,9 @@ abstract public class ParameterNode extends SystemNode {
         super(nodeElement);
     }
 
+    public ParameterNode(JsonObject nodeObject) throws GraphException {
+        super(nodeObject);
+    }
     /**
      * Constructs a ParameterNode.
      * 
@@ -188,6 +194,10 @@ abstract public class ParameterNode extends SystemNode {
         }
     }
 
+    public void setMetadataJson(JsonObject metadata1) {
+        this.metadataJson = metadata1;
+    }
+
     /**
      * @return The metadata
      */
@@ -268,6 +278,30 @@ abstract public class ParameterNode extends SystemNode {
         }
     }
 
+    protected void parseConfiguration(JsonObject configObject) {
+        JsonElement nameElement = configObject.get(NAME_TAG);
+        if (nameElement != null) {
+            this.configured = true;
+            this.configuredName = nameElement.getAsString();
+        }
+        JsonElement descriptionElement = configObject.get(DESCRIPTION_TAG);
+        if (descriptionElement != null) {
+            this.description = descriptionElement.getAsString();
+        }
+        JsonElement typeElement = configObject.get(DATA_TYPE_QNAME_TAG);
+        if (typeElement != null) {
+            this.parameterType = QName.valueOf(typeElement.getAsString());
+        }
+        JsonElement metadataElement = configObject.get(METADATA_TAG);
+        if (metadataElement != null) {
+            JsonObject metaObject = (JsonObject) metadataElement;
+            JsonElement appInfoElement = metaObject.get("appinfo");
+            if (appInfoElement != null) {
+                setMetadataJson((JsonObject) appInfoElement);
+            }
+        }
+    }
+
     @Override
     protected XmlElement addConfigurationElement(XmlElement nodeElement) {
 
@@ -298,6 +332,28 @@ abstract public class ParameterNode extends SystemNode {
         }
 
         return configElement;
+    }
+
+    @Override
+    protected JsonObject addConfigurationElement(JsonObject nodeObject) {
+        JsonObject configObject = new JsonObject();
+
+        if (this.configured) {
+            // Don't save the name here if this node has not been configured.
+            configObject.addProperty(NAME_TAG, this.configuredName);
+        }
+        if (this.description != null) {
+            configObject.addProperty(DESCRIPTION_TAG, this.description);
+        }
+        if (this.parameterType != null) {
+            configObject.addProperty(DATA_TYPE_QNAME_TAG, this.parameterType.toString());
+        }
+        if (this.metadata != null) {
+            configObject.add(METADATA_TAG, this.metadataJson);
+        }
+        nodeObject.add(GraphSchema.NODE_CONFIG_TAG, configObject);
+
+        return configObject;
     }
 
     protected List<DataEdge> getEdges() {

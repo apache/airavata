@@ -73,10 +73,10 @@ public class ComputeResourceTest {
             ipdaresses.add("222.33.43.444");
             ipdaresses.add("23.344.44.454");
             description.setIpAddresses(ipdaresses);
-            List<String> aliases = new ArrayList<String>();
-            aliases.add("test.alias1");
-            aliases.add("test.alias2");
-            description.setHostAliases(aliases);
+//            List<String> aliases = new ArrayList<String>();
+//            aliases.add("test.alias1");
+//            aliases.add("test.alias2");
+//            description.setHostAliases(aliases);
             String sshsubmissionId = addSSHJobSubmission();
             System.out.println("**** SSH Submission id ****** :" + sshsubmissionId);
 //            String gsiSSHsubmissionId = addGSISSHJobSubmission();
@@ -144,10 +144,17 @@ public class ComputeResourceTest {
             if (computeResource.isComputeResourceExists(resourceId)){
                 host = computeResource.getComputeResource(resourceId);
                 List<String> hostAliases = host.getHostAliases();
-                for (String alias : hostAliases){
+                if (hostAliases != null && !hostAliases.isEmpty()){
+                    for (String alias : hostAliases){
+                        System.out.println("%%%%%%%%%%%%%%%% alias value :  %%%%%%%%%%%%%%%%%%% : " + alias);
+                    }
+                }
+                host.addToHostAliases("abc");
+                computeResource.updateComputeResource(resourceId, host);
+                List<String> hostAliases1 = computeResource.getComputeResource(resourceId).getHostAliases();
+                for (String alias : hostAliases1){
                     System.out.println("%%%%%%%%%%%%%%%% alias value :  %%%%%%%%%%%%%%%%%%% : " + alias);
                 }
-
                 System.out.println("**********Resource name ************* : " +  host.getHostName());
             }
 

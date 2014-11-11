@@ -21,13 +21,7 @@
 
 package org.apache.airavata.workflow.model.graph.ws;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.airavata.common.exception.UtilsException;
-import org.apache.airavata.common.utils.XMLUtil;
+import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.graph.DataEdge;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -40,13 +34,14 @@ import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.xmlpull.infoset.XmlElement;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+
 public class WSGraph extends GraphImpl {
 
-    private XmlElement metadata;
 
-    private XmlElement inputMetadata;
-
-    private XmlElement outputMetadata;
 
     private boolean editable=true;
     /**
@@ -59,97 +54,16 @@ public class WSGraph extends GraphImpl {
     }
 
     /**
-     * Returns the metadata.
-     * 
-     * @return The metadata
-     */
-    public XmlElement getMetadata() {
-        return this.metadata;
-    }
-
-    /**
-     * Sets metadata.
-     * 
-     * @param metadata
-     *            The metadata to set.
-     */
-    public void setMetadata(XmlElement metadata) {
-        this.metadata = metadata;
-    }
-
-    /**
-     * Returns the inputMetadata.
-     * 
-     * @return The inputMetadata
-     */
-    public XmlElement getInputMetadata() {
-        return this.inputMetadata;
-    }
-
-    /**
-     * Sets inputMetadata.
-     * 
-     * @param inputMetadata
-     *            The inputMetadata to set.
-     */
-    public void setInputMetadata(XmlElement inputMetadata) {
-        this.inputMetadata = inputMetadata;
-    }
-
-    /**
-     * Returns the outputMetadata.
-     * 
-     * @return The outputMetadata
-     */
-    public XmlElement getOutputMetadata() {
-        return this.outputMetadata;
-    }
-
-    /**
-     * Sets outputMetadata.
-     * 
-     * @param outputMetadata
-     *            The outputMetadata to set.
-     */
-    public void setOutputMetadata(XmlElement outputMetadata) {
-        this.outputMetadata = outputMetadata;
-    }
-
-    /**
      * @see org.apache.airavata.workflow.model.graph.impl.GraphImpl#toXML(org.xmlpull.infoset.XmlElement)
      */
     @Override
     protected void toXML(XmlElement graphElement) {
         super.toXML(graphElement);
+    }
 
-        try {
-            graphElement.setAttributeValue(GraphSchema.NS, GraphSchema.GRAPH_TYPE_ATTRIBUTE, GraphSchema.GRAPH_TYPE_WS);
 
-            if (this.metadata != null) {
-                XmlElement metadataElement = graphElement.addElement(GraphSchema.NS, GraphSchema.GRAPH_METADATA_TAG);
-                // Clone the metadata to avoid parent problem because this can be
-                // called multiple times.
-                metadataElement.addChild(XMLUtil.deepClone(this.metadata));
-            }
-
-            if (this.inputMetadata != null) {
-                XmlElement metadataElement = graphElement.addElement(GraphSchema.NS,
-                        GraphSchema.GRAPH_INPUT_METADATA_TAG);
-                // Clone the metadata to avoid parent problem because this can be
-                // called multiple times.
-                metadataElement.addChild(XMLUtil.deepClone(this.inputMetadata));
-            }
-
-            if (this.outputMetadata != null) {
-                XmlElement metadataElement = graphElement.addElement(GraphSchema.NS,
-                        GraphSchema.GRAPH_OUTPUT_METADATA_TAG);
-                // Clone the metadata to avoid parent problem because this can be
-                // called multiple times.
-                metadataElement.addChild(XMLUtil.deepClone(this.outputMetadata));
-            }
-        } catch (UtilsException e) {
-            e.printStackTrace();
-        }
+    protected void parse(JsonObject graphObject) throws GraphException {
+        super.parse(graphObject);
     }
 
     /**
@@ -158,33 +72,6 @@ public class WSGraph extends GraphImpl {
     @Override
     protected void parse(XmlElement graphElement) throws GraphException {
         super.parse(graphElement);
-
-        XmlElement metadataElement = graphElement.element(GraphSchema.GRAPH_METADATA_TAG);
-        if (metadataElement != null) {
-            for (XmlElement appinfo : metadataElement.requiredElementContent()) {
-                this.metadata = appinfo;
-                // It should have only one element.
-                break;
-            }
-        }
-
-        XmlElement inputMetadataElement = graphElement.element(GraphSchema.GRAPH_INPUT_METADATA_TAG);
-        if (inputMetadataElement != null) {
-            for (XmlElement appinfo : inputMetadataElement.requiredElementContent()) {
-                this.inputMetadata = appinfo;
-                // It should have only one element.
-                break;
-            }
-        }
-
-        XmlElement outputMetadataElement = graphElement.element(GraphSchema.GRAPH_OUTPUT_METADATA_TAG);
-        if (outputMetadataElement != null) {
-            for (XmlElement appinfo : outputMetadataElement.requiredElementContent()) {
-                this.outputMetadata = appinfo;
-                // It should have only one element.
-                break;
-            }
-        }
     }
 
     public boolean equals(WSGraph graph) {
@@ -240,7 +127,7 @@ public class WSGraph extends GraphImpl {
     }
 
     /**
-     * @param name
+     * @param id
      * @param nodes
      * @return
      */

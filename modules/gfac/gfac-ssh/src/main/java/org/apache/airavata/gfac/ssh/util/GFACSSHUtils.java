@@ -32,6 +32,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.ssh.context.SSHAuthWrapper;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
@@ -48,6 +49,8 @@ import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthentica
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.schemas.gfac.*;
 import org.slf4j.Logger;
@@ -62,9 +65,12 @@ public class GFACSSHUtils {
 
     public static int maxClusterCount = 5;
 
-    public static final String ADVANCED_SSH_AUTH = "advanced.ssh.auth";
-
-
+    /**
+     * This method is to add computing resource specific authentication, if its a third party machine, use the other addSecurityContext
+     * @param jobExecutionContext
+     * @throws GFacException
+     * @throws ApplicationSettingsException
+     */
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
         HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
         if (registeredHost.getType() instanceof GlobusHostType || registeredHost.getType() instanceof UnicoreHostType) {
@@ -77,8 +83,6 @@ public class GFACSSHUtils {
             requestData.setTokenId(credentialStoreToken);
 
             ServerInfo serverInfo = new ServerInfo(null, registeredHost.getType().getHostAddress());
-            SSHAuthWrapper sshAuth = (SSHAuthWrapper) jobExecutionContext.getProperty(ADVANCED_SSH_AUTH);
-
             Cluster pbsCluster = null;
             try {
                 TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
@@ -95,9 +99,6 @@ public class GFACSSHUtils {
 
                 String key = credentials.getPortalUserName() + registeredHost.getType().getHostAddress() +
                         serverInfo.getPort();
-                if(sshAuth!=null){
-                    key=sshAuth.getKey();
-                }
                 boolean recreate = false;
                 synchronized (clusters) {
                     if (clusters.containsKey(key) && clusters.get(key).size() < maxClusterCount) {
@@ -125,15 +126,8 @@ public class GFACSSHUtils {
                         recreate = true;
                     }
                     if (recreate) {
-                        if (sshAuth != null) {
-                            pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),
+                        pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
                                     CommonUtils.getPBSJobManager(installedParentPath));
-                            jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,null); // some other provider might fail
-                            key = sshAuth.getKey();
-                        } else {
-                            pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
-                                    CommonUtils.getPBSJobManager(installedParentPath));
-                        }
                         List<Cluster> pbsClusters = null;
                         if (!(clusters.containsKey(key))) {
                             pbsClusters = new ArrayList<Cluster>();
@@ -148,8 +142,69 @@ public class GFACSSHUtils {
                 e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
             sshSecurityContext.setPbsCluster(pbsCluster);
-            jobExecutionContext.addSecurityContext(Constants.SSH_SECURITY_CONTEXT, sshSecurityContext);
+            jobExecutionContext.addSecurityContext(registeredHost.getType().getHostAddress(), sshSecurityContext);
         }
+    }
+
+    /**
+     * This method can be used to add third party resource security contexts
+     * @param jobExecutionContext
+     * @param sshAuth
+     * @throws GFacException
+     * @throws ApplicationSettingsException
+     */
+    public static void addSecurityContext(JobExecutionContext jobExecutionContext,SSHAuthWrapper sshAuth) throws GFacException, ApplicationSettingsException {
+            try {
+                if(sshAuth== null) {
+                    throw new GFacException("Error adding security Context, because sshAuthWrapper is null");
+                }
+                SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
+                Cluster pbsCluster = null;
+                String key=sshAuth.getKey();
+                boolean recreate = false;
+                synchronized (clusters) {
+                    if (clusters.containsKey(key) && clusters.get(key).size() < maxClusterCount) {
+                        recreate = true;
+                    } else if (clusters.containsKey(key)) {
+                        int i = new Random().nextInt(Integer.MAX_VALUE) % maxClusterCount;
+                        if (clusters.get(key).get(i).getSession().isConnected()) {
+                            pbsCluster = clusters.get(key).get(i);
+                        } else {
+                            clusters.get(key).remove(i);
+                            recreate = true;
+                        }
+                        if (!recreate) {
+                            try {
+                                pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+                            } catch (Exception e) {
+                                clusters.get(key).remove(i);
+                                logger.info("Connection found the connection map is expired, so we create from the scratch");
+                                maxClusterCount++;
+                                recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+                            }
+                        }
+                        logger.info("Re-using the same connection used with the connection string:" + key);
+                    } else {
+                        recreate = true;
+                    }
+                    if (recreate) {
+                        pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),null);
+                        key = sshAuth.getKey();
+                        List<Cluster> pbsClusters = null;
+                        if (!(clusters.containsKey(key))) {
+                            pbsClusters = new ArrayList<Cluster>();
+                        } else {
+                            pbsClusters = clusters.get(key);
+                        }
+                        pbsClusters.add(pbsCluster);
+                        clusters.put(key, pbsClusters);
+                    }
+                }
+                sshSecurityContext.setPbsCluster(pbsCluster);
+                jobExecutionContext.addSecurityContext(key, sshSecurityContext);
+            } catch (Exception e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
     }
 
     public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext,
@@ -240,6 +295,37 @@ public class GFACSSHUtils {
 
         }
         return jobDescriptor;
+    }
+
+    /**
+     * This method can be used to set the Security Context if its not set and later use it in other places
+     * @param jobExecutionContext
+     * @param authenticationInfo
+     * @param userName
+     * @param hostName
+     * @param port
+     * @return
+     * @throws GFacException
+     */
+    public static String prepareSecurityContext(JobExecutionContext jobExecutionContext, AuthenticationInfo authenticationInfo
+            , String userName, String hostName, int port) throws GFacException {
+        ServerInfo serverInfo = new ServerInfo(userName, hostName);
+        String key = userName+hostName+port;
+        SSHAuthWrapper sshAuthWrapper = new SSHAuthWrapper(serverInfo, authenticationInfo, key);
+        if (jobExecutionContext.getSecurityContext(key) == null) {
+            try {
+                GFACSSHUtils.addSecurityContext(jobExecutionContext, sshAuthWrapper);
+            } catch (ApplicationSettingsException e) {
+                logger.error(e.getMessage());
+                try {
+                    GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                } catch (GFacException e1) {
+                    logger.error(e1.getLocalizedMessage());
+                }
+                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+            }
+        }
+        return key;
     }
 
 }

@@ -149,7 +149,8 @@ public interface WSConstants {
      * 
      * </appinfo>
      */
-    public static final String EMPTY_APPINFO = "<appinfo xmlns=\"http://www.w3.org/2001/XMLSchema\">\n\n</appinfo>";
+//    public static final String EMPTY_APPINFO = "<appinfo xmlns=\"http://www.w3.org/2001/XMLSchema\">\n\n</appinfo>";
+    public static final String EMPTY_APPINFO = "{'appinfo': '' }";
 
     /**
      * minOccurs

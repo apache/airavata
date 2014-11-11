@@ -122,7 +122,7 @@ public class XBayaConstants {
     /**
      * Suffix of a workflow file
      */
-    public static final String WORKFLOW_FILE_SUFFIX = ".xwf";
+    public static final String WORKFLOW_FILE_SUFFIX = ".awf";
 
     /**
      * File suffix for Jython scripts

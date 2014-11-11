@@ -35,8 +35,8 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.api.workflow.Workflow.Client;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
@@ -77,9 +77,9 @@ public class WorkflowImportWindow {
      */
     public WorkflowImportWindow(XBayaEngine engine) throws Exception {
         this.engine = engine;
-        if (engine.getGUI().setupThriftClientData(ThriftServiceType.WORKFLOW_SERVICE)) {
-        	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE);
-        	setClient(AiravataClientFactory.createWorkflowClient(thriftClientData.getServerAddress(), thriftClientData.getServerPort()));
+        if (engine.getGUI().setupThriftClientData(ThriftServiceType.API_SERVICE)) {
+        	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
+        	setClient(AiravataClientFactory.createAiravataClient(thriftClientData.getServerAddress(), thriftClientData.getServerPort()));
             initGUI();
         } else {
         	throw new Exception("Thrift data not setup for workflow service!!!");

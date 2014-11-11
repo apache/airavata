@@ -276,6 +276,22 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
+    public List<ApplicationModule> getAllApplicationModules() throws AppCatalogException {
+        List<ApplicationModule> applicationModules = new ArrayList<ApplicationModule>();
+        try {
+            AppModuleResource resource = new AppModuleResource();
+            List<Resource> resources = resource.getAll();
+            if (resources != null && !resources.isEmpty()){
+                applicationModules = AppCatalogThriftConversion.getAppModules(resources);
+            }
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource list...", e);
+            throw new AppCatalogException(e);
+        }
+        return applicationModules;
+    }
+
+    @Override
     public List<ApplicationInterfaceDescription> getApplicationInterfaces(Map<String, String> filters) throws AppCatalogException {
         List<ApplicationInterfaceDescription> appInterfaces = new ArrayList<ApplicationInterfaceDescription>();
         try {

@@ -37,8 +37,6 @@ import org.slf4j.LoggerFactory;
 public class SSHSecurityContext implements SecurityContext {
 	private static final Logger log = LoggerFactory.getLogger(SSHSecurityContext.class);
 
-	public static final String SSH_SECURITY_CONTEXT = "ssh";
-
 	private String username;
 	private String privateKeyLoc;
 	private String keyPass;

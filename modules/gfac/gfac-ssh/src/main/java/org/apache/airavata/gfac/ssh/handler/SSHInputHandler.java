@@ -66,13 +66,8 @@ public class SSHInputHandler extends AbstractHandler {
         Cluster cluster = null;
         
         try {
-        	cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
-            if (cluster == null) {
-                throw new GFacException("Security context is not set properly");
-            } else {
-                log.info("Successfully retrieved the Security Context");
-            }
-            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
+            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 try {
                     GFACSSHUtils.addSecurityContext(jobExecutionContext);
                 } catch (ApplicationSettingsException e) {

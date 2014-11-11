@@ -157,12 +157,10 @@ public class HPCPullMonitor extends PullMonitor {
         HostDescription currentHostDescription = null;
         try {
             take = this.queue.take();
-            Map<String,MonitorID> completedJobs = new HashMap<String,MonitorID>();
             List<HostMonitorData> hostMonitorData = take.getHostMonitorData();
             for (HostMonitorData iHostMonitorData : hostMonitorData) {
                 if (iHostMonitorData.getHost().getType() instanceof GsisshHostType
                         || iHostMonitorData.getHost().getType() instanceof SSHHostType) {
-                    currentHostDescription = iHostMonitorData.getHost();
                     String hostName =  iHostMonitorData.getHost().getType().getHostAddress();
                     ResourceConnection connection = null;
                     if (connections.containsKey(hostName)) {
@@ -181,17 +179,22 @@ public class HPCPullMonitor extends PullMonitor {
                     // before we get the statuses, we check the cancel job list and remove them permanently
                     List<MonitorID> monitorID = iHostMonitorData.getMonitorIDs();
                     Iterator<String> iterator1 = cancelJobList.iterator();
-
-                    for(MonitorID iMonitorID:monitorID){
+                    ListIterator<MonitorID> monitorIDListIterator = monitorID.listIterator();
+                    while (monitorIDListIterator.hasNext()){
+                        MonitorID iMonitorID = monitorIDListIterator.next();
                         while(iterator1.hasNext()) {
                             String cancelMId = iterator1.next();
                             if (cancelMId.equals(iMonitorID.getExperimentID() + "+" + iMonitorID.getTaskID())) {
                                 iMonitorID.setStatus(JobState.CANCELED);
-                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
-                                iterator1.remove();
+                                CommonUtils.removeMonitorFromQueue(take,iMonitorID);
                                 logger.debugId(cancelMId, "Found a match in cancel monitor queue, hence moved to the " +
                                                 "completed job queue, experiment {}, task {} , job {}",
                                         iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobID());
+                                logger.info("Job cancelled: marking the Job as ************CANCELLED************ experiment {}, task {}, job name {} .",
+                                        iMonitorID.getExperimentID(),iMonitorID.getTaskID(),iMonitorID.getJobName());
+                                sendNotification(iMonitorID);
+                                monitorIDListIterator.remove();
+                                GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
                                 break;
                             }
                         }
@@ -199,26 +202,36 @@ public class HPCPullMonitor extends PullMonitor {
                     }
                     synchronized (completedJobsFromPush) {
                         ListIterator<String> iterator = completedJobsFromPush.listIterator();
-                        for (MonitorID iMonitorID : monitorID) {
+                        monitorIDListIterator = monitorID.listIterator();
+                        while (monitorIDListIterator.hasNext()) {
+                            MonitorID iMonitorID = monitorIDListIterator.next();
                             String completeId = null;
                             while (iterator.hasNext()) {
                                  completeId = iterator.next();
                                 if (completeId.equals(iMonitorID.getUserName() + "," + iMonitorID.getJobName())) {
                                     logger.info("This job is finished because push notification came with <username,jobName> " + completeId);
-                                    completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                                     iMonitorID.setStatus(JobState.COMPLETE);
-                                    iterator.remove();//we have to make this empty everytime we iterate, otherwise this list will accumulate and will lead to a memory leak
+                                    CommonUtils.removeMonitorFromQueue(take,iMonitorID);//we have to make this empty everytime we iterate, otherwise this list will accumulate and will lead to a memory leak
                                     logger.debugId(completeId, "Push notification updated job {} status to {}. " +
                                                     "experiment {} , task {}.", iMonitorID.getJobID(), JobState.COMPLETE.toString(),
                                             iMonitorID.getExperimentID(), iMonitorID.getTaskID());
+                                    logger.info("AMQP message recieved: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
+                                            iMonitorID.getExperimentID(),iMonitorID.getTaskID(),iMonitorID.getJobName());
+
+                                    iterator.remove();
+                                    sendNotification(iMonitorID);
+                                    GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
                                     break;
                                 }
                             }
                             iterator = completedJobsFromPush.listIterator();
                         }
                     }
+
+                    // we have to get this again because we removed the already completed jobs with amqp messages
+                    monitorID = iHostMonitorData.getMonitorIDs();
                     Map<String, JobState> jobStatuses = connection.getJobStatuses(monitorID);
-                    Iterator<MonitorID> iterator = monitorID.iterator();
+                    Iterator<MonitorID> iterator = monitorID.listIterator();
                     while (iterator.hasNext()) {
                         MonitorID iMonitorID = iterator.next();
                         currentMonitorID = iMonitorID;
@@ -226,13 +239,22 @@ public class HPCPullMonitor extends PullMonitor {
                                 !JobState.COMPLETE.equals(iMonitorID.getStatus())) {
                             iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID() + "," + iMonitorID.getJobName()));    //IMPORTANT this is NOT a simple setter we have a logic
                         }else if(JobState.COMPLETE.equals(iMonitorID.getStatus())){
-                            completedJobs.put(iMonitorID.getJobName(), iMonitorID);
                             logger.debugId(iMonitorID.getJobID(), "Moved job {} to completed jobs map, experiment {}, " +
                                     "task {}", iMonitorID.getJobID(), iMonitorID.getExperimentID(), iMonitorID.getTaskID());
+                            CommonUtils.removeMonitorFromQueue(take,iMonitorID);
+                            logger.info("PULL Notification is complete: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
+                                    iMonitorID.getExperimentID(),iMonitorID.getTaskID(),iMonitorID.getJobName());
+                            GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
                         }
-                        jobStatus = new JobStatusChangeRequestEvent();
                         iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID()+","+iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
-
+                        iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
+                        sendNotification(iMonitorID);
+                        // if the job is completed we do not have to put the job to the queue again
+                        iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
+                    }
+                    iterator = monitorID.listIterator();
+                    while(iterator.hasNext()){
+                        MonitorID iMonitorID = iterator.next();
                         if (iMonitorID.getFailedCount() > FAILED_COUNT) {
                             iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                             String outputDir = iMonitorID.getJobExecutionContext().getApplicationContext()
@@ -245,15 +267,19 @@ public class HPCPullMonitor extends PullMonitor {
                                     // this is because while we run output handler something failed and during exception
                                     // we store all the jobs in the monitor queue again
                                     logger.error("We know this  job is already attempted to run out-handlers");
-                                    CommonUtils.removeMonitorFromQueue(queue, iMonitorID);
+//                                    CommonUtils.removeMonitorFromQueue(queue, iMonitorID);
                                 }
                             }
                             if (stdOut != null && stdOut.size() > 0 && !stdOut.get(0).isEmpty()) { // have to be careful with this
                                 iMonitorID.setStatus(JobState.COMPLETE);
-                                completedJobs.put(iMonitorID.getJobName(), iMonitorID);
-                                logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, removed job {} from " +
-                                                "monitor queue. Experiment {} , task {}", iMonitorID.getFailedCount(),
+                                logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, " +
+                                                " Experiment {} , task {}", iMonitorID.getFailedCount(),
                                         iMonitorID.getExperimentID(), iMonitorID.getTaskID());
+                                logger.info("Listing directory came as complete: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
+                                        iMonitorID.getExperimentID(),iMonitorID.getTaskID(),iMonitorID.getJobName());
+                                sendNotification(iMonitorID);
+                                CommonUtils.removeMonitorFromQueue(take,iMonitorID);
+                                GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
                             } else {
                                 iMonitorID.setFailedCount(0);
                             }
@@ -263,22 +289,9 @@ public class HPCPullMonitor extends PullMonitor {
                             // if the job is complete we remove it from the Map, if any of these maps
                             // get empty this userMonitorData will get delete from the queue
                         }
-                        JobIdentifier jobIdentity = new JobIdentifier(iMonitorID.getJobID(),
-                                iMonitorID.getTaskID(),
-                                iMonitorID.getWorkflowNodeID(),
-                                iMonitorID.getExperimentID(),
-                                iMonitorID.getJobExecutionContext().getGatewayID());
-                        jobStatus.setJobIdentity(jobIdentity);
-                        jobStatus.setState(iMonitorID.getStatus());
-                        // we have this JobStatus class to handle amqp monitoring
-
-                        publisher.publish(jobStatus);
-                        logger.debugId(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
-                                        "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
-                                jobStatus.getJobIdentity().getTaskId());
-                        // if the job is completed we do not have to put the job to the queue again
-                        iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                     }
+
+
                 } else {
                     logger.debug("Qstat Monitor doesn't handle non-gsissh hosts , host {}", iHostMonitorData.getHost()
                             .getType().getHostAddress());
@@ -286,30 +299,11 @@ public class HPCPullMonitor extends PullMonitor {
             }
             // We have finished all the HostMonitorData object in userMonitorData, now we need to put it back
             // now the userMonitorData goes back to the tail of the queue
-            queue.put(take);
-            // cleaning up the completed jobs, this method will remove some of the userMonitorData from the queue if
-            // they become empty
-            Map<String, Integer> jobRemoveCountMap = new HashMap<String, Integer>();
-            ZooKeeper zk = null;
-            Set<String> keys = completedJobs.keySet();
-            for (String jobName: keys) {
-                MonitorID completedJob = completedJobs.get(jobName);
-                CommonUtils.removeMonitorFromQueue(queue, completedJob);
-//                    gfac.invokeOutFlowHandlers(completedJob.getJobExecutionContext());
-                  GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, completedJob, publisher));
-                if (zk == null) {
-                    zk = completedJob.getJobExecutionContext().getZk();
-                }
-                String key = CommonUtils.getJobCountUpdatePath(completedJob);
-                int i = 0;
-                if (jobRemoveCountMap.containsKey(key)) {
-                    i = Integer.valueOf(jobRemoveCountMap.get(key));
-                }
-                jobRemoveCountMap.put(key, ++i);
-            }
-            if (completedJobs.size() > 0) {
-                // reduce completed job count from zookeeper
-                CommonUtils.updateZkWithJobCount(zk, jobRemoveCountMap, false);
+            // during individual monitorID removal we remove the HostMonitorData object if it become empty
+            // so if all the jobs are finished for all the hostMOnitorId objects in userMonitorData object
+            // we should remove it from the queue so here we do not put it back.
+            if(take.getHostMonitorData().size()!=0) {
+                queue.put(take);
             }
         } catch (InterruptedException e) {
             if (!this.queue.contains(take)) {
@@ -355,6 +349,23 @@ public class HPCPullMonitor extends PullMonitor {
             throw new AiravataMonitorException("Error retrieving the job status", e);
         }
         return true;
+    }
+
+    private void sendNotification(MonitorID iMonitorID) {
+        JobStatusChangeRequestEvent jobStatus = new JobStatusChangeRequestEvent();
+        JobIdentifier jobIdentity = new JobIdentifier(iMonitorID.getJobID(),
+                iMonitorID.getTaskID(),
+                iMonitorID.getWorkflowNodeID(),
+                iMonitorID.getExperimentID(),
+                iMonitorID.getJobExecutionContext().getGatewayID());
+        jobStatus.setJobIdentity(jobIdentity);
+        jobStatus.setState(iMonitorID.getStatus());
+        // we have this JobStatus class to handle amqp monitoring
+        logger.debugId(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
+                "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
+        jobStatus.getJobIdentity().getTaskId());
+
+        publisher.publish(jobStatus);
     }
 
     /**

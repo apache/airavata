@@ -67,6 +67,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
         int oldIndex = 0;
         List<String> oldFiles = new ArrayList<String>();
         StringBuffer data = new StringBuffer("|");
+        String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
         if (jobExecutionContext.getApplicationContext().getHostDescription().getType() instanceof GsisshHostType) { // this is because we don't have the right jobexecution context
             // so attempting to get it from the registry
             if (Constants.PUSH.equals(((GsisshHostType) jobExecutionContext.getApplicationContext().getHostDescription().getType()).getMonitorMode())) {
@@ -98,8 +99,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             }
         }
         try {
-            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) == null) {
-
+            if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
         }  catch (Exception e) {
@@ -119,11 +119,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
         Cluster cluster = null;
         
         try {
-            if (jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT) != null) {
-                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
-            } else {
-                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT)).getPbsCluster();
-            }
+            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
             if (cluster == null) {
                 GFacUtils.saveErrorDetails(jobExecutionContext, "Security context is not set properly", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
                 

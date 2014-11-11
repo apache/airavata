@@ -49,11 +49,13 @@ public class ResourceConnection {
     public ResourceConnection(HostMonitorData hostMonitorData,AuthenticationInfo authInfo) throws SSHApiException {
         MonitorID monitorID = hostMonitorData.getMonitorIDs().get(0);
         try {
-            GSISecurityContext securityContext = (GSISecurityContext) monitorID.getJobExecutionContext().getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT);
+            GSISecurityContext securityContext = (GSISecurityContext)
+                    monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress());
             if(securityContext != null) {
                 cluster = (PBSCluster) securityContext.getPbsCluster();
             }else {
-                SSHSecurityContext sshSecurityContext = (SSHSecurityContext) monitorID.getJobExecutionContext().getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT);
+                SSHSecurityContext sshSecurityContext = (SSHSecurityContext)
+                        monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress());
                 cluster = (PBSCluster)sshSecurityContext.getPbsCluster();
             }
 
@@ -68,7 +70,8 @@ public class ResourceConnection {
     public ResourceConnection(HostMonitorData hostMonitorData) throws SSHApiException {
         MonitorID monitorID = hostMonitorData.getMonitorIDs().get(0);
         try {
-            GSISecurityContext securityContext = (GSISecurityContext) monitorID.getJobExecutionContext().getSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT);
+            GSISecurityContext securityContext = (GSISecurityContext)
+                    monitorID.getJobExecutionContext().getSecurityContext(monitorID.getHost().getType().getHostAddress());
             cluster = (PBSCluster) securityContext.getPbsCluster();
 
             // we just use cluster configuration from the incoming request and construct a new cluster because for monitoring

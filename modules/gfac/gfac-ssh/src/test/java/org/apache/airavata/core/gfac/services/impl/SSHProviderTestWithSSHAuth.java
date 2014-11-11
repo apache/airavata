@@ -132,7 +132,7 @@ public class SSHProviderTestWithSSHAuth {
         jobExecutionContext.setApplicationContext(applicationContext);
 
         // Add security context
-        jobExecutionContext.addSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT, getSecurityContext());
+        jobExecutionContext.addSecurityContext(host.getType().getHostAddress(), getSecurityContext());
         /*
         * Host
         */

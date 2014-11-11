@@ -55,6 +55,12 @@ public interface ComputeResource {
 
 
     String addResourceJobManager(ResourceJobManager resourceJobManager) throws AppCatalogException;
+
+    void updateResourceJobManager (String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws AppCatalogException;
+
+    ResourceJobManager getResourceJobManager (String resourceJobManagerId) throws AppCatalogException;
+
+    void deleteResourceJobManager (String resourceJobManagerId) throws AppCatalogException;
     
     /**
      * This will add a SSHJobSubmission protocol to the database
@@ -77,6 +83,7 @@ public interface ComputeResource {
      * @return uniquely generated submission id
      */
     String addUNICOREJobSubmission (UnicoreJobSubmission unicoreJobSubmission) throws AppCatalogException;
+
 
 
     String addLocalDataMovement (LOCALDataMovement localDataMovement) throws AppCatalogException;
@@ -219,14 +226,16 @@ public interface ComputeResource {
      * @param jobSubmissionInterfaceId unique job submission interface id
      * @throws AppCatalogException
      */
-    void removeJobSubmissionInterface(String jobSubmissionInterfaceId) throws AppCatalogException;
+    void removeJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId) throws AppCatalogException;
 
     /**
      * This method will remove data movement interface
      * @param dataMovementInterfaceId unique data movement id
      * @throws AppCatalogException
      */
-    void removeDataMovementInterface(String dataMovementInterfaceId)  throws AppCatalogException;
+    void removeDataMovementInterface(String computeResourceId, String dataMovementInterfaceId)  throws AppCatalogException;
+
+    void removeBatchQueue(String computeResourceId, String queueName)  throws AppCatalogException;
 
 
 

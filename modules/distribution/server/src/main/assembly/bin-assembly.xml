@@ -203,6 +203,8 @@
 				<include>org.apache.airavata:airavata-common-utils:jar</include>
 				<include>org.apache.airavata:airavata-orchestrator-service:jar
 				</include>
+				<include>org.apache.airavata:airavata-orchestrator-stubs:jar
+				</include>
 				<include>org.apache.airavata:airavata-orchestrator-core:jar
 				</include>
 				<include>org.apache.airavata:airavata-gfac-schema-utils:jar
@@ -216,6 +218,7 @@
 				<include>org.apache.airavata:airavata-data-models:jar</include>
 				<include>org.apache.airavata:airavata-credential-store:jar</include>
 				<include>org.apache.airavata:airavata-gfac-core:jar</include>
+				<include>org.apache.airavata:airavata-gfac-stubs:jar</include>
 				<include>org.apache.airavata:airavata-gfac-service:jar</include>
 				<include>org.apache.airavata:airavata-gfac-ssh:jar</include>
 				<include>org.apache.airavata:airavata-gfac-local:jar</include>
@@ -320,6 +323,7 @@
 				<include>org.apache.santuario:xmlsec</include>
 				<include>commons-httpclient:commons-httpclient</include>
 				<include>commons-codec:commons-codec</include>
+                <include>com.google.code.gson:gson</include>
 			</includes>
 		</dependencySet>
 
