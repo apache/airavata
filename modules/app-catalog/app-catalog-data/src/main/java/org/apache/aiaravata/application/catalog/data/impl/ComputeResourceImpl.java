@@ -132,6 +132,8 @@ public class ComputeResourceImpl implements ComputeResource {
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<String> ipAddresses = description.getIpAddresses();
+        HostIPAddressResource resource = new HostIPAddressResource();
+        resource.remove(description.getComputeResourceId());
 		if (ipAddresses != null && !ipAddresses.isEmpty()) {
 		    for (String ipAddress : ipAddresses) {
 		        HostIPAddressResource ipAddressResource = new HostIPAddressResource();
@@ -147,6 +149,9 @@ public class ComputeResourceImpl implements ComputeResource {
 			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<String> hostAliases = description.getHostAliases();
+        // delete previous host aliases
+        HostAliasResource resource = new HostAliasResource();
+        resource.remove(description.getComputeResourceId());
 		if (hostAliases != null && !hostAliases.isEmpty()) {
 		    for (String alias : hostAliases) {
 		        HostAliasResource aliasResource = new HostAliasResource();
@@ -698,10 +703,13 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public void removeJobSubmissionInterface(String jobSubmissionInterfaceId) throws AppCatalogException {
+    public void removeJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId) throws AppCatalogException {
         try {
             JobSubmissionInterfaceResource resource = new JobSubmissionInterfaceResource();
-            resource.remove(jobSubmissionInterfaceId);
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AbstractResource.JobSubmissionInterfaceConstants.COMPUTE_RESOURCE_ID, computeResourceId);
+            ids.put(AbstractResource.JobSubmissionInterfaceConstants.JOB_SUBMISSION_INTERFACE_ID, jobSubmissionInterfaceId);
+            resource.remove(ids);
         }catch (Exception e){
             logger.error("Error while removing job submission interface..", e);
             throw new AppCatalogException(e);
@@ -709,12 +717,29 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
-    public void removeDataMovementInterface(String dataMovementInterfaceId) throws AppCatalogException {
+    public void removeDataMovementInterface(String computeResourceId, String dataMovementInterfaceId) throws AppCatalogException {
         try {
             DataMovementInterfaceResource resource = new DataMovementInterfaceResource();
-            resource.remove(dataMovementInterfaceId);
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AbstractResource.DataMovementInterfaceConstants.COMPUTE_RESOURCE_ID, computeResourceId);
+            ids.put(AbstractResource.DataMovementInterfaceConstants.DATA_MOVEMENT_INTERFACE_ID, dataMovementInterfaceId);
+            resource.remove(ids);
         }catch (Exception e){
             logger.error("Error while removing data movement interface..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public void removeBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
+        try {
+            BatchQueueResource resource = new BatchQueueResource();
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AbstractResource.BatchQueueConstants.COMPUTE_RESOURCE_ID, computeResourceId);
+            ids.put(AbstractResource.BatchQueueConstants.QUEUE_NAME, queueName);
+            resource.remove(ids);
+        }catch (Exception e){
+            logger.error("Error while removing batch queue..", e);
             throw new AppCatalogException(e);
         }
     }
@@ -726,7 +751,7 @@ public class ComputeResourceImpl implements ComputeResource {
 		ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(resourceJobManager);
 		resource.save();
 		Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-		if (jobManagerCommands!=null) {
+		if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
 			for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
 				JobManagerCommandResource r = new JobManagerCommandResource();
 				r.setCommandType(commandType.toString());
@@ -738,7 +763,61 @@ public class ComputeResourceImpl implements ComputeResource {
 		return resource.getResourceJobManagerId();
 	}
 
-	@Override
+    @Override
+    public void updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws AppCatalogException {
+        try {
+            ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(updatedResourceJobManager);
+            resource.setResourceJobManagerId(resourceJobManagerId);
+            resource.save();
+            Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
+            if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
+                for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
+                    JobManagerCommandResource r = new JobManagerCommandResource();
+                    Map<String, String> ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.JobManagerCommandConstants.RESOURCE_JOB_MANAGER_ID, resourceJobManagerId);
+                    ids.put(AbstractResource.JobManagerCommandConstants.COMMAND_TYPE, commandType.toString());
+                    JobManagerCommandResource existingCommand;
+                    if (r.isExists(ids)){
+                        existingCommand = (JobManagerCommandResource)r.get(ids);
+                    }else {
+                        existingCommand = new JobManagerCommandResource();
+                    }
+                    existingCommand.setCommandType(commandType.toString());
+                    existingCommand.setCommand(jobManagerCommands.get(commandType));
+                    existingCommand.setResourceJobManagerId(resource.getResourceJobManagerId());
+                    existingCommand.save();
+                }
+            }
+        }catch (Exception e){
+            logger.error("Error while updating resource job manager..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
+        try {
+            ResourceJobManagerResource resource = new ResourceJobManagerResource();
+            ResourceJobManagerResource jobManagerResource = (ResourceJobManagerResource)resource.get(resourceJobManagerId);
+            return AppCatalogThriftConversion.getResourceJobManager(jobManagerResource);
+        }catch (Exception e){
+            logger.error("Error while retrieving resource job manager..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public void deleteResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
+        try {
+            ResourceJobManagerResource resource = new ResourceJobManagerResource();
+            resource.remove(resourceJobManagerId);
+        }catch (Exception e){
+            logger.error("Error while deleting resource job manager..", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
 	public String addLocalJobSubmission(LOCALSubmission localSubmission)
 			throws AppCatalogException {
 		localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));

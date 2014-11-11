@@ -35,7 +35,6 @@ import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
-import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
@@ -73,6 +72,8 @@ import java.util.Set;
 public class AdvancedSCPOutputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(AdvancedSCPOutputHandler.class);
 
+    public static final int DEFAULT_SSH_PORT = 22;
+
     private String password = null;
 
     private String publicKeyPath;
@@ -86,8 +87,6 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
     private String hostName;
 
     private String outputPath;
-
-    public static final String ADVANCED_SSH_AUTH = "advanced.ssh.auth";
 
 
     public void initProperties(Properties properties) throws GFacHandlerException {
@@ -110,24 +109,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
                     this.passPhrase);
         }
-        ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        String key = this.userName + this.hostName;
-        jobExecutionContext.setProperty(ADVANCED_SSH_AUTH,new SSHAuthWrapper(serverInfo,authenticationInfo,key));
         try {
-            if (jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT) == null) {
-                try {
-                    GFACSSHUtils.addSecurityContext(jobExecutionContext);
-                } catch (ApplicationSettingsException e) {
-                    log.error(e.getMessage());
-                    try {
-         				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-         			} catch (GFacException e1) {
-         				 log.error(e1.getLocalizedMessage());
-         			}
-                    throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
-                }
-            }
-            pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(SSHSecurityContext.SSH_SECURITY_CONTEXT)).getPbsCluster();
             ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext()
                     .getApplicationDeploymentDescription().getType();
             String standardError = app.getStandardError();
@@ -135,15 +117,17 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             super.invoke(jobExecutionContext);
             // Server info
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir() != null){
-            	try{
-            	URL outputPathURL = new URL(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir());
-            	this.userName = outputPathURL.getUserInfo();
-            	this.hostName = outputPathURL.getHost();
-            	outputPath = outputPathURL.getPath();
-            	} catch (MalformedURLException e) {
-					log.error(e.getLocalizedMessage(),e);
-				}
+                try{
+                    URL outputPathURL = new URL(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().getOutputDataDir());
+                    this.userName = outputPathURL.getUserInfo();
+                    this.hostName = outputPathURL.getHost();
+                    outputPath = outputPathURL.getPath();
+                } catch (MalformedURLException e) {
+                    log.error(e.getLocalizedMessage(),e);
+                }
             }
+            String key = GFACSSHUtils.prepareSecurityContext(jobExecutionContext, authenticationInfo, this.userName, this.hostName, DEFAULT_SSH_PORT);
+            pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(key)).getPbsCluster();
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && !jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().isPersistOutputData()){
             outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
                     + File.separator;
@@ -190,4 +174,6 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
         	throw new GFacHandlerException(e);
         }
     }
+
+
 }

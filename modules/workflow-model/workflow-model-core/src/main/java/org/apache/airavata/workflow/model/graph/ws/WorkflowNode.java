@@ -21,6 +21,7 @@
 
 package org.apache.airavata.workflow.model.graph.ws;
 
+import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.component.ws.WorkflowComponent;
 import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
@@ -39,6 +40,9 @@ public class WorkflowNode extends WSNode {
         super(nodeElement);
     }
 
+    public WorkflowNode(JsonObject nodeObject) throws GraphException{
+        super(nodeObject);
+    }
     /**
      * Constructs a WorkflowNode.
      * 
@@ -63,4 +67,10 @@ public class WorkflowNode extends WSNode {
         return nodeElement;
     }
 
+    @Override
+    protected JsonObject toJSON() {
+        JsonObject nodeObject = (JsonObject) super.toJSON();
+        nodeObject.addProperty(GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_WORKFLOW);
+        return nodeObject;
+    }
 }

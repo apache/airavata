@@ -184,7 +184,7 @@ public class GSISSHProviderTestWithMyProxyAuth {
 
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, serv.getType().getName());
         // Adding security context
-        jobExecutionContext.addSecurityContext(GSISecurityContext.GSI_SECURITY_CONTEXT, getSecurityContext(app));
+        jobExecutionContext.addSecurityContext(hostAddress, getSecurityContext(app));
         ApplicationContext applicationContext = new ApplicationContext();
         jobExecutionContext.setApplicationContext(applicationContext);
         applicationContext.setServiceDescription(serv);

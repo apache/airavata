@@ -86,6 +86,8 @@ public interface ApplicationInterface {
      */
     List<ApplicationModule> getApplicationModules(Map<String, String> filters) throws AppCatalogException;
 
+    List<ApplicationModule> getAllApplicationModules() throws AppCatalogException;
+
     /**
      * This method will return a list of application interfaces according to given search criteria
      * @param filters map should be provided as the field name and it's value

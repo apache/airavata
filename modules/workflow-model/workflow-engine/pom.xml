@@ -231,7 +231,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-orchestrator-service</artifactId>
+            <artifactId>airavata-orchestrator-stubs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-gfac-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

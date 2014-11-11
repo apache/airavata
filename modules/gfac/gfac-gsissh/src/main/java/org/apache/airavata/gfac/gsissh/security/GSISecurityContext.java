@@ -55,8 +55,6 @@ public class GSISecurityContext extends AbstractSecurityContext {
     /*
      * context name
      */
-    public static final String GSI_SECURITY_CONTEXT = "gsi";
-
 
     private Cluster pbsCluster = null;
 

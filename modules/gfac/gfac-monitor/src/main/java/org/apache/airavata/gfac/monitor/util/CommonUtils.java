@@ -152,13 +152,10 @@ public class CommonUtils {
      * @param monitorID
      * @throws AiravataMonitorException
      */
-    public static void removeMonitorFromQueue(BlockingQueue<UserMonitorData> queue, MonitorID monitorID) throws AiravataMonitorException {
-            Iterator<UserMonitorData> iterator = queue.iterator();
-            while (iterator.hasNext()) {
-                UserMonitorData next = iterator.next();
-                if (next.getUserName().equals(monitorID.getUserName())) {
+    public static void removeMonitorFromQueue(UserMonitorData userMonitorData, MonitorID monitorID) throws AiravataMonitorException {
+                if (userMonitorData.getUserName().equals(monitorID.getUserName())) {
                     // then this is the right place to update
-                    List<HostMonitorData> hostMonitorData = next.getHostMonitorData();
+                    List<HostMonitorData> hostMonitorData = userMonitorData.getHostMonitorData();
                     Iterator<HostMonitorData> iterator1 = hostMonitorData.iterator();
                     while (iterator1.hasNext()) {
                         HostMonitorData iHostMonitorID = iterator1.next();
@@ -177,11 +174,6 @@ public class CommonUtils {
                                         iterator1.remove();
                                         logger.debug("Removed host {} from monitoring queue", iHostMonitorID.getHost()
                                                 .getType().getHostAddress());
-                                        if (hostMonitorData.size() == 0) {
-                                            // no useful data so we have to remove the element from the queue
-                                            queue.remove(next);
-                                            logger.debug("Removed user {} from monitoring.", next.getUserName());
-                                        }
                                     }
                                     return;
                                 }
@@ -189,7 +181,6 @@ public class CommonUtils {
                         }
                     }
                 }
-            }
         logger.info("Cannot find the given MonitorID in the queue with userName " +
                 monitorID.getUserName() + "  and jobID " + monitorID.getJobID());
         logger.info("This might not be an error because someone else removed this job from the queue");

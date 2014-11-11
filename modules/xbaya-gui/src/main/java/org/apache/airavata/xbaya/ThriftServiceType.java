@@ -22,6 +22,5 @@
 package org.apache.airavata.xbaya;
 
 public enum ThriftServiceType {
-	API_SERVICE,
-	WORKFLOW_SERVICE
+	API_SERVICE
 }

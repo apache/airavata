@@ -124,12 +124,9 @@ public class RegistryWindow {
         this.usernameTextField = new XBayaTextField();
         this.serverTextField.setText("localhost");
         this.portTextField.setText("8930");
-        if (serviceType == ThriftServiceType.WORKFLOW_SERVICE){
-            this.portTextField.setText("8931");
-        }
         this.gatewayNameTextField.setText("airavata");
         this.usernameTextField.setText("airavata");
-        ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.WORKFLOW_SERVICE);
+        ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
     	if (thriftClientData!=null){
     		this.serverTextField.setText(thriftClientData.getServerAddress());
             this.gatewayNameTextField.setText(thriftClientData.getGatewayId());
@@ -198,13 +195,7 @@ public class RegistryWindow {
     }
 
     private void validateData() throws NumberFormatException, AiravataClientConnectException{
-    	switch(getServiceType()){
-    	case API_SERVICE:
-    		AiravataClientFactory.createAiravataClient(getServerName(), Integer.parseInt(getServerPort())); break;
-    	case WORKFLOW_SERVICE:
-    		AiravataClientFactory.createWorkflowClient(getServerName(), Integer.parseInt(getServerPort())); break;
-    	}
-        
+    		AiravataClientFactory.createAiravataClient(getServerName(), Integer.parseInt(getServerPort()));
     }
 
     public String getUserName() {

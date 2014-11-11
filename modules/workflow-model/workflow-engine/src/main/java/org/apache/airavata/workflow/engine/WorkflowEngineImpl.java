@@ -26,6 +26,7 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQPublisher;
+import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
@@ -82,9 +83,9 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 
 	}
 
-	private OrchestratorService.Client getOrchestratorClient() {
+	private OrchestratorService.Client getOrchestratorClient() throws AiravataClientConnectException{
 		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
         final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
-        return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+       	return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
 	}
 }

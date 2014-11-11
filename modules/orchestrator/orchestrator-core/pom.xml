@@ -54,14 +54,9 @@ the License. -->
             <artifactId>airavata-gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.airavata</groupId>-->
-            <!--<artifactId>airavata-client-api</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-service</artifactId>
+            <artifactId>airavata-gfac-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

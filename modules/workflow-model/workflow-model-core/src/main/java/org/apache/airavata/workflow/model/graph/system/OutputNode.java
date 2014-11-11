@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
+import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.system.OutputComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
@@ -60,6 +61,9 @@ public class OutputNode extends ParameterNode {
         super(nodeElement);
     }
 
+    public OutputNode(JsonObject nodeObject) throws GraphException {
+        super(nodeObject);
+    }
     /**
      * Returns the type of the parameter
      * 
@@ -199,4 +203,10 @@ public class OutputNode extends ParameterNode {
         return nodeElement;
     }
 
+    @Override
+    protected JsonObject toJSON() {
+        JsonObject nodeObject = super.toJSON();
+        nodeObject.addProperty(GraphSchema.NODE_TYPE_ATTRIBUTE, GraphSchema.NODE_TYPE_OUTPUT);
+        return nodeObject;
+    }
 }

@@ -56,6 +56,9 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import org.apache.airavata.common.utils.JSONUtil;
 import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
@@ -149,7 +152,8 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 
     private List<Node> multipleSelectedNodes;
 
-    private XmlElement originalWorkflowElement;
+//    private XmlElement originalWorkflowElement;
+    private JsonObject originalWorkflowElementJson;
     
     boolean editable=false;
     /**
@@ -1347,10 +1351,11 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 	
 	public boolean isWorkflowChanged(){
 		try {
-			if (originalWorkflowElement==null){
+			if (originalWorkflowElementJson==null){
 				updateOriginalWorkflowElement();
 			}
-			return !XMLUtil.isEqual(originalWorkflowElement, getWorkflow().toXML());
+//			return !XMLUtil.isEqual(originalWorkflowElement, getWorkflow().toXML());
+			return !JSONUtil.isEqual(originalWorkflowElementJson, getWorkflow().toJSON());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return true;
@@ -1363,7 +1368,8 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 	}
 
 	private void updateOriginalWorkflowElement() {
-		originalWorkflowElement = getWorkflow().toXML();
+//		originalWorkflowElement = getWorkflow().toXML();
+        originalWorkflowElementJson = getWorkflow().toJSON();
 	}
 
 	@Override

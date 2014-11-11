@@ -23,7 +23,7 @@
  */
 #include "Workflow.h"
 
-namespace airavata { namespace api { namespace workflow {
+namespace apache { namespace airavata { namespace api {
 
 uint32_t Workflow_getAllWorkflows_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -94,14 +94,14 @@ uint32_t Workflow_getAllWorkflows_result::read(::apache::thrift::protocol::TProt
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size0;
-            ::apache::thrift::protocol::TType _etype3;
-            xfer += iprot->readListBegin(_etype3, _size0);
-            this->success.resize(_size0);
-            uint32_t _i4;
-            for (_i4 = 0; _i4 < _size0; ++_i4)
+            uint32_t _size288;
+            ::apache::thrift::protocol::TType _etype291;
+            xfer += iprot->readListBegin(_etype291, _size288);
+            this->success.resize(_size288);
+            uint32_t _i292;
+            for (_i292 = 0; _i292 < _size288; ++_i292)
             {
-              xfer += iprot->readString(this->success[_i4]);
+              xfer += iprot->readString(this->success[_i292]);
             }
             xfer += iprot->readListEnd();
           }
@@ -156,10 +156,10 @@ uint32_t Workflow_getAllWorkflows_result::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::vector<std::string> ::const_iterator _iter5;
-      for (_iter5 = this->success.begin(); _iter5 != this->success.end(); ++_iter5)
+      std::vector<std::string> ::const_iterator _iter293;
+      for (_iter293 = this->success.begin(); _iter293 != this->success.end(); ++_iter293)
       {
-        xfer += oprot->writeString((*_iter5));
+        xfer += oprot->writeString((*_iter293));
       }
       xfer += oprot->writeListEnd();
     }
@@ -206,14 +206,14 @@ uint32_t Workflow_getAllWorkflows_presult::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size6;
-            ::apache::thrift::protocol::TType _etype9;
-            xfer += iprot->readListBegin(_etype9, _size6);
-            (*(this->success)).resize(_size6);
-            uint32_t _i10;
-            for (_i10 = 0; _i10 < _size6; ++_i10)
+            uint32_t _size294;
+            ::apache::thrift::protocol::TType _etype297;
+            xfer += iprot->readListBegin(_etype297, _size294);
+            (*(this->success)).resize(_size294);
+            uint32_t _i298;
+            for (_i298 = 0; _i298 < _size294; ++_i298)
             {
-              xfer += iprot->readString((*(this->success))[_i10]);
+              xfer += iprot->readString((*(this->success))[_i298]);
             }
             xfer += iprot->readListEnd();
           }

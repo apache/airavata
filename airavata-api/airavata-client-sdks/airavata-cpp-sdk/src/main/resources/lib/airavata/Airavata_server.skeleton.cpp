@@ -194,6 +194,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateApplicationModule\n");
   }
 
+  void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) {
+    // Your implementation goes here
+    printf("getAllModules\n");
+  }
+
   bool deleteApplicationModule(const std::string& appModuleId) {
     // Your implementation goes here
     printf("deleteApplicationModule\n");
@@ -354,7 +359,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addLocalDataMovementDetails\n");
   }
 
-  bool updateLocalDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
+  bool updateLocalDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
     // Your implementation goes here
     printf("updateLocalDataMovementDetails\n");
   }
@@ -369,7 +374,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addSCPDataMovementDetails\n");
   }
 
-  bool updateSCPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
+  bool updateSCPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("updateSCPDataMovementDetails\n");
   }
@@ -384,7 +389,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("addGridFTPDataMovementDetails\n");
   }
 
-  bool updateGridFTPDataMovementDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
+  bool updateGridFTPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("updateGridFTPDataMovementDetails\n");
   }
@@ -414,14 +419,39 @@ class AiravataHandler : virtual public AiravataIf {
     printf("changeDataMovementPriorities\n");
   }
 
-  bool deleteJobSubmissionInterface(const std::string& jobSubmissionInterfaceId) {
+  bool deleteJobSubmissionInterface(const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId) {
     // Your implementation goes here
     printf("deleteJobSubmissionInterface\n");
   }
 
-  bool deleteDataMovementInterface(const std::string& dataMovementInterfaceId) {
+  bool deleteDataMovementInterface(const std::string& computeResourceId, const std::string& dataMovementInterfaceId) {
     // Your implementation goes here
     printf("deleteDataMovementInterface\n");
+  }
+
+  void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) {
+    // Your implementation goes here
+    printf("registerResourceJobManager\n");
+  }
+
+  bool updateResourceJobManager(const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager) {
+    // Your implementation goes here
+    printf("updateResourceJobManager\n");
+  }
+
+  void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const std::string& resourceJobManagerId) {
+    // Your implementation goes here
+    printf("getResourceJobManager\n");
+  }
+
+  bool deleteResourceJobManager(const std::string& resourceJobManagerId) {
+    // Your implementation goes here
+    printf("deleteResourceJobManager\n");
+  }
+
+  bool deleteBatchQueue(const std::string& computeResourceId, const std::string& queueName) {
+    // Your implementation goes here
+    printf("deleteBatchQueue\n");
   }
 
   void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
@@ -467,6 +497,41 @@ class AiravataHandler : virtual public AiravataIf {
   bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("deleteGatewayComputeResourcePreference\n");
+  }
+
+  void getAllWorkflows(std::vector<std::string> & _return) {
+    // Your implementation goes here
+    printf("getAllWorkflows\n");
+  }
+
+  void getWorkflow( ::Workflow& _return, const std::string& workflowTemplateId) {
+    // Your implementation goes here
+    printf("getWorkflow\n");
+  }
+
+  void deleteWorkflow(const std::string& workflowTemplateId) {
+    // Your implementation goes here
+    printf("deleteWorkflow\n");
+  }
+
+  void registerWorkflow(std::string& _return, const  ::Workflow& workflow) {
+    // Your implementation goes here
+    printf("registerWorkflow\n");
+  }
+
+  void updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow) {
+    // Your implementation goes here
+    printf("updateWorkflow\n");
+  }
+
+  void getWorkflowTemplateId(std::string& _return, const std::string& workflowName) {
+    // Your implementation goes here
+    printf("getWorkflowTemplateId\n");
+  }
+
+  bool isWorkflowExistWithName(const std::string& workflowName) {
+    // Your implementation goes here
+    printf("isWorkflowExistWithName\n");
   }
 
 };

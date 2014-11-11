@@ -218,7 +218,7 @@ public class AppCatalogThriftConversion {
         resource.setAlternativeSshHostname(submission.getAlternativeSSHHostName());
         resource.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
         ResourceJobManagerResource resourceJobManager = getResourceJobManager(submission.getResourceJobManager());
-        resourceJobManager.setResourceJobManagerId(submission.getJobSubmissionInterfaceId());
+//        resourceJobManager.setResourceJobManagerId(submission.getJobSubmissionInterfaceId());
         resource.setResourceJobManagerId(resourceJobManager.getResourceJobManagerId());
         resource.setResourceJobManagerResource(resourceJobManager);
         if (submission.getSecurityProtocol() != null){
