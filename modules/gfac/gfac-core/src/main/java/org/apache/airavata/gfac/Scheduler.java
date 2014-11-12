@@ -123,7 +123,7 @@ public class Scheduler {
                 LOCALSubmission localSubmission;
                 String securityProtocol = null;
                 try {
-                    AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+                    AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
                     if (jobSubmissionProtocol == JobSubmissionProtocol.SSH) {
                         sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(
                                 jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId());
@@ -136,9 +136,9 @@ public class Scheduler {
                     List<Element> elements = GFacUtils.getElementList(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_SUBMISSION + jobSubmissionProtocol + "']");
                     for (Element element : elements) {
                         String security = element.getAttribute(Constants.GFAC_CONFIG_SECURITY_ATTRIBUTE);
-                        if (securityProtocol == null && security == null) {
+                        if (security.equals("")) {
                             providerClassName = element.getAttribute(Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
-                        }else if (securityProtocol.equals(security)) {
+                        }else if (securityProtocol != null && securityProtocol.equals(security)) {
                             providerClassName = element.getAttribute(Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                         }
                     }

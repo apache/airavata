@@ -38,6 +38,8 @@ import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
@@ -87,47 +89,48 @@ public class SSHInputHandler extends AbstractHandler {
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {
-                ActualParameter actualParameter = (ActualParameter) input.getParameters().get(paramName);
-                String paramValue = MappingFactory.toString(actualParameter);
+                InputDataObjectType inputParamType = (InputDataObjectType) input.getParameters().get(paramName);
+                String paramValue = inputParamType.getValue();
                 //TODO: Review this with type
-                if ("URI".equals(actualParameter.getType().getType().toString())) {
-                	if (index < oldIndex) {
+                if (inputParamType.getType() == DataType.URI) {
+                    if (index < oldIndex) {
                         log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+                        inputParamType.setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
-                    }else{
-                	String stageInputFile = stageInputFiles(cluster,jobExecutionContext, paramValue);
-                    ((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
-                    StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
-                    
-                    status.setTransferState(TransferState.UPLOAD);
-                    detail.setTransferStatus(status);
-                    detail.setTransferDescription("Input Data Staged: " + stageInputFile);
-                    registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                    GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
-                    }
-                } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-                	if (index < oldIndex) {
-                        log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
-                        data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
-                    }else{
-                	List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
-                    List<String> newFiles = new ArrayList<String>();
-                    for (String paramValueEach : split) {
-                        String stageInputFiles = stageInputFiles(cluster,jobExecutionContext, paramValueEach);
+                    } else {
+                        String stageInputFile = stageInputFiles(cluster, jobExecutionContext, paramValue);
+                        inputParamType.setValue(stageInputFile);
+                        StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
                         status.setTransferState(TransferState.UPLOAD);
                         detail.setTransferStatus(status);
-                        detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
+                        detail.setTransferDescription("Input Data Staged: " + stageInputFile);
                         registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                        newFiles.add(stageInputFiles);
-                        StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
+
                         GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                     }
-                    ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
-                    }
-                }
-                inputNew.getParameters().put(paramName, actualParameter);
+                }// FIXME: what is the thrift model DataType equivalent for URIArray type?
+//                else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
+//                	if (index < oldIndex) {
+//                        log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
+//                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+//                        data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
+//                    }else{
+//                	List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
+//                    List<String> newFiles = new ArrayList<String>();
+//                    for (String paramValueEach : split) {
+//                        String stageInputFiles = stageInputFiles(cluster,jobExecutionContext, paramValueEach);
+//                        status.setTransferState(TransferState.UPLOAD);
+//                        detail.setTransferStatus(status);
+//                        detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
+//                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+//                        newFiles.add(stageInputFiles);
+//                        StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
+//                        GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+//                    }
+//                    ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
+//                    }
+//                }
+                inputNew.getParameters().put(paramName, inputParamType);
             }
         } catch (Exception e) {
             log.error(e.getMessage());

@@ -43,14 +43,18 @@ import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
+import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.schemas.gfac.FileArrayType;
 import org.apache.airavata.schemas.gfac.StringArrayType;
 import org.apache.airavata.schemas.gfac.URIArrayType;
@@ -79,9 +83,10 @@ public class GFACSSHUtils {
             logger.error("This is a wrong method to invoke to non ssh host types,please check your gfac-config.xml");
         } else if (preferredJobSubmissionProtocol == JobSubmissionProtocol.SSH) {
             try {
-                AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+                AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
                 SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionInterface.getJobSubmissionInterfaceId());
-                if (sshJobSubmission.getSecurityProtocol() == SecurityProtocol.GSI) {
+                SecurityProtocol securityProtocol = sshJobSubmission.getSecurityProtocol();
+                if (securityProtocol == SecurityProtocol.GSI || securityProtocol == SecurityProtocol.SSH_KEYS) {
                     SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
                     String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
                     RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
@@ -218,6 +223,7 @@ public class GFACSSHUtils {
 
     public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
+        TaskDetails taskData = jobExecutionContext.getTaskData();
         // this is common for any application descriptor
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
         jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
@@ -236,26 +242,49 @@ public class GFACSSHUtils {
         Map<String, Object> inputs = input.getParameters();
         Set<String> keys = inputs.keySet();
         for (String paramName : keys) {
-            ActualParameter actualParameter = (ActualParameter) inputs.get(paramName);
-            if ("URIArray".equals(actualParameter.getType().getType().toString()) || "StringArray".equals(actualParameter.getType().getType().toString())
-                    || "FileArray".equals(actualParameter.getType().getType().toString())) {
-                String[] values = null;
-                if (actualParameter.getType() instanceof URIArrayType) {
-                    values = ((URIArrayType) actualParameter.getType()).getValueArray();
-                } else if (actualParameter.getType() instanceof StringArrayType) {
-                    values = ((StringArrayType) actualParameter.getType()).getValueArray();
-                } else if (actualParameter.getType() instanceof FileArrayType) {
-                    values = ((FileArrayType) actualParameter.getType()).getValueArray();
-                }
-                String value = StringUtil.createDelimiteredString(values, " ");
-                inputValues.add(value);
-            } else {
-                String paramValue = MappingFactory.toString(actualParameter);
-                inputValues.add(paramValue);
-            }
+            InputDataObjectType inputDataObjectType = (InputDataObjectType) inputs.get(paramName);
+            inputValues.add(inputDataObjectType.getValue());
         }
         jobDescriptor.setInputValues(inputValues);
+        jobDescriptor.setUserName(((GSISSHAbstractCluster) cluster).getServerInfo().getUserName());
+        jobDescriptor.setShellName("/bin/bash");
+        jobDescriptor.setAllEnvExport(true);
+        jobDescriptor.setMailOptions("n");
+        jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
 
+        ComputationalResourceScheduling taskScheduling = taskData.getTaskScheduling();
+        if (taskScheduling != null) {
+            int totalNodeCount = taskScheduling.getNodeCount();
+            int totalCPUCount = taskScheduling.getTotalCPUCount();
+
+//        jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
+            if (taskScheduling.getComputationalProjectAccount() != null) {
+                jobDescriptor.setAcountString(taskScheduling.getComputationalProjectAccount());
+            }
+            if (taskScheduling.getQueueName() != null) {
+                jobDescriptor.setQueueName(taskScheduling.getQueueName());
+            }
+
+            if (totalNodeCount > 0) {
+                jobDescriptor.setNodes(totalNodeCount);
+            }
+            if (taskScheduling.getComputationalProjectAccount() != null) {
+                jobDescriptor.setAcountString(taskScheduling.getComputationalProjectAccount());
+            }
+            if (taskScheduling.getQueueName() != null) {
+                jobDescriptor.setQueueName(taskScheduling.getQueueName());
+            }
+            if (totalCPUCount > 0) {
+                int ppn = totalCPUCount / totalNodeCount;
+                jobDescriptor.setProcessesPerNode(ppn);
+                jobDescriptor.setCPUCount(totalCPUCount);
+            }
+            if (taskScheduling.getWallTimeLimit() > 0) {
+                jobDescriptor.setMaxWallTime(String.valueOf(taskScheduling.getWallTimeLimit()));
+            }
+        } else {
+            logger.error("Task scheduling cannot be null at this point..");
+        }
         return jobDescriptor;
     }
 

@@ -89,6 +89,7 @@ public class BetterGfacImpl implements GFac,Watcher {
     public static final String ERROR_SENT = "ErrorSent";
 
     private Registry registry;
+    private AppCatalog appCatalog;
 
     // we are not storing zk instance in to jobExecution context
     private ZooKeeper zk;
@@ -109,11 +110,12 @@ public class BetterGfacImpl implements GFac,Watcher {
      * @param registry
      * @param zooKeeper
      */
-    public BetterGfacImpl(Registry registry, ZooKeeper zooKeeper,
+    public BetterGfacImpl(Registry registry,  AppCatalog appCatalog, ZooKeeper zooKeeper,
                           MonitorPublisher publisher) {
         this.registry = registry;
         monitorPublisher = publisher;     // This is a EventBus common for gfac
         this.zk = zooKeeper;
+        this.appCatalog = appCatalog;
     }
 
     public static void startStatusUpdators(Registry registry, ZooKeeper zk, MonitorPublisher publisher) {
@@ -280,7 +282,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         jobExecutionContext.setWorkflowNodeDetails(experiment.getWorkflowNodeDetailsList().get(0));
         jobExecutionContext.setTaskData(taskData);
         jobExecutionContext.setGatewayID(gatewayID);
-
+        jobExecutionContext.setAppCatalog(appCatalog);
 
         List<JobDetails> jobDetailsList = taskData.getJobDetailsList();
         //FIXME: Following for loop only set last jobDetails element to the jobExecutionContext
