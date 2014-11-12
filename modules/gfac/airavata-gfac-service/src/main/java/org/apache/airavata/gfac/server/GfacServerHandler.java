@@ -21,6 +21,8 @@
 package org.apache.airavata.gfac.server;
 
 import com.google.common.eventbus.EventBus;
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
@@ -52,6 +54,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GfacServerHandler.class);
 
     private Registry registry;
+    private AppCatalog appCatalog;
 
     private String registryURL;
 
@@ -104,6 +107,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             publisher = new MonitorPublisher(new EventBus());
             BetterGfacImpl.setMonitorPublisher(publisher);
             registry = RegistryFactory.getDefaultRegistry();
+            appCatalog = AppCatalogFactory.getAppCatalog();
             setGatewayProperties();
             BetterGfacImpl.startDaemonHandlers();
             BetterGfacImpl.startStatusUpdators(registry,zk,publisher);
@@ -261,7 +265,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
 
     private GFac getGfac()throws TException{
         try {
-            return new BetterGfacImpl(registry,zk,publisher);
+            return new BetterGfacImpl(registry, appCatalog, zk,publisher);
         } catch (Exception e) {
             throw new TException("Error initializing gfac instance",e);
         }

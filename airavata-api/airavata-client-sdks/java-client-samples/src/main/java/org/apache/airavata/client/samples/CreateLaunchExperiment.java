@@ -58,7 +58,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_3f2bb10b-2ee4-48c0-a526-c7c3c53f0a97";
+    private static String echoAppId = "Echo_36fbb479-5b41-4f48-a9c5-382ee910ac6b";
     private static String wrfAppId = "WRF_a37fb0be-a252-4185-a31c-ff43f585f88f";
     private static String amberAppId = "Amber_a8187edf-7be0-4dad-9c8a-d0cc9075e6a0";
 
@@ -93,11 +93,11 @@ public class CreateLaunchExperiment {
 //    final String expId = createEchoExperimentForTrestles(airavataClient);
 //    final String expId = createExperimentEchoForLocalHost(airavataClient);
 //    final String expId = createExperimentWRFTrestles(airavataClient);
-//    final String expId = createExperimentForBR2(airavataClient);
+    final String expId = createExperimentForBR2(airavataClient);
 //    final String expId = createExperimentForBR2Amber(airavataClient);
 //    final String expId = createExperimentWRFStampede(airavataClient);
 //    final String expId = createExperimentForStampedeAmber(airavataClient);
-    final String expId = createExperimentForTrestlesAmber(airavataClient);
+//    final String expId = createExperimentForTrestlesAmber(airavataClient);
 
     System.out.println("Experiment ID : " + expId);
 //    updateExperiment(airavata, expId);

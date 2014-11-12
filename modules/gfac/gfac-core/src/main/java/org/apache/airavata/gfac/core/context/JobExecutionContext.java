@@ -27,6 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
@@ -43,9 +46,12 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.zookeeper.ZooKeeper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JobExecutionContext extends AbstractContext implements Serializable{
 
+    private static final Logger log = LoggerFactory.getLogger(JobExecutionContext.class);
     private GFacConfiguration gfacConfiguration;
 
     private ApplicationContext applicationContext;
@@ -147,6 +153,8 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     private String experimentID;
 
+    private AppCatalog appCatalog;
+
     public String getGatewayID() {
         return gatewayID;
     }
@@ -177,6 +185,20 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         outputFileList = new ArrayList<String>();
     }
 
+    public AppCatalog getAppCatalog() {
+        return appCatalog;
+    }
+
+    public void setAppCatalog(AppCatalog appCatalog) {
+        if (appCatalog == null){
+            try {
+                this.appCatalog = AppCatalogFactory.getAppCatalog();
+            } catch (AppCatalogException e) {
+                log.error("Unable to create app catalog instance" , e);
+            }
+        }
+        this.appCatalog = appCatalog;
+    }
 
     public String getExperimentID() {
         return experimentID;

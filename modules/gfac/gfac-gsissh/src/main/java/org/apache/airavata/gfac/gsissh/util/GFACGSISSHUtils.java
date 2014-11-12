@@ -70,11 +70,12 @@ public class GFACGSISSHUtils {
     public static final String SUN_GRID_ENGINE_JOB_MANAGER = "UGE";
     public static int maxClusterCount = 5;
     public static Map<String, List<Cluster>> clusters = new HashMap<String, List<Cluster>>();
+
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
         JobSubmissionInterface jobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
         JobSubmissionProtocol jobProtocol = jobSubmissionInterface.getJobSubmissionProtocol();
         try {
-            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
             SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
             if (jobProtocol == JobSubmissionProtocol.GLOBUS || jobProtocol == JobSubmissionProtocol.UNICORE
                     || jobProtocol == JobSubmissionProtocol.CLOUD || jobProtocol == JobSubmissionProtocol.LOCAL) {

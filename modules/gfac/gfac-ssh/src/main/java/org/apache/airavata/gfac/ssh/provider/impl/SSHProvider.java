@@ -28,6 +28,9 @@ import java.io.OutputStream;
 import java.util.*;
 import java.util.Map.Entry;
 
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.commons.gfac.type.ActualParameter;
 import org.apache.airavata.commons.gfac.type.MappingFactory;
@@ -52,7 +55,10 @@ import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
@@ -77,40 +83,46 @@ public class SSHProvider extends AbstractProvider {
     private boolean hpcType = false;
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
-        super.initialize(jobExecutionContext);
-        String hostAddress = jobExecutionContext.getHostName();
-        if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
-            try {
+        try {
+            super.initialize(jobExecutionContext);
+            String hostAddress = jobExecutionContext.getHostName();
+            AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
+            JobSubmissionInterface jobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
+            SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+            ResourceJobManagerType resourceJobManagerType = sshJobSubmission.getResourceJobManager().getResourceJobManagerType();
+            if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
-            } catch (ApplicationSettingsException e) {
-                log.error(e.getMessage());
-                throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
             }
-        }
-        taskID = jobExecutionContext.getTaskData().getTaskID();
+            taskID = jobExecutionContext.getTaskData().getTaskID();
 
-        JobSubmissionProtocol preferredJobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
-        if (preferredJobSubmissionProtocol == JobSubmissionProtocol.SSH) {
-            jobID = "SSH_" + jobExecutionContext.getHostName() + "_" + Calendar.getInstance().getTimeInMillis();
-            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
+            JobSubmissionProtocol preferredJobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
+            if (preferredJobSubmissionProtocol == JobSubmissionProtocol.SSH && resourceJobManagerType == ResourceJobManagerType.FORK) {
+                jobID = "SSH_" + jobExecutionContext.getHostName() + "_" + Calendar.getInstance().getTimeInMillis();
+                cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
 
-            String remoteFile = jobExecutionContext.getWorkingDir() + File.separatorChar + Constants.EXECUTABLE_NAME;
-            details.setJobID(taskID);
-            details.setJobDescription(remoteFile);
-            jobExecutionContext.setJobDetails(details);
-            JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, null);
-            details.setJobDescription(jobDescriptor.toXML());
+                String remoteFile = jobExecutionContext.getWorkingDir() + File.separatorChar + Constants.EXECUTABLE_NAME;
+                details.setJobID(taskID);
+                details.setJobDescription(remoteFile);
+                jobExecutionContext.setJobDetails(details);
+                // FIXME : Why cluster is passed as null
+                JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, cluster);
+                details.setJobDescription(jobDescriptor.toXML());
 
-            GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SETUP);
-            log.info(remoteFile);
-            try {
+                GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SETUP);
+                log.info(remoteFile);
                 File runscript = createShellScript(jobExecutionContext);
                 cluster.scpTo(remoteFile, runscript.getAbsolutePath());
-            } catch (Exception e) {
-                throw new GFacProviderException(e.getLocalizedMessage(), e);
+            } else {
+                hpcType = true;
             }
-        } else {
-            hpcType = true;
+        } catch (AppCatalogException e) {
+           log.error("Error while creating app catalog", e);
+            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+        } catch (ApplicationSettingsException e) {
+            log.error(e.getMessage());
+            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+        } catch (Exception e) {
+            throw new GFacProviderException(e.getLocalizedMessage(), e);
         }
     }
 

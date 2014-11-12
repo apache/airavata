@@ -94,7 +94,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         Cluster cluster = null;
 
         try {
-            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
             SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(
                     jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId());
             if (jobExecutionContext.getSecurityContext(jobExecutionContext.getHostName()) != null) {
@@ -319,7 +319,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
                     throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
                 }
             }
-            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
             SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(
                     jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId());
             delegateToMonitorHandlers(jobExecutionContext, sshJobSubmission, jobId);
