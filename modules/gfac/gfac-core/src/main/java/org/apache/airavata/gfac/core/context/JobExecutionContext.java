@@ -189,14 +189,15 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     }
 
     public void setAppCatalog(AppCatalog appCatalog) {
-        if (appCatalog == null){
+        if (appCatalog == null) {
             try {
                 this.appCatalog = AppCatalogFactory.getAppCatalog();
             } catch (AppCatalogException e) {
-                log.error("Unable to create app catalog instance" , e);
+                log.error("Unable to create app catalog instance", e);
             }
+        } else {
+            this.appCatalog = appCatalog;
         }
-        this.appCatalog = appCatalog;
     }
 
     public String getExperimentID() {
