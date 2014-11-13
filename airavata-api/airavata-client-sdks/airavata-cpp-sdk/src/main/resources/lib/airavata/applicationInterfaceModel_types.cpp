@@ -334,8 +334,8 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
         break;
       case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->applicationDesription);
-          this->__isset.applicationDesription = true;
+          xfer += iprot->readString(this->applicationDescription);
+          this->__isset.applicationDescription = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -428,9 +428,9 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
   xfer += oprot->writeString(this->applicationName);
   xfer += oprot->writeFieldEnd();
 
-  if (this->__isset.applicationDesription) {
-    xfer += oprot->writeFieldBegin("applicationDesription", ::apache::thrift::protocol::T_STRING, 3);
-    xfer += oprot->writeString(this->applicationDesription);
+  if (this->__isset.applicationDescription) {
+    xfer += oprot->writeFieldBegin("applicationDescription", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeString(this->applicationDescription);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.applicationModules) {
@@ -481,7 +481,7 @@ void swap(ApplicationInterfaceDescription &a, ApplicationInterfaceDescription &b
   using ::std::swap;
   swap(a.applicationInterfaceId, b.applicationInterfaceId);
   swap(a.applicationName, b.applicationName);
-  swap(a.applicationDesription, b.applicationDesription);
+  swap(a.applicationDescription, b.applicationDescription);
   swap(a.applicationModules, b.applicationModules);
   swap(a.applicationInputs, b.applicationInputs);
   swap(a.applicationOutputs, b.applicationOutputs);

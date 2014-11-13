@@ -50,7 +50,7 @@ try
 
         $appInterface = new ApplicationInterfaceDescription();
         $appInterface->applicationName = $appName;
-        $appInterface->applicationDesription = $appDescription;
+        $appInterface->applicationDescription = $appDescription;
 
         //Add the module provided in argument. If you would like to add multiple modules, you may modify this script or
         // use the updateAppInterface.php script

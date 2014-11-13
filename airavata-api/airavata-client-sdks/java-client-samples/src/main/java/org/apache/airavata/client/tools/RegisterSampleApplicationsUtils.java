@@ -143,12 +143,12 @@ public class RegisterSampleApplicationsUtils {
     }
 
     public static ApplicationInterfaceDescription createApplicationInterfaceDescription
-            (String applicationName, String applicationDesription, List<String> applicationModules,
+            (String applicationName, String applicationDescription, List<String> applicationModules,
             List<InputDataObjectType> applicationInputs, List<OutputDataObjectType>applicationOutputs) {
         ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
 
         applicationInterfaceDescription.setApplicationName(applicationName);
-        if (applicationDesription != null) applicationInterfaceDescription.setApplicationDesription(applicationDesription);
+        if (applicationDescription != null) applicationInterfaceDescription.setApplicationDescription(applicationDescription);
         if (applicationModules != null) applicationInterfaceDescription.setApplicationModules(applicationModules);
         if (applicationInputs != null) applicationInterfaceDescription.setApplicationInputs(applicationInputs);
         if (applicationOutputs != null) applicationInterfaceDescription.setApplicationOutputs(applicationOutputs);
