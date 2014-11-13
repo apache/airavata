@@ -55,10 +55,7 @@ import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
@@ -86,10 +83,8 @@ public class SSHProvider extends AbstractProvider {
         try {
             super.initialize(jobExecutionContext);
             String hostAddress = jobExecutionContext.getHostName();
-            AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
-            JobSubmissionInterface jobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
-            SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
-            ResourceJobManagerType resourceJobManagerType = sshJobSubmission.getResourceJobManager().getResourceJobManagerType();
+            ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
+            ResourceJobManagerType resourceJobManagerType = resourceJobManager.getResourceJobManagerType();
             if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
             }
@@ -115,9 +110,6 @@ public class SSHProvider extends AbstractProvider {
             } else {
                 hpcType = true;
             }
-        } catch (AppCatalogException e) {
-           log.error("Error while creating app catalog", e);
-            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
         } catch (ApplicationSettingsException e) {
             log.error(e.getMessage());
             throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
