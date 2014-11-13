@@ -23,8 +23,6 @@ package org.apache.airavata.gfac;
 
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderConfig;
@@ -34,7 +32,6 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterfa
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -220,8 +217,8 @@ public class Scheduler {
         return ExecutionMode.fromString(executionMode);
     }
 
-    private static HostDescription scheduleHost(List<HostDescription> registeredHosts) {
-        //todo implement an algorithm to pick a host among different hosts, ideally this could be configurable in an xml
-        return registeredHosts.get(0);
-    }
+//    private static HostDescription scheduleHost(List<HostDescription> registeredHosts) {
+//        //todo implement an algorithm to pick a host among different hosts, ideally this could be configurable in an xml
+//        return registeredHosts.get(0);
+//    }
 }

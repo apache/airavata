@@ -20,37 +20,23 @@
 */
 package org.apache.airavata.gfac.ssh.handler;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.gfac.ssh.context.SSHAuthWrapper;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
-import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
-import org.apache.airavata.gsi.ssh.util.CommonUtils;
-import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
-import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.TransferState;
-import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,10 +136,10 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {
-                ActualParameter actualParameter = (ActualParameter) input.getParameters().get(paramName);
-                String paramValue = MappingFactory.toString(actualParameter);
+                InputDataObjectType inputParamType = (InputDataObjectType) input.getParameters().get(paramName);
+                String paramValue = inputParamType.getValue();
                 // TODO: Review this with type
-                if ("URI".equals(actualParameter.getType().getType().toString())) {
+                if (inputParamType.getType() == DataType.URI) {
                     try {
                         URL file = new URL(paramValue);
                         String key = file.getUserInfo() + file.getHost() + DEFAULT_SSH_PORT;
@@ -169,11 +155,11 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
 
                     if (index < oldIndex) {
                         log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+                        inputParamType.setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
                     } else {
                         String stageInputFile = stageInputFiles(pbsCluster, paramValue, parentPath);
-                        ((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
+                        inputParamType.setValue(stageInputFile);
                         StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
                         status.setTransferState(TransferState.UPLOAD);
                         detail.setTransferStatus(status);
@@ -182,32 +168,34 @@ public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
 
                         GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                     }
-                } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-                    List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
-                    List<String> newFiles = new ArrayList<String>();
-                    for (String paramValueEach : split) {
-                        try {
-                            URL file = new URL(paramValue);
-                            this.userName = file.getUserInfo();
-                            this.hostName = file.getHost();
-                            paramValueEach = file.getPath();
-                        } catch (MalformedURLException e) {
-                            log.error(e.getLocalizedMessage(), e);
-                        }
-                        if (index < oldIndex) {
-                            log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                            newFiles.add(oldFiles.get(index));
-                            data.append(oldFiles.get(index++)).append(",");
-                        } else {
-                            String stageInputFiles = stageInputFiles(pbsCluster, paramValueEach, parentPath);
-                            StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
-                            GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
-                            newFiles.add(stageInputFiles);
-                        }
-                    }
-                    ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
                 }
-                inputNew.getParameters().put(paramName, actualParameter);
+                // FIXME: what is the thrift model DataType equivalent for URIArray type?
+//                else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
+//                    List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
+//                    List<String> newFiles = new ArrayList<String>();
+//                    for (String paramValueEach : split) {
+//                        try {
+//                            URL file = new URL(paramValue);
+//                            this.userName = file.getUserInfo();
+//                            this.hostName = file.getHost();
+//                            paramValueEach = file.getPath();
+//                        } catch (MalformedURLException e) {
+//                            log.error(e.getLocalizedMessage(), e);
+//                        }
+//                        if (index < oldIndex) {
+//                            log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
+//                            newFiles.add(oldFiles.get(index));
+//                            data.append(oldFiles.get(index++)).append(",");
+//                        } else {
+//                            String stageInputFiles = stageInputFiles(pbsCluster, paramValueEach, parentPath);
+//                            StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
+//                            GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+//                            newFiles.add(stageInputFiles);
+//                        }
+//                    }
+//                    ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
+//                }
+                inputNew.getParameters().put(paramName, inputParamType);
             }
         } catch (Exception e) {
             log.error(e.getMessage());

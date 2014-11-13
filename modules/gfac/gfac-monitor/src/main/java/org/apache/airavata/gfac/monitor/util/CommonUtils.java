@@ -25,7 +25,6 @@ import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandler;
@@ -35,13 +34,7 @@ import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -54,31 +47,6 @@ import java.util.concurrent.CountDownLatch;
 public class CommonUtils {
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(CommonUtils.class);
 
-    public static boolean isPBSHost(HostDescription host){
-        if("pbs".equals(((GsisshHostType)host.getType()).getJobManager()) ||
-                "".equals(((GsisshHostType)host.getType()).getJobManager())){
-         return true;
-        }else{
-            // default is pbs so we return true
-            return false;
-        }
-    }
-    public static boolean isSlurm(HostDescription host){
-        if("slurm".equals(((GsisshHostType)host.getType()).getJobManager())){
-         return true;
-        }else{
-            // default is pbs so we return true
-            return false;
-        }
-    }
-    public static boolean isSGE(HostDescription host){
-        if("sge".equals(((GsisshHostType)host.getType()).getJobManager())){
-         return true;
-        }else{
-            // default is pbs so we return true
-            return false;
-        }
-    }
     public static String getChannelID(MonitorID monitorID) {
         return monitorID.getUserName() + "-" + monitorID.getComputeResourceDescription().getHostName();
     }
@@ -187,22 +155,6 @@ public class CommonUtils {
         logger.info("Cannot find the given MonitorID in the queue with userName " +
                 monitorID.getUserName() + "  and jobID " + monitorID.getJobID());
         logger.info("This might not be an error because someone else removed this job from the queue");
-    }
-
-    public static boolean isEqual(HostDescription host1,HostDescription host2) {
-        if ((host1.getType() instanceof GsisshHostType) && (host2.getType() instanceof GsisshHostType)) {
-            GsisshHostType hostType1 = (GsisshHostType)host1.getType();
-            GsisshHostType hostType2 = (GsisshHostType)host2.getType();
-            if(hostType1.getHostAddress().equals(hostType2.getHostAddress())
-                    && hostType1.getJobManager().equals(hostType2.getJobManager())
-                    && (hostType1.getPort() == hostType2.getPort())
-                    && hostType1.getMonitorMode().equals(hostType2.getMonitorMode())){
-                return true;
-            }
-        } else {
-            logger.error("This method is only impmlemented to handle Gsissh host types");
-        }
-        return false;
     }
 
     public static void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {

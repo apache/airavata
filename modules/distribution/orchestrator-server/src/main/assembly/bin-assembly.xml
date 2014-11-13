@@ -188,8 +188,8 @@
 				</include>
 				<include>org.apache.airavata:airavata-orchestrator-core:jar
 				</include>
-				<include>org.apache.airavata:airavata-gfac-schema-utils:jar
-				</include>
+				<!--<include>org.apache.airavata:airavata-gfac-schema-utils:jar-->
+				<!--</include>-->
 				<include>org.apache.airavata:airavata-workflow-execution-context:jar
 				</include>
 				<include>org.apache.airavata:airavata-registry-cpi:jar</include>

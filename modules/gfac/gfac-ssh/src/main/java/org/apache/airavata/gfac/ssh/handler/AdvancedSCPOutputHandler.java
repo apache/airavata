@@ -21,8 +21,6 @@
 package org.apache.airavata.gfac.ssh.handler;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -46,11 +44,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This handler will copy outputs from airavata installed local directory
@@ -149,9 +143,9 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             Set<String> keys = output.keySet();
             for (String paramName : keys) {
-                ActualParameter actualParameter = (ActualParameter) output.get(paramName);
-                if ("URI".equals(actualParameter.getType().getType().toString())) {
-                	String downloadFile = MappingFactory.toString(actualParameter);
+                OutputDataObjectType outputDataObjectType = (OutputDataObjectType) output.get(paramName);
+                if (outputDataObjectType.getType() == DataType.URI) {
+                	String downloadFile = outputDataObjectType.getValue();
                 	if(downloadFile == null || !(new File(downloadFile).isFile())){
                         GFacUtils.saveErrorDetails(jobExecutionContext, "Empty Output returned from the application", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 		throw new GFacHandlerException("Empty Output returned from the application");

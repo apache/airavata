@@ -26,7 +26,6 @@ import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
@@ -152,7 +151,6 @@ public class HPCPullMonitor extends PullMonitor {
         UserMonitorData take = null;
         JobStatusChangeRequestEvent jobStatus = new JobStatusChangeRequestEvent();
         MonitorID currentMonitorID = null;
-        HostDescription currentHostDescription = null;
         try {
             take = this.queue.take();
             List<HostMonitorData> hostMonitorData = take.getHostMonitorData();
