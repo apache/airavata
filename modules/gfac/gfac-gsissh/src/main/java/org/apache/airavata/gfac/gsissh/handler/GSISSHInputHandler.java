@@ -67,7 +67,7 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
         TransferStatus status = new TransferStatus();
         StringBuffer data = new StringBuffer("|");
         Cluster cluster = null;
-        
+
         try {
             String hostAddress = jobExecutionContext.getHostName();
             if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
@@ -80,8 +80,8 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
             } else {
                 log.info("Successfully retrieved the Security Context");
             }
-           
-        	String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
+
+            String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
             if (pluginData != null) {
                 try {
                     oldIndex = Integer.parseInt(pluginData.split("\\|")[0].trim());
@@ -93,7 +93,7 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                         oldFiles.clear();
                     }
                 } catch (NumberFormatException e) {
-                    log.error("Previously stored data " + pluginData +" is wrong so we continue the operations");
+                    log.error("Previously stored data " + pluginData + " is wrong so we continue the operations");
                 }
             }
             if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
@@ -102,10 +102,10 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                 } catch (ApplicationSettingsException e) {
                     log.error(e.getMessage());
                     try {
-       				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                        GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     } catch (GFacException e1) {
-       				 log.error(e1.getLocalizedMessage());
-                    }  
+                        log.error(e1.getLocalizedMessage());
+                    }
                     throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
                 }
             }
@@ -159,7 +159,7 @@ public class GSISSHInputHandler extends AbstractRecoverableHandler {
                 inputNew.getParameters().put(paramName, inputParamType);
             }
         } catch (Exception e) {
-			log.error(e.getMessage());
+            log.error(e.getMessage());
             status.setTransferState(TransferState.FAILED);
             detail.setTransferDescription(e.getLocalizedMessage());
             detail.setTransferStatus(status);

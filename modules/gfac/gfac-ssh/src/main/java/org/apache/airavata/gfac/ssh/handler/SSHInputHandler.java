@@ -82,6 +82,13 @@ public class SSHInputHandler extends AbstractHandler {
                     throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
                 }
             }
+
+            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
+            if (cluster == null) {
+                throw new GFacException("Security context is not set properly");
+            } else {
+                log.info("Successfully retrieved the Security Context");
+            }
             log.info("Invoking SCPInputHandler");
             super.invoke(jobExecutionContext);
 
