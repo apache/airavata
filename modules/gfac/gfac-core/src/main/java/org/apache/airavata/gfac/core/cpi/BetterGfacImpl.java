@@ -396,9 +396,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             * Stdout and Stderr for Shell
             */
         jobExecutionContext.setStandardOutput(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stdout");
-        System.out.println("*********************** standared output ************* " + jobExecutionContext.getStandardOutput());
         jobExecutionContext.setStandardError(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
-        System.out.println("*********************** standared error ************* " + jobExecutionContext.getStandardError());
     }
 
     private void populateDefaultComputeResourceConfiguration(JobExecutionContext jobExecutionContext, ApplicationInterfaceDescription applicationInterface, ComputeResourceDescription computeResource) {
