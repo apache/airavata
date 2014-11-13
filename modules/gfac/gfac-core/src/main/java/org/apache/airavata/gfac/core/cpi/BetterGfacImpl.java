@@ -370,6 +370,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                     }
                 }
             }
+        }  else {
+            setUpWorkingLocation(jobExecutionContext, applicationInterface, "/tmp");
         }
         return jobExecutionContext;
     }

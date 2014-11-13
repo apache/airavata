@@ -40,9 +40,8 @@ public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
             logger.info("Error saving plugin status to ZK");
         }
         StringBuffer data = new StringBuffer();
-        ComputeResourcePreference computeResourcePreference = jobExecutionContext.getApplicationContext().getComputeResourcePreference();
 
-        data.append(computeResourcePreference.getScratchLocation());
+        data.append(jobExecutionContext.getScratchLocation());
         data.append(",").append(jobExecutionContext.getWorkingDir());
 
         /*
