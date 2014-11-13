@@ -36,10 +36,7 @@ import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.notification.GFacNotifier;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -117,6 +114,8 @@ public class JobExecutionContext extends AbstractContext implements Serializable
      * use preferred job submission protocol.
      */
     private JobSubmissionInterface preferredJobSubmissionInterface;
+
+    private ResourceJobManager resourceJobManager;
     /**
      * List of job submission protocols sorted by priority order.
      */
@@ -300,7 +299,15 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         this.inPath = false;
     }
 
-	public SecurityContext getSecurityContext(String name) throws GFacException{
+    public ResourceJobManager getResourceJobManager() {
+        return resourceJobManager;
+    }
+
+    public void setResourceJobManager(ResourceJobManager resourceJobManager) {
+        this.resourceJobManager = resourceJobManager;
+    }
+
+    public SecurityContext getSecurityContext(String name) throws GFacException{
 		SecurityContext secContext = securityContext.get(name);
 		return secContext;
 	}

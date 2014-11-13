@@ -19,26 +19,21 @@ package org.apache.airavata.gfac.monitor;/*
  *
 */
 
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
-import org.apache.airavata.gfac.ssh.security.TokenizedSSHAuthInfo;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Map;
 
 public class HPCMonitorID extends MonitorID {
     private final static Logger logger = LoggerFactory.getLogger(HPCMonitorID.class);
@@ -67,10 +62,18 @@ public class HPCMonitorID extends MonitorID {
                 SecurityContext securityContext = jobExecutionContext.getSecurityContext(hostAddress);
                 ServerInfo serverInfo = null;
                 if (securityContext != null) {
-                    serverInfo = (((GSISecurityContext) securityContext).getPbsCluster()).getServerInfo();
-                }
-                if (serverInfo.getUserName() != null) {
-                    setUserName(serverInfo.getUserName());
+                    if (securityContext instanceof  GSISecurityContext){
+                        serverInfo = (((GSISecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                        if (serverInfo.getUserName() != null) {
+                            setUserName(serverInfo.getUserName());
+                        }
+                    }
+                    if (securityContext instanceof SSHSecurityContext){
+                        serverInfo = (((SSHSecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                        if (serverInfo.getUserName() != null) {
+                            setUserName(serverInfo.getUserName());
+                        }
+                    }
                 }
             } catch (GFacException e) {
                 e.printStackTrace();

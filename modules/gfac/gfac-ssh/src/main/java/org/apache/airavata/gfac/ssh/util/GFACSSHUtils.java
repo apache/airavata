@@ -22,14 +22,9 @@ package org.apache.airavata.gfac.ssh.util;
 
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
@@ -47,17 +42,11 @@ import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.schemas.gfac.FileArrayType;
-import org.apache.airavata.schemas.gfac.StringArrayType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +86,7 @@ public class GFACSSHUtils {
                     Cluster pbsCluster = null;
                     try {
                         TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
-                        String installedParentPath = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getExecutablePath();
+                        String installedParentPath = jobExecutionContext.getResourceJobManager().getJobManagerBinPath();
                         if (installedParentPath == null) {
                             installedParentPath = "/";
                         }
@@ -224,6 +213,17 @@ public class GFACSSHUtils {
     public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
         TaskDetails taskData = jobExecutionContext.getTaskData();
+        ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
+        Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
+        String jobManagerBinPath = resourceJobManager.getJobManagerBinPath();
+        if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
+            for (JobManagerCommand command : jobManagerCommands.keySet()) {
+                if (command == JobManagerCommand.SUBMISSION) {
+                    String commandVal = jobManagerCommands.get(command);
+                    jobDescriptor.setJobSubmitter(commandVal);
+                }
+            }
+        }
         // this is common for any application descriptor
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
         jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
@@ -257,7 +257,7 @@ public class GFACSSHUtils {
             int totalNodeCount = taskScheduling.getNodeCount();
             int totalCPUCount = taskScheduling.getTotalCPUCount();
 
-//        jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
+
             if (taskScheduling.getComputationalProjectAccount() != null) {
                 jobDescriptor.setAcountString(taskScheduling.getComputationalProjectAccount());
             }

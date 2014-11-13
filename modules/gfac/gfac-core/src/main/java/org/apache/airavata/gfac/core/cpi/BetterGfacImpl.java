@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.core.cpi;
 
 import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -53,10 +54,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
-import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -338,6 +336,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 
         // set compute resource configuration as default preferred values, after that replace those with gateway user preferences.
         populateDefaultComputeResourceConfiguration(jobExecutionContext, applicationInterface, computeResource);
+        populateResourceJobManager(jobExecutionContext);
         // if gateway resource preference is set
         if (gatewayResourcePreferences != null ) {
             if (gatewayResourcePreferences.getScratchLocation() == null) {
@@ -397,7 +396,9 @@ public class BetterGfacImpl implements GFac,Watcher {
             * Stdout and Stderr for Shell
             */
         jobExecutionContext.setStandardOutput(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stdout");
+        System.out.println("*********************** standared output ************* " + jobExecutionContext.getStandardOutput());
         jobExecutionContext.setStandardError(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
+        System.out.println("*********************** standared error ************* " + jobExecutionContext.getStandardError());
     }
 
     private void populateDefaultComputeResourceConfiguration(JobExecutionContext jobExecutionContext, ApplicationInterfaceDescription applicationInterface, ComputeResourceDescription computeResource) {
@@ -413,6 +414,26 @@ public class BetterGfacImpl implements GFac,Watcher {
         if (jobExecutionContext.getHostPrioritizedDataMovementInterfaces() != null) {
             jobExecutionContext.setPreferredDataMovementInterface(jobExecutionContext.getHostPrioritizedDataMovementInterfaces().get(0));
             jobExecutionContext.setPreferredDataMovementProtocol(jobExecutionContext.getPreferredDataMovementInterface().getDataMovementProtocol());
+        }
+    }
+
+    private void populateResourceJobManager (JobExecutionContext jobExecutionContext) {
+        try {
+            JobSubmissionProtocol submissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
+            JobSubmissionInterface jobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
+            if (submissionProtocol == JobSubmissionProtocol.SSH) {
+                SSHJobSubmission sshJobSubmission = GFacUtils.getSSHJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (sshJobSubmission != null){
+                    jobExecutionContext.setResourceJobManager(sshJobSubmission.getResourceJobManager());
+                }
+            } else if (submissionProtocol == JobSubmissionProtocol.LOCAL){
+                LOCALSubmission localJobSubmission = GFacUtils.getLocalJobSubmission(jobSubmissionInterface.getJobSubmissionInterfaceId());
+                if (localJobSubmission != null){
+                    jobExecutionContext.setResourceJobManager(localJobSubmission.getResourceJobManager());
+                }
+            }
+        } catch (AppCatalogException e) {
+           log.error("Error occured while retrieving job submission interface", e);
         }
     }
 
