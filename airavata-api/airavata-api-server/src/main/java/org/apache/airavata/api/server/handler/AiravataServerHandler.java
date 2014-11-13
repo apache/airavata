@@ -1297,7 +1297,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<ApplicationModule> getAllModules() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ApplicationModule> getAllAppModules() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getAllApplicationModules();
@@ -1415,6 +1415,17 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Error while deleting application deployment. More info : " + e.getMessage());
             throw exception;
         }
+    }
+
+    /**
+     * Fetch all Application Deployment Descriptions.
+     *
+     * @return list<applicationDeployment.
+     * Returns the list of all application Deployment Objects.
+     */
+    @Override
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployments() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return null;
     }
 
     /**

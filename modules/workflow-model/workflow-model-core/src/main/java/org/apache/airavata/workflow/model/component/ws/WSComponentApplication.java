@@ -202,7 +202,7 @@ public class WSComponentApplication {
     public WSComponentApplication(ApplicationInterfaceDescription application) {
 		setApplicationId(application.getApplicationInterfaceId());
 		setName(application.getApplicationName());
-		setDescription(application.getApplicationDesription());
+		setDescription(application.getApplicationDescription());
                 
         List<InputDataObjectType> applicationInputs = application.getApplicationInputs();
         for (InputDataObjectType inputDataObjectType : applicationInputs) {

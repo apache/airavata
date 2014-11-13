@@ -497,7 +497,7 @@ public class AppCatalogThriftConversion {
         ApplicationInterfaceDescription description = new ApplicationInterfaceDescription();
         description.setApplicationInterfaceId(resource.getInterfaceId());
         description.setApplicationName(resource.getAppName());
-        description.setApplicationDesription(resource.getAppDescription());
+        description.setApplicationDescription(resource.getAppDescription());
 
         AppModuleMappingResource appModuleMappingResource = new AppModuleMappingResource();
         List<Resource> appModules = appModuleMappingResource.get(AbstractResource.AppModuleMappingConstants.INTERFACE_ID, resource.getInterfaceId());

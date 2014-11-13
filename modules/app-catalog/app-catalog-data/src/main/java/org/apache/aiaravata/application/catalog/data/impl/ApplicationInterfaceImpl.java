@@ -73,7 +73,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
             }else {
                 resource.setInterfaceId(AppCatalogUtils.getID(applicationInterfaceDescription.getApplicationName()));
             }
-            resource.setAppDescription(applicationInterfaceDescription.getApplicationDesription());
+            resource.setAppDescription(applicationInterfaceDescription.getApplicationDescription());
             resource.save();
             applicationInterfaceDescription.setApplicationInterfaceId(resource.getInterfaceId());
 

@@ -343,7 +343,7 @@ class ApplicationInterfaceDescription {
 
   public $applicationInterfaceId = "DO_NOT_SET_AT_CLIENTS";
   public $applicationName = null;
-  public $applicationDesription = null;
+  public $applicationDescription = null;
   public $applicationModules = null;
   public $applicationInputs = null;
   public $applicationOutputs = null;
@@ -360,7 +360,7 @@ class ApplicationInterfaceDescription {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'applicationDesription',
+          'var' => 'applicationDescription',
           'type' => TType::STRING,
           ),
         4 => array(
@@ -398,8 +398,8 @@ class ApplicationInterfaceDescription {
       if (isset($vals['applicationName'])) {
         $this->applicationName = $vals['applicationName'];
       }
-      if (isset($vals['applicationDesription'])) {
-        $this->applicationDesription = $vals['applicationDesription'];
+      if (isset($vals['applicationDescription'])) {
+        $this->applicationDescription = $vals['applicationDescription'];
       }
       if (isset($vals['applicationModules'])) {
         $this->applicationModules = $vals['applicationModules'];
@@ -448,7 +448,7 @@ class ApplicationInterfaceDescription {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->applicationDesription);
+            $xfer += $input->readString($this->applicationDescription);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -529,9 +529,9 @@ class ApplicationInterfaceDescription {
       $xfer += $output->writeString($this->applicationName);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->applicationDesription !== null) {
-      $xfer += $output->writeFieldBegin('applicationDesription', TType::STRING, 3);
-      $xfer += $output->writeString($this->applicationDesription);
+    if ($this->applicationDescription !== null) {
+      $xfer += $output->writeFieldBegin('applicationDescription', TType::STRING, 3);
+      $xfer += $output->writeString($this->applicationDescription);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->applicationModules !== null) {
