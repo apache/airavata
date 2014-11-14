@@ -34,7 +34,7 @@
     </Application>
 
 
-    <Provider class="org.apache.airavata.job.TestProvider" host="org.apache.airavata.schemas.gfac.impl.GsisshHostTypeImpl" executionMode="async">
+    <Provider class="org.apache.airavata.job.TestProvider" submission="SSH" security="GSI" executionMode="async">
              <InHandlers>
                 <Handler class="org.apache.airavata.job.TestInHandler">
                         <property name="name1" value="value1"/>
