@@ -25,15 +25,8 @@ import java.util.Arrays;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
-import org.apache.airavata.orchestrator.core.impl.GFACEmbeddedJobSubmitter;
-import org.apache.airavata.orchestrator.core.job.JobSubmitter;
-import org.apache.airavata.orchestrator.cpi.Orchestrator;
-import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
