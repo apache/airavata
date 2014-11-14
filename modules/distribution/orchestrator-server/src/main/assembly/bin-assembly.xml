@@ -170,59 +170,9 @@
 		</dependencySet>
 		<dependencySet>
 			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>org.slf4j:slf4j-api:jar</include>
-				<include>org.slf4j:slf4j-jcl:jar</include>
-				<include>org.slf4j:slf4j-log4j12:jar</include>
-				<include>log4j:log4j:jar</include>
-				<include>javax.jcr:jcr:jar</include>
-				<include>commons-collections:commons-collections</include>
-				<include>commons-configuration:commons-configuration</include>
-				<include>commons-lang:commons-lang</include>
-				<include>commons-io:commons-io</include>
-			    <include>org.apache.xmlbeans:xmlbeans</include>
-				<include>org.apache.airavata:airavata-standalone-server:jar
-				</include>
-				<include>org.apache.airavata:airavata-common-utils:jar</include>
-				<include>org.apache.airavata:airavata-orchestrator-service:jar
-				</include>
-				<include>org.apache.airavata:airavata-orchestrator-core:jar
-				</include>
-				<!--<include>org.apache.airavata:airavata-gfac-schema-utils:jar-->
-				<!--</include>-->
-				<include>org.apache.airavata:airavata-workflow-execution-context:jar
-				</include>
-				<include>org.apache.airavata:airavata-registry-cpi:jar</include>
-				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
-				<include>org.apache.airavata:app-catalog-cpi:jar</include>
-				<include>org.apache.airavata:app-catalog-data:jar</include>
-				<include>org.apache.airavata:airavata-data-models:jar</include>
-				<include>org.apache.airavata:airavata-credential-store:jar</include>
-				<include>org.apache.airavata:airavata-gfac-core:jar</include>
-				<include>org.apache.airavata:airavata-gfac-stubs:jar</include>
-				<include>org.apache.airavata:airavata-message-monitor:jar</include>
-				<include>org.apache.airavata:airavata-workflow-model-core:jar
-				</include>
-				<include>org.apache.airavata:airavata-messenger-commons:jar
-				</include>
-				<include>org.apache.airavata:airavata-messenger-client:jar</include>
-				<include>org.apache.airavata:airavata-workflow-engine:jar</include>
-				<include>org.apache.airavata:airavata-messaging-core:jar</include>
-				<include>org.apache.airavata:airavata-model-utils:jar</include>
-				<include>org.apache.airavata:airavata-api-stubs:jar</include>
-				<include>org.apache.openjpa:openjpa-all:jar</include>
-				<include>org.bouncycastle:bcprov-jdk15on</include>
-				<include>javax.servlet:javax.servlet-api</include>
-				<include>xerces:xercesImpl:jar:2.9.1</include>
-				<include>com.ibm.icu:icu4j</include>
-				<include>com.google.guava:guava</include>
-				<include>org.apache.xmlbeans:xmlbeans</include>
-				<include>org.apache.thrift:libthrift:jar:0.9.1</include>
-				<include>commons-cli:commons-cli</include>
-				<include>commons-codec:commons-codec</include>
-				<include>com.rabbitmq:amqp-client</include>
-				<include>org.apache.zookeeper:zookeeper</include>
-			</includes>
+		 	<includes>
+				<include>*:*:jar</include>
+            </includes>
 		</dependencySet>
 
 	</dependencySets>
