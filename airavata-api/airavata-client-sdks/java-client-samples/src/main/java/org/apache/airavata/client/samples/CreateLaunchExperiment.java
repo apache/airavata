@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
 public class CreateLaunchExperiment {
@@ -59,8 +58,15 @@ public class CreateLaunchExperiment {
     private static Airavata.Client airavataClient;
 
     private static String echoAppId = "Echo_36fbb479-5b41-4f48-a9c5-382ee910ac6b";
-    private static String wrfAppId = "WRF_a37fb0be-a252-4185-a31c-ff43f585f88f";
-    private static String amberAppId = "Amber_a8187edf-7be0-4dad-9c8a-d0cc9075e6a0";
+    private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
+    private static String amberAppId = "Amber_49b16f6f-93ab-4885-9971-6ab2ab5eb3d3";
+    private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
+    private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
+    private static String lammpsAppId = "LAMMPS_10893eb5-3840-438c-8446-d26c7ecb001f";
+    private static String nwchemAppId = "NWChem_2c8fee64-acf9-4a89-b6d3-91eb53c7640c";
+    private static String trinityAppId = "Trinity_e894acf5-9bca-46e8-a1bd-7e2d5155191a";
+    private static String autodockAppId = "AutoDock_43d9fdd0-c404-49f4-b913-3abf9080a8c9";
+
 
     private static String localHost = "localhost";
     private static String trestlesHostName = "trestles.sdsc.xsede.org";
@@ -80,35 +86,39 @@ public class CreateLaunchExperiment {
     }
     
     private static String fsdResourceId;
-    
-    
-    
+
+
     public static void createAndLaunchExp() throws TException {
-//    	final String expId = createEchoExperimentForFSD(airavataClient);
-    	try {
-        for (int i = 0; i < 1; i++) {
-//    final String expId = createExperimentForSSHHost(airavata);
-//            final String expId = createEchoExperimentForFSD(airavataClient);
-//    final String expId = createEchoExperimentForStampede(airavataClient);
-//    final String expId = createEchoExperimentForTrestles(airavataClient);
-//    final String expId = createExperimentEchoForLocalHost(airavataClient);
-//    final String expId = createExperimentWRFTrestles(airavataClient);
-    final String expId = createExperimentForBR2(airavataClient);
-//    final String expId = createExperimentForBR2Amber(airavataClient);
-//    final String expId = createExperimentWRFStampede(airavataClient);
-//    final String expId = createExperimentForStampedeAmber(airavataClient);
-//    final String expId = createExperimentForTrestlesAmber(airavataClient);
+//        final String expId = createEchoExperimentForFSD(airavataClient);
+        try {
+            for (int i = 0; i < 1; i++) {
+//                final String expId = createExperimentForSSHHost(airavata);
+//                final String expId = createEchoExperimentForFSD(airavataClient);
+//                final String expId = createEchoExperimentForStampede(airavataClient);
+                final String expId = createEchoExperimentForTrestles(airavataClient);
+//                final String expId = createExperimentEchoForLocalHost(airavataClient);
+//                final String expId = createExperimentWRFTrestles(airavataClient);
+//                final String expId = createExperimentForBR2(airavataClient);
+//                final String expId = createExperimentForBR2Amber(airavataClient);
+//                final String expId = createExperimentWRFStampede(airavataClient);
+//                final String expId = createExperimentForStampedeAmber(airavataClient);
+//                final String expId = createExperimentForTrestlesAmber(airavataClient);
+//                final String expId = createExperimentGROMACSStampede(airavataClient);
+//                final String expId = createExperimentESPRESSOStampede(airavataClient);
+//                final String expId = createExperimentLAMMPSStampede(airavataClient);
+//                final String expId = createExperimentNWCHEMStampede(airavataClient);
+//                final String expId = createExperimentTRINITYStampede(airavataClient);
+//                final String expId = createExperimentAUTODOCKStampede(airavataClient); // this is not working , we need to register AutoDock app on stampede
+                System.out.println("Experiment ID : " + expId);
+//                updateExperiment(airavata, expId);
+                launchExperiment(airavataClient, expId);
+            }
+        } catch (Exception e) {
+            logger.error("Error while connecting with server", e.getMessage());
+            e.printStackTrace();
 
-    System.out.println("Experiment ID : " + expId);
-//    updateExperiment(airavata, expId);
-            launchExperiment(airavataClient, expId);
         }
-    } catch (Exception e) {
-        logger.error("Error while connecting with server", e.getMessage());
-        e.printStackTrace();
-
     }
- }
 
    
     
@@ -281,17 +291,17 @@ public class CreateLaunchExperiment {
             InputDataObjectType input = new InputDataObjectType();
             input.setName("Config_Namelist_File");
             input.setType(DataType.URI);
-            input.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/namelist.input");
+            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/namelist.input");
 
             InputDataObjectType input1 = new InputDataObjectType();
             input1.setName("WRF_Initial_Conditions");
             input1.setType(DataType.URI);
-            input1.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfinput_d01");
+            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfinput_d01");
 
             InputDataObjectType input2 = new InputDataObjectType();
             input2.setName("WRF_Boundary_File");
             input2.setType(DataType.URI);
-            input2.setValue("/Users/lahirugunathilake/Downloads/wrf_sample_inputs/wrfbdy_d01");
+            input2.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfbdy_d01");
 
             exInputs.add(input);
             exInputs.add(input1);
@@ -349,23 +359,518 @@ public class CreateLaunchExperiment {
         return null;
     }
 
+
+    public static String createExperimentGROMACSStampede(Airavata.Client client) throws TException {
+        try {
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("GROMOS_Coordinate_File");
+            input.setType(DataType.URI);
+            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/GROMMACS_FILES/pdb1y6l-EM-vacuum.gro");
+
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("Portable_Input_Binary_File");
+            input1.setType(DataType.URI);
+            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/GROMMACS_FILES/pdb1y6l-EM-vacuum.tpr");
+
+            exInputs.add(input);
+            exInputs.add(input1);
+
+
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("pdb1y6l-EM-vacuum.tpr.trr");
+            output.setType(DataType.URI);
+            output.setValue("");
+
+            OutputDataObjectType output1 = new OutputDataObjectType();
+            output1.setName("pdb1y6l-EM-vacuum.tpr.edr");
+            output1.setType(DataType.URI);
+            output1.setValue("");
+
+            OutputDataObjectType output2 = new OutputDataObjectType();
+            output2.setName("pdb1y6l-EM-vacuum.tpr.log");
+            output2.setType(DataType.URI);
+            output2.setValue("");
+
+            OutputDataObjectType output3 = new OutputDataObjectType();
+            output3.setName("pdb1y6l-EM-vacuum.gro");
+            output3.setType(DataType.URI);
+            output3.setValue("");
+
+            OutputDataObjectType output4 = new OutputDataObjectType();
+            output4.setName("GROMACS.oJobID");
+            output4.setType(DataType.URI);
+            output4.setValue("");
+
+
+            exOut.add(output);
+            exOut.add(output1);
+            exOut.add(output2);
+            exOut.add(output3);
+            exOut.add(output4);
+
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "GromacsExperiment", "Testing", gromacsAppId, exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(gromacsAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(stampedeHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 16, 1, "development", 30, 0, 1, "TG-STA110014S");
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        return client.createExperiment(simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+        return null;
+    }
+
+    public static String createExperimentESPRESSOStampede(Airavata.Client client) throws TException {
+        try {
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("AI_Pseudopotential_File");
+            input.setType(DataType.URI);
+            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/ESPRESSO_FILES/Al.sample.in");
+
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("AI_Primitive_Cell");
+            input1.setType(DataType.URI);
+            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/ESPRESSO_FILES/Al.pz-vbc.UPF");
+
+            exInputs.add(input);
+            exInputs.add(input1);
+
+
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("ESPRESSO_Execution_Log");
+            output.setType(DataType.URI);
+            output.setValue("");
+
+            OutputDataObjectType output1 = new OutputDataObjectType();
+            output1.setName("ESPRESSO_WFC_Binary_file");
+            output1.setType(DataType.URI);
+            output1.setValue("");
+
+            OutputDataObjectType output2 = new OutputDataObjectType();
+            output2.setName("Al_exc3.wfc1");
+            output2.setType(DataType.URI);
+            output2.setValue("");
+
+            OutputDataObjectType output3 = new OutputDataObjectType();
+            output3.setName("Al_exc3.wfc2");
+            output3.setType(DataType.URI);
+            output3.setValue("");
+
+            OutputDataObjectType output4 = new OutputDataObjectType();
+            output4.setName("Al_exc3.wfc3");
+            output4.setType(DataType.URI);
+            output4.setValue("");
+
+            OutputDataObjectType output5 = new OutputDataObjectType();
+            output5.setName("Al_exc3.wfc4");
+            output5.setType(DataType.URI);
+            output5.setValue("");
+
+            OutputDataObjectType output6 = new OutputDataObjectType();
+            output6.setName("ESPRESSO.oJobID");
+            output6.setType(DataType.URI);
+            output6.setValue("");
+
+
+            exOut.add(output);
+            exOut.add(output1);
+            exOut.add(output2);
+            exOut.add(output3);
+            exOut.add(output4);
+            exOut.add(output5);
+            exOut.add(output6);
+
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "EspressoExperiment", "Testing", espressoAppId, exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(espressoAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(stampedeHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 16, 1, "development", 30, 0, 1, "TG-STA110014S");
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        return client.createExperiment(simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+        return null;
+    }
+
+    public static String createExperimentTRINITYStampede(Airavata.Client client) throws TException {
+        try {
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("RNA_Seq_Left_Input");
+            input.setType(DataType.URI);
+            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/TRINITY_FILES/reads.left.fq");
+
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("RNA_Seq_Right_Input");
+            input1.setType(DataType.URI);
+            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/TRINITY_FILES/reads.right.fq");
+
+            exInputs.add(input);
+            exInputs.add(input1);
+
+
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("Trinity_Execution_Log");
+            output.setType(DataType.URI);
+            output.setValue("");
+
+            OutputDataObjectType output1 = new OutputDataObjectType();
+            output1.setName("Trinity_FASTA_File");
+            output1.setType(DataType.URI);
+            output1.setValue("");
+
+            OutputDataObjectType output2 = new OutputDataObjectType();
+            output2.setName("Trinity.oJobID");
+            output2.setType(DataType.URI);
+            output2.setValue("");
+
+
+            exOut.add(output);
+            exOut.add(output1);
+            exOut.add(output2);
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "TrinityExperiment", "Testing", trinityAppId, exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(trinityAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(stampedeHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 16, 1, "development", 30, 0, 1, "TG-STA110014S");
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        return client.createExperiment(simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+        return null;
+    }
+
+    public static String createExperimentLAMMPSStampede(Airavata.Client client) throws TException {
+        try {
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Friction_Simulation_Input");
+            input.setType(DataType.URI);
+            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/LAMMPS_FILES/in.friction");
+
+            exInputs.add(input);
+
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("LAMMPS_Simulation_Log");
+            output.setType(DataType.URI);
+            output.setValue("");
+
+            OutputDataObjectType output1 = new OutputDataObjectType();
+            output1.setName("LAMMPS.oJobID");
+            output1.setType(DataType.URI);
+            output1.setValue("");
+
+            exOut.add(output);
+            exOut.add(output1);
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "LAMMPSExperiment", "Testing", lammpsAppId, exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(lammpsAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(stampedeHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 16, 1, "development", 30, 0, 1, "TG-STA110014S");
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        return client.createExperiment(simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+        return null;
+    }
+
+    public static String createExperimentNWCHEMStampede(Airavata.Client client) throws TException {
+        try {
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Water_Molecule_Input");
+            input.setType(DataType.URI);
+            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/NWCHEM_FILES/water.nw");
+
+            exInputs.add(input);
+
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("NWChem_Execution_Log");
+            output.setType(DataType.URI);
+            output.setValue("");
+
+            exOut.add(output);
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "NWchemExperiment", "Testing", nwchemAppId, exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(nwchemAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(stampedeHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 16, 1, "development", 30, 0, 1, "TG-STA110014S");
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        return client.createExperiment(simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+        return null;
+    }
+    public static String createExperimentAUTODOCKStampede(Airavata.Client client) throws TException {
+        try {
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("AD4_parameters.dat");
+            input.setType(DataType.URI);
+            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/AD4_parameters.dat");
+
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("hsg1.A.map");
+            input1.setType(DataType.URI);
+            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.A.map");
+
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("hsg1.C.map");
+            input2.setType(DataType.URI);
+            input2.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.C.map");
+
+            InputDataObjectType input3 = new InputDataObjectType();
+            input3.setName("hsg1.d.map");
+            input3.setType(DataType.URI);
+            input3.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.d.map");
+
+            InputDataObjectType input4 = new InputDataObjectType();
+            input4.setName("hsg1.e.map");
+            input4.setType(DataType.URI);
+            input4.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.e.map");
+
+            InputDataObjectType input5 = new InputDataObjectType();
+            input5.setName("hsg1.HD.map");
+            input5.setType(DataType.URI);
+            input5.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.HD.map");
+
+            InputDataObjectType input6 = new InputDataObjectType();
+            input6.setName("hsg1.maps.fld");
+            input6.setType(DataType.URI);
+            input6.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.maps.fld");
+
+            InputDataObjectType input7 = new InputDataObjectType();
+            input7.setName("hsg1.NA.map");
+            input7.setType(DataType.URI);
+            input7.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.NA.map");
+
+            InputDataObjectType input8 = new InputDataObjectType();
+            input8.setName("hsg1.N.map");
+            input8.setType(DataType.URI);
+            input8.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.N.map");
+
+            InputDataObjectType input9 = new InputDataObjectType();
+            input9.setName("hsg1.OA.map");
+            input9.setType(DataType.URI);
+            input9.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.OA.map");
+
+            InputDataObjectType input10 = new InputDataObjectType();
+            input10.setName("ind.dpf");
+            input10.setType(DataType.URI);
+            input10.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/ind.dpf");
+
+            InputDataObjectType input11 = new InputDataObjectType();
+            input11.setName("ind.pdbqt");
+            input11.setType(DataType.URI);
+            input11.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/ind.pdbqt");
+
+
+            exInputs.add(input);
+            exInputs.add(input1);
+            exInputs.add(input2);
+            exInputs.add(input3);
+            exInputs.add(input4);
+            exInputs.add(input5);
+            exInputs.add(input6);
+            exInputs.add(input7);
+            exInputs.add(input8);
+            exInputs.add(input9);
+            exInputs.add(input10);
+            exInputs.add(input11);
+
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("ind.dlg");
+            output.setType(DataType.URI);
+            output.setValue("");
+
+            OutputDataObjectType output1 = new OutputDataObjectType();
+            output1.setName("Autodock.oJobID");
+            output1.setType(DataType.URI);
+            output1.setValue("");
+
+            exOut.add(output);
+            exOut.add(output1);
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "AutoDockExperiment", "Testing", autodockAppId, exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(autodockAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(stampedeHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 16, 1, "development", 30, 0, 1, "TG-STA110014S");
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        return client.createExperiment(simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+        return null;
+    }
+
     public static String createExperimentWRFTrestles(Airavata.Client client) throws TException {
         try {
             List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
             InputDataObjectType input = new InputDataObjectType();
             input.setName("WRF_Namelist");
             input.setType(DataType.URI);
-            input.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/namelist.input");
+            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/namelist.input");
 
             InputDataObjectType input1 = new InputDataObjectType();
             input1.setName("WRF_Input_File");
             input1.setType(DataType.URI);
-            input1.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/wrfinput_d01");
+            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfinput_d01");
 
             InputDataObjectType input2 = new InputDataObjectType();
             input2.setName("WRF_Boundary_File");
             input2.setType(DataType.URI);
-            input2.setValue("/Users/chathuri/Downloads/wrf_sample_inputs/wrfbdy_d01");
+            input2.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfbdy_d01");
 
             exInputs.add(input);
             exInputs.add(input1);
@@ -812,19 +1317,19 @@ public class CreateLaunchExperiment {
             InputDataObjectType input = new InputDataObjectType();
             input.setName("Heat_Restart_File");
             input.setType(DataType.URI);
-            input.setValue("/Users/lahirugunathilake/Downloads/02_Heat.rst");
+            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/02_Heat.rst");
             exInputs.add(input);
 
             InputDataObjectType input1 = new InputDataObjectType();
             input1.setName("Production_Control_File");
             input1.setType(DataType.URI);
-            input1.setValue("/Users/lahirugunathilake/Downloads/03_Prod.in");
+            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/03_Prod.in");
             exInputs.add(input1);
 
             InputDataObjectType input2 = new InputDataObjectType();
             input2.setName("Parameter_Topology_File");
             input2.setType(DataType.URI);
-            input2.setValue("/Users/lahirugunathilake/Downloads/prmtop");
+            input2.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/prmtop");
             exInputs.add(input2);
 
             List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
