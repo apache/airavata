@@ -76,7 +76,7 @@ public class HPCMonitorID extends MonitorID {
                     }
                 }
             } catch (GFacException e) {
-                e.printStackTrace();
+                logger.error("Error while getting security context", e);
             }
         }
     }
