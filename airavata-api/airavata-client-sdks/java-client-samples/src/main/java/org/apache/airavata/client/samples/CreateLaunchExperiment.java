@@ -862,7 +862,7 @@ public class CreateLaunchExperiment {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
                     if (resourceName.equals(stampedeHostName)) {
-                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "development", 20, 0, 1, null);
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "development", 20, 0, 1, "TG-STA110014S");
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
