@@ -95,7 +95,32 @@ public class AppModuleMappingResource extends AbstractResource {
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(APP_MODULE_MAPPING);
             generator.setParameter(AppModuleMappingConstants.INTERFACE_ID, ids.get(AppModuleMappingConstants.INTERFACE_ID));
-            generator.setParameter(AppModuleMappingConstants.MODULE_ID, ids.get(AppModuleMappingConstants.MODULE_ID));
+            if (ids.get(AppModuleMappingConstants.MODULE_ID) != null){
+                generator.setParameter(AppModuleMappingConstants.MODULE_ID, ids.get(AppModuleMappingConstants.MODULE_ID));
+            }
+            Query q = generator.deleteQuery(em);
+            q.executeUpdate();
+            em.getTransaction().commit();
+            em.close();
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    public void removeAll() throws AppCatalogException {
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(APP_MODULE_MAPPING);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
