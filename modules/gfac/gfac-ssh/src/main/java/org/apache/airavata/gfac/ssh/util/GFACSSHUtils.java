@@ -215,7 +215,6 @@ public class GFACSSHUtils {
         TaskDetails taskData = jobExecutionContext.getTaskData();
         ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
         Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-        String jobManagerBinPath = resourceJobManager.getJobManagerBinPath();
         if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
             for (JobManagerCommand command : jobManagerCommands.keySet()) {
                 if (command == JobManagerCommand.SUBMISSION) {
