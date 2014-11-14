@@ -67,7 +67,9 @@ public class ApplicationInputResource extends AbstractResource {
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_INPUT);
             generator.setParameter(AppInputConstants.INTERFACE_ID, ids.get(AppInputConstants.INTERFACE_ID));
-            generator.setParameter(AppInputConstants.INPUT_KEY, ids.get(AppInputConstants.INPUT_KEY));
+            if (ids.get(AppInputConstants.INPUT_KEY) != null){
+                generator.setParameter(AppInputConstants.INPUT_KEY, ids.get(AppInputConstants.INPUT_KEY));
+            }
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -277,9 +279,9 @@ public class ApplicationInputResource extends AbstractResource {
             } else {
             	applicationInput=existingApplicationInput;
             }
-            applicationInput.setInterfaceID(interfaceID);
             ApplicationInterface applicationInterface = em.find(ApplicationInterface.class, interfaceID);
             applicationInput.setApplicationInterface(applicationInterface);
+            applicationInput.setInterfaceID(applicationInterface.getInterfaceID());
             applicationInput.setDataType(dataType);
             applicationInput.setInputKey(inputKey);
             applicationInput.setInputVal(inputVal);
