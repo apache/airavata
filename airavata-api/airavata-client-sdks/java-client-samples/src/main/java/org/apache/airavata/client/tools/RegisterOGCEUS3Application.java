@@ -32,8 +32,8 @@ public class RegisterOGCEUS3Application {
 //	public static final String THRIFT_SERVER_HOST = "gridfarm005.ucs.indiana.edu";
 //  public static final int THRIFT_SERVER_PORT = 8930;
 	private static final String DEFAULT_GATEWAY= "default"; 
-	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
-	public static final int THRIFT_SERVER_PORT = 9930;		
+	public static final String THRIFT_SERVER_HOST = "localhost";
+	public static final int THRIFT_SERVER_PORT = 8930;
 //    private static final String DEFAULT_GATEWAY = "ultrascan";
     private static Airavata.Client airavataClient;
 
