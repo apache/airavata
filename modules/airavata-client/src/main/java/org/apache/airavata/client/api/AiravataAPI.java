@@ -43,7 +43,7 @@ public interface AiravataAPI {
      * Returns the ApplicationManager
      * @return
      */
-	public ApplicationManager getApplicationManager();
+//	public ApplicationManager getApplicationManager();
 
     /**
      * Returns the WorkflowManager
