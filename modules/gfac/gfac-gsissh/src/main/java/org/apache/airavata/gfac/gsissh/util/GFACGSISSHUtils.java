@@ -42,10 +42,7 @@ import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.slf4j.Logger;
@@ -162,9 +159,17 @@ public class GFACGSISSHUtils {
 
     public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
-        ApplicationContext applicationContext = jobExecutionContext.getApplicationContext();
-        ApplicationDeploymentDescription app = applicationContext.getApplicationDeploymentDescription();
         TaskDetails taskData = jobExecutionContext.getTaskData();
+        ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
+        Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
+        if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
+            for (JobManagerCommand command : jobManagerCommands.keySet()) {
+                if (command == JobManagerCommand.SUBMISSION) {
+                    String commandVal = jobManagerCommands.get(command);
+                    jobDescriptor.setJobSubmitter(commandVal);
+                }
+            }
+        }
         // this is common for any application descriptor
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
         jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
