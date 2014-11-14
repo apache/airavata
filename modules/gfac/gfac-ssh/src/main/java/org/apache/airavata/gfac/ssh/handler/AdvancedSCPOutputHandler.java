@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.ssh.handler;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
@@ -115,7 +116,6 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
                 }
             }
-            pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(hostName)).getPbsCluster();
             String standardError = jobExecutionContext.getStandardError();
             String standardOutput = jobExecutionContext.getStandardOutput();
             super.invoke(jobExecutionContext);
