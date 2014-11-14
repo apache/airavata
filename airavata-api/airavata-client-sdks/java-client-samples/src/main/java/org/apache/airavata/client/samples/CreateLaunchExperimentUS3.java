@@ -54,8 +54,8 @@ public class CreateLaunchExperimentUS3 {
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
             System.out.println("API version is " + airavata.getAPIVersion());
 //            addDescriptors();
-            final String expId = createUS3ExperimentForTrestles(airavata);
-//            final String expId = createUS3ExperimentForStampede(airavata);
+//            final String expId = createUS3ExperimentForTrestles(airavata);
+            final String expId = createUS3ExperimentForStampede(airavata);
 //            final String expId = createUS3ExperimentForLonestar(airavata);
 //            final String expId =  createUS3ExperimentForAlamo(airavata);
             System.out.println("Experiment ID : " + expId);
@@ -302,7 +302,7 @@ public class CreateLaunchExperimentUS3 {
             Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org_e59e046f-e0e1-49c4-8475-2fab2e35d044", 16, 2, 0, "normal", 30, 0, 0, "TG-MCB070039N");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org_e59e046f-e0e1-49c4-8475-2fab2e35d044", 32, 2, 0, "normal", 30, 0, 0, "TG-STA110014S");
 
             scheduling.setResourceHostId("stampede.tacc.xsede.org_e59e046f-e0e1-49c4-8475-2fab2e35d044");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
