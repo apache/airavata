@@ -27,7 +27,7 @@
             <Handler class="org.apache.airavata.gfac.local.handler.LocalDirectorySetupHandler"/>
         </InHandlers>
     </Provider>
-   <Provider class="org.apache.airavata.gfac.gram.provider.impl.GramProvider" host="org.apache.airavata.schemas.gfac.impl.GlobusHostTypeImpl">
+   <Provider class="org.apache.airavata.gfac.gram.provider.impl.GramProvider" submission="GLOBUS" security="GSI">
         <property name="name" value="value"/>
         <InHandlers>
             <Handler class="org.apache.airavata.gfac..gram.handler.GramDirectorySetupHandler">
@@ -39,15 +39,15 @@
             <Handler class="org.apache.airavata.gfac..gram.handler.GridFTPOutputHandler"/>
         </OutHandlers>
     </Provider>
-    <Provider class="org.apache.airavata.gfac.bes.provider.impl.BESProvider" host="org.apache.airavata.schemas.gfac.impl.UnicoreHostTypeImpl">
+    <Provider class="org.apache.airavata.gfac.bes.provider.impl.BESProvider" submission="UNICORE" security="GSI">
     </Provider>
 
-    <Provider class="org.apache.airavata.gfac.ec2.EC2Provider" host="org.apache.airavata.schemas.gfac.impl.Ec2HostTypeImpl">
+    <Provider class="org.apache.airavata.gfac.ec2.EC2Provider" submission="CLOUD" security="">
         <InHandlers/>
         <OutHandlers/>
     </Provider>
 
-    <Provider class="org.apache.airavata.gfac.hadoop.provider.impl.HadoopProvider" host="org.apache.airavata.schemas.gfac.impl.HadoopHostTypeImpl">
+    <Provider class="org.apache.airavata.gfac.hadoop.provider.impl.HadoopProvider" submission="CLOUD" >
         <InHandlers>
         	<Handler class="org.apache.airavata.gfac.hadoop.handler.HadoopDeploymentHandler"/>
             <Handler class="org.apache.airavata.gfac.hadoop.handler.HDFSDataMovementHandler"/>
