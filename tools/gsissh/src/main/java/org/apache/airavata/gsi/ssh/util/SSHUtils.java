@@ -155,7 +155,7 @@ public class SSHUtils {
         File _lfile = new File(lFile);
 
         if (ptimestamp) {
-            command = "T " + (_lfile.lastModified() / 1000) + " 0";
+            command = "T" + (_lfile.lastModified() / 1000) + " 0";
             // The access time should be sent here,
             // but it is not accessible with JavaAPI ;-<
             command += (" " + (_lfile.lastModified() / 1000) + " 0\n");
@@ -259,7 +259,7 @@ public class SSHUtils {
         File _lfile = new File(localFile);
 
         if (ptimestamp) {
-            command = "T " + (_lfile.lastModified() / 1000) + " 0";
+            command = "T" + (_lfile.lastModified() / 1000) + " 0";
             // The access time should be sent here,
             // but it is not accessible with JavaAPI ;-<
             command += (" " + (_lfile.lastModified() / 1000) + " 0\n");

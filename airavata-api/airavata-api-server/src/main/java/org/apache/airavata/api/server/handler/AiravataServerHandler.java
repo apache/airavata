@@ -1425,7 +1425,16 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationDeployment().getAllApplicationDeployements();
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application deployments...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
