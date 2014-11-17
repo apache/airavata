@@ -24,10 +24,12 @@ package org.apache.airavata.xbaya.ui.experiment;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.utils.JSONUtil;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
@@ -40,6 +42,7 @@ import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
+import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.ThriftClientData;
@@ -266,7 +269,7 @@ public class WorkflowInterpreterLaunchWindow {
 		workflowClone.setName(workflowClone.getName()+UUID.randomUUID().toString());
 		org.apache.airavata.model.Workflow w = new org.apache.airavata.model.Workflow();
 		w.setName(workflowClone.getName());
-		w.setGraph(XMLUtil.xmlElementToString(workflowClone.toXML()));
+        w.setGraph(JSONUtil.jsonElementToString(workflowClone.toJSON()));
 		w.setTemplateId(airavataClient.registerWorkflow(w));
         String instanceName = this.instanceNameTextField.getText();
         if (instanceName.trim().equals("")){
@@ -306,6 +309,15 @@ public class WorkflowInterpreterLaunchWindow {
             elem.setType(DataType.STRING);
             elem.setValue(value);
 			experiment.addToExperimentInputs(elem );
+        }
+
+        final List<OutputNode> outputNodes = GraphUtil.getOutputNodes(this.workflow.getGraph());
+        OutputDataObjectType outputDataObjectType = null;
+        for (OutputNode outputNode : outputNodes) {
+            outputDataObjectType = new OutputDataObjectType();
+            outputDataObjectType.setName(outputNode.getName());
+            outputDataObjectType.setType(DataType.STRING);
+            experiment.addToExperimentOutputs(outputDataObjectType);
         }
 
         // Add scheduling configurations
