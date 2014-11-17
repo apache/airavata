@@ -43,9 +43,7 @@ public class JSONUtil {
 
 
     public static void saveJSON(JsonElement jsonElement, File file) throws IOException {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        IOUtil.writeToFile(gson.toJson(jsonElement), file);
-
+        IOUtil.writeToFile(jsonElementToString(jsonElement), file);
     }
 
     public static JsonObject stringToJSONObject(String workflowString) {
@@ -66,6 +64,11 @@ public class JSONUtil {
             throw new RuntimeException("Error while loading Json from file");
         }
 
+    }
+
+    public static String jsonElementToString(JsonElement jsonElement) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(jsonElement);
     }
 
     public static boolean isEqual(JsonObject originalJsonObject, JsonObject newJsonObject) {
