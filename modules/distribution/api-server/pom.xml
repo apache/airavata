@@ -138,57 +138,6 @@
 			<artifactId>airavata-api-server</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-		<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-orchestrator-stubs</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-data-models</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-model-utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-common-utils</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-jpa-registry</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>app-catalog-cpi</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.airavata</groupId>
-			<artifactId>app-catalog-data</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.thrift</groupId>
-			<artifactId>libthrift</artifactId>
-			<version>${thrift.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
-		<!-- zookeeper dependencies -->
-		<dependency>
-			<groupId>org.apache.zookeeper</groupId>
-			<artifactId>zookeeper</artifactId>
-			<version>3.4.0</version>
-		</dependency>
 	</dependencies>
 
 
