@@ -93,7 +93,6 @@
 				<include>airavata-server.properties</include>
 				<include>zoo.cfg</include>
 				<include>log4j.properties</include>
-				<include>host.xml</include>
 				<include>persistence.xml</include>
 				<include>provenance.sql</include>
 			</includes>

@@ -134,6 +134,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
+			<artifactId>airavata-standalone-server</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.airavata</groupId>
 			<artifactId>airavata-orchestrator-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
