@@ -55,7 +55,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_636b4530-6fb2-4c9e-998a-b41e648aa70f";
+    private static String echoAppId = "Echo_7405adc7-9519-4478-8529-21846b837cd3";
     private static String wrfAppId = "WRF_d41bdc86-e280-4eb6-a045-708f69a8c116";
     private static String amberAppId = "Amber_b23ee051-90d6-4892-827e-622a2f6c95ee";
 
@@ -73,7 +73,7 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-    //            registerApplications(); // run this only the first time
+//                registerApplications(); // run this only the first time
                 createAndLaunchExp();
     }
     
@@ -208,22 +208,22 @@ public class CreateLaunchExperiment {
         try {
         	// these are template variables and do not need to have values, as it is a data model.
             List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("Input_to_Echo");
-            input.setType(DataType.STRING);
-            input.setValue("Echoed_Output=Hello World");
-            exInputs.add(input);
+            DataObjectType i1 = new DataObjectType();
+            i1.setKey("i1");
+            i1.setType(DataType.STRING);
+            i1.setValue("Test echo output");
+            exInputs.add(i1);
             DataObjectType i2 = new DataObjectType();
-            i2.setKey("Input_to_Echo1");
+            i2.setKey("i2");
             i2.setType(DataType.URI);
-            i2.setValue("http://shrib.com/22QmrrX4");
+            i2.setValue("http://textfiles.com/art/152614.txt");
             exInputs.add(i2);
 
             List<DataObjectType> exOut = new ArrayList<DataObjectType>();
             DataObjectType output = new DataObjectType();
-            output.setKey("Echoed_Output");
+            output.setKey("o1");
             output.setType(DataType.STRING);
-            output.setValue("22QmrrX4");
+            output.setValue("152614.txt");
             exOut.add(output);
             
             
