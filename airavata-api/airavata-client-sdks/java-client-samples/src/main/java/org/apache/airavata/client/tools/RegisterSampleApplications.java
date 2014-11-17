@@ -529,10 +529,10 @@ public class RegisterSampleApplications {
             List<String> appModules = new ArrayList<String>();
             appModules.add(echoModuleId);
 
-            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "Hello World",
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("i1", "",
                     DataType.STRING, null, false, "A test string to Echo", null);
             
-            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo1", "http://shrib.com/22QmrrX4",
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("i2", "",
                     DataType.URI, null, false, "A test uri to Echo", null);
 
             
@@ -540,8 +540,8 @@ public class RegisterSampleApplications {
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "22QmrrX4", DataType.STRING);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("o1",
+                    "", DataType.STRING);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);

@@ -156,7 +156,7 @@ public class DataTransferrer {
 			}
 		}
 		 if (stringMap == null || stringMap.isEmpty()) {
-             throw new GFacProviderException("Empty Output returned from the Application, Double check the application" +
+             log.warn("Empty Output returned from the Application, Double check the application" +
                      "and ApplicationDescriptor output Parameter Names");
          }
 		
@@ -197,29 +197,31 @@ public class DataTransferrer {
 		FileDownloader f1 = new FileDownloader(stdoutFileName,stdoutLocation, Mode.overwrite);
 		try {
 			f1.perform(storageClient);
+			log.info("Downloading stdout and stderr..");
 			String stdoutput = readFile(stdoutLocation);
+			log.info("Stdout downloaded to "+stdoutLocation);
 			appDesc.setStandardOutput(stdoutput);
-		} catch (Exception e) {
-			throw new GFacProviderException(e.getLocalizedMessage(),e);
-		}
-		String stderrLocation = downloadLocation+File.separator+stderrFileName;
-//		FileDownloader f2 = new FileDownloader(stderrFileName,stderrLocation, Mode.overwrite);
-		try {
+			
+			if(UASDataStagingProcessor.isUnicoreEndpoint(jobContext)) {
+				String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
+				String scriptCodeLocation = downloadLocation+File.separator+scriptExitCodeFName;
+				f1.setFrom(scriptExitCodeFName);
+				f1.setTo(downloadLocation+File.separator+scriptCodeLocation);
+				f1.perform(storageClient);
+				log.info("UNICORE_SCRIPT_EXIT_CODE downloaded to "+scriptCodeLocation);
+			}
+
+			String stderrLocation = downloadLocation+File.separator+stderrFileName;
 			f1.setFrom(stderrFileName);
 			f1.setTo(stderrLocation);
 			f1.perform(storageClient);
 			String stderror = readFile(stderrLocation);
+			log.info("Stderr downloaded to "+stderrLocation);
 			appDesc.setStandardError(stderror);
 		} catch (Exception e) {
 			throw new GFacProviderException(e.getLocalizedMessage(),e);
 		}
 		
-		if(UASDataStagingProcessor.isUnicoreEndpoint(jobContext)) {
-			String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
-			f1.setFrom(scriptExitCodeFName);
-			f1.setTo(downloadLocation+File.separator+scriptExitCodeFName);
-			
-		}
 	}
 	
 	public List<String> extractOutStringParams(JobExecutionContext context) {
