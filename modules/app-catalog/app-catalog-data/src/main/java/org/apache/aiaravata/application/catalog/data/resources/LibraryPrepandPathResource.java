@@ -93,7 +93,9 @@ public class LibraryPrepandPathResource extends AbstractResource {
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(LIBRARY_PREPAND_PATH);
             generator.setParameter(LibraryPrepandPathConstants.DEPLOYMENT_ID, ids.get(LibraryPrepandPathConstants.DEPLOYMENT_ID));
-            generator.setParameter(LibraryPrepandPathConstants.NAME, ids.get(LibraryPrepandPathConstants.NAME));
+            if (ids.get(LibraryPrepandPathConstants.NAME) != null){
+                generator.setParameter(LibraryPrepandPathConstants.NAME, ids.get(LibraryPrepandPathConstants.NAME));
+            }
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
