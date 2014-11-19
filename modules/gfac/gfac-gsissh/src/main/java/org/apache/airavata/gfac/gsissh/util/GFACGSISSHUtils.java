@@ -43,6 +43,7 @@ import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.slf4j.Logger;
@@ -178,6 +179,17 @@ public class GFACGSISSHUtils {
         jobDescriptor.setExecutablePath(jobExecutionContext.getExecutablePath());
         jobDescriptor.setStandardOutFile(jobExecutionContext.getStandardOutput());
         jobDescriptor.setStandardErrorFile(jobExecutionContext.getStandardError());
+        String computationalProjectAccount = taskData.getTaskScheduling().getComputationalProjectAccount();
+        if (computationalProjectAccount == null){
+            ComputeResourcePreference computeResourcePreference = jobExecutionContext.getApplicationContext().getComputeResourcePreference();
+            if (computeResourcePreference != null) {
+                computationalProjectAccount = computeResourcePreference.getAllocationProjectNumber();
+            }
+        }
+        if (computationalProjectAccount != null) {
+            jobDescriptor.setAcountString(computationalProjectAccount);
+        }
+
         Random random = new Random();
         int i = random.nextInt(Integer.MAX_VALUE); // We always set the job name
         jobDescriptor.setJobName("A" + String.valueOf(i+99999999));
