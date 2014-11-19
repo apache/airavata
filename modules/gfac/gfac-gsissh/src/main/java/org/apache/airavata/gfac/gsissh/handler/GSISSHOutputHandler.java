@@ -254,9 +254,9 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 }
             }
             // Why we set following?
-//            app.setStandardError(localStdErrFile.getAbsolutePath());
-//            app.setStandardOutput(localStdOutFile.getAbsolutePath());
-//            app.setOutputDataDirectory(outputDataDir);
+            jobExecutionContext.setStandardError(localStdErrFile.getAbsolutePath());
+            jobExecutionContext.setStandardOutput(localStdOutFile.getAbsolutePath());
+            jobExecutionContext.setOutputDir(outputDataDir);
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription(outputDataDir);

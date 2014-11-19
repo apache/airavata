@@ -43,6 +43,7 @@ import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
@@ -232,6 +233,16 @@ public class GFACSSHUtils {
                 .getApplicationDeploymentDescription().getExecutablePath());
         jobDescriptor.setStandardOutFile(jobExecutionContext.getStandardOutput());
         jobDescriptor.setStandardErrorFile(jobExecutionContext.getStandardError());
+        String computationalProjectAccount = taskData.getTaskScheduling().getComputationalProjectAccount();
+        if (computationalProjectAccount == null){
+            ComputeResourcePreference computeResourcePreference = jobExecutionContext.getApplicationContext().getComputeResourcePreference();
+            if (computeResourcePreference != null) {
+                computationalProjectAccount = computeResourcePreference.getAllocationProjectNumber();
+            }
+        }
+        if (computationalProjectAccount != null) {
+            jobDescriptor.setAcountString(computationalProjectAccount);
+        }
         Random random = new Random();
         int i = random.nextInt(Integer.MAX_VALUE);
         jobDescriptor.setJobName(String.valueOf(i + 99999999));

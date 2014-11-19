@@ -195,9 +195,9 @@ public class SSHOutputHandler extends AbstractHandler {
                 }
             }
             // FIXME: why we set standard error ouput and outputDirectory again ?
-//            app.setStandardError(localStdErrFile.getAbsolutePath());
-//            app.setStandardOutput(localStdOutFile.getAbsolutePath());
-//            app.setOutputDataDirectory(outputDataDir);
+            jobExecutionContext.setStandardError(localStdErrFile.getAbsolutePath());
+            jobExecutionContext.setStandardOutput(localStdOutFile.getAbsolutePath());
+            jobExecutionContext.setOutputDir(outputDataDir);
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription(outputDataDir);
