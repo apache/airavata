@@ -390,7 +390,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
-                            + serverInfo.getHost() + ":rFile", e);
+                            + serverInfo.getHost() + ":rFile : " + remoteFile, e);
                 }
             } catch (JSchException e) {
                 retry--;
@@ -402,7 +402,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
                     throw new SSHApiException("Failed during scping local file:" + localFile + " to remote file "
-                            + serverInfo.getHost() + ":rFile", e);
+                            + serverInfo.getHost() + ":rFile : " + remoteFile, e);
                 }
             }
         }
