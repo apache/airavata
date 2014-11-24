@@ -532,13 +532,15 @@ public class RegisterSampleApplications {
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("i1", "",
                     DataType.STRING, null, false, "A test string to Echo", null);
             
+<<<<<<< HEAD
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("i2", "",
                     DataType.URI, null, false, "A test uri to Echo", null);
 
             
+=======
+>>>>>>> f348ef4c59c7f6a8c0fa347bde5b203ae17f7dde
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
-            applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("o1",
                     "", DataType.STRING);
@@ -1097,12 +1099,12 @@ public class RegisterSampleApplications {
 
 
             ComputeResourcePreference stampedeResourcePreferences = RegisterSampleApplicationsUtils.
-                    createComputeResourcePreference(stampedeResourceId, "TG-STA110014S", false, null, null, null,
-                            "/scratch/01437/ogce/gta-work-dirs");
+                    createComputeResourcePreference(stampedeResourceId, "TG-STA110014S", false, null,
+                            JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01437/ogce/gta-work-dirs");
 
             ComputeResourcePreference trestlesResourcePreferences = RegisterSampleApplicationsUtils.
-                    createComputeResourcePreference(trestlesResourceId, "sds128", false, null, null, null,
-                            "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs");
+                    createComputeResourcePreference(trestlesResourceId, "sds128", false, null, JobSubmissionProtocol.SSH,
+                            DataMovementProtocol.SCP, "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs");
 
             ComputeResourcePreference bigRedResourcePreferences = RegisterSampleApplicationsUtils.
                     createComputeResourcePreference(bigredResourceId, "TG-STA110014S", false, null, null, null,

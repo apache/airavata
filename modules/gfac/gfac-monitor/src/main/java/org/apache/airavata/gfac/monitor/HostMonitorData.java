@@ -20,34 +20,44 @@
 */
 package org.apache.airavata.gfac.monitor;
 
-import org.apache.airavata.commons.gfac.type.HostDescription;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class HostMonitorData {
-    private HostDescription host;
+//    private HostDescription host;
+    private ComputeResourceDescription computeResourceDescription;
+    private JobSubmissionProtocol jobSubmissionProtocol;
+    private DataMovementProtocol dataMovementProtocol;
 
     private List<MonitorID> monitorIDs;
 
-    public HostMonitorData(HostDescription host) {
-        this.host = host;
-        monitorIDs = new ArrayList<MonitorID>();
+    public HostMonitorData(JobExecutionContext jobExecutionContext) {
+        this.computeResourceDescription = jobExecutionContext.getApplicationContext().getComputeResourceDescription();
+        this.jobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
+        this.dataMovementProtocol = jobExecutionContext.getPreferredDataMovementProtocol();
+        this.monitorIDs = new ArrayList<MonitorID>();
     }
 
-    public HostMonitorData(HostDescription host, List<MonitorID> monitorIDs) {
-        this.host = host;
+    public HostMonitorData(JobExecutionContext jobExecutionContext, List<MonitorID> monitorIDs) {
+        this.computeResourceDescription = jobExecutionContext.getApplicationContext().getComputeResourceDescription();
+        this.jobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
+        this.dataMovementProtocol = jobExecutionContext.getPreferredDataMovementProtocol();
         this.monitorIDs = monitorIDs;
     }
 
-    public HostDescription getHost() {
-        return host;
+    public ComputeResourceDescription getComputeResourceDescription() {
+        return computeResourceDescription;
     }
 
-    public void setHost(HostDescription host) {
-        this.host = host;
+    public void setComputeResourceDescription(ComputeResourceDescription computeResourceDescription) {
+        this.computeResourceDescription = computeResourceDescription;
     }
 
     public List<MonitorID> getMonitorIDs() {
@@ -66,5 +76,13 @@ public class HostMonitorData {
      */
     public void addMonitorIDForHost(MonitorID monitorID)throws AiravataMonitorException {
         monitorIDs.add(monitorID);
+    }
+
+    public JobSubmissionProtocol getJobSubmissionProtocol() {
+        return jobSubmissionProtocol;
+    }
+
+    public DataMovementProtocol getDataMovementProtocol() {
+        return dataMovementProtocol;
     }
 }

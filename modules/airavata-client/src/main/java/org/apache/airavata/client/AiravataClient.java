@@ -56,7 +56,7 @@ public class AiravataClient extends Observable implements AiravataAPI {
 
 	private Map<String, String> configuration = new HashMap<String, String>();
 	private AiravataManagerImpl airavataManagerImpl;
-	private ApplicationManagerImpl applicationManagerImpl;
+//	private ApplicationManagerImpl applicationManagerImpl;
 	private WorkflowManagerImpl workflowManagerImpl;
 	private UserManagerImpl userManagerImpl;
 //	private ExecutionManagerThriftImpl executionManagerImpl;
@@ -264,12 +264,12 @@ public class AiravataClient extends Observable implements AiravataAPI {
 		return airavataManagerImpl;
 	}
 
-	public ApplicationManager getApplicationManager() {
-		if (applicationManagerImpl == null) {
-			applicationManagerImpl = new ApplicationManagerImpl(this);
-		}
-		return applicationManagerImpl;
-	}
+//	public ApplicationManager getApplicationManager() {
+//		if (applicationManagerImpl == null) {
+//			applicationManagerImpl = new ApplicationManagerImpl(this);
+//		}
+//		return applicationManagerImpl;
+//	}
 
 	public WorkflowManager getWorkflowManager() {
 		if (workflowManagerImpl == null) {

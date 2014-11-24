@@ -99,7 +99,7 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID);
+            CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID, jobExecutionContext);
             CommonUtils.increaseZkJobCount(monitorID); // update change job count to zookeeper
         } catch (AiravataMonitorException e) {
             logger.errorId(monitorID.getJobID(), "Error adding job {} monitorID object to the queue with experiment {}",

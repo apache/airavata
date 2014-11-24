@@ -45,8 +45,8 @@ public class DocumentCreatorUtils {
 
 	public static ComputeResourcePreference createComputeResourcePreference(String computeResourceId, String scratchLocation,
 			String allocationProjectNumber, boolean overridebyAiravata,
-			String preferredBatchQueue, String preferredJobSubmissionProtocol,
-			String preferredDataMovementProtocol) throws AppCatalogException {
+			String preferredBatchQueue, JobSubmissionProtocol preferredJobSubmissionProtocol,
+			DataMovementProtocol preferredDataMovementProtocol) throws AppCatalogException {
 		ComputeResourcePreference computeResourcePreference = new ComputeResourcePreference();
 		computeResourcePreference.setComputeResourceId(computeResourceId);
 		computeResourcePreference.setOverridebyAiravata(overridebyAiravata);

@@ -108,8 +108,8 @@
 				<include>net.java.dev.jets3t:jets3t</include>
 				<include>org.apache.airavata:airavata-orchestrator-core:jar
 				</include>
-				<include>org.apache.airavata:airavata-gfac-schema-utils:jar
-				</include>
+				<!--<include>org.apache.airavata:airavata-gfac-schema-utils:jar-->
+				<!--</include>-->
 				<include>org.apache.airavata:airavata-common-utils:jar</include>
 				<include>org.apache.airavata:airavata-workflow-execution-context:jar
 				</include>

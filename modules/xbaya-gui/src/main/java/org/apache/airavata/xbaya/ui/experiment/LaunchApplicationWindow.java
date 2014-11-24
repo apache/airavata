@@ -21,13 +21,32 @@
 
 package org.apache.airavata.xbaya.ui.experiment;
 
-import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import org.apache.airavata.api.Airavata.Client;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.workflow.model.graph.DataPort;
+import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
+import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.airavata.xbaya.ThriftClientData;
+import org.apache.airavata.xbaya.ThriftServiceType;
+import org.apache.airavata.xbaya.XBayaEngine;
+import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
+import org.apache.airavata.xbaya.ui.widgets.GridPanel;
+import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
+import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
+import org.apache.airavata.xbaya.util.XBayaUtil;
+import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
@@ -38,39 +57,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
 import javax.xml.namespace.QName;
-
-import org.apache.airavata.api.Airavata.Client;
-import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.DataType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
-import org.apache.airavata.workflow.model.graph.DataPort;
-import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
-import org.apache.airavata.workflow.model.graph.system.InputNode;
-import org.apache.airavata.workflow.model.graph.system.OutputNode;
-import org.apache.airavata.workflow.model.graph.util.GraphUtil;
-import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.MonitorConfiguration;
-import org.apache.airavata.xbaya.ThriftClientData;
-import org.apache.airavata.xbaya.ThriftServiceType;
-import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
-import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
-import org.apache.airavata.xbaya.ui.widgets.GridPanel;
-import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
-import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.apache.airavata.xbaya.util.XBayaUtil;
-import org.apache.thrift.TException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlElement;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class LaunchApplicationWindow {
 
@@ -364,8 +356,8 @@ public class LaunchApplicationWindow {
             DataPort inputPort = inputPorts.get(i);
             XBayaTextField parameterTextField = this.parameterTextFields.get(i);           
             String value = parameterTextField.getText();
-            DataObjectType elem = new DataObjectType();
-            elem.setKey(inputPort.getName());
+            InputDataObjectType elem = new InputDataObjectType();
+            elem.setName(inputPort.getName());
             String type = inputPort.getType().getLocalPart().trim();
             DataType inpType = DataType.STRING;
             if(type.equalsIgnoreCase("string")){
@@ -391,8 +383,8 @@ public class LaunchApplicationWindow {
         
         for (int i = 0; i < outputPorts.size(); i++) {
             DataPort outputPort = outputPorts.get(i);
-            DataObjectType elem = new DataObjectType();
-            elem.setKey(outputPort.getName());
+            OutputDataObjectType elem = new OutputDataObjectType();
+            elem.setName(outputPort.getName());
             String type = outputPort.getType().getLocalPart().trim();
             DataType outType = DataType.STRING;
             if(type.equalsIgnoreCase("string")){
@@ -443,10 +435,10 @@ public class LaunchApplicationWindow {
         	while(output.equals("")){
         		output = "";
         		fullOutput = "Experiment Completed Successfully. Output(s) are shown below:\n";
-            	List<DataObjectType> outputs = airavataClient.getExperimentOutputs(experiment.getExperimentID());
+            	List<OutputDataObjectType> outputs = airavataClient.getExperimentOutputs(experiment.getExperimentID());
             	for(int i1=0; i1<outputs.size(); i1++){
             		output = outputs.get(i1).getValue();
-            		fullOutput+= outputs.get(i1).getKey()+": "+output+"\n";
+            		fullOutput+= outputs.get(i1).getName()+": "+output+"\n";
             	}            	
             } 
         	JOptionPane.showMessageDialog(null, fullOutput);

@@ -38,7 +38,7 @@ public class UNICORESecurityContext extends X509SecurityContext {
 	 * @return an instance of the default client configuration
 	 * @throws GFacException
 	 * @throws ApplicationSettingsException 
-	 * @throws GFacProviderException
+	 * @throws GFacException, ApplicationSettingsException
 	 */
 	public DefaultClientConfiguration getDefaultConfiguration() throws GFacException, ApplicationSettingsException {
 		try{
@@ -69,7 +69,7 @@ public class UNICORESecurityContext extends X509SecurityContext {
 	 * @param caKeyPath
 	 * @param caKeyPwd
 	 * @return
-	 * @throws GFacProviderException
+	 * @throws GFacException
 	 */
 	public DefaultClientConfiguration getServerSignedConfiguration(String userID, String userDN, String caCertPath, String caKeyPath, String caKeyPwd) throws GFacException {
 		try {

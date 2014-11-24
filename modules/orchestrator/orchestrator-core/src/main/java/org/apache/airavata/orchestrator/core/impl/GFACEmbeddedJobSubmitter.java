@@ -49,7 +49,7 @@ public class GFACEmbeddedJobSubmitter implements JobSubmitter {
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
-        gfac = new BetterGfacImpl(orchestratorContext.getNewRegistry(), null, new MonitorPublisher(new EventBus()));
+        gfac = new BetterGfacImpl(orchestratorContext.getNewRegistry(),null, null, new MonitorPublisher(new EventBus()));
     }
 
     public GFACInstance selectGFACInstance() throws OrchestratorException {

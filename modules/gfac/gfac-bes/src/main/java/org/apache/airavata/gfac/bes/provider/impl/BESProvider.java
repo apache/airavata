@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.bes.provider.impl;
 import java.util.Calendar;
 import java.util.Map;
 
+import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
@@ -40,6 +41,9 @@ import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.schemas.gfac.UnicoreHostType;
@@ -101,9 +105,170 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 
 	public void execute(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException, GFacException {
+
+        StorageClient sc = null;
+        try {
+            JobSubmissionInterface preferredJobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
+            JobSubmissionProtocol protocol = preferredJobSubmissionInterface.getJobSubmissionProtocol();
+            String interfaceId = preferredJobSubmissionInterface.getJobSubmissionInterfaceId();
+            String factoryUrl = null;
+            if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
+                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(interfaceId);
+                factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
+            }
+            EndpointReferenceType eprt = EndpointReferenceType.Factory
+                    .newInstance();
+            eprt.addNewAddress().setStringValue(factoryUrl);
+            String userDN = getUserName(jobExecutionContext);
+
+            // TODO: to be removed
+            if (userDN == null || userDN.equalsIgnoreCase("admin")) {
+                userDN = "CN=zdv575, O=Ultrascan Gateway, C=DE";
+            }
+            CreateActivityDocument cad = CreateActivityDocument.Factory
+                    .newInstance();
+            JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory
+                    .newInstance();
+
+            // create storage
+            StorageCreator storageCreator = new StorageCreator(secProperties,
+                    factoryUrl, 5, null);
+            sc = storageCreator.createStorage();
+
+            JobDefinitionType jobDefinition = JSDLGenerator.buildJSDLInstance(
+                    jobExecutionContext, sc.getUrl()).getJobDefinition();
+            cad.addNewCreateActivity().addNewActivityDocument()
+                    .setJobDefinition(jobDefinition);
+            log.info("JSDL" + jobDefDoc.toString());
+
+            // upload files if any
+            DataTransferrer dt = new DataTransferrer(jobExecutionContext, sc);
+            dt.uploadLocalFiles();
+
+            JobDetails jobDetails = new JobDetails();
+            FactoryClient factory = new FactoryClient(eprt, secProperties);
+
+            log.info(String.format("Activity Submitting to %s ... \n",
+                    factoryUrl));
+            jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
+            CreateActivityResponseDocument response = factory.createActivity(cad);
+            log.info(String.format("Activity Submitted to %s \n", factoryUrl));
+
+            EndpointReferenceType activityEpr = response.getCreateActivityResponse().getActivityIdentifier();
+
+            log.info("Activity : " + activityEpr.getAddress().getStringValue() + " Submitted.");
+
+            // factory.waitWhileActivityIsDone(activityEpr, 1000);
+            jobId = WSUtilities.extractResourceID(activityEpr);
+            if (jobId == null) {
+                jobId = new Long(Calendar.getInstance().getTimeInMillis())
+                        .toString();
+            }
+            log.info("JobID: " + jobId);
+            jobDetails.setJobID(activityEpr.toString());
+            jobDetails.setJobDescription(activityEpr.toString());
+
+            jobExecutionContext.setJobDetails(jobDetails);
+            log.info(formatStatusMessage(activityEpr.getAddress()
+                    .getStringValue(), factory.getActivityStatus(activityEpr)
+                    .toString()));
+
+            jobExecutionContext.getNotifier().publish(new UnicoreJobIDEvent(jobId));
+            GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SUBMITTED);
+
+            factory.getActivityStatus(activityEpr);
+            log.info(formatStatusMessage(activityEpr.getAddress()
+                    .getStringValue(), factory.getActivityStatus(activityEpr)
+                    .toString()));
+
+            // TODO publish the status messages to the message bus
+            while ((factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED)
+                    && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FAILED)
+                    && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.CANCELLED)) {
+
+                ActivityStatusType activityStatus = getStatus(factory, activityEpr);
+                JobState applicationJobStatus = getApplicationJobStatus(activityStatus);
+                String jobStatusMessage = "Status of job " + jobId + "is "
+                        + applicationJobStatus;
+                GFacUtils.updateJobStatus(jobExecutionContext, jobDetails,
+                        applicationJobStatus);
+
+                jobExecutionContext.getNotifier().publish(
+                        new StatusChangeEvent(jobStatusMessage));
+
+                // GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId,
+                // applicationJobStatus);
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                }
+                continue;
+            }
+
+            ActivityStatusType activityStatus = null;
+            activityStatus = getStatus(factory, activityEpr);
+            log.info(formatStatusMessage(activityEpr.getAddress().getStringValue(), activityStatus.getState().toString()));
+            ActivityClient activityClient;
+            activityClient = new ActivityClient(activityEpr, secProperties);
+            dt.setStorageClient(activityClient.getUspaceClient());
+
+            if ((activityStatus.getState() == ActivityStateEnumeration.FAILED)) {
+                String error = activityStatus.getFault().getFaultcode()
+                        .getLocalPart()
+                        + "\n"
+                        + activityStatus.getFault().getFaultstring()
+                        + "\n EXITCODE: " + activityStatus.getExitCode();
+                log.info(error);
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                }
+                dt.downloadStdOuts();
+            } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
+                JobState applicationJobStatus = JobState.CANCELED;
+                String jobStatusMessage = "Status of job " + jobId + "is "
+                        + applicationJobStatus;
+                jobExecutionContext.getNotifier().publish(
+                        new StatusChangeEvent(jobStatusMessage));
+                GFacUtils.updateJobStatus(jobExecutionContext, jobDetails,
+                        applicationJobStatus);
+                throw new GFacProviderException(
+                        jobExecutionContext.getExperimentID() + "Job Canceled");
+            } else if (activityStatus.getState() == ActivityStateEnumeration.FINISHED) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                }
+                if (activityStatus.getExitCode() == 0) {
+                    dt.downloadRemoteFiles();
+                } else {
+                    dt.downloadStdOuts();
+                }
+            }
+        } catch (AppCatalogException e) {
+            log.error("Error while retrieving UNICORE job submission..");
+            throw new GFacProviderException("Error while retrieving UNICORE job submission..", e);
+        } catch (Exception e) {
+            log.error("Cannot create storage..");
+            throw new GFacProviderException("Cannot create storage..", e);
+        } finally {
+            // destroy sms instance
+            try {
+                if (sc != null) {
+                    sc.destroy();
+                }
+            } catch (Exception e) {
+                log.warn(
+                        "Cannot destroy temporary SMS instance:" + sc.getUrl(),
+                        e);
+            }
+        }
+
+    }
+
 		UnicoreHostType host = (UnicoreHostType) jobExecutionContext
 				.getApplicationContext().getHostDescription().getType();
-
+		
 		String factoryUrl = host.getUnicoreBESEndPointArray()[0];
 
 		EndpointReferenceType eprt = EndpointReferenceType.Factory
@@ -305,6 +470,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 
 	}
 
+
 	private JobState getApplicationJobStatus(ActivityStatusType activityStatus) {
 		if (activityStatus == null) {
 			return JobState.UNKNOWN;
@@ -368,10 +534,14 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 			// initSecurityProperties(jobExecutionContext);
 			EndpointReferenceType eprt = EndpointReferenceType.Factory
 					.parse(activityEpr);
-			UnicoreHostType host = (UnicoreHostType) jobExecutionContext
-					.getApplicationContext().getHostDescription().getType();
-
-			String factoryUrl = host.getUnicoreBESEndPointArray()[0];
+            JobSubmissionInterface preferredJobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
+            JobSubmissionProtocol protocol = preferredJobSubmissionInterface.getJobSubmissionProtocol();
+            String interfaceId = preferredJobSubmissionInterface.getJobSubmissionInterfaceId();
+            String factoryUrl = null;
+            if (protocol.equals(JobSubmissionProtocol.UNICORE)) {
+                UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(interfaceId);
+                factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
+            }
 			EndpointReferenceType epr = EndpointReferenceType.Factory
 					.newInstance();
 			epr.addNewAddress().setStringValue(factoryUrl);

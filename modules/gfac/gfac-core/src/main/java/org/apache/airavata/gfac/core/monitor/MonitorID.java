@@ -22,8 +22,8 @@ package org.apache.airavata.gfac.core.monitor;
 
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.workspace.experiment.JobState;
 
 import java.sql.Timestamp;
@@ -43,7 +43,7 @@ public class MonitorID {
 
     private Timestamp lastMonitored;
 
-    private HostDescription host;
+    private ComputeResourceDescription computeResourceDescription;
 
     private Map<String, Object> parameters;
 
@@ -66,7 +66,7 @@ public class MonitorID {
     public MonitorID() {
     }
     public MonitorID(MonitorID monitorID){
-        this.host = monitorID.getHost();
+        this.computeResourceDescription = monitorID.getComputeResourceDescription();
         this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.userName = monitorID.getUserName();
         this.jobID = monitorID.getJobID();
@@ -75,8 +75,8 @@ public class MonitorID {
         this.workflowNodeID = monitorID.getWorkflowNodeID();
         this.jobName = monitorID.getJobName();
     }
-    public MonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID, String experimentID, String userName,String jobName) {
-        this.host = host;
+    public MonitorID(ComputeResourceDescription computeResourceDescription, String jobID, String taskID, String workflowNodeID, String experimentID, String userName,String jobName) {
+        this.computeResourceDescription = computeResourceDescription;
         this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.userName = userName;
         this.jobID = jobID;
@@ -88,7 +88,7 @@ public class MonitorID {
 
     public MonitorID(JobExecutionContext jobExecutionContext) {
         this.jobExecutionContext = jobExecutionContext;
-        host = jobExecutionContext.getApplicationContext().getHostDescription();
+        this.computeResourceDescription = jobExecutionContext.getApplicationContext().getComputeResourceDescription();
         userName = jobExecutionContext.getExperiment().getUserName();
         taskID = jobExecutionContext.getTaskData().getTaskID();
         experimentID = jobExecutionContext.getExperiment().getExperimentID();
@@ -101,12 +101,12 @@ public class MonitorID {
         }
     }
 
-    public HostDescription getHost() {
-        return host;
+    public ComputeResourceDescription getComputeResourceDescription() {
+        return computeResourceDescription;
     }
 
-    public void setHost(HostDescription host) {
-        this.host = host;
+    public void setComputeResourceDescription(ComputeResourceDescription computeResourceDescription) {
+        this.computeResourceDescription = computeResourceDescription;
     }
 
     public Timestamp getLastMonitored() {

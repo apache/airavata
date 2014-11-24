@@ -149,7 +149,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getExperimentStatus\n");
   }
 
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getExperimentOutputs\n");
   }
@@ -194,9 +194,9 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateApplicationModule\n");
   }
 
-  void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) {
+  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) {
     // Your implementation goes here
-    printf("getAllModules\n");
+    printf("getAllAppModules\n");
   }
 
   bool deleteApplicationModule(const std::string& appModuleId) {
@@ -222,6 +222,11 @@ class AiravataHandler : virtual public AiravataIf {
   bool deleteApplicationDeployment(const std::string& appDeploymentId) {
     // Your implementation goes here
     printf("deleteApplicationDeployment\n");
+  }
+
+  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return) {
+    // Your implementation goes here
+    printf("getAllApplicationDeployments\n");
   }
 
   void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId) {

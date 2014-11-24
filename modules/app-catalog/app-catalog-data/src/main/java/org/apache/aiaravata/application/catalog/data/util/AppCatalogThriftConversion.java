@@ -497,7 +497,7 @@ public class AppCatalogThriftConversion {
         ApplicationInterfaceDescription description = new ApplicationInterfaceDescription();
         description.setApplicationInterfaceId(resource.getInterfaceId());
         description.setApplicationName(resource.getAppName());
-        description.setApplicationDesription(resource.getAppDescription());
+        description.setApplicationDescription(resource.getAppDescription());
 
         AppModuleMappingResource appModuleMappingResource = new AppModuleMappingResource();
         List<Resource> appModules = appModuleMappingResource.get(AbstractResource.AppModuleMappingConstants.INTERFACE_ID, resource.getInterfaceId());
@@ -670,8 +670,12 @@ public class AppCatalogThriftConversion {
         ComputeResourcePreference preference = new ComputeResourcePreference();
         preference.setComputeResourceId(resource.getResourceId());
         preference.setOverridebyAiravata(resource.getOverrideByAiravata());
-        preference.setPreferredJobSubmissionProtocol(resource.getPreferredJobProtocol());
-        preference.setPreferredDataMovementProtocol(resource.getPreferedDMProtocol());
+        if (resource.getPreferredJobProtocol() != null){
+            preference.setPreferredJobSubmissionProtocol(JobSubmissionProtocol.valueOf(resource.getPreferredJobProtocol()));
+        }
+        if (resource.getPreferedDMProtocol() != null){
+            preference.setPreferredDataMovementProtocol(DataMovementProtocol.valueOf(resource.getPreferedDMProtocol()));
+        }
         preference.setPreferredBatchQueue(resource.getBatchQueue());
         preference.setScratchLocation(resource.getScratchLocation());
         preference.setAllocationProjectNumber(resource.getProjectNumber());

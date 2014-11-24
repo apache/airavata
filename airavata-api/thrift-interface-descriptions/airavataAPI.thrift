@@ -397,7 +397,7 @@ service Airavata {
               3: airavataErrors.AiravataClientException ace,
               4: airavataErrors.AiravataSystemException ase)
 
-  list<experimentModel.DataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
+  list<applicationInterfaceModel.OutputDataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
       throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.ExperimentNotFoundException enf,
               3: airavataErrors.AiravataClientException ace,
@@ -574,7 +574,7 @@ service Airavata {
                 3: airavataErrors.AiravataSystemException ase)
 
 
-  list<applicationDeploymentModel.ApplicationModule> getAllModules ()
+  list<applicationDeploymentModel.ApplicationModule> getAllAppModules ()
         throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
@@ -662,6 +662,18 @@ service Airavata {
          	throws (1: airavataErrors.InvalidRequestException ire,
                    2: airavataErrors.AiravataClientException ace,
                    3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Fetch all Application Deployment Descriptions.
+   *
+   * @return list<applicationDeployment.
+   *   Returns the list of all application Deployment Objects.
+   *
+  */
+  list<applicationDeploymentModel.ApplicationDeploymentDescription> getAllApplicationDeployments()
+      	throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.AiravataClientException ace,
+                3: airavataErrors.AiravataSystemException ase)
 
   /**
    * Fetch a list of Deployed Compute Hosts.

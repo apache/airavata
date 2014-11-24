@@ -275,7 +275,7 @@ public class Initialize {
         try {
             System.setProperty(DERBY_SERVER_MODE_SYS_PROPERTY, "true");
             server = new NetworkServerControl(InetAddress.getByName("0.0.0.0"),
-                    getPort(jdbcUrl),
+                    20000,
                     jdbcUser, jdbcPassword);
             java.io.PrintWriter consoleWriter = new java.io.PrintWriter(System.out, true);
             server.start(consoleWriter);

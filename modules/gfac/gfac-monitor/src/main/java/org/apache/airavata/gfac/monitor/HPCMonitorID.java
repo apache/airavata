@@ -19,25 +19,21 @@ package org.apache.airavata.gfac.monitor;/*
  *
 */
 
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
-import org.apache.airavata.gfac.ssh.security.TokenizedSSHAuthInfo;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Map;
 
 public class HPCMonitorID extends MonitorID {
     private final static Logger logger = LoggerFactory.getLogger(HPCMonitorID.class);
@@ -45,10 +41,10 @@ public class HPCMonitorID extends MonitorID {
 
     private AuthenticationInfo authenticationInfo = null;
 
-    public HPCMonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID,
+    public HPCMonitorID(ComputeResourceDescription computeResourceDescription, String jobID, String taskID, String workflowNodeID,
                         String experimentID, String userName,String jobName) {
-        super(host, jobID, taskID, workflowNodeID, experimentID, userName,jobName);
-        setHost(host);
+        super(computeResourceDescription, jobID, taskID, workflowNodeID, experimentID, userName,jobName);
+        setComputeResourceDescription(computeResourceDescription);
         setJobStartedTime(new Timestamp((new Date()).getTime()));
         setUserName(userName);
         setJobID(jobID);
@@ -62,23 +58,31 @@ public class HPCMonitorID extends MonitorID {
         this.authenticationInfo = authenticationInfo;
         if (this.authenticationInfo != null) {
             try {
-                String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+                String hostAddress = jobExecutionContext.getHostName();
                 SecurityContext securityContext = jobExecutionContext.getSecurityContext(hostAddress);
                 ServerInfo serverInfo = null;
                 if (securityContext != null) {
-                    serverInfo = (((GSISecurityContext) securityContext).getPbsCluster()).getServerInfo();
-                }
-                if (serverInfo.getUserName() != null) {
-                    setUserName(serverInfo.getUserName());
+                    if (securityContext instanceof  GSISecurityContext){
+                        serverInfo = (((GSISecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                        if (serverInfo.getUserName() != null) {
+                            setUserName(serverInfo.getUserName());
+                        }
+                    }
+                    if (securityContext instanceof SSHSecurityContext){
+                        serverInfo = (((SSHSecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                        if (serverInfo.getUserName() != null) {
+                            setUserName(serverInfo.getUserName());
+                        }
+                    }
                 }
             } catch (GFacException e) {
-                e.printStackTrace();
+                logger.error("Error while getting security context", e);
             }
         }
     }
 
-    public HPCMonitorID(HostDescription host, String jobID, String taskID, String workflowNodeID, String experimentID, String userName, AuthenticationInfo authenticationInfo) {
-        setHost(host);
+    public HPCMonitorID(ComputeResourceDescription computeResourceDescription, String jobID, String taskID, String workflowNodeID, String experimentID, String userName, AuthenticationInfo authenticationInfo) {
+        setComputeResourceDescription(computeResourceDescription);
         setJobStartedTime(new Timestamp((new Date()).getTime()));
         this.authenticationInfo = authenticationInfo;
         // if we give myproxyauthenticationInfo, so we try to use myproxy user as the user

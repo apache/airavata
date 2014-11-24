@@ -30,12 +30,12 @@ import java.util.concurrent.BlockingQueue;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.core.PushMonitor;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.gfac.monitor.util.AMQPConnectionUtil;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -107,30 +107,37 @@ public class AMQPMonitor extends PushMonitor {
     @Override
     public boolean registerListener(MonitorID monitorID) throws AiravataMonitorException {
         // we subscribe to read user-host based subscription
-        HostDescription host = monitorID.getHost();
-        String hostAddress = host.getType().getHostAddress();
-        // in amqp case there are no multiple jobs per each host, because once a job is put in to the queue it
-        // will be picked by the Monitor, so jobs will not stay in this queueu but jobs will stay in finishQueue
-        String channelID = CommonUtils.getChannelID(monitorID);
-        if(availableChannels.get(channelID) == null){
-        try {
-            //todo need to fix this rather getting it from a file
-            Connection connection = AMQPConnectionUtil.connect(amqpHosts, connectionName, proxyPath);
-            Channel channel = null;
-            channel = connection.createChannel();
-            availableChannels.put(channelID, channel);
-            String queueName = channel.queueDeclare().getQueue();
+        ComputeResourceDescription computeResourceDescription = monitorID.getComputeResourceDescription();
+        if (computeResourceDescription.isSetIpAddresses() && computeResourceDescription.getIpAddresses().size() > 0) {
+            // we get first ip address for the moment
+            String hostAddress = computeResourceDescription.getIpAddresses().get(0);
+            // in amqp case there are no multiple jobs per each host, because once a job is put in to the queue it
+            // will be picked by the Monitor, so jobs will not stay in this queueu but jobs will stay in finishQueue
+            String channelID = CommonUtils.getChannelID(monitorID);
+            if (availableChannels.get(channelID) == null) {
+                try {
+                    //todo need to fix this rather getting it from a file
+                    Connection connection = AMQPConnectionUtil.connect(amqpHosts, connectionName, proxyPath);
+                    Channel channel = null;
+                    channel = connection.createChannel();
+                    availableChannels.put(channelID, channel);
+                    String queueName = channel.queueDeclare().getQueue();
 
-            BasicConsumer consumer = new
-                    BasicConsumer(new JSONMessageParser(), localPublisher);          // here we use local publisher
-            channel.basicConsume(queueName, true, consumer);
-            String filterString = CommonUtils.getRoutingKey(monitorID.getUserName(), hostAddress);
-            // here we queuebind to a particular user in a particular machine
-            channel.queueBind(queueName, "glue2.computing_activity", filterString);
-            logger.info("Using filtering string to monitor: " + filterString);
-        } catch (IOException e) {
-            logger.error("Error creating the connection to finishQueue the job:" + monitorID.getUserName());
-        }
+                    BasicConsumer consumer = new
+                            BasicConsumer(new JSONMessageParser(), localPublisher);          // here we use local publisher
+                    channel.basicConsume(queueName, true, consumer);
+                    String filterString = CommonUtils.getRoutingKey(monitorID.getUserName(), hostAddress);
+                    // here we queuebind to a particular user in a particular machine
+                    channel.queueBind(queueName, "glue2.computing_activity", filterString);
+                    logger.info("Using filtering string to monitor: " + filterString);
+                } catch (IOException e) {
+                    logger.error("Error creating the connection to finishQueue the job:" + monitorID.getUserName());
+                }
+            }
+        } else {
+            throw new AiravataMonitorException("Couldn't register monitor for jobId :" + monitorID.getJobID() +
+                    " , ComputeResourceDescription " + computeResourceDescription.getHostName() + " doesn't has an " +
+                    "IpAddress with it");
         }
         return true;
     }

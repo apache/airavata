@@ -21,34 +21,35 @@
 
 package org.apache.airavata.integration;
 
+import junit.framework.Assert;
+import org.apache.airavata.integration.tools.DocumentCreatorNew;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.util.ProjectModelUtil;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 //import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 //import org.apache.airavata.client.tools.DocumentCreatorNew;
-import org.apache.airavata.integration.tools.DocumentCreatorNew;
-import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.util.ProjectModelUtil;
-import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
-import org.apache.airavata.model.workspace.experiment.DataType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 //import org.apache.airavata.workflow.model.wf.Workflow;
 //import org.apache.airavata.ws.monitor.EventData;
 //import org.apache.airavata.ws.monitor.EventDataListenerAdapter;
 //import org.apache.airavata.ws.monitor.EventDataRepository;
 //import org.apache.airavata.ws.monitor.Monitor;
 //import org.apache.airavata.ws.monitor.MonitorUtil;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
 
 /**
  * Integration test class.
@@ -87,16 +88,16 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
         log.info("Running job in trestles...");
         DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
         documentCreator.createPBSDocsForOGCE_Echo();
-        List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-        DataObjectType input = new DataObjectType();
-        input.setKey("echo_input");
+        List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+        InputDataObjectType input = new InputDataObjectType();
+        input.setName("echo_input");
         input.setType(DataType.STRING);
         input.setValue("echo_output=Hello World");
         exInputs.add(input);
 
-        List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-        DataObjectType output = new DataObjectType();
-        output.setKey("echo_output");
+        List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+        OutputDataObjectType output = new OutputDataObjectType();
+        output.setName("echo_output");
         output.setType(DataType.STRING);
         output.setValue("");
         exOut.add(output);
@@ -161,16 +162,16 @@ public class BaseCaseIT extends WorkflowIntegrationTestBase {
         log.info("Running job in Stampede...");
         DocumentCreatorNew documentCreator = new DocumentCreatorNew(client);
         documentCreator.createSlurmDocs();
-        List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-        DataObjectType input = new DataObjectType();
-        input.setKey("echo_input");
+        List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+        InputDataObjectType input = new InputDataObjectType();
+        input.setName("echo_input");
         input.setType(DataType.STRING);
         input.setValue("echo_output=Hello World");
         exInputs.add(input);
 
-        List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-        DataObjectType output = new DataObjectType();
-        output.setKey("echo_output");
+        List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+        OutputDataObjectType output = new OutputDataObjectType();
+        output.setName("echo_output");
         output.setType(DataType.STRING);
         output.setValue("");
         exOut.add(output);
